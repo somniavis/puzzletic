@@ -432,32 +432,48 @@
 @media (max-width: 768px) {
   .game-header {
     padding: 0.75rem 1rem;
+    flex-direction: row;
+    gap: 0.5rem;
   }
 
   .character-profile {
-    padding: 0.4rem 0.75rem 0.4rem 0.4rem;
+    padding: 0.3rem 0.6rem 0.3rem 0.3rem;
+    flex-shrink: 0;
   }
 
   .profile-avatar {
-    width: 50px;
-    height: 50px;
+    width: 45px;
+    height: 45px;
+    border: 3px solid #2d4a3d;
   }
 
   .profile-name {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
+  }
+
+  .profile-level {
+    font-size: 0.7rem;
+    padding: 0.1rem 0.4rem;
+  }
+
+  .stats-row {
+    flex: 1;
+    gap: 0.4rem;
+    justify-content: flex-end;
   }
 
   .stat-badge {
-    padding: 0.4rem 0.75rem;
-    min-width: 70px;
+    padding: 0.3rem 0.6rem;
+    min-width: 60px;
+    border: 3px solid #2d4a3d;
   }
 
   .stat-icon {
-    font-size: 1.3rem;
+    font-size: 1.2rem;
   }
 
   .stat-value {
-    font-size: 1rem;
+    font-size: 0.9rem;
   }
 
   .action-bar {
