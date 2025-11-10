@@ -1,7 +1,11 @@
 import React from 'react';
 import type { Character, CharacterMood, CharacterAction } from '../../../types/character';
 import { PixelRenderer } from '../../PixelArt/PixelRenderer';
-import { greenSlimeIdle, greenSlimeHappy, greenSlimeSleeping } from './GreenSlimePixelData';
+import {
+  greenSlimeIdle,
+  greenSlimeHappy,
+  greenSlimeSleeping
+} from './GreenSlimePixelData';
 import './GreenSlime.css';
 
 interface GreenSlimeProps {
@@ -27,8 +31,13 @@ export const GreenSlime: React.FC<GreenSlimeProps> = ({
   };
 
   const getPixelData = () => {
-    if (mood === 'happy') return greenSlimeHappy;
+    // Happy moods: happy, excited
+    if (mood === 'happy' || mood === 'excited') return greenSlimeHappy;
+
+    // Sleeping mood - closed eyes
     if (mood === 'sleeping') return greenSlimeSleeping;
+
+    // Default: neutral, idle, sad
     return greenSlimeIdle;
   };
 

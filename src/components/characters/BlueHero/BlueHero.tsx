@@ -27,8 +27,16 @@ export const BlueHero: React.FC<BlueHeroProps> = ({
   };
 
   const getPixelData = () => {
-    if (mood === 'happy') return blueHeroHappy;
+    // Happy moods: happy, excited
+    if (mood === 'happy' || mood === 'excited') return blueHeroHappy;
+
+    // Sleeping mood
     if (mood === 'sleeping') return blueHeroSleeping;
+
+    // Sad mood - use idle for now (can create sad sprite later)
+    if (mood === 'sad') return blueHeroIdle;
+
+    // Default: neutral, idle
     return blueHeroIdle;
   };
 

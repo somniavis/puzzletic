@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { Character, CharacterMood, CharacterAction } from '../../types/character';
 import { CHARACTERS } from '../characters';
+import { FOOD_ITEMS, FOOD_CATEGORIES, type FoodItem, type FoodCategory } from '../../types/food';
 import './PetRoom.css';
 
 interface PetRoomProps {
@@ -10,10 +12,13 @@ interface PetRoomProps {
 }
 
 export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsChange }) => {
+  const { t } = useTranslation();
   const [mood, setMood] = useState<CharacterMood>('neutral');
   const [action, setAction] = useState<CharacterAction>('idle');
   const [position, setPosition] = useState({ x: 50, y: 50 }); // percentage position
   const [isMoving, setIsMoving] = useState(false);
+  const [showFoodMenu, setShowFoodMenu] = useState(false);
+  const [selectedFoodCategory, setSelectedFoodCategory] = useState<FoodCategory>('meal');
 
   // Auto-move character randomly
   useEffect(() => {
@@ -32,30 +37,55 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
 
   // Update mood based on stats
   useEffect(() => {
-    const { happiness, health, hunger } = character.stats;
+    const { happiness, health, hunger, fatigue } = character.stats;
+
+    // Very bad condition - sad
     if (health < 30 || hunger > 80) {
       setMood('sad');
-    } else if (happiness > 70 && hunger < 40) {
+    }
+    // Tired - sleeping
+    else if (fatigue > 70) {
+      setMood('sleeping');
+    }
+    // Very happy - excited
+    else if (happiness > 85 && hunger < 30 && health > 80) {
+      setMood('excited');
+    }
+    // Happy condition
+    else if (happiness > 70 && hunger < 50) {
       setMood('happy');
-    } else {
+    }
+    // Default - neutral
+    else {
       setMood('neutral');
     }
   }, [character.stats]);
 
-  const handleFeed = () => {
+  const handleFeed = (food: FoodItem) => {
     setAction('eating');
-    onStatsChange({
-      hunger: Math.max(0, character.stats.hunger - 20),
-      happiness: Math.min(100, character.stats.happiness + 5),
-    });
+    const newStats: Partial<Character['stats']> = {
+      hunger: Math.max(0, character.stats.hunger + food.effects.hunger),
+      happiness: Math.min(100, character.stats.happiness + food.effects.happiness),
+    };
+    if (food.effects.health) {
+      newStats.health = Math.min(100, character.stats.health + food.effects.health);
+    }
+    onStatsChange(newStats);
+    setShowFoodMenu(false);
     setTimeout(() => setAction('idle'), 2000);
   };
 
-  const handleWash = () => {
+  const toggleFoodMenu = () => {
+    setShowFoodMenu(!showFoodMenu);
+  };
+
+  const filteredFoods = FOOD_ITEMS.filter(food => food.category === selectedFoodCategory);
+
+  const handleMedicine = () => {
     setAction('happy');
     onStatsChange({
-      hygiene: Math.min(100, character.stats.hygiene + 25),
-      happiness: Math.min(100, character.stats.happiness + 10),
+      health: Math.min(100, character.stats.health + 30),
+      happiness: Math.min(100, character.stats.happiness + 5),
     });
     setTimeout(() => setAction('idle'), 2000);
   };
@@ -96,7 +126,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
           </div>
           <div className="profile-info">
             <div className="profile-name">{character.name}</div>
-            <div className="profile-level">Lv.{character.level}</div>
+            <div className="profile-level">{t('character.profile.level', { level: character.level })}</div>
           </div>
         </div>
 
@@ -141,21 +171,73 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
         </div>
       </div>
 
+      {/* Food Menu Submenu */}
+      {showFoodMenu && (
+        <div className="food-menu-overlay" onClick={() => setShowFoodMenu(false)}>
+          <div className="food-menu" onClick={(e) => e.stopPropagation()}>
+            <div className="food-menu-header">
+              <h3>{t('food.menu.title')}</h3>
+              <button className="close-btn" onClick={() => setShowFoodMenu(false)}>✕</button>
+            </div>
+
+            <div className="food-categories">
+              {(Object.keys(FOOD_CATEGORIES) as FoodCategory[]).map((category) => (
+                <button
+                  key={category}
+                  className={`category-tab ${selectedFoodCategory === category ? 'active' : ''}`}
+                  onClick={() => setSelectedFoodCategory(category)}
+                >
+                  <span className="category-icon">{FOOD_CATEGORIES[category].icon}</span>
+                  <span className="category-name">{t(FOOD_CATEGORIES[category].nameKey)}</span>
+                </button>
+              ))}
+            </div>
+
+            <div className="food-items-grid">
+              {filteredFoods.map((food) => (
+                <button
+                  key={food.id}
+                  className="food-item"
+                  onClick={() => handleFeed(food)}
+                  disabled={action !== 'idle'}
+                >
+                  <span className="food-item-icon">{food.icon}</span>
+                  <span className="food-item-name">{t(food.nameKey)}</span>
+                  <div className="food-item-effects">
+                    {food.effects.hunger < 0 && (
+                      <span className="effect">🍖 {-food.effects.hunger}</span>
+                    )}
+                    {food.effects.happiness > 0 && (
+                      <span className="effect">❤️ +{food.effects.happiness}</span>
+                    )}
+                    {food.effects.health && food.effects.health > 0 && (
+                      <span className="effect">💚 +{food.effects.health}</span>
+                    )}
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Bottom Action Bar */}
       <div className="action-bar">
         <button
           className="action-btn action-btn--small"
-          onClick={handleFeed}
+          onClick={toggleFoodMenu}
           disabled={action !== 'idle'}
+          title={t('actions.feed')}
         >
           <span className="action-icon">🍖</span>
         </button>
         <button
           className="action-btn action-btn--small"
-          onClick={handleWash}
+          onClick={handleMedicine}
           disabled={action !== 'idle'}
+          title={t('actions.medicine')}
         >
-          <span className="action-icon">🛁</span>
+          <span className="action-icon">💊</span>
         </button>
         <button
           className="action-btn action-btn--main"
@@ -163,18 +245,20 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
           disabled={action !== 'idle'}
         >
           <span className="action-icon-large">🎾</span>
-          <span className="action-label">놀아주기</span>
+          <span className="action-label">{t('actions.play')}</span>
         </button>
         <button
           className="action-btn action-btn--small"
           onClick={handleClean}
           disabled={action !== 'idle'}
+          title={t('actions.clean')}
         >
           <span className="action-icon">🧹</span>
         </button>
         <button
           className="action-btn action-btn--small"
           disabled={action !== 'idle'}
+          title={t('actions.settings')}
         >
           <span className="action-icon">⚙️</span>
         </button>
