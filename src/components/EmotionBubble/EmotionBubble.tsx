@@ -36,12 +36,9 @@ const ALL_EMOTIONS: EmotionType[] = [
 ];
 
 export const EmotionBubble: React.FC<EmotionBubbleProps> = ({
-  character,
   emotion: propEmotion,
-  onToggle
 }) => {
   const [position, setPosition] = useState<'left' | 'right'>('right');
-  const [isVisible, setIsVisible] = useState(true);
   const [currentEmotion, setCurrentEmotion] = useState<EmotionType>(propEmotion || 'hungry');
 
   // Update emotion when prop changes
@@ -58,7 +55,7 @@ export const EmotionBubble: React.FC<EmotionBubbleProps> = ({
 
   return (
     <div
-      className={`emotion-bubble emotion-bubble--${position} ${isVisible ? 'emotion-bubble--visible' : ''}`}
+      className={`emotion-bubble emotion-bubble--${position} emotion-bubble--visible`}
     >
       <div className="emotion-bubble__content">
         <span className="emotion-bubble__emoji">{emoji}</span>

@@ -15,10 +15,10 @@ export const CHARACTER_SPECIES: Record<string, CharacterSpecies> = {
       },
       {
         stage: 2,
-        name: 'Golden Jello',
+        name: 'Yellow Pear Jello',
         requiredLevel: 10,
         requiredAffection: 50,
-        description: 'A beautiful jello with a warm radiance.',
+        description: 'A pear-shaped yellow jello with evolved features.',
       },
       {
         stage: 3,
@@ -43,10 +43,10 @@ export const CHARACTER_SPECIES: Record<string, CharacterSpecies> = {
       },
       {
         stage: 2,
-        name: 'Ruby Jello',
+        name: 'Red Devil Jello',
         requiredLevel: 10,
         requiredAffection: 50,
-        description: 'A sparkling ruby-colored jello.',
+        description: 'A devilish red jello with horn-like features.',
       },
       {
         stage: 3,
@@ -71,10 +71,10 @@ export const CHARACTER_SPECIES: Record<string, CharacterSpecies> = {
       },
       {
         stage: 2,
-        name: 'Emerald Jello',
+        name: 'Lime Leaf Jello',
         requiredLevel: 10,
         requiredAffection: 50,
-        description: 'A vibrant emerald-green jello.',
+        description: 'A lime jello with leaf-like decorations.',
       },
       {
         stage: 3,
@@ -99,10 +99,10 @@ export const CHARACTER_SPECIES: Record<string, CharacterSpecies> = {
       },
       {
         stage: 2,
-        name: 'Glacier Jello',
+        name: 'Mint Sprout Jello',
         requiredLevel: 10,
         requiredAffection: 50,
-        description: 'A cool glacier-mint jello.',
+        description: 'A mint jello with sprout-like features.',
       },
       {
         stage: 3,
@@ -127,10 +127,10 @@ export const CHARACTER_SPECIES: Record<string, CharacterSpecies> = {
       },
       {
         stage: 2,
-        name: 'Sapphire Jello',
+        name: 'Blue Cat Jello',
         requiredLevel: 10,
         requiredAffection: 50,
-        description: 'A deep sapphire blue jello.',
+        description: 'A blue jello with cat-like ears and features.',
       },
       {
         stage: 3,
@@ -155,10 +155,10 @@ export const CHARACTER_SPECIES: Record<string, CharacterSpecies> = {
       },
       {
         stage: 2,
-        name: 'Ivory Jello',
+        name: 'Cream Ram Jello',
         requiredLevel: 10,
         requiredAffection: 50,
-        description: 'A smooth ivory-colored jello.',
+        description: 'A cream jello with ram-like horns.',
       },
       {
         stage: 3,
@@ -183,10 +183,10 @@ export const CHARACTER_SPECIES: Record<string, CharacterSpecies> = {
       },
       {
         stage: 2,
-        name: 'Amethyst Jello',
+        name: 'Purple Imp Jello',
         requiredLevel: 10,
         requiredAffection: 50,
-        description: 'A mystical amethyst jello.',
+        description: 'A purple jello with imp-like features.',
       },
       {
         stage: 3,
@@ -211,10 +211,10 @@ export const CHARACTER_SPECIES: Record<string, CharacterSpecies> = {
       },
       {
         stage: 2,
-        name: 'Azure Jello',
+        name: 'Sky Lynx Jello',
         requiredLevel: 10,
         requiredAffection: 50,
-        description: 'A brilliant azure sky jello.',
+        description: 'A sky jello with lynx-like features.',
       },
       {
         stage: 3,
@@ -239,10 +239,10 @@ export const CHARACTER_SPECIES: Record<string, CharacterSpecies> = {
       },
       {
         stage: 2,
-        name: 'Cocoa Jello',
+        name: 'Brown Willow Jello',
         requiredLevel: 10,
         requiredAffection: 50,
-        description: 'A rich cocoa-colored jello.',
+        description: 'A brown jello with willow-like branches.',
       },
       {
         stage: 3,
@@ -267,10 +267,10 @@ export const CHARACTER_SPECIES: Record<string, CharacterSpecies> = {
       },
       {
         stage: 2,
-        name: 'Tangerine Jello',
+        name: 'Orange Tail Jello',
         requiredLevel: 10,
         requiredAffection: 50,
-        description: 'A vibrant tangerine jello.',
+        description: 'An orange jello with a fox-like tail.',
       },
       {
         stage: 3,
@@ -295,10 +295,10 @@ export const CHARACTER_SPECIES: Record<string, CharacterSpecies> = {
       },
       {
         stage: 2,
-        name: 'Moss Jello',
+        name: 'Olive Bloom Jello',
         requiredLevel: 10,
         requiredAffection: 50,
-        description: 'A verdant moss-green jello.',
+        description: 'An olive jello with blooming flowers.',
       },
       {
         stage: 3,
@@ -323,10 +323,10 @@ export const CHARACTER_SPECIES: Record<string, CharacterSpecies> = {
       },
       {
         stage: 2,
-        name: 'Aqua Jello',
+        name: 'Cyan Ghost Jello',
         requiredLevel: 10,
         requiredAffection: 50,
-        description: 'A shimmering aquamarine jello.',
+        description: 'A cyan jello with ghost-like features.',
       },
       {
         stage: 3,
@@ -338,6 +338,9 @@ export const CHARACTER_SPECIES: Record<string, CharacterSpecies> = {
     ],
   },
 };
+
+// Export type for species IDs
+export type CharacterSpeciesId = keyof typeof CHARACTER_SPECIES;
 
 /**
  * Gets the name of a specific evolution stage for a character species.

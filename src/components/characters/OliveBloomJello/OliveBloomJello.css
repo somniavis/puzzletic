@@ -1,0 +1,45 @@
+.olive-bloom-jello {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.olive-bloom-jello:hover {
+  transform: scale(1.05);
+}
+
+.olive-bloom-jello__image {
+  display: block;
+  object-fit: contain;
+}
+
+.olive-bloom-jello--idle {
+  animation: float 3s ease-in-out infinite;
+}
+
+.olive-bloom-jello--happy {
+  animation: bounce 0.5s ease infinite;
+}
+
+.olive-bloom-jello--sad {
+  opacity: 0.8;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-15px);
+  }
+}

@@ -1,0 +1,45 @@
+.sky-lynx-jello {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.sky-lynx-jello:hover {
+  transform: scale(1.05);
+}
+
+.sky-lynx-jello__image {
+  display: block;
+  object-fit: contain;
+}
+
+.sky-lynx-jello--idle {
+  animation: float 3s ease-in-out infinite;
+}
+
+.sky-lynx-jello--happy {
+  animation: bounce 0.5s ease infinite;
+}
+
+.sky-lynx-jello--sad {
+  opacity: 0.8;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-15px);
+  }
+}

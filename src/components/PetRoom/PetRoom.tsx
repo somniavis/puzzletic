@@ -3,11 +3,12 @@ import { useTranslation } from 'react-i18next';
 import type { Character, CharacterMood, CharacterAction } from '../../types/character';
 import { CHARACTERS } from '../characters';
 import { FOOD_ITEMS, FOOD_CATEGORIES, type FoodItem, type FoodCategory } from '../../types/food';
+import type { CharacterSpeciesId } from '../../data/species';
 import './PetRoom.css';
 
 interface PetRoomProps {
   character: Character;
-  speciesId: 'blueHero' | 'greenSlime' | 'pinkSlime';
+  speciesId: CharacterSpeciesId;
   onStatsChange: (stats: Partial<Character['stats']>) => void;
 }
 
@@ -109,7 +110,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
     setTimeout(() => setAction('idle'), 3000);
   };
 
-  const CharacterComponent = CHARACTERS[speciesId];
+  const CharacterComponent = CHARACTERS[speciesId as keyof typeof CHARACTERS];
 
   return (
     <div className="pet-room">

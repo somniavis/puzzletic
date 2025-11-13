@@ -10,13 +10,31 @@ interface CharacterGalleryProps {
   onSelect?: (speciesId: string) => void;
 }
 
+// Mapping from base species ID + stage to evolved character component key
+const EVOLUTION_COMPONENT_MAP: Record<string, Record<number, keyof typeof CHARACTERS>> = {
+  yellowJello: { 1: 'yellowJello', 2: 'yellowPearJello', 3: 'yellowJello' },
+  redJello: { 1: 'redJello', 2: 'redDevilJello', 3: 'redJello' },
+  limeJello: { 1: 'limeJello', 2: 'limeLeafJello', 3: 'limeJello' },
+  mintJello: { 1: 'mintJello', 2: 'mintSproutJello', 3: 'mintJello' },
+  blueJello: { 1: 'blueJello', 2: 'blueCatJello', 3: 'blueJello' },
+  creamJello: { 1: 'creamJello', 2: 'creamRamJello', 3: 'creamJello' },
+  purpleJello: { 1: 'purpleJello', 2: 'purpleImpJello', 3: 'purpleJello' },
+  skyJello: { 1: 'skyJello', 2: 'skyLynxJello', 3: 'skyJello' },
+  brownJello: { 1: 'brownJello', 2: 'brownWillowJello', 3: 'brownJello' },
+  orangeJello: { 1: 'orangeJello', 2: 'orangeTailJello', 3: 'orangeJello' },
+  oliveJello: { 1: 'oliveJello', 2: 'oliveBloomJello', 3: 'oliveJello' },
+  cyanJello: { 1: 'cyanJello', 2: 'cyanGhostJello', 3: 'cyanJello' },
+};
+
 export const CharacterGallery: React.FC<CharacterGalleryProps> = ({
   species,
   selectedStage = 1,
   onSelect,
 }) => {
-  const renderCharacter = (speciesId: string) => {
-    const CharacterComponent = CHARACTERS[speciesId as keyof typeof CHARACTERS];
+  const renderCharacter = (speciesId: string, stage: EvolutionStage) => {
+    // Get the appropriate component key based on species and stage
+    const componentKey = EVOLUTION_COMPONENT_MAP[speciesId]?.[stage] || speciesId;
+    const CharacterComponent = CHARACTERS[componentKey as keyof typeof CHARACTERS];
 
     if (!CharacterComponent) {
       return (
@@ -52,7 +70,7 @@ export const CharacterGallery: React.FC<CharacterGalleryProps> = ({
             onClick={() => onSelect?.(spec.id)}
           >
             <div className="character-preview">
-              {renderCharacter(spec.id)}
+              {renderCharacter(spec.id, selectedStage)}
             </div>
             <div className="character-info">
               <h3>{evolution?.name || spec.name}</h3>
