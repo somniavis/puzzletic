@@ -1,0 +1,144 @@
+.purple-jello {
+  display: inline-block;
+  cursor: pointer;
+  position: relative;
+  /* Default idle animation - subtle floating */
+  animation: slime-idle-float 3s ease-in-out infinite;
+}
+
+.purple-jello:hover {
+  animation: slime-hover-pulse 0.6s ease-in-out infinite;
+}
+
+.purple-jello__image {
+  object-fit: contain;
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+  /* Subtle breathing effect on the image itself */
+  animation: slime-breathe 4s ease-in-out infinite;
+}
+
+/* Animation for different actions */
+.purple-jello--jumping {
+  animation: slime-jump 0.8s cubic-bezier(0.36, 0, 0.66, -0.56) infinite;
+}
+
+.purple-jello--happy {
+  animation: slime-bounce 1s ease-in-out infinite;
+}
+
+.purple-jello--playing {
+  animation: slime-wiggle 1.2s ease-in-out infinite;
+}
+
+.purple-jello--eating {
+  animation: slime-eat 0.5s ease-in-out 3;
+}
+
+.purple-jello--sleeping {
+  animation: slime-sleep 2s ease-in-out infinite;
+}
+
+/* Idle state - gentle floating */
+@keyframes slime-idle-float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+/* Breathing effect */
+@keyframes slime-breathe {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+}
+
+/* Hover pulse */
+@keyframes slime-hover-pulse {
+  0%, 100% {
+    transform: scale(1) translateY(0);
+  }
+  50% {
+    transform: scale(1.08) translateY(-5px);
+  }
+}
+
+/* Jump animation */
+@keyframes slime-jump {
+  0%, 100% {
+    transform: translateY(0) scaleY(1);
+  }
+  20% {
+    transform: translateY(0) scaleY(0.8) scaleX(1.1);
+  }
+  50% {
+    transform: translateY(-30px) scaleY(1.1) scaleX(0.95);
+  }
+  80% {
+    transform: translateY(0) scaleY(0.85) scaleX(1.08);
+  }
+}
+
+/* Bounce animation - squish effect */
+@keyframes slime-bounce {
+  0%, 100% {
+    transform: scale(1, 1);
+  }
+  25% {
+    transform: scale(1.05, 0.95);
+  }
+  50% {
+    transform: scale(0.95, 1.05);
+  }
+  75% {
+    transform: scale(1.02, 0.98);
+  }
+}
+
+/* Wiggle animation */
+@keyframes slime-wiggle {
+  0%, 100% {
+    transform: rotate(0deg) translateX(0);
+  }
+  20% {
+    transform: rotate(-3deg) translateX(-3px);
+  }
+  40% {
+    transform: rotate(3deg) translateX(3px);
+  }
+  60% {
+    transform: rotate(-2deg) translateX(-2px);
+  }
+  80% {
+    transform: rotate(2deg) translateX(2px);
+  }
+}
+
+/* Eating animation */
+@keyframes slime-eat {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.15, 0.9);
+  }
+}
+
+/* Sleeping animation - slow gentle breathing */
+@keyframes slime-sleep {
+  0%, 100% {
+    transform: scale(1) translateY(0);
+    opacity: 0.9;
+  }
+  50% {
+    transform: scale(1.03) translateY(-2px);
+    opacity: 1;
+  }
+}

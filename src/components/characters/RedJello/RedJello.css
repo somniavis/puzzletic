@@ -1,0 +1,38 @@
+.red-jello {
+  display: inline-block;
+  cursor: pointer;
+  position: relative;
+  animation: slime-idle-float 3s ease-in-out infinite;
+}
+
+.red-jello:hover {
+  animation: slime-hover-pulse 0.6s ease-in-out infinite;
+}
+
+.red-jello__image {
+  object-fit: contain;
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+  animation: slime-breathe 4s ease-in-out infinite;
+}
+
+.red-jello--jumping {
+  animation: slime-jump 0.8s cubic-bezier(0.36, 0, 0.66, -0.56) infinite;
+}
+
+.red-jello--happy {
+  animation: slime-bounce 1s ease-in-out infinite;
+}
+
+.red-jello--playing {
+  animation: slime-wiggle 1.2s ease-in-out infinite;
+}
+
+.red-jello--eating {
+  animation: slime-eat 0.5s ease-in-out 3;
+}
+
+.red-jello--sleeping {
+  animation: slime-sleep 2s ease-in-out infinite;
+}

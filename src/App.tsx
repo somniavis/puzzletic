@@ -7,12 +7,24 @@ import { createCharacter } from './data/characters'
 import type { CharacterAction, CharacterMood, Character } from './types/character'
 
 type Page = 'home' | 'gallery' | 'stats';
-type CharacterSpeciesId = 'blueHero' | 'greenSlime';
+type CharacterSpeciesId =
+  | 'yellowJello'
+  | 'redJello'
+  | 'limeJello'
+  | 'mintJello'
+  | 'blueJello'
+  | 'creamJello'
+  | 'purpleJello'
+  | 'skyJello'
+  | 'brownJello'
+  | 'orangeJello'
+  | 'oliveJello'
+  | 'cyanJello';
 
 function App() {
   const [currentPage, setCurrentPage] = useState<Page>('home')
-  const [selectedSpeciesId, setSelectedSpeciesId] = useState<CharacterSpeciesId>('blueHero')
-  const [character, setCharacter] = useState(() => createCharacter('blueHero'))
+  const [selectedSpeciesId, setSelectedSpeciesId] = useState<CharacterSpeciesId>('yellowJello')
+  const [character, setCharacter] = useState(() => createCharacter('yellowJello'))
   const [mood, setMood] = useState<CharacterMood>('neutral')
   const [action, setAction] = useState<CharacterAction>('idle')
 
@@ -29,8 +41,14 @@ function App() {
   }
 
   const handleCharacterSelect = (speciesId: string) => {
-    if (speciesId === 'blueHero' || speciesId === 'greenSlime') {
-      setSelectedSpeciesId(speciesId)
+    const validSpecies: CharacterSpeciesId[] = [
+      'yellowJello', 'redJello', 'limeJello', 'mintJello',
+      'blueJello', 'creamJello', 'purpleJello', 'skyJello',
+      'brownJello', 'orangeJello', 'oliveJello', 'cyanJello'
+    ];
+
+    if (validSpecies.includes(speciesId as CharacterSpeciesId)) {
+      setSelectedSpeciesId(speciesId as CharacterSpeciesId)
       setCharacter(createCharacter(speciesId))
       setCurrentPage('home')
       // Reset mood and action when changing character

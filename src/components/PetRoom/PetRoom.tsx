@@ -7,7 +7,7 @@ import './PetRoom.css';
 
 interface PetRoomProps {
   character: Character;
-  speciesId: 'blueHero' | 'greenSlime';
+  speciesId: 'blueHero' | 'greenSlime' | 'pinkSlime';
   onStatsChange: (stats: Partial<Character['stats']>) => void;
 }
 

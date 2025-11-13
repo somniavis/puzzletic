@@ -1,0 +1,106 @@
+.emotion-bubble {
+  position: absolute;
+  top: -55px;
+  z-index: 10;
+  opacity: 0;
+  transform: scale(0.5) translateY(10px);
+  transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  pointer-events: none;
+}
+
+.emotion-bubble--visible {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+  animation: bubble-float-container 2s ease-in-out infinite 0.3s;
+}
+
+/* Position variants */
+.emotion-bubble--left {
+  left: -15px;
+}
+
+.emotion-bubble--right {
+  right: -15px;
+}
+
+.emotion-bubble__content {
+  background: white;
+  border: none;
+  border-radius: 16px;
+  padding: 10px 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 60px;
+  min-height: 45px;
+  position: relative;
+}
+
+.emotion-bubble__emoji {
+  font-size: 28px;
+  line-height: 1;
+  display: block;
+}
+
+/* Speech bubble tail */
+.emotion-bubble__tail {
+  position: absolute;
+  bottom: -10px;
+  width: 0;
+  height: 0;
+  border-left: 12px solid transparent;
+  border-right: 12px solid transparent;
+  border-top: 15px solid white;
+  z-index: 1;
+}
+
+.emotion-bubble--left .emotion-bubble__tail {
+  left: 20px;
+}
+
+.emotion-bubble--right .emotion-bubble__tail {
+  right: 20px;
+}
+
+/* Floating animation for entire bubble container */
+@keyframes bubble-float-container {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+/* Responsive sizing */
+@media (max-width: 768px) {
+  .emotion-bubble {
+    top: -45px;
+  }
+
+  .emotion-bubble--left {
+    left: -10px;
+  }
+
+  .emotion-bubble--right {
+    right: -10px;
+  }
+
+  .emotion-bubble__content {
+    min-width: 50px;
+    min-height: 38px;
+    padding: 8px 12px;
+  }
+
+  .emotion-bubble__emoji {
+    font-size: 22px;
+  }
+
+  .emotion-bubble__tail {
+    bottom: -8px;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 12px solid white;
+  }
+}
