@@ -17,6 +17,7 @@ i18n
     interpolation: {
       escapeValue: false, // react already safes from xss
     },
+    debug: true,
   });
 
 export default i18n;

@@ -11,19 +11,22 @@ interface CharacterGalleryProps {
 }
 
 // Mapping from base species ID + stage to evolved character component key
+// Stage 3, 4, 5 will show placeholder until characters are added
 const EVOLUTION_COMPONENT_MAP: Record<string, Record<number, keyof typeof CHARACTERS>> = {
-  yellowJello: { 1: 'yellowJello', 2: 'yellowPearJello', 3: 'yellowJello' },
-  redJello: { 1: 'redJello', 2: 'redDevilJello', 3: 'redJello' },
-  limeJello: { 1: 'limeJello', 2: 'limeLeafJello', 3: 'limeJello' },
-  mintJello: { 1: 'mintJello', 2: 'mintSproutJello', 3: 'mintJello' },
-  blueJello: { 1: 'blueJello', 2: 'blueCatJello', 3: 'blueJello' },
-  creamJello: { 1: 'creamJello', 2: 'creamRamJello', 3: 'creamJello' },
-  purpleJello: { 1: 'purpleJello', 2: 'purpleImpJello', 3: 'purpleJello' },
-  skyJello: { 1: 'skyJello', 2: 'skyLynxJello', 3: 'skyJello' },
-  brownJello: { 1: 'brownJello', 2: 'brownWillowJello', 3: 'brownJello' },
-  orangeJello: { 1: 'orangeJello', 2: 'orangeTailJello', 3: 'orangeJello' },
-  oliveJello: { 1: 'oliveJello', 2: 'oliveBloomJello', 3: 'oliveJello' },
-  cyanJello: { 1: 'cyanJello', 2: 'cyanGhostJello', 3: 'cyanJello' },
+  yellowJello: { 1: 'yellowJello', 2: 'yellowPearJello' },
+  redJello: { 1: 'redJello', 2: 'redDevilJello' },
+  limeJello: { 1: 'limeJello', 2: 'limeLeafJello' },
+  mintJello: { 1: 'mintJello', 2: 'mintSproutJello' },
+  blueJello: { 1: 'blueJello', 2: 'blueCatJello' },
+  creamJello: { 1: 'creamJello', 2: 'creamRamJello' },
+  purpleJello: { 1: 'purpleJello', 2: 'purpleImpJello' },
+  skyJello: { 1: 'skyJello', 2: 'skyLynxJello' },
+  brownJello: { 1: 'brownJello', 2: 'brownWillowJello' },
+  orangeJello: { 1: 'orangeJello', 2: 'orangeTailJello' },
+  oliveJello: { 1: 'oliveJello', 2: 'oliveBloomJello' },
+  cyanJello: { 1: 'cyanJello', 2: 'cyanGhostJello' },
+  // Stage 3, 4, 5 characters will be added here when created
+  // Example: yellowJello: { 1: 'yellowJello', 2: 'yellowPearJello', 3: 'yellowStage3Name', 4: 'yellowStage4Name', 5: 'yellowStage5Name' },
 };
 
 export const CharacterGallery: React.FC<CharacterGalleryProps> = ({

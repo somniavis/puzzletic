@@ -4,6 +4,8 @@ import type { Character, CharacterMood, CharacterAction } from '../../types/char
 import { CHARACTERS } from '../characters';
 import { FOOD_ITEMS, FOOD_CATEGORIES, type FoodItem, type FoodCategory } from '../../types/food';
 import type { CharacterSpeciesId } from '../../data/species';
+import { EmotionBubble } from '../EmotionBubble/EmotionBubble';
+import type { EmotionCategory } from '../../types/emotion';
 import './PetRoom.css';
 
 interface PetRoomProps {
@@ -20,6 +22,12 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
   const [isMoving, setIsMoving] = useState(false);
   const [showFoodMenu, setShowFoodMenu] = useState(false);
   const [selectedFoodCategory, setSelectedFoodCategory] = useState<FoodCategory>('meal');
+  const [bubble, setBubble] = useState<{ category: EmotionCategory; level: 1 | 2 | 3; key: number } | null>(null);
+
+  const showBubble = (category: EmotionCategory, level: 1 | 2 | 3) => {
+    setBubble({ category, level, key: Date.now() });
+    setTimeout(() => setBubble(null), 2000); // Hide bubble after 2 seconds
+  };
 
   // Auto-move character randomly
   useEffect(() => {
@@ -39,31 +47,64 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
   // Update mood based on stats
   useEffect(() => {
     const { happiness, health, hunger, fatigue } = character.stats;
+    let newMood: CharacterMood = 'neutral';
+    let bubbleCategory: EmotionCategory | null = null;
+    let bubbleLevel: 1 | 2 | 3 = 1;
 
     // Very bad condition - sad
-    if (health < 30 || hunger > 80) {
-      setMood('sad');
+    if (health < 30) {
+      newMood = 'sad';
+      if (mood !== 'sad') {
+        bubbleCategory = 'sick';
+        bubbleLevel = 2;
+      }
+    } else if (hunger > 80) {
+      newMood = 'sad'; // or a new 'hungry' mood if we want to be specific
+      if (mood !== 'sad') {
+        bubbleCategory = 'worried'; // or a new 'hungry' category
+        bubbleLevel = 1;
+      }
     }
     // Tired - sleeping
     else if (fatigue > 70) {
-      setMood('sleeping');
+      newMood = 'sleeping';
+      if (mood !== 'sleeping') {
+        bubbleCategory = 'sleepy';
+        bubbleLevel = 2;
+      }
     }
     // Very happy - excited
     else if (happiness > 85 && hunger < 30 && health > 80) {
-      setMood('excited');
+      newMood = 'excited';
+      if (mood !== 'excited') {
+        bubbleCategory = 'joy';
+        bubbleLevel = 3;
+      }
     }
     // Happy condition
     else if (happiness > 70 && hunger < 50) {
-      setMood('happy');
+      newMood = 'happy';
+      if (mood !== 'happy') {
+        bubbleCategory = 'joy';
+        bubbleLevel = 2;
+      }
     }
     // Default - neutral
     else {
-      setMood('neutral');
+      newMood = 'neutral';
     }
-  }, [character.stats]);
+
+    if (newMood !== mood) {
+      setMood(newMood);
+      if (bubbleCategory) {
+        showBubble(bubbleCategory, bubbleLevel);
+      }
+    }
+  }, [character.stats, mood]);
 
   const handleFeed = (food: FoodItem) => {
     setAction('eating');
+    showBubble('playful', 1);
     const newStats: Partial<Character['stats']> = {
       hunger: Math.max(0, character.stats.hunger + food.effects.hunger),
       happiness: Math.min(100, character.stats.happiness + food.effects.happiness),
@@ -84,15 +125,20 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
 
   const handleMedicine = () => {
     setAction('happy');
+    showBubble('sick', 1);
     onStatsChange({
       health: Math.min(100, character.stats.health + 30),
       happiness: Math.min(100, character.stats.happiness + 5),
     });
-    setTimeout(() => setAction('idle'), 2000);
+    setTimeout(() => {
+      setAction('idle');
+      showBubble('joy', 1);
+    }, 2000);
   };
 
   const handleClean = () => {
     setAction('jumping');
+    showBubble('joy', 1);
     onStatsChange({
       hygiene: Math.min(100, character.stats.hygiene + 15),
       health: Math.min(100, character.stats.health + 5),
@@ -102,12 +148,21 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
 
   const handlePlay = () => {
     setAction('playing');
+    showBubble('joy', 2);
     onStatsChange({
       happiness: Math.min(100, character.stats.happiness + 20),
       fatigue: Math.min(100, character.stats.fatigue + 10),
       affection: Math.min(100, character.stats.affection + 5),
     });
     setTimeout(() => setAction('idle'), 3000);
+  };
+  
+  const handleCharacterClick = () => {
+    // Show a love emotion when clicked
+    showBubble('love', 2);
+    onStatsChange({
+      affection: Math.min(100, character.stats.affection + 2),
+    });
   };
 
   const CharacterComponent = CHARACTERS[speciesId as keyof typeof CHARACTERS];
@@ -162,7 +217,15 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
             bottom: `${position.y}%`,
             transform: 'translate(-50%, 50%)',
           }}
+          onClick={handleCharacterClick}
         >
+          {bubble && (
+            <EmotionBubble
+              key={bubble.key}
+              category={bubble.category}
+              level={bubble.level}
+            />
+          )}
           <CharacterComponent
             character={character}
             size="small"

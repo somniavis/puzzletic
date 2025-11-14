@@ -1,57 +1,51 @@
 import React, { useState, useEffect } from 'react';
-import type { Character } from '../../types/character';
+import { useTranslation } from 'react-i18next';
+import type { EmotionCategory, EmotionExpression } from '../../types/emotion';
+import { emotionData } from '../../data/emotions';
 import './EmotionBubble.css';
 
-export type EmotionType =
-  | 'neutral'
-  | 'hungry'
-  | 'sick'
-  | 'happy'
-  | 'sad'
-  | 'sleepy'
-  | 'surprised'
-  | 'excited'
-  | 'angry';
-
 interface EmotionBubbleProps {
-  character: Character;
-  emotion?: EmotionType;
-  onToggle?: () => void;
+  category: EmotionCategory;
+  level: 1 | 2 | 3;
 }
 
-const EMOTION_EMOJIS: Record<EmotionType, string> = {
-  neutral: '😐',
-  hungry: '🍔',
-  sick: '🤒',
-  happy: '😊',
-  sad: '😢',
-  sleepy: '😴',
-  surprised: '😲',
-  excited: '🤩',
-  angry: '😠',
+const getRandomExpression = (
+  category: EmotionCategory,
+  level: 1 | 2 | 3
+): EmotionExpression | null => {
+  const categoryData = emotionData[category];
+  if (!categoryData) return null;
+
+  const levelData = categoryData.find((l) => l.level === level);
+  if (!levelData || levelData.expressions.length === 0) return null;
+
+  const randomIndex = Math.floor(Math.random() * levelData.expressions.length);
+  return levelData.expressions[randomIndex];
 };
 
-const ALL_EMOTIONS: EmotionType[] = [
-  'neutral', 'hungry', 'sick', 'happy', 'sad', 'sleepy', 'surprised', 'excited', 'angry'
-];
-
 export const EmotionBubble: React.FC<EmotionBubbleProps> = ({
-  emotion: propEmotion,
+  category,
+  level,
 }) => {
+  const { t } = useTranslation();
   const [position, setPosition] = useState<'left' | 'right'>('right');
-  const [currentEmotion, setCurrentEmotion] = useState<EmotionType>(propEmotion || 'hungry');
+  const [expression, setExpression] = useState<EmotionExpression | null>(null);
 
-  // Update emotion when prop changes
   useEffect(() => {
-    if (propEmotion) {
-      setCurrentEmotion(propEmotion);
-      // Random position when emotion changes
-      const randomPosition = Math.random() > 0.5 ? 'right' : 'left';
-      setPosition(randomPosition);
-    }
-  }, [propEmotion]);
+    const newExpression = getRandomExpression(category, level);
+    setExpression(newExpression);
 
-  const emoji = EMOTION_EMOJIS[currentEmotion];
+    const randomPosition = Math.random() > 0.5 ? 'right' : 'left';
+    setPosition(randomPosition);
+  }, [category, level]);
+
+  if (!expression) {
+    return null;
+  }
+
+  const { emoji, messageKey } = expression;
+  const message = t(messageKey);
+  console.log(`Translating ${messageKey}: ${message}`);
 
   return (
     <div
@@ -59,16 +53,11 @@ export const EmotionBubble: React.FC<EmotionBubbleProps> = ({
     >
       <div className="emotion-bubble__content">
         <span className="emotion-bubble__emoji">{emoji}</span>
+        {message && <span className="emotion-bubble__message">{message}</span>}
       </div>
       <div className="emotion-bubble__tail"></div>
     </div>
   );
-};
-
-// Export function to get random emotion
-export const getRandomEmotion = (): EmotionType => {
-  const randomIndex = Math.floor(Math.random() * ALL_EMOTIONS.length);
-  return ALL_EMOTIONS[randomIndex];
 };
 
 export default EmotionBubble;

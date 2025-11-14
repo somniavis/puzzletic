@@ -1,28 +1,44 @@
-import { YellowJello } from './YellowJello/YellowJello';
-import { RedJello } from './RedJello/RedJello';
-import { LimeJello } from './LimeJello/LimeJello';
-import { MintJello } from './MintJello/MintJello';
-import { BlueJello } from './BlueJello/BlueJello';
-import { CreamJello } from './CreamJello/CreamJello';
-import { PurpleJello } from './PurpleJello/PurpleJello';
-import { SkyJello } from './SkyJello/SkyJello';
-import { BrownJello } from './BrownJello/BrownJello';
-import { OrangeJello } from './OrangeJello/OrangeJello';
-import { OliveJello } from './OliveJello/OliveJello';
-import { CyanJello } from './CyanJello/CyanJello';
-import { YellowPearJello } from './YellowPearJello/YellowPearJello';
-import { RedDevilJello } from './RedDevilJello/RedDevilJello';
-import { LimeLeafJello } from './LimeLeafJello/LimeLeafJello';
-import { MintSproutJello } from './MintSproutJello/MintSproutJello';
-import { BlueCatJello } from './BlueCatJello/BlueCatJello';
-import { CreamRamJello } from './CreamRamJello/CreamRamJello';
-import { PurpleImpJello } from './PurpleImpJello/PurpleImpJello';
-import { SkyLynxJello } from './SkyLynxJello/SkyLynxJello';
-import { BrownWillowJello } from './BrownWillowJello/BrownWillowJello';
-import { OrangeTailJello } from './OrangeTailJello/OrangeTailJello';
-import { OliveBloomJello } from './OliveBloomJello/OliveBloomJello';
-import { CyanGhostJello } from './CyanGhostJello/CyanGhostJello';
+/**
+ * Character Components
+ * 모든 젤로 캐릭터 컴포넌트를 export합니다.
+ */
 
+// Import from base (Stage 1)
+import {
+  YellowJello,
+  RedJello,
+  LimeJello,
+  MintJello,
+  BlueJello,
+  CreamJello,
+  PurpleJello,
+  SkyJello,
+  BrownJello,
+  OrangeJello,
+  OliveJello,
+  CyanJello,
+} from './base';
+
+// Import from evolved (Stage 2+)
+import {
+  YellowPearJello,
+  RedDevilJello,
+  LimeLeafJello,
+  MintSproutJello,
+  BlueCatJello,
+  CreamRamJello,
+  PurpleImpJello,
+  SkyLynxJello,
+  BrownWillowJello,
+  OrangeTailJello,
+  OliveBloomJello,
+  CyanGhostJello,
+} from './evolved';
+
+// Export metadata and utilities
+export * from './metadata';
+
+// Export all characters object
 export const CHARACTERS = {
   yellowJello: YellowJello,
   redJello: RedJello,
@@ -52,7 +68,9 @@ export const CHARACTERS = {
 
 export type CharacterType = keyof typeof CHARACTERS;
 
+// Export individual characters
 export {
+  // Base characters (Stage 1)
   YellowJello,
   RedJello,
   LimeJello,
@@ -65,6 +83,7 @@ export {
   OrangeJello,
   OliveJello,
   CyanJello,
+  // Evolved characters (Stage 2)
   YellowPearJello,
   RedDevilJello,
   LimeLeafJello,
@@ -76,5 +95,5 @@ export {
   BrownWillowJello,
   OrangeTailJello,
   OliveBloomJello,
-  CyanGhostJello
+  CyanGhostJello,
 };

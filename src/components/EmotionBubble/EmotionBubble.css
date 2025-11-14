@@ -32,6 +32,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 8px; /* Add gap between emoji and message */
   min-width: 60px;
   min-height: 45px;
   position: relative;
@@ -41,6 +42,14 @@
   font-size: 28px;
   line-height: 1;
   display: block;
+  flex-shrink: 0; /* Prevent emoji from shrinking */
+}
+
+.emotion-bubble__message {
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+  white-space: nowrap; /* Prevent message from wrapping */
 }
 
 /* Speech bubble tail */
@@ -91,10 +100,15 @@
     min-width: 50px;
     min-height: 38px;
     padding: 8px 12px;
+    gap: 6px;
   }
 
   .emotion-bubble__emoji {
     font-size: 22px;
+  }
+
+  .emotion-bubble__message {
+    font-size: 14px;
   }
 
   .emotion-bubble__tail {

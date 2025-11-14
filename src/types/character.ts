@@ -20,7 +20,7 @@ export interface CharacterStats {
   stamina: number;       // 0-100
 }
 
-export type EvolutionStage = 1 | 2 | 3; // Expandable to more stages in the future
+export type EvolutionStage = 1 | 2 | 3 | 4 | 5;
 
 export interface CharacterEvolution {
   stage: EvolutionStage;
