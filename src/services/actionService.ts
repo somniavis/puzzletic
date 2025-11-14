@@ -1,0 +1,308 @@
+/**
+ * Action Service
+ * 양육 행동 처리 서비스
+ */
+
+import type {
+  NurturingStats,
+  ActionResult,
+  Poop,
+  FoodEffect,
+} from '../types/nurturing';
+import {
+  FOOD_EFFECTS,
+  MEDICINE_EFFECTS,
+  CLEAN_EFFECT,
+  PLAY_EFFECT,
+  STUDY_EFFECT,
+  STUDY_REQUIREMENTS,
+  POOP_CONFIG,
+  MESSAGES,
+} from '../constants/nurturing';
+import { clampStat, evaluateCondition } from './gameTickService';
+
+/**
+ * 랜덤 위치 생성 (똥 배치용)
+ */
+const generateRandomPosition = (): { x: number; y: number } => {
+  return {
+    x: Math.random() * 80 + 10, // 10% ~ 90% (화면 가장자리 피하기)
+    y: Math.random() * 60 + 30, // 30% ~ 90% (상단 UI 피하기)
+  };
+};
+
+/**
+ * 똥 생성 (확률 기반)
+ */
+const tryCreatePoop = (
+  foodEffect: FoodEffect,
+  existingPoops: Poop[]
+): Poop | undefined => {
+  // 최대 똥 개수 체크
+  if (existingPoops.length >= POOP_CONFIG.MAX_POOPS) {
+    return undefined;
+  }
+
+  // 확률 체크
+  if (Math.random() > foodEffect.poopChance) {
+    return undefined;
+  }
+
+  // 똥 생성
+  const position = generateRandomPosition();
+  return {
+    id: `poop-${Date.now()}-${Math.random()}`,
+    x: position.x,
+    y: position.y,
+    createdAt: Date.now(),
+    cleanlinessDebuff: foodEffect.cleanlinessDebuff,
+  };
+};
+
+/**
+ * 음식 먹이기
+ */
+export const feedCharacter = (
+  currentStats: NurturingStats,
+  foodId: string,
+  existingPoops: Poop[]
+): ActionResult => {
+  const foodEffect = FOOD_EFFECTS[foodId] || FOOD_EFFECTS.default;
+
+  // 주요 효과
+  const newStats: Partial<NurturingStats> = {
+    fullness: clampStat(currentStats.fullness + foodEffect.fullness),
+    happiness: clampStat(currentStats.happiness + foodEffect.happiness),
+  };
+
+  const statChanges: Partial<NurturingStats> = {
+    fullness: (newStats.fullness || currentStats.fullness) - currentStats.fullness,
+    happiness: (newStats.happiness || currentStats.happiness) - currentStats.happiness,
+  };
+
+  // 부작용: 똥 생성 시도
+  const poopCreated = tryCreatePoop(foodEffect, existingPoops);
+
+  // 똥이 생성되면 즉시 청결도 감소
+  if (poopCreated) {
+    newStats.cleanliness = clampStat(
+      currentStats.cleanliness + foodEffect.cleanlinessDebuff
+    );
+    statChanges.cleanliness = foodEffect.cleanlinessDebuff;
+  }
+
+  return {
+    success: true,
+    statChanges,
+    sideEffects: {
+      poopCreated,
+      emotionTriggered: 'joy',
+    },
+    message: poopCreated ? MESSAGES.POOP_ALERT : undefined,
+  };
+};
+
+/**
+ * 약 먹이기
+ * 중요: 건강이 낮을 때만 효과적, "아픔" 상태에서는 약으로만 회복 가능
+ */
+export const giveMedicine = (
+  currentStats: NurturingStats,
+  medicineId: string
+): ActionResult => {
+  const condition = evaluateCondition(currentStats);
+  const medicineEffect = MEDICINE_EFFECTS[medicineId] || MEDICINE_EFFECTS.default;
+
+  // 건강 회복
+  const newStats: Partial<NurturingStats> = {
+    health: clampStat(currentStats.health + medicineEffect.health),
+    happiness: clampStat(currentStats.happiness + medicineEffect.happiness),
+  };
+
+  const statChanges: Partial<NurturingStats> = {
+    health: (newStats.health || currentStats.health) - currentStats.health,
+    happiness: (newStats.happiness || currentStats.happiness) - currentStats.happiness,
+  };
+
+  // 부작용 (현재는 없음 - 안도감만)
+  // fullness: currentStats.fullness + medicineEffect.fullness 를 추가하려면 여기
+
+  return {
+    success: true,
+    statChanges,
+    sideEffects: {
+      emotionTriggered: condition.isSick ? 'love' : 'neutral',
+    },
+    message: condition.isSick ? '아픔이 나아지고 있어요' : undefined,
+  };
+};
+
+/**
+ * 청소하기
+ */
+export const cleanRoom = (
+  currentStats: NurturingStats,
+  poopsToClean: Poop[] = []
+): ActionResult => {
+  // 주요 효과
+  const newStats: Partial<NurturingStats> = {
+    cleanliness: clampStat(currentStats.cleanliness + CLEAN_EFFECT.cleanliness),
+    happiness: clampStat(currentStats.happiness + CLEAN_EFFECT.happiness),
+  };
+
+  const statChanges: Partial<NurturingStats> = {
+    cleanliness: (newStats.cleanliness || currentStats.cleanliness) - currentStats.cleanliness,
+    happiness: (newStats.happiness || currentStats.happiness) - currentStats.happiness,
+  };
+
+  // 똥 청소 보너스 (똥 개수만큼 추가 만족감)
+  const poopBonus = poopsToClean.length * 2;
+  if (poopBonus > 0) {
+    newStats.happiness = clampStat((newStats.happiness || 0) + poopBonus);
+    statChanges.happiness = (statChanges.happiness || 0) + poopBonus;
+  }
+
+  return {
+    success: true,
+    statChanges,
+    sideEffects: {
+      emotionTriggered: 'playful',
+    },
+    message: poopsToClean.length > 0 ? `똥 ${poopsToClean.length}개를 치웠어요!` : undefined,
+  };
+};
+
+/**
+ * 놀이하기
+ */
+export const playWithCharacter = (
+  currentStats: NurturingStats
+): ActionResult => {
+  // 주요 효과
+  const newStats: Partial<NurturingStats> = {
+    happiness: clampStat(currentStats.happiness + PLAY_EFFECT.happiness),
+  };
+
+  // 부작용 (비용)
+  newStats.fullness = clampStat(currentStats.fullness + PLAY_EFFECT.fullness);
+  newStats.cleanliness = clampStat(currentStats.cleanliness + PLAY_EFFECT.cleanliness);
+
+  const statChanges: Partial<NurturingStats> = {
+    happiness: (newStats.happiness || currentStats.happiness) - currentStats.happiness,
+    fullness: (newStats.fullness || currentStats.fullness) - currentStats.fullness,
+    cleanliness: (newStats.cleanliness || currentStats.cleanliness) - currentStats.cleanliness,
+  };
+
+  return {
+    success: true,
+    statChanges,
+    sideEffects: {
+      emotionTriggered: 'playful',
+    },
+  };
+};
+
+/**
+ * 학습하기 (재화 획득)
+ * 학습은 컨디션이 좋아야만 가능
+ */
+export const studyWithCharacter = (
+  currentStats: NurturingStats
+): ActionResult => {
+  const condition = evaluateCondition(currentStats);
+
+  // 학습 가능 여부 체크
+  if (!condition.canStudy) {
+    return {
+      success: false,
+      statChanges: {},
+      message: MESSAGES.CANT_STUDY,
+    };
+  }
+
+  // 추가 세부 조건 체크
+  if (
+    currentStats.happiness < STUDY_REQUIREMENTS.MIN_HAPPINESS ||
+    currentStats.health < STUDY_REQUIREMENTS.MIN_HEALTH ||
+    currentStats.fullness < STUDY_REQUIREMENTS.MIN_FULLNESS
+  ) {
+    let reason = '';
+    if (currentStats.happiness < STUDY_REQUIREMENTS.MIN_HAPPINESS) {
+      reason = '행복도가 너무 낮아요';
+    } else if (currentStats.health < STUDY_REQUIREMENTS.MIN_HEALTH) {
+      reason = '건강이 좋지 않아요';
+    } else {
+      reason = '배가 너무 고파요';
+    }
+
+    return {
+      success: false,
+      statChanges: {},
+      message: `${MESSAGES.CANT_STUDY} (${reason})`,
+    };
+  }
+
+  // 주요 효과
+  const newStats: Partial<NurturingStats> = {
+    happiness: clampStat(currentStats.happiness + STUDY_EFFECT.happiness),
+  };
+
+  // 부작용 (비용)
+  newStats.fullness = clampStat(currentStats.fullness + STUDY_EFFECT.fullness);
+  newStats.cleanliness = clampStat(currentStats.cleanliness + STUDY_EFFECT.cleanliness);
+
+  const statChanges: Partial<NurturingStats> = {
+    happiness: (newStats.happiness || currentStats.happiness) - currentStats.happiness,
+    fullness: (newStats.fullness || currentStats.fullness) - currentStats.fullness,
+    cleanliness: (newStats.cleanliness || currentStats.cleanliness) - currentStats.cleanliness,
+  };
+
+  // 재화 보너스 계산 (컨디션이 좋을수록 더 많이)
+  let currencyReward = STUDY_EFFECT.currencyReward;
+
+  // 보너스 조건: 모든 스탯이 80 이상이면 2배
+  if (
+    currentStats.happiness >= 80 &&
+    currentStats.health >= 80 &&
+    currentStats.fullness >= 80 &&
+    currentStats.cleanliness >= 80
+  ) {
+    currencyReward *= 2;
+  }
+
+  return {
+    success: true,
+    statChanges,
+    sideEffects: {
+      currencyEarned: currencyReward,
+      emotionTriggered: 'joy',
+    },
+    message: `학습 완료! 재화 +${currencyReward}`,
+  };
+};
+
+/**
+ * 똥 개별 제거 (특정 똥 클릭시)
+ */
+export const removePoop = (
+  poopId: string,
+  poops: Poop[]
+): { updatedPoops: Poop[]; removed: boolean } => {
+  const index = poops.findIndex((p) => p.id === poopId);
+
+  if (index === -1) {
+    return { updatedPoops: poops, removed: false };
+  }
+
+  const updatedPoops = [...poops];
+  updatedPoops.splice(index, 1);
+
+  return { updatedPoops, removed: true };
+};
+
+/**
+ * 모든 똥 제거 (청소하기 버튼 사용시)
+ */
+export const removeAllPoops = (): Poop[] => {
+  return [];
+};

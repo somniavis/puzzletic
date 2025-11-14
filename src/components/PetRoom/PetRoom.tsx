@@ -6,6 +6,8 @@ import { FOOD_ITEMS, FOOD_CATEGORIES, type FoodItem, type FoodCategory } from '.
 import type { CharacterSpeciesId } from '../../data/species';
 import { EmotionBubble } from '../EmotionBubble/EmotionBubble';
 import type { EmotionCategory } from '../../types/emotion';
+import { useNurturing } from '../../contexts/NurturingContext';
+import { Poop } from '../Poop/Poop';
 import './PetRoom.css';
 
 interface PetRoomProps {
@@ -16,6 +18,10 @@ interface PetRoomProps {
 
 export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsChange }) => {
   const { t } = useTranslation();
+
+  // 양육 시스템 사용
+  const nurturing = useNurturing();
+
   const [mood, setMood] = useState<CharacterMood>('neutral');
   const [action, setAction] = useState<CharacterAction>('idle');
   const [position, setPosition] = useState({ x: 50, y: 50 }); // percentage position
@@ -44,52 +50,55 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
     return () => clearInterval(moveInterval);
   }, [position, isMoving]);
 
-  // Update mood based on stats
+  // Update mood based on nurturing stats
   useEffect(() => {
-    const { happiness, health, hunger, fatigue } = character.stats;
+    const { happiness, health, fullness } = nurturing.stats;
+    const { condition } = nurturing;
     let newMood: CharacterMood = 'neutral';
     let bubbleCategory: EmotionCategory | null = null;
     let bubbleLevel: 1 | 2 | 3 = 1;
 
-    // Very bad condition - sad
-    if (health < 30) {
+    // 아픔 상태 (sick)
+    if (condition.isSick) {
       newMood = 'sad';
       if (mood !== 'sad') {
         bubbleCategory = 'sick';
         bubbleLevel = 2;
       }
-    } else if (hunger > 80) {
-      newMood = 'sad'; // or a new 'hungry' mood if we want to be specific
+    }
+    // 배고픔 상태 (hungry)
+    else if (condition.isHungry) {
+      newMood = 'sad';
       if (mood !== 'sad') {
-        bubbleCategory = 'worried'; // or a new 'hungry' category
+        bubbleCategory = 'worried';
         bubbleLevel = 1;
       }
     }
-    // Tired - sleeping
-    else if (fatigue > 70) {
-      newMood = 'sleeping';
-      if (mood !== 'sleeping') {
-        bubbleCategory = 'sleepy';
+    // 더러움 상태 (dirty)
+    else if (condition.isDirty) {
+      newMood = 'sad';
+      if (mood !== 'sad') {
+        bubbleCategory = 'worried';
         bubbleLevel = 2;
       }
     }
-    // Very happy - excited
-    else if (happiness > 85 && hunger < 30 && health > 80) {
+    // 매우 행복 (excited)
+    else if (happiness > 85 && fullness > 70 && health > 80) {
       newMood = 'excited';
       if (mood !== 'excited') {
         bubbleCategory = 'joy';
         bubbleLevel = 3;
       }
     }
-    // Happy condition
-    else if (happiness > 70 && hunger < 50) {
+    // 행복 (happy)
+    else if (happiness > 70 && fullness > 50) {
       newMood = 'happy';
       if (mood !== 'happy') {
         bubbleCategory = 'joy';
         bubbleLevel = 2;
       }
     }
-    // Default - neutral
+    // 기본 (neutral)
     else {
       newMood = 'neutral';
     }
@@ -100,19 +109,25 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
         showBubble(bubbleCategory, bubbleLevel);
       }
     }
-  }, [character.stats, mood]);
+  }, [nurturing.stats, nurturing.condition, mood]);
 
   const handleFeed = (food: FoodItem) => {
     setAction('eating');
-    showBubble('playful', 1);
-    const newStats: Partial<Character['stats']> = {
-      hunger: Math.max(0, character.stats.hunger + food.effects.hunger),
-      happiness: Math.min(100, character.stats.happiness + food.effects.happiness),
-    };
-    if (food.effects.health) {
-      newStats.health = Math.min(100, character.stats.health + food.effects.health);
+
+    // 양육 시스템으로 먹이기 실행
+    const result = nurturing.feed(food.id);
+
+    if (result.success) {
+      showBubble('playful', 1);
+
+      // 똥 생성시 알림
+      if (result.sideEffects?.poopCreated) {
+        setTimeout(() => {
+          showBubble('neutral', 1);
+        }, 1500);
+      }
     }
-    onStatsChange(newStats);
+
     setShowFoodMenu(false);
     setTimeout(() => setAction('idle'), 2000);
   };
@@ -125,36 +140,86 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
 
   const handleMedicine = () => {
     setAction('happy');
-    showBubble('sick', 1);
-    onStatsChange({
-      health: Math.min(100, character.stats.health + 30),
-      happiness: Math.min(100, character.stats.happiness + 5),
-    });
-    setTimeout(() => {
-      setAction('idle');
-      showBubble('joy', 1);
-    }, 2000);
+
+    // 양육 시스템으로 약 먹이기 실행
+    const result = nurturing.giveMedicine('default');
+
+    if (result.success) {
+      showBubble('sick', 1);
+      setTimeout(() => {
+        setAction('idle');
+        showBubble('joy', 1);
+      }, 2000);
+    } else {
+      setTimeout(() => setAction('idle'), 2000);
+    }
   };
 
   const handleClean = () => {
     setAction('jumping');
-    showBubble('joy', 1);
-    onStatsChange({
-      hygiene: Math.min(100, character.stats.hygiene + 15),
-      health: Math.min(100, character.stats.health + 5),
+
+    // 모든 똥에 청소 애니메이션 트리거
+    const allPoopIds = nurturing.poops.map(p => p.id);
+
+    // 각 똥을 순차적으로 클릭한 것처럼 처리
+    allPoopIds.forEach((poopId, index) => {
+      setTimeout(() => {
+        handlePoopClick(poopId);
+      }, index * 100); // 100ms 간격으로 순차 청소
     });
-    setTimeout(() => setAction('idle'), 2000);
+
+    // 빗자루 이펙트 후 청소 완료
+    setTimeout(() => {
+      // 양육 시스템으로 청소하기 실행 (스탯 증가)
+      const result = nurturing.clean();
+
+      if (result.success) {
+        showBubble('joy', 1);
+      }
+
+      setAction('idle');
+    }, allPoopIds.length * 100 + 500);
   };
 
   const handlePlay = () => {
     setAction('playing');
-    showBubble('joy', 2);
-    onStatsChange({
-      happiness: Math.min(100, character.stats.happiness + 20),
-      fatigue: Math.min(100, character.stats.fatigue + 10),
-      affection: Math.min(100, character.stats.affection + 5),
-    });
+
+    // 양육 시스템으로 놀이하기 실행
+    const result = nurturing.play();
+
+    if (result.success) {
+      showBubble('joy', 2);
+    }
+
     setTimeout(() => setAction('idle'), 3000);
+  };
+
+  const handleStudy = () => {
+    setAction('playing');
+
+    // 양육 시스템으로 학습하기 실행
+    const result = nurturing.study();
+
+    if (result.success) {
+      showBubble('joy', 3);
+      // 재화 획득 알림
+      if (result.message) {
+        console.log(result.message);
+      }
+    } else {
+      // 학습 불가 알림
+      showBubble('worried', 1);
+      if (result.message) {
+        console.log(result.message);
+      }
+    }
+
+    setTimeout(() => setAction('idle'), 3000);
+  };
+
+  const handlePoopClick = (poopId: string) => {
+    nurturing.clickPoop(poopId);
+    showBubble('playful', 1);
   };
   
   const handleCharacterClick = () => {
@@ -189,15 +254,19 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
         <div className="stats-row">
           <div className="stat-badge stat-badge--hunger">
             <span className="stat-icon">🍖</span>
-            <span className="stat-value">{100 - character.stats.hunger}</span>
+            <span className="stat-value">{Math.round(nurturing.stats.fullness)}</span>
           </div>
           <div className="stat-badge stat-badge--happiness">
-            <span className="stat-icon">❤️</span>
-            <span className="stat-value">{character.stats.happiness}</span>
+            <span className="stat-icon">😊</span>
+            <span className="stat-value">{Math.round(nurturing.stats.happiness)}</span>
           </div>
           <div className="stat-badge stat-badge--health">
-            <span className="stat-icon">💚</span>
-            <span className="stat-value">{character.stats.health}</span>
+            <span className="stat-icon">❤️</span>
+            <span className="stat-value">{Math.round(nurturing.stats.health)}</span>
+          </div>
+          <div className="stat-badge stat-badge--cleanliness">
+            <span className="stat-icon">✨</span>
+            <span className="stat-value">{Math.round(nurturing.stats.cleanliness)}</span>
           </div>
         </div>
       </div>
@@ -208,6 +277,11 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
           <div className="room-floor" />
           <div className="room-wall" />
         </div>
+
+        {/* 똥들 렌더링 */}
+        {nurturing.poops.map((poop) => (
+          <Poop key={poop.id} poop={poop} onClick={handlePoopClick} />
+        ))}
 
         {/* Character */}
         <div
@@ -321,10 +395,11 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
         </button>
         <button
           className="action-btn action-btn--small"
-          disabled={action !== 'idle'}
-          title={t('actions.settings')}
+          onClick={handleStudy}
+          disabled={action !== 'idle' || !nurturing.condition.canStudy}
+          title="학습하기 (재화 획득)"
         >
-          <span className="action-icon">⚙️</span>
+          <span className="action-icon">📚</span>
         </button>
       </div>
     </div>

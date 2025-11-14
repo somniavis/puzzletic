@@ -1,3 +1,71 @@
+/* 양육 패널 오버레이 */
+.nurturing-panel-overlay {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: white;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+  padding: 20px;
+  z-index: 100;
+  max-height: 50vh;
+  overflow-y: auto;
+  animation: slide-up 0.3s ease-out;
+}
+
+@keyframes slide-up {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.toggle-panel-btn {
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  background: rgba(0, 0, 0, 0.1);
+  border: none;
+  padding: 8px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  color: #666;
+  transition: all 0.2s ease;
+}
+
+.toggle-panel-btn:hover {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.show-panel-btn {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 25px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 700;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+  z-index: 100;
+  transition: all 0.2s ease;
+}
+
+.show-panel-btn:hover {
+  transform: translateX(-50%) translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+}
+
 .pet-room {
   display: flex;
   flex-direction: column;

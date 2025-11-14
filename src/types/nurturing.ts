@@ -1,0 +1,110 @@
+/**
+ * Nurturing System Types
+ * 양육 시스템 타입 정의
+ */
+
+// 4대 핵심 지수 (4 Core Stats)
+export interface NurturingStats {
+  fullness: number;    // 포만감 (0-100)
+  health: number;      // 건강 (0-100)
+  cleanliness: number; // 청결도 (0-100)
+  happiness: number;   // 행복도 (0-100)
+}
+
+// 스탯 상태 (Stat States)
+export type StatState =
+  | 'critical'   // < 20
+  | 'warning'    // 20-50
+  | 'normal'     // 50-80
+  | 'excellent'; // > 80
+
+// 캐릭터 상태 (Character Conditions)
+export interface CharacterCondition {
+  isHungry: boolean;      // 배고픔 상태 (fullness < 30)
+  isDirty: boolean;       // 더러움 상태 (cleanliness < 20)
+  isSick: boolean;        // 아픔 상태 (health < 50)
+  canStudy: boolean;      // 학습 가능 여부
+  needsAttention: boolean; // 즉시 케어 필요
+}
+
+// 똥 오브젝트 (Poop Object)
+export interface Poop {
+  id: string;
+  x: number;            // 화면 위치 X (%)
+  y: number;            // 화면 위치 Y (%)
+  createdAt: number;    // 생성 시간 (timestamp)
+  cleanlinessDebuff: number; // 청결도 감소값
+}
+
+// 행동 타입 (Action Types)
+export type NurturingAction =
+  | 'feed'      // 음식 먹이기
+  | 'medicine'  // 약 먹이기
+  | 'clean'     // 청소하기
+  | 'play'      // 놀이하기
+  | 'study';    // 학습하기
+
+// 행동 결과 (Action Result)
+export interface ActionResult {
+  success: boolean;
+  statChanges: Partial<NurturingStats>;
+  sideEffects?: {
+    poopCreated?: Poop;
+    emotionTriggered?: string;
+    currencyEarned?: number;
+  };
+  message?: string;
+}
+
+// 음식 아이템 효과 (Food Item Effect)
+export interface FoodEffect {
+  fullness: number;        // 포만감 증가량
+  happiness: number;       // 행복도 보너스
+  poopChance: number;      // 똥 생성 확률 (0-1)
+  cleanlinessDebuff: number; // 똥 발생시 청결도 감소
+}
+
+// 약 아이템 효과 (Medicine Item Effect)
+export interface MedicineEffect {
+  health: number;          // 건강 회복량
+  happiness: number;       // 행복도 보너스
+  fullness: number;        // 포만감 감소 (부작용)
+}
+
+// 게임 틱 설정 (Game Tick Configuration)
+export interface GameTickConfig {
+  intervalMs: number;      // 틱 간격 (밀리초, 기본: 60000 = 1분)
+  lastTickTime: number;    // 마지막 틱 시간 (timestamp)
+  isActive: boolean;       // 틱 활성화 여부
+}
+
+// 로직 틱 결과 (Logic Tick Result)
+export interface TickResult {
+  statChanges: Partial<NurturingStats>;
+  condition: CharacterCondition;
+  penalties: {
+    hunger?: number;
+    dirty?: number;
+    sick?: number;
+    poopDebuff?: number;
+  };
+  alerts: string[];
+}
+
+// 오프라인 진행 계산 결과 (Offline Progress Result)
+export interface OfflineProgressResult {
+  ticksElapsed: number;
+  finalStats: NurturingStats;
+  events: string[];
+  poopsGenerated: Poop[];
+}
+
+// 지속 상태 (Persistent State)
+export interface NurturingPersistentState {
+  stats: NurturingStats;
+  poops: Poop[];
+  lastActiveTime: number;
+  tickConfig: GameTickConfig;
+  totalCurrencyEarned: number;
+  studyCount: number;
+}

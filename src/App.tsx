@@ -5,6 +5,7 @@ import { PetRoom } from './components/PetRoom/PetRoom'
 import { CHARACTERS } from './components/characters'
 import { createCharacter } from './data/characters'
 import type { CharacterAction, CharacterMood, Character } from './types/character'
+import { NurturingProvider } from './contexts/NurturingContext'
 
 type Page = 'home' | 'gallery' | 'stats';
 type CharacterSpeciesId =
@@ -162,7 +163,7 @@ function App() {
 
   // Show Home page (Pet Room)
   return (
-    <>
+    <NurturingProvider>
       <div className="page-nav page-nav--floating">
         <button onClick={() => setCurrentPage('gallery')}>🖼️</button>
         <button onClick={() => setCurrentPage('stats')}>📊</button>
@@ -172,7 +173,7 @@ function App() {
         speciesId={selectedSpeciesId}
         onStatsChange={handleStatsChange}
       />
-    </>
+    </NurturingProvider>
   )
 }
 

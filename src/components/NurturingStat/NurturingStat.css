@@ -1,0 +1,134 @@
+.nurturing-stat {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  min-width: 200px;
+}
+
+.stat-icon {
+  font-size: 24px;
+  min-width: 30px;
+  text-align: center;
+}
+
+.stat-info {
+  flex: 1;
+  min-width: 80px;
+}
+
+.stat-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stat-value {
+  font-size: 16px;
+  font-weight: 700;
+  color: #333;
+  margin-top: 2px;
+}
+
+.stat-bar {
+  flex: 1;
+  height: 8px;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+
+.stat-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4caf50, #8bc34a);
+  border-radius: 4px;
+  transition: width 0.5s ease, background 0.3s ease;
+}
+
+/* 상태별 스타일 */
+.nurturing-stat.stat-excellent {
+  border: 2px solid #4caf50;
+  background: rgba(76, 175, 80, 0.1);
+}
+
+.nurturing-stat.stat-excellent .stat-bar-fill {
+  background: linear-gradient(90deg, #4caf50, #66bb6a);
+}
+
+.nurturing-stat.stat-normal .stat-bar-fill {
+  background: linear-gradient(90deg, #ffc107, #ffb300);
+}
+
+.nurturing-stat.stat-warning {
+  border: 2px solid #ff9800;
+  background: rgba(255, 152, 0, 0.1);
+  animation: pulse-warning 2s ease-in-out infinite;
+}
+
+.nurturing-stat.stat-warning .stat-bar-fill {
+  background: linear-gradient(90deg, #ff9800, #fb8c00);
+}
+
+.nurturing-stat.stat-critical {
+  border: 2px solid #f44336;
+  background: rgba(244, 67, 54, 0.1);
+  animation: pulse-critical 1s ease-in-out infinite;
+}
+
+.nurturing-stat.stat-critical .stat-bar-fill {
+  background: linear-gradient(90deg, #f44336, #e53935);
+}
+
+.nurturing-stat.stat-critical .stat-value {
+  color: #f44336;
+}
+
+.nurturing-stat.stat-warning .stat-value {
+  color: #ff9800;
+}
+
+/* 애니메이션 */
+@keyframes pulse-warning {
+  0%, 100% {
+    box-shadow: 0 2px 8px rgba(255, 152, 0, 0.3);
+  }
+  50% {
+    box-shadow: 0 2px 16px rgba(255, 152, 0, 0.6);
+  }
+}
+
+@keyframes pulse-critical {
+  0%, 100% {
+    box-shadow: 0 2px 8px rgba(244, 67, 54, 0.4);
+  }
+  50% {
+    box-shadow: 0 2px 20px rgba(244, 67, 54, 0.8);
+  }
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+  .nurturing-stat {
+    min-width: 150px;
+    padding: 8px;
+  }
+
+  .stat-icon {
+    font-size: 20px;
+  }
+
+  .stat-label {
+    font-size: 10px;
+  }
+
+  .stat-value {
+    font-size: 14px;
+  }
+}

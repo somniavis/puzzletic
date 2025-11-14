@@ -1,0 +1,115 @@
+.nurturing-panel {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.nurturing-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+/* 상태 알림 */
+.condition-alerts {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.alert {
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  animation: alert-pulse 1.5s ease-in-out infinite;
+}
+
+.alert-hungry {
+  background: rgba(255, 152, 0, 0.2);
+  border: 2px solid #ff9800;
+  color: #e65100;
+}
+
+.alert-dirty {
+  background: rgba(156, 39, 176, 0.2);
+  border: 2px solid #9c27b0;
+  color: #4a148c;
+}
+
+.alert-sick {
+  background: rgba(244, 67, 54, 0.2);
+  border: 2px solid #f44336;
+  color: #b71c1c;
+}
+
+@keyframes alert-pulse {
+  0%, 100% {
+    opacity: 0.8;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* 재화 정보 */
+.currency-info {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 30px;
+  padding: 15px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 12px;
+  color: white;
+}
+
+.currency-item,
+.study-count {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.currency-icon,
+.study-icon {
+  font-size: 24px;
+}
+
+.currency-value,
+.study-value {
+  color: white;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+  .nurturing-panel {
+    padding: 15px;
+  }
+
+  .nurturing-stats-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .currency-info {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .alert {
+    font-size: 12px;
+    padding: 10px;
+  }
+}

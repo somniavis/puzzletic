@@ -1,0 +1,119 @@
+.poop {
+  position: absolute;
+  font-size: 32px;
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.2s ease;
+  z-index: 5;
+  animation: poop-appear 0.3s ease-out;
+  pointer-events: auto;
+}
+
+.poop:hover {
+  transform: scale(1.2) rotate(10deg);
+  filter: drop-shadow(0 0 5px rgba(139, 69, 19, 0.5));
+}
+
+.poop:active {
+  transform: scale(0.9);
+}
+
+/* 똥이 치워지는 애니메이션 */
+.poop.poop-cleaning {
+  animation: poop-clean 0.4s ease-out forwards;
+  pointer-events: none;
+}
+
+/* 빗자루 이펙트 */
+.broom-effect {
+  position: absolute;
+  font-size: 40px;
+  z-index: 6;
+  pointer-events: none;
+  animation: broom-sweep 0.4s ease-out;
+  transform-origin: bottom center;
+}
+
+@keyframes poop-appear {
+  0% {
+    transform: scale(0) translateY(-20px);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2) translateY(5px);
+  }
+  100% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes poop-clean {
+  0% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(0.5) rotate(180deg);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(0) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+@keyframes broom-sweep {
+  0% {
+    transform: translateX(-30px) translateY(-30px) rotate(-45deg);
+    opacity: 0;
+  }
+  30% {
+    opacity: 1;
+  }
+  50% {
+    transform: translateX(0) translateY(0) rotate(0deg);
+  }
+  70% {
+    transform: translateX(15px) translateY(5px) rotate(20deg);
+  }
+  100% {
+    transform: translateX(30px) translateY(10px) rotate(45deg);
+    opacity: 0;
+  }
+}
+
+/* 똥이 오래될수록 어두워지는 효과 (선택사항) */
+.poop.old {
+  filter: brightness(0.7);
+}
+
+/* 반짝이는 효과 (클린 완료 시) */
+@keyframes sparkle {
+  0%, 100% {
+    opacity: 0;
+    transform: scale(0);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.5);
+  }
+}
+
+/* 호버 시 빗자루 커서 힌트 */
+.poop::before {
+  content: '🧹';
+  position: absolute;
+  top: -30px;
+  left: 50%;
+  transform: translateX(-50%) scale(0);
+  font-size: 20px;
+  opacity: 0;
+  transition: all 0.2s ease;
+  pointer-events: none;
+}
+
+.poop:hover::before {
+  transform: translateX(-50%) scale(1);
+  opacity: 0.8;
+}
