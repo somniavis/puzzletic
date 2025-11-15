@@ -371,7 +371,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
     const happinessChange = calculateClickResponse(personality, happiness, health, fullness);
 
     // 행복도 변화에 따른 감정 카테고리 결정
-    const { category, level } = getClickEmotionCategory(happinessChange, happiness);
+    const { category, level } = getClickEmotionCategory(happinessChange);
 
     // 디버그 로그
     console.log('👆 Character Click:', {
@@ -381,18 +381,12 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
       emotion: { category, level },
     });
 
-    // 행복도 업데이트 (nurturing 시스템 통해)
-    if (happinessChange !== 0) {
-      nurturing.updateStats({
-        happiness: Math.max(0, Math.min(100, happiness + happinessChange)),
-      });
-    }
-
     // 말풍선 표시
     showBubble(category, level);
 
-    // 애정도는 항상 소량 증가 (클릭 자체가 상호작용이므로)
+    // 스탯 업데이트: 행복도 변화 + 애정도 증가
     onStatsChange({
+      happiness: Math.max(0, Math.min(100, happiness + happinessChange)),
       affection: Math.min(100, character.stats.affection + 1),
     });
   };

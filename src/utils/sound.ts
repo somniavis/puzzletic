@@ -16,8 +16,6 @@ export const SOUNDS = {
   jelloClick2: `${SOUND_BASE_URL}/jellosound/jellosound-2.mp3`,
 } as const;
 
-type SoundKey = keyof typeof SOUNDS;
-
 /**
  * Audio Pool: 각 사운드마다 여러 개의 Audio 인스턴스를 관리
  * 동시에 같은 사운드를 여러 번 재생할 수 있도록 풀 방식 사용

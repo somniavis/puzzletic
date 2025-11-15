@@ -95,12 +95,10 @@ export const calculateClickResponse = (
 /**
  * 클릭 반응에 따른 감정 카테고리 반환
  * @param happinessChange 행복도 변화량
- * @param currentHappiness 현재 행복도
  * @returns 감정 카테고리
  */
 export const getClickEmotionCategory = (
-  happinessChange: number,
-  currentHappiness: number
+  happinessChange: number
 ): { category: 'joy' | 'love' | 'playful' | 'neutral' | 'worried' | 'angry'; level: 1 | 2 | 3 } => {
   // 긍정적 반응
   if (happinessChange >= 4) {
