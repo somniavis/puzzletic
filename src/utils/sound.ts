@@ -6,6 +6,7 @@
  * - Audio Pool: Audio 객체를 재사용하여 메모리 효율성 향상
  * - Preload: 앱 시작 시 사운드 미리 로드
  * - 즉시 재생: 캐시된 Audio 객체로 지연 없이 재생
+ * - Mobile Optimized: iOS/Android에서 터치 시 즉시 재생 가능
  */
 
 const SOUND_BASE_URL = 'https://pub-1411335941ed4406b5f667f40e04a814.r2.dev/sound';
@@ -19,11 +20,49 @@ export const SOUNDS = {
 /**
  * Audio Pool: 각 사운드마다 여러 개의 Audio 인스턴스를 관리
  * 동시에 같은 사운드를 여러 번 재생할 수 있도록 풀 방식 사용
+ * 모바일 최적화: load() 메서드로 버퍼 준비 + Touch Unlock
  */
 class SoundManager {
   private audioPool: Map<string, HTMLAudioElement[]> = new Map();
   private poolSize: number = 3; // 각 사운드당 최대 3개 인스턴스
   private preloadComplete: Set<string> = new Set();
+  private isUnlocked: boolean = false; // 모바일 오디오 컨텍스트 활성화 여부
+
+  constructor() {
+    // 모바일에서 첫 터치 시 오디오 컨텍스트 활성화
+    this.setupTouchUnlock();
+  }
+
+  /**
+   * 모바일 오디오 컨텍스트 활성화 (Touch Unlock)
+   * iOS/Android에서는 사용자 제스처 후에만 오디오 재생 가능
+   */
+  private setupTouchUnlock(): void {
+    const unlockAudio = () => {
+      if (this.isUnlocked) return;
+
+      // 무음 오디오를 재생하여 오디오 컨텍스트 활성화
+      const silentAudio = new Audio();
+      silentAudio.src = 'data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAADhADAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMD//////////////////////////////////////////////////////////////////8AAAAATGF2YzU4LjEzAAAAAAAAAAAAAAAAJAAAAAAAAAAAA4TnXXFTAAAAAAAAAAAAAAAAAAAA//sQZAAP8AAAaQAAAAgAAA0gAAABAAABpAAAACAAADSAAAAETEFNRTMuMTAwVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV//sQZDQP8AAAaQAAAAgAAA0gAAABAAABpAAAACAAADSAAAAEVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV';
+      silentAudio.volume = 0;
+      silentAudio.play().then(() => {
+        this.isUnlocked = true;
+        console.log('🔓 Mobile audio context unlocked');
+      }).catch(() => {
+        // 실패해도 다음 터치에서 재시도
+      });
+
+      // 이벤트 리스너 제거
+      document.removeEventListener('touchstart', unlockAudio);
+      document.removeEventListener('touchend', unlockAudio);
+      document.removeEventListener('click', unlockAudio);
+    };
+
+    // 다양한 이벤트에 리스너 등록
+    document.addEventListener('touchstart', unlockAudio, { once: true });
+    document.addEventListener('touchend', unlockAudio, { once: true });
+    document.addEventListener('click', unlockAudio, { once: true });
+  }
 
   /**
    * 사운드 프리로드
@@ -39,6 +78,9 @@ class SoundManager {
       const audio = new Audio();
       audio.preload = 'auto';
       audio.src = soundUrl;
+
+      // 모바일 최적화: 즉시 버퍼 로드 시작
+      audio.load();
 
       // 로드 완료 대기
       await new Promise<void>((resolve) => {
@@ -85,12 +127,19 @@ class SoundManager {
 
   /**
    * 사운드 재생
+   * 모바일 최적화: play 전에 load() 호출로 버퍼 준비 완료 확인
    */
   play(soundUrl: string, volume: number = 0.5): void {
     try {
       const audio = this.getAvailableAudio(soundUrl);
       audio.volume = Math.max(0, Math.min(1, volume));
       audio.currentTime = 0; // 처음부터 재생
+
+      // 모바일 최적화: 재생 직전 버퍼 상태 확인
+      // readyState < 3이면 load() 호출로 즉시 준비
+      if (audio.readyState < 3) {
+        audio.load();
+      }
 
       audio.play().catch((error) => {
         console.warn('Sound playback failed:', error);
