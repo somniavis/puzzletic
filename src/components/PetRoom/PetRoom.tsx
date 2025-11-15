@@ -4,10 +4,12 @@ import type { Character, CharacterMood, CharacterAction } from '../../types/char
 import { CHARACTERS } from '../characters';
 import { FOOD_ITEMS, FOOD_CATEGORIES, type FoodItem, type FoodCategory } from '../../types/food';
 import type { CharacterSpeciesId } from '../../data/species';
+import { CHARACTER_SPECIES } from '../../data/species';
 import { EmotionBubble } from '../EmotionBubble/EmotionBubble';
 import type { EmotionCategory } from '../../types/emotion';
 import { useNurturing } from '../../contexts/NurturingContext';
 import { Poop } from '../Poop/Poop';
+import { calculateClickResponse, getClickEmotionCategory } from '../../constants/personality';
 import './PetRoom.css';
 
 interface PetRoomProps {
@@ -95,91 +97,145 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
       const { happiness, health, fullness, cleanliness } = nurturing.stats;
       const { condition } = nurturing;
 
-      // Priority-based bubble display (highest priority first)
+      // Debug log - 상태 확인용 (개발 중)
+      console.log('🎈 Bubble Check:', {
+        happiness,
+        health,
+        fullness,
+        cleanliness,
+        condition
+      });
 
-      // 1. Critical health (아파요!)
+      // ==================== 위급 상태 (Critical) ====================
+
+      // 1. 매우 위급: 건강 20 미만 (즉시 치료 필요)
       if (health < 20) {
+        console.log('→ Showing: Critical Health');
         showBubble('sick', 3);
         return;
       }
 
-      // 2. Very sick (아파요)
+      // 2. 위급: 아픔 상태 + 건강 50 미만
       if (condition.isSick && health < 50) {
+        console.log('→ Showing: Very Sick');
         showBubble('sick', 2);
         return;
       }
 
-      // 3. Critical hunger (너무 배고파요!)
+      // 3. 매우 배고픔: 포만감 10 미만 (즉시 먹이 필요)
       if (fullness < 10) {
+        console.log('→ Showing: Critical Hunger');
         showBubble('worried', 3);
         return;
       }
 
-      // 4. Very hungry (배고파요)
+      // 4. 배고픔: 배고픔 상태 + 포만감 30 미만
       if (condition.isHungry && fullness < 30) {
+        console.log('→ Showing: Very Hungry');
         showBubble('worried', 2);
         return;
       }
 
-      // 5. Very dirty (더러워요!)
+      // 5. 매우 더러움: 청결도 10 미만 (즉시 청소 필요)
       if (cleanliness < 10) {
+        console.log('→ Showing: Very Dirty');
         showBubble('worried', 3);
         return;
       }
 
-      // 6. Dirty (청소해주세요)
+      // 6. 더러움: 더러움 상태 + 청결도 20 미만
       if (condition.isDirty && cleanliness < 20) {
+        console.log('→ Showing: Dirty');
         showBubble('worried', 2);
         return;
       }
 
-      // 7. Unhappy (슬퍼요)
+      // ==================== 불만족 상태 (Unhappy) ====================
+
+      // 7. 매우 불행: 행복도 20 미만
       if (happiness < 20) {
+        console.log('→ Showing: Very Unhappy');
         showBubble('worried', 3);
         return;
       }
 
-      // 8. Low happiness (심심해요)
+      // 8. 약간 불행: 행복도 40 미만
       if (happiness < 40) {
+        console.log('→ Showing: Unhappy');
         showBubble('worried', 1);
         return;
       }
 
-      // 9. Mildly sick
+      // ==================== 주의 상태 (Warning) ====================
+
+      // 9. 약한 질병: 아픔 상태 (건강은 50 이상)
       if (condition.isSick) {
+        console.log('→ Showing: Mildly Sick');
         showBubble('sick', 1);
         return;
       }
 
-      // 10. Slightly hungry
+      // 10. 약간 배고픔: 포만감 50 미만
       if (fullness < 50) {
+        console.log('→ Showing: Slightly Hungry');
         showBubble('neutral', 2);
         return;
       }
 
-      // 11. Very happy! (행복해요!)
-      if (happiness > 85 && fullness > 70 && health > 80) {
+      // 11. 약간 피곤함: 행복도 60 미만
+      if (happiness < 60) {
+        console.log('→ Showing: Slightly Tired');
+        showBubble('neutral', 1);
+        return;
+      }
+
+      // 12. 청결도 낮음: 청결도 40 미만
+      if (cleanliness < 40) {
+        console.log('→ Showing: Getting Dirty');
+        showBubble('neutral', 1);
+        return;
+      }
+
+      // ==================== 만족 상태 (Satisfied) ====================
+
+      // 13. 매우 행복: 모든 스탯이 높음
+      if (happiness > 85 && fullness > 70 && health > 80 && cleanliness > 70) {
+        console.log('→ Showing: Very Happy');
         showBubble('joy', 3);
         return;
       }
 
-      // 12. Happy (기분 좋아요)
-      if (happiness > 70 && fullness > 60) {
+      // 14. 행복: 주요 스탯이 높음
+      if (happiness > 70 && fullness > 60 && health > 60) {
+        console.log('→ Showing: Happy');
         showBubble('joy', 2);
         return;
       }
 
-      // 13. Content (편안해요)
+      // 15. 만족: 행복도 60 이상
       if (happiness > 60) {
+        console.log('→ Showing: Content');
         showBubble('joy', 1);
         return;
       }
+
+      // ==================== 기본 상태 (Default) ====================
+
+      // 16. 평범한 상태 (아무 조건도 만족하지 않음)
+      console.log('→ Showing: Neutral');
+      showBubble('neutral', 1);
     };
+
+    // Initial check after 2 seconds
+    const initialTimeout = setTimeout(checkAndShowBubble, 2000);
 
     // Check every 10 seconds for periodic bubbles
     const bubbleInterval = setInterval(checkAndShowBubble, 10000);
 
-    return () => clearInterval(bubbleInterval);
+    return () => {
+      clearTimeout(initialTimeout);
+      clearInterval(bubbleInterval);
+    };
   }, [nurturing.stats, nurturing.condition, bubble, lastBubbleTime]);
 
   const handleFeed = (food: FoodItem) => {
@@ -294,10 +350,40 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
   };
   
   const handleCharacterClick = () => {
-    // Show a love emotion when clicked
-    showBubble('love', 2);
+    // 캐릭터의 성격 가져오기
+    const species = CHARACTER_SPECIES[speciesId];
+    const personality = species.personality;
+
+    // 현재 상태값
+    const { happiness, health, fullness } = nurturing.stats;
+
+    // 성격과 상태값에 따른 행복도 변화 계산
+    const happinessChange = calculateClickResponse(personality, happiness, health, fullness);
+
+    // 행복도 변화에 따른 감정 카테고리 결정
+    const { category, level } = getClickEmotionCategory(happinessChange, happiness);
+
+    // 디버그 로그
+    console.log('👆 Character Click:', {
+      personality,
+      currentHappiness: happiness,
+      happinessChange,
+      emotion: { category, level },
+    });
+
+    // 행복도 업데이트 (nurturing 시스템 통해)
+    if (happinessChange !== 0) {
+      nurturing.updateStats({
+        happiness: Math.max(0, Math.min(100, happiness + happinessChange)),
+      });
+    }
+
+    // 말풍선 표시
+    showBubble(category, level);
+
+    // 애정도는 항상 소량 증가 (클릭 자체가 상호작용이므로)
     onStatsChange({
-      affection: Math.min(100, character.stats.affection + 2),
+      affection: Math.min(100, character.stats.affection + 1),
     });
   };
 

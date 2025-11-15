@@ -5,6 +5,7 @@ export const CHARACTER_SPECIES: Record<string, CharacterSpecies> = {
     id: 'yellowJello',
     name: 'Yellow Jello',
     description: 'A sweet and adorable jello with a sunny glow.',
+    personality: 'affectionate',
     evolutions: [
       {
         stage: 1,
@@ -47,6 +48,7 @@ export const CHARACTER_SPECIES: Record<string, CharacterSpecies> = {
     id: 'redJello',
     name: 'Red Jello',
     description: 'A vibrant red jello full of energy.',
+    personality: 'energetic',
     evolutions: [
       {
         stage: 1,
@@ -89,6 +91,7 @@ export const CHARACTER_SPECIES: Record<string, CharacterSpecies> = {
     id: 'limeJello',
     name: 'Lime Jello',
     description: 'A fresh lime jello with zesty personality.',
+    personality: 'playful',
     evolutions: [
       {
         stage: 1,
@@ -131,6 +134,7 @@ export const CHARACTER_SPECIES: Record<string, CharacterSpecies> = {
     id: 'mintJello',
     name: 'Mint Jello',
     description: 'A cool mint jello with refreshing charm.',
+    personality: 'calm',
     evolutions: [
       {
         stage: 1,
@@ -173,6 +177,7 @@ export const CHARACTER_SPECIES: Record<string, CharacterSpecies> = {
     id: 'blueJello',
     name: 'Blue Jello',
     description: 'A calm blue jello like the deep ocean.',
+    personality: 'shy',
     evolutions: [
       {
         stage: 1,
@@ -215,6 +220,7 @@ export const CHARACTER_SPECIES: Record<string, CharacterSpecies> = {
     id: 'creamJello',
     name: 'Cream Jello',
     description: 'A soft cream jello with gentle nature.',
+    personality: 'affectionate',
     evolutions: [
       {
         stage: 1,
@@ -257,6 +263,7 @@ export const CHARACTER_SPECIES: Record<string, CharacterSpecies> = {
     id: 'purpleJello',
     name: 'Purple Jello',
     description: 'A royal purple jello with mystical aura.',
+    personality: 'grumpy',
     evolutions: [
       {
         stage: 1,
@@ -299,6 +306,7 @@ export const CHARACTER_SPECIES: Record<string, CharacterSpecies> = {
     id: 'skyJello',
     name: 'Sky Jello',
     description: 'A bright sky jello as clear as daylight.',
+    personality: 'calm',
     evolutions: [
       {
         stage: 1,
@@ -341,6 +349,7 @@ export const CHARACTER_SPECIES: Record<string, CharacterSpecies> = {
     id: 'brownJello',
     name: 'Brown Jello',
     description: 'A warm brown jello with earthy charm.',
+    personality: 'shy',
     evolutions: [
       {
         stage: 1,
@@ -383,6 +392,7 @@ export const CHARACTER_SPECIES: Record<string, CharacterSpecies> = {
     id: 'orangeJello',
     name: 'Orange Jello',
     description: 'A cheerful orange jello bursting with joy.',
+    personality: 'playful',
     evolutions: [
       {
         stage: 1,
@@ -425,6 +435,7 @@ export const CHARACTER_SPECIES: Record<string, CharacterSpecies> = {
     id: 'oliveJello',
     name: 'Olive Jello',
     description: 'A unique olive jello with natural grace.',
+    personality: 'grumpy',
     evolutions: [
       {
         stage: 1,
@@ -467,6 +478,7 @@ export const CHARACTER_SPECIES: Record<string, CharacterSpecies> = {
     id: 'cyanJello',
     name: 'Cyan Jello',
     description: 'A bright cyan jello sparkling like water.',
+    personality: 'energetic',
     evolutions: [
       {
         stage: 1,
