@@ -10,6 +10,7 @@ import type { EmotionCategory } from '../../types/emotion';
 import { useNurturing } from '../../contexts/NurturingContext';
 import { Poop } from '../Poop/Poop';
 import { calculateClickResponse, getClickEmotionCategory } from '../../constants/personality';
+import { playButtonSound, playJelloClickSound } from '../../utils/sound';
 import './PetRoom.css';
 
 interface PetRoomProps {
@@ -239,6 +240,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
   }, [nurturing.stats, nurturing.condition, bubble, lastBubbleTime]);
 
   const handleFeed = (food: FoodItem) => {
+    playButtonSound();
     setAction('eating');
 
     // 양육 시스템으로 먹이기 실행
@@ -260,12 +262,14 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
   };
 
   const toggleFoodMenu = () => {
+    playButtonSound();
     setShowFoodMenu(!showFoodMenu);
   };
 
   const filteredFoods = FOOD_ITEMS.filter(food => food.category === selectedFoodCategory);
 
   const handleMedicine = () => {
+    playButtonSound();
     setAction('happy');
 
     // 양육 시스템으로 약 먹이기 실행
@@ -283,6 +287,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
   };
 
   const handleClean = () => {
+    playButtonSound();
     setAction('jumping');
 
     // 모든 똥에 청소 애니메이션 트리거
@@ -309,6 +314,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
   };
 
   const handlePlay = () => {
+    playButtonSound();
     setAction('playing');
 
     // 양육 시스템으로 놀이하기 실행
@@ -322,6 +328,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
   };
 
   const handleStudy = () => {
+    playButtonSound();
     setAction('playing');
 
     // 양육 시스템으로 학습하기 실행
@@ -350,6 +357,9 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
   };
   
   const handleCharacterClick = () => {
+    // 젤로 클릭 사운드 재생 (랜덤)
+    playJelloClickSound();
+
     // 캐릭터의 성격 가져오기
     const species = CHARACTER_SPECIES[speciesId];
     const personality = species.personality;
@@ -468,11 +478,11 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
 
       {/* Food Menu Submenu */}
       {showFoodMenu && (
-        <div className="food-menu-overlay" onClick={() => setShowFoodMenu(false)}>
+        <div className="food-menu-overlay" onClick={() => { playButtonSound(); setShowFoodMenu(false); }}>
           <div className="food-menu" onClick={(e) => e.stopPropagation()}>
             <div className="food-menu-header">
               <h3>{t('food.menu.title')}</h3>
-              <button className="close-btn" onClick={() => setShowFoodMenu(false)}>✕</button>
+              <button className="close-btn" onClick={() => { playButtonSound(); setShowFoodMenu(false); }}>✕</button>
             </div>
 
             <div className="food-categories">
@@ -480,7 +490,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
                 <button
                   key={category}
                   className={`category-tab ${selectedFoodCategory === category ? 'active' : ''}`}
-                  onClick={() => setSelectedFoodCategory(category)}
+                  onClick={() => { playButtonSound(); setSelectedFoodCategory(category); }}
                 >
                   <span className="category-icon">{FOOD_CATEGORIES[category].icon}</span>
                   <span className="category-name">{t(FOOD_CATEGORIES[category].nameKey)}</span>

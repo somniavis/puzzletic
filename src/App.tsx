@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import './App.css'
 import { CharacterAdmin } from './pages/CharacterAdmin'
 import { PetRoom } from './components/PetRoom/PetRoom'
@@ -6,6 +6,7 @@ import { CHARACTERS } from './components/characters'
 import { createCharacter } from './data/characters'
 import type { CharacterAction, CharacterMood, Character } from './types/character'
 import { NurturingProvider } from './contexts/NurturingContext'
+import { preloadSounds } from './utils/sound'
 
 type Page = 'home' | 'gallery' | 'stats';
 type CharacterSpeciesId =
@@ -28,6 +29,13 @@ function App() {
   const [character, setCharacter] = useState(() => createCharacter('yellowJello'))
   const [mood, setMood] = useState<CharacterMood>('neutral')
   const [action, setAction] = useState<CharacterAction>('idle')
+
+  // 앱 시작 시 사운드 프리로드
+  useEffect(() => {
+    preloadSounds().catch((error) => {
+      console.error('Failed to preload sounds:', error);
+    });
+  }, []);
 
   const handleMoodChange = (newMood: CharacterMood) => {
     setMood(newMood)
