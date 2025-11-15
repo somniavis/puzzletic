@@ -6,8 +6,8 @@
 import type { NurturingStats, FoodEffect, MedicineEffect } from '../types/nurturing';
 
 // ==================== 게임 틱 설정 ====================
-export const TICK_INTERVAL_MS = 60000; // 1분 (60초) = 1 로직 틱
-// export const TICK_INTERVAL_MS = 30000; // 밸런스 조정시 30초로 변경 가능
+export const TICK_INTERVAL_MS = 5000; // 5초 = 1 로직 틱 (빠른 변화로 관리 필요성 증가)
+// export const TICK_INTERVAL_MS = 10000; // 10초 (조금 더 여유있게)
 
 // ==================== 초기 스탯 ====================
 export const DEFAULT_NURTURING_STATS: NurturingStats = {
@@ -32,10 +32,11 @@ export const THRESHOLDS = {
 };
 
 // ==================== 자연 감소 (Natural Degradation) ====================
+// 5초당 감소량 (빠른 게임플레이를 위한 조정)
 export const NATURAL_DECAY = {
-  fullness: -0.5,      // 200분 (3.3시간)에 100 -> 0
-  cleanliness: -0.25,  // 400분 (6.6시간)에 100 -> 0
-  happiness: -0.2,     // 500분 (8.3시간)에 100 -> 0
+  fullness: -0.8,      // 약 10분에 100 -> 0 (가장 빠름)
+  cleanliness: -0.4,   // 약 20분에 100 -> 0
+  happiness: -0.3,     // 약 27분에 100 -> 0
   health: 0,           // 자연 감소 없음 (원인이 있어야 감소)
 };
 
@@ -43,27 +44,27 @@ export const NATURAL_DECAY = {
 
 // 배고픔 상태 페널티 (fullness < 30)
 export const HUNGER_PENALTY = {
-  happiness: -0.5,     // "배고파서 기분이 안 좋아..."
-  health: -0.5,        // "배고파서 힘이 없어..."
+  happiness: -0.8,     // "배고파서 기분이 안 좋아..."
+  health: -0.6,        // "배고파서 힘이 없어..."
 };
 
 // 더러움 상태 페널티 (cleanliness < 20)
 export const DIRTY_PENALTY = {
-  happiness: -0.5,     // "몸이 찝찝하고 불쾌해..."
-  health: -1.0,        // "질병의 주된 원인" (배고픔보다 치명적)
+  happiness: -0.7,     // "몸이 찝찝하고 불쾌해..."
+  health: -1.2,        // "질병의 주된 원인" (배고픔보다 치명적)
 };
 
 // 아픔 상태 페널티 (health < 50)
 export const SICK_PENALTY = {
-  happiness: -1.0,     // "너무 아파서 아무것도 하기 싫어..."
-  fullness: -0.5,      // "아파서 소화가 안돼..." (혹은 제거 가능)
+  happiness: -1.5,     // "너무 아파서 아무것도 하기 싫어..."
+  fullness: -0.7,      // "아파서 소화가 안돼..." (혹은 제거 가능)
 };
 
 // 똥 방치 페널티 (1개당)
 export const POOP_PENALTY_PER_ITEM = {
-  health: -0.3,        // 틱마다 건강 감소
-  happiness: -0.2,     // 틱마다 행복도 감소
-  cleanliness: -0.5,   // 틱마다 청결도 추가 감소
+  health: -0.5,        // 틱마다 건강 감소
+  happiness: -0.4,     // 틱마다 행복도 감소
+  cleanliness: -0.8,   // 틱마다 청결도 추가 감소
 };
 
 // ==================== 행동 효과 (Action Effects) ====================

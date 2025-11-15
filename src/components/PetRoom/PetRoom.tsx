@@ -29,10 +29,12 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
   const [showFoodMenu, setShowFoodMenu] = useState(false);
   const [selectedFoodCategory, setSelectedFoodCategory] = useState<FoodCategory>('meal');
   const [bubble, setBubble] = useState<{ category: EmotionCategory; level: 1 | 2 | 3; key: number } | null>(null);
+  const [lastBubbleTime, setLastBubbleTime] = useState(0);
 
   const showBubble = (category: EmotionCategory, level: 1 | 2 | 3) => {
     setBubble({ category, level, key: Date.now() });
-    setTimeout(() => setBubble(null), 2000); // Hide bubble after 2 seconds
+    setLastBubbleTime(Date.now());
+    setTimeout(() => setBubble(null), 3000); // Hide bubble after 3 seconds
   };
 
   // Auto-move character randomly
@@ -55,61 +57,130 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
     const { happiness, health, fullness } = nurturing.stats;
     const { condition } = nurturing;
     let newMood: CharacterMood = 'neutral';
-    let bubbleCategory: EmotionCategory | null = null;
-    let bubbleLevel: 1 | 2 | 3 = 1;
 
-    // 아픔 상태 (sick)
+    // Determine mood based on stats
     if (condition.isSick) {
+      newMood = 'sick';
+    } else if (condition.isHungry) {
       newMood = 'sad';
-      if (mood !== 'sad') {
-        bubbleCategory = 'sick';
-        bubbleLevel = 2;
-      }
-    }
-    // 배고픔 상태 (hungry)
-    else if (condition.isHungry) {
+    } else if (condition.isDirty) {
       newMood = 'sad';
-      if (mood !== 'sad') {
-        bubbleCategory = 'worried';
-        bubbleLevel = 1;
-      }
-    }
-    // 더러움 상태 (dirty)
-    else if (condition.isDirty) {
-      newMood = 'sad';
-      if (mood !== 'sad') {
-        bubbleCategory = 'worried';
-        bubbleLevel = 2;
-      }
-    }
-    // 매우 행복 (excited)
-    else if (happiness > 85 && fullness > 70 && health > 80) {
+    } else if (happiness > 85 && fullness > 70 && health > 80) {
       newMood = 'excited';
-      if (mood !== 'excited') {
-        bubbleCategory = 'joy';
-        bubbleLevel = 3;
-      }
-    }
-    // 행복 (happy)
-    else if (happiness > 70 && fullness > 50) {
+    } else if (happiness > 70 && fullness > 50) {
       newMood = 'happy';
-      if (mood !== 'happy') {
-        bubbleCategory = 'joy';
-        bubbleLevel = 2;
-      }
-    }
-    // 기본 (neutral)
-    else {
+    } else {
       newMood = 'neutral';
     }
 
-    if (newMood !== mood) {
-      setMood(newMood);
-      if (bubbleCategory) {
-        showBubble(bubbleCategory, bubbleLevel);
+    setMood(newMood);
+  }, [nurturing.stats, nurturing.condition]);
+
+  // Periodic emotion bubble system - shows bubbles based on current state
+  useEffect(() => {
+    const checkAndShowBubble = () => {
+      const now = Date.now();
+      const timeSinceLastBubble = now - lastBubbleTime;
+
+      // Don't show bubble if one was shown recently (less than 8 seconds ago)
+      if (timeSinceLastBubble < 8000) {
+        return;
       }
-    }
-  }, [nurturing.stats, nurturing.condition, mood]);
+
+      // Don't show bubble if currently showing one
+      if (bubble !== null) {
+        return;
+      }
+
+      const { happiness, health, fullness, cleanliness } = nurturing.stats;
+      const { condition } = nurturing;
+
+      // Priority-based bubble display (highest priority first)
+
+      // 1. Critical health (아파요!)
+      if (health < 20) {
+        showBubble('sick', 3);
+        return;
+      }
+
+      // 2. Very sick (아파요)
+      if (condition.isSick && health < 50) {
+        showBubble('sick', 2);
+        return;
+      }
+
+      // 3. Critical hunger (너무 배고파요!)
+      if (fullness < 10) {
+        showBubble('worried', 3);
+        return;
+      }
+
+      // 4. Very hungry (배고파요)
+      if (condition.isHungry && fullness < 30) {
+        showBubble('worried', 2);
+        return;
+      }
+
+      // 5. Very dirty (더러워요!)
+      if (cleanliness < 10) {
+        showBubble('worried', 3);
+        return;
+      }
+
+      // 6. Dirty (청소해주세요)
+      if (condition.isDirty && cleanliness < 20) {
+        showBubble('worried', 2);
+        return;
+      }
+
+      // 7. Unhappy (슬퍼요)
+      if (happiness < 20) {
+        showBubble('worried', 3);
+        return;
+      }
+
+      // 8. Low happiness (심심해요)
+      if (happiness < 40) {
+        showBubble('worried', 1);
+        return;
+      }
+
+      // 9. Mildly sick
+      if (condition.isSick) {
+        showBubble('sick', 1);
+        return;
+      }
+
+      // 10. Slightly hungry
+      if (fullness < 50) {
+        showBubble('neutral', 2);
+        return;
+      }
+
+      // 11. Very happy! (행복해요!)
+      if (happiness > 85 && fullness > 70 && health > 80) {
+        showBubble('joy', 3);
+        return;
+      }
+
+      // 12. Happy (기분 좋아요)
+      if (happiness > 70 && fullness > 60) {
+        showBubble('joy', 2);
+        return;
+      }
+
+      // 13. Content (편안해요)
+      if (happiness > 60) {
+        showBubble('joy', 1);
+        return;
+      }
+    };
+
+    // Check every 10 seconds for periodic bubbles
+    const bubbleInterval = setInterval(checkAndShowBubble, 10000);
+
+    return () => clearInterval(bubbleInterval);
+  }, [nurturing.stats, nurturing.condition, bubble, lastBubbleTime]);
 
   const handleFeed = (food: FoodItem) => {
     setAction('eating');
