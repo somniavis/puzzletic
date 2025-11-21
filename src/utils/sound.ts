@@ -15,6 +15,7 @@ export const SOUNDS = {
   buttonClick: `${SOUND_BASE_URL}/game%20sound/button-sound1.mp3`,
   jelloClick1: `${SOUND_BASE_URL}/jellosound/jellosound-1.mp3`,
   jelloClick2: `${SOUND_BASE_URL}/jellosound/jellosound-2.mp3`,
+  eating: `${SOUND_BASE_URL}/game%20sound/eating-sound.mp3`,
 } as const;
 
 /**
@@ -202,4 +203,12 @@ export const playJelloClickSound = (volume: number = 0.5): void => {
   const jelloSounds = [SOUNDS.jelloClick1, SOUNDS.jelloClick2];
   const randomSound = jelloSounds[Math.floor(Math.random() * jelloSounds.length)];
   soundManager.play(randomSound, volume);
+};
+
+/**
+ * 먹기 사운드를 재생합니다.
+ * @param volume 볼륨 (0.0 ~ 1.0, 기본값: 0.5)
+ */
+export const playEatingSound = (volume: number = 0.5): void => {
+  soundManager.play(SOUNDS.eating, volume);
 };

@@ -10,7 +10,7 @@ import type { EmotionCategory } from '../../types/emotion';
 import { useNurturing } from '../../contexts/NurturingContext';
 import { Poop } from '../Poop/Poop';
 import { calculateClickResponse, getClickEmotionCategory } from '../../constants/personality';
-import { playButtonSound, playJelloClickSound } from '../../utils/sound';
+import { playButtonSound, playJelloClickSound, playEatingSound } from '../../utils/sound';
 import './PetRoom.css';
 
 interface PetRoomProps {
@@ -33,6 +33,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
   const [selectedFoodCategory, setSelectedFoodCategory] = useState<FoodCategory>('meal');
   const [bubble, setBubble] = useState<{ category: EmotionCategory; level: 1 | 2 | 3; key: number } | null>(null);
   const [lastBubbleTime, setLastBubbleTime] = useState(0);
+  const [flyingFood, setFlyingFood] = useState<{ icon: string; key: number } | null>(null);
 
   const showBubble = (category: EmotionCategory, level: 1 | 2 | 3) => {
     setBubble({ category, level, key: Date.now() });
@@ -241,24 +242,33 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
 
   const handleFeed = (food: FoodItem) => {
     playButtonSound();
-    setAction('eating');
-
-    // 양육 시스템으로 먹이기 실행
-    const result = nurturing.feed(food.id);
-
-    if (result.success) {
-      showBubble('playful', 1);
-
-      // 똥 생성시 알림
-      if (result.sideEffects?.poopCreated) {
-        setTimeout(() => {
-          showBubble('neutral', 1);
-        }, 1500);
-      }
-    }
-
     setShowFoodMenu(false);
-    setTimeout(() => setAction('idle'), 2000);
+
+    // 음식 먹는 애니메이션 시작 + 사운드
+    setFlyingFood({ icon: food.icon, key: Date.now() });
+    playEatingSound();
+
+    // 애니메이션 완료 후 실제 먹이기 실행
+    setTimeout(() => {
+      setFlyingFood(null);
+      setAction('eating');
+
+      // 양육 시스템으로 먹이기 실행
+      const result = nurturing.feed(food.id);
+
+      if (result.success) {
+        showBubble('playful', 1);
+
+        // 똥 생성시 알림
+        if (result.sideEffects?.poopCreated) {
+          setTimeout(() => {
+            showBubble('neutral', 1);
+          }, 1500);
+        }
+      }
+
+      setTimeout(() => setAction('idle'), 1500);
+    }, 1200); // 애니메이션 시간
   };
 
   const toggleFoodMenu = () => {
@@ -443,6 +453,20 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
         {nurturing.poops.map((poop) => (
           <Poop key={poop.id} poop={poop} onClick={handlePoopClick} />
         ))}
+
+        {/* 먹는 음식 애니메이션 */}
+        {flyingFood && (
+          <div
+            key={flyingFood.key}
+            className="eating-food"
+            style={{
+              left: `${position.x}%`,
+              bottom: `${position.y - 5}%`,
+            }}
+          >
+            {flyingFood.icon}
+          </div>
+        )}
 
         {/* Character */}
         <div

@@ -496,6 +496,32 @@
   white-space: nowrap;
 }
 
+/* Eating Food Animation */
+.eating-food {
+  position: absolute;
+  font-size: 3rem;
+  z-index: 20;
+  pointer-events: none;
+  transform: translateX(-50%) translateY(0);
+  animation: eat-food 1.2s ease-out forwards;
+  filter: drop-shadow(2px 4px 6px rgba(0, 0, 0, 0.3));
+}
+
+@keyframes eat-food {
+  0% {
+    transform: translateX(-50%) scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: translateX(-50%) scale(0.5);
+    opacity: 0.7;
+  }
+  100% {
+    transform: translateX(-50%) scale(0);
+    opacity: 0;
+  }
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .game-header {
