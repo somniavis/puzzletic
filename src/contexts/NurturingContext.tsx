@@ -9,6 +9,7 @@ import type {
   NurturingPersistentState,
   ActionResult,
   CharacterCondition,
+  PendingPoop,
 } from '../types/nurturing';
 import { TICK_INTERVAL_MS } from '../constants/nurturing';
 import {
@@ -29,7 +30,9 @@ import {
   playWithCharacter as servicePlay,
   studyWithCharacter as serviceStudy,
   removePoop,
+  convertPendingToPoop,
 } from '../services/actionService';
+import { POOP_CONFIG } from '../constants/nurturing';
 import type { Poop } from '../types/nurturing';
 
 interface NurturingContextValue {
@@ -97,9 +100,29 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
         happiness: clampStat(currentState.stats.happiness + (tickResult.statChanges.happiness || 0)),
       };
 
+      // 예약된 똥 처리: 시간이 된 것들을 실제 똥으로 변환
+      const now = Date.now();
+      const pendingPoops = currentState.pendingPoops || [];
+      const readyPoops = pendingPoops.filter(p => p.scheduledAt <= now);
+      const remainingPendingPoops = pendingPoops.filter(p => p.scheduledAt > now);
+
+      // 새로 생성된 똥들
+      let newPoops = [...currentState.poops];
+      readyPoops.forEach(pending => {
+        if (newPoops.length < POOP_CONFIG.MAX_POOPS) {
+          const newPoop = convertPendingToPoop(pending);
+          newPoops.push(newPoop);
+          // 똥 생성 시 청결도 감소
+          newStats.cleanliness = clampStat(newStats.cleanliness + pending.cleanlinessDebuff);
+          console.log('💩 똥이 나왔어요!');
+        }
+      });
+
       const newState: NurturingPersistentState = {
         ...currentState,
         stats: newStats,
+        poops: newPoops,
+        pendingPoops: remainingPendingPoops,
         lastActiveTime: Date.now(),
         tickConfig: {
           ...currentState.tickConfig,
@@ -146,10 +169,10 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
   // ==================== 행동 함수 ====================
 
   const feed = useCallback((foodId: string): ActionResult => {
-    let result: ActionResult = { success: false, statChanges: {} };
+    let result: ActionResult & { pendingPoopScheduled?: PendingPoop } = { success: false, statChanges: {} };
 
     setState((currentState) => {
-      result = serviceFeed(currentState.stats, foodId, currentState.poops);
+      result = serviceFeed(currentState.stats, foodId, currentState.poops, currentState.pendingPoops || []);
 
       if (!result.success) {
         return currentState;
@@ -159,21 +182,21 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
       const newStats: NurturingStats = {
         fullness: clampStat(currentState.stats.fullness + (result.statChanges.fullness || 0)),
         health: currentState.stats.health,
-        cleanliness: clampStat(currentState.stats.cleanliness + (result.statChanges.cleanliness || 0)),
+        cleanliness: currentState.stats.cleanliness,
         happiness: clampStat(currentState.stats.happiness + (result.statChanges.happiness || 0)),
       };
 
-      let newPoops = currentState.poops;
-
-      // 똥 생성
-      if (result.sideEffects?.poopCreated) {
-        newPoops = [...newPoops, result.sideEffects.poopCreated];
+      // 예약된 똥 추가
+      let newPendingPoops = currentState.pendingPoops || [];
+      if (result.pendingPoopScheduled) {
+        newPendingPoops = [...newPendingPoops, result.pendingPoopScheduled];
+        console.log('💩 똥 예약됨!', Math.round((result.pendingPoopScheduled.scheduledAt - Date.now()) / 1000), '초 후');
       }
 
       const newState: NurturingPersistentState = {
         ...currentState,
         stats: newStats,
-        poops: newPoops,
+        pendingPoops: newPendingPoops,
         lastActiveTime: Date.now(),
       };
 

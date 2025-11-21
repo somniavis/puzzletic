@@ -180,6 +180,11 @@ export const STUDY_EFFECT = {
 export const POOP_CONFIG = {
   INITIAL_CLEANLINESS_DEBUFF: -10,  // 똥 발생 즉시 청결도 감소
   MAX_POOPS: 5,                      // 최대 똥 개수 (화면 과부하 방지)
+  // 지연 생성 설정
+  DELAY_MIN_MS: 15000,               // 최소 지연 시간 (15초)
+  DELAY_MAX_MS: 30000,               // 최대 지연 시간 (30초)
+  FULLNESS_BONUS_THRESHOLD: 80,      // 포만감이 이 이상이면 확률 증가
+  FULLNESS_BONUS_CHANCE: 0.2,        // 포만감 보너스 확률 (+20%)
 };
 
 // ==================== 학습 조건 (Study Requirements) ====================

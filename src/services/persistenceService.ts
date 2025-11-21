@@ -23,6 +23,7 @@ const createDefaultState = (): NurturingPersistentState => {
   return {
     stats: { ...DEFAULT_NURTURING_STATS },
     poops: [],
+    pendingPoops: [], // 지연 생성 대기 중인 똥
     lastActiveTime: Date.now(),
     tickConfig: {
       intervalMs: TICK_INTERVAL_MS,

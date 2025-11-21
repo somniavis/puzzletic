@@ -36,6 +36,13 @@ export interface Poop {
   cleanlinessDebuff: number; // 청결도 감소값
 }
 
+// 예약된 똥 (Pending Poop - 지연 생성용)
+export interface PendingPoop {
+  id: string;
+  scheduledAt: number;  // 생성 예정 시간 (timestamp)
+  cleanlinessDebuff: number;
+}
+
 // 행동 타입 (Action Types)
 export type NurturingAction =
   | 'feed'      // 음식 먹이기
@@ -103,6 +110,7 @@ export interface OfflineProgressResult {
 export interface NurturingPersistentState {
   stats: NurturingStats;
   poops: Poop[];
+  pendingPoops: PendingPoop[]; // 지연 생성 대기 중인 똥
   lastActiveTime: number;
   tickConfig: GameTickConfig;
   totalCurrencyEarned: number;

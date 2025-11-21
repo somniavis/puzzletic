@@ -7,6 +7,7 @@ import type {
   NurturingStats,
   ActionResult,
   Poop,
+  PendingPoop,
   FoodEffect,
 } from '../types/nurturing';
 import {
@@ -32,46 +33,76 @@ const generateRandomPosition = (): { x: number; y: number } => {
 };
 
 /**
- * 똥 생성 (확률 기반)
+ * 지연 똥 예약 (확률 기반 + 포만감 보너스)
+ * 음식 먹으면 즉시 생성하지 않고 20~60초 후 생성 예약
  */
-const tryCreatePoop = (
+const trySchedulePoop = (
   foodEffect: FoodEffect,
-  existingPoops: Poop[]
-): Poop | undefined => {
-  // 최대 똥 개수 체크
-  if (existingPoops.length >= POOP_CONFIG.MAX_POOPS) {
+  currentFullness: number,
+  existingPoops: Poop[],
+  pendingPoops: PendingPoop[]
+): PendingPoop | undefined => {
+  // 최대 똥 개수 체크 (현재 + 예약 중인 것)
+  const totalPoops = existingPoops.length + pendingPoops.length;
+  if (totalPoops >= POOP_CONFIG.MAX_POOPS) {
     return undefined;
+  }
+
+  // 기본 확률 + 포만감 보너스
+  let poopChance = foodEffect.poopChance;
+  if (currentFullness >= POOP_CONFIG.FULLNESS_BONUS_THRESHOLD) {
+    poopChance += POOP_CONFIG.FULLNESS_BONUS_CHANCE;
   }
 
   // 확률 체크
-  if (Math.random() > foodEffect.poopChance) {
+  if (Math.random() > poopChance) {
     return undefined;
   }
 
-  // 똥 생성
+  // 지연 시간 계산 (20~60초 랜덤)
+  const delay = POOP_CONFIG.DELAY_MIN_MS +
+    Math.random() * (POOP_CONFIG.DELAY_MAX_MS - POOP_CONFIG.DELAY_MIN_MS);
+
+  // 예약 생성
+  return {
+    id: `pending-poop-${Date.now()}-${Math.random()}`,
+    scheduledAt: Date.now() + delay,
+    cleanlinessDebuff: foodEffect.cleanlinessDebuff,
+  };
+};
+
+/**
+ * 예약된 똥을 실제 똥으로 변환 (위치 지정)
+ */
+export const convertPendingToPoop = (pending: PendingPoop): Poop => {
   const position = generateRandomPosition();
   return {
     id: `poop-${Date.now()}-${Math.random()}`,
     x: position.x,
     y: position.y,
     createdAt: Date.now(),
-    cleanlinessDebuff: foodEffect.cleanlinessDebuff,
+    cleanlinessDebuff: pending.cleanlinessDebuff,
   };
 };
 
 /**
  * 음식 먹이기
+ * 똥은 즉시 생성하지 않고 예약 (지연 생성)
  */
 export const feedCharacter = (
   currentStats: NurturingStats,
   foodId: string,
-  existingPoops: Poop[]
-): ActionResult => {
+  existingPoops: Poop[],
+  pendingPoops: PendingPoop[] = []
+): ActionResult & { pendingPoopScheduled?: PendingPoop } => {
   const foodEffect = FOOD_EFFECTS[foodId] || FOOD_EFFECTS.default;
+
+  // 먹은 후 포만감 계산
+  const newFullness = clampStat(currentStats.fullness + foodEffect.fullness);
 
   // 주요 효과
   const newStats: Partial<NurturingStats> = {
-    fullness: clampStat(currentStats.fullness + foodEffect.fullness),
+    fullness: newFullness,
     happiness: clampStat(currentStats.happiness + foodEffect.happiness),
   };
 
@@ -80,25 +111,21 @@ export const feedCharacter = (
     happiness: (newStats.happiness || currentStats.happiness) - currentStats.happiness,
   };
 
-  // 부작용: 똥 생성 시도
-  const poopCreated = tryCreatePoop(foodEffect, existingPoops);
-
-  // 똥이 생성되면 즉시 청결도 감소
-  if (poopCreated) {
-    newStats.cleanliness = clampStat(
-      currentStats.cleanliness + foodEffect.cleanlinessDebuff
-    );
-    statChanges.cleanliness = foodEffect.cleanlinessDebuff;
-  }
+  // 부작용: 똥 예약 시도 (지연 생성)
+  const pendingPoopScheduled = trySchedulePoop(
+    foodEffect,
+    newFullness,
+    existingPoops,
+    pendingPoops
+  );
 
   return {
     success: true,
     statChanges,
     sideEffects: {
-      poopCreated,
       emotionTriggered: 'joy',
     },
-    message: poopCreated ? MESSAGES.POOP_ALERT : undefined,
+    pendingPoopScheduled,
   };
 };
 
