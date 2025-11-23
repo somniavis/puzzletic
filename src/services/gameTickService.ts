@@ -8,6 +8,8 @@ import type {
   CharacterCondition,
   TickResult,
   Poop,
+  AbandonmentState,
+  AbandonmentStatusUI,
 } from '../types/nurturing';
 import {
   NATURAL_DECAY,
@@ -18,6 +20,8 @@ import {
   THRESHOLDS,
   STAT_MIN,
   STAT_MAX,
+  ABANDONMENT_PERIODS,
+  ABANDONMENT_MESSAGE_KEYS,
 } from '../constants/nurturing';
 
 /**
@@ -220,4 +224,106 @@ export const getStatState = (value: number): 'critical' | 'warning' | 'normal' |
   if (value < THRESHOLDS.WARNING) return 'warning';
   if (value < THRESHOLDS.GOOD) return 'normal';
   return 'excellent';
+};
+
+/**
+ * 가출 상태 체크 및 업데이트
+ * @param stats 현재 스탯
+ * @param abandonmentState 현재 가출 상태
+ * @param currentTime 현재 시간 (timestamp)
+ * @returns 업데이트된 가출 상태
+ */
+export const checkAbandonmentState = (
+  stats: NurturingStats,
+  abandonmentState: AbandonmentState,
+  currentTime: number
+): AbandonmentState => {
+  // 모든 스탯이 0인지 확인
+  const allStatsZero =
+    stats.fullness === 0 &&
+    stats.health === 0 &&
+    stats.cleanliness === 0 &&
+    stats.happiness === 0;
+
+  // 케이스 1: 모든 스탯이 0 (카운트다운 시작/진행)
+  if (allStatsZero) {
+    // 처음 0이 된 시점 기록
+    if (!abandonmentState.allZeroStartTime) {
+      abandonmentState.allZeroStartTime = currentTime;
+    }
+
+    const timeSinceAllZero = currentTime - abandonmentState.allZeroStartTime;
+
+    // 7일 경과 → 가출 처리
+    if (timeSinceAllZero >= ABANDONMENT_PERIODS.ABANDONED && !abandonmentState.hasAbandoned) {
+      abandonmentState.hasAbandoned = true;
+      abandonmentState.abandonedAt = currentTime;
+    }
+  }
+  // 케이스 2: 스탯이 하나라도 회복됨 (카운트다운 리셋)
+  else {
+    // 가출하지 않은 경우에만 리셋
+    if (!abandonmentState.hasAbandoned) {
+      abandonmentState.allZeroStartTime = null;
+    }
+  }
+
+  return abandonmentState;
+};
+
+/**
+ * 가출 상태의 UI 정보 가져오기
+ * @param abandonmentState 가출 상태
+ * @param currentTime 현재 시간 (timestamp)
+ * @returns UI 표시용 정보
+ */
+export const getAbandonmentStatusUI = (
+  abandonmentState: AbandonmentState,
+  currentTime: number
+): AbandonmentStatusUI => {
+  // 가출 완료
+  if (abandonmentState.hasAbandoned) {
+    return {
+      level: 'abandoned',
+      message: ABANDONMENT_MESSAGE_KEYS.ABANDONED,
+    };
+  }
+
+  // 카운트다운 진행 중
+  if (abandonmentState.allZeroStartTime) {
+    const elapsed = currentTime - abandonmentState.allZeroStartTime;
+    const timeLeft = ABANDONMENT_PERIODS.ABANDONED - elapsed;
+
+    // 이탈 예고 단계 (3.5일 ~ 7일)
+    if (elapsed >= ABANDONMENT_PERIODS.LEAVING) {
+      // 시간 표시 없이 "Leaving soon!"만 표시
+      return {
+        level: 'leaving',
+        message: ABANDONMENT_MESSAGE_KEYS.LEAVING,
+        timeLeft,
+      };
+    }
+
+    // 위기 단계 (1.75일 ~ 3.5일)
+    if (elapsed >= ABANDONMENT_PERIODS.CRITICAL) {
+      return {
+        level: 'critical',
+        message: ABANDONMENT_MESSAGE_KEYS.CRITICAL,
+        timeLeft,
+      };
+    }
+
+    // 위험 단계 (0 ~ 1.75일)
+    return {
+      level: 'danger',
+      message: ABANDONMENT_MESSAGE_KEYS.DANGER,
+      timeLeft,
+    };
+  }
+
+  // 정상 상태
+  return {
+    level: 'normal',
+    message: null,
+  };
 };

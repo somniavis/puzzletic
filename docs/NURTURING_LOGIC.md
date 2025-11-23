@@ -16,8 +16,9 @@
 6. [행동 시스템](#행동-시스템)
 7. [똥 시스템](#똥-시스템)
 8. [오프라인 진행](#오프라인-진행)
-9. [밸런스 조정 가이드](#밸런스-조정-가이드)
-10. [업데이트 히스토리](#업데이트-히스토리)
+9. [가출 시스템](#가출-시스템)
+10. [밸런스 조정 가이드](#밸런스-조정-가이드)
+11. [업데이트 히스토리](#업데이트-히스토리)
 
 ---
 
@@ -554,6 +555,352 @@ function applyOfflineProgress(state) {
 
 ---
 
+## 가출 시스템
+
+### 개요
+
+캐릭터를 장기간 방치하면 가출하는 시스템입니다. 다마고치 스타일의 핵심 메커니즘으로, 사용자가 주기적으로 접속하도록 유도합니다.
+
+**목표**: 주 2회 방문 (3-4일에 한 번씩 접속하면 안전)
+
+### 트리거 조건
+
+```typescript
+// 가출 카운트다운 시작 조건
+모든 스탯이 0인 상태:
+  fullness === 0 &&
+  health === 0 &&
+  cleanliness === 0 &&
+  happiness === 0
+```
+
+**중요**:
+- 모든 스탯이 0이 되는 순간부터 7일 카운트다운 시작
+- 접속 중이든 미접속이든 상관없이 카운트다운 진행
+- 스탯이 하나라도 회복되면 카운트다운 **즉시 리셋**
+
+### 7일 타임라인
+
+```
+D-Day 0 (00:00): 모든 스탯 0 도달
+├─ 0시간 ~ 42시간 (0 ~ 1.75일): ⚠️ 위험 상태 (Danger)
+│  └─ "캐릭터가 관심이 필요합니다!"
+│
+├─ 42시간 ~ 84시간 (1.75 ~ 3.5일): ⚠️⚠️ 위기 상태 (Critical)
+│  └─ "캐릭터가 매우 안 좋은 상태입니다! 빨리 돌봐주세요!"
+│
+├─ 84시간 ~ 168시간 (3.5 ~ 7일): ⚠️⚠️⚠️ 이탈 예고 (Leaving Soon)
+│  └─ "캐릭터가 X일 X시간 X분 후 가출합니다!" (실시간 카운트다운)
+│
+└─ 168시간 (7일): 💀 가출 (Abandoned)
+   └─ "캐릭터가 가출했습니다..."
+```
+
+### 구현 로직
+
+#### 1. 데이터 구조
+
+**파일**: `src/types/nurturing.ts`
+
+```typescript
+export interface AbandonmentState {
+  allZeroStartTime: number | null;  // 모든 스탯이 0이 된 시점
+  hasAbandoned: boolean;             // 가출 여부
+  abandonedAt: number | null;        // 가출 시점
+}
+
+export type AbandonmentLevel =
+  | 'normal'     // 정상
+  | 'danger'     // 위험 (0 ~ 1.75일)
+  | 'critical'   // 위기 (1.75 ~ 3.5일)
+  | 'leaving'    // 이탈 예고 (3.5 ~ 7일)
+  | 'abandoned'; // 가출 완료
+```
+
+#### 2. 상수 정의
+
+**파일**: `src/constants/nurturing.ts`
+
+```typescript
+export const ABANDONMENT_PERIODS = {
+  DANGER: 0,                          // 0시간 (즉시)
+  CRITICAL: 42 * 60 * 60 * 1000,      // 42시간
+  LEAVING: 84 * 60 * 60 * 1000,       // 84시간 (3.5일)
+  ABANDONED: 168 * 60 * 60 * 1000,    // 168시간 (7일)
+};
+
+export const DEFAULT_ABANDONMENT_STATE: AbandonmentState = {
+  allZeroStartTime: null,
+  hasAbandoned: false,
+  abandonedAt: null,
+};
+```
+
+#### 3. 체크 로직
+
+**파일**: `src/services/gameTickService.ts`
+
+```typescript
+export const checkAbandonmentState = (
+  stats: NurturingStats,
+  abandonmentState: AbandonmentState,
+  currentTime: number
+): AbandonmentState => {
+  const allStatsZero =
+    stats.fullness === 0 &&
+    stats.health === 0 &&
+    stats.cleanliness === 0 &&
+    stats.happiness === 0;
+
+  if (allStatsZero) {
+    // 처음 0이 된 시점 기록
+    if (!abandonmentState.allZeroStartTime) {
+      abandonmentState.allZeroStartTime = currentTime;
+    }
+
+    const timeSinceAllZero = currentTime - abandonmentState.allZeroStartTime;
+
+    // 7일 경과 → 가출 처리
+    if (timeSinceAllZero >= ABANDONMENT_PERIODS.ABANDONED) {
+      abandonmentState.hasAbandoned = true;
+      abandonmentState.abandonedAt = currentTime;
+    }
+  } else {
+    // 스탯이 하나라도 회복됨 → 카운트다운 리셋
+    if (!abandonmentState.hasAbandoned) {
+      abandonmentState.allZeroStartTime = null;
+    }
+  }
+
+  return abandonmentState;
+};
+```
+
+#### 4. UI 정보 제공
+
+**파일**: `src/services/gameTickService.ts`
+
+```typescript
+export const getAbandonmentStatusUI = (
+  abandonmentState: AbandonmentState,
+  currentTime: number
+): AbandonmentStatusUI => {
+  // 가출 완료
+  if (abandonmentState.hasAbandoned) {
+    return {
+      level: 'abandoned',
+      message: '캐릭터가 가출했습니다...',
+    };
+  }
+
+  // 카운트다운 진행 중
+  if (abandonmentState.allZeroStartTime) {
+    const elapsed = currentTime - abandonmentState.allZeroStartTime;
+    const timeLeft = ABANDONMENT_PERIODS.ABANDONED - elapsed;
+
+    // 이탈 예고 단계
+    if (elapsed >= ABANDONMENT_PERIODS.LEAVING) {
+      const days = Math.floor(timeLeft / (24 * 60 * 60 * 1000));
+      const hours = Math.floor((timeLeft % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
+      const minutes = Math.floor((timeLeft % (60 * 60 * 1000)) / (60 * 1000));
+
+      return {
+        level: 'leaving',
+        message: `캐릭터가 ${days}일 ${hours}시간 ${minutes}분 후 가출합니다!`,
+        timeLeft,
+        countdown: `${days}일 ${hours}시간 ${minutes}분`,
+      };
+    }
+
+    // 위기 단계
+    if (elapsed >= ABANDONMENT_PERIODS.CRITICAL) {
+      return {
+        level: 'critical',
+        message: '캐릭터가 매우 안 좋은 상태입니다! 빨리 돌봐주세요!',
+        timeLeft,
+      };
+    }
+
+    // 위험 단계
+    return {
+      level: 'danger',
+      message: '캐릭터가 관심이 필요합니다!',
+      timeLeft,
+    };
+  }
+
+  // 정상 상태
+  return {
+    level: 'normal',
+    message: null,
+  };
+};
+```
+
+### 시뮬레이션 예시
+
+#### 시나리오 1: 접속 중 방치
+
+```
+10:00 - 접속, 캐릭터 방치
+10:30 - 모든 스탯 0 도달
+       → allZeroStartTime = 10:30 기록
+       → "캐릭터가 관심이 필요합니다!" (위험)
+
+Day 1, 16:30 (10:30 + 1.75일)
+       → "캐릭터가 매우 안 좋은 상태입니다!" (위기)
+
+Day 4, 04:30 (10:30 + 3.5일)
+       → "캐릭터가 3일 6시간 후 가출합니다!" (이탈 예고)
+       → 실시간 카운트다운 시작
+
+Day 7, 10:30 (10:30 + 7일)
+       → 가출 완료
+```
+
+#### 시나리오 2: 오프라인 방치
+
+```
+Day 0, 10:00 - 마지막 접속, 스탯 양호
+Day 0, 11:00 - (미접속) 모든 스탯 0 도달
+               → allZeroStartTime 기록 (localStorage)
+
+Day 1 ~ 7 - (미접속) 카운트다운 진행 중
+            - 서버가 없어서 푸시 알림 불가능
+            - 로컬스토리지에만 데이터 저장
+
+Day 8, 09:00 - 재접속
+              ↓
+           1. localStorage 읽기
+           2. allZeroStartTime = Day 0, 11:00
+           3. 현재 시간 = Day 8, 09:00
+           4. 경과 시간 = 7일 22시간
+           5. ABANDONED 기간 초과
+           6. hasAbandoned = true
+           7. "캐릭터가 가출했습니다..." 표시
+```
+
+#### 시나리오 3: 중간에 회복
+
+```
+10:00 - 모든 스탯 0
+       → 카운트다운 시작
+
+Day 2 (위기 단계)
+       → 사용자 접속
+       → 음식 먹이기 (fullness: 0 → 20)
+       → allStatsZero = false
+       → allZeroStartTime = null (리셋!)
+       → 정상 상태로 복귀
+
+다시 방치
+       → 모든 스탯 0
+       → 새로운 카운트다운 시작 (처음부터)
+```
+
+### 통합 위치
+
+#### 1. 틱 로직 (매 5초)
+
+**파일**: `src/contexts/NurturingContext.tsx`
+
+```typescript
+const runGameTick = useCallback(() => {
+  setState((currentState) => {
+    // ... 기존 틱 로직 ...
+
+    // 가출 상태 체크 추가
+    const updatedAbandonmentState = checkAbandonmentState(
+      newStats,
+      currentState.abandonmentState,
+      Date.now()
+    );
+
+    const newState: NurturingPersistentState = {
+      ...currentState,
+      stats: newStats,
+      abandonmentState: updatedAbandonmentState, // 저장
+      // ...
+    };
+
+    return newState;
+  });
+}, []);
+```
+
+#### 2. 오프라인 진행
+
+**파일**: `src/services/persistenceService.ts`
+
+```typescript
+export const applyOfflineProgress = (state) => {
+  // 1. 스탯 계산
+  const { finalStats } = calculateOfflineProgress(...);
+
+  // 2. 가출 상태 체크
+  const updatedAbandonmentState = checkAbandonmentState(
+    finalStats,
+    state.abandonmentState,
+    currentTime
+  );
+
+  return {
+    ...state,
+    stats: finalStats,
+    abandonmentState: updatedAbandonmentState,
+  };
+};
+```
+
+#### 3. Context에서 노출
+
+**파일**: `src/contexts/NurturingContext.tsx`
+
+```typescript
+interface NurturingContextValue {
+  // ...
+  abandonmentStatus: AbandonmentStatusUI;  // 가출 상태 정보
+}
+
+// 사용 예시
+const { abandonmentStatus } = useNurturing();
+
+if (abandonmentStatus.level === 'leaving') {
+  console.log(abandonmentStatus.message);
+  // "캐릭터가 2일 5시간 30분 후 가출합니다!"
+}
+```
+
+### 현재 제한 사항 (로컬스토리지 기반)
+
+#### ✅ 가능한 것
+- 접속 시 가출 상태 체크 및 판정
+- 오프라인 경과 시간 계산
+- 7일 경과 후 가출 처리
+- 스탯 회복 시 카운트다운 리셋
+
+#### ❌ 불가능한 것 (서버 필요)
+- **미접속 중 푸시 알림**: "2일 후 가출합니다" 알림을 보낼 서버가 없음
+- **실시간 모니터링**: 사용자가 접속 안 해도 7일째에 자동으로 처리
+- **크로스 디바이스 동기화**: PC-모바일 간 데이터 동기화 불가
+- **서버 사이드 스케줄링**: 매일 체크해서 가출 임박 유저에게 알림
+
+**데이터 휘발성**:
+- 브라우저 캐시 삭제 시 데이터 손실
+- localStorage만 사용 (서버 백업 없음)
+
+### 향후 서버 추가 시 개선 사항
+
+1. **데이터베이스 저장**: localStorage → DB
+2. **Cron Job**: 매일 체크하여 가출 임박 유저 찾기
+3. **푸시 알림**:
+   - Day 3.5: "위기 상태입니다!"
+   - Day 6: "내일 가출합니다!"
+4. **이메일 알림**: 가출 전 최후 경고
+5. **복구 시스템**: 가출 후 24시간 내 재화로 복구 가능
+
+---
+
 ## 밸런스 조정 가이드
 
 ### 틱 간격 변경
@@ -694,6 +1041,33 @@ export const STUDY_REQUIREMENTS = {
 ---
 
 ## 업데이트 히스토리
+
+### v1.1.0 (2025-11-23)
+
+**가출 시스템 추가**
+- 모든 스탯 0 시점부터 7일 카운트다운
+- 4단계 경고: 위험 → 위기 → 이탈 예고 → 가출
+- 로컬스토리지 기반 오프라인 진행 계산
+- Context API 통합 (abandonmentStatus)
+
+**타임라인:**
+- 0 ~ 1.75일: 위험 상태
+- 1.75 ~ 3.5일: 위기 상태
+- 3.5 ~ 7일: 이탈 예고 (실시간 카운트다운)
+- 7일: 가출 완료
+
+**데이터 구조:**
+- `AbandonmentState` 타입 추가
+- `ABANDONMENT_PERIODS` 상수 정의
+- `checkAbandonmentState()` 로직 구현
+- `getAbandonmentStatusUI()` UI 정보 제공
+
+**제한 사항:**
+- 로컬스토리지만 사용 (서버 없음)
+- 푸시 알림 불가능
+- 향후 서버 추가 예정
+
+---
 
 ### v1.0.0 (2025-11-15)
 

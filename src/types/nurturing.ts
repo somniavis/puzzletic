@@ -106,6 +106,24 @@ export interface OfflineProgressResult {
   poopsGenerated: Poop[];
 }
 
+// 가출 상태 (Abandonment State)
+export interface AbandonmentState {
+  allZeroStartTime: number | null;  // 모든 스탯이 0이 된 시점 (카운트다운 시작)
+  hasAbandoned: boolean;             // 가출 여부
+  abandonedAt: number | null;        // 가출 시점 (allZeroStartTime + 7일)
+}
+
+// 가출 단계 (Abandonment Level)
+export type AbandonmentLevel = 'normal' | 'danger' | 'critical' | 'leaving' | 'abandoned';
+
+// 가출 상태 UI 정보 (Abandonment Status UI)
+export interface AbandonmentStatusUI {
+  level: AbandonmentLevel;
+  message: string | null;
+  timeLeft?: number;      // 남은 시간 (밀리초)
+  countdown?: string;     // "3일 5시간 12분"
+}
+
 // 지속 상태 (Persistent State)
 export interface NurturingPersistentState {
   stats: NurturingStats;
@@ -115,4 +133,5 @@ export interface NurturingPersistentState {
   tickConfig: GameTickConfig;
   totalCurrencyEarned: number;
   studyCount: number;
+  abandonmentState: AbandonmentState;  // 가출 상태
 }

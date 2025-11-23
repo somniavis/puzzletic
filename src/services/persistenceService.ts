@@ -11,8 +11,9 @@ import type {
 import {
   DEFAULT_NURTURING_STATS,
   TICK_INTERVAL_MS,
+  DEFAULT_ABANDONMENT_STATE,
 } from '../constants/nurturing';
-import { calculateOfflineProgress } from './gameTickService';
+import { calculateOfflineProgress, checkAbandonmentState } from './gameTickService';
 
 const STORAGE_KEY = 'puzzleletic_nurturing_state';
 
@@ -32,6 +33,7 @@ const createDefaultState = (): NurturingPersistentState => {
     },
     totalCurrencyEarned: 0,
     studyCount: 0,
+    abandonmentState: { ...DEFAULT_ABANDONMENT_STATE },
   };
 };
 
@@ -65,6 +67,11 @@ export const loadNurturingState = (): NurturingPersistentState => {
     if (!loaded.stats || !loaded.lastActiveTime) {
       console.warn('Invalid saved state, resetting to default');
       return createDefaultState();
+    }
+
+    // 기존 데이터에 abandonmentState가 없으면 기본값 추가 (마이그레이션)
+    if (!loaded.abandonmentState) {
+      loaded.abandonmentState = { ...DEFAULT_ABANDONMENT_STATE };
     }
 
     return loaded;
@@ -105,11 +112,19 @@ export const applyOfflineProgress = (
     state.poops
   );
 
+  // 가출 상태 체크
+  const updatedAbandonmentState = checkAbandonmentState(
+    finalStats,
+    state.abandonmentState,
+    currentTime
+  );
+
   // 상태 업데이트
   const updatedState: NurturingPersistentState = {
     ...state,
     stats: finalStats,
     lastActiveTime: currentTime,
+    abandonmentState: updatedAbandonmentState,
     tickConfig: {
       ...state.tickConfig,
       lastTickTime: currentTime,

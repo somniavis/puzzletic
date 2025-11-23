@@ -444,6 +444,22 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
 
       {/* Main Room Area */}
       <div className="room-container">
+        {/* 가출 경고 메시지 */}
+        {nurturing.abandonmentStatus.level !== 'normal' && (
+          <div className={`abandonment-alert abandonment-alert--${nurturing.abandonmentStatus.level}`}>
+            <span className="abandonment-alert__icon">
+              {nurturing.abandonmentStatus.level === 'abandoned' && '💀'}
+              {nurturing.abandonmentStatus.level === 'leaving' && '⚠️'}
+              {nurturing.abandonmentStatus.level === 'critical' && '⚠️'}
+              {nurturing.abandonmentStatus.level === 'danger' && '⚠️'}
+            </span>
+            <span className="abandonment-alert__text">
+              {t(nurturing.abandonmentStatus.message as any, {
+                countdown: nurturing.abandonmentStatus.countdown || '',
+              })}
+            </span>
+          </div>
+        )}
         <div className="room-background">
           <div className="room-floor" />
           <div className="room-wall" />

@@ -362,6 +362,12 @@ export const en = {
       },
     },
   },
+  abandonment: {
+    danger: 'Needs attention!',
+    critical: 'Critical condition!',
+    leaving: 'Leaving soon!',
+    abandoned: 'Has left...',
+  },
 } as const;
 
 export type TranslationKeys = typeof en;

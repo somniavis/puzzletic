@@ -10,6 +10,7 @@ import type {
   ActionResult,
   CharacterCondition,
   PendingPoop,
+  AbandonmentStatusUI,
 } from '../types/nurturing';
 import { TICK_INTERVAL_MS } from '../constants/nurturing';
 import {
@@ -22,6 +23,8 @@ import {
   executeGameTick,
   evaluateCondition,
   clampStat,
+  checkAbandonmentState,
+  getAbandonmentStatusUI,
 } from '../services/gameTickService';
 import {
   feedCharacter as serviceFeed,
@@ -43,6 +46,7 @@ interface NurturingContextValue {
   totalCurrencyEarned: number;
   studyCount: number;
   isTickActive: boolean;
+  abandonmentStatus: AbandonmentStatusUI;  // 가출 상태
 
   // 행동 (Actions)
   feed: (foodId: string) => ActionResult;
@@ -118,11 +122,19 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
         }
       });
 
+      // 가출 상태 체크
+      const updatedAbandonmentState = checkAbandonmentState(
+        newStats,
+        currentState.abandonmentState,
+        Date.now()
+      );
+
       const newState: NurturingPersistentState = {
         ...currentState,
         stats: newStats,
         poops: newPoops,
         pendingPoops: remainingPendingPoops,
+        abandonmentState: updatedAbandonmentState,
         lastActiveTime: Date.now(),
         tickConfig: {
           ...currentState.tickConfig,
@@ -385,6 +397,9 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     });
   }, []);
 
+  // 가출 상태 UI 정보
+  const abandonmentStatus = getAbandonmentStatusUI(state.abandonmentState, Date.now());
+
   // Context Value
   const value: NurturingContextValue = {
     stats: state.stats,
@@ -393,6 +408,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     totalCurrencyEarned: state.totalCurrencyEarned,
     studyCount: state.studyCount,
     isTickActive: state.tickConfig.isActive,
+    abandonmentStatus,
     feed,
     giveMedicine,
     clean,

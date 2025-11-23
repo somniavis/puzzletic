@@ -3,7 +3,7 @@
  * 양육 시스템 상수 정의
  */
 
-import type { NurturingStats, FoodEffect, MedicineEffect } from '../types/nurturing';
+import type { NurturingStats, FoodEffect, MedicineEffect, AbandonmentState } from '../types/nurturing';
 
 // ==================== 게임 틱 설정 ====================
 export const TICK_INTERVAL_MS = 5000; // 5초 = 1 로직 틱 (빠른 변화로 관리 필요성 증가)
@@ -197,6 +197,30 @@ export const STUDY_REQUIREMENTS = {
 // ==================== 사망 조건 (Death Condition) ====================
 export const DEATH_THRESHOLD = 0;  // 건강도 0 = 사망
 
+// ==================== 가출 시스템 (Abandonment System) ====================
+// 🧪 테스트용 (빠른 확인) - 주석 처리하여 비활성화
+// export const ABANDONMENT_PERIODS = {
+//   DANGER: 0,                          // 0초 (즉시 위험 상태)
+//   CRITICAL: 10 * 1000,                // 10초 (위기 상태)
+//   LEAVING: 20 * 1000,                 // 20초 (이탈 예고)
+//   ABANDONED: 40 * 1000,               // 40초 (가출)
+// };
+
+// 📦 프로덕션용 (실제 운영) - 주석 해제하여 사용
+export const ABANDONMENT_PERIODS = {
+  DANGER: 0,                          // 0시간 (즉시 위험 상태)
+  CRITICAL: 42 * 60 * 60 * 1000,      // 42시간 (1.75일)
+  LEAVING: 84 * 60 * 60 * 1000,       // 84시간 (3.5일)
+  ABANDONED: 168 * 60 * 60 * 1000,    // 168시간 (7일)
+};
+
+// 기본 가출 상태
+export const DEFAULT_ABANDONMENT_STATE: AbandonmentState = {
+  allZeroStartTime: null,
+  hasAbandoned: false,
+  abandonedAt: null,
+};
+
 // ==================== UI 메시지 (UI Messages) ====================
 export const MESSAGES = {
   HUNGRY: "배고파요...",
@@ -208,3 +232,12 @@ export const MESSAGES = {
   POOP_ALERT: "똥을 쌌어요! 청소해주세요",
   NEED_MEDICINE: "아플 때는 약으로만 회복할 수 있어요",
 };
+
+// ==================== 가출 메시지 키 (Abandonment Message Keys) ====================
+// 다국어 시스템 사용 - src/i18n/locales/en.ts 참조
+export const ABANDONMENT_MESSAGE_KEYS = {
+  DANGER: 'abandonment.danger',
+  CRITICAL: 'abandonment.critical',
+  LEAVING: 'abandonment.leaving',
+  ABANDONED: 'abandonment.abandoned',
+} as const;
