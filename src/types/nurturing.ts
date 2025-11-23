@@ -3,11 +3,10 @@
  * 양육 시스템 타입 정의
  */
 
-// 4대 핵심 지수 (4 Core Stats)
+// 3대 핵심 지수 (3 Core Stats) - 청결도는 건강에 통합
 export interface NurturingStats {
   fullness: number;    // 포만감 (0-100)
-  health: number;      // 건강 (0-100)
-  cleanliness: number; // 청결도 (0-100)
+  health: number;      // 건강 (0-100) - 청결도 + 질병 통합
   happiness: number;   // 행복도 (0-100)
 }
 
@@ -21,8 +20,7 @@ export type StatState =
 // 캐릭터 상태 (Character Conditions)
 export interface CharacterCondition {
   isHungry: boolean;      // 배고픔 상태 (fullness < 30)
-  isDirty: boolean;       // 더러움 상태 (cleanliness < 20)
-  isSick: boolean;        // 아픔 상태 (health < 50)
+  isSick: boolean;        // 아픔 상태 (health < 50) - 청결도와 질병 통합
   canStudy: boolean;      // 학습 가능 여부
   needsAttention: boolean; // 즉시 케어 필요
 }
@@ -33,14 +31,14 @@ export interface Poop {
   x: number;            // 화면 위치 X (%)
   y: number;            // 화면 위치 Y (%)
   createdAt: number;    // 생성 시간 (timestamp)
-  cleanlinessDebuff: number; // 청결도 감소값
+  healthDebuff: number; // 건강 감소값 (기존 cleanlinessDebuff를 healthDebuff로 변경)
 }
 
 // 예약된 똥 (Pending Poop - 지연 생성용)
 export interface PendingPoop {
   id: string;
   scheduledAt: number;  // 생성 예정 시간 (timestamp)
-  cleanlinessDebuff: number;
+  healthDebuff: number; // 건강 감소값
 }
 
 // 행동 타입 (Action Types)
@@ -67,8 +65,9 @@ export interface ActionResult {
 export interface FoodEffect {
   fullness: number;        // 포만감 증가량
   happiness: number;       // 행복도 보너스
+  health?: number;         // 건강 회복량 (건강식의 경우)
   poopChance: number;      // 똥 생성 확률 (0-1)
-  cleanlinessDebuff: number; // 똥 발생시 청결도 감소
+  healthDebuff: number;    // 똥 발생시 건강 감소
 }
 
 // 약 아이템 효과 (Medicine Item Effect)

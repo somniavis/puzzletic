@@ -61,7 +61,7 @@ export const loadNurturingState = (): NurturingPersistentState => {
       return createDefaultState();
     }
 
-    const loaded = JSON.parse(serialized) as NurturingPersistentState;
+    const loaded = JSON.parse(serialized) as any; // 마이그레이션을 위해 any 사용
 
     // 데이터 무결성 검증
     if (!loaded.stats || !loaded.lastActiveTime) {
@@ -69,12 +69,55 @@ export const loadNurturingState = (): NurturingPersistentState => {
       return createDefaultState();
     }
 
-    // 기존 데이터에 abandonmentState가 없으면 기본값 추가 (마이그레이션)
+    // 마이그레이션: cleanliness 제거 및 건강에 통합
+    if (loaded.stats.cleanliness !== undefined) {
+      console.log('🔄 Migrating old data: removing cleanliness, integrating into health');
+
+      // 청결도를 건강에 반영 (평균값 사용)
+      const oldHealth = loaded.stats.health || 50;
+      const oldCleanliness = loaded.stats.cleanliness || 50;
+      loaded.stats.health = Math.round((oldHealth + oldCleanliness) / 2);
+
+      // cleanliness 제거
+      delete loaded.stats.cleanliness;
+    }
+
+    // 기존 데이터에 abandonmentState가 없으면 기본값 추가
     if (!loaded.abandonmentState) {
       loaded.abandonmentState = { ...DEFAULT_ABANDONMENT_STATE };
     }
 
-    return loaded;
+    // pendingPoops가 없으면 빈 배열 추가
+    if (!loaded.pendingPoops) {
+      loaded.pendingPoops = [];
+    }
+
+    // 똥 데이터 마이그레이션: cleanlinessDebuff → healthDebuff
+    if (loaded.poops) {
+      loaded.poops = loaded.poops.map((poop: any) => {
+        if (poop.cleanlinessDebuff !== undefined && poop.healthDebuff === undefined) {
+          return {
+            ...poop,
+            healthDebuff: poop.cleanlinessDebuff,
+          };
+        }
+        return poop;
+      });
+    }
+
+    if (loaded.pendingPoops) {
+      loaded.pendingPoops = loaded.pendingPoops.map((poop: any) => {
+        if (poop.cleanlinessDebuff !== undefined && poop.healthDebuff === undefined) {
+          return {
+            ...poop,
+            healthDebuff: poop.cleanlinessDebuff,
+          };
+        }
+        return poop;
+      });
+    }
+
+    return loaded as NurturingPersistentState;
   } catch (error) {
     console.error('Failed to load nurturing state:', error);
     return createDefaultState();
@@ -161,9 +204,6 @@ export const updateStats = (
   }
   if (statChanges.health !== undefined) {
     updatedStats.health = statChanges.health;
-  }
-  if (statChanges.cleanliness !== undefined) {
-    updatedStats.cleanliness = statChanges.cleanliness;
   }
   if (statChanges.happiness !== undefined) {
     updatedStats.happiness = statChanges.happiness;

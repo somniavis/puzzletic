@@ -25,11 +25,6 @@ export const NurturingPanel: React.FC = () => {
           icon="❤️"
         />
         <NurturingStat
-          label="청결도"
-          value={stats.cleanliness}
-          icon="✨"
-        />
-        <NurturingStat
           label="행복도"
           value={stats.happiness}
           icon="😊"
@@ -41,9 +36,6 @@ export const NurturingPanel: React.FC = () => {
         <div className="condition-alerts">
           {condition.isHungry && (
             <div className="alert alert-hungry">🍖 배고파요! 음식을 주세요</div>
-          )}
-          {condition.isDirty && (
-            <div className="alert alert-dirty">✨ 더러워요! 청소해주세요</div>
           )}
           {condition.isSick && (
             <div className="alert alert-sick">💊 아파요! 약이 필요해요</div>

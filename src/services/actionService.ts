@@ -67,7 +67,7 @@ const trySchedulePoop = (
   return {
     id: `pending-poop-${Date.now()}-${Math.random()}`,
     scheduledAt: Date.now() + delay,
-    cleanlinessDebuff: foodEffect.cleanlinessDebuff,
+    healthDebuff: foodEffect.healthDebuff,
   };
 };
 
@@ -81,7 +81,7 @@ export const convertPendingToPoop = (pending: PendingPoop): Poop => {
     x: position.x,
     y: position.y,
     createdAt: Date.now(),
-    cleanlinessDebuff: pending.cleanlinessDebuff,
+    healthDebuff: pending.healthDebuff,
   };
 };
 
@@ -106,9 +106,15 @@ export const feedCharacter = (
     happiness: clampStat(currentStats.happiness + foodEffect.happiness),
   };
 
+  // 건강식인 경우 건강 회복
+  if (foodEffect.health) {
+    newStats.health = clampStat(currentStats.health + foodEffect.health);
+  }
+
   const statChanges: Partial<NurturingStats> = {
     fullness: (newStats.fullness || currentStats.fullness) - currentStats.fullness,
     happiness: (newStats.happiness || currentStats.happiness) - currentStats.happiness,
+    health: foodEffect.health ? ((newStats.health || currentStats.health) - currentStats.health) : 0,
   };
 
   // 부작용: 똥 예약 시도 (지연 생성)
@@ -173,12 +179,12 @@ export const cleanRoom = (
 ): ActionResult => {
   // 주요 효과
   const newStats: Partial<NurturingStats> = {
-    cleanliness: clampStat(currentStats.cleanliness + CLEAN_EFFECT.cleanliness),
+    health: clampStat(currentStats.health + CLEAN_EFFECT.health),
     happiness: clampStat(currentStats.happiness + CLEAN_EFFECT.happiness),
   };
 
   const statChanges: Partial<NurturingStats> = {
-    cleanliness: (newStats.cleanliness || currentStats.cleanliness) - currentStats.cleanliness,
+    health: (newStats.health || currentStats.health) - currentStats.health,
     happiness: (newStats.happiness || currentStats.happiness) - currentStats.happiness,
   };
 
@@ -212,12 +218,10 @@ export const playWithCharacter = (
 
   // 부작용 (비용)
   newStats.fullness = clampStat(currentStats.fullness + PLAY_EFFECT.fullness);
-  newStats.cleanliness = clampStat(currentStats.cleanliness + PLAY_EFFECT.cleanliness);
 
   const statChanges: Partial<NurturingStats> = {
     happiness: (newStats.happiness || currentStats.happiness) - currentStats.happiness,
     fullness: (newStats.fullness || currentStats.fullness) - currentStats.fullness,
-    cleanliness: (newStats.cleanliness || currentStats.cleanliness) - currentStats.cleanliness,
   };
 
   return {
@@ -276,12 +280,10 @@ export const studyWithCharacter = (
 
   // 부작용 (비용)
   newStats.fullness = clampStat(currentStats.fullness + STUDY_EFFECT.fullness);
-  newStats.cleanliness = clampStat(currentStats.cleanliness + STUDY_EFFECT.cleanliness);
 
   const statChanges: Partial<NurturingStats> = {
     happiness: (newStats.happiness || currentStats.happiness) - currentStats.happiness,
     fullness: (newStats.fullness || currentStats.fullness) - currentStats.fullness,
-    cleanliness: (newStats.cleanliness || currentStats.cleanliness) - currentStats.cleanliness,
   };
 
   // 재화 보너스 계산 (컨디션이 좋을수록 더 많이)
@@ -291,8 +293,7 @@ export const studyWithCharacter = (
   if (
     currentStats.happiness >= 80 &&
     currentStats.health >= 80 &&
-    currentStats.fullness >= 80 &&
-    currentStats.cleanliness >= 80
+    currentStats.fullness >= 80
   ) {
     currencyReward *= 2;
   }

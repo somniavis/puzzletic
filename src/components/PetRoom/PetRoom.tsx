@@ -67,8 +67,6 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
       newMood = 'sick';
     } else if (condition.isHungry) {
       newMood = 'sad';
-    } else if (condition.isDirty) {
-      newMood = 'sad';
     } else if (happiness > 85 && fullness > 70 && health > 80) {
       newMood = 'excited';
     } else if (happiness > 70 && fullness > 50) {
@@ -96,7 +94,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
         return;
       }
 
-      const { happiness, health, fullness, cleanliness } = nurturing.stats;
+      const { happiness, health, fullness } = nurturing.stats;
       const { condition } = nurturing;
 
       // Debug log - 상태 확인용 (개발 중)
@@ -104,7 +102,6 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
         happiness,
         health,
         fullness,
-        cleanliness,
         condition
       });
 
@@ -138,17 +135,17 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
         return;
       }
 
-      // 5. 매우 더러움: 청결도 10 미만 (즉시 청소 필요)
-      if (cleanliness < 10) {
-        console.log('→ Showing: Very Dirty');
+      // 5. 똥이 많을 때 (3개 이상)
+      if (nurturing.poops.length >= 3) {
+        console.log('→ Showing: Too Much Poop');
         showBubble('worried', 3);
         return;
       }
 
-      // 6. 더러움: 더러움 상태 + 청결도 20 미만
-      if (condition.isDirty && cleanliness < 20) {
-        console.log('→ Showing: Dirty');
-        showBubble('worried', 2);
+      // 6. 똥이 있을 때 (1-2개)
+      if (nurturing.poops.length > 0) {
+        console.log('→ Showing: Needs Cleaning');
+        showBubble('worried', 1);
         return;
       }
 
@@ -191,17 +188,10 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
         return;
       }
 
-      // 12. 청결도 낮음: 청결도 40 미만
-      if (cleanliness < 40) {
-        console.log('→ Showing: Getting Dirty');
-        showBubble('neutral', 1);
-        return;
-      }
-
       // ==================== 만족 상태 (Satisfied) ====================
 
-      // 13. 매우 행복: 모든 스탯이 높음
-      if (happiness > 85 && fullness > 70 && health > 80 && cleanliness > 70) {
+      // 12. 매우 행복: 모든 스탯이 높음
+      if (happiness > 85 && fullness > 70 && health > 80) {
         console.log('→ Showing: Very Happy');
         showBubble('joy', 3);
         return;
@@ -239,6 +229,24 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
       clearInterval(bubbleInterval);
     };
   }, [nurturing.stats, nurturing.condition, bubble, lastBubbleTime]);
+
+  // 건강 상태에 따른 아이콘 반환
+  const getHealthIcon = (health: number): string => {
+    if (health >= 80) return '💖';  // 별 하트
+    if (health >= 50) return '❤️';  // 빨간 하트
+    if (health >= 30) return '💔';  // 깨진 하트
+    if (health >= 10) return '🩶';  // 회색 하트
+    return '🖤';  // 검은 하트
+  };
+
+  // 행복도에 따른 아이콘 반환
+  const getHappinessIcon = (happiness: number): string => {
+    if (happiness >= 80) return '😍';  // 하트 눈 웃음
+    if (happiness >= 60) return '😊';  // 웃는 얼굴
+    if (happiness >= 40) return '🙂';  // 미소
+    if (happiness >= 20) return '😔';  // 슬픔
+    return '😭';  // 우는 얼굴
+  };
 
   const handleFeed = (food: FoodItem) => {
     playButtonSound();
@@ -428,16 +436,12 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
             <span className="stat-value">{Math.round(nurturing.stats.fullness)}</span>
           </div>
           <div className="stat-badge stat-badge--happiness">
-            <span className="stat-icon">😊</span>
+            <span className="stat-icon">{getHappinessIcon(nurturing.stats.happiness)}</span>
             <span className="stat-value">{Math.round(nurturing.stats.happiness)}</span>
           </div>
           <div className="stat-badge stat-badge--health">
-            <span className="stat-icon">❤️</span>
+            <span className="stat-icon">{getHealthIcon(nurturing.stats.health)}</span>
             <span className="stat-value">{Math.round(nurturing.stats.health)}</span>
-          </div>
-          <div className="stat-badge stat-badge--cleanliness">
-            <span className="stat-icon">✨</span>
-            <span className="stat-value">{Math.round(nurturing.stats.cleanliness)}</span>
           </div>
         </div>
       </div>
@@ -477,7 +481,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
             className="eating-food"
             style={{
               left: `${position.x}%`,
-              bottom: `${position.y - 5}%`,
+              bottom: `${position.y - 7}%`,
             }}
           >
             {flyingFood.icon}

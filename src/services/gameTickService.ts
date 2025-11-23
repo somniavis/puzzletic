@@ -14,9 +14,9 @@ import type {
 import {
   NATURAL_DECAY,
   HUNGER_PENALTY,
-  DIRTY_PENALTY,
   SICK_PENALTY,
-  POOP_PENALTY_PER_ITEM,
+  POOP_PENALTY,
+  UNHAPPY_PENALTY,
   THRESHOLDS,
   STAT_MIN,
   STAT_MAX,
@@ -36,7 +36,6 @@ export const clampStat = (value: number): number => {
  */
 export const evaluateCondition = (stats: NurturingStats): CharacterCondition => {
   const isHungry = stats.fullness < THRESHOLDS.HUNGER;
-  const isDirty = stats.cleanliness < THRESHOLDS.DIRTY;
   const isSick = stats.health < THRESHOLDS.SICK;
 
   // 학습 가능 여부: 너무 불행하거나 아프거나 배고프면 불가
@@ -49,12 +48,10 @@ export const evaluateCondition = (stats: NurturingStats): CharacterCondition => 
   const needsAttention =
     stats.fullness < THRESHOLDS.CRITICAL ||
     stats.health < THRESHOLDS.CRITICAL ||
-    stats.cleanliness < THRESHOLDS.CRITICAL ||
     stats.happiness < THRESHOLDS.CRITICAL;
 
   return {
     isHungry,
-    isDirty,
     isSick,
     canStudy,
     needsAttention,
@@ -78,64 +75,71 @@ export const executeGameTick = (
 
   // ==================== A. 기본 감소 (Natural Decay) ====================
   newStats.fullness += NATURAL_DECAY.fullness;
-  newStats.cleanliness += NATURAL_DECAY.cleanliness;
   newStats.happiness += NATURAL_DECAY.happiness;
-  // health는 자연 감소 없음
+  newStats.health += NATURAL_DECAY.health;
 
   // ==================== B. 상태 평가 ====================
   const condition = evaluateCondition(currentStats); // 변경 전 상태 기준으로 판정
 
   // ==================== C. 상호 악화 (Vicious Cycle) ====================
 
-  // 1. 배고픔 상태 (fullness < 30)
-  if (condition.isHungry) {
-    newStats.happiness += HUNGER_PENALTY.happiness;
-    newStats.health += HUNGER_PENALTY.health;
-    penalties.hunger = HUNGER_PENALTY.happiness + HUNGER_PENALTY.health;
+  // 1. 배고픔 상태 페널티
+  if (currentStats.fullness < 20) {
+    // 심각한 배고픔
+    newStats.happiness += HUNGER_PENALTY.severe.happiness;
+    newStats.health += HUNGER_PENALTY.severe.health;
+    penalties.hunger = Math.abs(HUNGER_PENALTY.severe.happiness + HUNGER_PENALTY.severe.health);
+    alerts.push('심각한 배고픔 페널티: 행복도/건강 감소');
+  } else if (currentStats.fullness < 40) {
+    // 경미한 배고픔
+    newStats.happiness += HUNGER_PENALTY.mild.happiness;
+    newStats.health += HUNGER_PENALTY.mild.health;
+    penalties.hunger = Math.abs(HUNGER_PENALTY.mild.happiness + HUNGER_PENALTY.mild.health);
     alerts.push('배고픔 페널티: 행복도/건강 감소');
   }
 
-  // 2. 더러움 상태 (cleanliness < 20)
-  if (condition.isDirty) {
-    newStats.happiness += DIRTY_PENALTY.happiness;
-    newStats.health += DIRTY_PENALTY.health;
-    penalties.dirty = DIRTY_PENALTY.happiness + DIRTY_PENALTY.health;
-    alerts.push('더러움 페널티: 행복도/건강 감소 (심각)');
-  }
-
-  // 3. 아픔 상태 (health < 50)
+  // 2. 아픔 상태 페널티 (health < 50)
   if (condition.isSick) {
     newStats.happiness += SICK_PENALTY.happiness;
-    newStats.fullness += SICK_PENALTY.fullness;
-    penalties.sick = SICK_PENALTY.happiness + SICK_PENALTY.fullness;
-    alerts.push('아픔 페널티: 행복도/포만감 감소');
+    penalties.sick = Math.abs(SICK_PENALTY.happiness);
+    alerts.push('아픔 페널티: 행복도 감소');
+  }
+
+  // 3. 불행 상태 페널티 (happiness < 20)
+  if (currentStats.happiness < 20) {
+    newStats.health += UNHAPPY_PENALTY.health;
+    alerts.push('불행 페널티: 건강 감소');
   }
 
   // 4. 똥 방치 페널티
   if (poops.length > 0) {
-    const poopPenalty = {
-      health: POOP_PENALTY_PER_ITEM.health * poops.length,
-      happiness: POOP_PENALTY_PER_ITEM.happiness * poops.length,
-      cleanliness: POOP_PENALTY_PER_ITEM.cleanliness * poops.length,
-    };
-    newStats.health += poopPenalty.health;
-    newStats.happiness += poopPenalty.happiness;
-    newStats.cleanliness += poopPenalty.cleanliness;
-    penalties.poopDebuff = Math.abs(poopPenalty.health + poopPenalty.happiness + poopPenalty.cleanliness);
-    alerts.push(`똥 방치 페널티 (${poops.length}개): 모든 스탯 감소`);
+    let healthPenalty = 0;
+
+    if (poops.length === 1) {
+      healthPenalty = POOP_PENALTY.perPoop;
+    } else if (poops.length === 2) {
+      healthPenalty = POOP_PENALTY.twoPoops;
+    } else {
+      healthPenalty = POOP_PENALTY.threeOrMore;
+    }
+
+    const happinessPenalty = POOP_PENALTY.happiness * poops.length;
+
+    newStats.health += healthPenalty;
+    newStats.happiness += happinessPenalty;
+    penalties.poopDebuff = Math.abs(healthPenalty + happinessPenalty);
+    alerts.push(`똥 방치 페널티 (${poops.length}개): 건강/행복도 감소`);
   }
 
   // ==================== D. 스탯 범위 제한 ====================
   newStats.fullness = clampStat(newStats.fullness);
   newStats.health = clampStat(newStats.health);
-  newStats.cleanliness = clampStat(newStats.cleanliness);
   newStats.happiness = clampStat(newStats.happiness);
 
   // ==================== E. 결과 반환 ====================
   const statChanges: Partial<NurturingStats> = {
     fullness: newStats.fullness - currentStats.fullness,
     health: newStats.health - currentStats.health,
-    cleanliness: newStats.cleanliness - currentStats.cleanliness,
     happiness: newStats.happiness - currentStats.happiness,
   };
 
@@ -190,7 +194,6 @@ export const calculateOfflineProgress = (
     // 스탯 업데이트
     stats.fullness += tickResult.statChanges.fullness || 0;
     stats.health += tickResult.statChanges.health || 0;
-    stats.cleanliness += tickResult.statChanges.cleanliness || 0;
     stats.happiness += tickResult.statChanges.happiness || 0;
 
     // 이벤트 기록 (중요한 것만)
@@ -206,7 +209,6 @@ export const calculateOfflineProgress = (
   // 최종 범위 제한
   stats.fullness = clampStat(stats.fullness);
   stats.health = clampStat(stats.health);
-  stats.cleanliness = clampStat(stats.cleanliness);
   stats.happiness = clampStat(stats.happiness);
 
   return {
@@ -242,7 +244,6 @@ export const checkAbandonmentState = (
   const allStatsZero =
     stats.fullness === 0 &&
     stats.health === 0 &&
-    stats.cleanliness === 0 &&
     stats.happiness === 0;
 
   // 케이스 1: 모든 스탯이 0 (카운트다운 시작/진행)

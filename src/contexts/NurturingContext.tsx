@@ -100,7 +100,6 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
       const newStats: NurturingStats = {
         fullness: clampStat(currentState.stats.fullness + (tickResult.statChanges.fullness || 0)),
         health: clampStat(currentState.stats.health + (tickResult.statChanges.health || 0)),
-        cleanliness: clampStat(currentState.stats.cleanliness + (tickResult.statChanges.cleanliness || 0)),
         happiness: clampStat(currentState.stats.happiness + (tickResult.statChanges.happiness || 0)),
       };
 
@@ -116,8 +115,8 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
         if (newPoops.length < POOP_CONFIG.MAX_POOPS) {
           const newPoop = convertPendingToPoop(pending);
           newPoops.push(newPoop);
-          // 똥 생성 시 청결도 감소
-          newStats.cleanliness = clampStat(newStats.cleanliness + pending.cleanlinessDebuff);
+          // 똥 생성 시 건강 감소
+          newStats.health = clampStat(newStats.health + pending.healthDebuff);
           console.log('💩 똥이 나왔어요!');
         }
       });
@@ -193,8 +192,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
       // 스탯 업데이트
       const newStats: NurturingStats = {
         fullness: clampStat(currentState.stats.fullness + (result.statChanges.fullness || 0)),
-        health: currentState.stats.health,
-        cleanliness: currentState.stats.cleanliness,
+        health: clampStat(currentState.stats.health + (result.statChanges.health || 0)),
         happiness: clampStat(currentState.stats.happiness + (result.statChanges.happiness || 0)),
       };
 
@@ -234,7 +232,6 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
       const newStats: NurturingStats = {
         fullness: currentState.stats.fullness,
         health: clampStat(currentState.stats.health + (result.statChanges.health || 0)),
-        cleanliness: currentState.stats.cleanliness,
         happiness: clampStat(currentState.stats.happiness + (result.statChanges.happiness || 0)),
       };
 
@@ -261,8 +258,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
 
       const newStats: NurturingStats = {
         fullness: currentState.stats.fullness,
-        health: currentState.stats.health,
-        cleanliness: clampStat(currentState.stats.cleanliness + (result.statChanges.cleanliness || 0)),
+        health: clampStat(currentState.stats.health + (result.statChanges.health || 0)),
         happiness: clampStat(currentState.stats.happiness + (result.statChanges.happiness || 0)),
       };
 
@@ -291,7 +287,6 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
       const newStats: NurturingStats = {
         fullness: clampStat(currentState.stats.fullness + (result.statChanges.fullness || 0)),
         health: currentState.stats.health,
-        cleanliness: clampStat(currentState.stats.cleanliness + (result.statChanges.cleanliness || 0)),
         happiness: clampStat(currentState.stats.happiness + (result.statChanges.happiness || 0)),
       };
 
@@ -323,7 +318,6 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
       const newStats: NurturingStats = {
         fullness: clampStat(currentState.stats.fullness + (result.statChanges.fullness || 0)),
         health: currentState.stats.health,
-        cleanliness: clampStat(currentState.stats.cleanliness + (result.statChanges.cleanliness || 0)),
         happiness: clampStat(currentState.stats.happiness + (result.statChanges.happiness || 0)),
       };
 
