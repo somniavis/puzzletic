@@ -10,14 +10,13 @@ export interface FoodItem {
   };
 }
 
-export type FoodCategory = 'fruit' | 'vegetable' | 'bakery' | 'meal' | 'snack' | 'dessert';
+export type FoodCategory = 'fruit' | 'vegetable' | 'bakery' | 'meal' | 'dessert';
 
 export const FOOD_CATEGORIES: Record<FoodCategory, { nameKey: string; icon: string }> = {
   fruit: { nameKey: 'food.categories.fruit', icon: '🍇' },
   vegetable: { nameKey: 'food.categories.vegetable', icon: '🥕' },
   bakery: { nameKey: 'food.categories.bakery', icon: '🍞' },
   meal: { nameKey: 'food.categories.meal', icon: '🍖' },
-  snack: { nameKey: 'food.categories.snack', icon: '🍿' },
   dessert: { nameKey: 'food.categories.dessert', icon: '🍰' },
 };
 
@@ -97,21 +96,12 @@ export const FOOD_ITEMS: FoodItem[] = [
   { id: 'cooked_rice', nameKey: 'food.items.cooked_rice', icon: '🍚', category: 'meal', effects: { hunger: -30, happiness: 10 } },
   { id: 'pot_of_food', nameKey: 'food.items.pot_of_food', icon: '🍲', category: 'meal', effects: { hunger: -50, happiness: 22 } },
   { id: 'shallow_pan_of_food', nameKey: 'food.items.shallow_pan_of_food', icon: '🥘', category: 'meal', effects: { hunger: -55, happiness: 25 } },
-
-  // Snacks
-  { id: 'oden', nameKey: 'food.items.oden', icon: '🍢', category: 'snack', effects: { hunger: -20, happiness: 12 } },
-  { id: 'rice_cracker', nameKey: 'food.items.rice_cracker', icon: '🍘', category: 'snack', effects: { hunger: -15, happiness: 9 } },
-  { id: 'rice_ball', nameKey: 'food.items.rice_ball', icon: '🍙', category: 'snack', effects: { hunger: -25, happiness: 11 } },
-  { id: 'fried_shrimp', nameKey: 'food.items.fried_shrimp', icon: '🍤', category: 'snack', effects: { hunger: -22, happiness: 14 } },
-  { id: 'fish_cake_with_swirl', nameKey: 'food.items.fish_cake_with_swirl', icon: '🍥', category: 'snack', effects: { hunger: -18, happiness: 13 } },
-  { id: 'dumpling', nameKey: 'food.items.dumpling', icon: '🥟', category: 'snack', effects: { hunger: -20, happiness: 15 } },
-  { id: 'fortune_cookie', nameKey: 'food.items.fortune_cookie', icon: '🥠', category: 'snack', effects: { hunger: -10, happiness: 18 } },
-  { id: 'moon_cake', nameKey: 'food.items.moon_cake', icon: '🥮', category: 'snack', effects: { hunger: -28, happiness: 20 } },
-  { id: 'takeout_box', nameKey: 'food.items.takeout_box', icon: '🥡', category: 'snack', effects: { hunger: -35, happiness: 15 } },
-  { id: 'popcorn', nameKey: 'food.items.popcorn', icon: '🍿', category: 'snack', effects: { hunger: -25, happiness: 17 } },
-  { id: 'canned_food', nameKey: 'food.items.canned_food', icon: '🥫', category: 'snack', effects: { hunger: -30, happiness: 10 } },
-  { id: 'roasted_sweet_potato', nameKey: 'food.items.roasted_sweet_potato', icon: '🍠', category: 'snack', effects: { hunger: -28, happiness: 16 } },
-  { id: 'tamale', nameKey: 'food.items.tamale', icon: '🫔', category: 'snack', effects: { hunger: -32, happiness: 18 } },
+  // Moved from Snacks to Meals
+  { id: 'oden', nameKey: 'food.items.oden', icon: '🍢', category: 'meal', effects: { hunger: -20, happiness: 12 } },
+  { id: 'rice_ball', nameKey: 'food.items.rice_ball', icon: '🍙', category: 'meal', effects: { hunger: -25, happiness: 11 } },
+  { id: 'fried_shrimp', nameKey: 'food.items.fried_shrimp', icon: '🍤', category: 'meal', effects: { hunger: -22, happiness: 14 } },
+  { id: 'dumpling', nameKey: 'food.items.dumpling', icon: '🥟', category: 'meal', effects: { hunger: -20, happiness: 15 } },
+  { id: 'canned_food', nameKey: 'food.items.canned_food', icon: '🥫', category: 'meal', effects: { hunger: -30, happiness: 10 } },
 
   // Desserts
   { id: 'soft_ice_cream', nameKey: 'food.items.soft_ice_cream', icon: '🍦', category: 'dessert', effects: { hunger: -15, happiness: 25 } },
@@ -128,4 +118,9 @@ export const FOOD_ITEMS: FoodItem[] = [
   { id: 'lollipop', nameKey: 'food.items.lollipop', icon: '🍭', category: 'dessert', effects: { hunger: -8, happiness: 18 } },
   { id: 'custard', nameKey: 'food.items.custard', icon: '🍮', category: 'dessert', effects: { hunger: -20, happiness: 32 } },
   { id: 'honey_pot', nameKey: 'food.items.honey_pot', icon: '🍯', category: 'dessert', effects: { hunger: -15, happiness: 25, health: 5 } },
+  // Moved from Snacks to Desserts
+  { id: 'rice_cracker', nameKey: 'food.items.rice_cracker', icon: '🍘', category: 'dessert', effects: { hunger: -15, happiness: 9 } },
+  { id: 'fortune_cookie', nameKey: 'food.items.fortune_cookie', icon: '🥠', category: 'dessert', effects: { hunger: -10, happiness: 18 } },
+  { id: 'moon_cake', nameKey: 'food.items.moon_cake', icon: '🥮', category: 'dessert', effects: { hunger: -28, happiness: 20 } },
+  { id: 'popcorn', nameKey: 'food.items.popcorn', icon: '🍿', category: 'dessert', effects: { hunger: -25, happiness: 17 } },
 ];
