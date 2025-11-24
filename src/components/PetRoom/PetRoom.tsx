@@ -359,30 +359,6 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
     setTimeout(() => setAction('idle'), 3000);
   };
 
-  const handleStudy = () => {
-    playButtonSound();
-    setAction('playing');
-
-    // 양육 시스템으로 학습하기 실행
-    const result = nurturing.study();
-
-    if (result.success) {
-      showBubble('joy', 3);
-      // 재화 획득 알림
-      if (result.message) {
-        console.log(result.message);
-      }
-    } else {
-      // 학습 불가 알림
-      showBubble('worried', 1);
-      if (result.message) {
-        console.log(result.message);
-      }
-    }
-
-    setTimeout(() => setAction('idle'), 3000);
-  };
-
   const handlePoopClick = (poopId: string) => {
     playCleaningSound(); // 청소 효과음 재생
     nurturing.clickPoop(poopId);
@@ -664,11 +640,15 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
         </button>
         <button
           className="action-btn action-btn--small"
-          onClick={handleStudy}
-          disabled={action !== 'idle' || !nurturing.condition.canStudy}
-          title="학습하기 (재화 획득)"
+          onClick={() => {
+            playButtonSound();
+            // TODO: 설정 기능 추가
+            console.log('Settings clicked');
+          }}
+          disabled={false}
+          title={t('actions.settings')}
         >
-          <span className="action-icon">📚</span>
+          <span className="action-icon">⚙️</span>
         </button>
       </div>
     </div>
