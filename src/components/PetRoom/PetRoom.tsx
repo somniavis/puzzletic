@@ -11,7 +11,7 @@ import { useNurturing } from '../../contexts/NurturingContext';
 import { Poop } from '../Poop/Poop';
 import { Bug } from '../Bug/Bug';
 import { calculateClickResponse, getClickEmotionCategory } from '../../constants/personality';
-import { playButtonSound, playJelloClickSound, playEatingSound } from '../../utils/sound';
+import { playButtonSound, playJelloClickSound, playEatingSound, playCleaningSound } from '../../utils/sound';
 import './PetRoom.css';
 
 interface PetRoomProps {
@@ -311,6 +311,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
     setShowCleanMenu(false);
 
     if (nurturing.poops.length > 0) {
+      playCleaningSound(); // 청소 효과음 재생
       setAction('jumping');
       const poopToClean = nurturing.poops[0];
       handlePoopClick(poopToClean.id); // This already calls nurturing.clickPoop
@@ -331,6 +332,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
     const result = nurturing.cleanBug();
 
     if (result.success) {
+      playCleaningSound(); // 청소 효과음 재생
       showBubble('playful', 1);
       console.log(result.message);
     } else {
@@ -382,11 +384,13 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
   };
 
   const handlePoopClick = (poopId: string) => {
+    playCleaningSound(); // 청소 효과음 재생
     nurturing.clickPoop(poopId);
     showBubble('playful', 1);
   };
 
   const handleBugClick = (bugId: string) => {
+    playCleaningSound(); // 청소 효과음 재생
     nurturing.clickBug(bugId);
     showBubble('playful', 1);
   };

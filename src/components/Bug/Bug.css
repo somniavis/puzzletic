@@ -68,9 +68,14 @@
 }
 
 
-/* 제거 애니메이션 */
+/* 제거 애니메이션 - 신문지가 내리칠 때 바로 사라짐 */
 .bug.bug-swatted {
-  animation: bug-smash 0.5s ease-out forwards;
+  animation: bug-disappear 0.5s ease-out forwards;
+}
+
+/* 클릭 시 호버 신문지 숨기기 */
+.bug.bug-swatted::before {
+  opacity: 0 !important;
 }
 
 /* 신문지 때리기 이펙트 */
@@ -83,17 +88,14 @@
   transform-origin: bottom right;
 }
 
-@keyframes bug-smash {
+@keyframes bug-disappear {
   0% {
-    transform: translate(-50%, 50%) scale(1) rotate(0deg);
     opacity: 1;
   }
-  50% {
-    transform: translate(-50%, 50%) scale(1.5) rotate(180deg);
-    opacity: 0.7;
+  70% {
+    opacity: 1;
   }
   100% {
-    transform: translate(-50%, 50%) scale(0) rotate(360deg);
     opacity: 0;
   }
 }
@@ -121,20 +123,17 @@
   }
 }
 
-/* 호버 시 신문지 커서 힌트 */
+/* 호버 시 신문지 힌트 - 오른쪽 상단에 대기 */
 .bug::before {
   content: '🗞️';
   position: absolute;
-  top: -25px;
-  left: 50%;
-  transform: translateX(-50%) scale(0);
-  font-size: 20px;
-  opacity: 0;
-  transition: all 0.2s ease;
+  font-size: 40px;
   pointer-events: none;
+  transform: translate(50px, -50px) rotate(35deg);
+  opacity: 0;
+  transition: opacity 0.2s ease;
 }
 
 .bug:hover::before {
-  transform: translateX(-50%) scale(1);
-  opacity: 0.8;
+  opacity: 0.6;
 }

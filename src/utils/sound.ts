@@ -16,6 +16,7 @@ export const SOUNDS = {
   jelloClick1: `${SOUND_BASE_URL}/jellosound/jellosound-1.mp3`,
   jelloClick2: `${SOUND_BASE_URL}/jellosound/jellosound-2.mp3`,
   eating: `${SOUND_BASE_URL}/game%20sound/eating-sound.mp3`,
+  cleaning: `${SOUND_BASE_URL}/game%20sound/cleaning_sound.mp3`,
 } as const;
 
 /**
@@ -211,4 +212,13 @@ export const playJelloClickSound = (volume: number = 0.5): void => {
  */
 export const playEatingSound = (volume: number = 0.5): void => {
   soundManager.play(SOUNDS.eating, volume);
+};
+
+/**
+ * 청소 사운드를 재생합니다.
+ * 똥치우기 또는 벌레 잡기 시 사용됩니다.
+ * @param volume 볼륨 (0.0 ~ 1.0, 기본값: 0.5)
+ */
+export const playCleaningSound = (volume: number = 0.5): void => {
+  soundManager.play(SOUNDS.cleaning, volume);
 };
