@@ -10,9 +10,10 @@ import type {
   ActionResult,
   CharacterCondition,
   PendingPoop,
+  Bug,
   AbandonmentStatusUI,
 } from '../types/nurturing';
-import { TICK_INTERVAL_MS } from '../constants/nurturing';
+import { TICK_INTERVAL_MS, BUG_CONFIG } from '../constants/nurturing';
 import {
   loadNurturingState,
   saveNurturingState,
@@ -25,6 +26,8 @@ import {
   clampStat,
   checkAbandonmentState,
   getAbandonmentStatusUI,
+  calculateBugSpawnChance,
+  createBug,
 } from '../services/gameTickService';
 import {
   feedCharacter as serviceFeed,
@@ -42,6 +45,7 @@ interface NurturingContextValue {
   // 상태
   stats: NurturingStats;
   poops: Poop[];
+  bugs: Bug[];
   condition: CharacterCondition;
   totalCurrencyEarned: number;
   studyCount: number;
@@ -52,9 +56,11 @@ interface NurturingContextValue {
   feed: (foodId: string) => ActionResult;
   giveMedicine: (medicineId: string) => ActionResult;
   clean: () => ActionResult;
+  cleanBug: () => ActionResult;
   play: () => ActionResult;
   study: () => ActionResult;
   clickPoop: (poopId: string) => void;
+  clickBug: (bugId: string) => void;
 
   // 유틸리티
   resetGame: () => void;
@@ -94,7 +100,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
   // 게임 틱 실행
   const runGameTick = useCallback(() => {
     setState((currentState) => {
-      const tickResult = executeGameTick(currentState.stats, currentState.poops);
+      const tickResult = executeGameTick(currentState.stats, currentState.poops, currentState.bugs || []);
 
       // 새 스탯 계산
       const newStats: NurturingStats = {
@@ -121,6 +127,17 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
         }
       });
 
+      // 벌레 생성 시도
+      let newBugs = [...(currentState.bugs || [])];
+      if (newBugs.length < BUG_CONFIG.MAX_BUGS) {
+        const spawnChance = calculateBugSpawnChance(newPoops);
+        if (Math.random() < spawnChance) {
+          const newBug = createBug();
+          newBugs.push(newBug);
+          console.log(`🦟 벌레가 나타났어요! (${newBug.type})`);
+        }
+      }
+
       // 가출 상태 체크
       const updatedAbandonmentState = checkAbandonmentState(
         newStats,
@@ -132,6 +149,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
         ...currentState,
         stats: newStats,
         poops: newPoops,
+        bugs: newBugs,
         pendingPoops: remainingPendingPoops,
         abandonmentState: updatedAbandonmentState,
         lastActiveTime: Date.now(),
@@ -357,6 +375,58 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     });
   }, []);
 
+  const clickBug = useCallback((bugId: string) => {
+    setState((currentState) => {
+      const bugs = currentState.bugs || [];
+      const bugToRemove = bugs.find(b => b.id === bugId);
+
+      if (!bugToRemove) {
+        return currentState;
+      }
+
+      const updatedBugs = bugs.filter(b => b.id !== bugId);
+
+      const newState: NurturingPersistentState = {
+        ...currentState,
+        bugs: updatedBugs,
+      };
+
+      saveNurturingState(newState);
+
+      return newState;
+    });
+  }, []);
+
+  const cleanBug = useCallback((): ActionResult => {
+    let result: ActionResult = { success: false, statChanges: {} };
+
+    setState((currentState) => {
+      const bugs = currentState.bugs || [];
+
+      if (bugs.length === 0) {
+        result = { success: false, statChanges: {}, message: '제거할 벌레가 없습니다.' };
+        return currentState;
+      }
+
+      // 벌레 1마리 제거
+      const updatedBugs = bugs.slice(1);
+
+      const newState: NurturingPersistentState = {
+        ...currentState,
+        bugs: updatedBugs,
+        lastActiveTime: Date.now(),
+      };
+
+      saveNurturingState(newState);
+
+      result = { success: true, statChanges: {}, message: '벌레 1마리를 제거했습니다!' };
+
+      return newState;
+    });
+
+    return result;
+  }, []);
+
   const resetGame = useCallback(() => {
     const newState = resetNurturingState();
     setState(newState);
@@ -398,6 +468,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
   const value: NurturingContextValue = {
     stats: state.stats,
     poops: state.poops,
+    bugs: state.bugs || [],
     condition,
     totalCurrencyEarned: state.totalCurrencyEarned,
     studyCount: state.studyCount,
@@ -406,9 +477,11 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     feed,
     giveMedicine,
     clean,
+    cleanBug,
     play,
     study,
     clickPoop,
+    clickBug,
     resetGame,
     pauseTick,
     resumeTick,

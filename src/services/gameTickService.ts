@@ -8,6 +8,8 @@ import type {
   CharacterCondition,
   TickResult,
   Poop,
+  Bug,
+  BugType,
   AbandonmentState,
   AbandonmentStatusUI,
 } from '../types/nurturing';
@@ -22,6 +24,7 @@ import {
   STAT_MAX,
   ABANDONMENT_PERIODS,
   ABANDONMENT_MESSAGE_KEYS,
+  BUG_CONFIG,
 } from '../constants/nurturing';
 
 /**
@@ -59,14 +62,46 @@ export const evaluateCondition = (stats: NurturingStats): CharacterCondition => 
 };
 
 /**
+ * 벌레 생성 확률 계산
+ * @param poops 현재 똥 목록
+ * @returns 벌레 생성 확률 (0-1)
+ */
+export const calculateBugSpawnChance = (poops: Poop[]): number => {
+  let chance = BUG_CONFIG.SPAWN_CHANCE;
+  chance += poops.length * BUG_CONFIG.SPAWN_INCREASE_PER_POOP;
+  return Math.min(1, chance); // 최대 100%
+};
+
+/**
+ * 벌레 생성
+ * @returns 새로 생성된 벌레
+ */
+export const createBug = (): Bug => {
+  const bugTypes: BugType[] = ['fly', 'mosquito'];
+  const randomType = bugTypes[Math.floor(Math.random() * bugTypes.length)];
+
+  return {
+    id: `bug-${Date.now()}-${Math.random()}`,
+    type: randomType,
+    x: Math.random() * 80 + 10, // 10-90%
+    y: Math.random() * 60 + 20, // 20-80%
+    createdAt: Date.now(),
+    healthDebuff: BUG_CONFIG.HEALTH_DEBUFF_PER_BUG,
+    happinessDebuff: BUG_CONFIG.HAPPINESS_DEBUFF_PER_BUG,
+  };
+};
+
+/**
  * 1회 로직 틱 실행 (1분 경과)
  * @param currentStats 현재 스탯
  * @param poops 현재 바닥에 있는 똥 목록
+ * @param bugs 현재 벌레 목록
  * @returns 틱 실행 결과 (스탯 변화, 상태, 페널티, 알림)
  */
 export const executeGameTick = (
   currentStats: NurturingStats,
-  poops: Poop[] = []
+  poops: Poop[] = [],
+  bugs: Bug[] = []
 ): TickResult => {
   // 새 스탯 객체 (변경사항 누적)
   const newStats = { ...currentStats };
@@ -131,6 +166,16 @@ export const executeGameTick = (
     alerts.push(`똥 방치 페널티 (${poops.length}개): 건강/행복도 감소`);
   }
 
+  // 5. 벌레 페널티
+  if (bugs.length > 0) {
+    const bugHealthPenalty = BUG_CONFIG.HEALTH_DEBUFF_PER_BUG * bugs.length;
+    const bugHappinessPenalty = BUG_CONFIG.HAPPINESS_DEBUFF_PER_BUG * bugs.length;
+
+    newStats.health += bugHealthPenalty;
+    newStats.happiness += bugHappinessPenalty;
+    alerts.push(`벌레 페널티 (${bugs.length}마리): 건강/행복도 감소`);
+  }
+
   // ==================== D. 스탯 범위 제한 ====================
   newStats.fullness = clampStat(newStats.fullness);
   newStats.health = clampStat(newStats.health);
@@ -167,7 +212,8 @@ export const calculateOfflineProgress = (
   lastActiveTime: number,
   currentTime: number,
   tickIntervalMs: number,
-  poops: Poop[] = []
+  poops: Poop[] = [],
+  bugs: Bug[] = []
 ): {
   finalStats: NurturingStats;
   ticksElapsed: number;
@@ -189,7 +235,7 @@ export const calculateOfflineProgress = (
   const events: string[] = [];
 
   for (let i = 0; i < ticksElapsed; i++) {
-    const tickResult = executeGameTick(stats, poops);
+    const tickResult = executeGameTick(stats, poops, bugs);
 
     // 스탯 업데이트
     stats.fullness += tickResult.statChanges.fullness || 0;

@@ -34,6 +34,20 @@ export interface Poop {
   healthDebuff: number; // 건강 감소값 (기존 cleanlinessDebuff를 healthDebuff로 변경)
 }
 
+// 벌레 타입 (Bug Type)
+export type BugType = 'fly' | 'mosquito';
+
+// 벌레 오브젝트 (Bug Object)
+export interface Bug {
+  id: string;
+  type: BugType;        // 벌레 종류
+  x: number;            // 화면 위치 X (%)
+  y: number;            // 화면 위치 Y (%)
+  createdAt: number;    // 생성 시간 (timestamp)
+  healthDebuff: number; // 건강 감소값
+  happinessDebuff: number; // 행복도 감소값
+}
+
 // 예약된 똥 (Pending Poop - 지연 생성용)
 export interface PendingPoop {
   id: string;
@@ -128,6 +142,7 @@ export interface NurturingPersistentState {
   stats: NurturingStats;
   poops: Poop[];
   pendingPoops: PendingPoop[]; // 지연 생성 대기 중인 똥
+  bugs: Bug[];                  // 벌레 목록
   lastActiveTime: number;
   tickConfig: GameTickConfig;
   totalCurrencyEarned: number;

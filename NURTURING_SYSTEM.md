@@ -99,6 +99,22 @@ const TICK_INTERVAL_MS = 60000;
 최대 똥 개수: 5개
 ```
 
+#### 벌레 페널티 🆕
+
+```
+벌레 1마리당: 건강 -0.3/5초, 행복도 -0.2/5초
+
+최대 벌레 개수: 3마리
+생성 확률: 기본 3% (약 2.5분마다 1마리)
+똥 보너스: 똥 1개당 +5% 확률 증가
+
+예시:
+- 똥 0개: 3% (약 2.5분마다 1마리)
+- 똥 1개: 8% (약 1분마다 1마리)
+- 똥 2개: 13% (약 40초마다 1마리)
+- 똥 3개: 18% (약 30초마다 1마리)
+```
+
 ---
 
 ## 스탯 시스템
@@ -172,17 +188,39 @@ const TICK_INTERVAL_MS = 60000;
    음식(건강식 +3~5)이나 청소(+5)보다 빠른 회복
 ```
 
-### 3. 청소하기 (Clean)
+### 3. 청소하기 (Clean) 🆕
+
+청소 버튼(✨)을 클릭하면 청소 도구 메뉴가 나타납니다:
+
+#### 🧹 빗자루 (모든 똥 제거)
 
 **주요 효과:**
-
 ```
 건강 +5 (환경 개선으로 건강 증가)
 행복도 +10 (깨끗해져서 기분이 좋아짐)
 모든 똥 제거
 ```
 
+**사용 방법:**
+- 청소 메뉴에서 빗자루 선택
+- 화면의 똥을 개별 클릭하여 제거
+
 **부작용:** 없음 (순수하게 긍정적인 행동)
+
+#### 🗞️ 신문지 (벌레 1마리 제거)
+
+**주요 효과:**
+```
+벌레 1마리 제거
+```
+
+**사용 방법:**
+- 청소 메뉴에서 신문지 선택
+- 화면의 벌레를 개별 클릭하여 제거
+
+**애니메이션:**
+- 신문으로 탁 쳐서 없애는 효과
+- 벌레가 회전하면서 사라짐
 
 ### 4. 놀이하기 (Play)
 
@@ -257,6 +295,9 @@ src/
     ├── Poop/
     │   ├── Poop.tsx                # 똥 컴포넌트
     │   └── Poop.css
+    ├── Bug/                        # 🆕 벌레 시스템
+    │   ├── Bug.tsx                 # 벌레 컴포넌트
+    │   └── Bug.css                 # 날아다니는 애니메이션
     ├── NurturingStat/
     │   ├── NurturingStat.tsx       # 개별 스탯 표시
     │   └── NurturingStat.css
@@ -295,7 +336,7 @@ function MyComponent() {
   const nurturing = useNurturing();
 
   // 스탯 접근
-  const { stats, poops, condition } = nurturing;
+  const { stats, poops, bugs, condition } = nurturing;
   console.log(stats.fullness); // 0-100
 
   // 행동 실행
@@ -317,6 +358,20 @@ function MyComponent() {
   const handlePoopClick = (poopId: string) => {
     nurturing.clickPoop(poopId);
   };
+
+  // 🆕 벌레 클릭
+  const handleBugClick = (bugId: string) => {
+    nurturing.clickBug(bugId);
+  };
+
+  // 🆕 청소 도구 사용
+  const handleCleanBroom = () => {
+    nurturing.clean(); // 모든 똥 제거
+  };
+
+  const handleCleanNewspaper = () => {
+    nurturing.cleanBug(); // 벌레 1마리 제거
+  };
 }
 ```
 
@@ -325,9 +380,10 @@ function MyComponent() {
 ```tsx
 import { NurturingPanel } from './components/NurturingPanel/NurturingPanel';
 import { Poop } from './components/Poop/Poop';
+import { Bug } from './components/Bug/Bug';
 
 function GameRoom() {
-  const { poops } = useNurturing();
+  const { poops, bugs } = useNurturing();
 
   return (
     <>
@@ -337,6 +393,11 @@ function GameRoom() {
       {/* 똥 렌더링 */}
       {poops.map((poop) => (
         <Poop key={poop.id} poop={poop} onClick={handlePoopClick} />
+      ))}
+
+      {/* 🆕 벌레 렌더링 */}
+      {bugs.map((bug) => (
+        <Bug key={bug.id} bug={bug} onClick={handleBugClick} />
       ))}
     </>
   );

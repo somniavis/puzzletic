@@ -9,6 +9,7 @@ import { EmotionBubble } from '../EmotionBubble/EmotionBubble';
 import type { EmotionCategory } from '../../types/emotion';
 import { useNurturing } from '../../contexts/NurturingContext';
 import { Poop } from '../Poop/Poop';
+import { Bug } from '../Bug/Bug';
 import { calculateClickResponse, getClickEmotionCategory } from '../../constants/personality';
 import { playButtonSound, playJelloClickSound, playEatingSound } from '../../utils/sound';
 import './PetRoom.css';
@@ -30,6 +31,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
   const [position, setPosition] = useState({ x: 50, y: 50 }); // percentage position
   const [isMoving, setIsMoving] = useState(false);
   const [showFoodMenu, setShowFoodMenu] = useState(false);
+  const [showCleanMenu, setShowCleanMenu] = useState(false);
   const [selectedFoodCategory, setSelectedFoodCategory] = useState<FoodCategory>('meal');
   const [bubble, setBubble] = useState<{ category: EmotionCategory; level: 1 | 2 | 3; key: number } | null>(null);
   const [lastBubbleTime, setLastBubbleTime] = useState(0);
@@ -304,8 +306,9 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
     }
   };
 
-  const handleClean = () => {
+  const handleCleanBroom = () => {
     playButtonSound();
+    setShowCleanMenu(false);
     setAction('jumping');
 
     // 모든 똥에 청소 애니메이션 트리거
@@ -329,6 +332,26 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
 
       setAction('idle');
     }, allPoopIds.length * 100 + 500);
+  };
+
+  const handleCleanNewspaper = () => {
+    playButtonSound();
+    setShowCleanMenu(false);
+
+    // 벌레 1마리 제거
+    const result = nurturing.cleanBug();
+
+    if (result.success) {
+      showBubble('playful', 1);
+      console.log(result.message);
+    } else {
+      console.log(result.message);
+    }
+  };
+
+  const toggleCleanMenu = () => {
+    playButtonSound();
+    setShowCleanMenu(!showCleanMenu);
   };
 
   const handlePlay = () => {
@@ -371,6 +394,11 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
 
   const handlePoopClick = (poopId: string) => {
     nurturing.clickPoop(poopId);
+    showBubble('playful', 1);
+  };
+
+  const handleBugClick = (bugId: string) => {
+    nurturing.clickBug(bugId);
     showBubble('playful', 1);
   };
   
@@ -474,6 +502,11 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
           <Poop key={poop.id} poop={poop} onClick={handlePoopClick} />
         ))}
 
+        {/* 벌레들 렌더링 */}
+        {nurturing.bugs.map((bug) => (
+          <Bug key={bug.id} bug={bug} onClick={handleBugClick} />
+        ))}
+
         {/* 먹는 음식 애니메이션 */}
         {flyingFood && (
           <div
@@ -564,6 +597,45 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
         </div>
       )}
 
+      {/* Clean Menu Submenu */}
+      {showCleanMenu && (
+        <div className="food-menu-overlay" onClick={() => { playButtonSound(); setShowCleanMenu(false); }}>
+          <div className="food-menu" onClick={(e) => e.stopPropagation()}>
+            <div className="food-menu-header">
+              <h3>청소 도구</h3>
+              <button className="close-btn" onClick={() => { playButtonSound(); setShowCleanMenu(false); }}>✕</button>
+            </div>
+
+            <div className="food-items-grid">
+              <button
+                className="food-item"
+                onClick={handleCleanBroom}
+                disabled={action !== 'idle' || nurturing.poops.length === 0}
+              >
+                <span className="food-item-icon">🧹</span>
+                <span className="food-item-name">빗자루</span>
+                <div className="food-item-effects">
+                  <span className="effect">똥 모두 치우기</span>
+                  <span className="effect">💚 +5 ❤️ +10</span>
+                </div>
+              </button>
+
+              <button
+                className="food-item"
+                onClick={handleCleanNewspaper}
+                disabled={action !== 'idle' || nurturing.bugs.length === 0}
+              >
+                <span className="food-item-icon">🗞️</span>
+                <span className="food-item-name">신문지</span>
+                <div className="food-item-effects">
+                  <span className="effect">벌레 1마리 제거</span>
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Bottom Action Bar */}
       <div className="action-bar">
         <button
@@ -592,11 +664,11 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
         </button>
         <button
           className="action-btn action-btn--small"
-          onClick={handleClean}
+          onClick={toggleCleanMenu}
           disabled={action !== 'idle'}
           title={t('actions.clean')}
         >
-          <span className="action-icon">🧹</span>
+          <span className="action-icon">✨</span>
         </button>
         <button
           className="action-btn action-btn--small"

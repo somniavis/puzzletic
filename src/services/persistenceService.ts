@@ -25,6 +25,7 @@ const createDefaultState = (): NurturingPersistentState => {
     stats: { ...DEFAULT_NURTURING_STATS },
     poops: [],
     pendingPoops: [], // 지연 생성 대기 중인 똥
+    bugs: [],         // 벌레 목록
     lastActiveTime: Date.now(),
     tickConfig: {
       intervalMs: TICK_INTERVAL_MS,
@@ -92,6 +93,11 @@ export const loadNurturingState = (): NurturingPersistentState => {
       loaded.pendingPoops = [];
     }
 
+    // bugs가 없으면 빈 배열 추가
+    if (!loaded.bugs) {
+      loaded.bugs = [];
+    }
+
     // 똥 데이터 마이그레이션: cleanlinessDebuff → healthDebuff
     if (loaded.poops) {
       loaded.poops = loaded.poops.map((poop: any) => {
@@ -152,7 +158,8 @@ export const applyOfflineProgress = (
     state.lastActiveTime,
     currentTime,
     state.tickConfig.intervalMs,
-    state.poops
+    state.poops,
+    state.bugs || []
   );
 
   // 가출 상태 체크
