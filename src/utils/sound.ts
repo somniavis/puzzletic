@@ -68,6 +68,7 @@ class SoundManager {
 
   /**
    * 사운드 프리로드
+   * loadeddata 이벤트 사용으로 더 빠른 준비 완료
    */
   async preload(soundUrl: string): Promise<void> {
     if (this.preloadComplete.has(soundUrl)) {
@@ -84,13 +85,16 @@ class SoundManager {
       // 모바일 최적화: 즉시 버퍼 로드 시작
       audio.load();
 
-      // 로드 완료 대기
+      // loadeddata로 변경 - canplaythrough보다 더 빨리 완료됨
       await new Promise<void>((resolve) => {
-        audio.addEventListener('canplaythrough', () => resolve(), { once: true });
+        audio.addEventListener('loadeddata', () => resolve(), { once: true });
         audio.addEventListener('error', () => {
           console.warn(`Failed to preload sound: ${soundUrl}`);
           resolve(); // 실패해도 계속 진행
         }, { once: true });
+
+        // 타임아웃 추가 - 최대 3초 대기
+        setTimeout(() => resolve(), 3000);
       });
 
       pool.push(audio);
@@ -129,20 +133,19 @@ class SoundManager {
 
   /**
    * 사운드 재생
-   * 모바일 최적화: play 전에 load() 호출로 버퍼 준비 완료 확인
+   * 최적화: 불필요한 체크 제거로 즉시 재생
    */
   play(soundUrl: string, volume: number = 0.5): void {
     try {
       const audio = this.getAvailableAudio(soundUrl);
       audio.volume = Math.max(0, Math.min(1, volume));
-      audio.currentTime = 0; // 처음부터 재생
 
-      // 모바일 최적화: 재생 직전 버퍼 상태 확인
-      // readyState < 3이면 load() 호출로 즉시 준비
-      if (audio.readyState < 3) {
-        audio.load();
+      // 재생 중인 오디오만 초기화 (이미 정지된 오디오는 currentTime이 0)
+      if (!audio.paused) {
+        audio.currentTime = 0;
       }
 
+      // 프리로드된 오디오는 바로 재생 (readyState 체크 제거)
       audio.play().catch((error) => {
         console.warn('Sound playback failed:', error);
         // 사용자 인터랙션 전에는 자동재생이 차단될 수 있음
