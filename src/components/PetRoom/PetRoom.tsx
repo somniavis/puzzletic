@@ -507,7 +507,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
             className="eating-food"
             style={{
               left: `${position.x}%`,
-              bottom: `${position.y - (window.innerWidth <= 768 ? 8 : 7)}%`,
+              bottom: `${position.y - (window.innerWidth <= 768 ? 9 : 7)}%`,
             }}
           >
             {flyingFood.icon}
