@@ -309,29 +309,18 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
   const handleCleanBroom = () => {
     playButtonSound();
     setShowCleanMenu(false);
-    setAction('jumping');
 
-    // 모든 똥에 청소 애니메이션 트리거
-    const allPoopIds = nurturing.poops.map(p => p.id);
+    if (nurturing.poops.length > 0) {
+      setAction('jumping');
+      const poopToClean = nurturing.poops[0];
+      handlePoopClick(poopToClean.id); // This already calls nurturing.clickPoop
 
-    // 각 똥을 순차적으로 클릭한 것처럼 처리
-    allPoopIds.forEach((poopId, index) => {
+      // Reset action after a short delay
       setTimeout(() => {
-        handlePoopClick(poopId);
-      }, index * 100); // 100ms 간격으로 순차 청소
-    });
-
-    // 빗자루 이펙트 후 청소 완료
-    setTimeout(() => {
-      // 양육 시스템으로 청소하기 실행 (스탯 증가)
-      const result = nurturing.clean();
-
-      if (result.success) {
-        showBubble('joy', 1);
-      }
-
-      setAction('idle');
-    }, allPoopIds.length * 100 + 500);
+        setAction('idle');
+        showBubble('joy', 1); // Show feedback bubble
+      }, 500);
+    }
   };
 
   const handleCleanNewspaper = () => {
@@ -602,7 +591,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
         <div className="food-menu-overlay" onClick={() => { playButtonSound(); setShowCleanMenu(false); }}>
           <div className="food-menu" onClick={(e) => e.stopPropagation()}>
             <div className="food-menu-header">
-              <h3>청소 도구</h3>
+              <h3>{t('cleanMenu.title')}</h3>
               <button className="close-btn" onClick={() => { playButtonSound(); setShowCleanMenu(false); }}>✕</button>
             </div>
 
@@ -613,10 +602,9 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
                 disabled={action !== 'idle' || nurturing.poops.length === 0}
               >
                 <span className="food-item-icon">🧹</span>
-                <span className="food-item-name">빗자루</span>
+                <span className="food-item-name">{t('cleanMenu.broom.name')}</span>
                 <div className="food-item-effects">
-                  <span className="effect">똥 모두 치우기</span>
-                  <span className="effect">💚 +5 ❤️ +10</span>
+                  <span className="effect">{t('cleanMenu.broom.effect')}</span>
                 </div>
               </button>
 
@@ -626,9 +614,9 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
                 disabled={action !== 'idle' || nurturing.bugs.length === 0}
               >
                 <span className="food-item-icon">🗞️</span>
-                <span className="food-item-name">신문지</span>
+                <span className="food-item-name">{t('cleanMenu.newspaper.name')}</span>
                 <div className="food-item-effects">
-                  <span className="effect">벌레 1마리 제거</span>
+                  <span className="effect">{t('cleanMenu.newspaper.effect')}</span>
                 </div>
               </button>
             </div>

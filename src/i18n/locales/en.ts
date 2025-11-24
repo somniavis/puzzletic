@@ -210,6 +210,17 @@ export const en = {
     clean: 'Clean',
     settings: 'Settings',
   },
+  cleanMenu: {
+    title: 'Cleaning Tools',
+    broom: {
+      name: 'Broom',
+      effect: 'Clean 1 poop',
+    },
+    newspaper: {
+      name: 'Newspaper',
+      effect: 'Remove 1 bug',
+    },
+  },
   emotions: {
     joy: {
       l1: {
