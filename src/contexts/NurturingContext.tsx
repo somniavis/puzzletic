@@ -13,7 +13,7 @@ import type {
   Bug,
   AbandonmentStatusUI,
 } from '../types/nurturing';
-import { TICK_INTERVAL_MS, BUG_CONFIG } from '../constants/nurturing';
+import { TICK_INTERVAL_MS } from '../constants/nurturing';
 import {
   loadNurturingState,
   saveNurturingState,
