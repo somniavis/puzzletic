@@ -12,7 +12,7 @@
 const SOUND_BASE_URL = 'https://pub-1411335941ed4406b5f667f40e04a814.r2.dev/sound';
 
 export const SOUNDS = {
-  buttonClick: `${SOUND_BASE_URL}/game%20sound/button-sound0.mp3`,
+  buttonClick: `${SOUND_BASE_URL}/game%20sound/button_sound1.mp3`,
   jelloClick1: `${SOUND_BASE_URL}/jellosound/jellosound-1.mp3`,
   jelloClick2: `${SOUND_BASE_URL}/jellosound/jellosound-2.mp3`,
   jelloClick3: `${SOUND_BASE_URL}/jellosound/jellosound-3.mp3`,
