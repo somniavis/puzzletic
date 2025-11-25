@@ -65,6 +65,21 @@ export interface Character {
   stats: CharacterStats;
   currentMood: CharacterMood;
   currentAction: CharacterAction;
+
+  // 게임 메카닉스 필드
+  gp: number; // Growth Point (경험치)
+  coins: number; // 획득한 코인
+  tendencies?: {
+    intelligence: number;
+    creativity: number;
+    physical: number;
+    social: number;
+    discipline: number;
+    exploration: number;
+  };
+  jelloSpecies?: string | null; // 진화 분기 종류 (4단계부터)
+  gamesPlayed: number; // 플레이한 게임 수
+  lastPlayTime?: number | null; // 마지막 놀이 시간 (쿨다운용)
 }
 
 export interface CharacterComponentProps {
