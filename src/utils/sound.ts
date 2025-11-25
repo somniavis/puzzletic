@@ -12,12 +12,46 @@
 const SOUND_BASE_URL = 'https://pub-1411335941ed4406b5f667f40e04a814.r2.dev/sound';
 
 export const SOUNDS = {
-  buttonClick: `${SOUND_BASE_URL}/game%20sound/button-sound1.mp3`,
+  buttonClick: `${SOUND_BASE_URL}/game%20sound/button-sound0.mp3`,
   jelloClick1: `${SOUND_BASE_URL}/jellosound/jellosound-1.mp3`,
   jelloClick2: `${SOUND_BASE_URL}/jellosound/jellosound-2.mp3`,
-  eating: `${SOUND_BASE_URL}/game%20sound/eating-sound.mp3`,
-  cleaning: `${SOUND_BASE_URL}/game%20sound/cleaning_sound.mp3`,
+  jelloClick3: `${SOUND_BASE_URL}/jellosound/jellosound-3.mp3`,
+  eating: `${SOUND_BASE_URL}/game%20sound/eating-sound1.mp3`,
+  cleaning: `${SOUND_BASE_URL}/game%20sound/cleaning_sound1.mp3`,
+  backgroundMusic: `${SOUND_BASE_URL}/game%20sound/background_bgm1.mp3`,
 } as const;
+
+/**
+ * BGM 활성화 상태를 확인하는 함수
+ */
+const isBgmEnabled = (): boolean => {
+  const settings = localStorage.getItem('puzzleletic_sound_settings');
+  if (settings) {
+    try {
+      const parsed = JSON.parse(settings);
+      return parsed.bgmEnabled !== false; // 기본값 true
+    } catch (e) {
+      return true;
+    }
+  }
+  return true; // 기본값 true
+};
+
+/**
+ * SFX 활성화 상태를 확인하는 함수
+ */
+const isSfxEnabled = (): boolean => {
+  const settings = localStorage.getItem('puzzleletic_sound_settings');
+  if (settings) {
+    try {
+      const parsed = JSON.parse(settings);
+      return parsed.sfxEnabled !== false; // 기본값 true
+    } catch (e) {
+      return true;
+    }
+  }
+  return true; // 기본값 true
+};
 
 /**
  * Audio Pool: 각 사운드마다 여러 개의 Audio 인스턴스를 관리
@@ -29,6 +63,7 @@ class SoundManager {
   private poolSize: number = 3; // 각 사운드당 최대 3개 인스턴스
   private preloadComplete: Set<string> = new Set();
   private isUnlocked: boolean = false; // 모바일 오디오 컨텍스트 활성화 여부
+  private bgmAudio: HTMLAudioElement | null = null; // 배경음 전용 인스턴스
 
   constructor() {
     // 모바일에서 첫 터치 시 오디오 컨텍스트 활성화
@@ -50,6 +85,11 @@ class SoundManager {
       silentAudio.play().then(() => {
         this.isUnlocked = true;
         console.log('🔓 Mobile audio context unlocked');
+
+        // BGM도 함께 시작 시도
+        if (this.bgmAudio && isBgmEnabled()) {
+          this.playBgm();
+        }
       }).catch(() => {
         // 실패해도 다음 터치에서 재시도
       });
@@ -168,6 +208,61 @@ class SoundManager {
 
     console.log('🎵 All sounds preloaded!');
   }
+
+  /**
+   * 배경음악 초기화 및 프리로드
+   */
+  async initBgm(): Promise<void> {
+    if (this.bgmAudio) return;
+
+    this.bgmAudio = new Audio(SOUNDS.backgroundMusic);
+    this.bgmAudio.loop = true; // 무한 반복
+    this.bgmAudio.volume = 0.3; // 배경음은 조금 작게
+    this.bgmAudio.preload = 'auto';
+
+    await new Promise<void>((resolve) => {
+      this.bgmAudio!.addEventListener('loadeddata', () => resolve(), { once: true });
+      this.bgmAudio!.addEventListener('error', () => {
+        console.warn('Failed to preload background music');
+        resolve();
+      }, { once: true });
+      setTimeout(() => resolve(), 3000);
+    });
+
+    console.log('✅ Background music initialized');
+  }
+
+  /**
+   * 배경음악 재생
+   */
+  playBgm(): void {
+    if (!this.bgmAudio) {
+      console.warn('Background music not initialized');
+      return;
+    }
+
+    this.bgmAudio.play().catch((error) => {
+      console.warn('Background music playback failed:', error);
+    });
+  }
+
+  /**
+   * 배경음악 정지
+   */
+  pauseBgm(): void {
+    if (this.bgmAudio && !this.bgmAudio.paused) {
+      this.bgmAudio.pause();
+    }
+  }
+
+  /**
+   * 배경음악 볼륨 설정
+   */
+  setBgmVolume(volume: number): void {
+    if (this.bgmAudio) {
+      this.bgmAudio.volume = Math.max(0, Math.min(1, volume));
+    }
+  }
 }
 
 // 싱글톤 인스턴스
@@ -179,23 +274,7 @@ const soundManager = new SoundManager();
  */
 export const preloadSounds = async (): Promise<void> => {
   await soundManager.preloadAll();
-};
-
-/**
- * SFX 활성화 상태를 확인하는 함수
- * SoundContext에서 설정 값을 가져옵니다.
- */
-const isSfxEnabled = (): boolean => {
-  const settings = localStorage.getItem('puzzleletic_sound_settings');
-  if (settings) {
-    try {
-      const parsed = JSON.parse(settings);
-      return parsed.sfxEnabled !== false; // 기본값 true
-    } catch (e) {
-      return true;
-    }
-  }
-  return true; // 기본값 true
+  await soundManager.initBgm();
 };
 
 /**
@@ -219,12 +298,12 @@ export const playButtonSound = (volume: number = 0.5): void => {
 
 /**
  * 젤로 클릭 사운드를 랜덤하게 재생합니다.
- * jellosound-1.mp3 또는 jellosound-2.mp3 중 하나를 랜덤하게 재생
+ * jellosound-1.mp3, jellosound-2.mp3, jellosound-3.mp3 중 하나를 랜덤하게 재생
  * @param volume 볼륨 (0.0 ~ 1.0, 기본값: 0.5)
  */
 export const playJelloClickSound = (volume: number = 0.5): void => {
   if (!isSfxEnabled()) return;
-  const jelloSounds = [SOUNDS.jelloClick1, SOUNDS.jelloClick2];
+  const jelloSounds = [SOUNDS.jelloClick1, SOUNDS.jelloClick2, SOUNDS.jelloClick3];
   const randomSound = jelloSounds[Math.floor(Math.random() * jelloSounds.length)];
   soundManager.play(randomSound, volume);
 };
@@ -246,4 +325,29 @@ export const playEatingSound = (volume: number = 0.5): void => {
 export const playCleaningSound = (volume: number = 0.5): void => {
   if (!isSfxEnabled()) return;
   soundManager.play(SOUNDS.cleaning, volume);
+};
+
+/**
+ * 배경음악을 재생합니다.
+ * 설정에서 BGM이 활성화된 경우에만 재생됩니다.
+ */
+export const startBackgroundMusic = (): void => {
+  if (isBgmEnabled()) {
+    soundManager.playBgm();
+  }
+};
+
+/**
+ * 배경음악을 정지합니다.
+ */
+export const stopBackgroundMusic = (): void => {
+  soundManager.pauseBgm();
+};
+
+/**
+ * 배경음악 볼륨을 설정합니다.
+ * @param volume 볼륨 (0.0 ~ 1.0)
+ */
+export const setBackgroundMusicVolume = (volume: number): void => {
+  soundManager.setBgmVolume(volume);
 };

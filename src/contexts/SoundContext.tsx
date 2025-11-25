@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { startBackgroundMusic, stopBackgroundMusic } from '../utils/sound';
 
 interface SoundSettings {
   bgmEnabled: boolean;
@@ -37,6 +38,24 @@ export const SoundProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
   }, [settings]);
+
+  // BGM 설정이 변경될 때 배경음 제어
+  useEffect(() => {
+    // 타이머를 사용하여 프리로드가 완료될 시간을 확보
+    const timer = setTimeout(() => {
+      if (settings.bgmEnabled) {
+        startBackgroundMusic();
+      } else {
+        stopBackgroundMusic();
+      }
+    }, 500); // 500ms 후 재생 시도
+
+    // cleanup
+    return () => {
+      clearTimeout(timer);
+      stopBackgroundMusic();
+    };
+  }, [settings.bgmEnabled]);
 
   const toggleBgm = () => {
     setSettings(prev => ({ ...prev, bgmEnabled: !prev.bgmEnabled }));
