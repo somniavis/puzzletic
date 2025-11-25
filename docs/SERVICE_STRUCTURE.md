@@ -2,65 +2,38 @@
 
 ## 개요
 
-Puzzletic은 Tamagotchi 스타일의 가상 펫 육성 게임과 교육용 퍼즐 게임을 결합한 웹 애플리케이션입니다.
+Puzzletic은 React와 TypeScript를 기반으로 구축된 가상 펫 육성 웹 애플리케이션입니다. 사용자는 캐릭터를 입양하고, 다양한 상호작용과 퍼즐 게임을 통해 캐릭터를 성장시킬 수 있습니다.
 
 ### 기술 스택
-- **프레임워크**: React 18 + TypeScript
+- **프레임워크**: React 19 + TypeScript
 - **빌드 도구**: Vite
+- **상태 관리**: React Context API (`NurturingContext`)
+- **국제화**: i18next
 - **배포**: Vercel
-- **버전 관리**: GitHub
 
 ---
 
-## 핵심 게임 메커니즘
+## 핵심 시스템
 
-### 1. 캐릭터 육성 시스템
+### 1. 캐릭터 시스템
+- **진화**: `evolutionTree.ts`에 정의된 트리를 따라 여러 단계로 진화합니다.
+- **컴포넌트**: 모든 캐릭터는 `src/components/characters` 내부에 자체 폴더와 컴포넌트(`*.tsx`)를 가집니다.
+- **렌더링**: 캐릭터의 시각적 표현은 외부 이미지 URL에 의존하며, 각 캐릭터 컴포넌트 내에서 관리됩니다. (자세한 내용은 `ASSETS.md` 참조)
 
-#### 캐릭터 선택 및 진화
-- **3단계 진화 시스템** (향후 확장 가능)
-  - Stage 1: 초보 단계 (시작)
-  - Stage 2: 중급 단계 (레벨 + 애정도 요구)
-  - Stage 3: 마스터 단계 (높은 레벨 + 애정도 요구)
+### 2. 양육 시스템 (`Nurturing`)
+- **실시간 상호작용**: `gameTickService.ts`를 통해 캐릭터의 상태(포만감, 건강, 행복)가 실시간으로 변화합니다.
+- **상태 관리**: `NurturingContext.tsx`가 모든 양육 관련 상태와 행동을 전역적으로 관리합니다.
+- **주요 기능**:
+  - **스탯 관리**: 먹이주기, 약주기, 놀아주기 등을 통해 캐릭터의 3대 핵심 스탯(포만감, 건강, 행복)을 관리합니다.
+  - **오염 시스템**: 음식을 먹으면 `Poop`(똥)이 생성되고, 시간이 지나면 `Bug`(벌레)가 발생하여 청결도와 건강에 영향을 줍니다.
+  - **가출 시스템**: 캐릭터를 장기간 방치하면 정해진 규칙에 따라 가출합니다.
+  - **데이터 영속성**: `persistenceService.ts`가 `localStorage`를 사용하여 사용자의 게임 상태를 저장하고, 오프라인 진행 상황을 계산합니다.
+- (자세한 내용은 `NURTURING.md` 참조)
 
-#### 캐릭터 스탯
-각 캐릭터는 8가지 스탯을 가집니다 (0-100 범위):
-- **hunger**: 배고픔 수치
-- **happiness**: 행복도
-- **health**: 건강 상태
-- **hygiene**: 위생 상태
-- **fatigue**: 피로도
-- **affection**: 애정도 (진화 조건)
-- **intelligence**: 지능 (퍼즐 성공률 영향)
-- **stamina**: 체력
-
-#### 캐릭터 상태
-- **Mood (감정 상태)**: happy, sad, neutral, excited, sick, sleeping
-- **Action (행동)**: idle, eating, playing, sleeping, sick, happy, jumping
-
-### 2. 코인 시스템
-
-#### 코인 획득 방법
-- **퍼즐 풀기**: 수학/과학 문제를 풀어 코인 획득
-  - 난이도에 따라 다른 보상
-  - 연속 성공 시 보너스
-
-#### 코인 사용처
-- **먹이 구매**: 캐릭터의 배고픔 해소
-- **놀이 아이템**: 행복도 증가
-- **청소 도구**: 위생 상태 개선
-- **약품**: 건강 회복
-- **배경 커스터마이징**: 게임 환경 꾸미기
-- **아이템 구매**: 다양한 장식품
-
-### 3. 퍼즐 게임 시스템
-
-#### 퍼즐 카테고리
-- **수학**: 산술, 대수, 기하학 문제
-- **과학**: 물리, 화학, 생물 퀴즈
-
-#### 난이도 설정
-- 캐릭터 레벨에 따른 자동 조정
-- 수동 난이도 선택 가능
+### 3. 관리자 페이지 (`CharacterAdmin`)
+- **위치**: `src/pages/CharacterAdmin.tsx`
+- **기능**: 게임에 존재하는 모든 캐릭터를 진화 단계별로 확인하고 관리할 수 있는 갤러리 형태의 페이지입니다.
+- (자세한 내용은 `CHARACTER_ADMIN.md` 참조)
 
 ---
 
@@ -68,178 +41,69 @@ Puzzletic은 Tamagotchi 스타일의 가상 펫 육성 게임과 교육용 퍼�
 
 ```
 puzzleletic/
+├── public/                      # 정적 에셋 (Vite 로고 등)
 ├── src/
-│   ├── components/
-│   │   ├── characters/          # 캐릭터 컴포넌트
-│   │   │   ├── BlueHero/        # 개별 캐릭터 폴더
-│   │   │   │   ├── BlueHero.tsx
-│   │   │   │   ├── BlueHero.css
-│   │   │   │   └── BlueHeroPixelData.ts
-│   │   │   └── index.ts         # 캐릭터 레지스트리
-│   │   ├── PixelArt/            # 픽셀 아트 렌더러
-│   │   │   └── PixelRenderer.tsx
-│   │   └── CharacterGallery/    # 캐릭터 갤러리
-│   │       ├── CharacterGallery.tsx
-│   │       └── CharacterGallery.css
-│   ├── pages/                   # 페이지 컴포넌트
-│   │   ├── CharacterAdmin.tsx   # 캐릭터 관리 페이지
-│   │   └── CharacterAdmin.css
-│   ├── types/
-│   │   └── character.ts         # 캐릭터 관련 타입 정의
-│   ├── data/
-│   │   ├── species.ts           # 캐릭터 종 데이터
-│   │   └── characters.ts        # 캐릭터 생성 헬퍼
-│   ├── App.tsx                  # 메인 앱 컴포넌트
-│   └── App.css
-├── docs/                        # 문서
-└── public/                      # 정적 파일
+│   ├── assets/                  # 내부 이미지 에셋 (React 로고 등)
+│   ├── components/              # 재사용 가능한 UI 컴포넌트
+│   │   ├── characters/          # 모든 캐릭터 컴포넌트
+│   │   │   ├── base/            # 1단계 기본 캐릭터
+│   │   │   ├── evolved/         # 2단계 이상 진화 캐릭터
+│   │   │   └── metadata/        # 캐릭터 메타데이터 (진화 트리)
+│   │   ├── Bug/                 # 벌레 컴포넌트
+│   │   ├── Poop/                # 똥 컴포넌트
+│   │   ├── NurturingPanel/      # 양육 상태 UI 패널
+│   │   └── PetRoom/             # 캐릭터가 머무는 방
+│   ├── constants/               # 상수 (양육 규칙, 성격 등)
+│   │   └── nurturing.ts
+│   ├── contexts/                # 전역 상태 관리
+│   │   └── NurturingContext.tsx
+│   ├── data/                    # 정적 데이터 (캐릭터, 감정, 종)
+│   ├── i18n/                    # 국제화 (i18next)
+│   ├── pages/                   # 페이지 단위 컴포넌트
+│   │   └── CharacterAdmin.tsx
+│   ├── services/                # 핵심 비즈니스 로직
+│   │   ├── actionService.ts     # 사용자 행동 처리
+│   │   ├── gameTickService.ts   # 실시간 게임 상태 변화
+│   │   └── persistenceService.ts# 데이터 저장/로드
+│   ├── types/                   # TypeScript 타입 정의
+│   └── utils/                   # 유틸리티 함수
+├── docs/                        # 프로젝트 문서
+├── index.html                   # 메인 HTML 파일
+├── package.json                 # 프로젝트 의존성 및 스크립트
+└── vite.config.ts               # Vite 설정 파일
 ```
 
 ---
 
-## 타입 시스템
+## 데이터 흐름
 
-### CharacterSpecies (캐릭터 종)
-```typescript
-interface CharacterSpecies {
-  id: string;                    // 고유 ID (예: 'blueHero')
-  name: string;                  // 종 이름
-  description: string;           // 설명
-  evolutions: CharacterEvolution[]; // 진화 단계 정보
-}
-```
-
-### CharacterEvolution (진화 단계)
-```typescript
-interface CharacterEvolution {
-  stage: EvolutionStage;         // 1, 2, 3
-  name: string;                  // 진화 단계 이름
-  requiredLevel: number;         // 필요 레벨
-  requiredAffection: number;     // 필요 애정도
-  description?: string;          // 설명
-}
-```
-
-### Character (캐릭터 인스턴스)
-```typescript
-interface Character {
-  id: string;                    // 고유 인스턴스 ID
-  speciesId: string;             // 종 ID
-  name: string;                  // 사용자 지정 이름
-  level: number;                 // 현재 레벨
-  experience: number;            // 경험치
-  evolutionStage: EvolutionStage; // 현재 진화 단계
-  stats: CharacterStats;         // 스탯
-  currentMood: CharacterMood;    // 현재 감정
-  currentAction: CharacterAction; // 현재 행동
-}
-```
-
----
-
-## 캐릭터 렌더링 시스템
-
-### 픽셀 아트 방식
-- **2D 배열 기반**: 각 픽셀을 색상 코드로 표현
-- **그리드 크기**: **24×24 픽셀** ⭐ (공식 표준)
-- **CSS Grid 렌더링**: 픽셀별 div 요소로 렌더링
-- **스케일링**: small(4px), medium(8px), large(12px)
-- **최종 크기 (24x24 기준)**: small(96px), medium(192px), large(288px)
-
-### 캐릭터 상태별 스프라이트
-각 캐릭터는 최소 3가지 스프라이트 필요:
-- **Idle**: 기본 대기 상태
-- **Happy**: 행복한 상태 (미소)
-- **Sleeping**: 잠자는 상태 (눈 감음)
-
-### 애니메이션
-- **idle-bounce**: 2초 주기 위아래 움직임
-- **jump**: 0.6초 점프 애니메이션
-- **wiggle**: 0.5초 좌우 흔들림
-- **playing**: 점프 + 흔들림 조합
-
----
-
-## 향후 개발 계획
-
-### 단기 (1-2개월)
-- [ ] 추가 캐릭터 종 개발 (최소 3-5종)
-- [ ] 퍼즐 게임 시스템 구현
-- [ ] 코인 시스템 및 상점 구현
-- [ ] 스탯 관리 시스템 (먹이주기, 놀아주기 등)
-
-### 중기 (3-6개월)
-- [ ] 배경 커스터마이징 시스템
-- [ ] 진화 애니메이션 및 이벤트
-- [ ] 업적 시스템
-- [ ] 사용자 계정 및 데이터 저장 (로컬스토리지 → 백엔드)
-
-### 장기 (6개월+)
-- [ ] 멀티플레이어 기능
-- [ ] 캐릭터 교환/거래 시스템
-- [ ] 시즌별 이벤트 캐릭터
-- [ ] 모바일 앱 버전
-
----
-
-## 성능 최적화 고려사항
-
-- **픽셀 렌더링 최적화**: React.memo 활용
-- **애니메이션 최적화**: CSS transform 사용
-- **상태 관리**: Context API 또는 Zustand 도입 검토
-- **코드 분할**: React.lazy를 통한 페이지별 번들 분리
-
----
-
-## 배포 정보
-
-- **개발 서버**: http://localhost:5173/
-- **프로덕션 URL**: https://puzzletic.vercel.app/
-- **Git 저장소**: https://github.com/somniavis/puzzletic
-
-### 배포 프로세스
-1. `main` 브랜치에 push
-2. Vercel 자동 빌드 및 배포
-3. 프리뷰 URL 생성 (PR 시)
+1.  **앱 시작**: `App.tsx`가 `NurturingProvider`를 렌더링합니다.
+2.  **상태 초기화**: `NurturingContext` 내부에서 `persistenceService.ts`를 호출하여 `localStorage`에서 이전 게임 상태를 불러옵니다.
+3.  **오프라인 진행 계산**: 마지막 접속 시간과 현재 시간의 차이를 계산하여, 그동안 진행되었을 게임 틱을 시뮬레이션하고 상태를 업데이트합니다.
+4.  **게임 틱 시작**: `gameTickService.ts`의 로직에 따라 `TICK_INTERVAL_MS` 간격으로 캐릭터의 상태가 주기적으로 업데이트됩니다.
+5.  **사용자 행동**: 사용자가 버튼(먹이주기, 놀기 등)을 클릭하면 `actionService.ts`의 함수가 호출되어 캐릭터의 상태가 즉시 변경됩니다.
+6.  **상태 변경 및 저장**: 모든 상태 변경은 `NurturingContext`를 통해 이루어지며, 변경된 내용은 즉시 `localStorage`에 저장됩니다.
+7.  **UI 렌더링**: `PetRoom`, `NurturingPanel` 등의 컴포넌트는 `useNurturing` 훅을 통해 최신 상태를 구독하고 UI를 렌더링합니다.
 
 ---
 
 ## 개발 가이드
 
-### 새 캐릭터 추가 방법
-1. 픽셀 데이터 생성 (`src/components/characters/[Name]/[Name]PixelData.ts`)
-2. 컴포넌트 생성 (`src/components/characters/[Name]/[Name].tsx`)
-3. `src/components/characters/index.ts`에 등록
-4. `src/data/species.ts`에 종 정의 추가
-
 ### 개발 환경 설정
 ```bash
+# 의존성 설치
 npm install
+
+# 개발 서버 실행 (http://localhost:5173)
 npm run dev
 ```
 
-### 빌드
-```bash
-npm run build
-```
+### 주요 스크립트
+- `npm run lint`: ESLint로 코드 스타일을 검사합니다.
+- `npm run build`: 프로덕션용으로 프로젝트를 빌드합니다.
+- `npm run preview`: 빌드된 결과물을 미리 봅니다.
 
 ---
-
----
-
-## 변경 이력
-
-### v1.1 (2025-11-09)
-- **픽셀 표준 확정**: 32×32 픽셀을 공식 표준으로 지정
-- 캐릭터 렌더링 시스템 설명 업데이트
-- 기존 캐릭터(BlueHero, GreenSlime) 32×32로 전환 완료
-
-### v1.0 (2025-11-09)
-- 초기 서비스 구조 문서 작성
-- 핵심 시스템 정의
-
----
-
-**문서 버전**: 1.1
-**최종 업데이트**: 2025-11-09
-**작성자**: Claude Code Assistant
+**문서 버전**: 2.0
+**최종 업데이트**: 2025-11-25
+**작성자**: Gemini

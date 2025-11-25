@@ -379,6 +379,27 @@ export const en = {
     leaving: 'Leaving soon!',
     abandoned: 'Has left...',
   },
+  settings: {
+    title: 'Settings',
+    sound: {
+      title: 'Sound',
+      description: 'Adjust sound settings',
+      bgm: 'Background Music',
+      sfx: 'Sound Effects',
+      on: 'ON',
+      off: 'OFF',
+    },
+    language: {
+      title: 'Language',
+      description: 'Select language',
+      selected: 'Selected',
+    },
+    admin: {
+      title: 'Admin',
+      gallery: 'Gallery',
+      stats: 'Stats',
+    },
+  },
 } as const;
 
 export type TranslationKeys = typeof en;

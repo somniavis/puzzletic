@@ -10,6 +10,7 @@ import type { EmotionCategory } from '../../types/emotion';
 import { useNurturing } from '../../contexts/NurturingContext';
 import { Poop } from '../Poop/Poop';
 import { Bug } from '../Bug/Bug';
+import { SettingsMenu } from '../SettingsMenu/SettingsMenu';
 import { calculateClickResponse, getClickEmotionCategory } from '../../constants/personality';
 import { playButtonSound, playJelloClickSound, playEatingSound, playCleaningSound } from '../../utils/sound';
 import './PetRoom.css';
@@ -18,9 +19,10 @@ interface PetRoomProps {
   character: Character;
   speciesId: CharacterSpeciesId;
   onStatsChange: (stats: Partial<Character['stats']>) => void;
+  onNavigate?: (page: 'gallery' | 'stats') => void;
 }
 
-export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsChange }) => {
+export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsChange, onNavigate }) => {
   const { t } = useTranslation();
 
   // 양육 시스템 사용
@@ -32,6 +34,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
   const [isMoving, setIsMoving] = useState(false);
   const [showFoodMenu, setShowFoodMenu] = useState(false);
   const [showCleanMenu, setShowCleanMenu] = useState(false);
+  const [showSettingsMenu, setShowSettingsMenu] = useState(false);
   const [selectedFoodCategory, setSelectedFoodCategory] = useState<FoodCategory>('meal');
   const [bubble, setBubble] = useState<{ category: EmotionCategory; level: 1 | 2 | 3; key: number } | null>(null);
   const [lastBubbleTime, setLastBubbleTime] = useState(0);
@@ -604,6 +607,13 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
         </div>
       )}
 
+      {/* Settings Menu */}
+      <SettingsMenu
+        isOpen={showSettingsMenu}
+        onClose={() => setShowSettingsMenu(false)}
+        onNavigate={onNavigate}
+      />
+
       {/* Bottom Action Bar */}
       <div className="action-bar">
         <button
@@ -642,8 +652,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
           className="action-btn action-btn--small"
           onClick={() => {
             playButtonSound();
-            // TODO: 설정 기능 추가
-            console.log('Settings clicked');
+            setShowSettingsMenu(true);
           }}
           disabled={false}
           title={t('actions.settings')}

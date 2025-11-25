@@ -182,11 +182,29 @@ export const preloadSounds = async (): Promise<void> => {
 };
 
 /**
+ * SFX 활성화 상태를 확인하는 함수
+ * SoundContext에서 설정 값을 가져옵니다.
+ */
+const isSfxEnabled = (): boolean => {
+  const settings = localStorage.getItem('puzzleletic_sound_settings');
+  if (settings) {
+    try {
+      const parsed = JSON.parse(settings);
+      return parsed.sfxEnabled !== false; // 기본값 true
+    } catch (e) {
+      return true;
+    }
+  }
+  return true; // 기본값 true
+};
+
+/**
  * 사운드를 재생합니다.
  * @param soundUrl 재생할 사운드 URL
  * @param volume 볼륨 (0.0 ~ 1.0, 기본값: 0.5)
  */
 export const playSound = (soundUrl: string, volume: number = 0.5): void => {
+  if (!isSfxEnabled()) return;
   soundManager.play(soundUrl, volume);
 };
 
@@ -195,6 +213,7 @@ export const playSound = (soundUrl: string, volume: number = 0.5): void => {
  * @param volume 볼륨 (0.0 ~ 1.0, 기본값: 0.5)
  */
 export const playButtonSound = (volume: number = 0.5): void => {
+  if (!isSfxEnabled()) return;
   soundManager.play(SOUNDS.buttonClick, volume);
 };
 
@@ -204,6 +223,7 @@ export const playButtonSound = (volume: number = 0.5): void => {
  * @param volume 볼륨 (0.0 ~ 1.0, 기본값: 0.5)
  */
 export const playJelloClickSound = (volume: number = 0.5): void => {
+  if (!isSfxEnabled()) return;
   const jelloSounds = [SOUNDS.jelloClick1, SOUNDS.jelloClick2];
   const randomSound = jelloSounds[Math.floor(Math.random() * jelloSounds.length)];
   soundManager.play(randomSound, volume);
@@ -214,6 +234,7 @@ export const playJelloClickSound = (volume: number = 0.5): void => {
  * @param volume 볼륨 (0.0 ~ 1.0, 기본값: 0.5)
  */
 export const playEatingSound = (volume: number = 0.5): void => {
+  if (!isSfxEnabled()) return;
   soundManager.play(SOUNDS.eating, volume);
 };
 
@@ -223,5 +244,6 @@ export const playEatingSound = (volume: number = 0.5): void => {
  * @param volume 볼륨 (0.0 ~ 1.0, 기본값: 0.5)
  */
 export const playCleaningSound = (volume: number = 0.5): void => {
+  if (!isSfxEnabled()) return;
   soundManager.play(SOUNDS.cleaning, volume);
 };

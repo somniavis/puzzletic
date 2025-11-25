@@ -6,6 +6,7 @@ import { CHARACTERS } from './components/characters'
 import { createCharacter } from './data/characters'
 import type { CharacterAction, CharacterMood, Character } from './types/character'
 import { NurturingProvider } from './contexts/NurturingContext'
+import { SoundProvider } from './contexts/SoundContext'
 import { preloadSounds } from './utils/sound'
 
 type Page = 'home' | 'gallery' | 'stats';
@@ -171,17 +172,16 @@ function App() {
 
   // Show Home page (Pet Room)
   return (
-    <NurturingProvider>
-      <div className="page-nav page-nav--floating">
-        <button onClick={() => setCurrentPage('gallery')}>🖼️</button>
-        <button onClick={() => setCurrentPage('stats')}>📊</button>
-      </div>
-      <PetRoom
-        character={character}
-        speciesId={selectedSpeciesId}
-        onStatsChange={handleStatsChange}
-      />
-    </NurturingProvider>
+    <SoundProvider>
+      <NurturingProvider>
+        <PetRoom
+          character={character}
+          speciesId={selectedSpeciesId}
+          onStatsChange={handleStatsChange}
+          onNavigate={(page) => setCurrentPage(page)}
+        />
+      </NurturingProvider>
+    </SoundProvider>
   )
 }
 
