@@ -16,8 +16,8 @@ export const SOUNDS = {
   jelloClick1: `${SOUND_BASE_URL}/jellosound/jellosound-1.mp3`,
   jelloClick2: `${SOUND_BASE_URL}/jellosound/jellosound-2.mp3`,
   jelloClick3: `${SOUND_BASE_URL}/jellosound/jellosound-3.mp3`,
-  eating: `${SOUND_BASE_URL}/game%20sound/eating-sound1.mp3`,
-  cleaning: `${SOUND_BASE_URL}/game%20sound/cleaning_sound1.mp3`,
+  eating: `${SOUND_BASE_URL}/game%20sound/eating_sound1.mp3`,
+  cleaning: `${SOUND_BASE_URL}/game%20sound/cleaning-sound1.mp3`,
   backgroundMusic: `${SOUND_BASE_URL}/game%20sound/background_bgm1.mp3`,
 } as const;
 
