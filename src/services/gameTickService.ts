@@ -61,28 +61,16 @@ export const evaluateCondition = (stats: NurturingStats): CharacterCondition => 
   };
 };
 
-/**
- * 벌레 생성 확률 계산
- * @param poops 현재 똥 목록
- * @returns 벌레 생성 확률 (0-1)
- */
-export const calculateBugSpawnChance = (poops: Poop[]): number => {
-  let chance = BUG_CONFIG.SPAWN_CHANCE;
-  chance += poops.length * BUG_CONFIG.SPAWN_INCREASE_PER_POOP;
-  return Math.min(1, chance); // 최대 100%
-};
+
 
 /**
  * 벌레 생성
  * @returns 새로 생성된 벌레
  */
-export const createBug = (): Bug => {
-  const bugTypes: BugType[] = ['fly', 'mosquito'];
-  const randomType = bugTypes[Math.floor(Math.random() * bugTypes.length)];
-
+export const createBug = (type: BugType): Bug => {
   return {
     id: `bug-${Date.now()}-${Math.random()}`,
-    type: randomType,
+    type,
     x: Math.random() * 80 + 10, // 10-90%
     y: Math.random() * 60 + 20, // 20-80%
     createdAt: Date.now(),
@@ -107,6 +95,7 @@ export const executeGameTick = (
   const newStats = { ...currentStats };
   const alerts: string[] = [];
   const penalties: TickResult['penalties'] = {};
+  let newBugs = [...bugs];
 
   // ==================== A. 기본 감소 (Natural Decay) ====================
   newStats.fullness += NATURAL_DECAY.fullness;
@@ -167,21 +156,39 @@ export const executeGameTick = (
   }
 
   // 5. 벌레 페널티
-  if (bugs.length > 0) {
-    const bugHealthPenalty = BUG_CONFIG.HEALTH_DEBUFF_PER_BUG * bugs.length;
-    const bugHappinessPenalty = BUG_CONFIG.HAPPINESS_DEBUFF_PER_BUG * bugs.length;
+  if (newBugs.length > 0) {
+    const bugHealthPenalty = BUG_CONFIG.HEALTH_DEBUFF_PER_BUG * newBugs.length;
+    const bugHappinessPenalty = BUG_CONFIG.HAPPINESS_DEBUFF_PER_BUG * newBugs.length;
 
     newStats.health += bugHealthPenalty;
     newStats.happiness += bugHappinessPenalty;
-    alerts.push(`벌레 페널티 (${bugs.length}마리): 건강/행복도 감소`);
+    alerts.push(`벌레 페널티 (${newBugs.length}마리): 건강/행복도 감소`);
   }
 
-  // ==================== D. 스탯 범위 제한 ====================
+  // ==================== D. 벌레 생성 ====================
+  if (newBugs.length < BUG_CONFIG.MAX_BUGS) {
+    // 파리 생성 (똥이 있을 때만)
+    if (poops.length > 0) {
+      const flySpawnChance = poops.length * BUG_CONFIG.FLY_SPAWN_CHANCE_PER_POOP;
+      if (Math.random() < flySpawnChance) {
+        newBugs.push(createBug('fly'));
+        alerts.push('파리가 나타났어요!');
+      }
+    }
+
+    // 모기 생성 (시간에 따라)
+    if (Math.random() < BUG_CONFIG.MOSQUITO_SPAWN_CHANCE) {
+      newBugs.push(createBug('mosquito'));
+      alerts.push('모기가 나타났어요!');
+    }
+  }
+
+  // ==================== E. 스탯 범위 제한 ====================
   newStats.fullness = clampStat(newStats.fullness);
   newStats.health = clampStat(newStats.health);
   newStats.happiness = clampStat(newStats.happiness);
 
-  // ==================== E. 결과 반환 ====================
+  // ==================== F. 결과 반환 ====================
   const statChanges: Partial<NurturingStats> = {
     fullness: newStats.fullness - currentStats.fullness,
     health: newStats.health - currentStats.health,
@@ -195,6 +202,7 @@ export const executeGameTick = (
     condition: finalCondition,
     penalties,
     alerts,
+    newBugs,
   };
 };
 

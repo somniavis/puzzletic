@@ -193,8 +193,8 @@ export const POOP_CONFIG = {
 // ==================== 벌레 시스템 (Bug System) ====================
 export const BUG_CONFIG = {
   MAX_BUGS: 3,                       // 최대 벌레 개수
-  SPAWN_CHANCE: 0.03,                // 틱당 벌레 생성 확률 (3% - 약 30틱마다 1마리)
-  SPAWN_INCREASE_PER_POOP: 0.05,     // 똥 1개당 생성 확률 증가 (+5%)
+  FLY_SPAWN_CHANCE_PER_POOP: 0.05,   // 틱당 똥 1개당 파리 생성 확률 (5%)
+  MOSQUITO_SPAWN_CHANCE: 1 / 60,     // 틱당 모기 생성 확률 (약 5분에 1마리)
   HEALTH_DEBUFF_PER_BUG: -0.3,       // 틱당 벌레 1마리당 건강 감소
   HAPPINESS_DEBUFF_PER_BUG: -0.2,    // 틱당 벌레 1마리당 행복도 감소
 };

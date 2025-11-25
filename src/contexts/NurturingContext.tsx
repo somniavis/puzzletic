@@ -26,8 +26,6 @@ import {
   clampStat,
   checkAbandonmentState,
   getAbandonmentStatusUI,
-  calculateBugSpawnChance,
-  createBug,
 } from '../services/gameTickService';
 import {
   feedCharacter as serviceFeed,
@@ -127,17 +125,6 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
         }
       });
 
-      // 벌레 생성 시도
-      let newBugs = [...(currentState.bugs || [])];
-      if (newBugs.length < BUG_CONFIG.MAX_BUGS) {
-        const spawnChance = calculateBugSpawnChance(newPoops);
-        if (Math.random() < spawnChance) {
-          const newBug = createBug();
-          newBugs.push(newBug);
-          console.log(`🦟 벌레가 나타났어요! (${newBug.type})`);
-        }
-      }
-
       // 가출 상태 체크
       const updatedAbandonmentState = checkAbandonmentState(
         newStats,
@@ -149,7 +136,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
         ...currentState,
         stats: newStats,
         poops: newPoops,
-        bugs: newBugs,
+        bugs: tickResult.newBugs || currentState.bugs,
         pendingPoops: remainingPendingPoops,
         abandonmentState: updatedAbandonmentState,
         lastActiveTime: Date.now(),
@@ -167,7 +154,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
 
       // 알림 출력 (콘솔)
       if (tickResult.alerts.length > 0) {
-        console.log('[Game Tick]', tickResult.alerts.join(', '));
+        tickResult.alerts.forEach(alert => console.log('[Game Tick]', alert));
       }
 
       return newState;

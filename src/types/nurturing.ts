@@ -104,11 +104,11 @@ export interface TickResult {
   condition: CharacterCondition;
   penalties: {
     hunger?: number;
-    dirty?: number;
     sick?: number;
     poopDebuff?: number;
   };
   alerts: string[];
+  newBugs?: Bug[];
 }
 
 // 오프라인 진행 계산 결과 (Offline Progress Result)
