@@ -257,6 +257,11 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
   };
 
   const handleFeed = (food: FoodItem) => {
+    if (nurturing.glo < food.price) {
+      showBubble('worried', 2); // Not enough money
+      return;
+    }
+    nurturing.spendGlo(food.price);
     playButtonSound();
     setShowFoodMenu(false);
 
@@ -300,6 +305,11 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
   };
 
   const handleGiveMedicine = (medicine: MedicineItem) => {
+    if (nurturing.glo < medicine.price) {
+      showBubble('worried', 2); // Not enough money
+      return;
+    }
+    nurturing.spendGlo(medicine.price);
     playButtonSound();
     setShowMedicineMenu(false);
     setAction('happy');
@@ -566,7 +576,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
                   key={food.id}
                   className="food-item"
                   onClick={() => handleFeed(food)}
-                  disabled={action !== 'idle'}
+                  disabled={action !== 'idle' || nurturing.glo < food.price}
                 >
                   <span className="food-item-icon">{food.icon}</span>
                   <span className="food-item-name">{t(food.nameKey)}</span>
@@ -606,7 +616,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
                   key={medicine.id}
                   className="food-item"
                   onClick={() => handleGiveMedicine(medicine)}
-                  disabled={action !== 'idle'}
+                  disabled={action !== 'idle' || nurturing.glo < medicine.price}
                 >
                   <span className="food-item-icon">{medicine.icon}</span>
                   <span className="food-item-name">{t(medicine.nameKey)}</span>
