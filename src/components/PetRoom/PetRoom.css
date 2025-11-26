@@ -793,3 +793,14 @@
   border-color: #757575;
   animation: none;
 }
+
+.food-item-price {
+  font-size: 0.9rem;
+  font-weight: 700;
+  background: rgba(139, 69, 19, 0.15);
+  padding: 0.3rem 0.6rem;
+  border-radius: 8px;
+  color: #4d3e2f;
+  border: 2px solid rgba(139, 69, 19, 0.3);
+  white-space: nowrap;
+}

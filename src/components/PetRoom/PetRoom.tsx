@@ -552,6 +552,8 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
                   <span className="food-item-icon">{food.icon}</span>
                   <span className="food-item-name">{t(food.nameKey)}</span>
                   <div className="food-item-effects">
+                    <span className="food-item-price">🪙 {food.price}</span>
+                    {/*
                     {food.effects.hunger < 0 && (
                       <span className="effect">🍖 {-food.effects.hunger}</span>
                     )}
@@ -561,6 +563,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
                     {food.effects.health && food.effects.health > 0 && (
                       <span className="effect">💚 +{food.effects.health}</span>
                     )}
+                    */}
                   </div>
                 </button>
               ))}
