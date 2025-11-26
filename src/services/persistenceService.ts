@@ -32,7 +32,7 @@ const createDefaultState = (): NurturingPersistentState => {
       lastTickTime: Date.now(),
       isActive: true,
     },
-    glo: 0,
+    glo: 10000,
     totalCurrencyEarned: 0,
     studyCount: 0,
     abandonmentState: { ...DEFAULT_ABANDONMENT_STATE },
@@ -99,9 +99,9 @@ export const loadNurturingState = (): NurturingPersistentState => {
       loaded.bugs = [];
     }
 
-    // glo가 없으면 기존 totalCurrencyEarned 값으로 초기화하거나 0으로 설정
-    if (loaded.glo === undefined) {
-      loaded.glo = loaded.totalCurrencyEarned || 0;
+    // glo가 없거나 0이면 10000으로 초기화 (테스트용)
+    if (loaded.glo === undefined || loaded.glo === 0) {
+      loaded.glo = 10000;
     }
 
     // 똥 데이터 마이그레이션: cleanlinessDebuff → healthDebuff

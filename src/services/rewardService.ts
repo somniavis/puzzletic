@@ -127,7 +127,14 @@ export const gainTendencyFromMinigame = (
       case 5:
         return TENDENCY_GAINS.minigame.difficulty5;
       default:
-        return {};
+        return {
+          intelligence: 0,
+          creativity: 0,
+          physical: 0,
+          social: 0,
+          discipline: 0,
+          exploration: 0,
+        };
     }
   })();
 

@@ -128,6 +128,12 @@
   text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.5);
 }
 
+.profile-stats-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
 .profile-level {
   font-size: 0.85rem;
   font-weight: 700;
@@ -136,7 +142,16 @@
   padding: 0.15rem 0.5rem;
   border-radius: 8px;
   display: inline-block;
-  align-self: flex-start;
+}
+
+.profile-glo {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #8b6914;
+  background: #fff9e6;
+  padding: 0.15rem 0.5rem;
+  border-radius: 8px;
+  display: inline-block;
 }
 
 .stats-row {
@@ -154,11 +169,6 @@
   border: 4px solid #2d4a3d;
   box-shadow: 0 4px 0 rgba(0, 0, 0, 0.3);
   min-width: 80px;
-}
-
-.stat-badge--glo {
-  border-color: #b4761f;
-  background: linear-gradient(180deg, #FFD700 0%, #FFA500 100%);
 }
 
 .stat-icon {

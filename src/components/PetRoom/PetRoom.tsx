@@ -442,15 +442,14 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
           </div>
           <div className="profile-info">
             <div className="profile-name">{character.name}</div>
-            <div className="profile-level">{t('character.profile.level', { level: character.level })}</div>
+            <div className="profile-stats-row">
+              <div className="profile-level">{t('character.profile.level', { level: character.level })}</div>
+              <div className="profile-glo">🪙 {nurturing.glo}</div>
+            </div>
           </div>
         </div>
 
         <div className="stats-row">
-          <div className="stat-badge stat-badge--glo">
-            <span className="stat-icon">🪙</span>
-            <span className="stat-value">{nurturing.glo}</span>
-          </div>
           <div className="stat-badge stat-badge--hunger">
             <span className="stat-icon">🍖</span>
             <span className="stat-value">{Math.round(nurturing.stats.fullness)}</span>

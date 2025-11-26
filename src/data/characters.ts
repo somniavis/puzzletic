@@ -34,5 +34,17 @@ export const createCharacter = (speciesId: string, customName?: string): Charact
     stats: { ...DEFAULT_STAGE_1_STATS },
     currentMood: 'neutral',
     currentAction: 'idle',
+    gp: 0,
+    glo: 0,
+    tendencies: {
+      intelligence: 0,
+      creativity: 0,
+      physical: 0,
+      social: 0,
+      discipline: 0,
+      exploration: 0,
+    },
+    gamesPlayed: 0,
+    lastPlayTime: null,
   };
 };

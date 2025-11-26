@@ -177,24 +177,38 @@ export const DEFAULT_TENDENCY_STATS: TendencyStats = {
 export const TENDENCY_GAINS = {
   // 미니게임 (난이도별)
   minigame: {
-    difficulty1: { intelligence: 1, discipline: 1 },      // 단순 반복
-    difficulty2: { intelligence: 2, discipline: 1 },      // 기초 응용
-    difficulty3: { intelligence: 3, creativity: 1 },      // 사고력
-    difficulty4: { intelligence: 4, creativity: 2 },      // 심화
-    difficulty5: { intelligence: 5, creativity: 3, exploration: 2 }, // 챌린지
+    difficulty1: { intelligence: 1, creativity: 0, physical: 0, social: 0, discipline: 1, exploration: 0 },      // 단순 반복
+    difficulty2: { intelligence: 2, creativity: 0, physical: 0, social: 0, discipline: 1, exploration: 0 },      // 기초 응용
+    difficulty3: { intelligence: 3, creativity: 1, physical: 0, social: 0, discipline: 0, exploration: 0 },      // 사고력
+    difficulty4: { intelligence: 4, creativity: 2, physical: 0, social: 0, discipline: 0, exploration: 0 },      // 심화
+    difficulty5: { intelligence: 5, creativity: 3, physical: 0, social: 0, discipline: 0, exploration: 2 }, // 챌린지
   },
   // 놀이
   play: {
+    intelligence: 0,
+    creativity: 0,
     physical: 2,
     social: 1,
+    discipline: 0,
+    exploration: 0,
   },
   // 청소
   clean: {
+    intelligence: 0,
+    creativity: 0,
+    physical: 0,
+    social: 0,
     discipline: 1,
+    exploration: 0,
   },
   // 먹이기
   feed: {
+    intelligence: 0,
+    creativity: 0,
+    physical: 0,
     social: 1,
+    discipline: 0,
+    exploration: 0,
   },
 };
 
