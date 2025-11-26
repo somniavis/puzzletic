@@ -7,8 +7,8 @@ import type { NurturingStats, FoodEffect, MedicineEffect, AbandonmentState } fro
 import { MEDICINE_ITEMS } from '../types/medicine';
 
 // ==================== 게임 틱 설정 ====================
-export const TICK_INTERVAL_MS = 5000; // 5초 = 1 로직 틱 (빠른 변화로 관리 필요성 증가)
-// export const TICK_INTERVAL_MS = 10000; // 10초 (조금 더 여유있게)
+// export const TICK_INTERVAL_MS = 5000; // 5초 = 1 로직 틱 (빠른 변화로 관리 필요성 증가)
+export const TICK_INTERVAL_MS = 10000; // 10초 (조금 더 여유있게)
 
 // ==================== 초기 스탯 ====================
 export const DEFAULT_NURTURING_STATS: NurturingStats = {
@@ -150,6 +150,12 @@ export const MEDICINE_EFFECTS: Record<string, MedicineEffect> = MEDICINE_ITEMS.r
 export const CLEAN_EFFECT = {
   health: 5,           // 건강 증가 (환경 개선 효과)
   happiness: 10,       // "깨끗해져서 기분이 좋아짐"
+};
+
+// 샤워 효과 (Shower Effect)
+export const SHOWER_EFFECT = {
+  health: 3,
+  happiness: 5,
 };
 
 // 놀이 효과 (Play Effect)

@@ -1,5 +1,5 @@
 export interface CleaningTool {
-  id: 'broom' | 'newspaper' | 'robot_cleaner';
+  id: 'broom' | 'newspaper' | 'shower' | 'robot_cleaner';
   nameKey: string;
   descriptionKey: string;
   icon: string;
@@ -7,6 +7,13 @@ export interface CleaningTool {
 }
 
 export const CLEANING_TOOLS: CleaningTool[] = [
+  {
+    id: 'shower',
+    nameKey: 'cleanMenu.shower.name',
+    descriptionKey: 'cleanMenu.shower.effect',
+    icon: '🛁',
+    price: 5,
+  },
   {
     id: 'broom',
     nameKey: 'cleanMenu.broom.name',

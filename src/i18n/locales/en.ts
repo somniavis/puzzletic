@@ -229,6 +229,10 @@ export const en = {
       name: 'Newspaper',
       effect: 'Remove 1 bug',
     },
+    shower: {
+      name: 'Shower',
+      effect: 'Feeling fresh',
+    },
     robot_cleaner: {
       name: 'Robot Cleaner',
       effect: 'Cleans all',

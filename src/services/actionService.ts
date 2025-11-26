@@ -14,6 +14,7 @@ import {
   FOOD_EFFECTS,
   MEDICINE_EFFECTS,
   CLEAN_EFFECT,
+  SHOWER_EFFECT,
   PLAY_EFFECT,
   STUDY_EFFECT,
   STUDY_REQUIREMENTS,
@@ -202,6 +203,32 @@ export const cleanRoom = (
       emotionTriggered: 'playful',
     },
     message: poopsToClean.length > 0 ? `똥 ${poopsToClean.length}개를 치웠어요!` : undefined,
+  };
+};
+
+/**
+ * 샤워하기
+ */
+export const takeShower = (
+  currentStats: NurturingStats
+): ActionResult => {
+  const newStats: Partial<NurturingStats> = {
+    health: clampStat(currentStats.health + SHOWER_EFFECT.health),
+    happiness: clampStat(currentStats.happiness + SHOWER_EFFECT.happiness),
+  };
+
+  const statChanges: Partial<NurturingStats> = {
+    health: (newStats.health || currentStats.health) - currentStats.health,
+    happiness: (newStats.happiness || currentStats.happiness) - currentStats.happiness,
+  };
+
+  return {
+    success: true,
+    statChanges,
+    sideEffects: {
+      emotionTriggered: 'joy',
+    },
+    message: '개운해요!',
   };
 };
 

@@ -33,6 +33,7 @@ import {
   cleanRoom as serviceCleanRoom,
   playWithCharacter as servicePlay,
   studyWithCharacter as serviceStudy,
+  takeShower as serviceTakeShower,
   removePoop,
   convertPendingToPoop,
 } from '../services/actionService';
@@ -57,6 +58,7 @@ interface NurturingContextValue {
   clean: () => ActionResult;
   cleanBug: () => ActionResult;
   cleanAll: () => ActionResult;
+  takeShower: () => ActionResult;
   play: () => ActionResult;
   study: () => ActionResult;
   clickPoop: (poopId: string) => void;
@@ -386,6 +388,37 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     };
   }, []);
 
+  const takeShower = useCallback((): ActionResult => {
+    let result: ActionResult = { success: false, statChanges: {} };
+
+    setState((currentState) => {
+      result = serviceTakeShower(currentState.stats);
+
+      if (!result.success) {
+        return currentState;
+      }
+
+      const newStats: NurturingStats = {
+        ...currentState.stats,
+        health: clampStat(currentState.stats.health + (result.statChanges.health || 0)),
+        happiness: clampStat(currentState.stats.happiness + (result.statChanges.happiness || 0)),
+      };
+
+      const newState: NurturingPersistentState = {
+        ...currentState,
+        stats: newStats,
+        lastActiveTime: Date.now(),
+      };
+
+      saveNurturingState(newState);
+      setCondition(evaluateCondition(newStats));
+
+      return newState;
+    });
+
+    return result;
+  }, []);
+
   const clickPoop = useCallback((poopId: string) => {
     setState((currentState) => {
       const { updatedPoops, removed } = removePoop(poopId, currentState.poops);
@@ -510,6 +543,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     clean,
     cleanBug,
     cleanAll,
+    takeShower,
     play,
     study,
     clickPoop,

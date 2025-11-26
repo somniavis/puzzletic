@@ -351,6 +351,16 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
           }
         }
         break;
+      case 'shower':
+        if (nurturing.glo >= tool.price) {
+          nurturing.spendGlo(tool.price);
+          nurturing.takeShower();
+          playCleaningSound();
+          showBubble('joy', 2);
+        } else {
+          showBubble('worried', 2); // Not enough money
+        }
+        break;
       case 'robot_cleaner':
         if (nurturing.glo >= tool.price) {
           if (nurturing.poops.length > 0 || nurturing.bugs.length > 0) {
@@ -454,7 +464,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
             <div className="profile-name">{character.name}</div>
             <div className="profile-stats-row">
               <div className="profile-level">{t('character.profile.level', { level: character.level })}</div>
-              <div className="profile-glo">🪙 {nurturing.glo}</div>
+              <div className="profile-glo">💰 {nurturing.glo}</div>
             </div>
           </div>
         </div>
@@ -581,7 +591,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
                   <span className="food-item-icon">{food.icon}</span>
                   <span className="food-item-name">{t(food.nameKey)}</span>
                   <div className="food-item-effects">
-                    <span className="food-item-price">🪙 {food.price}</span>
+                    <span className="food-item-price">💰 {food.price}</span>
                     {/*
                     {food.effects.hunger < 0 && (
                       <span className="effect">🍖 {-food.effects.hunger}</span>
@@ -621,7 +631,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
                   <span className="food-item-icon">{medicine.icon}</span>
                   <span className="food-item-name">{t(medicine.nameKey)}</span>
                   <div className="food-item-effects">
-                    <span className="food-item-price">🪙 {medicine.price}</span>
+                    <span className="food-item-price">💰 {medicine.price}</span>
                   </div>
                 </button>
               ))}
@@ -649,6 +659,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
                     action !== 'idle' ||
                     (tool.id === 'broom' && nurturing.poops.length === 0) ||
                     (tool.id === 'newspaper' && nurturing.bugs.length === 0) ||
+                    (tool.id === 'shower' && nurturing.glo < tool.price) ||
                     (tool.id === 'robot_cleaner' && nurturing.glo < tool.price)
                   }
                 >
@@ -658,7 +669,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
                     <span className="effect">{t(tool.descriptionKey)}</span>
                   </div>
                   <div className="food-item-price">
-                    {tool.price > 0 ? `🪙 ${tool.price}` : 'Free'}
+                    {tool.price > 0 ? `💰 ${tool.price}` : 'Free'}
                   </div>
                 </button>
               ))}
