@@ -1,6 +1,6 @@
 /**
  * Game Mechanics Constants
- * 게임 메카닉스 상수 정의 (진화, 보상, 코인)
+ * 게임 메카닉스 상수 정의 (진화, 보상, 글로)
  */
 
 import type {
@@ -78,35 +78,35 @@ export const DIFFICULTY_REWARDS: Record<number, DifficultyReward> = {
   1: {
     difficulty: 1,
     multiplier: 1.0,
-    baseCoin: 5,
+    baseGlo: 5,
     baseGP: 3,
     description: '단순 반복',
   },
   2: {
     difficulty: 2,
     multiplier: 1.5,
-    baseCoin: 7,
+    baseGlo: 7,
     baseGP: 5,
     description: '기초 응용',
   },
   3: {
     difficulty: 3,
     multiplier: 2.5,
-    baseCoin: 10,
+    baseGlo: 10,
     baseGP: 10,
     description: '사고력 필요',
   },
   4: {
     difficulty: 4,
     multiplier: 4.0,
-    baseCoin: 20,
+    baseGlo: 20,
     baseGP: 20,
     description: '심화 과정',
   },
   5: {
     difficulty: 5,
     multiplier: 6.0,
-    baseCoin: 25,
+    baseGlo: 25,
     baseGP: 40,
     description: '챌린지 (High Risk High Return)',
   },
@@ -132,7 +132,7 @@ export const DEFAULT_MASTERY_BONUS = 1.0;
  * - 쿨다운으로 남용 방지
  */
 export const PLAY_REWARD: PlayReward = {
-  baseCoin: 3,              // 기본 코인 (학습의 30~60%)
+  baseGlo: 3,               // 기본 글로 (학습의 30~60%)
   baseGP: 2,                // 기본 경험치 (학습의 20~30%)
   happinessRequirement: 50, // 최소 행복도 50 필요
   cooldownMs: 60000,        // 1분 쿨다운
@@ -144,15 +144,15 @@ export const PLAY_REWARD: PlayReward = {
  */
 export const PLAY_HAPPINESS_BONUS = {
   excellent: {  // 행복도 >= 80
-    coinMultiplier: 2.0,
+    gloMultiplier: 2.0,
     gpMultiplier: 1.5,
   },
   good: {       // 행복도 >= 65
-    coinMultiplier: 1.5,
+    gloMultiplier: 1.5,
     gpMultiplier: 1.3,
   },
   normal: {     // 행복도 >= 50
-    coinMultiplier: 1.0,
+    gloMultiplier: 1.0,
     gpMultiplier: 1.0,
   },
 };
@@ -290,10 +290,10 @@ export const GRADUATION_GP = 5000;
 /**
  * 졸업 보너스
  * - 도감 등록
- * - 특별 보상 (코인)
+ * - 특별 보상 (글로)
  */
 export const GRADUATION_BONUS = {
-  coinReward: 1000,         // 졸업 시 보너스 코인
+  gloReward: 1000,          // 졸업 시 보너스 글로 (GLO)
   achievementUnlock: true,  // 업적 해금
 };
 
@@ -308,7 +308,7 @@ export const POKEDEX_TOTAL_SPECIES = 10;
  * 도감 완성 보상
  */
 export const POKEDEX_COMPLETION_REWARD = {
-  coinReward: 10000,        // 완성 보너스
+  gloReward: 10000,         // 완성 보너스 글로 (GLO)
   specialTitle: 'Master Trainer',
   unlockSecret: true,       // 비밀 컨텐츠 해금
 };

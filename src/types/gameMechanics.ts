@@ -1,6 +1,6 @@
 /**
  * Game Mechanics Types
- * 게임 메카닉스 타입 정의 (진화, 보상, 코인, 도감)
+ * 게임 메카닉스 타입 정의 (진화, 보상, 글로(GLO), 도감)
  */
 
 // ==================== 진화 시스템 ====================
@@ -27,7 +27,7 @@ export type MinigameDifficulty = 1 | 2 | 3 | 4 | 5;
 export interface DifficultyReward {
   difficulty: MinigameDifficulty;
   multiplier: number;       // 난이도 계수
-  baseCoin: number;         // 기본 코인
+  baseGlo: number;          // 기본 글로 (GLO)
   baseGP: number;           // 기본 경험치 (Growth Point)
   description: string;      // 난이도 설명
 }
@@ -42,7 +42,7 @@ export interface MinigameResult {
 
 // 보상 계산 결과
 export interface RewardCalculation {
-  coinEarned: number;       // 획득 코인
+  gloEarned: number;        // 획득 글로 (GLO)
   gpEarned: number;         // 획득 경험치 (GP)
   perfectBonus: boolean;    // 퍼펙트 보너스 적용 여부
   breakdown: {
@@ -54,11 +54,11 @@ export interface RewardCalculation {
   };
 }
 
-// ==================== 코인 시스템 ====================
+// ==================== 글로(GLO) 시스템 ====================
 
-// 코인 획득 이벤트
-export interface CoinEvent {
-  source: 'minigame' | 'play' | 'graduation' | 'achievement';  // 코인 획득 경로
+// 글로 획득 이벤트
+export interface GloEvent {
+  source: 'minigame' | 'play' | 'graduation' | 'achievement';  // 글로 획득 경로
   amount: number;           // 획득량
   timestamp: number;        // 획득 시간
   details?: string;         // 상세 정보
@@ -105,7 +105,7 @@ export interface PokedexEntry {
   name: string;                     // 유저가 지어준 이름
   stageReached: EvolutionStage;     // 도달한 단계 (5 = 졸업)
   totalGPEarned: number;            // 총 획득 GP
-  totalCoinEarned: number;          // 총 획득 코인
+  totalGloEarned: number;           // 총 획득 글로 (GLO)
   totalGamesPlayed: number;         // 총 플레이 게임 수
   tendencies: TendencyStats;        // 최종 성향 통계
   graduatedAt: number;              // 졸업 시간 (timestamp)
@@ -124,7 +124,7 @@ export interface PokedexCollection {
 
 export interface PlayerProgress {
   currentCycle: number;             // 현재 사이클 (몇 번째 육성인지)
-  totalCoins: number;               // 누적 보유 코인 (영구 재화)
+  totalGlo: number;                 // 누적 보유 글로 (GLO - 영구 재화)
   currentJello: {
     name: string;
     species: JelloSpecies | null;   // null = 아직 분기 전
@@ -132,7 +132,7 @@ export interface PlayerProgress {
     gp: number;                     // 현재 GP
     tendencies: TendencyStats;
     gamesPlayed: number;
-    coinsEarned: number;            // 이번 사이클에서 획득한 코인
+    gloEarned: number;              // 이번 사이클에서 획득한 글로 (GLO)
     createdAt: number;              // 생성 시간
   };
   pokedex: PokedexCollection;       // 도감
@@ -143,7 +143,7 @@ export interface PlayerProgress {
 
 // 놀이 보상 설정
 export interface PlayReward {
-  baseCoin: number;         // 기본 코인 보상
+  baseGlo: number;          // 기본 글로 (GLO) 보상
   baseGP: number;           // 기본 경험치 보상
   happinessRequirement: number;  // 최소 행복도 요구사항
   cooldownMs: number;       // 쿨다운 시간 (밀리초)
@@ -152,7 +152,7 @@ export interface PlayReward {
 // 놀이 결과
 export interface PlayResult {
   success: boolean;
-  coinEarned: number;
-  gpEarned: number;
+  gloEarned: number;        // 획득 글로 (GLO)
+  gpEarned: number;         // 획득 경험치 (GP)
   message?: string;
 }

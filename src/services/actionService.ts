@@ -206,11 +206,11 @@ export const cleanRoom = (
 };
 
 /**
- * 놀이하기 (코인 + GP 보상 포함)
+ * 놀이하기 (글로 + GP 보상 포함)
  */
 export const playWithCharacter = (
   currentStats: NurturingStats
-): ActionResult & { coinEarned?: number; gpEarned?: number } => {
+): ActionResult & { gloEarned?: number; gpEarned?: number } => {
   // 주요 효과
   const newStats: Partial<NurturingStats> = {
     happiness: clampStat(currentStats.happiness + PLAY_EFFECT.happiness),
@@ -225,14 +225,14 @@ export const playWithCharacter = (
   };
 
   // 보상 계산 (rewardService에서 계산 - 추후 통합)
-  // 기본적으로 코인과 GP를 반환하도록 확장
+  // 기본적으로 글로와 GP를 반환하도록 확장
   return {
     success: true,
     statChanges,
     sideEffects: {
       emotionTriggered: 'playful',
     },
-    // coinEarned: 보상 시스템 통합 후 추가
+    // gloEarned: 보상 시스템 통합 후 추가
     // gpEarned: 보상 시스템 통합 후 추가
   };
 };

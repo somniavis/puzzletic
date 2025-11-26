@@ -14,7 +14,7 @@
 2. **육성**: 양육(상태 관리) + 학습(미니게임) 병행
 3. **성장**: 경험치(GP) 축적을 통한 5단계 진화
 4. **졸업(Reset)**: 5단계 달성 시 캐릭터는 **도감에 등록되고 떠남**
-5. **계승**: 획득한 재화(Coin)는 유지한 채 **새로운 알 육성 시작**
+5. **계승**: 획득한 재화(glo)는 유지한 채 **새로운 알 육성 시작**
 
 ---
 
@@ -42,7 +42,7 @@
 
 **공식**: `기본값 × 난이도 계수 × 정답률(0.0~1.0) × 숙련도 보너스 × 퍼펙트 보너스`
 
-| **난이도 (Lv)** | **난이도 계수** | **코인 (Coin)** | **경험치 (GP)** | **특징** |
+| **난이도 (Lv)** | **난이도 계수** | **글로(GLO) (glo)** | **경험치 (GP)** | **특징** |
 | --- | --- | --- | --- | --- |
 | **Lv 1** | 1.0 | 5 | 3 | 단순 반복 |
 | **Lv 2** | 1.5 | 7 | 5 | 기초 응용 |
@@ -56,7 +56,7 @@
 
 행복도 기반 차등 보상 시스템:
 
-| **행복도** | **보너스 등급** | **코인** | **GP** | **배율** |
+| **행복도** | **보너스 등급** | **글로(GLO)** | **GP** | **배율** |
 | --- | --- | --- | --- | --- |
 | **≥ 80** | Excellent | 6 | 3 | 2.0x / 1.5x |
 | **≥ 65** | Good | 4.5 | 2.6 | 1.5x / 1.3x |
@@ -135,12 +135,12 @@
 | **항목** | **내용** |
 | --- | --- |
 | **도감 등록** | 해당 젤로가 도감에 영구 등록 |
-| **보너스 코인** | 1,000 코인 지급 |
+| **보너스 글로(GLO)** | 1,000 글로(GLO) 지급 |
 | **업적 해금** | 졸업 관련 업적 획득 |
 
 졸업 후:
 - 캐릭터는 떠나고 도감에 기록됨
-- 코인은 유지
+- 글로(GLO)은 유지
 - 새로운 알(1단계)로 시작
 
 ---
@@ -159,7 +159,7 @@
 - 이름 (유저가 지은 이름)
 - 도달 단계 (5단계 = 졸업)
 - 총 획득 GP
-- 총 획득 코인
+- 총 획득 글로(GLO)
 - 총 플레이 게임 수
 - 최종 성향 통계
 - 졸업 시간
@@ -169,7 +169,7 @@
 
 | **보상** | **내용** |
 | --- | --- |
-| **완성 보너스** | 10,000 코인 |
+| **완성 보너스** | 10,000 글로(GLO) |
 | **특별 칭호** | "Master Trainer" |
 | **비밀 컨텐츠** | 숨겨진 기능 해금 |
 
@@ -185,7 +185,7 @@
 src/
 ├── types/
 │   ├── gameMechanics.ts        # 게임 메카닉스 타입 정의
-│   └── character.ts            # Character 타입에 GP, 코인 필드 추가
+│   └── character.ts            # Character 타입에 GP, 글로(GLO) 필드 추가
 ├── constants/
 │   └── gameMechanics.ts        # 진화 단계, 보상, 성향 상수
 └── services/
@@ -219,7 +219,7 @@ src/
 
 1. **미니게임 완료 시 보상 적용**
    - 미니게임 결과 → `calculateMinigameReward()` 호출
-   - 캐릭터 GP, 코인 업데이트
+   - 캐릭터 GP, 글로(GLO) 업데이트
    - 성향 증가
    - 진화 체크
 
@@ -230,7 +230,7 @@ src/
 
 3. **UI 표시**
    - GP 바 / 진화 단계 표시
-   - 코인 잔액 표시
+   - 글로(GLO) 잔액 표시
    - 성향 그래프
    - 도감 화면
 
@@ -259,11 +259,11 @@ const result = {
 
 // 보상 계산
 const reward = calculateMinigameReward(result);
-console.log(reward.coinEarned); // 9 코인
+console.log(reward.gloEarned); // 9 글로(GLO)
 console.log(reward.gpEarned); // 9 GP
 
 // 캐릭터 업데이트
-character.coins += reward.coinEarned;
+character.glo += reward.gloEarned;
 character.gp += reward.gpEarned;
 character.gamesPlayed += 1;
 
@@ -303,7 +303,7 @@ if (playReward.bonus === null) {
 }
 
 // 적용
-character.coins += playReward.coinEarned;
+character.glo += playReward.gloEarned;
 character.gp += playReward.gpEarned;
 character.lastPlayTime = Date.now();
 ```
@@ -323,14 +323,14 @@ if (canGraduate(character.gp, character.evolutionStage)) {
     name: character.name,
     stageReached: 5,
     totalGPEarned: character.gp,
-    totalCoinEarned: character.coins,
+    totalGloEarned: character.glo,
     totalGamesPlayed: character.gamesPlayed,
     tendencies: character.tendencies,
     graduatedAt: Date.now(),
   };
 
-  // 보너스 코인 지급
-  playerProgress.totalCoins += 1000;
+  // 보너스 글로(GLO) 지급
+  playerProgress.totalGlo += 1000;
 
   // 새 알 생성
   // ...
@@ -350,9 +350,9 @@ if (canGraduate(character.gp, character.evolutionStage)) {
 
 ### 경제 밸런스
 
-- 졸업 1회당 평균 코인 획득: 약 3,000~5,000 코인
-- 10종 완성 시 총 코인: 약 40,000~60,000 코인
-- 코인 사용처: 아이템 구매, 스킨 해금 등 (추후 확장)
+- 졸업 1회당 평균 글로(GLO) 획득: 약 3,000~5,000 글로(GLO)
+- 10종 완성 시 총 글로(GLO): 약 40,000~60,000 글로(GLO)
+- 글로(GLO) 사용처: 아이템 구매, 스킨 해금 등 (추후 확장)
 
 ---
 

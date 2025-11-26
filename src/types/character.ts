@@ -68,7 +68,7 @@ export interface Character {
 
   // 게임 메카닉스 필드
   gp: number; // Growth Point (경험치)
-  coins: number; // 획득한 코인
+  glo: number; // 글로 (GLO - 재화)
   tendencies?: {
     intelligence: number;
     creativity: number;

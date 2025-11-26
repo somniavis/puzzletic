@@ -1,6 +1,6 @@
 /**
  * Reward Service
- * 보상 시스템 서비스 (미니게임 보상 계산, 코인, GP)
+ * 보상 시스템 서비스 (미니게임 보상 계산, 글로, GP)
  */
 
 import type {
@@ -32,7 +32,7 @@ export const calculateMinigameReward = (result: MinigameResult): RewardCalculati
   }
 
   // 기본 보상
-  const baseCoin = difficultyConfig.baseCoin;
+  const baseGlo = difficultyConfig.baseGlo;
   const baseGP = difficultyConfig.baseGP;
 
   // 배율 적용
@@ -42,18 +42,18 @@ export const calculateMinigameReward = (result: MinigameResult): RewardCalculati
   const perfectMultiplier = result.isPerfect ? PERFECT_BONUS_MULTIPLIER : 1.0;
 
   // 최종 계산
-  const coinBeforeBonus = baseCoin * difficultyMultiplier * accuracyMultiplier * masteryMultiplier;
+  const gloBeforeBonus = baseGlo * difficultyMultiplier * accuracyMultiplier * masteryMultiplier;
   const gpBeforeBonus = baseGP * difficultyMultiplier * accuracyMultiplier * masteryMultiplier;
 
-  const finalCoin = Math.round(coinBeforeBonus * perfectMultiplier);
+  const finalGlo = Math.round(gloBeforeBonus * perfectMultiplier);
   const finalGP = Math.round(gpBeforeBonus * perfectMultiplier);
 
   return {
-    coinEarned: finalCoin,
+    gloEarned: finalGlo,
     gpEarned: finalGP,
     perfectBonus: result.isPerfect,
     breakdown: {
-      baseReward: baseCoin,
+      baseReward: baseGlo,
       difficultyMultiplier,
       accuracyMultiplier,
       masteryMultiplier,
@@ -66,42 +66,42 @@ export const calculateMinigameReward = (result: MinigameResult): RewardCalculati
  * 놀이 보상 계산
  *
  * 행복도 기반:
- * - 행복도 >= 80: 2배 코인, 1.5배 GP
- * - 행복도 >= 65: 1.5배 코인, 1.3배 GP
+ * - 행복도 >= 80: 2배 글로, 1.5배 GP
+ * - 행복도 >= 65: 1.5배 글로, 1.3배 GP
  * - 행복도 >= 50: 기본 보상
  */
 export const calculatePlayReward = (happiness: number): {
-  coinEarned: number;
+  gloEarned: number;
   gpEarned: number;
   bonus: 'excellent' | 'good' | 'normal' | null;
 } => {
   if (happiness < PLAY_REWARD.happinessRequirement) {
     return {
-      coinEarned: 0,
+      gloEarned: 0,
       gpEarned: 0,
       bonus: null,
     };
   }
 
-  let coinMultiplier = 1.0;
+  let gloMultiplier = 1.0;
   let gpMultiplier = 1.0;
   let bonus: 'excellent' | 'good' | 'normal' = 'normal';
 
   if (happiness >= 80) {
-    coinMultiplier = PLAY_HAPPINESS_BONUS.excellent.coinMultiplier;
+    gloMultiplier = PLAY_HAPPINESS_BONUS.excellent.gloMultiplier;
     gpMultiplier = PLAY_HAPPINESS_BONUS.excellent.gpMultiplier;
     bonus = 'excellent';
   } else if (happiness >= 65) {
-    coinMultiplier = PLAY_HAPPINESS_BONUS.good.coinMultiplier;
+    gloMultiplier = PLAY_HAPPINESS_BONUS.good.gloMultiplier;
     gpMultiplier = PLAY_HAPPINESS_BONUS.good.gpMultiplier;
     bonus = 'good';
   }
 
-  const coinEarned = Math.round(PLAY_REWARD.baseCoin * coinMultiplier);
+  const gloEarned = Math.round(PLAY_REWARD.baseGlo * gloMultiplier);
   const gpEarned = Math.round(PLAY_REWARD.baseGP * gpMultiplier);
 
   return {
-    coinEarned,
+    gloEarned,
     gpEarned,
     bonus,
   };
@@ -176,11 +176,11 @@ export const gainTendencyFromFeed = (currentTendencies: TendencyStats): Tendency
  * 난이도별 예상 보상 미리보기
  */
 export const previewRewardByDifficulty = (difficulty: MinigameDifficulty): {
-  minCoin: number;
-  maxCoin: number;
+  minGlo: number;
+  maxGlo: number;
   minGP: number;
   maxGP: number;
-  perfectCoin: number;
+  perfectGlo: number;
   perfectGP: number;
 } => {
   const config = DIFFICULTY_REWARDS[difficulty];
@@ -192,23 +192,23 @@ export const previewRewardByDifficulty = (difficulty: MinigameDifficulty): {
   const multiplier = config.multiplier;
 
   // 최소 보상 (정답률 0%)
-  const minCoin = 0;
+  const minGlo = 0;
   const minGP = 0;
 
   // 최대 보상 (정답률 100%, 보너스 제외)
-  const maxCoin = Math.round(config.baseCoin * multiplier);
+  const maxGlo = Math.round(config.baseGlo * multiplier);
   const maxGP = Math.round(config.baseGP * multiplier);
 
   // 퍼펙트 보상 (정답률 100% + 퍼펙트 보너스)
-  const perfectCoin = Math.round(maxCoin * PERFECT_BONUS_MULTIPLIER);
+  const perfectGlo = Math.round(maxGlo * PERFECT_BONUS_MULTIPLIER);
   const perfectGP = Math.round(maxGP * PERFECT_BONUS_MULTIPLIER);
 
   return {
-    minCoin,
-    maxCoin,
+    minGlo,
+    maxGlo,
     minGP,
     maxGP,
-    perfectCoin,
+    perfectGlo,
     perfectGP,
   };
 };
