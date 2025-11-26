@@ -14,8 +14,10 @@ import {
   DEFAULT_ABANDONMENT_STATE,
 } from '../constants/nurturing';
 import { calculateOfflineProgress, checkAbandonmentState } from './gameTickService';
+import { protectData, restoreData } from './simpleEncryption';
 
 const STORAGE_KEY = 'puzzleletic_nurturing_state';
+const CHECKSUM_KEY = 'puzzleletic_checksum';
 
 /**
  * 기본 상태 생성
@@ -41,11 +43,16 @@ const createDefaultState = (): NurturingPersistentState => {
 
 /**
  * 상태 저장 (localStorage)
+ * 민감한 데이터(glo, totalCurrencyEarned 등)를 암호화하여 저장
  */
 export const saveNurturingState = (state: NurturingPersistentState): void => {
   try {
-    const serialized = JSON.stringify(state);
+    // 민감한 데이터 암호화 및 체크섬 생성
+    const { protectedData, checksum } = protectData(state);
+
+    const serialized = JSON.stringify(protectedData);
     localStorage.setItem(STORAGE_KEY, serialized);
+    localStorage.setItem(CHECKSUM_KEY, checksum);
   } catch (error) {
     console.error('Failed to save nurturing state:', error);
   }
@@ -53,17 +60,38 @@ export const saveNurturingState = (state: NurturingPersistentState): void => {
 
 /**
  * 상태 불러오기 (localStorage)
+ * 암호화된 민감한 데이터 복원 및 무결성 검증
  */
 export const loadNurturingState = (): NurturingPersistentState => {
   try {
     const serialized = localStorage.getItem(STORAGE_KEY);
+    const storedChecksum = localStorage.getItem(CHECKSUM_KEY);
 
     if (!serialized) {
       // 저장된 데이터 없음 - 새로 시작
       return createDefaultState();
     }
 
-    const loaded = JSON.parse(serialized) as any; // 마이그레이션을 위해 any 사용
+    const protectedState = JSON.parse(serialized) as any;
+
+    // 암호화된 데이터가 있으면 복원 시도
+    let loaded: any;
+    if (protectedState._enc && storedChecksum) {
+      loaded = restoreData(protectedState, storedChecksum);
+
+      if (!loaded) {
+        console.warn('⚠️ Data tampering detected! Resetting sensitive data.');
+        // 조작이 감지되면 민감한 데이터만 초기화
+        loaded = protectedState;
+        delete loaded._enc;
+        loaded.glo = 10000;
+        loaded.totalCurrencyEarned = 0;
+        loaded.studyCount = 0;
+      }
+    } else {
+      // 암호화되지 않은 구버전 데이터
+      loaded = protectedState;
+    }
 
     // 데이터 무결성 검증
     if (!loaded.stats || !loaded.lastActiveTime) {
