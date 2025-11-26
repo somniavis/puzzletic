@@ -45,6 +45,7 @@ interface NurturingContextValue {
   poops: Poop[];
   bugs: Bug[];
   condition: CharacterCondition;
+  glo: number;
   totalCurrencyEarned: number;
   studyCount: number;
   isTickActive: boolean;
@@ -55,10 +56,12 @@ interface NurturingContextValue {
   giveMedicine: (medicineId: string) => ActionResult;
   clean: () => ActionResult;
   cleanBug: () => ActionResult;
+  cleanAll: () => ActionResult;
   play: () => ActionResult;
   study: () => ActionResult;
   clickPoop: (poopId: string) => void;
   clickBug: (bugId: string) => void;
+  spendGlo: (amount: number) => boolean;
 
   // 유틸리티
   resetGame: () => void;
@@ -326,10 +329,12 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
         happiness: clampStat(currentState.stats.happiness + (result.statChanges.happiness || 0)),
       };
 
+      const currencyEarned = result.sideEffects?.currencyEarned || 0;
       const newState: NurturingPersistentState = {
         ...currentState,
         stats: newStats,
-        totalCurrencyEarned: currentState.totalCurrencyEarned + (result.sideEffects?.currencyEarned || 0),
+        glo: (currentState.glo || 0) + currencyEarned,
+        totalCurrencyEarned: currentState.totalCurrencyEarned + currencyEarned,
         studyCount: currentState.studyCount + 1,
         lastActiveTime: Date.now(),
       };
@@ -341,6 +346,44 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     });
 
     return result;
+  }, []);
+
+  const spendGlo = useCallback((amount: number): boolean => {
+    let success = false;
+    setState((currentState) => {
+      if ((currentState.glo || 0) < amount) {
+        success = false;
+        return currentState;
+      }
+
+      success = true;
+      const newState = {
+        ...currentState,
+        glo: (currentState.glo || 0) - amount,
+      };
+      saveNurturingState(newState);
+      return newState;
+    });
+    return success;
+  }, []);
+
+  const cleanAll = useCallback((): ActionResult => {
+    setState((currentState) => {
+      const newState: NurturingPersistentState = {
+        ...currentState,
+        poops: [],
+        bugs: [],
+        lastActiveTime: Date.now(),
+      };
+      saveNurturingState(newState);
+      return newState;
+    });
+
+    return {
+      success: true,
+      statChanges: {},
+      message: '모든 오염물을 청소했습니다!',
+    };
   }, []);
 
   const clickPoop = useCallback((poopId: string) => {
@@ -457,6 +500,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     poops: state.poops,
     bugs: state.bugs || [],
     condition,
+    glo: state.glo,
     totalCurrencyEarned: state.totalCurrencyEarned,
     studyCount: state.studyCount,
     isTickActive: state.tickConfig.isActive,
@@ -465,10 +509,12 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     giveMedicine,
     clean,
     cleanBug,
+    cleanAll,
     play,
     study,
     clickPoop,
     clickBug,
+    spendGlo,
     resetGame,
     pauseTick,
     resumeTick,

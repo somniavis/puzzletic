@@ -145,6 +145,7 @@ export interface NurturingPersistentState {
   bugs: Bug[];                  // 벌레 목록
   lastActiveTime: number;
   tickConfig: GameTickConfig;
+  glo: number; // 재화 (currency)
   totalCurrencyEarned: number;
   studyCount: number;
   abandonmentState: AbandonmentState;  // 가출 상태

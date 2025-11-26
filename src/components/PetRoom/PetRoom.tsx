@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next';
 import type { Character, CharacterMood, CharacterAction } from '../../types/character';
 import { CHARACTERS } from '../characters';
 import { FOOD_ITEMS, FOOD_CATEGORIES, type FoodItem, type FoodCategory } from '../../types/food';
+import { MEDICINE_ITEMS, type MedicineItem } from '../../types/medicine';
+import { CLEANING_TOOLS, type CleaningTool } from '../../types/cleaning';
 import type { CharacterSpeciesId } from '../../data/species';
 import { CHARACTER_SPECIES } from '../../data/species';
 import { EmotionBubble } from '../EmotionBubble/EmotionBubble';
@@ -34,6 +36,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
   const [isMoving, setIsMoving] = useState(false);
   const [showFoodMenu, setShowFoodMenu] = useState(false);
   const [showCleanMenu, setShowCleanMenu] = useState(false);
+  const [showMedicineMenu, setShowMedicineMenu] = useState(false);
   const [showSettingsMenu, setShowSettingsMenu] = useState(false);
   const [selectedFoodCategory, setSelectedFoodCategory] = useState<FoodCategory>('meal');
   const [bubble, setBubble] = useState<{ category: EmotionCategory; level: 1 | 2 | 3; key: number } | null>(null);
@@ -291,56 +294,69 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
 
   const filteredFoods = FOOD_ITEMS.filter(food => food.category === selectedFoodCategory);
 
-  const handleMedicine = () => {
+  const toggleMedicineMenu = () => {
     playButtonSound();
+    setShowMedicineMenu(!showMedicineMenu);
+  };
+
+  const handleGiveMedicine = (medicine: MedicineItem) => {
+    playButtonSound();
+    setShowMedicineMenu(false);
     setAction('happy');
 
     // 양육 시스템으로 약 먹이기 실행
-    const result = nurturing.giveMedicine('default');
+    const result = nurturing.giveMedicine(medicine.id);
 
     if (result.success) {
-      showBubble('sick', 1);
+      showBubble('sick', 1); // Show relief
       setTimeout(() => {
         setAction('idle');
         showBubble('joy', 1);
       }, 2000);
     } else {
+      // Maybe show a "can't use this now" bubble
       setTimeout(() => setAction('idle'), 2000);
     }
   };
 
-  const handleCleanBroom = () => {
+  const handleClean = (tool: CleaningTool) => {
     playButtonSound();
-    setShowCleanMenu(false);
 
-    if (nurturing.poops.length > 0) {
-      playCleaningSound(); // 청소 효과음 재생
-      setAction('jumping');
-      const poopToClean = nurturing.poops[0];
-      handlePoopClick(poopToClean.id); // This already calls nurturing.clickPoop
-
-      // Reset action after a short delay
-      setTimeout(() => {
-        setAction('idle');
-        showBubble('joy', 1); // Show feedback bubble
-      }, 500);
+    switch (tool.id) {
+      case 'broom':
+        if (nurturing.poops.length > 0) {
+          playCleaningSound();
+          setAction('jumping');
+          const poopToClean = nurturing.poops[0];
+          handlePoopClick(poopToClean.id);
+          setTimeout(() => setAction('idle'), 500);
+        }
+        break;
+      case 'newspaper':
+        if (nurturing.bugs.length > 0) {
+          playCleaningSound();
+          const result = nurturing.cleanBug();
+          if (result.success) {
+            showBubble('playful', 1);
+          }
+        }
+        break;
+      case 'robot_cleaner':
+        if (nurturing.glo >= tool.price) {
+          if (nurturing.poops.length > 0 || nurturing.bugs.length > 0) {
+            nurturing.spendGlo(tool.price);
+            nurturing.cleanAll();
+            playCleaningSound();
+            showBubble('joy', 3);
+          } else {
+            showBubble('neutral', 1); // Nothing to clean
+          }
+        } else {
+          showBubble('worried', 2); // Not enough money
+        }
+        break;
     }
-  };
-
-  const handleCleanNewspaper = () => {
-    playButtonSound();
     setShowCleanMenu(false);
-
-    // 벌레 1마리 제거
-    const result = nurturing.cleanBug();
-
-    if (result.success) {
-      playCleaningSound(); // 청소 효과음 재생
-      showBubble('playful', 1);
-      console.log(result.message);
-    } else {
-      console.log(result.message);
-    }
   };
 
   const toggleCleanMenu = () => {
@@ -431,6 +447,10 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
         </div>
 
         <div className="stats-row">
+          <div className="stat-badge stat-badge--glo">
+            <span className="stat-icon">🪙</span>
+            <span className="stat-value">{nurturing.glo}</span>
+          </div>
           <div className="stat-badge stat-badge--hunger">
             <span className="stat-icon">🍖</span>
             <span className="stat-value">{Math.round(nurturing.stats.fullness)}</span>
@@ -572,6 +592,35 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
         </div>
       )}
 
+      {/* Medicine Menu Submenu */}
+      {showMedicineMenu && (
+        <div className="food-menu-overlay" onClick={() => { playButtonSound(); setShowMedicineMenu(false); }}>
+          <div className="food-menu" onClick={(e) => e.stopPropagation()}>
+            <div className="food-menu-header">
+              <h3>{t('medicine.menu.title')}</h3>
+              <button className="close-btn" onClick={() => { playButtonSound(); setShowMedicineMenu(false); }}>✕</button>
+            </div>
+
+            <div className="food-items-grid">
+              {MEDICINE_ITEMS.map((medicine) => (
+                <button
+                  key={medicine.id}
+                  className="food-item"
+                  onClick={() => handleGiveMedicine(medicine)}
+                  disabled={action !== 'idle'}
+                >
+                  <span className="food-item-icon">{medicine.icon}</span>
+                  <span className="food-item-name">{t(medicine.nameKey)}</span>
+                  <div className="food-item-effects">
+                    <span className="food-item-price">🪙 {medicine.price}</span>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Clean Menu Submenu */}
       {showCleanMenu && (
         <div className="food-menu-overlay" onClick={() => { playButtonSound(); setShowCleanMenu(false); }}>
@@ -582,29 +631,28 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
             </div>
 
             <div className="food-items-grid">
-              <button
-                className="food-item"
-                onClick={handleCleanBroom}
-                disabled={action !== 'idle' || nurturing.poops.length === 0}
-              >
-                <span className="food-item-icon">🧹</span>
-                <span className="food-item-name">{t('cleanMenu.broom.name')}</span>
-                <div className="food-item-effects">
-                  <span className="effect">{t('cleanMenu.broom.effect')}</span>
-                </div>
-              </button>
-
-              <button
-                className="food-item"
-                onClick={handleCleanNewspaper}
-                disabled={action !== 'idle' || nurturing.bugs.length === 0}
-              >
-                <span className="food-item-icon">🗞️</span>
-                <span className="food-item-name">{t('cleanMenu.newspaper.name')}</span>
-                <div className="food-item-effects">
-                  <span className="effect">{t('cleanMenu.newspaper.effect')}</span>
-                </div>
-              </button>
+              {CLEANING_TOOLS.map((tool) => (
+                <button
+                  key={tool.id}
+                  className="food-item"
+                  onClick={() => handleClean(tool)}
+                  disabled={
+                    action !== 'idle' ||
+                    (tool.id === 'broom' && nurturing.poops.length === 0) ||
+                    (tool.id === 'newspaper' && nurturing.bugs.length === 0) ||
+                    (tool.id === 'robot_cleaner' && nurturing.glo < tool.price)
+                  }
+                >
+                  <span className="food-item-icon">{tool.icon}</span>
+                  <span className="food-item-name">{t(tool.nameKey)}</span>
+                  <div className="food-item-effects">
+                    <span className="effect">{t(tool.descriptionKey)}</span>
+                  </div>
+                  <div className="food-item-price">
+                    {tool.price > 0 ? `🪙 ${tool.price}` : 'Free'}
+                  </div>
+                </button>
+              ))}
             </div>
           </div>
         </div>
@@ -629,7 +677,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
         </button>
         <button
           className="action-btn action-btn--small"
-          onClick={handleMedicine}
+          onClick={toggleMedicineMenu}
           disabled={action !== 'idle'}
           title={t('actions.medicine')}
         >

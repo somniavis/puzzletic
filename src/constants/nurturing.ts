@@ -4,6 +4,7 @@
  */
 
 import type { NurturingStats, FoodEffect, MedicineEffect, AbandonmentState } from '../types/nurturing';
+import { MEDICINE_ITEMS } from '../types/medicine';
 
 // ==================== 게임 틱 설정 ====================
 export const TICK_INTERVAL_MS = 5000; // 5초 = 1 로직 틱 (빠른 변화로 관리 필요성 증가)
@@ -135,30 +136,15 @@ export const FOOD_EFFECTS: Record<string, FoodEffect> = {
   },
 };
 
-// 약 아이템 (Medicine Items)
-export const MEDICINE_EFFECTS: Record<string, MedicineEffect> = {
-  bandage: {
-    health: 15,
-    happiness: -5,  // 약은 맛없어서 불행
-    fullness: 0,
-  },
-  antibiotic: {
-    health: 15,
-    happiness: -5,
-    fullness: 0,
-  },
-  healthPotion: {
-    health: 15,
-    happiness: -5,
-    fullness: 0,
-  },
-  // 기본 약 (Default)
-  default: {
-    health: 15,
-    happiness: -5,
-    fullness: 0,
-  },
-};
+// 약 아이템 (Medicine Items) - 동적으로 생성
+export const MEDICINE_EFFECTS: Record<string, MedicineEffect> = MEDICINE_ITEMS.reduce((acc, item) => {
+  acc[item.id] = {
+    health: item.effects.health,
+    happiness: item.effects.happiness,
+    fullness: 0, // 약은 포만감에 영향을 주지 않음
+  };
+  return acc;
+}, {} as Record<string, MedicineEffect>);
 
 // 청소 효과 (Cleaning Effect)
 export const CLEAN_EFFECT = {

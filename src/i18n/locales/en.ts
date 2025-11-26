@@ -203,6 +203,15 @@ export const en = {
       health: 'Health',
     },
   },
+  medicine: {
+    menu: {
+      title: 'Give Medicine',
+    },
+    items: {
+      pill: 'Pill',
+      syringe: 'Syringe',
+    },
+  },
   actions: {
     feed: 'Feed',
     medicine: 'Medicine',
@@ -219,6 +228,10 @@ export const en = {
     newspaper: {
       name: 'Newspaper',
       effect: 'Remove 1 bug',
+    },
+    robot_cleaner: {
+      name: 'Robot Cleaner',
+      effect: 'Cleans all',
     },
   },
   emotions: {
