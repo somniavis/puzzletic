@@ -41,7 +41,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
   const [selectedFoodCategory, setSelectedFoodCategory] = useState<FoodCategory>('meal');
   const [bubble, setBubble] = useState<{ category: EmotionCategory; level: 1 | 2 | 3; key: number } | null>(null);
   const [lastBubbleTime, setLastBubbleTime] = useState(0);
-  const [flyingFood, setFlyingFood] = useState<{ icon: string; key: number } | null>(null);
+  const [flyingFood, setFlyingFood] = useState<{ icon: string; key: number; type: 'food' | 'pill' | 'syringe' } | null>(null);
 
   const showBubble = (category: EmotionCategory, level: 1 | 2 | 3) => {
     setBubble({ category, level, key: Date.now() });
@@ -266,7 +266,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
     setShowFoodMenu(false);
 
     // 음식 먹는 애니메이션 시작 + 사운드
-    setFlyingFood({ icon: food.icon, key: Date.now() });
+    setFlyingFood({ icon: food.icon, key: Date.now(), type: 'food' });
     playEatingSound();
 
     // 애니메이션 완료 후 실제 먹이기 실행
@@ -312,21 +312,45 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
     nurturing.spendGlo(medicine.price);
     playButtonSound();
     setShowMedicineMenu(false);
-    setAction('happy');
 
-    // 양육 시스템으로 약 먹이기 실행
-    const result = nurturing.giveMedicine(medicine.id);
+    // 약/주사 애니메이션 시작
+    const isSyringe = medicine.id === 'syringe';
+    setFlyingFood({
+      icon: medicine.icon,
+      key: Date.now(),
+      type: isSyringe ? 'syringe' : 'pill'
+    });
 
-    if (result.success) {
-      showBubble('sick', 1); // Show relief
-      setTimeout(() => {
-        setAction('idle');
-        showBubble('joy', 1);
-      }, 2000);
+    if (isSyringe) {
+      // 주사 효과음: 클린 효과음 사용
+      playCleaningSound();
     } else {
-      // Maybe show a "can't use this now" bubble
-      setTimeout(() => setAction('idle'), 2000);
+      playEatingSound();
     }
+
+    // 애니메이션 완료 후 실제 약 먹이기 실행
+    setTimeout(() => {
+      setFlyingFood(null);
+      setAction(isSyringe ? 'sick' : 'eating'); // 주사는 아파함, 알약은 먹음
+
+      // 양육 시스템으로 약 먹이기 실행
+      const result = nurturing.giveMedicine(medicine.id);
+
+      if (result.success) {
+        setTimeout(() => {
+          showBubble('sick', 1); // Show relief
+          setAction('happy'); // 기뻐함
+
+          setTimeout(() => {
+            setAction('idle');
+            showBubble('joy', 1);
+          }, 2000);
+        }, 500); // 먹는 모션 후 반응
+      } else {
+        // Maybe show a "can't use this now" bubble
+        setTimeout(() => setAction('idle'), 1500);
+      }
+    }, 1200); // 애니메이션 시간
   };
 
   const handleClean = (tool: CleaningTool) => {
@@ -409,7 +433,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
     nurturing.clickBug(bugId);
     showBubble('playful', 1);
   };
-  
+
   const handleCharacterClick = () => {
     // 젤로 클릭 사운드 재생 (랜덤)
     playJelloClickSound();
@@ -522,7 +546,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
         {flyingFood && (
           <div
             key={flyingFood.key}
-            className="eating-food"
+            className={flyingFood.type === 'syringe' ? 'injecting-medicine' : 'eating-food'}
             style={{
               left: `${position.x}%`,
               bottom: `${position.y - (window.innerWidth <= 768 ? 9 : 7)}%`,
