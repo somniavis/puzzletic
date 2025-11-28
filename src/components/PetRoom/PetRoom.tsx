@@ -42,6 +42,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
   const [bubble, setBubble] = useState<{ category: EmotionCategory; level: 1 | 2 | 3; key: number } | null>(null);
   const [lastBubbleTime, setLastBubbleTime] = useState(0);
   const [flyingFood, setFlyingFood] = useState<{ icon: string; key: number; type: 'food' | 'pill' | 'syringe' } | null>(null);
+  const [isShowering, setIsShowering] = useState(false);
 
   const showBubble = (category: EmotionCategory, level: 1 | 2 | 3) => {
     setBubble({ category, level, key: Date.now() });
@@ -381,6 +382,8 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
           nurturing.takeShower();
           playCleaningSound();
           showBubble('joy', 2);
+          setIsShowering(true);
+          setTimeout(() => setIsShowering(false), 3000);
         } else {
           showBubble('worried', 2); // Not enough money
         }
@@ -542,6 +545,8 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
           <Bug key={bug.id} bug={bug} onClick={handleBugClick} />
         ))}
 
+        {/* 샤워 이펙트 (Removed from here) */}
+
         {/* 먹는 음식 애니메이션 */}
         {flyingFood && (
           <div
@@ -573,6 +578,8 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
               level={bubble.level}
             />
           )}
+          {/* 샤워 이펙트 (Moved here) */}
+          {isShowering && <div className="shower-effect">🚿</div>}
           <CharacterComponent
             character={character}
             size="small"
