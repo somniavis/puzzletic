@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Character, CharacterMood, CharacterAction } from '../../types/character';
 import { CHARACTERS } from '../characters';
@@ -49,6 +49,17 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
     setLastBubbleTime(Date.now());
     setTimeout(() => setBubble(null), 3000); // Hide bubble after 3 seconds
   };
+
+  const bubbles = useMemo(() => {
+    if (!isShowering) return [];
+    return Array.from({ length: 20 }).map((_, i) => ({
+      id: i,
+      left: Math.random() * 90 + 5,
+      delay: Math.random() * 1,
+      duration: 1 + Math.random(),
+      scale: 0.8 + Math.random() * 0.7
+    }));
+  }, [isShowering]);
 
   // Auto-move character randomly
   useEffect(() => {
@@ -580,6 +591,25 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
           )}
           {/* 샤워 이펙트 (Moved here) */}
           {isShowering && <div className="shower-effect">🚿</div>}
+          {/* 버블 이펙트 */}
+          {isShowering && (
+            <div className="bubble-container">
+              {bubbles.map((b) => (
+                <span
+                  key={b.id}
+                  className="bubble"
+                  style={{
+                    left: `${b.left}%`,
+                    animationDelay: `${b.delay}s`,
+                    animationDuration: `${b.duration}s`,
+                    transform: `scale(${b.scale})`
+                  }}
+                >
+                  🫧
+                </span>
+              ))}
+            </div>
+          )}
           <CharacterComponent
             character={character}
             size="small"
