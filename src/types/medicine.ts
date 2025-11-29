@@ -15,7 +15,7 @@ export const MEDICINE_ITEMS: MedicineItem[] = [
     nameKey: 'medicine.items.pill',
     icon: '💊',
     effects: {
-      health: 25,
+      health: 7,
       happiness: -5,
     },
     price: 50,
@@ -25,7 +25,7 @@ export const MEDICINE_ITEMS: MedicineItem[] = [
     nameKey: 'medicine.items.syringe',
     icon: '💉',
     effects: {
-      health: 60,
+      health: 25,
       happiness: -15,
     },
     price: 150,

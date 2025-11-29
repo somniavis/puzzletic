@@ -28,6 +28,7 @@ Puzzletic은 React와 TypeScript를 기반으로 구축된 가상 펫 육성 웹
   - **오염 시스템**: 음식을 먹으면 `Poop`(똥)이 생성되고, 시간이 지나면 `Bug`(벌레)가 발생하여 청결도와 건강에 영향을 줍니다.
   - **가출 시스템**: 캐릭터를 장기간 방치하면 정해진 규칙에 따라 가출합니다.
   - **데이터 영속성**: `persistenceService.ts`가 `localStorage`를 사용하여 사용자의 게임 상태를 저장하고, 오프라인 진행 상황을 계산합니다.
+  - **데이터 보안**: `simpleEncryption.ts`를 통해 중요 데이터(glo 등)를 XOR 암호화 및 체크섬으로 보호하여 무결성을 검증합니다.
 - (자세한 내용은 `NURTURING.md` 참조)
 
 ### 3. 관리자 페이지 (`CharacterAdmin`)
@@ -64,7 +65,9 @@ puzzleletic/
 │   ├── services/                # 핵심 비즈니스 로직
 │   │   ├── actionService.ts     # 사용자 행동 처리
 │   │   ├── gameTickService.ts   # 실시간 게임 상태 변화
-│   │   └── persistenceService.ts# 데이터 저장/로드
+│   │   ├── persistenceService.ts# 데이터 저장/로드
+│   │   ├── simpleEncryption.ts  # 데이터 암호화 및 무결성 검증
+│   │   └── sound/               # 사운드 에셋 및 유틸리티
 │   ├── types/                   # TypeScript 타입 정의
 │   └── utils/                   # 유틸리티 함수
 ├── docs/                        # 프로젝트 문서
@@ -84,6 +87,11 @@ puzzleletic/
 5.  **사용자 행동**: 사용자가 버튼(먹이주기, 놀기 등)을 클릭하면 `actionService.ts`의 함수가 호출되어 캐릭터의 상태가 즉시 변경됩니다.
 6.  **상태 변경 및 저장**: 모든 상태 변경은 `NurturingContext`를 통해 이루어지며, 변경된 내용은 즉시 `localStorage`에 저장됩니다.
 7.  **UI 렌더링**: `PetRoom`, `NurturingPanel` 등의 컴포넌트는 `useNurturing` 훅을 통해 최신 상태를 구독하고 UI를 렌더링합니다.
+
+### 4. 사운드 시스템
+- **Provider**: `SoundContext.tsx`를 통해 전역적으로 사운드 상태(음소거 여부 등)를 관리합니다.
+- **유틸리티**: `utils/sound.ts`에서 사운드 파일 프리로드(`preloadSounds`) 및 재생 함수(`playButtonSound`, `playEatingSound` 등)를 제공합니다.
+- **최적화**: 앱 시작 시 주요 사운드를 미리 로드하여 재생 지연을 최소화합니다.
 
 ---
 
