@@ -573,8 +573,15 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
           </div>
         )}
         <div className={`room-background ${currentBackground}`}>
+          <div className="room-wall">
+            {currentBackground === 'tropical_ground' && (
+              <>
+                <div className="cloud-1" />
+                <div className="cloud-2" />
+              </>
+            )}
+          </div>
           <div className="room-floor" />
-          <div className="room-wall" />
         </div>
 
         {/* 똥들 렌더링 */}

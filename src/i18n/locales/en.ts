@@ -222,7 +222,8 @@ export const en = {
     items: {
       default_ground: 'Default Ground',
       'default_ground.desc': 'The original wooden floor.',
-
+      tropical_ground: 'Tropical Island',
+      'tropical_ground.desc': 'A sunny paradise beach.',
     },
   },
   actions: {

@@ -24,5 +24,13 @@ export const SHOP_ITEMS: ShopItem[] = [
         price: 0,
         isOwned: true,
     },
-
+    {
+        id: 'tropical_ground',
+        nameKey: 'shop.items.tropical_ground',
+        descriptionKey: 'shop.items.tropical_ground.desc',
+        icon: '🏝️',
+        category: 'ground',
+        price: 150,
+        isOwned: false,
+    },
 ];
