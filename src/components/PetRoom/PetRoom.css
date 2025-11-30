@@ -1179,23 +1179,26 @@
   }
 }
 
-/* Sand Texture - Irregular Noise (Subtle) */
+/* Sand Texture - Irregular Noise (Subtle & Randomized) */
 .room-background.tropical_ground .room-floor::after {
   content: '';
   position: absolute;
   inset: 0;
   background-image:
-    radial-gradient(rgba(160, 82, 45, 0.1) 1px, transparent 1px),
-    radial-gradient(rgba(160, 82, 45, 0.08) 1px, transparent 1px),
-    radial-gradient(rgba(255, 255, 255, 0.2) 1px, transparent 1px);
+    radial-gradient(rgba(160, 82, 45, 0.1) 0.5px, transparent 0.5px),
+    radial-gradient(rgba(160, 82, 45, 0.08) 0.5px, transparent 0.5px),
+    radial-gradient(rgba(255, 255, 255, 0.2) 0.5px, transparent 0.5px),
+    radial-gradient(rgba(160, 82, 45, 0.05) 0.5px, transparent 0.5px);
   background-size:
-    11px 11px,
-    23px 23px,
-    7px 7px;
+    13px 13px,
+    29px 29px,
+    17px 17px,
+    23px 23px;
   background-position:
-    0 0,
-    5px 5px,
-    3px 3px;
+    2px 5px,
+    15px 10px,
+    7px 20px,
+    0 0;
   opacity: 0.4;
   pointer-events: none;
 }
