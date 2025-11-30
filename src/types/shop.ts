@@ -51,4 +51,12 @@ export const SHOP_ITEMS: ShopItem[] = [
         price: 250,
         isOwned: false,
     },
+    {
+        id: 'desert_ground',
+        nameKey: 'shop.items.desert_ground',
+        descriptionKey: 'shop.items.desert_ground.desc',
+        price: 200,
+        category: 'ground',
+        icon: '🏜️',
+    },
 ];

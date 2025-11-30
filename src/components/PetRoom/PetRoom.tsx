@@ -620,6 +620,18 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
                 <div className="cloud-2" />
               </>
             )}
+            {currentBackground === 'desert_ground' && (
+              <>
+                <div className="sand-dune dune-large" />
+                <div className="sand-dune dune-small" />
+                {/* Far Dunes (Right) */}
+                <div className="sand-dune dune-far-large" />
+                <div className="sand-dune dune-far-small" />
+                {/* Sandstorm Animation */}
+                <div className="sandstorm-1" />
+                <div className="sandstorm-2" />
+              </>
+            )}
             {currentBackground === 'volcanic_ground' && (
               <>
                 <div className="volcano-2" />

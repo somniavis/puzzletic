@@ -227,12 +227,15 @@
 }
 
 /* Default Ground Override to maintain original look (approx 60/40) */
+/* Default Ground Override: Full height floor with light yellow wall color */
 .room-background.default_ground .room-wall {
-  height: 60%;
+  display: none;
 }
 
 .room-background.default_ground .room-floor {
-  height: 40%;
+  height: 100%;
+  margin-top: 0;
+  background: linear-gradient(180deg, #FFF9E6 0%, #FFE4B5 100%);
 }
 
 /* Tropical Island Background */
@@ -1494,6 +1497,190 @@
   100% {
     opacity: 0;
   }
+}
+
+/* Desert Background */
+.room-background.desert_ground .room-wall {
+  height: 50vh !important;
+  /* Sky (0-33%) -> Sand Sea (33-100%) */
+  /* Sky Gradient: #87c8e4 to Lighter Blue */
+  background: linear-gradient(180deg, #87c8e4 0%, #b3e0f2 33%, #eed185 33%, #eed185 100%);
+  border-bottom: none;
+  overflow: hidden;
+}
+
+/* Sun (Top Left) */
+.room-background.desert_ground .room-wall::before {
+  content: '';
+  position: absolute;
+  top: 8%;
+  left: 15%;
+  /* Top Left */
+  width: 50px;
+  height: 50px;
+  background: radial-gradient(circle, #FFF9C4 0%, #FFEB3B 40%, #FFC107 100%);
+  border-radius: 50%;
+  box-shadow: 0 0 30px rgba(255, 235, 59, 0.6);
+  animation: sun-glow 4s ease-in-out infinite alternate;
+}
+
+/* Sand Dunes (Triangles) */
+.room-background.desert_ground .sand-dune {
+  position: absolute;
+  bottom: 65%;
+  /* Moved up from 60% to be in the middle of the visible Sand Sea */
+  clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+  /* Triangle Shape */
+  z-index: 1;
+}
+
+/* Large Dune (Left) */
+.room-background.desert_ground .dune-large {
+  left: 40%;
+  /* Moved closer to center */
+  transform: translateX(-50%);
+  width: 300px;
+  height: 100px;
+  background: #dcb66b;
+  /* Darker Sand */
+  z-index: 2;
+  /* In front */
+}
+
+/* Small Dune (Right) */
+.room-background.desert_ground .dune-small {
+  left: 60%;
+  /* Moved closer to center to overlap */
+  transform: translateX(-50%);
+  width: 180px;
+  height: 70px;
+  background: #e4c478;
+  /* Medium Sand */
+  z-index: 1;
+  /* Behind */
+}
+
+/* Far Dunes (Right Horizon) */
+/* Far Large Dune (Left in the pair) */
+.room-background.desert_ground .dune-far-large {
+  right: 15%;
+  /* Far Right */
+  width: 150px;
+  /* 50% of main large */
+  height: 50px;
+  background: #dcb66b;
+  z-index: 2;
+  bottom: 65%;
+  /* Horizon */
+}
+
+/* Far Small Dune (Right in the pair) */
+.room-background.desert_ground .dune-far-small {
+  right: 5%;
+  /* Further Right */
+  width: 90px;
+  /* 50% of main small */
+  height: 35px;
+  background: #e4c478;
+  z-index: 1;
+  bottom: 65%;
+  /* Horizon */
+}
+
+/* Sandstorm Animation (Intermittent) */
+@keyframes sandstorm-cycle {
+  0% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+
+  4% {
+    opacity: 0.8;
+    /* Fade in quickly (10% of active time) */
+  }
+
+  36% {
+    opacity: 0.8;
+    /* Fade out start (90% of active time) */
+  }
+
+  40% {
+    transform: translateX(-100%);
+    opacity: 0;
+    /* End of movement */
+  }
+
+  100% {
+    transform: translateX(-100%);
+    opacity: 0;
+    /* Wait off-screen */
+  }
+}
+
+.room-background.desert_ground .sandstorm-1 {
+  position: absolute;
+  top: 10%;
+  left: 0;
+  width: 100%;
+  height: 25%;
+  background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.4) 20%, rgba(238, 209, 133, 0.6) 50%, rgba(255, 255, 255, 0.4) 80%, transparent 100%);
+  filter: blur(8px);
+  z-index: 3;
+  animation: sandstorm-cycle 25s linear infinite;
+  /* 10s active / 25s total */
+  pointer-events: none;
+}
+
+.room-background.desert_ground .sandstorm-2 {
+  position: absolute;
+  top: 20%;
+  left: 0;
+  width: 100%;
+  height: 20%;
+  background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.3) 30%, rgba(238, 209, 133, 0.5) 60%, transparent 100%);
+  filter: blur(10px);
+  z-index: 3;
+  animation: sandstorm-cycle 38s linear infinite;
+  /* ~15s active / 38s total */
+  animation-delay: 3s;
+  pointer-events: none;
+}
+
+.room-background.desert_ground .room-floor {
+  height: 80vh !important;
+  margin-top: -30vh !important;
+  /* Soil Color */
+  background: linear-gradient(180deg, #e29046 0%, #cd7f32 100%);
+  /* Curved Effect */
+  border-top-left-radius: 50% 40px;
+  border-top-right-radius: 50% 40px;
+  overflow: hidden;
+  box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  /* Ensure floor covers wall elements */
+}
+
+/* Desert Texture (Matching Tropical Dot Pattern) */
+.room-background.desert_ground .room-floor::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(rgba(160, 82, 45, 0.1) 0.5px, transparent 0.5px),
+    radial-gradient(rgba(160, 82, 45, 0.08) 0.5px, transparent 0.5px),
+    radial-gradient(rgba(255, 255, 255, 0.2) 0.5px, transparent 0.5px),
+    radial-gradient(rgba(160, 82, 45, 0.05) 0.5px, transparent 0.5px);
+  background-size:
+    13px 13px,
+    29px 29px,
+    17px 17px,
+    23px 23px;
+  background-position:
+    15px 10px,
+    7px 20px,
+    0 0;
+  opacity: 0.4;
+  pointer-events: none;
 }
 
 /* Arctic Background */

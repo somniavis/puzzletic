@@ -228,6 +228,8 @@ export const en = {
       'arctic_ground.desc': 'A cold icy wonderland.',
       volcanic_ground: 'Volcanic Zone',
       'volcanic_ground.desc': 'A fiery land with flowing lava.',
+      desert_ground: 'Desert Ground',
+      'desert_ground.desc': 'Endless sand dunes.',
     },
   },
   actions: {
