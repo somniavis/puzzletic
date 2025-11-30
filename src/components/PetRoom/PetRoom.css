@@ -221,17 +221,6 @@
   height: 80%;
   /* Standard Bottom 80% */
   background: linear-gradient(180deg, #DEB887 0%, #D2691E 100%);
-  background-image:
-    repeating-linear-gradient(90deg,
-      #8B4513 0px,
-      #8B4513 2px,
-      transparent 2px,
-      transparent 50px),
-    repeating-linear-gradient(0deg,
-      #8B4513 0px,
-      #8B4513 2px,
-      transparent 2px,
-      transparent 50px);
   box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.2);
   flex-shrink: 0;
   z-index: 1;
