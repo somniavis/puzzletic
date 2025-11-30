@@ -949,6 +949,7 @@
   border: 2px solid rgba(139, 69, 19, 0.3);
   white-space: nowrap;
 }
+
 /* Shop Floating Button */
 .shop-btn-floating {
   position: absolute;
@@ -963,7 +964,8 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  z-index: 20; /* Above character and background */
+  z-index: 20;
+  /* Above character and background */
   box-shadow: 0 4px 0 #6B3513, 0 6px 8px rgba(0, 0, 0, 0.2);
   transition: all 0.2s ease;
 }
@@ -996,8 +998,9 @@
     top: 15px;
     right: 15px;
   }
-  
+
   .shop-btn-floating .action-icon {
     font-size: 1.6rem;
   }
 }
+

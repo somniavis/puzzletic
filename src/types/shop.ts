@@ -24,4 +24,5 @@ export const SHOP_ITEMS: ShopItem[] = [
         price: 0,
         isOwned: true,
     },
+
 ];

@@ -222,6 +222,7 @@ export const en = {
     items: {
       default_ground: 'Default Ground',
       'default_ground.desc': 'The original wooden floor.',
+
     },
   },
   actions: {
