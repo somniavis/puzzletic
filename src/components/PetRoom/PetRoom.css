@@ -1057,9 +1057,9 @@
   width: 100%;
   order: -1 !important;
   inset: auto !important;
-  /* Sky (0-30%) -> Ocean (30-100%) */
-  /* Updated gradient based on reference image: Lighter, softer blue sky */
-  background: linear-gradient(180deg, #AEEEEE 0%, #87CEEB 30%, #40E0D0 30%, #20B2AA 100%);
+  /* Sky (0-33%) -> Ocean (33-100%) */
+  /* Updated gradient: Horizon adjusted to 33% */
+  background: linear-gradient(180deg, #AEEEEE 0%, #87CEEB 33%, #40E0D0 33%, #20B2AA 100%);
   overflow: hidden;
   border-bottom: none;
   z-index: 0;
@@ -1141,7 +1141,8 @@
   width: 100%;
   inset: auto !important;
   margin-top: -30vh !important;
-  background: linear-gradient(180deg, #F9E79F 0%, #F4D03F 40%, #E67E22 100%);
+  /* White Sand Color based on reference - Lighter gradient */
+  background: linear-gradient(180deg, #FFF8DC 0%, #FFF0D4 100%);
   overflow: hidden;
   z-index: 1;
   /* Curved Sand Effect */
@@ -1178,16 +1179,23 @@
   }
 }
 
-/* Sand Texture */
+/* Sand Texture - Irregular Noise (Subtle) */
 .room-background.tropical_ground .room-floor::after {
   content: '';
   position: absolute;
   inset: 0;
   background-image:
-    radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.3) 0%, transparent 10%),
-    radial-gradient(circle at 60% 50%, rgba(255, 255, 255, 0.25) 0%, transparent 8%),
-    radial-gradient(circle at 80% 70%, rgba(255, 255, 255, 0.2) 0%, transparent 12%),
-    radial-gradient(circle at 30% 80%, rgba(230, 200, 150, 0.3) 0%, transparent 15%);
-  opacity: 0.5;
+    radial-gradient(rgba(160, 82, 45, 0.1) 1px, transparent 1px),
+    radial-gradient(rgba(160, 82, 45, 0.08) 1px, transparent 1px),
+    radial-gradient(rgba(255, 255, 255, 0.2) 1px, transparent 1px);
+  background-size:
+    11px 11px,
+    23px 23px,
+    7px 7px;
+  background-position:
+    0 0,
+    5px 5px,
+    3px 3px;
+  opacity: 0.4;
   pointer-events: none;
 }
