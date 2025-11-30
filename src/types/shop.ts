@@ -33,4 +33,13 @@ export const SHOP_ITEMS: ShopItem[] = [
         price: 150,
         isOwned: false,
     },
+    {
+        id: 'arctic_ground',
+        nameKey: 'shop.items.arctic_ground',
+        descriptionKey: 'shop.items.arctic_ground.desc',
+        icon: '❄️',
+        category: 'ground',
+        price: 200,
+        isOwned: false,
+    },
 ];

@@ -224,6 +224,8 @@ export const en = {
       'default_ground.desc': 'The original wooden floor.',
       tropical_ground: 'Tropical Island',
       'tropical_ground.desc': 'A sunny paradise beach.',
+      arctic_ground: 'Arctic Land',
+      'arctic_ground.desc': 'A cold icy wonderland.',
     },
   },
   actions: {

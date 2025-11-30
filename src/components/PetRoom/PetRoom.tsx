@@ -580,6 +580,16 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
                 <div className="cloud-2" />
               </>
             )}
+            {currentBackground === 'arctic_ground' && (
+              <>
+                <div className="aurora" />
+                <div className="star-1" />
+                <div className="star-2" />
+                <div className="star-3" />
+                <div className="star-4" />
+                <div className="iceberg-1" />
+              </>
+            )}
           </div>
           <div className="room-floor" />
         </div>
