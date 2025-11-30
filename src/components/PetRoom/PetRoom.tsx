@@ -70,7 +70,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
     const moveInterval = setInterval(() => {
       if (!isMoving && Math.random() > 0.7) {
         const newX = Math.max(10, Math.min(90, position.x + (Math.random() - 0.5) * 30));
-        const newY = Math.max(20, Math.min(80, position.y + (Math.random() - 0.5) * 20));
+        const newY = Math.max(10, Math.min(80, position.y + (Math.random() - 0.5) * 20));
         setPosition({ x: newX, y: newY });
         setIsMoving(true);
         setTimeout(() => setIsMoving(false), 1000);
