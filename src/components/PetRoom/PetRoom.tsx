@@ -320,11 +320,32 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
 
   const handleShopItemClick = (item: ShopItem) => {
     playButtonSound();
-    if (item.category === 'ground') {
-      setCurrentBackground(item.id);
-      showBubble('joy', 1);
+
+    // Check ownership
+    const isOwned = nurturing.inventory.includes(item.id);
+
+    if (isOwned) {
+      // Equip if owned
+      if (item.category === 'ground') {
+        setCurrentBackground(item.id);
+        showBubble('joy', 1);
+      }
+    } else {
+      // Purchase if not owned
+      if (nurturing.glo >= item.price) {
+        const success = nurturing.purchaseItem(item.id, item.price);
+        if (success) {
+          playCleaningSound();
+          showBubble('joy', 2);
+          // Auto-equip after purchase
+          if (item.category === 'ground') {
+            setCurrentBackground(item.id);
+          }
+        }
+      } else {
+        showBubble('worried', 2); // Not enough money
+      }
     }
-    // setShowShopMenu(false); // Keep menu open to allow trying different items? Or close it? Let's keep it open for now.
   };
 
   const filteredFoods = FOOD_ITEMS.filter(food => food.category === selectedFoodCategory);
@@ -580,6 +601,21 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
                 <div className="cloud-2" />
               </>
             )}
+            {currentBackground === 'volcanic_ground' && (
+              <>
+                <div className="volcano-2" />
+                <div className="volcano" />
+                <div className="volcano-smoke-main-1" />
+                <div className="volcano-smoke-main-2" />
+                <div className="volcano-smoke-main-3" />
+                <div className="volcano-smoke-main-4" />
+                <div className="volcano-smoke-main-5" />
+                <div className="volcano-smoke-main-6" />
+                <div className="volcano-smoke-small-1" />
+                <div className="volcano-smoke-small-2" />
+                <div className="volcano-smoke-small-3" />
+              </>
+            )}
             {currentBackground === 'arctic_ground' && (
               <>
                 <div className="aurora" />
@@ -827,9 +863,16 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
                     <span className="food-item-icon">{item.icon}</span>
                     <span className="food-item-name">{t(item.nameKey)}</span>
                     <div className="food-item-effects">
-                      <span className="food-item-price">{item.price > 0 ? `💰 ${item.price}` : 'Free'}</span>
+                      {nurturing.inventory.includes(item.id) ? (
+                        currentBackground === item.id ? (
+                          <span className="food-item-price">✅ Owned</span>
+                        ) : (
+                          <span className="food-item-price">Owned</span>
+                        )
+                      ) : (
+                        <span className="food-item-price">💰 {item.price}</span>
+                      )}
                     </div>
-                    {currentBackground === item.id && <div className="selected-badge">✅</div>}
                   </button>
                 ))}
               </div>

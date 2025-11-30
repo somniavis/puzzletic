@@ -149,4 +149,5 @@ export interface NurturingPersistentState {
   totalCurrencyEarned: number;
   studyCount: number;
   abandonmentState: AbandonmentState;  // 가출 상태
+  inventory: string[]; // 보유 아이템 목록 (ID)
 }

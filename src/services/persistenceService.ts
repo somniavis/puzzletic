@@ -16,7 +16,7 @@ import {
 import { calculateOfflineProgress, checkAbandonmentState } from './gameTickService';
 import { protectData, restoreData } from './simpleEncryption';
 
-const STORAGE_KEY = 'puzzleletic_nurturing_state';
+const STORAGE_KEY = 'puzzleletic_nurturing_state_v2';
 const CHECKSUM_KEY = 'puzzleletic_checksum';
 
 /**
@@ -38,6 +38,7 @@ const createDefaultState = (): NurturingPersistentState => {
     totalCurrencyEarned: 0,
     studyCount: 0,
     abandonmentState: { ...DEFAULT_ABANDONMENT_STATE },
+    inventory: ['default_ground'],
   };
 };
 
@@ -155,6 +156,11 @@ export const loadNurturingState = (): NurturingPersistentState => {
         }
         return poop;
       });
+    }
+
+    // inventory가 없으면 기본값 추가
+    if (!loaded.inventory) {
+      loaded.inventory = ['default_ground'];
     }
 
     return loaded as NurturingPersistentState;

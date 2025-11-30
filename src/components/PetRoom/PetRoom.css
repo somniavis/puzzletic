@@ -1202,6 +1202,217 @@
   pointer-events: none;
 }
 
+/* Volcanic Background */
+.room-background.volcanic_ground .room-wall {
+  height: 50vh !important;
+  /* Template Structure */
+  /* Dark Red Sunset Sky (0-33%) -> Red Lava Ocean (33-100%) */
+  background: linear-gradient(180deg, #1a0505 0%, #4a0505 20%, #8b0000 33%, #FF0000 33%, #DC143C 100%);
+  border-bottom: none;
+  overflow: hidden;
+}
+
+.room-background.volcanic_ground .room-floor {
+  height: 80vh !important;
+  margin-top: -30vh !important;
+  /* Template Structure */
+  /* Volcanic Earth Gradient */
+  background: linear-gradient(180deg, #3c2925 0%, #251815 100%);
+  /* Curved Effect */
+  border-top-left-radius: 50% 40px;
+  border-top-right-radius: 50% 40px;
+  overflow: hidden;
+  box-shadow: 0 -5px 15px rgba(220, 20, 60, 0.2);
+  /* Red glow shadow */
+}
+
+/* Lava Glow at Shoreline */
+.room-background.volcanic_ground .room-floor::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 15px;
+  background: linear-gradient(180deg, rgba(220, 20, 60, 0.8) 0%, transparent 100%);
+  opacity: 0.8;
+  animation: lava-pulse 3s ease-in-out infinite alternate;
+}
+
+@keyframes lava-pulse {
+  0% {
+    opacity: 0.6;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+/* Ash Texture (Matching Tropical Dot Pattern) */
+.room-background.volcanic_ground .room-floor::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(rgba(0, 0, 0, 0.2) 0.5px, transparent 0.5px),
+    radial-gradient(rgba(0, 0, 0, 0.15) 0.5px, transparent 0.5px),
+    radial-gradient(rgba(255, 255, 255, 0.1) 0.5px, transparent 0.5px),
+    radial-gradient(rgba(0, 0, 0, 0.1) 0.5px, transparent 0.5px);
+  background-size:
+    13px 13px,
+    29px 29px,
+    17px 17px,
+    23px 23px;
+  background-position:
+    15px 10px,
+    7px 20px,
+    0 0;
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* Volcano (Main - Satgat Shape) */
+.room-background.volcanic_ground .volcano {
+  position: absolute;
+  bottom: 65%;
+  /* Moved up further */
+  left: 65%;
+  /* Moved right */
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  /* Wide and large triangle */
+  border-left: 150px solid transparent;
+  border-right: 150px solid transparent;
+  border-bottom: 120px solid #2D0505;
+  /* Darkest Rock */
+  z-index: 2;
+  /* In front */
+}
+
+
+/* Volcano 2 (Small - Background) */
+.room-background.volcanic_ground .volcano-2 {
+  position: absolute;
+  bottom: 65%;
+  /* Same horizon line */
+  left: 45%;
+  /* To the left of main volcano */
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  /* Smaller triangle */
+  border-left: 100px solid transparent;
+  border-right: 100px solid transparent;
+  border-bottom: 80px solid #3E0808;
+  /* Slightly lighter/different shade */
+  z-index: 1;
+  /* Behind main volcano */
+}
+
+/* Volcanic Smoke Animation (Main Volcano) */
+.room-background.volcanic_ground .volcano-smoke-main-1,
+.room-background.volcanic_ground .volcano-smoke-main-2,
+.room-background.volcanic_ground .volcano-smoke-main-3,
+.room-background.volcanic_ground .volcano-smoke-main-4,
+.room-background.volcanic_ground .volcano-smoke-main-5,
+.room-background.volcanic_ground .volcano-smoke-main-6 {
+  position: absolute;
+  bottom: calc(65% + 90px);
+  /* Main Crater */
+  left: 65%;
+  width: 35px;
+  height: 35px;
+  background: radial-gradient(circle, rgba(220, 220, 220, 0.7) 0%, rgba(150, 150, 150, 0) 70%);
+  border-radius: 50%;
+  transform: translateX(-50%) scale(0.5);
+  filter: blur(6px);
+  opacity: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+
+/* Volcanic Smoke Animation (Small Volcano) */
+.room-background.volcanic_ground .volcano-smoke-small-1,
+.room-background.volcanic_ground .volcano-smoke-small-2,
+.room-background.volcanic_ground .volcano-smoke-small-3 {
+  position: absolute;
+  bottom: calc(65% + 60px);
+  /* Small Crater (Lower) */
+  left: 45%;
+  width: 25px;
+  height: 25px;
+  background: radial-gradient(circle, rgba(200, 200, 200, 0.6) 0%, rgba(150, 150, 150, 0) 70%);
+  border-radius: 50%;
+  transform: translateX(-50%) scale(0.5);
+  filter: blur(5px);
+  opacity: 0;
+  z-index: 0;
+  /* Behind main volcano */
+  pointer-events: none;
+}
+
+/* Staggered Animations & Position Variations */
+.room-background.volcanic_ground .volcano-smoke-main-1 {
+  animation: smoke-rise-left 4s infinite ease-out 0s;
+}
+
+.room-background.volcanic_ground .volcano-smoke-main-2 {
+  animation: smoke-rise-left 4s infinite ease-out 0.7s;
+  left: 64%;
+}
+
+.room-background.volcanic_ground .volcano-smoke-main-3 {
+  animation: smoke-rise-left 4s infinite ease-out 1.4s;
+  left: 66%;
+}
+
+.room-background.volcanic_ground .volcano-smoke-main-4 {
+  animation: smoke-rise-left 4s infinite ease-out 2.1s;
+}
+
+.room-background.volcanic_ground .volcano-smoke-main-5 {
+  animation: smoke-rise-left 4s infinite ease-out 2.8s;
+  left: 64%;
+}
+
+.room-background.volcanic_ground .volcano-smoke-main-6 {
+  animation: smoke-rise-left 4s infinite ease-out 3.5s;
+  left: 66%;
+}
+
+.room-background.volcanic_ground .volcano-smoke-small-1 {
+  animation: smoke-rise-left 3.5s infinite ease-out 0s;
+}
+
+.room-background.volcanic_ground .volcano-smoke-small-2 {
+  animation: smoke-rise-left 3.5s infinite ease-out 1.2s;
+  left: 44%;
+}
+
+.room-background.volcanic_ground .volcano-smoke-small-3 {
+  animation: smoke-rise-left 3.5s infinite ease-out 2.4s;
+  left: 46%;
+}
+
+@keyframes smoke-rise-left {
+  0% {
+    transform: translateX(-50%) translateY(0) scale(0.5);
+    opacity: 0;
+  }
+
+  20% {
+    opacity: 0.8;
+  }
+
+  100% {
+    /* Move diagonally top-left */
+    transform: translateX(-250%) translateY(-180px) scale(2.5);
+    opacity: 0;
+  }
+}
+
 /* Arctic Background */
 .room-background.arctic_ground .room-wall {
   height: 50vh !important;

@@ -226,6 +226,8 @@ export const en = {
       'tropical_ground.desc': 'A sunny paradise beach.',
       arctic_ground: 'Arctic Land',
       'arctic_ground.desc': 'A cold icy wonderland.',
+      volcanic_ground: 'Volcanic Zone',
+      'volcanic_ground.desc': 'A fiery land with flowing lava.',
     },
   },
   actions: {

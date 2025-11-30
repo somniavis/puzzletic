@@ -42,4 +42,13 @@ export const SHOP_ITEMS: ShopItem[] = [
         price: 200,
         isOwned: false,
     },
+    {
+        id: 'volcanic_ground',
+        nameKey: 'shop.items.volcanic_ground',
+        descriptionKey: 'shop.items.volcanic_ground.desc',
+        icon: '🌋',
+        category: 'ground',
+        price: 250,
+        isOwned: false,
+    },
 ];

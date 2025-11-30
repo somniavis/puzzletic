@@ -64,6 +64,8 @@ interface NurturingContextValue {
   clickPoop: (poopId: string) => void;
   clickBug: (bugId: string) => void;
   spendGlo: (amount: number) => boolean;
+  purchaseItem: (itemId: string, price: number) => boolean;
+  inventory: string[];
 
   // 유틸리티
   resetGame: () => void;
@@ -369,6 +371,33 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     return success;
   }, []);
 
+  const purchaseItem = useCallback((itemId: string, price: number): boolean => {
+    let success = false;
+    setState((currentState) => {
+      // 이미 보유 중이면 성공 처리 (돈 차감 안 함)
+      if (currentState.inventory?.includes(itemId)) {
+        success = true;
+        return currentState;
+      }
+
+      // 돈 부족
+      if ((currentState.glo || 0) < price) {
+        success = false;
+        return currentState;
+      }
+
+      success = true;
+      const newState = {
+        ...currentState,
+        glo: (currentState.glo || 0) - price,
+        inventory: [...(currentState.inventory || []), itemId],
+      };
+      saveNurturingState(newState);
+      return newState;
+    });
+    return success;
+  }, []);
+
   const cleanAll = useCallback((): ActionResult => {
     setState((currentState) => {
       const newState: NurturingPersistentState = {
@@ -549,6 +578,8 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     clickPoop,
     clickBug,
     spendGlo,
+    purchaseItem,
+    inventory: state.inventory || ['default_ground'],
     resetGame,
     pauseTick,
     resumeTick,
