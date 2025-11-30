@@ -525,6 +525,25 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
 
   const CharacterComponent = CHARACTERS[speciesId as keyof typeof CHARACTERS];
 
+  // Lightning Effect State
+  const [lightningStyle, setLightningStyle] = useState<React.CSSProperties>({});
+
+  useEffect(() => {
+    if (currentBackground === 'volcanic_ground') {
+      const updateLightning = () => {
+        setLightningStyle({
+          top: `${Math.random() * 15 + 2}%`,
+          left: `${Math.random() * 25 + 5}%`,
+          animationDelay: `${Math.random() * 2}s`
+        });
+      };
+
+      updateLightning(); // Initial set
+      const interval = setInterval(updateLightning, 8000); // Change position every 8s
+      return () => clearInterval(interval);
+    }
+  }, [currentBackground]);
+
   return (
     <div className="pet-room">
       {/* Top Header with Character Info */}
@@ -614,6 +633,11 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
                 <div className="volcano-smoke-small-1" />
                 <div className="volcano-smoke-small-2" />
                 <div className="volcano-smoke-small-3" />
+                <div className="volcano-smoke-small-3" />
+                <div
+                  className="volcano-lightning"
+                  style={lightningStyle}
+                />
               </>
             )}
             {currentBackground === 'arctic_ground' && (

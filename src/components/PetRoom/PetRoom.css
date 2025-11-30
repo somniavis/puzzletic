@@ -1076,7 +1076,22 @@
   background: radial-gradient(circle, #FFF9C4 0%, #FFEB3B 40%, #FFC107 100%);
   border-radius: 50%;
   box-shadow: 0 0 30px rgba(255, 235, 59, 0.6);
-  animation: sun-glow 3s ease-in-out infinite alternate;
+  animation: sun-glow 4s ease-in-out infinite alternate;
+}
+
+@keyframes sun-glow {
+  0% {
+    box-shadow: 0 0 30px rgba(255, 235, 59, 0.6);
+    transform: scale(1);
+  }
+
+  100% {
+    /* Intense expanding rays */
+    box-shadow:
+      0 0 60px rgba(255, 235, 59, 0.9),
+      0 0 100px rgba(255, 165, 0, 0.6);
+    transform: scale(1.1);
+  }
 }
 
 /* Cloud 1 (Left) */
@@ -1409,6 +1424,85 @@
   100% {
     /* Move diagonally top-left */
     transform: translateX(-250%) translateY(-180px) scale(2.5);
+    opacity: 0;
+  }
+}
+
+/* Volcanic Lightning Effect */
+.room-background.volcanic_ground .volcano-lightning {
+  position: absolute;
+  top: 2%;
+  /* Moved higher up */
+  left: 15%;
+  width: 2px;
+  height: 100px;
+  background: #fff;
+  box-shadow: 0 0 10px #fff, 0 0 20px #FFD700;
+  /* White core with Gold glow */
+  opacity: 0;
+  transform: rotate(15deg);
+  z-index: 0;
+  /* Behind volcano */
+  animation: lightning-flash 8s infinite ease-in-out;
+}
+
+/* Lightning Branches (Pseudo-elements) */
+.room-background.volcanic_ground .volcano-lightning::before {
+  content: '';
+  position: absolute;
+  top: 40%;
+  left: -20px;
+  width: 2px;
+  height: 60px;
+  background: #fff;
+  transform: rotate(-45deg);
+  box-shadow: 0 0 8px #fff;
+}
+
+.room-background.volcanic_ground .volcano-lightning::after {
+  content: '';
+  position: absolute;
+  top: 60%;
+  left: 10px;
+  width: 2px;
+  height: 40px;
+  background: #fff;
+  transform: rotate(30deg);
+  box-shadow: 0 0 8px #fff;
+}
+
+@keyframes lightning-flash {
+
+  0%,
+  90% {
+    opacity: 0;
+  }
+
+  91% {
+    opacity: 1;
+  }
+
+  92% {
+    opacity: 0;
+  }
+
+  93% {
+    opacity: 1;
+  }
+
+  94% {
+    opacity: 0;
+  }
+
+  95% {
+    opacity: 0.5;
+  }
+
+  96% {
+    opacity: 0;
+  }
+
+  100% {
     opacity: 0;
   }
 }
