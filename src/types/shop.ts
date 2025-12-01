@@ -25,6 +25,14 @@ export const SHOP_ITEMS: ShopItem[] = [
         isOwned: true,
     },
     {
+        id: 'forest_ground',
+        nameKey: 'shop.items.forest_ground',
+        descriptionKey: 'shop.items.forest_ground.desc',
+        category: 'ground',
+        price: 500,
+        icon: '🌲',
+    },
+    {
         id: 'tropical_ground',
         nameKey: 'shop.items.tropical_ground',
         descriptionKey: 'shop.items.tropical_ground.desc',

@@ -58,12 +58,28 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
     if (!isShowering) return [];
     return Array.from({ length: 20 }).map((_, i) => ({
       id: i,
-      left: Math.random() * 90 + 5,
-      delay: Math.random() * 1,
-      duration: 1 + Math.random(),
-      scale: 0.8 + Math.random() * 0.7
+      left: Math.random() * 100,
+      size: 10 + Math.random() * 20,
+      delay: Math.random() * 2,
+      duration: 3 + Math.random() * 2,
     }));
   }, [isShowering]);
+
+  // Generate static random trees for Forest background
+  // Generate static random trees for Forest background
+  const forestTrees = useMemo(() => {
+    return Array.from({ length: 100 }).map((_, i) => {
+      const bottomVal = 64 + Math.random() * 2; // 64% to 66% (Top 34% to 36%)
+      return {
+        id: i,
+        type: Math.random() > 0.5 ? '🌲' : '🌳',
+        left: `${Math.random() * 96 + 2}%`, // 2% to 98%
+        bottom: `${bottomVal}%`,
+        fontSize: `${16 + Math.random() * 16}px`, // 16px to 32px (More variety)
+        zIndex: Math.floor(100 - bottomVal), // Lower bottom (closer) -> Higher z-index
+      };
+    });
+  }, []);
 
   // Auto-move character randomly
   useEffect(() => {
@@ -640,6 +656,35 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
                 <div className="cactus-small">🌵</div>
               </>
             )}
+            {currentBackground === 'forest_ground' && (
+              <>
+                <div className="forest-mountain mountain-large" />
+                <div className="forest-mountain mountain-small" />
+                {/* Right Side Mountains (Smaller) */}
+                <div className="forest-mountain mountain-right-large" />
+                <div className="forest-mountain mountain-right-small" />
+                {/* Left Side Mountains (Smaller) */}
+                <div className="forest-mountain mountain-left-large" />
+                <div className="forest-mountain mountain-left-small" />
+                {/* Random Trees */}
+                {forestTrees.map((tree) => (
+                  <div
+                    key={tree.id}
+                    className="forest-tree"
+                    style={{
+                      left: tree.left,
+                      bottom: tree.bottom,
+                      fontSize: tree.fontSize,
+                      zIndex: tree.zIndex,
+                    }}
+                  >
+                    {tree.type}
+                  </div>
+                ))}
+                {/* Forest Lake */}
+                <div className="forest-lake" />
+              </>
+            )}
             {currentBackground === 'volcanic_ground' && (
               <>
                 <div className="volcano-2" />
@@ -730,7 +775,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
                     left: `${b.left}%`,
                     animationDelay: `${b.delay}s`,
                     animationDuration: `${b.duration}s`,
-                    transform: `scale(${b.scale})`
+                    fontSize: `${b.size}px`,
                   }}
                 >
                   🫧

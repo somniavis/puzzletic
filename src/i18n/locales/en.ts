@@ -78,7 +78,7 @@ export const en = {
   },
   food: {
     menu: {
-      title: 'Select Food',
+      title: 'Food',
       close: 'Close',
     },
     categories: {
@@ -205,7 +205,7 @@ export const en = {
   },
   medicine: {
     menu: {
-      title: 'Give Medicine',
+      title: 'Medicine',
     },
     items: {
       pill: 'Pill',
@@ -230,6 +230,8 @@ export const en = {
       'volcanic_ground.desc': 'A fiery land with flowing lava.',
       desert_ground: 'Desert Ground',
       'desert_ground.desc': 'Endless sand dunes.',
+      forest_ground: 'Forest',
+      'forest_ground.desc': 'A lush green forest.',
     },
   },
   actions: {
@@ -431,11 +433,11 @@ export const en = {
       description: 'Select language',
       selected: 'Selected',
     },
-    admin: {
-      title: 'Admin',
-      gallery: 'Gallery',
-      stats: 'Stats',
-    },
+  },
+  admin: {
+    title: 'Admin',
+    gallery: 'Gallery',
+    stats: 'Stats',
   },
 } as const;
 

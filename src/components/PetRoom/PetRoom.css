@@ -1015,26 +1015,145 @@
 }
 
 /* Forest Background */
+.room-background.forest_ground {
+  display: flex !important;
+  flex-direction: column !important;
+}
+
 .room-background.forest_ground .room-wall {
-  height: 20%;
-  background: linear-gradient(180deg, #87CEEB 0%, #B0E0E6 100%);
-  /* Light Blue Sky */
+  position: relative !important;
+  height: 50vh !important;
+  width: 100%;
+  order: -1 !important;
+  inset: auto !important;
+  /* Sky (0-33%) -> Forest Green (33-100%) */
+  background: linear-gradient(180deg, #87CEEB 0%, #B0E0E6 33%, #228B22 33%, #006400 100%);
+  overflow: hidden;
   border-bottom: none;
+  z-index: 0;
 }
 
 .room-background.forest_ground .room-floor {
-  height: 80%;
-  background: linear-gradient(180deg, #228B22 0%, #006400 100%);
-  /* Forest Green */
-  background-image:
-    repeating-linear-gradient(90deg,
-      rgba(0, 0, 0, 0.05) 0px,
-      rgba(0, 0, 0, 0.05) 2px,
-      transparent 2px,
-      transparent 40px),
-    radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 10%);
-  background-size: 100% 100%, 100px 100px;
-  box-shadow: inset 0 10px 20px rgba(0, 0, 0, 0.2);
+  position: relative !important;
+  height: 80vh !important;
+  width: 100%;
+  inset: auto !important;
+  margin-top: -30vh !important;
+  background: #b0cd74;
+  /* User specified color */
+  overflow: hidden;
+  z-index: 1;
+  /* Curved Floor Effect (Same as Tropical) */
+  border-top-left-radius: 50% 40px;
+  border-top-right-radius: 50% 40px;
+  box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Forest Mountains */
+.room-background.forest_ground .forest-mountain {
+  position: absolute;
+  bottom: 67%;
+  /* Moved down slightly to sit behind the curved horizon */
+  clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+  z-index: 0;
+}
+
+.room-background.forest_ground .mountain-large {
+  left: 40%;
+  transform: translateX(-50%);
+  width: 30%;
+  /* Responsive width */
+  min-width: 240px;
+  height: 96px;
+  background: linear-gradient(180deg, #2E8B57 0%, #006400 100%);
+  opacity: 0.9;
+  z-index: 2;
+}
+
+.room-background.forest_ground .mountain-small {
+  left: 60%;
+  transform: translateX(-50%);
+  width: 20%;
+  /* Responsive width */
+  min-width: 160px;
+  height: 72px;
+  background: linear-gradient(180deg, #3CB371 0%, #2E8B57 100%);
+  opacity: 0.8;
+  z-index: 1;
+}
+
+.room-background.forest_ground .mountain-right-large {
+  left: 80%;
+  transform: translateX(-50%);
+  width: 25%;
+  /* Responsive width */
+  min-width: 192px;
+  height: 77px;
+  background: linear-gradient(180deg, #2E8B57 0%, #006400 100%);
+  opacity: 0.9;
+  z-index: 2;
+}
+
+.room-background.forest_ground .mountain-right-small {
+  left: 90%;
+  transform: translateX(-50%);
+  width: 18%;
+  /* Responsive width */
+  min-width: 128px;
+  height: 58px;
+  background: linear-gradient(180deg, #3CB371 0%, #2E8B57 100%);
+  opacity: 0.8;
+  z-index: 1;
+}
+
+.room-background.forest_ground .mountain-left-large {
+  left: 20%;
+  transform: translateX(-50%);
+  width: 22%;
+  /* Responsive width */
+  min-width: 173px;
+  height: 69px;
+  background: linear-gradient(180deg, #2E8B57 0%, #006400 100%);
+  opacity: 0.9;
+  z-index: 2;
+}
+
+.room-background.forest_ground .mountain-left-small {
+  left: 10%;
+  transform: translateX(-50%);
+  width: 15%;
+  /* Responsive width */
+  min-width: 115px;
+  height: 52px;
+  background: linear-gradient(180deg, #3CB371 0%, #2E8B57 100%);
+  opacity: 0.8;
+  z-index: 1;
+}
+
+.room-background.forest_ground .forest-tree {
+  position: absolute;
+  transform: translateX(-50%);
+  /* bottom, left, fontSize, zIndex are set inline */
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.2));
+}
+
+.room-background.forest_ground .forest-lake {
+  position: absolute;
+  left: 5%;
+  /* Moved to 5% */
+  bottom: 60%;
+  /* Moved slightly down from 61% */
+  width: 70px;
+  /* 70% of 100px */
+  height: 21px;
+  /* 70% of 30px */
+  background: #5D9CEC;
+  border-radius: 10px;
+  /* Scaled radius */
+  box-shadow: -14px 7px 0 0 #5D9CEC;
+  /* Scaled shadow */
+  z-index: 1;
+  opacity: 0.9;
 }
 
 /* Tropical Island Background */
@@ -1144,7 +1263,7 @@
 .room-background.tropical_ground .sand-island {
   position: absolute;
   left: 10%;
-  bottom: calc(65% - 3px);
+  bottom: calc(65% - 8px);
   /* Moved higher (was 25%) to clear floor overlap (60%) */
   width: 70px;
   /* Reduced width (was 80px) */
@@ -1596,7 +1715,9 @@
   left: 40%;
   /* Moved closer to center */
   transform: translateX(-50%);
-  width: 300px;
+  width: 30%;
+  /* Responsive width */
+  min-width: 300px;
   height: 100px;
   background: #dcb66b;
   /* Darker Sand */
@@ -1609,7 +1730,9 @@
   left: 60%;
   /* Moved closer to center to overlap */
   transform: translateX(-50%);
-  width: 180px;
+  width: 20%;
+  /* Responsive width */
+  min-width: 180px;
   height: 70px;
   background: #e4c478;
   /* Medium Sand */
