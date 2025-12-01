@@ -22,7 +22,7 @@ interface PetRoomProps {
   character: Character;
   speciesId: CharacterSpeciesId;
   onStatsChange: (stats: Partial<Character['stats']>) => void;
-  onNavigate?: (page: 'gallery' | 'stats') => void;
+  onNavigate?: (page: 'gallery' | 'stats' | 'play') => void;
 }
 
 export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsChange, onNavigate }) => {
@@ -480,16 +480,9 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
 
   const handlePlay = () => {
     playButtonSound();
-    setAction('playing');
-
-    // 양육 시스템으로 놀이하기 실행
-    const result = nurturing.play();
-
-    if (result.success) {
-      showBubble('joy', 2);
+    if (onNavigate) {
+      onNavigate('play');
     }
-
-    setTimeout(() => setAction('idle'), 3000);
   };
 
   const handlePoopClick = (poopId: string) => {
