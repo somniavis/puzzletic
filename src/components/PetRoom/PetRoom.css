@@ -1140,6 +1140,63 @@
   }
 }
 
+/* Sand Island (Left Ocean) */
+.room-background.tropical_ground .sand-island {
+  position: absolute;
+  left: 10%;
+  bottom: calc(65% - 3px);
+  /* Moved higher (was 25%) to clear floor overlap (60%) */
+  width: 70px;
+  /* Reduced width (was 80px) */
+  height: 25px;
+  background: #FFF8DC;
+  /* Sand color */
+  border-radius: 15px;
+  /* Rounded rectangle */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  opacity: 0.9;
+  z-index: 1;
+}
+
+.room-background.tropical_ground .island-palm-1 {
+  position: absolute;
+  left: 5px;
+  bottom: 5px;
+  /* Moved down (was 10px) */
+  font-size: 24px;
+  z-index: 2;
+  transform: rotate(-10deg);
+  /* Slight tilt left */
+}
+
+.room-background.tropical_ground .island-palm-2 {
+  position: absolute;
+  left: 25px;
+  bottom: 3px;
+  /* Moved down (was 8px) */
+  font-size: 26px;
+  /* 1.3x larger (was 20px) */
+  z-index: 2;
+  transform: scaleX(-1) rotate(-5deg);
+  /* Mirrored and tilted */
+}
+
+.room-background.tropical_ground .island-palm-3 {
+  position: absolute;
+  left: 15px;
+  /* Middle */
+  bottom: 10px;
+  /* Moved down (was 15px) */
+  /* Higher up (Back) */
+  font-size: 26px;
+  /* Medium size */
+  z-index: 1;
+  /* Behind others */
+  transform: rotate(5deg);
+  /* Slight tilt */
+  filter: brightness(0.9);
+  /* Slightly darker for depth */
+}
 
 
 .room-background.tropical_ground .room-floor {
@@ -1646,6 +1703,38 @@
   pointer-events: none;
 }
 
+/* Cactus (Left Wall) */
+.room-background.desert_ground .cactus {
+  position: absolute;
+  left: 10%;
+  /* Reverted to 10% */
+  bottom: 65%;
+  /* Reverted to 65% */
+  font-size: 30px;
+  /* Reduced size (was 40px) */
+  z-index: 2;
+  /* Behind sandstorm (3) */
+  transform: translateY(20%);
+  /* Sit on sand */
+  filter: drop-shadow(2px 2px 2px rgba(0, 0, 0, 0.2));
+}
+
+/* Small Cactus (Left of Main Cactus) */
+.room-background.desert_ground .cactus-small {
+  position: absolute;
+  left: 8%;
+  /* Moved closer (was 6%) to main cactus (10%) */
+  bottom: 65%;
+  /* Same horizon */
+  font-size: 17px;
+  /* Smaller size */
+  z-index: 2;
+  /* Behind sandstorm (3) */
+  transform: translateY(20%);
+  filter: drop-shadow(2px 2px 2px rgba(0, 0, 0, 0.2));
+}
+
+/* Add shadow for better visibility */
 .room-background.desert_ground .room-floor {
   height: 80vh !important;
   margin-top: -30vh !important;
