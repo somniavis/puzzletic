@@ -439,6 +439,25 @@ export const en = {
       stats: 'Stats',
     },
   },
+  play: {
+    title: 'Play & Learn',
+    home: 'Home',
+    controls: {
+      title: "Let's play!",
+      expand: 'Expand',
+      collapse: 'Collapse',
+      level: 'Level',
+    },
+    categories: {
+      math: 'MATH',
+      science: 'SCIENCE',
+      sw: 'SW',
+    },
+    game: {
+      playNow: 'Play Now',
+      noGames: 'More games coming soon!',
+    },
+  },
 } as const;
 
 export type TranslationKeys = typeof en;

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import './PlayPage.css';
 import { playButtonSound } from '../utils/sound';
 
@@ -31,6 +32,7 @@ interface PlayPageProps {
 }
 
 export const PlayPage: React.FC<PlayPageProps> = ({ onNavigate }) => {
+    const { t } = useTranslation();
     const [selectedCategory, setSelectedCategory] = useState<Category>('math');
     const [selectedDifficulty, setSelectedDifficulty] = useState<Difficulty>(1);
     const [isControlsOpen, setIsControlsOpen] = useState(true);
@@ -67,20 +69,20 @@ export const PlayPage: React.FC<PlayPageProps> = ({ onNavigate }) => {
     return (
         <div className="play-page">
             <header className="play-header">
-                <h1>🎮 Play & Learn</h1>
+                <h1>🎮 {t('play.title')}</h1>
                 <button className="nav-btn" onClick={handleHomeClick}>
-                    🏠 Home
+                    🏠 {t('play.home')}
                 </button>
             </header>
 
             <div className="play-content">
                 <div className={`play-controls ${isControlsOpen ? 'open' : 'closed'}`}>
                     <div className="controls-header">
-                        <h3>Teach Jello!</h3>
+                        <h3>{t('play.controls.title')}</h3>
                         <button
                             className="toggle-controls-btn"
                             onClick={handleToggleControls}
-                            title={isControlsOpen ? "Collapse" : "Expand"}
+                            title={isControlsOpen ? t('play.controls.collapse') : t('play.controls.expand')}
                         >
                             {isControlsOpen ? '🔼' : '🔽'}
                         </button>
@@ -97,14 +99,14 @@ export const PlayPage: React.FC<PlayPageProps> = ({ onNavigate }) => {
                                             onClick={() => handleCategorySelect(cat)}
                                         >
                                             <span>{CATEGORY_ICONS[cat]}</span>
-                                            {cat.toUpperCase()}
+                                            {t(`play.categories.${cat}`)}
                                         </button>
                                     ))}
                                 </div>
                             </div>
 
                             <div className="control-group">
-                                <h4>Level</h4>
+                                <h4>{t('play.controls.level')}</h4>
                                 <div className="difficulty-selector">
                                     {[1, 2, 3, 4, 5].map(level => (
                                         <button
@@ -130,12 +132,12 @@ export const PlayPage: React.FC<PlayPageProps> = ({ onNavigate }) => {
                                     <span>{CATEGORY_ICONS[game.category]}</span>
                                 </div>
                                 <h3>{game.title}</h3>
-                                <button className="play-btn">Play Now ▶</button>
+                                <button className="play-btn">{t('play.game.playNow')} ▶</button>
                             </div>
                         ))
                     ) : (
                         <div className="no-games">
-                            <p>🚧 More games coming soon! 🚧</p>
+                            <p>🚧 {t('play.game.noGames')} 🚧</p>
                         </div>
                     )}
                 </div>
