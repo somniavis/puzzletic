@@ -433,11 +433,11 @@ export const en = {
       description: 'Select language',
       selected: 'Selected',
     },
-  },
-  admin: {
-    title: 'Admin',
-    gallery: 'Gallery',
-    stats: 'Stats',
+    admin: {
+      title: 'Admin',
+      gallery: 'Gallery',
+      stats: 'Stats',
+    },
   },
 } as const;
 

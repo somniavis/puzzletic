@@ -150,7 +150,6 @@ export const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose, onN
               <span className="food-item-icon language-flag">🇺🇸</span>
               <div className="language-info">
                 <span className="food-item-name">English</span>
-                <span className="language-code">(en-US)</span>
               </div>
               <div className="food-item-effects">
                 <span className="effect effect--selected">✓ {t('settings.language.selected')}</span>
