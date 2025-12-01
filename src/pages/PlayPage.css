@@ -151,11 +151,17 @@
 }
 
 /* Category & Difficulty Buttons - Matching Category Tab Style */
-.category-selector,
-.difficulty-selector {
+.category-selector {
     display: flex;
     gap: 10px;
     flex-wrap: wrap;
+}
+
+.difficulty-selector {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+    width: 100%;
 }
 
 .category-btn,
@@ -178,6 +184,11 @@
     align-items: center;
     justify-content: center;
     gap: 5px;
+}
+
+.difficulty-btn {
+    min-width: 0;
+    /* Allow shrinking */
 }
 
 .category-btn:hover,
@@ -205,7 +216,7 @@
 /* Game Grid */
 .game-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    grid-template-columns: repeat(4, 1fr);
     gap: 20px;
     padding-bottom: 40px;
 }
@@ -294,6 +305,12 @@
 }
 
 /* Responsive */
+@media (max-width: 1024px) {
+    .game-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
 @media (max-width: 768px) {
     .play-header {
         padding: 0.8rem 1rem;
@@ -312,14 +329,20 @@
         padding: 15px;
     }
 
-    .category-btn,
-    .difficulty-btn {
+    .category-btn {
         min-width: 80px;
         padding: 10px 5px;
         font-size: 0.8rem;
     }
 
+    .difficulty-btn {
+        padding: 10px 2px;
+        /* Reduce padding for small screens */
+        font-size: 0.8rem;
+    }
+
     .game-grid {
-        grid-template-columns: repeat(auto-fill, minmax(100%, 1fr));
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
     }
 }
