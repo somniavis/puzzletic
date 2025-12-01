@@ -75,7 +75,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
         type: Math.random() > 0.5 ? '🌲' : '🌳',
         left: `${Math.random() * 96 + 2}%`, // 2% to 98%
         bottom: `${bottomVal}%`,
-        fontSize: `${16 + Math.random() * 16}px`, // 16px to 32px (More variety)
+        fontSize: `${13.6 + Math.random() * 13.6}px`, // 85% of 16px-32px (13.6px-27.2px)
         zIndex: Math.floor(100 - bottomVal), // Lower bottom (closer) -> Higher z-index
       };
     });
