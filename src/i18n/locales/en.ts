@@ -209,7 +209,7 @@ export const en = {
     },
     items: {
       pill: 'Pill',
-      syringe: 'Syringe',
+      syringe: 'Vaccine',
     },
   },
   shop: {

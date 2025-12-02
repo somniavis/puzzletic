@@ -872,7 +872,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({
                     key={medicine.id}
                     className="food-item"
                     onClick={() => handleGiveMedicine(medicine)}
-                    disabled={action !== 'idle' || nurturing.glo < medicine.price}
+                    disabled={action !== 'idle' || nurturing.glo < medicine.price || nurturing.stats.health >= 60}
                   >
                     <span className="food-item-icon">{medicine.icon}</span>
                     <span className="food-item-name">{t(medicine.nameKey)}</span>
