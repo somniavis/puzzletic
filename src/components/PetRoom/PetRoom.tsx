@@ -31,6 +31,11 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
   // 양육 시스템 사용
   const nurturing = useNurturing();
 
+  // Resume tick when entering Pet Room (safety check)
+  useEffect(() => {
+    nurturing.resumeTick();
+  }, [nurturing]);
+
   const [mood, setMood] = useState<CharacterMood>('neutral');
   const [action, setAction] = useState<CharacterAction>('idle');
   const [position, setPosition] = useState({ x: 50, y: 50 }); // percentage position

@@ -81,101 +81,101 @@ function App() {
 
   return (
     <SoundProvider>
-      {currentPage === 'play' ? (
-        <PlayPage onNavigate={(page) => setCurrentPage(page)} />
-      ) : currentPage === 'gallery' ? (
-        <>
-          <div className="page-nav">
-            <button onClick={() => setCurrentPage('home')}>🏠 Home</button>
-            <button onClick={() => setCurrentPage('stats')}>📊 Stats</button>
-          </div>
-          <CharacterAdmin onCharacterSelect={handleCharacterSelect} />
-        </>
-      ) : currentPage === 'stats' ? (
-        <>
-          <div className="page-nav">
-            <button onClick={() => setCurrentPage('home')}>🏠 Home</button>
-            <button onClick={() => setCurrentPage('gallery')}>🖼️ Gallery</button>
-          </div>
-          <div className="app">
-            <div className="app-header">
-              <h1>Puzzletic - Stats</h1>
-              <p>Character Details & Controls</p>
+      <NurturingProvider>
+        {currentPage === 'play' ? (
+          <PlayPage onNavigate={(page) => setCurrentPage(page)} />
+        ) : currentPage === 'gallery' ? (
+          <>
+            <div className="page-nav">
+              <button onClick={() => setCurrentPage('home')}>🏠 Home</button>
+              <button onClick={() => setCurrentPage('stats')}>📊 Stats</button>
             </div>
-
-            <div className="character-stage">
-              {(() => {
-                const CharacterComponent = CHARACTERS[selectedSpeciesId];
-                return (
-                  <CharacterComponent
-                    character={character}
-                    size="large"
-                    mood={mood}
-                    action={action}
-                    onClick={() => handleActionChange('jumping')}
-                  />
-                );
-              })()}
+            <CharacterAdmin onCharacterSelect={handleCharacterSelect} />
+          </>
+        ) : currentPage === 'stats' ? (
+          <>
+            <div className="page-nav">
+              <button onClick={() => setCurrentPage('home')}>🏠 Home</button>
+              <button onClick={() => setCurrentPage('gallery')}>🖼️ Gallery</button>
             </div>
+            <div className="app">
+              <div className="app-header">
+                <h1>Puzzletic - Stats</h1>
+                <p>Character Details & Controls</p>
+              </div>
 
-            <div className="controls">
-              <div className="control-section">
-                <h3>Mood</h3>
-                <div className="button-group">
-                  <button onClick={() => handleMoodChange('happy')}>Happy</button>
-                  <button onClick={() => handleMoodChange('neutral')}>Neutral</button>
-                  <button onClick={() => handleMoodChange('sad')}>Sad</button>
-                  <button onClick={() => handleMoodChange('excited')}>Excited</button>
-                  <button onClick={() => handleMoodChange('sleeping')}>Sleeping</button>
+              <div className="character-stage">
+                {(() => {
+                  const CharacterComponent = CHARACTERS[selectedSpeciesId];
+                  return (
+                    <CharacterComponent
+                      character={character}
+                      size="large"
+                      mood={mood}
+                      action={action}
+                      onClick={() => handleActionChange('jumping')}
+                    />
+                  );
+                })()}
+              </div>
+
+              <div className="controls">
+                <div className="control-section">
+                  <h3>Mood</h3>
+                  <div className="button-group">
+                    <button onClick={() => handleMoodChange('happy')}>Happy</button>
+                    <button onClick={() => handleMoodChange('neutral')}>Neutral</button>
+                    <button onClick={() => handleMoodChange('sad')}>Sad</button>
+                    <button onClick={() => handleMoodChange('excited')}>Excited</button>
+                    <button onClick={() => handleMoodChange('sleeping')}>Sleeping</button>
+                  </div>
+                </div>
+
+                <div className="control-section">
+                  <h3>Actions</h3>
+                  <div className="button-group">
+                    <button onClick={() => handleActionChange('idle')}>Idle</button>
+                    <button onClick={() => handleActionChange('jumping')}>Jump</button>
+                    <button onClick={() => handleActionChange('happy')}>Wiggle</button>
+                    <button onClick={() => handleActionChange('playing')}>Play</button>
+                  </div>
                 </div>
               </div>
 
-              <div className="control-section">
-                <h3>Actions</h3>
-                <div className="button-group">
-                  <button onClick={() => handleActionChange('idle')}>Idle</button>
-                  <button onClick={() => handleActionChange('jumping')}>Jump</button>
-                  <button onClick={() => handleActionChange('happy')}>Wiggle</button>
-                  <button onClick={() => handleActionChange('playing')}>Play</button>
+              <div className="character-info">
+                <h3>{character.name}</h3>
+                <div className="stats">
+                  <div className="stat">
+                    <span>Level:</span> <strong>{character.level}</strong>
+                  </div>
+                  <div className="stat">
+                    <span>Health:</span> <strong>{character.stats.health}%</strong>
+                  </div>
+                  <div className="stat">
+                    <span>Happiness:</span> <strong>{character.stats.happiness}%</strong>
+                  </div>
+                  <div className="stat">
+                    <span>Hunger:</span> <strong>{character.stats.hunger}%</strong>
+                  </div>
+                  <div className="stat">
+                    <span>Hygiene:</span> <strong>{character.stats.hygiene}%</strong>
+                  </div>
+                  <div className="stat">
+                    <span>Fatigue:</span> <strong>{character.stats.fatigue}%</strong>
+                  </div>
                 </div>
               </div>
             </div>
-
-            <div className="character-info">
-              <h3>{character.name}</h3>
-              <div className="stats">
-                <div className="stat">
-                  <span>Level:</span> <strong>{character.level}</strong>
-                </div>
-                <div className="stat">
-                  <span>Health:</span> <strong>{character.stats.health}%</strong>
-                </div>
-                <div className="stat">
-                  <span>Happiness:</span> <strong>{character.stats.happiness}%</strong>
-                </div>
-                <div className="stat">
-                  <span>Hunger:</span> <strong>{character.stats.hunger}%</strong>
-                </div>
-                <div className="stat">
-                  <span>Hygiene:</span> <strong>{character.stats.hygiene}%</strong>
-                </div>
-                <div className="stat">
-                  <span>Fatigue:</span> <strong>{character.stats.fatigue}%</strong>
-                </div>
-              </div>
-            </div>
-          </div>
-        </>
-      ) : (
-        <NurturingProvider>
+          </>
+        ) : (
           <PetRoom
             character={character}
             speciesId={selectedSpeciesId}
             onStatsChange={handleStatsChange}
             onNavigate={(page) => setCurrentPage(page as Page)}
           />
-        </NurturingProvider>
-      )}
+        )}
+      </NurturingProvider>
     </SoundProvider>
   )
 }

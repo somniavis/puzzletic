@@ -192,6 +192,22 @@ export const applyOfflineProgress = (
     };
   }
 
+  // 틱이 비활성화된 경우 (예: 미니게임 중) 오프라인 진행 없음
+  if (!state.tickConfig.isActive) {
+    return {
+      updatedState: {
+        ...state,
+        lastActiveTime: currentTime,
+        tickConfig: {
+          ...state.tickConfig,
+          lastTickTime: currentTime,
+        },
+      },
+      ticksElapsed: 0,
+      events: [],
+    };
+  }
+
   // 오프라인 진행 계산
   const { finalStats, ticksElapsed, events } = calculateOfflineProgress(
     state.stats,

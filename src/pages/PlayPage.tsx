@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import './PlayPage.css';
 import { playButtonSound } from '../utils/sound';
+import { useNurturing } from '../contexts/NurturingContext';
 
 type Category = 'math' | 'science' | 'sw';
 type Difficulty = 1 | 2 | 3 | 4 | 5;
@@ -33,9 +34,18 @@ interface PlayPageProps {
 
 export const PlayPage: React.FC<PlayPageProps> = ({ onNavigate }) => {
     const { t } = useTranslation();
+    const { pauseTick, resumeTick } = useNurturing();
     const [selectedCategory, setSelectedCategory] = useState<Category>('math');
     const [selectedDifficulty, setSelectedDifficulty] = useState<Difficulty>(1);
     const [isControlsOpen, setIsControlsOpen] = useState(true);
+
+    // Pause game tick when entering Play Page, resume when leaving
+    useEffect(() => {
+        pauseTick();
+        return () => {
+            resumeTick();
+        };
+    }, [pauseTick, resumeTick]);
 
     const filteredGames = GAMES.filter(
         game => game.category === selectedCategory && game.difficulty === selectedDifficulty
@@ -77,11 +87,10 @@ export const PlayPage: React.FC<PlayPageProps> = ({ onNavigate }) => {
 
             <div className="play-content">
                 <div className={`play-controls ${isControlsOpen ? 'open' : 'closed'}`}>
-                    <div className="controls-header">
+                    <div className="controls-header" onClick={handleToggleControls}>
                         <h3>{t('play.controls.title')}</h3>
                         <button
                             className="toggle-controls-btn"
-                            onClick={handleToggleControls}
                             title={isControlsOpen ? t('play.controls.collapse') : t('play.controls.expand')}
                         >
                             {isControlsOpen ? '🔼' : '🔽'}
@@ -132,7 +141,7 @@ export const PlayPage: React.FC<PlayPageProps> = ({ onNavigate }) => {
                                     <span>{CATEGORY_ICONS[game.category]}</span>
                                 </div>
                                 <h3>{game.title}</h3>
-                                <button className="play-btn">{t('play.game.playNow')} ▶</button>
+                                <button className="play-btn">▶</button>
                             </div>
                         ))
                     ) : (

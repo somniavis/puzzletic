@@ -174,8 +174,9 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
       return;
     }
 
-    // 초기 틱
-    runGameTick();
+    // 초기 틱 (제거: 일시정지 해제 시 즉시 감소 방지)
+    // runGameTick();
+    console.log('⏰ Tick started (Interval set)');
 
     // 인터벌 설정
     tickIntervalRef.current = window.setInterval(() => {
@@ -526,6 +527,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
   }, []);
 
   const pauseTick = useCallback(() => {
+    console.log('⏸️ Pausing tick...');
     setState((currentState) => {
       const newState: NurturingPersistentState = {
         ...currentState,
@@ -540,6 +542,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
   }, []);
 
   const resumeTick = useCallback(() => {
+    console.log('▶️ Resuming tick...');
     setState((currentState) => {
       const newState: NurturingPersistentState = {
         ...currentState,
