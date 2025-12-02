@@ -71,6 +71,8 @@ interface NurturingContextValue {
   resetGame: () => void;
   pauseTick: () => void;
   resumeTick: () => void;
+  hasCharacter: boolean;
+  completeCharacterCreation: () => void;
 }
 
 const NurturingContext = createContext<NurturingContextValue | undefined>(undefined);
@@ -522,8 +524,22 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
 
   const resetGame = useCallback(() => {
     const newState = resetNurturingState();
-    setState(newState);
+    setState({
+      ...newState,
+      hasCharacter: false, // Reset character state
+    });
     setCondition(evaluateCondition(newState.stats));
+  }, []);
+
+  const completeCharacterCreation = useCallback(() => {
+    setState((currentState) => {
+      const newState = {
+        ...currentState,
+        hasCharacter: true,
+      };
+      saveNurturingState(newState);
+      return newState;
+    });
   }, []);
 
   const pauseTick = useCallback(() => {
@@ -586,6 +602,8 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     resetGame,
     pauseTick,
     resumeTick,
+    hasCharacter: state.hasCharacter ?? false, // Default to false if undefined
+    completeCharacterCreation,
   };
 
   return <NurturingContext.Provider value={value}>{children}</NurturingContext.Provider>;

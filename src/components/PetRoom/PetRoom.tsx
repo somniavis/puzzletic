@@ -14,6 +14,7 @@ import { useNurturing } from '../../contexts/NurturingContext';
 import { Poop } from '../Poop/Poop';
 import { Bug } from '../Bug/Bug';
 import { SettingsMenu } from '../SettingsMenu/SettingsMenu';
+import { GiftBox } from '../GiftBox/GiftBox';
 import { calculateClickResponse, getClickEmotionCategory } from '../../constants/personality';
 import { playButtonSound, playJelloClickSound, playEatingSound, playCleaningSound } from '../../utils/sound';
 import './PetRoom.css';
@@ -23,9 +24,26 @@ interface PetRoomProps {
   speciesId: CharacterSpeciesId;
   onStatsChange: (stats: Partial<Character['stats']>) => void;
   onNavigate?: (page: 'gallery' | 'stats' | 'play') => void;
+  showGiftBox?: boolean;
+  onOpenGift?: () => void;
+  mood?: CharacterMood;
+  action?: CharacterAction;
+  onMoodChange?: (mood: CharacterMood) => void;
+  onActionChange?: (action: CharacterAction) => void;
 }
 
-export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsChange, onNavigate }) => {
+export const PetRoom: React.FC<PetRoomProps> = ({
+  character,
+  speciesId,
+  onStatsChange,
+  onNavigate,
+  showGiftBox = false,
+  onOpenGift,
+  mood = 'neutral',
+  action = 'idle',
+  onMoodChange,
+  onActionChange
+}) => {
   const { t } = useTranslation();
 
   // 양육 시스템 사용
@@ -33,11 +51,11 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
 
   // Resume tick when entering Pet Room (safety check)
   useEffect(() => {
-    nurturing.resumeTick();
-  }, [nurturing]);
+    if (!showGiftBox) {
+      nurturing.resumeTick();
+    }
+  }, [nurturing, showGiftBox]);
 
-  const [mood, setMood] = useState<CharacterMood>('neutral');
-  const [action, setAction] = useState<CharacterAction>('idle');
   const [position, setPosition] = useState({ x: 50, y: 50 }); // percentage position
   const [isMoving, setIsMoving] = useState(false);
   const [showFoodMenu, setShowFoodMenu] = useState(false);
@@ -86,43 +104,32 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
     });
   }, []);
 
-  // Auto-move character randomly
+  // 젤로 자동 이동 (랜덤) - GiftBox 모드일 때는 이동 중지
   useEffect(() => {
-    const moveInterval = setInterval(() => {
-      if (!isMoving && Math.random() > 0.7) {
-        const newX = Math.max(10, Math.min(90, position.x + (Math.random() - 0.5) * 30));
-        const newY = Math.max(10, Math.min(80, position.y + (Math.random() - 0.5) * 20));
-        setPosition({ x: newX, y: newY });
-        setIsMoving(true);
-        setTimeout(() => setIsMoving(false), 1000);
-      }
-    }, 3000);
+    if (showGiftBox) return;
 
-    return () => clearInterval(moveInterval);
-  }, [position, isMoving]);
+    const moveRandomly = () => {
+      if (isMoving || action !== 'idle' || isShowering) return;
 
-  // Update mood based on nurturing stats
-  useEffect(() => {
-    const { happiness, health, fullness } = nurturing.stats;
-    const { condition } = nurturing;
-    let newMood: CharacterMood = 'neutral';
+      // 30% 확률로 이동
+      if (Math.random() > 0.3) return;
 
-    // Determine mood based on stats
-    if (condition.isSick) {
-      newMood = 'sick';
-    } else if (condition.isHungry) {
-      newMood = 'sad';
-    } else if (happiness > 85 && fullness > 70 && health > 80) {
-      newMood = 'excited';
-    } else if (happiness > 70 && fullness > 50) {
-      newMood = 'happy';
-    } else {
-      newMood = 'neutral';
-    }
+      const newX = 20 + Math.random() * 60; // 20% ~ 80%
+      const newY = 40 + Math.random() * 40; // 40% ~ 80% (바닥 영역)
 
-    setMood(newMood);
-  }, [nurturing.stats, nurturing.condition]);
+      setIsMoving(true);
+      setPosition({ x: newX, y: newY });
 
+      setTimeout(() => {
+        setIsMoving(false);
+      }, 1000); // 이동 시간
+    };
+
+    const interval = setInterval(moveRandomly, 3000);
+    return () => clearInterval(interval);
+  }, [isMoving, action, isShowering, showGiftBox]);
+
+  // 상태 변화에 따른 무드/액션 업데이트
   // Periodic emotion bubble system - shows bubbles based on current state
   useEffect(() => {
     const checkAndShowBubble = () => {
@@ -309,7 +316,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
     // 애니메이션 완료 후 실제 먹이기 실행
     setTimeout(() => {
       setFlyingFood(null);
-      setAction('eating');
+      onActionChange?.('eating');
 
       // 양육 시스템으로 먹이기 실행
       const result = nurturing.feed(food.id);
@@ -325,7 +332,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
         }
       }
 
-      setTimeout(() => setAction('idle'), 1500);
+      setTimeout(() => onActionChange?.('idle'), 1500);
     }, 1200); // 애니메이션 시간
   };
 
@@ -404,7 +411,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
     // 애니메이션 완료 후 실제 약 먹이기 실행
     setTimeout(() => {
       setFlyingFood(null);
-      setAction(isSyringe ? 'sick' : 'eating'); // 주사는 아파함, 알약은 먹음
+      onActionChange?.(isSyringe ? 'sick' : 'eating'); // 주사는 아파함, 알약은 먹음
 
       // 양육 시스템으로 약 먹이기 실행
       const result = nurturing.giveMedicine(medicine.id);
@@ -412,16 +419,16 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
       if (result.success) {
         setTimeout(() => {
           showBubble('sick', 1); // Show relief
-          setAction('happy'); // 기뻐함
+          onActionChange?.('happy'); // 기뻐함
 
           setTimeout(() => {
-            setAction('idle');
+            onActionChange?.('idle');
             showBubble('joy', 1);
           }, 2000);
         }, 500); // 먹는 모션 후 반응
       } else {
         // Maybe show a "can't use this now" bubble
-        setTimeout(() => setAction('idle'), 1500);
+        setTimeout(() => onActionChange?.('idle'), 1500);
       }
     }, 1200); // 애니메이션 시간
   };
@@ -433,10 +440,10 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
       case 'broom':
         if (nurturing.poops.length > 0) {
           playCleaningSound();
-          setAction('jumping');
+          onActionChange?.('jumping');
           const poopToClean = nurturing.poops[0];
           handlePoopClick(poopToClean.id);
-          setTimeout(() => setAction('idle'), 500);
+          setTimeout(() => onActionChange?.('idle'), 500);
         }
         break;
       case 'newspaper':
@@ -464,8 +471,8 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
         if (nurturing.glo >= tool.price) {
           if (nurturing.poops.length > 0 || nurturing.bugs.length > 0) {
             nurturing.spendGlo(tool.price);
+            setTimeout(() => playCleaningSound(), 100);
             nurturing.cleanAll();
-            playCleaningSound();
             showBubble('joy', 3);
           } else {
             showBubble('neutral', 1); // Nothing to clean
@@ -626,7 +633,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
             </span>
           </div>
         )}
-        <div className={`room-background ${currentBackground}`}>
+        <div className={`room-background ${showGiftBox ? 'default_ground' : currentBackground}`}>
           <div className="room-wall">
             {currentBackground === 'tropical_ground' && (
               <>
@@ -718,12 +725,12 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
         </div>
 
         {/* 똥들 렌더링 */}
-        {nurturing.poops.map((poop) => (
+        {!showGiftBox && nurturing.poops.map((poop) => (
           <Poop key={poop.id} poop={poop} onClick={handlePoopClick} />
         ))}
 
         {/* 벌레들 렌더링 */}
-        {nurturing.bugs.map((bug) => (
+        {!showGiftBox && nurturing.bugs.map((bug) => (
           <Bug key={bug.id} bug={bug} onClick={handleBugClick} />
         ))}
 
@@ -747,8 +754,8 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
         <div
           className="character-container"
           style={{
-            left: `${position.x}%`,
-            bottom: `${position.y}%`,
+            left: showGiftBox ? '50%' : `${position.x}%`,
+            bottom: showGiftBox ? '50%' : `${position.y}%`,
             transform: 'translate(-50%, 50%)',
           }}
           onClick={handleCharacterClick}
@@ -781,12 +788,16 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
               ))}
             </div>
           )}
-          <CharacterComponent
-            character={character}
-            size="small"
-            mood={mood}
-            action={action}
-          />
+          {showGiftBox ? (
+            <GiftBox onOpen={onOpenGift || (() => { })} />
+          ) : (
+            <CharacterComponent
+              character={character}
+              size="small"
+              mood={mood}
+              action={action}
+            />
+          )}
         </div>
       </div>
 
@@ -897,7 +908,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({ character, speciesId, onStatsC
                       (tool.id === 'broom' && nurturing.poops.length === 0) ||
                       (tool.id === 'newspaper' && nurturing.bugs.length === 0) ||
                       (tool.id === 'shower' && nurturing.glo < tool.price) ||
-                      (tool.id === 'robot_cleaner' && nurturing.glo < tool.price)
+                      (tool.id === 'robot_cleaner' && (nurturing.glo < tool.price || (nurturing.poops.length === 0 && nurturing.bugs.length === 0)))
                     }
                   >
                     <span className="food-item-icon">{tool.icon}</span>
