@@ -3,15 +3,16 @@
  * 양육 행동 처리 서비스
  */
 
+import {
+  FOOD_ITEMS
+} from '../types/food';
 import type {
   NurturingStats,
   ActionResult,
   Poop,
   PendingPoop,
-  FoodEffect,
 } from '../types/nurturing';
 import {
-  FOOD_EFFECTS,
   MEDICINE_EFFECTS,
   CLEAN_EFFECT,
   SHOWER_EFFECT,
@@ -38,7 +39,7 @@ const generateRandomPosition = (): { x: number; y: number } => {
  * 음식 먹으면 즉시 생성하지 않고 20~60초 후 생성 예약
  */
 const trySchedulePoop = (
-  foodEffect: FoodEffect,
+  _foodEffect: { hunger: number; happiness: number; health?: number },
   currentFullness: number,
   existingPoops: Poop[],
   pendingPoops: PendingPoop[]
@@ -49,8 +50,9 @@ const trySchedulePoop = (
     return undefined;
   }
 
-  // 기본 확률 + 포만감 보너스
-  let poopChance = foodEffect.poopChance;
+  // 기본 확률 (임시: 모든 음식 50% 확률)
+  // TODO: food.ts에 poopChance 추가 필요, 현재는 하드코딩
+  let poopChance = 0.5;
   if (currentFullness >= POOP_CONFIG.FULLNESS_BONUS_THRESHOLD) {
     poopChance += POOP_CONFIG.FULLNESS_BONUS_CHANCE;
   }
@@ -68,7 +70,7 @@ const trySchedulePoop = (
   return {
     id: `pending-poop-${Date.now()}-${Math.random()}`,
     scheduledAt: Date.now() + delay,
-    healthDebuff: foodEffect.healthDebuff,
+    healthDebuff: -5, // 기본 디버프값 (임시)
   };
 };
 
@@ -96,10 +98,20 @@ export const feedCharacter = (
   existingPoops: Poop[],
   pendingPoops: PendingPoop[] = []
 ): ActionResult & { pendingPoopScheduled?: PendingPoop } => {
-  const foodEffect = FOOD_EFFECTS[foodId] || FOOD_EFFECTS.default;
+  const foodItem = FOOD_ITEMS.find(item => item.id === foodId);
 
-  // 먹은 후 포만감 계산
-  const newFullness = clampStat(currentStats.fullness + foodEffect.fullness);
+  // 음식을 찾지 못한 경우 기본값 (안전장치)
+  const foodEffect = foodItem ? foodItem.effects : { hunger: -10, happiness: 5, health: 0 };
+
+  // 먹은 후 포만감 계산 (hunger는 감소값이므로 빼주는게 아니라 더해야 함. 
+  // 하지만 food.ts 정의상 hunger는 음수값(배고픔 해소)으로 되어있음.
+  // fullness는 0~100 (100이 배부름). 
+  // 기존 로직: fullness + foodEffect.fullness (양수)
+  // 새 로직: hunger가 음수(배고픔 감소) -> 즉 fullness 증가.
+  // 따라서 -foodEffect.hunger를 더해야 함.
+
+  const hungerRelief = -foodEffect.hunger; // 음수를 양수로 변환
+  const newFullness = clampStat(currentStats.fullness + hungerRelief);
 
   // 주요 효과
   const newStats: Partial<NurturingStats> = {
@@ -107,7 +119,7 @@ export const feedCharacter = (
     happiness: clampStat(currentStats.happiness + foodEffect.happiness),
   };
 
-  // 건강식인 경우 건강 회복
+  // 건강 효과 적용
   if (foodEffect.health) {
     newStats.health = clampStat(currentStats.health + foodEffect.health);
   }
