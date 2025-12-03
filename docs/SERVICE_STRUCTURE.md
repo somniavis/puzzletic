@@ -54,6 +54,9 @@ puzzleletic/
 │   │   ├── Poop/                # 똥 컴포넌트
 │   │   ├── NurturingPanel/      # 양육 상태 UI 패널
 │   │   └── PetRoom/             # 캐릭터가 머무는 방
+│   │       ├── MenuModal.tsx    # 메뉴 팝업 공통 컴포넌트
+│   │       ├── RoomBackground.tsx # 배경 렌더링 컴포넌트
+│   │       └── PetRoom.tsx      # 메인 컴포넌트
 │   ├── constants/               # 상수 (양육 규칙, 성격 등)
 │   │   └── nurturing.ts
 │   ├── contexts/                # 전역 상태 관리
