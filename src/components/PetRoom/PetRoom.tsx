@@ -661,7 +661,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({
             className={flyingFood.type === 'syringe' ? 'injecting-medicine' : 'eating-food'}
             style={{
               left: `${position.x}%`,
-              bottom: `${position.y - (window.innerWidth <= 768 ? 9 : 7) + 3}%`,
+              bottom: `${position.y - (window.innerWidth <= 768 ? 9 : 7) + 1.5}%`,
             }}
           >
             {flyingFood.icon}
