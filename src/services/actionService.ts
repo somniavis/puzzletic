@@ -16,13 +16,13 @@ import {
   MEDICINE_EFFECTS,
   CLEAN_EFFECT,
   SHOWER_EFFECT,
-  PLAY_EFFECT,
   STUDY_EFFECT,
   STUDY_REQUIREMENTS,
   POOP_CONFIG,
   MESSAGES,
 } from '../constants/nurturing';
 import { clampStat, evaluateCondition } from './gameTickService';
+import { DIFFICULTY_REWARDS, type GameDifficulty } from '../constants/progression';
 
 /**
  * 랜덤 위치 생성 (똥 배치용)
@@ -248,31 +248,35 @@ export const takeShower = (
  * 놀이하기 (글로 + GP 보상 포함)
  */
 export const playWithCharacter = (
-  currentStats: NurturingStats
+  currentStats: NurturingStats,
+  difficulty: GameDifficulty = 'easy'
 ): ActionResult & { gloEarned?: number; gpEarned?: number } => {
-  // 주요 효과
+  const reward = DIFFICULTY_REWARDS[difficulty];
+
+  // 주요 효과 (행복도 증가)
   const newStats: Partial<NurturingStats> = {
-    happiness: clampStat(currentStats.happiness + PLAY_EFFECT.happiness),
+    happiness: clampStat(currentStats.happiness + reward.happiness),
   };
 
-  // 부작용 (비용)
-  newStats.fullness = clampStat(currentStats.fullness + PLAY_EFFECT.fullness);
+  // 부작용 (비용 - 에너지 소모)
+  // 난이도가 높을수록 에너지 소모도 약간 증가 (기본 -10, 미디엄 -15, 하드 -20)
+  const energyCost = difficulty === 'hard' ? -20 : difficulty === 'medium' ? -15 : -10;
+  newStats.fullness = clampStat(currentStats.fullness + energyCost);
 
   const statChanges: Partial<NurturingStats> = {
     happiness: (newStats.happiness || currentStats.happiness) - currentStats.happiness,
     fullness: (newStats.fullness || currentStats.fullness) - currentStats.fullness,
   };
 
-  // 보상 계산 (rewardService에서 계산 - 추후 통합)
-  // 기본적으로 글로와 GP를 반환하도록 확장
   return {
     success: true,
     statChanges,
     sideEffects: {
       emotionTriggered: 'playful',
     },
-    // gloEarned: 보상 시스템 통합 후 추가
-    // gpEarned: 보상 시스템 통합 후 추가
+    // 보상 반환
+    gpEarned: reward.xp,
+    // gloEarned: 추후 게임별 로직에서 추가 (현재는 0 또는 별도 처리)
   };
 };
 
