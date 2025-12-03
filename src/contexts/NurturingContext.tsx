@@ -630,7 +630,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
   const abandonmentStatus = getAbandonmentStatusUI(state.abandonmentState, Date.now());
 
   // Context Value
-  const value: NurturingContextValue = {
+  const value: NurturingContextValue = React.useMemo(() => ({
     stats: state.stats,
     poops: state.poops,
     bugs: state.bugs || [],
@@ -657,9 +657,38 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     resetGame,
     pauseTick,
     resumeTick,
-    hasCharacter: state.hasCharacter ?? false, // Default to false if undefined
+    hasCharacter: state.hasCharacter ?? false,
     completeCharacterCreation,
-  };
+  }), [
+    state.stats,
+    state.poops,
+    state.bugs,
+    state.glo,
+    state.totalCurrencyEarned,
+    state.studyCount,
+    state.tickConfig.isActive,
+    state.inventory,
+    state.hasCharacter,
+    condition,
+    abandonmentStatus,
+    feed,
+    giveMedicine,
+    clean,
+    cleanBug,
+    cleanAll,
+    takeShower,
+    brushTeeth,
+    play,
+    study,
+    clickPoop,
+    clickBug,
+    spendGlo,
+    purchaseItem,
+    resetGame,
+    pauseTick,
+    resumeTick,
+    completeCharacterCreation
+  ]);
 
   return <NurturingContext.Provider value={value}>{children}</NurturingContext.Provider>;
 };

@@ -39,6 +39,7 @@ const createDefaultState = (): NurturingPersistentState => {
     studyCount: 0,
     abandonmentState: { ...DEFAULT_ABANDONMENT_STATE },
     inventory: ['default_ground'],
+    hasCharacter: false,
   };
 };
 
