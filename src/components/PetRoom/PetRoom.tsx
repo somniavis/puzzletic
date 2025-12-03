@@ -63,7 +63,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({
   const [showMedicineMenu, setShowMedicineMenu] = useState(false);
   const [showShopMenu, setShowShopMenu] = useState(false);
   const [showSettingsMenu, setShowSettingsMenu] = useState(false);
-  const [selectedFoodCategory, setSelectedFoodCategory] = useState<FoodCategory>('meal');
+  const [selectedFoodCategory, setSelectedFoodCategory] = useState<FoodCategory>('fruit');
   const [selectedShopCategory, setSelectedShopCategory] = useState<ShopCategory>('ground');
   const [currentBackground, setCurrentBackground] = useState<string>('default_ground');
   const [bubble, setBubble] = useState<{ category: EmotionCategory; level: 1 | 2 | 3; key: number } | null>(null);
@@ -661,7 +661,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({
             className={flyingFood.type === 'syringe' ? 'injecting-medicine' : 'eating-food'}
             style={{
               left: `${position.x}%`,
-              bottom: `${position.y - (window.innerWidth <= 768 ? 9 : 7)}%`,
+              bottom: `${position.y - (window.innerWidth <= 768 ? 9 : 7) + 3}%`,
             }}
           >
             {flyingFood.icon}
