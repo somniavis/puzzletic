@@ -34,6 +34,7 @@ import {
   playWithCharacter as servicePlay,
   studyWithCharacter as serviceStudy,
   takeShower as serviceTakeShower,
+  brushTeeth as serviceBrushTeeth,
   removePoop,
   convertPendingToPoop,
 } from '../services/actionService';
@@ -59,9 +60,10 @@ interface NurturingContextValue {
   cleanBug: () => ActionResult;
   cleanAll: () => ActionResult;
   takeShower: () => ActionResult;
+  brushTeeth: () => ActionResult;
   play: () => ActionResult;
   study: () => ActionResult;
-  clickPoop: (poopId: string) => void;
+  clickPoop: (poopId: string, happinessBonus?: number) => void;
   clickBug: (bugId: string) => void;
   spendGlo: (amount: number) => boolean;
   purchaseItem: (itemId: string, price: number) => boolean;
@@ -403,13 +405,20 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
 
   const cleanAll = useCallback((): ActionResult => {
     setState((currentState) => {
+      const newStats: NurturingStats = {
+        ...currentState.stats,
+        happiness: clampStat(currentState.stats.happiness + 10),
+      };
+
       const newState: NurturingPersistentState = {
         ...currentState,
+        stats: newStats,
         poops: [],
         bugs: [],
         lastActiveTime: Date.now(),
       };
       saveNurturingState(newState);
+      setCondition(evaluateCondition(newStats));
       return newState;
     });
 
@@ -451,7 +460,38 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     return result;
   }, []);
 
-  const clickPoop = useCallback((poopId: string) => {
+  const brushTeeth = useCallback((): ActionResult => {
+    let result: ActionResult = { success: false, statChanges: {} };
+
+    setState((currentState) => {
+      result = serviceBrushTeeth(currentState.stats);
+
+      if (!result.success) {
+        return currentState;
+      }
+
+      const newStats: NurturingStats = {
+        ...currentState.stats,
+        health: clampStat(currentState.stats.health + (result.statChanges.health || 0)),
+        happiness: clampStat(currentState.stats.happiness + (result.statChanges.happiness || 0)),
+      };
+
+      const newState: NurturingPersistentState = {
+        ...currentState,
+        stats: newStats,
+        lastActiveTime: Date.now(),
+      };
+
+      saveNurturingState(newState);
+      setCondition(evaluateCondition(newStats));
+
+      return newState;
+    });
+
+    return result;
+  }, []);
+
+  const clickPoop = useCallback((poopId: string, happinessBonus: number = 0) => {
     setState((currentState) => {
       const { updatedPoops, removed } = removePoop(poopId, currentState.poops);
 
@@ -459,12 +499,19 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
         return currentState;
       }
 
+      const newStats: NurturingStats = {
+        ...currentState.stats,
+        happiness: clampStat(currentState.stats.happiness + happinessBonus),
+      };
+
       const newState: NurturingPersistentState = {
         ...currentState,
+        stats: newStats,
         poops: updatedPoops,
       };
 
       saveNurturingState(newState);
+      setCondition(evaluateCondition(newStats));
 
       return newState;
     });
@@ -506,15 +553,22 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
       // 벌레 1마리 제거
       const updatedBugs = bugs.slice(1);
 
+      const newStats: NurturingStats = {
+        ...currentState.stats,
+        happiness: clampStat(currentState.stats.happiness + 3),
+      };
+
       const newState: NurturingPersistentState = {
         ...currentState,
+        stats: newStats,
         bugs: updatedBugs,
         lastActiveTime: Date.now(),
       };
 
       saveNurturingState(newState);
+      setCondition(evaluateCondition(newStats));
 
-      result = { success: true, statChanges: {}, message: '벌레 1마리를 제거했습니다!' };
+      result = { success: true, statChanges: { happiness: 3 }, message: '벌레 1마리를 제거했습니다!' };
 
       return newState;
     });
@@ -592,6 +646,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     cleanBug,
     cleanAll,
     takeShower,
+    brushTeeth,
     play,
     study,
     clickPoop,

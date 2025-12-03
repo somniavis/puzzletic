@@ -259,6 +259,10 @@ export const en = {
       name: 'Robot Cleaner',
       effect: 'Cleans all',
     },
+    toothbrush: {
+      name: 'Toothbrush',
+      effect: 'Feeling fresh',
+    },
   },
   emotions: {
     joy: {

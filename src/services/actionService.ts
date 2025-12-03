@@ -245,6 +245,32 @@ export const takeShower = (
 };
 
 /**
+ * 양치하기
+ */
+export const brushTeeth = (
+  currentStats: NurturingStats
+): ActionResult => {
+  const newStats: Partial<NurturingStats> = {
+    health: clampStat(currentStats.health + 3),
+    happiness: clampStat(currentStats.happiness + 2),
+  };
+
+  const statChanges: Partial<NurturingStats> = {
+    health: (newStats.health || currentStats.health) - currentStats.health,
+    happiness: (newStats.happiness || currentStats.happiness) - currentStats.happiness,
+  };
+
+  return {
+    success: true,
+    statChanges,
+    sideEffects: {
+      emotionTriggered: 'joy',
+    },
+    message: '치카치카!',
+  };
+};
+
+/**
  * 놀이하기 (글로 + GP 보상 포함)
  */
 export const playWithCharacter = (

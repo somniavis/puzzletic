@@ -15,7 +15,8 @@ interface PoopProps {
 export const Poop: React.FC<PoopProps> = ({ poop, onClick }) => {
   const [isBeingCleaned, setIsBeingCleaned] = useState(false);
 
-  const handleClick = () => {
+  const handleClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
     if (isBeingCleaned || !onClick) return;
 
     // 빗자루 애니메이션 시작

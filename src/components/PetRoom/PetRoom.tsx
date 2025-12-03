@@ -70,6 +70,8 @@ export const PetRoom: React.FC<PetRoomProps> = ({
   const [lastBubbleTime, setLastBubbleTime] = useState(0);
   const [flyingFood, setFlyingFood] = useState<{ icon: string; key: number; type: 'food' | 'pill' | 'syringe' } | null>(null);
   const [isShowering, setIsShowering] = useState(false);
+  const [isBrushing, setIsBrushing] = useState(false);
+  const [isCleaning, setIsCleaning] = useState(false);
 
   const showBubble = (category: EmotionCategory, level: 1 | 2 | 3) => {
     setBubble({ category, level, key: Date.now() });
@@ -439,20 +441,21 @@ export const PetRoom: React.FC<PetRoomProps> = ({
     switch (tool.id) {
       case 'broom':
         if (nurturing.poops.length > 0) {
-          playCleaningSound();
-          onActionChange?.('jumping');
+          setIsCleaning(true);
           const poopToClean = nurturing.poops[0];
-          handlePoopClick(poopToClean.id);
-          setTimeout(() => onActionChange?.('idle'), 500);
+          handlePoopClick(poopToClean.id, 3);
+          setTimeout(() => setIsCleaning(false), 1000);
         }
         break;
       case 'newspaper':
         if (nurturing.bugs.length > 0) {
+          setIsCleaning(true);
           playCleaningSound();
           const result = nurturing.cleanBug();
           if (result.success) {
             showBubble('playful', 1);
           }
+          setTimeout(() => setIsCleaning(false), 1000);
         }
         break;
       case 'shower':
@@ -470,13 +473,27 @@ export const PetRoom: React.FC<PetRoomProps> = ({
       case 'robot_cleaner':
         if (nurturing.glo >= tool.price) {
           if (nurturing.poops.length > 0 || nurturing.bugs.length > 0) {
+            setIsCleaning(true);
             nurturing.spendGlo(tool.price);
             setTimeout(() => playCleaningSound(), 100);
             nurturing.cleanAll();
             showBubble('joy', 3);
+            setTimeout(() => setIsCleaning(false), 2000);
           } else {
             showBubble('neutral', 1); // Nothing to clean
           }
+        } else {
+          showBubble('worried', 2); // Not enough money
+        }
+        break;
+      case 'toothbrush':
+        if (nurturing.glo >= tool.price) {
+          nurturing.spendGlo(tool.price);
+          nurturing.brushTeeth();
+          playCleaningSound();
+          showBubble('joy', 2);
+          setIsBrushing(true);
+          setTimeout(() => setIsBrushing(false), 3000);
         } else {
           showBubble('worried', 2); // Not enough money
         }
@@ -497,9 +514,9 @@ export const PetRoom: React.FC<PetRoomProps> = ({
     }
   };
 
-  const handlePoopClick = (poopId: string) => {
+  const handlePoopClick = (poopId: string, happinessBonus: number = 0) => {
     playCleaningSound(); // 청소 효과음 재생
-    nurturing.clickPoop(poopId);
+    nurturing.clickPoop(poopId, happinessBonus);
     showBubble('playful', 1);
   };
 
@@ -726,7 +743,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({
 
         {/* 똥들 렌더링 */}
         {!showGiftBox && nurturing.poops.map((poop) => (
-          <Poop key={poop.id} poop={poop} onClick={handlePoopClick} />
+          <Poop key={poop.id} poop={poop} onClick={() => handlePoopClick(poop.id)} />
         ))}
 
         {/* 벌레들 렌더링 */}
@@ -769,6 +786,8 @@ export const PetRoom: React.FC<PetRoomProps> = ({
           )}
           {/* 샤워 이펙트 (Moved here) */}
           {isShowering && <div className="shower-effect">🚿</div>}
+          {/* 양치 이펙트 */}
+          {isBrushing && <div className="brushing-effect">🪥</div>}
           {/* 버블 이펙트 */}
           {isShowering && (
             <div className="bubble-container">
@@ -991,7 +1010,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({
         <button
           className="action-btn action-btn--small"
           onClick={toggleFoodMenu}
-          disabled={action !== 'idle'}
+          disabled={action !== 'idle' || !!flyingFood || isShowering || isBrushing || isCleaning}
           title={t('actions.feed')}
         >
           <span className="action-icon">🍖</span>
@@ -999,7 +1018,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({
         <button
           className="action-btn action-btn--small"
           onClick={toggleMedicineMenu}
-          disabled={action !== 'idle'}
+          disabled={action !== 'idle' || !!flyingFood || isShowering || isBrushing || isCleaning}
           title={t('actions.medicine')}
         >
           <span className="action-icon">💊</span>
@@ -1007,7 +1026,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({
         <button
           className="action-btn action-btn--main"
           onClick={handlePlay}
-          disabled={action !== 'idle'}
+          disabled={action !== 'idle' || !!flyingFood || isShowering || isBrushing || isCleaning}
         >
           <span className="action-icon-large">🎾</span>
           <span className="action-label">{t('actions.play')}</span>
@@ -1015,7 +1034,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({
         <button
           className="action-btn action-btn--small"
           onClick={toggleCleanMenu}
-          disabled={action !== 'idle'}
+          disabled={action !== 'idle' || !!flyingFood || isShowering || isBrushing || isCleaning}
           title={t('actions.clean')}
         >
           <span className="action-icon">✨</span>
@@ -1026,7 +1045,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({
             playButtonSound();
             setShowSettingsMenu(true);
           }}
-          disabled={false}
+          disabled={action !== 'idle' || !!flyingFood || isShowering || isBrushing || isCleaning}
           title={t('actions.settings')}
         >
           <span className="action-icon">⚙️</span>
