@@ -18,6 +18,7 @@ import { GiftBox } from '../GiftBox/GiftBox';
 import { calculateClickResponse, getClickEmotionCategory } from '../../constants/personality';
 import { playButtonSound, playJelloClickSound, playEatingSound, playCleaningSound } from '../../utils/sound';
 import { RoomBackground } from './RoomBackground';
+import { MenuModal } from './MenuModal';
 import './PetRoom.css';
 
 interface PetRoomProps {
@@ -722,41 +723,37 @@ export const PetRoom: React.FC<PetRoomProps> = ({
       </div>
 
       {/* Food Menu Submenu */}
-      {
-        showFoodMenu && (
-          <div className="food-menu-overlay" onClick={() => { playButtonSound(); setShowFoodMenu(false); }}>
-            <div className="food-menu" onClick={(e) => e.stopPropagation()}>
-              <div className="food-menu-header">
-                <h3>{t('food.menu.title')}</h3>
-                <button className="close-btn" onClick={() => { playButtonSound(); setShowFoodMenu(false); }}>✕</button>
-              </div>
-
-              <div className="food-categories">
-                {(Object.keys(FOOD_CATEGORIES) as FoodCategory[]).map((category) => (
-                  <button
-                    key={category}
-                    className={`category-tab ${selectedFoodCategory === category ? 'active' : ''}`}
-                    onClick={() => { playButtonSound(); setSelectedFoodCategory(category); }}
-                  >
-                    <span className="category-icon">{FOOD_CATEGORIES[category].icon}</span>
-                    <span className="category-name">{t(FOOD_CATEGORIES[category].nameKey)}</span>
-                  </button>
-                ))}
-              </div>
-
-              <div className="food-items-grid">
-                {filteredFoods.map((food) => (
-                  <button
-                    key={food.id}
-                    className="food-item"
-                    onClick={() => handleFeed(food)}
-                    disabled={action !== 'idle' || nurturing.glo < food.price}
-                  >
-                    <span className="food-item-icon">{food.icon}</span>
-                    <span className="food-item-name">{t(food.nameKey)}</span>
-                    <div className="food-item-effects">
-                      <span className="food-item-price">💰 {food.price}</span>
-                      {/*
+      {showFoodMenu && (
+        <MenuModal
+          title={t('food.menu.title')}
+          onClose={() => setShowFoodMenu(false)}
+          headerContent={
+            <div className="food-categories">
+              {(Object.keys(FOOD_CATEGORIES) as FoodCategory[]).map((category) => (
+                <button
+                  key={category}
+                  className={`category-tab ${selectedFoodCategory === category ? 'active' : ''}`}
+                  onClick={() => { playButtonSound(); setSelectedFoodCategory(category); }}
+                >
+                  <span className="category-icon">{FOOD_CATEGORIES[category].icon}</span>
+                  <span className="category-name">{t(FOOD_CATEGORIES[category].nameKey)}</span>
+                </button>
+              ))}
+            </div>
+          }
+        >
+          {filteredFoods.map((food) => (
+            <button
+              key={food.id}
+              className="food-item"
+              onClick={() => handleFeed(food)}
+              disabled={action !== 'idle' || nurturing.glo < food.price}
+            >
+              <span className="food-item-icon">{food.icon}</span>
+              <span className="food-item-name">{t(food.nameKey)}</span>
+              <div className="food-item-effects">
+                <span className="food-item-price">💰 {food.price}</span>
+                {/*
                     {food.effects.hunger < 0 && (
                       <span className="effect">🍖 {-food.effects.hunger}</span>
                     )}
@@ -767,137 +764,111 @@ export const PetRoom: React.FC<PetRoomProps> = ({
                       <span className="effect">💚 +{food.effects.health}</span>
                     )}
                     */}
-                    </div>
-                  </button>
-                ))}
               </div>
-            </div>
-          </div>
-        )
-      }
+            </button>
+          ))}
+        </MenuModal>
+      )}
 
       {/* Medicine Menu Submenu */}
-      {
-        showMedicineMenu && (
-          <div className="food-menu-overlay" onClick={() => { playButtonSound(); setShowMedicineMenu(false); }}>
-            <div className="food-menu" onClick={(e) => e.stopPropagation()}>
-              <div className="food-menu-header">
-                <h3>{t('medicine.menu.title')}</h3>
-                <button className="close-btn" onClick={() => { playButtonSound(); setShowMedicineMenu(false); }}>✕</button>
+      {showMedicineMenu && (
+        <MenuModal
+          title={t('medicine.menu.title')}
+          onClose={() => setShowMedicineMenu(false)}
+        >
+          {MEDICINE_ITEMS.map((medicine) => (
+            <button
+              key={medicine.id}
+              className="food-item"
+              onClick={() => handleGiveMedicine(medicine)}
+              disabled={action !== 'idle' || nurturing.glo < medicine.price || nurturing.stats.health >= 60}
+            >
+              <span className="food-item-icon">{medicine.icon}</span>
+              <span className="food-item-name">{t(medicine.nameKey)}</span>
+              <div className="food-item-effects">
+                <span className="food-item-price">💰 {medicine.price}</span>
               </div>
-
-              <div className="food-items-grid">
-                {MEDICINE_ITEMS.map((medicine) => (
-                  <button
-                    key={medicine.id}
-                    className="food-item"
-                    onClick={() => handleGiveMedicine(medicine)}
-                    disabled={action !== 'idle' || nurturing.glo < medicine.price || nurturing.stats.health >= 60}
-                  >
-                    <span className="food-item-icon">{medicine.icon}</span>
-                    <span className="food-item-name">{t(medicine.nameKey)}</span>
-                    <div className="food-item-effects">
-                      <span className="food-item-price">💰 {medicine.price}</span>
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-        )
-      }
+            </button>
+          ))}
+        </MenuModal>
+      )}
 
       {/* Clean Menu Submenu */}
-      {
-        showCleanMenu && (
-          <div className="food-menu-overlay" onClick={() => { playButtonSound(); setShowCleanMenu(false); }}>
-            <div className="food-menu" onClick={(e) => e.stopPropagation()}>
-              <div className="food-menu-header">
-                <h3>{t('cleanMenu.title')}</h3>
-                <button className="close-btn" onClick={() => { playButtonSound(); setShowCleanMenu(false); }}>✕</button>
+      {showCleanMenu && (
+        <MenuModal
+          title={t('cleanMenu.title')}
+          onClose={() => setShowCleanMenu(false)}
+        >
+          {CLEANING_TOOLS.map((tool) => (
+            <button
+              key={tool.id}
+              className="food-item"
+              onClick={() => handleClean(tool)}
+              disabled={
+                action !== 'idle' ||
+                (tool.id === 'broom' && nurturing.poops.length === 0) ||
+                (tool.id === 'newspaper' && nurturing.bugs.length === 0) ||
+                (tool.id === 'shower' && nurturing.glo < tool.price) ||
+                (tool.id === 'robot_cleaner' && (nurturing.glo < tool.price || (nurturing.poops.length === 0 && nurturing.bugs.length === 0)))
+              }
+            >
+              <span className="food-item-icon">{tool.icon}</span>
+              <span className="food-item-name">{t(tool.nameKey)}</span>
+              <div className="food-item-effects">
+                <span className="effect">{t(tool.descriptionKey)}</span>
               </div>
-
-              <div className="food-items-grid">
-                {CLEANING_TOOLS.map((tool) => (
-                  <button
-                    key={tool.id}
-                    className="food-item"
-                    onClick={() => handleClean(tool)}
-                    disabled={
-                      action !== 'idle' ||
-                      (tool.id === 'broom' && nurturing.poops.length === 0) ||
-                      (tool.id === 'newspaper' && nurturing.bugs.length === 0) ||
-                      (tool.id === 'shower' && nurturing.glo < tool.price) ||
-                      (tool.id === 'robot_cleaner' && (nurturing.glo < tool.price || (nurturing.poops.length === 0 && nurturing.bugs.length === 0)))
-                    }
-                  >
-                    <span className="food-item-icon">{tool.icon}</span>
-                    <span className="food-item-name">{t(tool.nameKey)}</span>
-                    <div className="food-item-effects">
-                      <span className="effect">{t(tool.descriptionKey)}</span>
-                    </div>
-                    <div className="food-item-price">
-                      {tool.price > 0 ? `💰 ${tool.price}` : 'Free'}
-                    </div>
-                  </button>
-                ))}
+              <div className="food-item-price">
+                {tool.price > 0 ? `💰 ${tool.price}` : 'Free'}
               </div>
-            </div>
-          </div>
-        )
-      }
+            </button>
+          ))}
+        </MenuModal>
+      )}
 
       {/* Shop Menu Submenu */}
-      {
-        showShopMenu && (
-          <div className="food-menu-overlay" onClick={() => { playButtonSound(); setShowShopMenu(false); }}>
-            <div className="food-menu" onClick={(e) => e.stopPropagation()}>
-              <div className="food-menu-header">
-                <h3>{t('shop.menu.title', 'Shop')}</h3>
-                <button className="close-btn" onClick={() => { playButtonSound(); setShowShopMenu(false); }}>✕</button>
-              </div>
-
-              <div className="food-categories">
-                {(Object.keys(SHOP_CATEGORIES) as ShopCategory[]).map((category) => (
-                  <button
-                    key={category}
-                    className={`category-tab ${selectedShopCategory === category ? 'active' : ''}`}
-                    onClick={() => { playButtonSound(); setSelectedShopCategory(category); }}
-                  >
-                    <span className="category-icon">{SHOP_CATEGORIES[category].icon}</span>
-                    <span className="category-name">{t(SHOP_CATEGORIES[category].nameKey)}</span>
-                  </button>
-                ))}
-              </div>
-
-              <div className="food-items-grid">
-                {filteredShopItems.map((item) => (
-                  <button
-                    key={item.id}
-                    className={`food-item ${currentBackground === item.id ? 'active-item' : ''}`}
-                    onClick={() => handleShopItemClick(item)}
-                    style={currentBackground === item.id ? { borderColor: '#FFD700', backgroundColor: '#FFF9E6' } : {}}
-                  >
-                    <span className="food-item-icon">{item.icon}</span>
-                    <span className="food-item-name">{t(item.nameKey)}</span>
-                    <div className="food-item-effects">
-                      {nurturing.inventory.includes(item.id) ? (
-                        currentBackground === item.id ? (
-                          <span className="food-item-price">✅ Owned</span>
-                        ) : (
-                          <span className="food-item-price">Owned</span>
-                        )
-                      ) : (
-                        <span className="food-item-price">💰 {item.price}</span>
-                      )}
-                    </div>
-                  </button>
-                ))}
-              </div>
+      {showShopMenu && (
+        <MenuModal
+          title={t('shop.menu.title', 'Shop')}
+          onClose={() => setShowShopMenu(false)}
+          headerContent={
+            <div className="food-categories">
+              {(Object.keys(SHOP_CATEGORIES) as ShopCategory[]).map((category) => (
+                <button
+                  key={category}
+                  className={`category-tab ${selectedShopCategory === category ? 'active' : ''}`}
+                  onClick={() => { playButtonSound(); setSelectedShopCategory(category); }}
+                >
+                  <span className="category-icon">{SHOP_CATEGORIES[category].icon}</span>
+                  <span className="category-name">{t(SHOP_CATEGORIES[category].nameKey)}</span>
+                </button>
+              ))}
             </div>
-          </div>
-        )
-      }
+          }
+        >
+          {filteredShopItems.map((item) => (
+            <button
+              key={item.id}
+              className={`food-item ${currentBackground === item.id ? 'active-item' : ''}`}
+              onClick={() => handleShopItemClick(item)}
+              style={currentBackground === item.id ? { borderColor: '#FFD700', backgroundColor: '#FFF9E6' } : {}}
+            >
+              <span className="food-item-icon">{item.icon}</span>
+              <span className="food-item-name">{t(item.nameKey)}</span>
+              <div className="food-item-effects">
+                {nurturing.inventory.includes(item.id) ? (
+                  currentBackground === item.id ? (
+                    <span className="food-item-price">✅ Owned</span>
+                  ) : (
+                    <span className="food-item-price">Owned</span>
+                  )
+                ) : (
+                  <span className="food-item-price">💰 {item.price}</span>
+                )}
+              </div>
+            </button>
+          ))}
+        </MenuModal>
+      )}
 
       {/* Settings Menu */}
       <SettingsMenu
