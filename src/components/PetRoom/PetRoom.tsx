@@ -430,19 +430,31 @@ export const PetRoom: React.FC<PetRoomProps> = ({
       case 'broom':
         if (nurturing.poops.length > 0) {
           setIsCleaning(true);
-          const poopToClean = nurturing.poops[0];
-          handlePoopClick(poopToClean.id, 3);
+          // 애니메이션 중간에 청소 실행 (빗자루가 쓸 때)
+          setTimeout(() => {
+            const poopToClean = nurturing.poops[0];
+            if (poopToClean) {
+              handlePoopClick(poopToClean.id, 3);
+            }
+          }, 500);
           setTimeout(() => setIsCleaning(false), 1000);
         }
         break;
       case 'newspaper':
         if (nurturing.bugs.length > 0) {
           setIsCleaning(true);
-          playCleaningSound();
-          const result = nurturing.cleanBug();
-          if (result.success) {
-            showBubble('playful', 1);
-          }
+          // 애니메이션 중간에 청소 실행 (신문지로 때릴 때)
+          setTimeout(() => {
+            const bugToClean = nurturing.bugs[0];
+            if (bugToClean) {
+              handleBugClick(bugToClean.id);
+            } else {
+              // Fallback if no specific bug found (shouldn't happen due to check)
+              playCleaningSound();
+              nurturing.cleanBug();
+              showBubble('playful', 1);
+            }
+          }, 500);
           setTimeout(() => setIsCleaning(false), 1000);
         }
         break;
