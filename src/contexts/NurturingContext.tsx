@@ -58,6 +58,7 @@ interface NurturingContextValue {
   isTickActive: boolean;
   gameDifficulty: number | null; // 게임 난이도 (null이면 게임 중 아님)
   abandonmentStatus: AbandonmentStatusUI;  // 가출 상태
+  isSick: boolean; // 질병 상태 (true면 아픔, 약으로만 치료 가능)
 
   // 행동 (Actions)
   feed: (food: FoodItem) => ActionResult;
@@ -696,6 +697,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     isTickActive: state.tickConfig.isActive,
     gameDifficulty: state.gameDifficulty ?? null,
     abandonmentStatus,
+    isSick: state.isSick || false,
     feed,
     giveMedicine,
     clean,

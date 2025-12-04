@@ -704,14 +704,14 @@ export const PetRoom: React.FC<PetRoomProps> = ({
               />
             )}
             {/* 질병 상태 표시 (반창고 - 크로스 X 형태) */}
-            {nurturing.condition.isSick && !showGiftBox && (
+            {nurturing.isSick && !showGiftBox && (
               <div className="sick-bandaid">
                 <span className="bandaid-cross bandaid-left">🩹</span>
                 <span className="bandaid-cross bandaid-right">🩹</span>
               </div>
             )}
             {/* 질병 상태 표시 (온도계 - 우측 상단) */}
-            {nurturing.condition.isSick && !showGiftBox && (
+            {nurturing.isSick && !showGiftBox && (
               <div className="sick-thermometer">🌡️</div>
             )}
             {/* 샤워 이펙트 */}
