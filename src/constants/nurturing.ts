@@ -184,11 +184,24 @@ export const POOP_CONFIG = {
 
 // ==================== 벌레 시스템 (Bug System) ====================
 export const BUG_CONFIG = {
-  MAX_BUGS: 3,                       // 최대 벌레 개수
-  FLY_SPAWN_CHANCE_PER_POOP: 0.15 / 12,   // 틱당 똥 1개당 파리 생성 확률 (1분에 15% = 12틱에 15%)
-  MOSQUITO_SPAWN_CHANCE: 0.15 / 60,       // 틱당 모기 생성 확률 (5분에 15% = 60틱에 15%)
-  HEALTH_DEBUFF_PER_BUG: -0.3,       // 틱당 벌레 1마리당 건강 감소
-  HAPPINESS_DEBUFF_PER_BUG: -0.2,    // 틱당 벌레 1마리당 행복도 감소
+  MAX_BUGS: 5,
+  SPAWN_INTERVAL: 60 * 1000, // 1분마다 체크 (실제로는 틱마다 확률 체크)
+  FLY_SPAWN_CHANCE_PER_POOP: 0.1, // 똥 1개당 10%
+  MOSQUITO_SPAWN_CHANCE: 0.05,    // 5% 확률
+  HEALTH_DEBUFF_PER_BUG: -0.5,    // 벌레 1마리당 건강 감소
+  HAPPINESS_DEBUFF_PER_BUG: -0.5, // 벌레 1마리당 행복 감소
+};
+
+// ==================== 질병 설정 (Sick Config) ====================
+export const SICK_CONFIG = {
+  PENALTY: {
+    health: -1.5,      // 틱당 건강 감소 (평소의 3배)
+    happiness: -1.0,   // 틱당 행복 감소
+  },
+  CHANCE: {
+    BASE: 0.1,         // 기본 발병 확률 (10%)
+    PER_BUG: 0.05,     // 벌레 마리당 추가 확률 (5%)
+  },
 };
 
 // ==================== 학습 조건 (Study Requirements) ====================

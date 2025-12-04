@@ -25,6 +25,7 @@ import {
   ABANDONMENT_PERIODS,
   ABANDONMENT_MESSAGE_KEYS,
   BUG_CONFIG,
+  SICK_CONFIG,
 } from '../constants/nurturing';
 
 /**
@@ -37,29 +38,39 @@ export const clampStat = (value: number): number => {
 /**
  * 캐릭터의 현재 상태 판정
  */
-export const evaluateCondition = (stats: NurturingStats): CharacterCondition => {
+export const evaluateCondition = (stats: NurturingStats, isSick: boolean = false): CharacterCondition => {
   const isHungry = stats.fullness < THRESHOLDS.HUNGER;
-  const isSick = stats.health < THRESHOLDS.SICK;
+  // 기존: health < 50이면 아픔
+  // 변경: health < 50 이거나 isSick 상태이면 아픔
+  const isSickCondition = isSick || stats.health < THRESHOLDS.SICK;
 
   // 학습 가능 여부: 너무 불행하거나 아프거나 배고프면 불가
   const canStudy =
     stats.happiness >= 30 &&
+    !isSickCondition && // 아프면 공부 불가
     stats.health >= 30 &&
     stats.fullness >= 20;
 
   // 즉시 케어 필요: 위험 상태인 스탯이 하나라도 있으면
   const needsAttention =
+    isSick || // 질병 상태면 즉시 케어 필요
     stats.fullness < THRESHOLDS.CRITICAL ||
     stats.health < THRESHOLDS.CRITICAL ||
     stats.happiness < THRESHOLDS.CRITICAL;
 
   return {
     isHungry,
-    isSick,
+    isSick: isSickCondition,
     canStudy,
     needsAttention,
   };
 };
+
+// ... (createBug omitted)
+
+// ... (executeGameTick implementation)
+
+
 
 
 
@@ -84,19 +95,23 @@ export const createBug = (type: BugType): Bug => {
  * @param currentStats 현재 스탯
  * @param poops 현재 바닥에 있는 똥 목록
  * @param bugs 현재 벌레 목록
- * @returns 틱 실행 결과 (스탯 변화, 상태, 페널티, 알림)
+ * @param gameDifficulty 게임 난이도
+ * @param isSick 현재 질병 상태
+ * @returns 틱 실행 결과 (스탯 변화, 상태, 페널티, 알림, 질병 상태 변화)
  */
 export const executeGameTick = (
   currentStats: NurturingStats,
   poops: Poop[] = [],
   bugs: Bug[] = [],
-  gameDifficulty: number | null = null
-): TickResult => {
+  gameDifficulty: number | null = null,
+  isSick: boolean = false
+): TickResult & { newIsSick: boolean } => {
   // 새 스탯 객체 (변경사항 누적)
   const newStats = { ...currentStats };
   const alerts: string[] = [];
   const penalties: TickResult['penalties'] = {};
   let newBugs = [...bugs];
+  let newIsSick = isSick;
 
   // ==================== A. 기본 감소 (Natural Decay) ====================
   if (gameDifficulty !== null) {
@@ -116,37 +131,41 @@ export const executeGameTick = (
     newStats.health += NATURAL_DECAY.health;
   }
 
-  // ==================== B. 상태 평가 ====================
-  const condition = evaluateCondition(currentStats); // 변경 전 상태 기준으로 판정
+  // ==================== B. 질병 페널티 (Sick Penalty) ====================
+  if (newIsSick) {
+    newStats.health += SICK_CONFIG.PENALTY.health;
+    newStats.happiness += SICK_CONFIG.PENALTY.happiness;
+    penalties.sick = Math.abs(SICK_CONFIG.PENALTY.health);
+    alerts.push('질병으로 인해 건강이 빠르게 악화되고 있습니다!');
+  }
 
-  // ==================== C. 상호 악화 (Vicious Cycle) ====================
-
-  // 1. 배고픔 상태 페널티
-  if (currentStats.fullness < 20) {
-    // 심각한 배고픔
+  // ==================== C. 상태별 페널티 (Condition Penalties) ====================
+  // 1. 배고픔 페널티
+  if (currentStats.fullness < THRESHOLDS.CRITICAL) {
+    // 심각한 배고픔 (20 미만)
     newStats.happiness += HUNGER_PENALTY.severe.happiness;
     newStats.health += HUNGER_PENALTY.severe.health;
-    penalties.hunger = Math.abs(HUNGER_PENALTY.severe.happiness + HUNGER_PENALTY.severe.health);
-    alerts.push('심각한 배고픔 페널티: 행복도/건강 감소');
-  } else if (currentStats.fullness < 40) {
-    // 경미한 배고픔
+    penalties.hunger = Math.abs(HUNGER_PENALTY.severe.health);
+    alerts.push('배가 너무 고파서 건강이 크게 나빠집니다.');
+  } else if (currentStats.fullness < THRESHOLDS.HUNGER) {
+    // 일반 배고픔 (30 미만)
     newStats.happiness += HUNGER_PENALTY.mild.happiness;
     newStats.health += HUNGER_PENALTY.mild.health;
-    penalties.hunger = Math.abs(HUNGER_PENALTY.mild.happiness + HUNGER_PENALTY.mild.health);
-    alerts.push('배고픔 페널티: 행복도/건강 감소');
+    penalties.hunger = Math.abs(HUNGER_PENALTY.mild.health);
+    alerts.push('배가 고파서 건강과 행복도가 감소합니다.');
   }
 
-  // 2. 아픔 상태 페널티 (health < 50)
-  if (condition.isSick) {
+  // 2. 아픔 페널티 (기존 낮은 건강 페널티)
+  if (currentStats.health < THRESHOLDS.SICK) {
     newStats.happiness += SICK_PENALTY.happiness;
-    penalties.sick = Math.abs(SICK_PENALTY.happiness);
-    alerts.push('아픔 페널티: 행복도 감소');
+    penalties.sick = (penalties.sick || 0) + Math.abs(SICK_PENALTY.happiness);
+    // alerts.push('몸이 아파서 행복도가 감소합니다.');
   }
 
-  // 3. 불행 상태 페널티 (happiness < 20)
-  if (currentStats.happiness < 20) {
+  // 3. 불행 페널티
+  if (currentStats.happiness < THRESHOLDS.CRITICAL) {
     newStats.health += UNHAPPY_PENALTY.health;
-    alerts.push('불행 페널티: 건강 감소');
+    alerts.push('우울해서 건강이 나빠집니다.');
   }
 
   // 4. 똥 방치 페널티
@@ -179,21 +198,38 @@ export const executeGameTick = (
     alerts.push(`벌레 페널티 (${newBugs.length}마리): 건강/행복도 감소`);
   }
 
-  // ==================== D. 벌레 생성 ====================
+  // ==================== D. 벌레 생성 및 질병 감염 ====================
   if (newBugs.length < BUG_CONFIG.MAX_BUGS) {
+    let bugSpawned = false;
+
     // 파리 생성 (똥이 있을 때만)
     if (poops.length > 0) {
       const flySpawnChance = poops.length * BUG_CONFIG.FLY_SPAWN_CHANCE_PER_POOP;
       if (Math.random() < flySpawnChance) {
         newBugs.push(createBug('fly'));
         alerts.push('파리가 나타났어요!');
+        bugSpawned = true;
       }
     }
 
     // 모기 생성 (시간에 따라)
-    if (Math.random() < BUG_CONFIG.MOSQUITO_SPAWN_CHANCE) {
+    if (!bugSpawned && Math.random() < BUG_CONFIG.MOSQUITO_SPAWN_CHANCE) {
       newBugs.push(createBug('mosquito'));
       alerts.push('모기가 나타났어요!');
+      bugSpawned = true;
+    }
+
+    // 벌레 생성 시 질병 감염 체크
+    if (bugSpawned && !newIsSick) {
+      // 확률: 기본(10%) + (현재 벌레 수 * 5%)
+      // newBugs에는 방금 생성된 벌레가 포함되어 있음
+      const currentBugCount = newBugs.length; // 방금 생성된 것 포함
+      const sickChance = SICK_CONFIG.CHANCE.BASE + (currentBugCount * SICK_CONFIG.CHANCE.PER_BUG);
+
+      if (Math.random() < sickChance) {
+        newIsSick = true;
+        alerts.push('벌레 때문에 젤로가 병에 걸렸어요! 💊 약이 필요합니다.');
+      }
     }
   }
 
@@ -209,7 +245,7 @@ export const executeGameTick = (
     happiness: newStats.happiness - currentStats.happiness,
   };
 
-  const finalCondition = evaluateCondition(newStats);
+  const finalCondition = evaluateCondition(newStats, newIsSick);
 
   return {
     statChanges,
@@ -217,6 +253,7 @@ export const executeGameTick = (
     penalties,
     alerts,
     newBugs,
+    newIsSick,
   };
 };
 

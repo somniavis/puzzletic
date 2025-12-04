@@ -703,6 +703,17 @@ export const PetRoom: React.FC<PetRoomProps> = ({
                 level={bubble.level}
               />
             )}
+            {/* 질병 상태 표시 (반창고 - 크로스 X 형태) */}
+            {nurturing.condition.isSick && !showGiftBox && (
+              <div className="sick-bandaid">
+                <span className="bandaid-cross bandaid-left">🩹</span>
+                <span className="bandaid-cross bandaid-right">🩹</span>
+              </div>
+            )}
+            {/* 질병 상태 표시 (온도계 - 우측 상단) */}
+            {nurturing.condition.isSick && !showGiftBox && (
+              <div className="sick-thermometer">🌡️</div>
+            )}
             {/* 샤워 이펙트 */}
             {isShowering && <div className="shower-effect">🚿</div>}
             {/* 양치 이펙트 */}
@@ -739,6 +750,8 @@ export const PetRoom: React.FC<PetRoomProps> = ({
           </div>
         )}
       </div>
+
+
 
       {/* Food Menu Submenu */}
       {showFoodMenu && (

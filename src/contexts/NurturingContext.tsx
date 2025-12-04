@@ -121,7 +121,8 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
         currentState.stats,
         currentState.poops,
         currentState.bugs || [],
-        currentState.gameDifficulty ?? null
+        currentState.gameDifficulty ?? null,
+        currentState.isSick // 현재 질병 상태 전달
       );
 
       // 새 스탯 계산
@@ -161,6 +162,8 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
         stats: newStats,
         poops: newPoops,
         bugs: tickResult.newBugs || currentState.bugs,
+        isSick: tickResult.newIsSick, // 질병 상태 업데이트
+        sickProgress: tickResult.newIsSick && !currentState.isSick ? 0 : currentState.sickProgress, // 새로 아프면 진행도 초기화
         pendingPoops: remainingPendingPoops,
         abandonmentState: updatedAbandonmentState,
         lastActiveTime: Date.now(),
@@ -241,7 +244,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
       };
 
       saveNurturingState(newState);
-      setCondition(evaluateCondition(newStats));
+      setCondition(evaluateCondition(newStats, currentState.isSick)); // 질병 상태 유지
 
       return newState;
     });
@@ -250,10 +253,11 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
   }, []);
 
   const giveMedicine = useCallback((medicine: MedicineItem): ActionResult => {
-    let result: ActionResult = { success: false, statChanges: {} };
+    let result: ActionResult & { cureProgressDelta?: number } = { success: false, statChanges: {} };
 
     setState((currentState) => {
-      result = serviceGiveMedicine(currentState.stats, medicine.id);
+      // 질병 상태 전달
+      result = serviceGiveMedicine(currentState.stats, medicine.id, currentState.isSick);
 
       if (!result.success) {
         return currentState;
@@ -265,14 +269,33 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
         happiness: clampStat(currentState.stats.happiness + (result.statChanges.happiness || 0)),
       };
 
+      // 질병 치료 진행도 업데이트
+      let newIsSick = currentState.isSick;
+      let newSickProgress = currentState.sickProgress || 0;
+
+      if (result.cureProgressDelta && result.cureProgressDelta > 0) {
+        newSickProgress += result.cureProgressDelta;
+
+        // 치료 완료 체크 (2포인트 이상이면 완치)
+        if (newSickProgress >= 2) {
+          newIsSick = false;
+          newSickProgress = 0;
+          console.log('💊 질병이 완치되었습니다!');
+        } else {
+          console.log(`💊 치료 진행 중... (${newSickProgress}/2)`);
+        }
+      }
+
       const newState: NurturingPersistentState = {
         ...currentState,
         stats: newStats,
+        isSick: newIsSick, // 상태 업데이트
+        sickProgress: newSickProgress, // 진행도 업데이트
         lastActiveTime: Date.now(),
       };
 
       saveNurturingState(newState);
-      setCondition(evaluateCondition(newStats));
+      setCondition(evaluateCondition(newStats, newIsSick));
 
       return newState;
     });

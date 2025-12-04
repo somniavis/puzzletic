@@ -154,9 +154,10 @@ export const feedCharacter = (
  */
 export const giveMedicine = (
   currentStats: NurturingStats,
-  medicineId: string
-): ActionResult => {
-  const condition = evaluateCondition(currentStats);
+  medicineId: string,
+  isSick: boolean = false
+): ActionResult & { cureProgressDelta?: number } => {
+  const condition = evaluateCondition(currentStats, isSick);
   const medicineEffect = MEDICINE_EFFECTS[medicineId] || MEDICINE_EFFECTS.default;
 
   // 건강 회복
@@ -170,8 +171,15 @@ export const giveMedicine = (
     happiness: (newStats.happiness || currentStats.happiness) - currentStats.happiness,
   };
 
-  // 부작용 (현재는 없음 - 안도감만)
-  // fullness: currentStats.fullness + medicineEffect.fullness 를 추가하려면 여기
+  // 질병 치료 진행도 계산
+  let cureProgressDelta = 0;
+  if (isSick) {
+    if (medicineId === 'syringe') {
+      cureProgressDelta = 2; // 주사는 한 번에 치료 (2포인트)
+    } else {
+      cureProgressDelta = 1; // 알약은 두 번 필요 (1포인트)
+    }
+  }
 
   return {
     success: true,
@@ -180,6 +188,7 @@ export const giveMedicine = (
       emotionTriggered: condition.isSick ? 'love' : 'neutral',
     },
     message: condition.isSick ? '아픔이 나아지고 있어요' : undefined,
+    cureProgressDelta,
   };
 };
 
