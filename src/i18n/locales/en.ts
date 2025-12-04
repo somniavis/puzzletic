@@ -420,7 +420,7 @@ export const en = {
     danger: 'Needs attention!',
     critical: 'Critical condition!',
     leaving: 'Leaving soon!',
-    abandoned: 'Has left...',
+    abandoned: 'R.I.P. Jello has passed away...',
   },
   settings: {
     title: 'Settings',

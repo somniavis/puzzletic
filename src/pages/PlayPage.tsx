@@ -34,18 +34,18 @@ interface PlayPageProps {
 
 export const PlayPage: React.FC<PlayPageProps> = ({ onNavigate }) => {
     const { t } = useTranslation();
-    const { pauseTick, resumeTick } = useNurturing();
+    const { setGameDifficulty } = useNurturing();
     const [selectedCategory, setSelectedCategory] = useState<Category>('math');
     const [selectedDifficulty, setSelectedDifficulty] = useState<Difficulty>(1);
     const [isControlsOpen, setIsControlsOpen] = useState(true);
 
-    // Pause game tick when entering Play Page, resume when leaving
+    // Set Game Difficulty when entering Play Page or changing difficulty, unset when leaving
     useEffect(() => {
-        pauseTick();
+        setGameDifficulty(selectedDifficulty);
         return () => {
-            resumeTick();
+            setGameDifficulty(null);
         };
-    }, [pauseTick, resumeTick]);
+    }, [setGameDifficulty, selectedDifficulty]);
 
     const filteredGames = GAMES.filter(
         game => game.category === selectedCategory && game.difficulty === selectedDifficulty

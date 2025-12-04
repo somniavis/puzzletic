@@ -13,7 +13,12 @@ import type {
   Bug,
   AbandonmentStatusUI,
 } from '../types/nurturing';
-import { TICK_INTERVAL_MS } from '../constants/nurturing';
+import type { FoodItem } from '../types/food';
+import type { MedicineItem } from '../types/medicine';
+import type { CleaningTool } from '../types/cleaning';
+import {
+  TICK_INTERVAL_MS,
+} from '../constants/nurturing';
 import {
   loadNurturingState,
   saveNurturingState,
@@ -30,7 +35,7 @@ import {
 import {
   feedCharacter as serviceFeed,
   giveMedicine as serviceGiveMedicine,
-  cleanRoom as serviceCleanRoom,
+  cleanRoom as serviceClean, // Renamed from serviceCleanRoom to serviceClean
   playWithCharacter as servicePlay,
   studyWithCharacter as serviceStudy,
   takeShower as serviceTakeShower,
@@ -51,12 +56,13 @@ interface NurturingContextValue {
   totalCurrencyEarned: number;
   studyCount: number;
   isTickActive: boolean;
+  gameDifficulty: number | null; // 게임 난이도 (null이면 게임 중 아님)
   abandonmentStatus: AbandonmentStatusUI;  // 가출 상태
 
   // 행동 (Actions)
-  feed: (foodId: string) => ActionResult;
-  giveMedicine: (medicineId: string) => ActionResult;
-  clean: () => ActionResult;
+  feed: (food: FoodItem) => ActionResult;
+  giveMedicine: (medicine: MedicineItem) => ActionResult;
+  clean: (tool: CleaningTool) => ActionResult;
   cleanBug: () => ActionResult;
   cleanAll: () => ActionResult;
   takeShower: () => ActionResult;
@@ -73,6 +79,7 @@ interface NurturingContextValue {
   resetGame: () => void;
   pauseTick: () => void;
   resumeTick: () => void;
+  setGameDifficulty: (difficulty: number | null) => void;
   hasCharacter: boolean;
   completeCharacterCreation: () => void;
 }
@@ -109,7 +116,13 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
   // 게임 틱 실행
   const runGameTick = useCallback(() => {
     setState((currentState) => {
-      const tickResult = executeGameTick(currentState.stats, currentState.poops, currentState.bugs || []);
+      // 3. 게임 틱 실행
+      const tickResult = executeGameTick(
+        currentState.stats,
+        currentState.poops,
+        currentState.bugs || [],
+        currentState.gameDifficulty ?? null
+      );
 
       // 새 스탯 계산
       const newStats: NurturingStats = {
@@ -196,11 +209,11 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
 
   // ==================== 행동 함수 ====================
 
-  const feed = useCallback((foodId: string): ActionResult => {
+  const feed = useCallback((food: FoodItem): ActionResult => {
     let result: ActionResult & { pendingPoopScheduled?: PendingPoop } = { success: false, statChanges: {} };
 
     setState((currentState) => {
-      result = serviceFeed(currentState.stats, foodId, currentState.poops, currentState.pendingPoops || []);
+      result = serviceFeed(currentState.stats, food.id, currentState.poops, currentState.pendingPoops || []);
 
       if (!result.success) {
         return currentState;
@@ -236,11 +249,11 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     return result;
   }, []);
 
-  const giveMedicine = useCallback((medicineId: string): ActionResult => {
+  const giveMedicine = useCallback((medicine: MedicineItem): ActionResult => {
     let result: ActionResult = { success: false, statChanges: {} };
 
     setState((currentState) => {
-      result = serviceGiveMedicine(currentState.stats, medicineId);
+      result = serviceGiveMedicine(currentState.stats, medicine.id);
 
       if (!result.success) {
         return currentState;
@@ -267,11 +280,14 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     return result;
   }, []);
 
-  const clean = useCallback((): ActionResult => {
+  const clean = useCallback((_tool: CleaningTool): ActionResult => {
     let result: ActionResult = { success: false, statChanges: {} };
 
     setState((currentState) => {
-      result = serviceCleanRoom(currentState.stats, currentState.poops);
+      // serviceClean signature: (stats, poops)
+      // Note: We are ignoring tool.id for now as the service doesn't support it yet.
+      // If tool specific logic is needed, actionService.ts needs to be updated first.
+      result = serviceClean(currentState.stats, currentState.poops);
 
       const newStats: NurturingStats = {
         fullness: currentState.stats.fullness,
@@ -581,6 +597,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     setState({
       ...newState,
       hasCharacter: false, // Reset character state
+      gameDifficulty: null, // Reset game difficulty
     });
     setCondition(evaluateCondition(newState.stats));
   }, []);
@@ -626,6 +643,18 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     });
   }, []);
 
+  const setGameDifficulty = useCallback((difficulty: number | null) => {
+    console.log(`🎮 Game Difficulty Set: ${difficulty}`);
+    setState((currentState) => {
+      const newState: NurturingPersistentState = {
+        ...currentState,
+        gameDifficulty: difficulty,
+      };
+      saveNurturingState(newState); // Save the state change
+      return newState;
+    });
+  }, []);
+
   // 가출 상태 UI 정보
   const abandonmentStatus = getAbandonmentStatusUI(state.abandonmentState, Date.now());
 
@@ -639,6 +668,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     totalCurrencyEarned: state.totalCurrencyEarned,
     studyCount: state.studyCount,
     isTickActive: state.tickConfig.isActive,
+    gameDifficulty: state.gameDifficulty ?? null,
     abandonmentStatus,
     feed,
     giveMedicine,
@@ -657,6 +687,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     resetGame,
     pauseTick,
     resumeTick,
+    setGameDifficulty,
     hasCharacter: state.hasCharacter ?? false,
     completeCharacterCreation,
   }), [
@@ -667,6 +698,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     state.totalCurrencyEarned,
     state.studyCount,
     state.tickConfig.isActive,
+    state.gameDifficulty,
     state.inventory,
     state.hasCharacter,
     condition,
@@ -687,6 +719,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     resetGame,
     pauseTick,
     resumeTick,
+    setGameDifficulty,
     completeCharacterCreation
   ]);
 

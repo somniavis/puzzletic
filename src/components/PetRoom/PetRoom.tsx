@@ -308,7 +308,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({
       onActionChange?.('eating');
 
       // 양육 시스템으로 먹이기 실행
-      const result = nurturing.feed(food.id);
+      const result = nurturing.feed(food);
 
       if (result.success) {
         showBubble('playful', 1);
@@ -403,7 +403,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({
       onActionChange?.(isSyringe ? 'sick' : 'eating'); // 주사는 아파함, 알약은 먹음
 
       // 양육 시스템으로 약 먹이기 실행
-      const result = nurturing.giveMedicine(medicine.id);
+      const result = nurturing.giveMedicine(medicine);
 
       if (result.success) {
         setTimeout(() => {
@@ -621,11 +621,10 @@ export const PetRoom: React.FC<PetRoomProps> = ({
           <span className="action-icon">🛖</span>
         </button>
 
-        {/* 가출 경고 메시지 */}
-        {nurturing.abandonmentStatus.level !== 'normal' && (
+        {/* 가출 경고 메시지 (죽음 상태가 아닐 때만 표시) */}
+        {nurturing.abandonmentStatus.level !== 'normal' && nurturing.abandonmentStatus.level !== 'abandoned' && (
           <div className={`abandonment-alert abandonment-alert--${nurturing.abandonmentStatus.level}`}>
             <span className="abandonment-alert__icon">
-              {nurturing.abandonmentStatus.level === 'abandoned' && '💀'}
               {nurturing.abandonmentStatus.level === 'leaving' && '⚠️'}
               {nurturing.abandonmentStatus.level === 'critical' && '⚠️'}
               {nurturing.abandonmentStatus.level === 'danger' && '⚠️'}
@@ -635,6 +634,22 @@ export const PetRoom: React.FC<PetRoomProps> = ({
                 countdown: nurturing.abandonmentStatus.countdown || '',
               })}
             </span>
+          </div>
+        )}
+
+        {/* Death UI Overlay */}
+        {nurturing.abandonmentStatus.level === 'abandoned' && (
+          <div className="death-overlay">
+            <div className="death-container">
+              <div className="ghost">👻</div>
+              <div className="tombstone">🪦</div>
+            </div>
+            <div className="death-message">
+              {t('abandonment.abandoned')}
+            </div>
+            <button className="reset-btn" onClick={nurturing.resetGame}>
+              {t('game.reset', 'Reset Game')}
+            </button>
           </div>
         )}
         <RoomBackground
@@ -669,57 +684,59 @@ export const PetRoom: React.FC<PetRoomProps> = ({
           </div>
         )}
 
-        {/* Character */}
-        <div
-          className="character-container"
-          style={{
-            left: showGiftBox ? '50%' : `${position.x}%`,
-            bottom: showGiftBox ? '50%' : `${position.y}%`,
-            transform: 'translate(-50%, 50%)',
-          }}
-          onClick={handleCharacterClick}
-        >
-          {bubble && (
-            <EmotionBubble
-              key={bubble.key}
-              category={bubble.category}
-              level={bubble.level}
-            />
-          )}
-          {/* 샤워 이펙트 (Moved here) */}
-          {isShowering && <div className="shower-effect">🚿</div>}
-          {/* 양치 이펙트 */}
-          {isBrushing && <div className="brushing-effect">🪥</div>}
-          {/* 버블 이펙트 */}
-          {isShowering && (
-            <div className="bubble-container">
-              {bubbles.map((b) => (
-                <span
-                  key={b.id}
-                  className="bubble"
-                  style={{
-                    left: `${b.left}%`,
-                    animationDelay: `${b.delay}s`,
-                    animationDuration: `${b.duration}s`,
-                    fontSize: `${b.size}px`,
-                  }}
-                >
-                  🫧
-                </span>
-              ))}
-            </div>
-          )}
-          {showGiftBox ? (
-            <GiftBox onOpen={onOpenGift || (() => { })} />
-          ) : (
-            <CharacterComponent
-              character={character}
-              size="small"
-              mood={mood}
-              action={action}
-            />
-          )}
-        </div>
+        {/* Character (죽음 상태가 아닐 때만 표시) */}
+        {nurturing.abandonmentStatus.level !== 'abandoned' && (
+          <div
+            className="character-container"
+            style={{
+              left: showGiftBox ? '50%' : `${position.x}%`,
+              bottom: showGiftBox ? '50%' : `${position.y}%`,
+              transform: 'translate(-50%, 50%)',
+            }}
+            onClick={handleCharacterClick}
+          >
+            {bubble && (
+              <EmotionBubble
+                key={bubble.key}
+                category={bubble.category}
+                level={bubble.level}
+              />
+            )}
+            {/* 샤워 이펙트 */}
+            {isShowering && <div className="shower-effect">🚿</div>}
+            {/* 양치 이펙트 */}
+            {isBrushing && <div className="brushing-effect">🪥</div>}
+            {/* 버블 이펙트 */}
+            {isShowering && (
+              <div className="bubble-container">
+                {bubbles.map((b) => (
+                  <span
+                    key={b.id}
+                    className="bubble"
+                    style={{
+                      left: `${b.left}%`,
+                      animationDelay: `${b.delay}s`,
+                      animationDuration: `${b.duration}s`,
+                      fontSize: `${b.size}px`,
+                    }}
+                  >
+                    🫧
+                  </span>
+                ))}
+              </div>
+            )}
+            {showGiftBox ? (
+              <GiftBox onOpen={onOpenGift || (() => { })} />
+            ) : (
+              <CharacterComponent
+                character={character}
+                size="small"
+                mood={mood}
+                action={action}
+              />
+            )}
+          </div>
+        )}
       </div>
 
       {/* Food Menu Submenu */}

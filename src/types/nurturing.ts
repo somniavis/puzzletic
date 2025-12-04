@@ -151,4 +151,5 @@ export interface NurturingPersistentState {
   abandonmentState: AbandonmentState;  // 가출 상태
   inventory: string[]; // 보유 아이템 목록 (ID)
   hasCharacter: boolean; // 캐릭터 생성 여부 (Gift Box 표시용)
+  gameDifficulty?: number | null; // 게임 난이도 (1-5, null이면 게임 중 아님)
 }

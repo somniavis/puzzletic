@@ -89,7 +89,8 @@ export const createBug = (type: BugType): Bug => {
 export const executeGameTick = (
   currentStats: NurturingStats,
   poops: Poop[] = [],
-  bugs: Bug[] = []
+  bugs: Bug[] = [],
+  gameDifficulty: number | null = null
 ): TickResult => {
   // 새 스탯 객체 (변경사항 누적)
   const newStats = { ...currentStats };
@@ -98,9 +99,22 @@ export const executeGameTick = (
   let newBugs = [...bugs];
 
   // ==================== A. 기본 감소 (Natural Decay) ====================
-  newStats.fullness += NATURAL_DECAY.fullness;
-  newStats.happiness += NATURAL_DECAY.happiness;
-  newStats.health += NATURAL_DECAY.health;
+  if (gameDifficulty !== null) {
+    // 게임 플레이 중: 난이도에 따른 차등 적용
+    // 행복도: 1.5 * 난이도 - 0.5 (1단계: 1.0 ~ 5단계: 7.0)
+    // 포만감: -1.0 * 난이도 - 0.5 (1단계: -1.5 ~ 5단계: -5.5)
+    const happinessBonus = (1.5 * gameDifficulty) - 0.5;
+    const fullnessDecay = (-1.0 * gameDifficulty) - 0.5;
+
+    newStats.fullness += fullnessDecay;
+    newStats.happiness += happinessBonus;
+    newStats.health += NATURAL_DECAY.health;
+  } else {
+    // 평상시
+    newStats.fullness += NATURAL_DECAY.fullness;
+    newStats.happiness += NATURAL_DECAY.happiness;
+    newStats.health += NATURAL_DECAY.health;
+  }
 
   // ==================== B. 상태 평가 ====================
   const condition = evaluateCondition(currentStats); // 변경 전 상태 기준으로 판정
