@@ -51,11 +51,12 @@ export const PetRoom: React.FC<PetRoomProps> = ({
   const nurturing = useNurturing();
 
   // Resume tick when entering Pet Room (safety check)
+  // Resume tick when entering Pet Room (safety check)
   useEffect(() => {
     if (!showGiftBox) {
       nurturing.resumeTick();
     }
-  }, [nurturing, showGiftBox]);
+  }, [nurturing.resumeTick, showGiftBox]);
 
   const [position, setPosition] = useState({ x: 50, y: 50 }); // percentage position
   const [isMoving, setIsMoving] = useState(false);

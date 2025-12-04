@@ -629,8 +629,11 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
   }, []);
 
   const resumeTick = useCallback(() => {
-    console.log('▶️ Resuming tick...');
     setState((currentState) => {
+      if (currentState.tickConfig.isActive) {
+        return currentState;
+      }
+      console.log('▶️ Resuming tick...');
       const newState: NurturingPersistentState = {
         ...currentState,
         tickConfig: {
