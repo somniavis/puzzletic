@@ -3,26 +3,10 @@ import { useTranslation } from 'react-i18next';
 import './PlayPage.css';
 import { playButtonSound } from '../utils/sound';
 import { useNurturing } from '../contexts/NurturingContext';
+import { GAMES } from '../games/registry';
+import type { GameCategory, GameDifficulty, GameManifest } from '../games/types';
 
-type Category = 'math' | 'science' | 'sw';
-type Difficulty = 1 | 2 | 3 | 4 | 5;
-
-interface Game {
-    id: string;
-    title: string;
-    category: Category;
-    difficulty: Difficulty;
-    thumbnail?: string;
-}
-
-// Placeholder data - will be replaced with dynamic loading later
-const GAMES: Game[] = [
-    { id: 'math-1-1', title: 'Number Match', category: 'math', difficulty: 1 },
-    { id: 'math-1-2', title: 'Simple Addition', category: 'math', difficulty: 1 },
-    { id: 'science-1-1', title: 'Animal Sounds', category: 'science', difficulty: 1 },
-];
-
-const CATEGORY_ICONS: Record<Category, string> = {
+const CATEGORY_ICONS: Record<GameCategory, string> = {
     math: '🔢',
     science: '🧪',
     sw: '💻'
@@ -35,9 +19,10 @@ interface PlayPageProps {
 export const PlayPage: React.FC<PlayPageProps> = ({ onNavigate }) => {
     const { t } = useTranslation();
     const { setGameDifficulty } = useNurturing();
-    const [selectedCategory, setSelectedCategory] = useState<Category>('math');
-    const [selectedDifficulty, setSelectedDifficulty] = useState<Difficulty>(1);
+    const [selectedCategory, setSelectedCategory] = useState<GameCategory>('math');
+    const [selectedDifficulty, setSelectedDifficulty] = useState<GameDifficulty>(1);
     const [isControlsOpen, setIsControlsOpen] = useState(true);
+    const [activeGame, setActiveGame] = useState<GameManifest | null>(null);
 
     // Set Game Difficulty when entering Play Page or changing difficulty, unset when leaving
     useEffect(() => {
@@ -48,7 +33,7 @@ export const PlayPage: React.FC<PlayPageProps> = ({ onNavigate }) => {
     }, [setGameDifficulty, selectedDifficulty]);
 
     const filteredGames = GAMES.filter(
-        game => game.category === selectedCategory && game.difficulty === selectedDifficulty
+        game => game.category === selectedCategory && game.level === selectedDifficulty
     );
 
     const handleHomeClick = () => {
@@ -61,20 +46,35 @@ export const PlayPage: React.FC<PlayPageProps> = ({ onNavigate }) => {
         setIsControlsOpen(!isControlsOpen);
     };
 
-    const handleCategorySelect = (cat: Category) => {
+    const handleCategorySelect = (cat: GameCategory) => {
         playButtonSound();
         setSelectedCategory(cat);
     };
 
-    const handleDifficultySelect = (level: Difficulty) => {
+    const handleDifficultySelect = (level: GameDifficulty) => {
         playButtonSound();
         setSelectedDifficulty(level);
     };
 
-    const handlePlayClick = () => {
+    const handlePlayClick = (game: GameManifest) => {
         playButtonSound();
-        // Game launch logic will go here
+        setActiveGame(game);
     };
+
+    const handleExitGame = () => {
+        playButtonSound();
+        setActiveGame(null);
+    };
+
+    // If a game is active, render it full screen
+    if (activeGame) {
+        const GameComponent = activeGame.component;
+        return (
+            <div className="game-wrapper">
+                <GameComponent onExit={handleExitGame} />
+            </div>
+        );
+    }
 
     return (
         <div className="play-page">
@@ -101,7 +101,7 @@ export const PlayPage: React.FC<PlayPageProps> = ({ onNavigate }) => {
                         <div className="controls-body">
                             <div className="control-group">
                                 <div className="category-selector">
-                                    {(['math', 'science', 'sw'] as Category[]).map(cat => (
+                                    {(['math', 'science', 'sw'] as GameCategory[]).map(cat => (
                                         <button
                                             key={cat}
                                             className={`category-btn ${selectedCategory === cat ? 'active' : ''}`}
@@ -120,8 +120,8 @@ export const PlayPage: React.FC<PlayPageProps> = ({ onNavigate }) => {
                                     {[1, 2, 3, 4, 5].map(level => (
                                         <button
                                             key={level}
-                                            className={`difficulty-btn ${selectedDifficulty === level ? 'active' : ''}`}
-                                            onClick={() => handleDifficultySelect(level as Difficulty)}
+                                            className={`difficulty-btn ${selectedDifficulty === (level as GameDifficulty) ? 'active' : ''}`}
+                                            onClick={() => handleDifficultySelect(level as GameDifficulty)}
                                         >
                                             ⭐ {level}
                                         </button>
@@ -135,12 +135,17 @@ export const PlayPage: React.FC<PlayPageProps> = ({ onNavigate }) => {
                 <div className="game-grid">
                     {filteredGames.length > 0 ? (
                         filteredGames.map(game => (
-                            <div key={game.id} className="game-card" onClick={handlePlayClick}>
+                            <div key={game.id} className="game-card" onClick={() => handlePlayClick(game)}>
                                 <div className="game-thumbnail">
-                                    {/* Placeholder for thumbnail */}
-                                    <span>{CATEGORY_ICONS[game.category]}</span>
+                                    {/* Placeholder for thumbnail logic - prefer image, fallback to emoji */}
+                                    {game.thumbnail && !game.thumbnail.startsWith('http') ? (
+                                        <span style={{ fontSize: '3rem' }}>{game.thumbnail}</span>
+                                    ) : (
+                                        <span>{CATEGORY_ICONS[game.category]}</span>
+                                    )}
                                 </div>
                                 <h3>{game.title}</h3>
+                                <p className="game-description">{game.description}</p>
                                 <button className="play-btn">▶</button>
                             </div>
                         ))
@@ -154,3 +159,4 @@ export const PlayPage: React.FC<PlayPageProps> = ({ onNavigate }) => {
         </div>
     );
 };
+

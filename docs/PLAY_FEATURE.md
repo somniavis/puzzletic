@@ -11,8 +11,11 @@ The Play feature provides an educational game hub within the Puzzleletic applica
 
 ### Game Logic
 - **`src/games/`**: Root directory for all game implementations.
-  - **`src/games/[category]/[level]/[GameName]/`**: Standardized structure for individual games.
-    - Example: `src/games/math/level1/NumberMatch/`
+  - `registry.ts`: Central registry file where all games are imported and exported.
+  - `types.ts`: TypeScript definitions for the game system (`GameManifest` etc).
+  - **`src/games/[category]/[level]/[ID]_[GameName]/`**: Standardized structure for individual games.
+    - Example: `src/games/math/level1/001_NumberMatch/`
+    - Each game folder must contain an `index.tsx` (component) and `manifest.ts` (metadata).
 
 ## UI/UX Design
 
@@ -36,4 +39,4 @@ The game list adapts to various screen sizes to ensure optimal visibility:
 - **Navigation**: Accessible via the "Play" button in the PetRoom. Includes a "Home" button to return to the PetRoom.
 
 ## Scalability
-The structure is designed to support 1000+ games. New games should be added to the `src/games` directory following the category/level structure and registered in the `GAMES` list within `PlayPage.tsx` (eventually to be replaced by a dynamic loader or API).
+The structure is designed to support 1000+ games. New games should be added to the `src/games` directory following the category/level structure and registered in `src/games/registry.ts`.
