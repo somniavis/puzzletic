@@ -74,6 +74,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({
   const [isShowering, setIsShowering] = useState(false);
   const [isBrushing, setIsBrushing] = useState(false);
   const [isCleaning, setIsCleaning] = useState(false);
+  const [activeCleaningToolId, setActiveCleaningToolId] = useState<string | null>(null);
 
   const showBubble = (category: EmotionCategory, level: 1 | 2 | 3) => {
     setBubble({ category, level, key: Date.now() });
@@ -424,8 +425,8 @@ export const PetRoom: React.FC<PetRoomProps> = ({
   };
 
   const handleClean = (tool: CleaningTool) => {
-    playButtonSound();
-
+    playCleaningSound();
+    setActiveCleaningToolId(tool.id);
     switch (tool.id) {
       case 'broom':
         if (nurturing.poops.length > 0) {
@@ -494,6 +495,16 @@ export const PetRoom: React.FC<PetRoomProps> = ({
           showBubble('joy', 2);
           setIsBrushing(true);
           setTimeout(() => setIsBrushing(false), 3000);
+        } else {
+          showBubble('worried', 2); // Not enough money
+        }
+        break;
+      case 'max_stats':
+        if (nurturing.glo >= tool.price) {
+          nurturing.spendGlo(tool.price);
+          nurturing.maxStats();
+          playCleaningSound();
+          showBubble('joy', 3);
         } else {
           showBubble('worried', 2); // Not enough money
         }
@@ -728,6 +739,13 @@ export const PetRoom: React.FC<PetRoomProps> = ({
             )}
             {/* 샤워 이펙트 */}
             {isShowering && <div className="shower-effect">🚿</div>}
+
+            {/* 청소 이펙트 */}
+            {isCleaning && activeCleaningToolId === 'broom' && <div className="cleaning-effect">🧹</div>}
+            {isCleaning && activeCleaningToolId === 'newspaper' && <div className="cleaning-effect">🗞️</div>}
+            {isCleaning && activeCleaningToolId === 'robot_cleaner' && <div className="cleaning-effect">🤖</div>}
+            {isCleaning && activeCleaningToolId === 'max_stats' && <div className="cleaning-effect">🌟</div>}
+
             {/* 양치 이펙트 */}
             {isBrushing && <div className="brushing-effect">🪥</div>}
             {/* 버블 이펙트 */}

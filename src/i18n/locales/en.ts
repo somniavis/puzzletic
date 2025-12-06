@@ -263,6 +263,10 @@ export const en = {
       name: 'Toothbrush',
       effect: 'Feeling fresh',
     },
+    max_stats: {
+      name: 'all',
+      effect: '+100',
+    },
   },
   emotions: {
     joy: {

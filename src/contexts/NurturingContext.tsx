@@ -59,6 +59,7 @@ interface NurturingContextValue {
   gameDifficulty: number | null; // 게임 난이도 (null이면 게임 중 아님)
   abandonmentStatus: AbandonmentStatusUI;  // 가출 상태
   isSick: boolean; // 질병 상태 (true면 아픔, 약으로만 치료 가능)
+  maxStats: () => ActionResult;
 
   // 행동 (Actions)
   feed: (food: FoodItem) => ActionResult;
@@ -469,6 +470,33 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     };
   }, []);
 
+  const maxStats = useCallback((): ActionResult => {
+    setState((currentState) => {
+      const newStats: NurturingStats = {
+        fullness: 100,
+        health: 100,
+        happiness: 100,
+      };
+
+      const newState: NurturingPersistentState = {
+        ...currentState,
+        stats: newStats,
+        isSick: false,
+        sickProgress: 0,
+        lastActiveTime: Date.now(),
+      };
+      saveNurturingState(newState);
+      setCondition(evaluateCondition(newStats));
+      return newState;
+    });
+
+    return {
+      success: true,
+      statChanges: { fullness: 100, health: 100, happiness: 100 },
+      message: '모든 상태가 회복되었습니다!',
+    };
+  }, []);
+
   const takeShower = useCallback((): ActionResult => {
     let result: ActionResult = { success: false, statChanges: {} };
 
@@ -698,6 +726,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     gameDifficulty: state.gameDifficulty ?? null,
     abandonmentStatus,
     isSick: state.isSick || false,
+    maxStats,
     feed,
     giveMedicine,
     clean,

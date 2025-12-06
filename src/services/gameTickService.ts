@@ -220,7 +220,8 @@ export const executeGameTick = (
     }
 
     // 벌레 생성 시 질병 감염 체크
-    if (bugSpawned && !newIsSick) {
+    // 수정: 건강이 나쁠 때(50 미만)만 감염됨
+    if (bugSpawned && !newIsSick && newStats.health < THRESHOLDS.SICK) {
       // 확률: 기본(10%) + (현재 벌레 수 * 5%)
       // newBugs에는 방금 생성된 벌레가 포함되어 있음
       const currentBugCount = newBugs.length; // 방금 생성된 것 포함
