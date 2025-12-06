@@ -92,6 +92,9 @@ export const en = {
     playAgain: 'Play Again',
     download: 'Result',
     howToPlay: 'How to Play',
+    results: 'Final Results',
+    earnedXp: 'Earned XP',
+    earnedGlo: 'Earned Glo',
   },
   food: {
     menu: {

@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
-    Trophy, Coins, Flame, Heart, Clock,
+    Coins, Flame, Heart, Clock,
     Download, RotateCcw
 } from 'lucide-react';
 import { toPng } from 'html-to-image';
@@ -30,7 +30,7 @@ export const Layout1: React.FC<Layout1Props> = ({
 }) => {
     const {
         gameState, score, lives, timeLeft,
-        streak, bestStreak, difficultyLevel,
+        streak, bestStreak,
         gameOverReason,
         startGame
     } = engine;
@@ -107,52 +107,78 @@ export const Layout1: React.FC<Layout1Props> = ({
 
     // Render Game Over Screen
     if (gameState === 'gameover') {
+        const earnedXp = score;
+        const earnedGlo = Math.floor(score * 0.1);
+
         return (
             <div className="layout1-container">
                 <header className="layout1-header">
                     <button className="icon-btn" onClick={() => { playButtonSound(); onExit(); }} style={{ fontSize: '1.5rem' }}>🔙</button>
                 </header>
 
-                <div className="overlay-screen">
-                    <div ref={gameOverRef} className="overlay-content" style={{ minWidth: '300px' }}>
-                        <div style={{ textAlign: 'center', marginBottom: '1rem' }}>
-                            <div style={{ fontSize: '3rem' }}>
-                                {gameOverReason === 'cleared' ? '🏆' : '🏁'}
-                            </div>
-                            <div style={{ fontSize: '3rem' }}>
-                                {gameOverReason === 'cleared' ? '🏆' : '🏁'}
-                            </div>
-                            <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#334155' }}>
-                                {t('common.gameOver')}
-                            </h2>
+                <div className="overlay-screen start-screen-layout">
+                    <div className="start-header-section">
+                        <div style={{ fontSize: '4rem', marginBottom: '0.5rem' }}>
+                            {gameOverReason === 'cleared' ? '🏆' : '🏁'}
                         </div>
+                        <h1 className="game-title">{t('common.gameOver') || 'Game Over!'}</h1>
+                    </div>
 
-                        <div style={{ background: '#f1f5f9', padding: '1rem', borderRadius: '0.5rem', marginBottom: '1rem' }}>
-                            <div style={{ fontSize: '0.875rem', color: '#64748b' }}>{t('common.finalScore')}</div>
-                            <div style={{ fontSize: '2.5rem', fontWeight: 800, color: '#3b82f6', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
-                                <Coins className="text-yellow-500" /> {score}
-                            </div>
-                        </div>
+                    <div ref={gameOverRef} className="start-content-scroll custom-scrollbar">
+                        <div className="how-to-play-box result-box">
+                            <h3 className="section-title">{t('common.results') || 'Final Results'}</h3>
 
-                        <div className="stats-grid" style={{ gridTemplateColumns: '1fr 1fr', marginBottom: '1rem' }}>
-                            <div className="stat-card">
-                                <div className="stat-label">{t('common.bestStreak')}</div>
-                                <div className="stat-value"><Flame size={16} color="#f97316" /> {bestStreak}</div>
+                            <div className="result-grid">
+                                <div className="result-item">
+                                    <span className="result-label">{t('common.finalScore') || 'Final Score'}</span>
+                                    <span className="result-value text-blue">
+                                        <Coins size={20} className="text-yellow-500" /> {score}
+                                    </span>
+                                </div>
+                                <div className="result-item">
+                                    <span className="result-label">{t('common.bestStreak') || 'Best Streak'}</span>
+                                    <span className="result-value text-orange">
+                                        <Flame size={20} className="text-orange-500" /> {bestStreak}
+                                    </span>
+                                </div>
                             </div>
-                            <div className="stat-card">
-                                <div className="stat-label">{t('common.difficulty')}</div>
-                                <div className="stat-value"><Trophy size={16} color="#a855f7" /> {difficultyLevel}</div>
-                            </div>
-                        </div>
 
-                        <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1.5rem' }}>
-                            <button className="restart-btn" onClick={() => { playButtonSound(); startGame(); }} style={{ flex: 1 }}>
-                                <RotateCcw size={20} /> {t('common.playAgain')}
-                            </button>
-                            <button className="icon-btn" onClick={() => { playButtonSound(); handleDownload(); }} style={{ borderRadius: '0.5rem', width: '3rem', background: '#e2e8f0' }}>
-                                <Download size={20} />
-                            </button>
+                            <div className="divider"></div>
+
+                            <div className="result-grid">
+                                <div className="result-item">
+                                    <span className="result-label">{t('common.earnedXp') || 'Earned XP'}</span>
+                                    <span className="result-value text-purple">
+                                        <span>✨</span> +{earnedXp}
+                                    </span>
+                                </div>
+                                <div className="result-item">
+                                    <span className="result-label">{t('common.earnedGlo') || 'Earned Glo'}</span>
+                                    <span className="result-value text-yellow">
+                                        <span>💰</span> +{earnedGlo}
+                                    </span>
+                                </div>
+                            </div>
                         </div>
+                    </div>
+
+                    <div className="start-footer-section" style={{ flexDirection: 'column', gap: '1rem', alignItems: 'center' }}>
+                        <button className="restart-btn" onClick={() => { playButtonSound(); startGame(); }}>
+                            <RotateCcw size={24} /> {t('common.playAgain') || 'Play Again'}
+                        </button>
+
+                        <button className="icon-btn" onClick={() => { playButtonSound(); handleDownload(); }}
+                            style={{
+                                background: 'rgba(255,255,255,0.3)',
+                                padding: '0.75rem',
+                                borderRadius: '50%',
+                                border: '2px solid rgba(255,255,255,0.5)',
+                                color: '#1e293b'
+                            }}
+                            title="Download Result"
+                        >
+                            <Download size={20} />
+                        </button>
                     </div>
                 </div>
             </div>
