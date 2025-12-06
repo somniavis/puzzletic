@@ -144,8 +144,15 @@ export const PlayPage: React.FC<PlayPageProps> = ({ onNavigate }) => {
                                         <span>{CATEGORY_ICONS[game.category]}</span>
                                     )}
                                 </div>
-                                <h3>{game.title}</h3>
-                                <p className="game-description">{game.description}</p>
+                                <div className="game-title-group">
+                                    <h3>{game.titleKey ? t(game.titleKey) : game.title}</h3>
+                                    {(game.subtitleKey || game.subtitle) && (
+                                        <div className="game-subtitle" style={{ fontSize: '0.875rem', color: '#64748b' }}>
+                                            {game.subtitleKey ? t(game.subtitleKey) : game.subtitle}
+                                        </div>
+                                    )}
+                                </div>
+                                <p className="game-description">{game.descriptionKey ? t(game.descriptionKey) : game.description}</p>
                                 <button className="play-btn">▶</button>
                             </div>
                         ))

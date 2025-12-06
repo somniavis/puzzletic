@@ -82,7 +82,13 @@ export const NumberMatch: React.FC<Props> = ({ onExit }) => {
     return (
         <Layout1
             title={t('games.math-01.title')}
+            subtitle={t('games.math-01.sub')}
             description={t('math-01:instruction', { target: problem?.a || '?' })}
+            instructions={[
+                { icon: '🎯', title: t('games.math-01.howToPlay.goal.title'), description: t('games.math-01.howToPlay.goal.desc') },
+                { icon: '⏳', title: t('games.math-01.howToPlay.time.title'), description: t('games.math-01.howToPlay.time.desc') },
+                { icon: '❤️', title: t('games.math-01.howToPlay.lives.title'), description: t('games.math-01.howToPlay.lives.desc') }
+            ]}
             engine={engine}
             onExit={onExit}
         >

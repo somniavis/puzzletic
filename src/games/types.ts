@@ -18,6 +18,10 @@ export interface GameManifest {
     thumbnail?: string;
     /** Key for localized title */
     titleKey?: string;
+    /** Subtitle for the game */
+    subtitle?: string;
+    /** Key for localized subtitle */
+    subtitleKey?: string;
     /** Key for localized description */
     descriptionKey?: string;
     /** The main component to render when the game is played */

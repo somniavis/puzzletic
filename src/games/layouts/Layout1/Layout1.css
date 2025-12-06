@@ -13,6 +13,20 @@
     overflow: hidden;
 }
 
+/* Custom Scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+}
+
 /* Header */
 .layout1-header {
     display: flex;
@@ -23,15 +37,17 @@
     top: 0;
     left: 0;
     width: 100%;
-    z-index: 20;
+    z-index: 60;
 }
 
 .icon-btn {
     background: rgba(255, 255, 255, 0.3);
     backdrop-filter: blur(4px);
     border: none;
-    border-radius: 50%;
-    padding: 0.5rem;
+    border-radius: 12px;
+    padding: 0.75rem;
+    min-width: 44px;
+    min-height: 44px;
     cursor: pointer;
     transition: background 0.2s;
     display: flex;
@@ -124,8 +140,117 @@
     background: rgba(255, 255, 255, 0.9);
     z-index: 50;
     text-align: center;
+    padding: 0;
+    /* Updated: no default padding for full screen layout */
 }
 
+/* New Start Screen Layout */
+.start-screen-layout {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: transparent;
+    backdrop-filter: none;
+}
+
+.start-header-section {
+    flex-shrink: 0;
+    padding: 4rem 2rem 1rem;
+    /* Top padding to account for main header */
+    text-align: center;
+    background: transparent;
+}
+
+.game-subtitle {
+    font-size: 1.25rem;
+    color: #475569;
+    font-weight: 600;
+}
+
+.start-content-scroll {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 0 1.5rem;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.how-to-play-box {
+    background: white;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    margin-bottom: 1rem;
+    text-align: left;
+}
+
+.section-title {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: #334155;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.section-title::before {
+    content: '📖';
+}
+
+.game-description-text {
+    color: #64748b;
+    margin-bottom: 1.5rem;
+    line-height: 1.5;
+}
+
+.instructions-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.instruction-item {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    padding: 0.75rem;
+    background: #f8fafc;
+    border-radius: 0.75rem;
+    border-left: 4px solid #a855f7;
+}
+
+.instruction-icon {
+    font-size: 1.5rem;
+    line-height: 1;
+}
+
+.instruction-text strong {
+    display: block;
+    color: #1e293b;
+    margin-bottom: 0.25rem;
+    font-size: 0.95rem;
+}
+
+.instruction-text p {
+    color: #64748b;
+    font-size: 0.875rem;
+    margin: 0;
+}
+
+.start-footer-section {
+    flex-shrink: 0;
+    padding: 1.5rem;
+    background: transparent;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+}
+
+/* Original overlay content - keep for Game Over */
 .overlay-content {
     background: white;
     padding: 2rem;
@@ -139,16 +264,18 @@
     background: linear-gradient(to right, #4ade80, #3b82f6);
     color: white;
     font-weight: 700;
-    padding: 0.75rem 1.5rem;
-    border-radius: 0.75rem;
+    padding: 1rem 2rem;
+    border-radius: 1rem;
     border: none;
     cursor: pointer;
-    font-size: 1.125rem;
+    font-size: 1.25rem;
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
     margin-top: 1rem;
     transition: transform 0.2s;
+    width: 100%;
+    justify-content: center;
 }
 
 .start-btn:hover,

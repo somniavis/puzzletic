@@ -91,6 +91,7 @@ export const en = {
     finalScore: 'Final Score',
     playAgain: 'Play Again',
     download: 'Result',
+    howToPlay: 'How to Play',
   },
   food: {
     menu: {
@@ -485,7 +486,13 @@ export const en = {
   games: {
     'math-01': {
       title: 'Number Match',
+      sub: 'Basic Addition',
       desc: 'Match the numbers to solve the puzzle!',
+      howToPlay: {
+        goal: { title: 'Goal', desc: 'Find two numbers that add up to the target number.' },
+        time: { title: 'Time', desc: 'You have 60 seconds. Correct answers add time!' },
+        lives: { title: 'Lives', desc: 'You have 3 lives. Wrong answers cost a life.' }
+      }
     },
   },
 } as const;

@@ -1,16 +1,19 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
     Trophy, Coins, Flame, Heart, Clock,
-    Volume2, VolumeX, Download, RotateCcw
+    Download, RotateCcw
 } from 'lucide-react';
 import { toPng } from 'html-to-image';
+import { playButtonSound, playJelloClickSound } from '../../../utils/sound';
 import './Layout1.css';
 import { useGameEngine } from './useGameEngine';
 
 interface Layout1Props {
     title: string;
+    subtitle?: string;
     description?: string;
+    instructions?: { icon?: string; title: string; description: string }[];
     engine: ReturnType<typeof useGameEngine>;
     onExit: () => void;
     children: React.ReactNode;
@@ -18,7 +21,9 @@ interface Layout1Props {
 
 export const Layout1: React.FC<Layout1Props> = ({
     title,
+    subtitle,
     description,
+    instructions,
     engine,
     onExit,
     children
@@ -31,8 +36,15 @@ export const Layout1: React.FC<Layout1Props> = ({
     } = engine;
 
     const { t } = useTranslation();
-    const [isSoundEnabled, setIsSoundEnabled] = useState(true);
+    // Removed local sound state to use global system settings
     const gameOverRef = useRef<HTMLDivElement>(null);
+
+    // Play sound on effects
+    React.useEffect(() => {
+        if (gameState === 'correct') {
+            playJelloClickSound();
+        }
+    }, [gameState]);
 
     const handleDownload = async () => {
         if (!gameOverRef.current) return;
@@ -52,18 +64,39 @@ export const Layout1: React.FC<Layout1Props> = ({
         return (
             <div className="layout1-container">
                 <header className="layout1-header">
-                    <button className="icon-btn" onClick={onExit}>🔙</button>
-                    {/* Sound Toggle */}
-                    <button className="icon-btn" onClick={() => setIsSoundEnabled(!isSoundEnabled)}>
-                        {isSoundEnabled ? <Volume2 size={20} /> : <VolumeX size={20} />}
-                    </button>
+                    <button className="icon-btn" onClick={() => { playButtonSound(); onExit(); }} style={{ fontSize: '1.5rem' }}>🔙</button>
+                    {/* Sound Toggle removed - using system settings */}
                 </header>
 
-                <div className="overlay-screen">
-                    <div className="overlay-content">
+                <div className="overlay-screen start-screen-layout">
+                    <div className="start-header-section">
                         <h1 className="game-title">{title}</h1>
-                        <p style={{ color: '#64748b', marginBottom: '2rem' }}>{description}</p>
-                        <button className="start-btn" onClick={startGame}>
+                        {subtitle && <h2 className="game-subtitle">{subtitle}</h2>}
+                    </div>
+
+                    <div className="start-content-scroll custom-scrollbar">
+                        <div className="how-to-play-box">
+                            <h3 className="section-title">{t('common.howToPlay') || 'How to Play'}</h3>
+                            {description && <p className="game-description-text">{description}</p>}
+
+                            {instructions && instructions.length > 0 && (
+                                <div className="instructions-list">
+                                    {instructions.map((inst, index) => (
+                                        <div key={index} className="instruction-item">
+                                            {inst.icon && <span className="instruction-icon">{inst.icon}</span>}
+                                            <div className="instruction-text">
+                                                <strong>{inst.title}</strong>
+                                                <p>{inst.description}</p>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    <div className="start-footer-section">
+                        <button className="start-btn" onClick={() => { playButtonSound(); startGame(); }}>
                             ▶ Start Game
                         </button>
                     </div>
@@ -77,7 +110,7 @@ export const Layout1: React.FC<Layout1Props> = ({
         return (
             <div className="layout1-container">
                 <header className="layout1-header">
-                    <button className="icon-btn" onClick={onExit}>🔙</button>
+                    <button className="icon-btn" onClick={() => { playButtonSound(); onExit(); }} style={{ fontSize: '1.5rem' }}>🔙</button>
                 </header>
 
                 <div className="overlay-screen">
@@ -113,10 +146,10 @@ export const Layout1: React.FC<Layout1Props> = ({
                         </div>
 
                         <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1.5rem' }}>
-                            <button className="restart-btn" onClick={startGame} style={{ flex: 1 }}>
+                            <button className="restart-btn" onClick={() => { playButtonSound(); startGame(); }} style={{ flex: 1 }}>
                                 <RotateCcw size={20} /> {t('common.playAgain')}
                             </button>
-                            <button className="icon-btn" onClick={handleDownload} style={{ borderRadius: '0.5rem', width: '3rem', background: '#e2e8f0' }}>
+                            <button className="icon-btn" onClick={() => { playButtonSound(); handleDownload(); }} style={{ borderRadius: '0.5rem', width: '3rem', background: '#e2e8f0' }}>
                                 <Download size={20} />
                             </button>
                         </div>
@@ -130,11 +163,8 @@ export const Layout1: React.FC<Layout1Props> = ({
     return (
         <div className="layout1-container">
             <header className="layout1-header">
-                <button className="icon-btn" onClick={onExit}>🔙</button>
+                <button className="icon-btn" onClick={() => { playButtonSound(); onExit(); }} style={{ fontSize: '1.5rem' }}>🔙</button>
                 <div style={{ fontWeight: 700, color: '#334155' }}>{title}</div>
-                <button className="icon-btn" onClick={() => setIsSoundEnabled(!isSoundEnabled)}>
-                    {isSoundEnabled ? <Volume2 size={20} /> : <VolumeX size={20} />}
-                </button>
             </header>
 
             <div className="layout1-dashboard">
