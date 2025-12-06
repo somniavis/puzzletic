@@ -139,7 +139,7 @@ export const PlayPage: React.FC<PlayPageProps> = ({ onNavigate }) => {
                                 <div className="game-thumbnail">
                                     {/* Placeholder for thumbnail logic - prefer image, fallback to emoji */}
                                     {game.thumbnail && !game.thumbnail.startsWith('http') ? (
-                                        <span style={{ fontSize: '3rem' }}>{game.thumbnail}</span>
+                                        <span style={{ fontSize: '2.5rem' }}>{game.thumbnail}</span>
                                     ) : (
                                         <span>{CATEGORY_ICONS[game.category]}</span>
                                     )}
@@ -147,12 +147,11 @@ export const PlayPage: React.FC<PlayPageProps> = ({ onNavigate }) => {
                                 <div className="game-title-group">
                                     <h3>{game.titleKey ? t(game.titleKey) : game.title}</h3>
                                     {(game.subtitleKey || game.subtitle) && (
-                                        <div className="game-subtitle" style={{ fontSize: '0.875rem', color: '#64748b' }}>
+                                        <div className="game-subtitle">
                                             {game.subtitleKey ? t(game.subtitleKey) : game.subtitle}
                                         </div>
                                     )}
                                 </div>
-                                <p className="game-description">{game.descriptionKey ? t(game.descriptionKey) : game.description}</p>
                                 <button className="play-btn">▶</button>
                             </div>
                         ))

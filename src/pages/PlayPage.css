@@ -214,24 +214,24 @@
     transform: translateY(2px);
 }
 
-/* Game Grid */
+/* Game Grid - Converted to List */
 .game-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
     padding-bottom: 40px;
 }
 
-/* Game Card - Matching Food Item Style but bigger */
+/* Game Card - Horizontal Row */
 .game-card {
     background: linear-gradient(180deg, #FFFFFF 0%, #F5F5DC 100%);
     border: 4px solid #8B4513;
     border-radius: 20px;
-    padding: 20px;
+    padding: 1rem;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
-    gap: 15px;
+    gap: 1.5rem;
     box-shadow: 0 6px 0 #6B3513, 0 10px 15px rgba(0, 0, 0, 0.1);
     transition: all 0.2s;
     cursor: pointer;
@@ -240,26 +240,29 @@
 }
 
 .game-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 11px 0 #6B3513, 0 15px 20px rgba(0, 0, 0, 0.2);
+    transform: translateY(-4px);
+    box-shadow: 0 10px 0 #6B3513, 0 15px 20px rgba(0, 0, 0, 0.2);
 }
 
 .game-card:active {
-    transform: translateY(6px);
+    transform: translateY(4px);
     box-shadow: 0 0 0 #6B3513;
 }
 
 .game-thumbnail {
-    width: 100%;
-    height: 160px;
+    width: 80px;
+    height: 80px;
+    flex-shrink: 0;
     background: #E0F6FF;
     border: 3px solid #4d3e2f;
-    border-radius: 12px;
+    border-radius: 16px;
+    /* Slightly rounder */
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 5rem;
+    font-size: 2.5rem;
     position: relative;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .game-thumbnail::after {
@@ -267,30 +270,51 @@
     position: absolute;
     inset: 0;
     background: linear-gradient(180deg, rgba(255, 255, 255, 0.2) 0%, rgba(0, 0, 0, 0.05) 100%);
-    border-radius: 9px;
+    border-radius: 13px;
+}
+
+.game-title-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+    text-align: left;
 }
 
 .game-card h3 {
     margin: 0;
-    font-size: 1.3rem;
+    font-size: 1.25rem;
     font-weight: 800;
     color: #4d3e2f;
-    text-align: center;
+    text-align: left;
+    line-height: 1.2;
+}
+
+.game-subtitle {
+    font-size: 0.9rem;
+    color: #8B4513;
+    /* Use brown instead of slate for warmth */
+    font-weight: 600;
 }
 
 .play-btn {
-    width: 100%;
-    padding: 12px;
+    width: auto;
+    min-width: 60px;
+    height: 60px;
+    padding: 0;
     background: linear-gradient(180deg, #4CAF50 0%, #45a049 100%);
     color: white;
     border: 3px solid #2d5a2f;
-    border-radius: 12px;
+    border-radius: 16px;
     cursor: pointer;
     font-weight: 800;
-    font-size: 1rem;
+    font-size: 1.5rem;
     box-shadow: 0 4px 0 #2d5a2f;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-self: center;
 }
 
 .no-games {
@@ -306,12 +330,6 @@
 }
 
 /* Responsive */
-@media (max-width: 1024px) {
-    .game-grid {
-        grid-template-columns: repeat(3, 1fr);
-    }
-}
-
 @media (max-width: 768px) {
     .play-header {
         padding: 0.8rem 1rem;
@@ -338,18 +356,34 @@
 
     .difficulty-btn {
         padding: 10px 2px;
-        /* Reduce padding for small screens */
         font-size: 0.8rem;
     }
 
-    .game-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 15px;
+    .game-card {
+        padding: 0.75rem;
+        gap: 1rem;
     }
-}
 
-@media (max-width: 480px) {
-    .game-grid {
-        grid-template-columns: 1fr;
+    .game-thumbnail {
+        width: 60px;
+        height: 60px;
+        font-size: 2rem;
+        border-radius: 12px;
+        border-width: 2px;
+    }
+
+    .game-card h3 {
+        font-size: 1.1rem;
+    }
+
+    .game-subtitle {
+        font-size: 0.8rem;
+    }
+
+    .play-btn {
+        height: 50px;
+        min-width: 50px;
+        font-size: 1.2rem;
+        border-radius: 12px;
     }
 }
