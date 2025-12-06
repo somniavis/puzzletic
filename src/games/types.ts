@@ -16,6 +16,10 @@ export interface GameManifest {
     level: GameDifficulty;
     /** URL to thumbnail image or emoji as placeholder */
     thumbnail?: string;
+    /** Key for localized title */
+    titleKey?: string;
+    /** Key for localized description */
+    descriptionKey?: string;
     /** The main component to render when the game is played */
     component: ComponentType<{ onExit: () => void }>;
 }

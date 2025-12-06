@@ -1,0 +1,6 @@
+{
+  "name": "숫자 자물쇠: 연산으로 비밀번호 풀기 (Number Lock: Crack the code with math)",
+  "description": "A fun and educational game where you solve arithmetic puzzles to unlock the lock. Features adaptive difficulty, power-ups, and achievements.",
+  "requestFramePermissions": [],
+  "prompt": ""
+}

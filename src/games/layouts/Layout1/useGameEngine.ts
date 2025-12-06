@@ -1,0 +1,167 @@
+import { useState, useEffect, useRef, useCallback } from 'react';
+
+export type GameState = 'idle' | 'playing' | 'correct' | 'wrong' | 'gameover';
+export type GameOverReason = 'time' | 'lives' | 'cleared' | null;
+
+export interface GameEngineConfig {
+    initialLives?: number;
+    initialTime?: number;
+    maxDifficulty?: number;
+}
+
+export const useGameEngine = (config: GameEngineConfig = {}) => {
+    const { initialLives = 3, initialTime = 60, maxDifficulty = 3 } = config;
+
+    // State
+    const [gameState, setGameState] = useState<GameState>('idle');
+    const [score, setScore] = useState(0);
+    const [lives, setLives] = useState(initialLives);
+    const [timeLeft, setTimeLeft] = useState(initialTime);
+    const [difficultyLevel, setDifficultyLevel] = useState(1);
+    const [streak, setStreak] = useState(0);
+    const [bestStreak, setBestStreak] = useState(0);
+
+    // Internal counters
+    const [consecutiveCorrect, setConsecutiveCorrect] = useState(0);
+    const [consecutiveWrong, setConsecutiveWrong] = useState(0);
+    const [gameOverReason, setGameOverReason] = useState<GameOverReason>(null);
+    const [achievements, setAchievements] = useState({
+        firstCorrect: false,
+        lightningSpeed: false,
+        streakMaster: false,
+        master: false
+    });
+
+    const timerRef = useRef<number | undefined>(undefined);
+    const [deadline, setDeadline] = useState<number | null>(null);
+    const [questionStartTime, setQuestionStartTime] = useState<number>(0);
+    const [isTimeFrozen, setIsTimeFrozen] = useState(false);
+
+    // Timer Logic
+    useEffect(() => {
+        if (gameState !== 'playing' || !deadline) {
+            if (timerRef.current) cancelAnimationFrame(timerRef.current);
+            return;
+        }
+
+        const loop = () => {
+            if (!isTimeFrozen) {
+                const remaining = deadline - Date.now();
+                const newTimeLeft = Math.max(0, Math.ceil(remaining / 1000));
+                setTimeLeft(newTimeLeft);
+
+                if (remaining <= 0) {
+                    setGameOverReason('time');
+                    setGameState('gameover');
+                    return;
+                }
+            }
+            timerRef.current = requestAnimationFrame(loop);
+        };
+        timerRef.current = requestAnimationFrame(loop);
+        return () => { if (timerRef.current) cancelAnimationFrame(timerRef.current); };
+    }, [gameState, deadline, isTimeFrozen]);
+
+    const startGame = useCallback(() => {
+        setGameState('playing');
+        setScore(0);
+        setLives(initialLives);
+        setTimeLeft(initialTime);
+        setDifficultyLevel(1);
+        setStreak(0);
+        setBestStreak(0);
+        setGameOverReason(null);
+        setDeadline(Date.now() + initialTime * 1000);
+        setQuestionStartTime(Date.now());
+        setAchievements({ firstCorrect: false, lightningSpeed: false, streakMaster: false, master: false });
+    }, [initialLives, initialTime]);
+
+    const submitAnswer = useCallback((isCorrect: boolean) => {
+        const now = Date.now();
+        const responseTime = now - questionStartTime;
+
+        if (isCorrect) {
+            setGameState('correct');
+            const newStreak = streak + 1;
+            setStreak(newStreak);
+            setBestStreak(prev => Math.max(prev, newStreak));
+
+            // Difficulty Adjustment
+            const newConsecutiveCorrect = consecutiveCorrect + 1;
+            if (difficultyLevel < maxDifficulty && newConsecutiveCorrect >= 3) {
+                setDifficultyLevel(prev => prev + 1);
+                setConsecutiveCorrect(0);
+            } else {
+                setConsecutiveCorrect(newConsecutiveCorrect);
+            }
+            setConsecutiveWrong(0);
+
+            // Score Calculation
+            let timeBonus = Math.max(0, 10 - Math.floor(responseTime / 1000)) * 5;
+            let streakBonus = streak * 25;
+            let baseScore = difficultyLevel * 50;
+            setScore(prev => prev + baseScore + timeBonus + streakBonus);
+
+            // Time Bonus
+            const bonusTimeMs = difficultyLevel * 2000;
+            setDeadline(prev => prev ? Math.min(prev + bonusTimeMs, Date.now() + 60000) : null);
+
+            // Achievements
+            if (!achievements.firstCorrect) setAchievements(prev => ({ ...prev, firstCorrect: true }));
+            if (responseTime < 3000) setAchievements(prev => ({ ...prev, lightningSpeed: true }));
+            if (newStreak >= 5) setAchievements(prev => ({ ...prev, streakMaster: true }));
+
+        } else {
+            setGameState('wrong');
+            setStreak(0);
+            setConsecutiveCorrect(0);
+            setConsecutiveWrong(prev => prev + 1);
+            setLives(prev => {
+                const newLives = prev - 1;
+                if (newLives <= 0) {
+                    setGameOverReason('lives');
+                    setTimeout(() => setGameState('gameover'), 1500);
+                }
+                return newLives;
+            });
+
+            // Difficulty Down
+            if (consecutiveWrong >= 1 && difficultyLevel > 1) {
+                setDifficultyLevel(prev => prev - 1);
+                setConsecutiveWrong(0);
+            }
+        }
+
+        // Reset for next question (if not gameover)
+        if (lives > (isCorrect ? 0 : 1)) {
+            setTimeout(() => {
+                setGameState('playing');
+                setQuestionStartTime(Date.now());
+            }, 1500);
+        }
+
+    }, [streak, difficultyLevel, consecutiveCorrect, consecutiveWrong, achievements, maxDifficulty, lives, questionStartTime]);
+
+    const activatePowerUp = (type: string) => {
+        if (type === 'timeFreeze') {
+            setIsTimeFrozen(true);
+            setTimeout(() => setIsTimeFrozen(false), 5000); // Freeze for 5s
+        }
+        // Add other powerups here
+    };
+
+    return {
+        gameState,
+        score,
+        lives,
+        timeLeft,
+        difficultyLevel,
+        streak,
+        bestStreak,
+        achievements,
+        gameOverReason,
+        startGame,
+        submitAnswer,
+        activatePowerUp,
+    };
+};

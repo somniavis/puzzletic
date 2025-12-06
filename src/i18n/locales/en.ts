@@ -76,6 +76,22 @@ export const en = {
       'Crystal Jello': 'Crystal Jello',
     },
   },
+  common: {
+    start: 'Start',
+    cancel: 'Cancel',
+    confirm: 'Confirm',
+    close: 'Close',
+    score: 'Score',
+    lives: 'Lives',
+    streak: 'Streak',
+    bestStreak: 'Best Streak',
+    difficulty: 'Difficulty',
+    time: 'Time',
+    gameOver: 'Game Over!',
+    finalScore: 'Final Score',
+    playAgain: 'Play Again',
+    download: 'Result',
+  },
   food: {
     menu: {
       title: 'Food',
@@ -464,6 +480,12 @@ export const en = {
     game: {
       playNow: 'Play Now',
       noGames: 'More games coming soon!',
+    },
+  },
+  games: {
+    'math-01': {
+      title: 'Number Match',
+      desc: 'Match the numbers to solve the puzzle!',
     },
   },
 } as const;

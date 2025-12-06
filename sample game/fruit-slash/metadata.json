@@ -1,0 +1,6 @@
+{
+  "name": "Fruit Slash",
+  "description": "A fun math puzzle game where you solve equations by slicing fruit. Features adaptive difficulty, power-ups, and achievements.",
+  "requestFramePermissions": [],
+  "prompt": ""
+}
