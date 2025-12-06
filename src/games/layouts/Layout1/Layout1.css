@@ -72,7 +72,8 @@
 
 /* Dashboard (Score, Lives, etc) */
 .layout1-dashboard {
-    max-width: 28rem;
+    max-width: 37.5rem;
+    /* 600px to match start screen */
     margin: 4.5rem auto 1rem;
     padding: 0 1rem;
     z-index: 10;
@@ -93,8 +94,11 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
+    /* Align to top to match labels */
     align-items: center;
+    transition: flex 0.2s;
+    /* Smooth sizing changes */
 }
 
 .stat-label {
@@ -102,6 +106,11 @@
     color: #475569;
     /* slate-600 */
     margin-bottom: 0.25rem;
+    height: 1rem;
+    /* Fixed height for alignment */
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .stat-value {
@@ -113,16 +122,24 @@
     align-items: center;
     justify-content: center;
     gap: 0.25rem;
+    height: 1.75rem;
+    /* Fixed height for alignment */
 }
 
 /* Game Area */
 .layout1-game-area {
     margin: 0 1rem 1rem;
-    max-width: 28rem;
+    max-width: 37.5rem;
+    /* 600px to match start screen */
     flex: 1;
-    background: #fffbeb;
-    border-radius: 1rem;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    background: #f5f3ff;
+    /* Soft Violet White to match Indigo border */
+    border-radius: 1.25rem;
+    /* 20px */
+    border: 4px solid #a5b4fc;
+    /* Soft Indigo Border to match background */
+    box-shadow: 0 6px 0 #6366f1, 0 10px 15px rgba(0, 0, 0, 0.1);
+    /* Indigo Shadow */
     display: flex;
     flex-direction: column;
     position: relative;
@@ -273,26 +290,38 @@
 
 .start-btn,
 .restart-btn {
-    background: linear-gradient(to right, #4ade80, #3b82f6);
+    background: linear-gradient(180deg, #4ade80 0%, #3b82f6 100%);
     color: white;
-    font-weight: 700;
+    font-weight: 800;
     padding: 1rem 2rem;
     border-radius: 1rem;
-    border: none;
+    /* 16px */
+    border: 3px solid #1d4ed8;
+    /* Matched 3px border */
+    box-shadow: 0 4px 0 #1e40af, 0 6px 12px rgba(0, 0, 0, 0.2);
+    /* Matched shadow depth */
     cursor: pointer;
-    font-size: 1.25rem;
+    font-size: 1.5rem;
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
     margin-top: 1rem;
-    transition: transform 0.2s;
+    transition: all 0.1s ease;
     width: 100%;
     justify-content: center;
+    text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.2);
 }
 
 .start-btn:hover,
 .restart-btn:hover {
-    transform: scale(1.05);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 0 #1e40af, 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.start-btn:active,
+.restart-btn:active {
+    transform: translateY(4px);
+    box-shadow: 0 0 0 #1e40af, 0 0 0 rgba(0, 0, 0, 0.2);
 }
 
 .game-title {
