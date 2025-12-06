@@ -93,8 +93,8 @@ export const en = {
     download: 'Result',
     howToPlay: 'How to Play',
     results: 'Final Results',
-    earnedXp: 'Earned XP',
-    earnedGlo: 'Earned Glo',
+    earnedXp: 'XP',
+    earnedGlo: 'Glo',
   },
   food: {
     menu: {

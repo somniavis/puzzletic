@@ -129,10 +129,10 @@ export const Layout1: React.FC<Layout1Props> = ({
                             <h3 className="section-title">{t('common.results') || 'Final Results'}</h3>
 
                             <div className="result-grid">
-                                <div className="result-item">
+                                <div className="result-item highlight">
                                     <span className="result-label">{t('common.finalScore') || 'Final Score'}</span>
-                                    <span className="result-value text-blue">
-                                        <Coins size={20} className="text-yellow-500" /> {score}
+                                    <span className="result-value text-blue" style={{ color: '#b45309' }}>
+                                        <Coins size={24} className="text-yellow-500" fill="#f59e0b" /> {score}
                                     </span>
                                 </div>
                                 <div className="result-item">
@@ -162,23 +162,16 @@ export const Layout1: React.FC<Layout1Props> = ({
                         </div>
                     </div>
 
-                    <div className="start-footer-section" style={{ flexDirection: 'column', gap: '1rem', alignItems: 'center' }}>
-                        <button className="restart-btn" onClick={() => { playButtonSound(); startGame(); }}>
-                            <RotateCcw size={24} /> {t('common.playAgain') || 'Play Again'}
-                        </button>
+                    <div className="start-footer-section">
+                        <div className="game-over-buttons">
+                            <button className="restart-btn" onClick={() => { playButtonSound(); startGame(); }} style={{ marginTop: 0, flex: 1 }}>
+                                <RotateCcw size={32} strokeWidth={2.5} />
+                            </button>
 
-                        <button className="icon-btn" onClick={() => { playButtonSound(); handleDownload(); }}
-                            style={{
-                                background: 'rgba(255,255,255,0.3)',
-                                padding: '0.75rem',
-                                borderRadius: '50%',
-                                border: '2px solid rgba(255,255,255,0.5)',
-                                color: '#1e293b'
-                            }}
-                            title="Download Result"
-                        >
-                            <Download size={20} />
-                        </button>
+                            <button className="download-btn" onClick={() => { playButtonSound(); handleDownload(); }} title="Download Result">
+                                <Download size={32} strokeWidth={2.5} />
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
