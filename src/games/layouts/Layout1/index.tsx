@@ -164,16 +164,16 @@ export const Layout1: React.FC<Layout1Props> = ({
         <div className="layout1-container">
             <header className="layout1-header">
                 <button className="icon-btn" onClick={() => { playButtonSound(); onExit(); }} style={{ fontSize: '1.5rem' }}>🔙</button>
-                <div style={{ fontWeight: 700, color: '#334155' }}>{title}</div>
+                <div className="header-title">{title}</div>
             </header>
 
             <div className="layout1-dashboard">
-                <div className="stats-grid">
-                    <div className="stat-card">
+                <div className="stats-grid-row">
+                    <div className="stat-card score-card">
                         <div className="stat-label">{t('common.score')}</div>
                         <div className="stat-value"><Coins size={16} className="text-yellow-500" /> {score}</div>
                     </div>
-                    <div className="stat-card">
+                    <div className="stat-card lives-card">
                         <div className="stat-label">{t('common.lives')}</div>
                         <div className="stat-value">
                             {[...Array(3)].map((_, i) => (
@@ -184,23 +184,15 @@ export const Layout1: React.FC<Layout1Props> = ({
                             ))}
                         </div>
                     </div>
-                    <div className="stat-card">
+                    <div className="stat-card streak-card">
                         <div className="stat-label">{t('common.streak')}</div>
                         <div className="stat-value"><Flame size={16} className="text-orange-500" /> {streak}</div>
                     </div>
-                </div>
-
-                <div className="timer-bar-container">
-                    <Clock size={16} />
-                    <span className="timer-text">{timeLeft}s</span>
-                    <div className="timer-track">
-                        <div
-                            className="timer-fill"
-                            style={{
-                                width: `${(timeLeft / 60) * 100}%`,
-                                background: timeLeft < 10 ? '#ef4444' : '#22c55e'
-                            }}
-                        />
+                    <div className="stat-card time-card">
+                        <div className="stat-label">Time</div>
+                        <div className="stat-value" style={{ color: timeLeft < 10 ? '#ef4444' : '#1e293b' }}>
+                            <Clock size={16} /> {timeLeft}
+                        </div>
                     </div>
                 </div>
             </div>
