@@ -36,16 +36,40 @@ export const Layout1: React.FC<Layout1Props> = ({
         startGame
     } = engine;
 
+    const lastEvent = (engine as any).lastEvent;
+
+    // Manage overlapping animation bursts
+    const [activeBursts, setActiveBursts] = React.useState<{ id: number; type: 'correct' | 'wrong' }[]>([]);
+    const [showShake, setShowShake] = React.useState(false);
+
+    React.useEffect(() => {
+        if (lastEvent) {
+            if (lastEvent.type === 'correct') {
+                const newBurst = { id: lastEvent.id, type: lastEvent.type };
+                setActiveBursts(prev => [...prev, newBurst as any]);
+                // Remove after 2.5s (animation duration + buffer)
+                setTimeout(() => {
+                    setActiveBursts(prev => prev.filter(b => b.id !== newBurst.id));
+                }, 2500);
+            } else if (lastEvent.type === 'wrong') {
+                setShowShake(true);
+                setTimeout(() => setShowShake(false), 500);
+            }
+        }
+    }, [lastEvent]);
+
     const { t } = useTranslation();
     const { settings, toggleBgm } = useSound();
     const gameOverRef = useRef<HTMLDivElement>(null);
 
-    // Play sound on effects
+    // Play sound on effects (migrated from singular state)
     React.useEffect(() => {
-        if (gameState === 'correct') {
+        if (lastEvent?.type === 'correct') {
             playJelloClickSound();
         }
-    }, [gameState]);
+    }, [lastEvent]);
+    // Remove old sound effect dependency on gameState
+    // React.useEffect(() => { if (gameState === 'correct') playJelloClickSound(); }, [gameState]); 
 
     const handleDownload = async () => {
         if (!gameOverRef.current) return;
@@ -230,20 +254,35 @@ export const Layout1: React.FC<Layout1Props> = ({
                     {children}
                 </div>
 
-                {/* Feedback Overlay (Correct/Wrong) - Translucent */}
-                {(gameState === 'correct' || gameState === 'wrong') && (
+                {/* Feedback Overlay (Correct/Wrong) - Overlapping Bursts */}
+                {activeBursts.map(burst => (
+                    <React.Fragment key={burst.id}>
+                        {/* Spawn multiple stars with random offsets */}
+                        {[...Array(12)].map((_, i) => (
+                            <div
+                                key={i}
+                                className="celebration-star"
+                                style={{
+                                    left: `${50 + (Math.random() * 60 - 30)}%`,
+                                    top: `${50 + (Math.random() * 60 - 30)}%`,
+                                    animationDelay: `${Math.random() * 0.2}s`,
+                                    fontSize: `${0.8 + Math.random() * 1.2}rem`
+                                }}
+                            >
+                                🌟
+                            </div>
+                        ))}
+                    </React.Fragment>
+                ))}
+
+                {showShake && (
                     <div style={{
                         position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        background: gameState === 'correct' ? 'rgba(34, 197, 94, 0.2)' : 'rgba(239, 68, 68, 0.2)',
+                        background: 'rgba(239, 68, 68, 0.2)',
                         pointerEvents: 'none', borderRadius: '1rem'
                     }}>
-                        <div style={{
-                            fontSize: '4rem',
-                            animation: 'bounce 0.5s'
-                        }}>
-                            {gameState === 'correct' ? '🎉' : '💔'}
-                        </div>
+                        <div style={{ fontSize: '4rem', animation: 'bounce 0.5s' }}>💔</div>
                     </div>
                 )}
             </main>

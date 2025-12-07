@@ -111,6 +111,7 @@ export const useRoundCountingLogic = () => {
     const [timeFrozen, setTimeFrozen] = useState(false);
     const [doubleScoreActive, setDoubleScoreActive] = useState(false);
     const [questionStartTime, setQuestionStartTime] = useState(0);
+    const [lastEvent, setLastEvent] = useState<{ type: 'correct' | 'wrong', id: number } | null>(null);
 
     // Initialize/Reset Game
     const setupNewGame = useCallback(() => {
@@ -129,6 +130,7 @@ export const useRoundCountingLogic = () => {
             streak: 0,
             bestStreak: prev.bestStreak // Preserve session best
         }));
+        setLastEvent(null);
     }, []);
 
     const startGame = useCallback(() => {
@@ -141,6 +143,7 @@ export const useRoundCountingLogic = () => {
         setPowerUps({ timeFreeze: 0, extraLife: 0, doubleScore: 0 });
         setTimeFrozen(false);
         setDoubleScoreActive(false);
+        setLastEvent(null);
 
         // Generate initial problem
         const newProblem = generateProblem(initialDifficulty);
@@ -225,6 +228,9 @@ export const useRoundCountingLogic = () => {
             const newFoundIds = [...foundIds, clickedItem.id];
             setFoundIds(newFoundIds);
 
+            // Trigger feedback event
+            setLastEvent({ type: 'correct', id: Date.now() });
+
             if (newFoundIds.length === currentProblem.targetCount) {
                 // Round Complete
                 const responseTime = Date.now() - questionStartTime;
@@ -271,6 +277,10 @@ export const useRoundCountingLogic = () => {
             // Wrong
             playButtonSound(); // Simple click sound for error or maybe add a specific error sound later
             setIncorrectClickIndex(index);
+
+            // Trigger feedback event
+            setLastEvent({ type: 'wrong', id: Date.now() });
+
             setTimeout(() => setIncorrectClickIndex(null), 500);
             setGameState(prev => {
                 const newLives = prev.lives - 1;
@@ -318,6 +328,7 @@ export const useRoundCountingLogic = () => {
         startGame,
         handleItemClick,
         usePowerUp,
-        stopTimer
+        stopTimer,
+        lastEvent
     };
 };

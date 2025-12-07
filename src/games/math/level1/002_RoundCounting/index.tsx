@@ -23,7 +23,8 @@ export const RoundCounting: React.FC<RoundCountingProps> = ({ onExit }) => {
         startGame,
         handleItemClick,
         usePowerUp,
-        stopTimer
+        stopTimer,
+        lastEvent
     } = useRoundCountingLogic();
 
     useEffect(() => {
@@ -52,7 +53,8 @@ export const RoundCounting: React.FC<RoundCountingProps> = ({ onExit }) => {
         onPause: stopTimer,
         onResume: startGame,
         onExit: onExit,
-        onRestart: () => window.location.reload()
+        onRestart: () => window.location.reload(),
+        lastEvent: lastEvent
     };
 
     return (
