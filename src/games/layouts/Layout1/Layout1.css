@@ -145,6 +145,9 @@
     position: relative;
     align-self: center;
     width: 100%;
+    /* CRITICAL: Allow flex child to shrink below content size */
+    min-width: 0;
+    overflow: hidden;
 }
 
 .content-wrapper {
@@ -153,6 +156,9 @@
     align-items: center;
     justify-content: center;
     position: relative;
+    /* CRITICAL: Allow flex child to shrink below content size */
+    min-width: 0;
+    overflow: hidden;
 }
 
 /* Modals / Start Screen */
