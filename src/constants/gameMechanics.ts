@@ -14,7 +14,7 @@ import type {
 // ==================== 진화 단계 설정 ====================
 
 /**
- * 진화 단계별 필요 GP 및 정보
+ * 진화 단계별 필요 XP 및 정보
  *
  * 설계 철학:
  * - 2단계: 빠른 성취감 (튜토리얼)
@@ -26,40 +26,40 @@ export const EVOLUTION_STAGES: Record<number, EvolutionStageInfo> = {
   1: {
     stage: 1,
     name: '알',
-    requiredGP: 0,
-    requiredGPFromPrevious: 0,
+    requiredXP: 0,
+    requiredXPFromPrevious: 0,
     estimatedGames: 0,
     description: '시작 단계',
   },
   2: {
     stage: 2,
     name: '유아기',
-    requiredGP: 100,
-    requiredGPFromPrevious: 100,
+    requiredXP: 100,
+    requiredXPFromPrevious: 100,
     estimatedGames: 10,
     description: '어? 금방 깨어나네? (튜토리얼)',
   },
   3: {
     stage: 3,
     name: '아동기',
-    requiredGP: 500,
-    requiredGPFromPrevious: 400,
+    requiredXP: 500,
+    requiredXPFromPrevious: 400,
     estimatedGames: 50,
     description: '이제 좀 게임답네 (본격 시작)',
   },
   4: {
     stage: 4,
     name: '청소년기',
-    requiredGP: 2000,
-    requiredGPFromPrevious: 1500,
+    requiredXP: 2000,
+    requiredXPFromPrevious: 1500,
     estimatedGames: 200,
     description: '[분기점] 성향이 결정되는 가장 중요한 시기',
   },
   5: {
     stage: 5,
     name: '성체',
-    requiredGP: 5000,
-    requiredGPFromPrevious: 3000,
+    requiredXP: 5000,
+    requiredXPFromPrevious: 3000,
     estimatedGames: 500,
     description: '[인내심] 마지막 끈기가 필요한 구간 - 졸업 가능',
   },
@@ -79,42 +79,42 @@ export const DIFFICULTY_REWARDS: Record<number, DifficultyReward> = {
     difficulty: 1,
     multiplier: 1.0,
     baseGlo: 5,
-    baseGP: 3,
+    baseXP: 3,
     description: '단순 반복',
   },
   2: {
     difficulty: 2,
     multiplier: 1.5,
     baseGlo: 7,
-    baseGP: 5,
+    baseXP: 5,
     description: '기초 응용',
   },
   3: {
     difficulty: 3,
     multiplier: 2.5,
     baseGlo: 10,
-    baseGP: 10,
+    baseXP: 10,
     description: '사고력 필요',
   },
   4: {
     difficulty: 4,
     multiplier: 4.0,
     baseGlo: 20,
-    baseGP: 20,
+    baseXP: 20,
     description: '심화 과정',
   },
   5: {
     difficulty: 5,
     multiplier: 6.0,
     baseGlo: 25,
-    baseGP: 40,
+    baseXP: 40,
     description: '챌린지 (High Risk High Return)',
   },
 };
 
 /**
  * 난이도별 XP 보상 비율 (현재 단계 요구량 대비)
- * 예: 3단계(요구량 400)에서 난이도 1(2.0%) 클리어 시 8 GP 획득
+ * 예: 3단계(요구량 400)에서 난이도 1(2.0%) 클리어 시 8 XP 획득
  */
 export const DIFFICULTY_SCALING_PERCENTAGES: Record<number, number> = {
   1: 0.02,  // 2.0% (약 50판)
@@ -145,7 +145,7 @@ export const DEFAULT_MASTERY_BONUS = 1.0;
  */
 export const PLAY_REWARD: PlayReward = {
   baseGlo: 3,               // 기본 글로 (학습의 30~60%)
-  baseGP: 2,                // 기본 경험치 (학습의 20~30%)
+  baseXP: 2,                // 기본 경험치 (학습의 20~30%)
   happinessRequirement: 50, // 최소 행복도 50 필요
   cooldownMs: 60000,        // 1분 쿨다운
 };
@@ -157,15 +157,15 @@ export const PLAY_REWARD: PlayReward = {
 export const PLAY_HAPPINESS_BONUS = {
   excellent: {  // 행복도 >= 80
     gloMultiplier: 2.0,
-    gpMultiplier: 1.5,
+    xpMultiplier: 1.5,
   },
   good: {       // 행복도 >= 65
     gloMultiplier: 1.5,
-    gpMultiplier: 1.3,
+    xpMultiplier: 1.3,
   },
   normal: {     // 행복도 >= 50
     gloMultiplier: 1.0,
-    gpMultiplier: 1.0,
+    xpMultiplier: 1.0,
   },
 };
 
@@ -308,10 +308,10 @@ export const MIN_TENDENCY_FOR_BRANCH = 20;
 /**
  * 졸업 조건
  * - 5단계(성체) 도달
- * - 5000 GP 달성
+ * - 5000 XP 달성
  */
 export const GRADUATION_STAGE = 5;
-export const GRADUATION_GP = 5000;
+export const GRADUATION_XP = 5000;
 
 /**
  * 졸업 보너스

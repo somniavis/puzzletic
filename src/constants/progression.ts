@@ -20,7 +20,7 @@ export const GROWTH_STAGES: Record<EvolutionStage, { name: string; requiredXp: n
 export type GameDifficulty = 'easy' | 'medium' | 'hard';
 
 export interface DifficultyReward {
-    xp: number;       // 획득 경험치 (GP)
+    xp: number;       // 획득 경험치 (XP)
     happiness: number; // 획득 행복도
 }
 

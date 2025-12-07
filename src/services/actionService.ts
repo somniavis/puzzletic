@@ -285,7 +285,7 @@ export const brushTeeth = (
 export const playWithCharacter = (
   currentStats: NurturingStats,
   difficulty: GameDifficulty = 'easy'
-): ActionResult & { gloEarned?: number; gpEarned?: number } => {
+): ActionResult & { gloEarned?: number; xpEarned?: number } => {
   const reward = DIFFICULTY_REWARDS[difficulty];
 
   // 주요 효과 (행복도 증가)
@@ -310,7 +310,7 @@ export const playWithCharacter = (
       emotionTriggered: 'playful',
     },
     // 보상 반환
-    gpEarned: reward.xp,
+    xpEarned: reward.xp,
     // gloEarned: 추후 게임별 로직에서 추가 (현재는 0 또는 별도 처리)
   };
 };

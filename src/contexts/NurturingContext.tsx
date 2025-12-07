@@ -43,7 +43,7 @@ import {
   removePoop,
   convertPendingToPoop,
 } from '../services/actionService';
-import { addGPAndCheckEvolution } from '../services/evolutionService';
+import { addXPAndCheckEvolution } from '../services/evolutionService';
 import { POOP_CONFIG } from '../constants/nurturing';
 import type { Poop } from '../types/nurturing';
 
@@ -61,9 +61,9 @@ interface NurturingContextValue {
   abandonmentStatus: AbandonmentStatusUI;  // 가출 상태
   isSick: boolean; // 질병 상태 (true면 아픔, 약으로만 치료 가능)
   maxStats: () => ActionResult;
-  gp: number;
+  xp: number;
   evolutionStage: number;
-  addRewards: (gp: number, glo: number) => void;
+  addRewards: (xp: number, glo: number) => void;
 
   // 행동 (Actions)
   feed: (food: FoodItem) => ActionResult;
@@ -714,17 +714,17 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     });
   }, []);
 
-  const addRewards = useCallback((gpAmount: number, gloAmount: number) => {
+  const addRewards = useCallback((xpAmount: number, gloAmount: number) => {
     setState((currentState) => {
-      const { newGP, newStage, evolved } = addGPAndCheckEvolution(
-        currentState.gp || 0,
+      const { newXP, newStage, evolved } = addXPAndCheckEvolution(
+        currentState.xp || 0,
         (currentState.evolutionStage || 1) as any,
-        gpAmount
+        xpAmount
       );
 
       const newState = {
         ...currentState,
-        gp: newGP,
+        xp: newXP,
         evolutionStage: newStage,
         glo: (currentState.glo || 0) + gloAmount,
         totalCurrencyEarned: (currentState.totalCurrencyEarned || 0) + gloAmount,
@@ -756,7 +756,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     gameDifficulty: state.gameDifficulty ?? null,
     abandonmentStatus,
     isSick: state.isSick || false,
-    gp: state.gp || 0,
+    xp: state.xp || 0,
     evolutionStage: state.evolutionStage || 1,
     maxStats,
     addRewards,
@@ -791,7 +791,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     state.gameDifficulty,
     state.inventory,
     state.hasCharacter,
-    state.gp,
+    state.xp,
     state.evolutionStage,
     condition,
     abandonmentStatus,

@@ -14,52 +14,52 @@ import {
   JELLO_SPECIES_CONDITIONS,
   MIN_TENDENCY_FOR_BRANCH,
   GRADUATION_STAGE,
-  GRADUATION_GP,
+  GRADUATION_XP,
 } from '../constants/gameMechanics';
 
 /**
- * GP를 기반으로 현재 진화 단계 계산
+ * XP를 기반으로 현재 진화 단계 계산
  */
-export const calculateEvolutionStage = (currentGP: number): EvolutionStage => {
-  if (currentGP >= EVOLUTION_STAGES[5].requiredGP) return 5;
-  if (currentGP >= EVOLUTION_STAGES[4].requiredGP) return 4;
-  if (currentGP >= EVOLUTION_STAGES[3].requiredGP) return 3;
-  if (currentGP >= EVOLUTION_STAGES[2].requiredGP) return 2;
+export const calculateEvolutionStage = (currentXP: number): EvolutionStage => {
+  if (currentXP >= EVOLUTION_STAGES[5].requiredXP) return 5;
+  if (currentXP >= EVOLUTION_STAGES[4].requiredXP) return 4;
+  if (currentXP >= EVOLUTION_STAGES[3].requiredXP) return 3;
+  if (currentXP >= EVOLUTION_STAGES[2].requiredXP) return 2;
   return 1;
 };
 
 /**
- * 다음 단계까지 필요한 GP 계산
+ * 다음 단계까지 필요한 XP 계산
  */
-export const getGPToNextStage = (currentGP: number, currentStage: EvolutionStage): number => {
+export const getXPToNextStage = (currentXP: number, currentStage: EvolutionStage): number => {
   if (currentStage >= 5) return 0; // 이미 최대 단계
 
   const nextStage = (currentStage + 1) as EvolutionStage;
-  const requiredGP = EVOLUTION_STAGES[nextStage].requiredGP;
+  const requiredXP = EVOLUTION_STAGES[nextStage].requiredXP;
 
-  return Math.max(0, requiredGP - currentGP);
+  return Math.max(0, requiredXP - currentXP);
 };
 
 /**
  * 진화 진행률 계산 (현재 단계 내에서의 진행도)
  */
-export const getEvolutionProgress = (currentGP: number, currentStage: EvolutionStage): number => {
+export const getEvolutionProgress = (currentXP: number, currentStage: EvolutionStage): number => {
   if (currentStage >= 5) return 100; // 최대 단계 도달
 
   const currentStageInfo = EVOLUTION_STAGES[currentStage];
   const nextStageInfo = EVOLUTION_STAGES[(currentStage + 1) as EvolutionStage];
 
-  const gpInCurrentStage = currentGP - currentStageInfo.requiredGP;
-  const gpNeededForNextStage = nextStageInfo.requiredGP - currentStageInfo.requiredGP;
+  const xpInCurrentStage = currentXP - currentStageInfo.requiredXP;
+  const xpNeededForNextStage = nextStageInfo.requiredXP - currentStageInfo.requiredXP;
 
-  return Math.min(100, (gpInCurrentStage / gpNeededForNextStage) * 100);
+  return Math.min(100, (xpInCurrentStage / xpNeededForNextStage) * 100);
 };
 
 /**
  * 졸업 가능 여부 체크
  */
-export const canGraduate = (currentGP: number, currentStage: EvolutionStage): boolean => {
-  return currentStage >= GRADUATION_STAGE && currentGP >= GRADUATION_GP;
+export const canGraduate = (currentXP: number, currentStage: EvolutionStage): boolean => {
+  return currentStage >= GRADUATION_STAGE && currentXP >= GRADUATION_XP;
 };
 
 /**
@@ -132,24 +132,24 @@ export const canBranch = (currentStage: EvolutionStage, tendencies: TendencyStat
 };
 
 /**
- * GP 추가 및 진화 체크
+ * XP 추가 및 진화 체크
  */
-export const addGPAndCheckEvolution = (
-  currentGP: number,
+export const addXPAndCheckEvolution = (
+  currentXP: number,
   currentStage: EvolutionStage,
-  gpToAdd: number
+  xpToAdd: number
 ): {
-  newGP: number;
+  newXP: number;
   newStage: EvolutionStage;
   evolved: boolean;
   stageInfo?: typeof EVOLUTION_STAGES[keyof typeof EVOLUTION_STAGES];
 } => {
-  const newGP = currentGP + gpToAdd;
-  const newStage = calculateEvolutionStage(newGP);
+  const newXP = currentXP + xpToAdd;
+  const newStage = calculateEvolutionStage(newXP);
   const evolved = newStage > currentStage;
 
   return {
-    newGP,
+    newXP,
     newStage,
     evolved,
     stageInfo: evolved ? EVOLUTION_STAGES[newStage] : undefined,

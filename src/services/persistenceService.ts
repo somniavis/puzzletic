@@ -40,7 +40,7 @@ const createDefaultState = (): NurturingPersistentState => {
     abandonmentState: { ...DEFAULT_ABANDONMENT_STATE },
     inventory: ['default_ground'],
     hasCharacter: false,
-    gp: 0,
+    xp: 0,
     evolutionStage: 1, // Start at Egg
   };
 };
@@ -164,6 +164,17 @@ export const loadNurturingState = (): NurturingPersistentState => {
     // inventory가 없으면 기본값 추가
     if (!loaded.inventory) {
       loaded.inventory = ['default_ground'];
+    }
+
+    // GP -> XP 마이그레이션
+    if (loaded.gp !== undefined && loaded.xp === undefined) {
+      console.log('🔄 Migrating old data: GP -> XP');
+      loaded.xp = loaded.gp;
+      delete loaded.gp;
+    }
+    // XP가 없으면 0으로 초기화
+    if (loaded.xp === undefined) {
+      loaded.xp = 0;
     }
 
     return loaded as NurturingPersistentState;

@@ -27,7 +27,7 @@ import {
  * 공식: 기본값 × 난이도 계수 × 정답률(0.0~1.0) × 숙련도 보너스
  * 퍼펙트 보너스: 정답률 100% 시 최종 보상 1.2배
  * 
- * [변경 사항] XP(GP)는 현재 진화 단계(currentStage)의 요구량을 기준으로 동적 계산됨 (고정 XP 룰)
+ * [변경 사항] XP는 현재 진화 단계(currentStage)의 요구량을 기준으로 동적 계산됨 (고정 XP 룰)
  */
 export const calculateMinigameReward = (
   result: MinigameResult,
@@ -49,29 +49,29 @@ export const calculateMinigameReward = (
   const gloBeforeBonus = baseGlo * difficultyMultiplier * accuracyMultiplier * masteryMultiplier;
 
 
-  // 2. GP 계산 (동적 스케일링: 현재 레벨 요구량 * 난이도 비중)
+  // 2. XP 계산 (동적 스케일링: 현재 레벨 요구량 * 난이도 비중)
   // 다음 단계로 넘어가기 위한 필요 XP량 (Delta) 조회
   // 5단계(만렙)인 경우 5단계 도달치(3000)를 기준으로 함 (파밍)
   const targetStage = (currentStage < 5 ? currentStage + 1 : 5) as EvolutionStage;
-  const xpRequirement = EVOLUTION_STAGES[targetStage].requiredGPFromPrevious;
+  const xpRequirement = EVOLUTION_STAGES[targetStage].requiredXPFromPrevious;
 
   // 난이도별 비중 가져오기 (예: 난이도 1 = 2%, 난이도 5 = 12%)
   const percentage = DIFFICULTY_SCALING_PERCENTAGES[result.difficulty] || 0.02;
 
-  // 기본 GP (Base GP)
+  // 기본 XP (Base XP)
   // 주의: 난이도 계수(difficultyMultiplier)는 이미 percentage에 포함되어 있으므로 중복 적용하지 않음
-  const dynamicBaseGP = xpRequirement * percentage;
+  const dynamicBaseXP = xpRequirement * percentage;
 
-  const gpBeforeBonus = dynamicBaseGP * accuracyMultiplier * masteryMultiplier;
+  const xpBeforeBonus = dynamicBaseXP * accuracyMultiplier * masteryMultiplier;
 
 
   // 3. 최종 결과 (반올림 및 퍼펙트 보너스)
   const finalGlo = Math.round(gloBeforeBonus * perfectMultiplier);
-  const finalGP = Math.round(gpBeforeBonus * perfectMultiplier);
+  const finalXP = Math.round(xpBeforeBonus * perfectMultiplier);
 
   return {
     gloEarned: finalGlo,
-    gpEarned: finalGP,
+    xpEarned: finalXP,
     perfectBonus: result.isPerfect,
     breakdown: {
       baseReward: baseGlo, // 표기에 사용될 수 있으므로 GLO 베이스 유지/혹은 dynamicBaseGP로 교체? 
@@ -89,43 +89,43 @@ export const calculateMinigameReward = (
  * 놀이 보상 계산
  *
  * 행복도 기반:
- * - 행복도 >= 80: 2배 글로, 1.5배 GP
- * - 행복도 >= 65: 1.5배 글로, 1.3배 GP
+ * - 행복도 >= 80: 2배 글로, 1.5배 XP
+ * - 행복도 >= 65: 1.5배 글로, 1.3배 XP
  * - 행복도 >= 50: 기본 보상
  */
 export const calculatePlayReward = (happiness: number): {
   gloEarned: number;
-  gpEarned: number;
+  xpEarned: number;
   bonus: 'excellent' | 'good' | 'normal' | null;
 } => {
   if (happiness < PLAY_REWARD.happinessRequirement) {
     return {
       gloEarned: 0,
-      gpEarned: 0,
+      xpEarned: 0,
       bonus: null,
     };
   }
 
   let gloMultiplier = 1.0;
-  let gpMultiplier = 1.0;
+  let xpMultiplier = 1.0;
   let bonus: 'excellent' | 'good' | 'normal' = 'normal';
 
   if (happiness >= 80) {
     gloMultiplier = PLAY_HAPPINESS_BONUS.excellent.gloMultiplier;
-    gpMultiplier = PLAY_HAPPINESS_BONUS.excellent.gpMultiplier;
+    xpMultiplier = PLAY_HAPPINESS_BONUS.excellent.xpMultiplier;
     bonus = 'excellent';
   } else if (happiness >= 65) {
     gloMultiplier = PLAY_HAPPINESS_BONUS.good.gloMultiplier;
-    gpMultiplier = PLAY_HAPPINESS_BONUS.good.gpMultiplier;
+    xpMultiplier = PLAY_HAPPINESS_BONUS.good.xpMultiplier;
     bonus = 'good';
   }
 
   const gloEarned = Math.round(PLAY_REWARD.baseGlo * gloMultiplier);
-  const gpEarned = Math.round(PLAY_REWARD.baseGP * gpMultiplier);
+  const xpEarned = Math.round(PLAY_REWARD.baseXP * xpMultiplier);
 
   return {
     gloEarned,
-    gpEarned,
+    xpEarned,
     bonus,
   };
 };
@@ -208,10 +208,10 @@ export const gainTendencyFromFeed = (currentTendencies: TendencyStats): Tendency
 export const previewRewardByDifficulty = (difficulty: MinigameDifficulty): {
   minGlo: number;
   maxGlo: number;
-  minGP: number;
-  maxGP: number;
+  minXP: number;
+  maxXP: number;
   perfectGlo: number;
-  perfectGP: number;
+  perfectXP: number;
 } => {
   const config = DIFFICULTY_REWARDS[difficulty];
 
@@ -223,23 +223,23 @@ export const previewRewardByDifficulty = (difficulty: MinigameDifficulty): {
 
   // 최소 보상 (정답률 0%)
   const minGlo = 0;
-  const minGP = 0;
+  const minXP = 0;
 
   // 최대 보상 (정답률 100%, 보너스 제외)
   const maxGlo = Math.round(config.baseGlo * multiplier);
-  const maxGP = Math.round(config.baseGP * multiplier);
+  const maxXP = Math.round(config.baseXP * multiplier);
 
   // 퍼펙트 보상 (정답률 100% + 퍼펙트 보너스)
   const perfectGlo = Math.round(maxGlo * PERFECT_BONUS_MULTIPLIER);
-  const perfectGP = Math.round(maxGP * PERFECT_BONUS_MULTIPLIER);
+  const perfectXP = Math.round(maxXP * PERFECT_BONUS_MULTIPLIER);
 
   return {
     minGlo,
     maxGlo,
-    minGP,
-    maxGP,
+    minXP,
+    maxXP,
     perfectGlo,
-    perfectGP,
+    perfectXP,
   };
 };
 

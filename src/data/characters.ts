@@ -34,7 +34,7 @@ export const createCharacter = (speciesId: string, customName?: string): Charact
     stats: { ...DEFAULT_STAGE_1_STATS },
     currentMood: 'neutral',
     currentAction: 'idle',
-    gp: 0,
+    xp: 0,
     glo: 0,
     tendencies: {
       intelligence: 0,

@@ -67,7 +67,7 @@ export interface Character {
   currentAction: CharacterAction;
 
   // 게임 메카닉스 필드
-  gp: number; // Growth Point (경험치)
+  xp: number; // Experience Point (경험치)
   glo: number; // 글로 (GLO - 재화)
   tendencies?: {
     intelligence: number;

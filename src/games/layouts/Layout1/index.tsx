@@ -60,7 +60,7 @@ export const Layout1: React.FC<Layout1Props> = ({
             }, evolutionStage as any);
 
             setRewardResult(calculated);
-            addRewards(calculated.gpEarned, calculated.gloEarned);
+            addRewards(calculated.xpEarned, calculated.gloEarned);
         } else if (gameState === 'playing' || gameState === 'idle') {
             if (rewardResult) setRewardResult(null);
         }
@@ -160,7 +160,7 @@ export const Layout1: React.FC<Layout1Props> = ({
 
     // Render Game Over Screen
     if (gameState === 'gameover') {
-        const earnedXp = rewardResult?.gpEarned || 0;
+        const earnedXp = rewardResult?.xpEarned || 0;
         const earnedGlo = rewardResult?.gloEarned || 0;
 
         return (

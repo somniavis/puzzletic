@@ -125,7 +125,7 @@ export const RoundCounting: React.FC<RoundCountingProps> = ({ onExit }) => {
         streak: gameState.streak,
         bestStreak: gameState.bestStreak,
         gameOverReason: gameState.gameOverReason,
-        currentLevel: gameState.difficultyLevel,
+        difficultyLevel: gameState.difficultyLevel,
         maxLevel: 3,
         startGame: startGame, // Required by Layout1 restart button
         onPause: stopTimer,

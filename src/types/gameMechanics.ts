@@ -12,9 +12,9 @@ export type EvolutionStage = 1 | 2 | 3 | 4 | 5;
 export interface EvolutionStageInfo {
   stage: EvolutionStage;
   name: string;                    // 단계 명칭 (알, 유아기, 아동기, 청소년기, 성체)
-  requiredGP: number;              // 이 단계까지 필요한 누적 GP
-  requiredGPFromPrevious: number;  // 이전 단계로부터 필요한 GP
-  estimatedGames: number;          // 예상 플레이 횟수 (판당 10GP 기준)
+  requiredXP: number;              // 이 단계까지 필요한 누적 XP
+  requiredXPFromPrevious: number;  // 이전 단계로부터 필요한 XP
+  estimatedGames: number;          // 예상 플레이 횟수 (판당 10XP 기준)
   description: string;             // 단계 설명
 }
 
@@ -28,7 +28,7 @@ export interface DifficultyReward {
   difficulty: MinigameDifficulty;
   multiplier: number;       // 난이도 계수
   baseGlo: number;          // 기본 글로 (GLO)
-  baseGP: number;           // 기본 경험치 (Growth Point)
+  baseXP: number;           // 기본 경험치 (Experience Point)
   description: string;      // 난이도 설명
 }
 
@@ -43,7 +43,7 @@ export interface MinigameResult {
 // 보상 계산 결과
 export interface RewardCalculation {
   gloEarned: number;        // 획득 글로 (GLO)
-  gpEarned: number;         // 획득 경험치 (GP)
+  xpEarned: number;         // 획득 경험치 (XP)
   perfectBonus: boolean;    // 퍼펙트 보너스 적용 여부
   breakdown: {
     baseReward: number;     // 기본 보상
@@ -92,7 +92,7 @@ export interface TendencyStats {
 // 진화 조건
 export interface EvolutionCondition {
   stage: EvolutionStage;
-  requiredGP: number;
+  requiredXP: number;
   dominantTendency?: keyof TendencyStats;  // 주도 성향 (4단계부터 중요)
   minTendencyValue?: number;               // 최소 성향 값
 }
@@ -104,7 +104,7 @@ export interface PokedexEntry {
   species: JelloSpecies;
   name: string;                     // 유저가 지어준 이름
   stageReached: EvolutionStage;     // 도달한 단계 (5 = 졸업)
-  totalGPEarned: number;            // 총 획득 GP
+  totalXPEarned: number;            // 총 획득 XP
   totalGloEarned: number;           // 총 획득 글로 (GLO)
   totalGamesPlayed: number;         // 총 플레이 게임 수
   tendencies: TendencyStats;        // 최종 성향 통계
@@ -129,7 +129,7 @@ export interface PlayerProgress {
     name: string;
     species: JelloSpecies | null;   // null = 아직 분기 전
     stage: EvolutionStage;
-    gp: number;                     // 현재 GP
+    xp: number;                     // 현재 XP
     tendencies: TendencyStats;
     gamesPlayed: number;
     gloEarned: number;              // 이번 사이클에서 획득한 글로 (GLO)
@@ -144,7 +144,7 @@ export interface PlayerProgress {
 // 놀이 보상 설정
 export interface PlayReward {
   baseGlo: number;          // 기본 글로 (GLO) 보상
-  baseGP: number;           // 기본 경험치 보상
+  baseXP: number;           // 기본 경험치 보상
   happinessRequirement: number;  // 최소 행복도 요구사항
   cooldownMs: number;       // 쿨다운 시간 (밀리초)
 }
@@ -153,6 +153,6 @@ export interface PlayReward {
 export interface PlayResult {
   success: boolean;
   gloEarned: number;        // 획득 글로 (GLO)
-  gpEarned: number;         // 획득 경험치 (GP)
+  xpEarned: number;         // 획득 경험치 (XP)
   message?: string;
 }
