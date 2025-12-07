@@ -62,6 +62,9 @@ puzzleletic/
 │   ├── contexts/                # 전역 상태 관리
 │   │   └── NurturingContext.tsx
 │   ├── data/                    # 정적 데이터 (캐릭터, 감정, 종)
+│   ├── games/                   # 게임 모듈
+│   │   ├── registry.ts          # 게임 레지스트리 (모든 게임 등록)
+│   │   └── math/                # 과목별 게임 폴더
 │   ├── i18n/                    # 국제화 (i18next)
 │   ├── pages/                   # 페이지 단위 컴포넌트
 │   │   └── CharacterAdmin.tsx

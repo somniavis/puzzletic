@@ -66,7 +66,9 @@ Game titles and descriptions displayed in the `PlayPage` list must be translated
       }
     }
     ```
+
 2.  Update `manifest.ts` to use keys (see Section 3).
+3.  **Register Game**: Ensure the game is imported and added to the `GAMES` array in `src/games/registry.ts`.
 
 ---
 

@@ -11,8 +11,10 @@ The Play feature provides an educational game hub within the Puzzleletic applica
 
 ### Game Logic
 - **`src/games/`**: Root directory for all game implementations.
-  - `registry.ts`: Central registry file where all games are imported and exported.
-  - `types.ts`: TypeScript definitions for the game system (`GameManifest` etc).
+### Game Logic
+- **`src/games/`**: Root directory for all game implementations.
+  - **`registry.ts`**: Central registry where all available games are imported and exported via `GAMES` array. Used by `PlayPage` to list games.
+  - **`types.ts`**: TypeScript definitions for the game system (`GameManifest`, `GameDifficulty`, etc).
   - **`src/games/[category]/[level]/[ID]_[GameName]/`**: Standardized structure for individual games.
     - Example: `src/games/math/level1/001_NumberMatch/`
     - Each game folder must contain an `index.tsx` (component) and `manifest.ts` (metadata).
@@ -20,11 +22,10 @@ The Play feature provides an educational game hub within the Puzzleletic applica
 ## UI/UX Design
 
 ### Responsive Layout
-The game list adapts to various screen sizes to ensure optimal visibility:
-- **Desktop (> 1024px)**: 4 columns
-- **Tablet (768px - 1024px)**: 3 columns
-- **Mobile (480px - 768px)**: 2 columns
-- **Small Mobile (< 480px)**: 1 column
+The game list uses a **Vertical Card List** layout to optimize readability and touch targets:
+- **Layout**: Vertical list (`flex-direction: column`) where each game is presented as a horizontal card.
+- **Card Design**: Includes a large thumbnail, title, subtitle, and a dedicated "Play" button.
+- **Adaptability**: The cards automatically adjust their internal spacing and font sizes for mobile devices, ensuring a consistent look across Desktop, Tablet, and Mobile.
 
 ### Level Selector
 - **Layout**: Fixed 1x5 grid (1 row, 5 columns) across all devices.
