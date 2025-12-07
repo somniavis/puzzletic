@@ -95,9 +95,7 @@ export const PlayPage: React.FC<PlayPageProps> = ({ onNavigate }) => {
             <header className="play-header">
                 <h1>🎮 {t('play.title')}</h1>
                 <div className="header-actions" style={{ display: 'flex', gap: '0.5rem' }}>
-                    <button className="nav-btn" onClick={() => { playButtonSound(); toggleBgm(); }} title="Toggle Background Music">
-                        {settings.bgmEnabled ? '🎵' : '🔇'}
-                    </button>
+
                     <button className="nav-btn" onClick={handleHomeClick}>
                         🏠 {t('play.home')}
                     </button>
