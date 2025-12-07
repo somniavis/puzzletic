@@ -113,6 +113,18 @@ export const DIFFICULTY_REWARDS: Record<number, DifficultyReward> = {
 };
 
 /**
+ * 난이도별 XP 보상 비율 (현재 단계 요구량 대비)
+ * 예: 3단계(요구량 400)에서 난이도 1(2.0%) 클리어 시 8 GP 획득
+ */
+export const DIFFICULTY_SCALING_PERCENTAGES: Record<number, number> = {
+  1: 0.02,  // 2.0% (약 50판)
+  2: 0.035, // 3.5% (약 28판)
+  3: 0.05,  // 5.0% (20판)
+  4: 0.08,  // 8.0% (약 12판)
+  5: 0.12,  // 12.0% (약 8판)
+};
+
+/**
  * 퍼펙트 보너스 배율
  */
 export const PERFECT_BONUS_MULTIPLIER = 1.2;

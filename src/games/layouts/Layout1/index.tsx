@@ -9,6 +9,9 @@ import { toPng } from 'html-to-image';
 import { playButtonSound, playJelloClickSound, playClearSound } from '../../../utils/sound';
 import './Layout1.css';
 import { useGameEngine } from './useGameEngine';
+import { useNurturing } from '../../../contexts/NurturingContext';
+import { calculateMinigameReward } from '../../../services/rewardService';
+import type { RewardCalculation, MinigameDifficulty } from '../../../types/gameMechanics';
 
 interface Layout1Props {
     title: string;
@@ -41,6 +44,27 @@ export const Layout1: React.FC<Layout1Props> = ({
     // Manage overlapping animation bursts
     const [activeBursts, setActiveBursts] = React.useState<{ id: number; type: 'correct' | 'wrong' }[]>([]);
     const [showShake, setShowShake] = React.useState(false);
+
+    const { evolutionStage, addRewards } = useNurturing();
+    const [rewardResult, setRewardResult] = React.useState<RewardCalculation | null>(null);
+
+    // Calculate and award rewards on Game Over
+    React.useEffect(() => {
+        if (gameState === 'gameover' && !rewardResult) {
+            const calculated = calculateMinigameReward({
+                difficulty: engine.difficultyLevel as MinigameDifficulty,
+                // score removed as it's not part of MinigameResult
+                accuracy: 1.0, // Simplification: Perfect accuracy assumed for reward calc base (score reflects performance)
+                isPerfect: lives === 3,
+                masteryBonus: 1.0
+            }, evolutionStage as any);
+
+            setRewardResult(calculated);
+            addRewards(calculated.gpEarned, calculated.gloEarned);
+        } else if (gameState === 'playing' || gameState === 'idle') {
+            if (rewardResult) setRewardResult(null);
+        }
+    }, [gameState, rewardResult, score, lives, engine.difficultyLevel, evolutionStage, addRewards]);
 
     React.useEffect(() => {
         if (lastEvent) {
@@ -136,8 +160,8 @@ export const Layout1: React.FC<Layout1Props> = ({
 
     // Render Game Over Screen
     if (gameState === 'gameover') {
-        const earnedXp = score;
-        const earnedGlo = Math.floor(score * 0.1);
+        const earnedXp = rewardResult?.gpEarned || 0;
+        const earnedGlo = rewardResult?.gloEarned || 0;
 
         return (
             <div className="layout1-container">

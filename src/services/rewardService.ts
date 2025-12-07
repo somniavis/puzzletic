@@ -8,9 +8,12 @@ import type {
   RewardCalculation,
   MinigameDifficulty,
   TendencyStats,
+  EvolutionStage,
 } from '../types/gameMechanics';
 import {
   DIFFICULTY_REWARDS,
+  DIFFICULTY_SCALING_PERCENTAGES,
+  EVOLUTION_STAGES,
   PERFECT_BONUS_MULTIPLIER,
   DEFAULT_MASTERY_BONUS,
   PLAY_REWARD,
@@ -23,28 +26,46 @@ import {
  *
  * 공식: 기본값 × 난이도 계수 × 정답률(0.0~1.0) × 숙련도 보너스
  * 퍼펙트 보너스: 정답률 100% 시 최종 보상 1.2배
+ * 
+ * [변경 사항] XP(GP)는 현재 진화 단계(currentStage)의 요구량을 기준으로 동적 계산됨 (고정 XP 룰)
  */
-export const calculateMinigameReward = (result: MinigameResult): RewardCalculation => {
+export const calculateMinigameReward = (
+  result: MinigameResult,
+  currentStage: EvolutionStage = 1
+): RewardCalculation => {
   const difficultyConfig = DIFFICULTY_REWARDS[result.difficulty];
 
   if (!difficultyConfig) {
     throw new Error(`Invalid difficulty: ${result.difficulty}`);
   }
 
-  // 기본 보상
+  // 1. GLO 계산 (기존 방식 유지: Base * Multiplier)
   const baseGlo = difficultyConfig.baseGlo;
-  const baseGP = difficultyConfig.baseGP;
-
-  // 배율 적용
   const difficultyMultiplier = difficultyConfig.multiplier;
   const accuracyMultiplier = result.accuracy;
   const masteryMultiplier = result.masteryBonus || DEFAULT_MASTERY_BONUS;
   const perfectMultiplier = result.isPerfect ? PERFECT_BONUS_MULTIPLIER : 1.0;
 
-  // 최종 계산
   const gloBeforeBonus = baseGlo * difficultyMultiplier * accuracyMultiplier * masteryMultiplier;
-  const gpBeforeBonus = baseGP * difficultyMultiplier * accuracyMultiplier * masteryMultiplier;
 
+
+  // 2. GP 계산 (동적 스케일링: 현재 레벨 요구량 * 난이도 비중)
+  // 다음 단계로 넘어가기 위한 필요 XP량 (Delta) 조회
+  // 5단계(만렙)인 경우 5단계 도달치(3000)를 기준으로 함 (파밍)
+  const targetStage = (currentStage < 5 ? currentStage + 1 : 5) as EvolutionStage;
+  const xpRequirement = EVOLUTION_STAGES[targetStage].requiredGPFromPrevious;
+
+  // 난이도별 비중 가져오기 (예: 난이도 1 = 2%, 난이도 5 = 12%)
+  const percentage = DIFFICULTY_SCALING_PERCENTAGES[result.difficulty] || 0.02;
+
+  // 기본 GP (Base GP)
+  // 주의: 난이도 계수(difficultyMultiplier)는 이미 percentage에 포함되어 있으므로 중복 적용하지 않음
+  const dynamicBaseGP = xpRequirement * percentage;
+
+  const gpBeforeBonus = dynamicBaseGP * accuracyMultiplier * masteryMultiplier;
+
+
+  // 3. 최종 결과 (반올림 및 퍼펙트 보너스)
   const finalGlo = Math.round(gloBeforeBonus * perfectMultiplier);
   const finalGP = Math.round(gpBeforeBonus * perfectMultiplier);
 
@@ -53,7 +74,9 @@ export const calculateMinigameReward = (result: MinigameResult): RewardCalculati
     gpEarned: finalGP,
     perfectBonus: result.isPerfect,
     breakdown: {
-      baseReward: baseGlo,
+      baseReward: baseGlo, // 표기에 사용될 수 있으므로 GLO 베이스 유지/혹은 dynamicBaseGP로 교체? 
+      // UI에서 "기본 점수"를 보여줄 때 혼동 없도록 일단 GLO 기준 유지하거나 별도 필드 추가 고려.
+      // 여기선 로직 호환성을 위해 유지.
       difficultyMultiplier,
       accuracyMultiplier,
       masteryMultiplier,

@@ -40,6 +40,8 @@ const createDefaultState = (): NurturingPersistentState => {
     abandonmentState: { ...DEFAULT_ABANDONMENT_STATE },
     inventory: ['default_ground'],
     hasCharacter: false,
+    gp: 0,
+    evolutionStage: 1, // Start at Egg
   };
 };
 
