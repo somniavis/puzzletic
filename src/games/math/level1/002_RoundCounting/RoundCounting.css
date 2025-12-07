@@ -86,14 +86,12 @@
     gap: 0.4rem;
 
     /* Mobile-Focused Responsive Logic */
-    /* Priority: Match width of top display area (100% of container) */
+    /* Restore width 100% to ensure it fills the box, but respect Aspect Ratio and Max Height */
     width: 100%;
-    aspect-ratio: 1/1;
-
-    /* Ensure it doesn't spill out of parent */
+    height: auto;
     max-width: 100%;
-    /* Restore vertical constraint */
     max-height: 100%;
+    aspect-ratio: 1/1;
 
     /* Center it */
     align-self: center;
