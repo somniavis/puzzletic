@@ -108,24 +108,26 @@
     /* Default to 4 if not set, but JS handles it */
     grid-template-columns: repeat(var(--grid-cols, 4), minmax(0, 1fr));
     grid-template-rows: repeat(var(--grid-cols, 4), minmax(0, 1fr));
-    gap: 0.75rem;
+    gap: 0.4rem;
 
-    /* Standard Responsive Square Logic */
-    /* Try to be wide, but constrained by height and aspect ratio */
-    width: 90%;
-    height: auto;
-
-    /* Never exceed container bounds */
-    max-width: 100%;
-    max-height: 90%;
-    /* Match width margin logic for symmetry */
-
+    /* Mobile-Focused Responsive Logic */
+    /* Priority: Match width of top display area (100% of container) */
+    width: 100%;
     aspect-ratio: 1/1;
+
+    /* Ensure it doesn't spill out of parent */
+    max-width: 100%;
+    /* Restore vertical constraint */
+    max-height: 100%;
+
+    /* Center it */
+    align-self: center;
+    justify-self: center;
+    margin: 0 auto;
 
     /* Self-contained for query units of children */
     container-type: size;
     box-sizing: border-box;
-    margin: auto;
 
     transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }

@@ -7,6 +7,9 @@
   - **Round & Round Counting Improvements**:
     - Implemented **Progressive Difficulty**: Starts with 3x3 grid (Level 1) and expands to 4x4 (Level 2+) after 3 consecutive wins.
     - **Responsive Layout**: Game area now scales dynamically (max 600px) with perfect square aspect ratio.
+    - **Mobile Optimization**: 
+      - Enforced 100% width usage on small screens for maximum visibility.
+      - Optimized grid gaps (0.4rem) and card scaling (0.92x) to ensure zero overlap on <350px devices.
     - **Optimized UI**: Dynamic font sizing and grid adjustments prevent overflow on mobile devices.
   - **Sound System Standardization**:
     - **Synchronized BGM**: Added BGM toggle to Play Page, Game, and Game Over screens, syncing state globally.
