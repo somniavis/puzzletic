@@ -14,6 +14,8 @@ const CATEGORY_ICONS: Record<GameCategory, string> = {
     sw: '💻'
 };
 
+import { useSound } from '../contexts/SoundContext';
+
 interface PlayPageProps {
     onNavigate: (page: 'home') => void;
 }
@@ -21,6 +23,7 @@ interface PlayPageProps {
 export const PlayPage: React.FC<PlayPageProps> = ({ onNavigate }) => {
     const { t, i18n } = useTranslation();
     const { setGameDifficulty } = useNurturing();
+    const { settings, toggleBgm } = useSound(); // Use global sound context for BGM sync
     const [selectedCategory, setSelectedCategory] = useState<GameCategory>('math');
     const [selectedDifficulty, setSelectedDifficulty] = useState<GameDifficulty>(1);
     const [isControlsOpen, setIsControlsOpen] = useState(true);
@@ -91,9 +94,14 @@ export const PlayPage: React.FC<PlayPageProps> = ({ onNavigate }) => {
         <div className="play-page">
             <header className="play-header">
                 <h1>🎮 {t('play.title')}</h1>
-                <button className="nav-btn" onClick={handleHomeClick}>
-                    🏠 {t('play.home')}
-                </button>
+                <div className="header-actions" style={{ display: 'flex', gap: '0.5rem' }}>
+                    <button className="nav-btn" onClick={() => { playButtonSound(); toggleBgm(); }} title="Toggle Background Music">
+                        {settings.bgmEnabled ? '🎵' : '🔇'}
+                    </button>
+                    <button className="nav-btn" onClick={handleHomeClick}>
+                        🏠 {t('play.home')}
+                    </button>
+                </div>
             </header>
 
             <div className="play-content">

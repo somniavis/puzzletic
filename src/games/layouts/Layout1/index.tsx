@@ -6,7 +6,7 @@ import {
     Download, RotateCcw
 } from 'lucide-react';
 import { toPng } from 'html-to-image';
-import { playButtonSound, playJelloClickSound } from '../../../utils/sound';
+import { playButtonSound, playJelloClickSound, playClearSound } from '../../../utils/sound';
 import './Layout1.css';
 import { useGameEngine } from './useGameEngine';
 
@@ -65,6 +65,8 @@ export const Layout1: React.FC<Layout1Props> = ({
     // Play sound on effects (migrated from singular state)
     React.useEffect(() => {
         if (lastEvent?.type === 'correct') {
+            playClearSound();
+        } else if (lastEvent?.type === 'wrong') {
             playJelloClickSound();
         }
     }, [lastEvent]);

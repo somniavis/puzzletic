@@ -328,6 +328,16 @@ export const playCleaningSound = (volume: number = 0.5): void => {
 };
 
 /**
+ * 클리어 사운드를 재생합니다.
+ * @param volume 볼륨 (0.0 ~ 1.0, 기본값: 0.5)
+ */
+export const playClearSound = (volume: number = 0.5): void => {
+  if (!isSfxEnabled()) return;
+  // Using cleaning sound as clear sound for now
+  soundManager.play(SOUNDS.cleaning, volume);
+};
+
+/**
  * 배경음악을 재생합니다.
  * 설정에서 BGM이 활성화된 경우에만 재생됩니다.
  */
