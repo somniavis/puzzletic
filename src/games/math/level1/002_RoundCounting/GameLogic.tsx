@@ -14,6 +14,7 @@ export interface Problem {
     targetCount: number;
     gridItems: GridItem[];
     difficulty: number;
+    cols: number;
 }
 
 export interface GameState {
@@ -48,20 +49,31 @@ const shuffleArray = <T,>(array: T[]): T[] => {
 };
 
 const generateProblem = (difficulty: number): Problem => {
-    const gridSize = 16;
+    let gridSize: number;
+    let cols: number;
     let targetCount: number;
     let distractorCount: number;
 
-    if (difficulty === 1) { // Beginner: 1-4
-        targetCount = Math.floor(Math.random() * 4) + 1;
-        distractorCount = 4;
-    } else if (difficulty === 2) { // Intermediate: 3-7
-        targetCount = Math.floor(Math.random() * 5) + 3;
-        distractorCount = 6;
-    } else { // Advanced: 5-9
-        targetCount = Math.floor(Math.random() * 5) + 5;
-        distractorCount = 8;
+    if (difficulty === 1) {
+        // Beginner: 3x3
+        cols = 3;
+        gridSize = 9;
+        targetCount = Math.floor(Math.random() * 3) + 1;
+    } else {
+        // Intermediate+: 4x4
+        cols = 4;
+        gridSize = 16;
+        if (difficulty === 2) {
+            // Level 2
+            targetCount = Math.floor(Math.random() * 5) + 3;
+        } else {
+            // Level 3
+            targetCount = Math.floor(Math.random() * 5) + 5;
+        }
     }
+
+    targetCount = Math.min(targetCount, gridSize - 1);
+    distractorCount = gridSize - targetCount;
 
     const targetEmoji = ITEMS[Math.floor(Math.random() * ITEMS.length)];
     const distractors = shuffleArray(ITEMS.filter(i => i !== targetEmoji)).slice(0, distractorCount);
@@ -75,9 +87,11 @@ const generateProblem = (difficulty: number): Problem => {
 
     // Add distractors
     let currentDistractorIndex = 0;
-    for (let i = 0; i < gridSize - targetCount; i++) {
-        gridItems.push({ id: Math.random(), emoji: distractors[currentDistractorIndex], isTarget: false });
-        currentDistractorIndex = (currentDistractorIndex + 1) % distractors.length;
+    if (distractors.length > 0) {
+        for (let i = 0; i < distractorCount; i++) {
+            gridItems.push({ id: Math.random(), emoji: distractors[currentDistractorIndex], isTarget: false });
+            currentDistractorIndex = (currentDistractorIndex + 1) % distractors.length;
+        }
     }
 
     return {
@@ -86,6 +100,7 @@ const generateProblem = (difficulty: number): Problem => {
         targetCount,
         gridItems: shuffleArray(gridItems),
         difficulty,
+        cols
     };
 };
 

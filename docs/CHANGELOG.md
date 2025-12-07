@@ -2,18 +2,19 @@
 
 ## 2025-12-07 (Latest Updates)
 
-### 🧩 게임 로직 & UI 개선
-- **Round & Round Counting**: 별 모양 폭발 애니메이션과 타이밍을 부드럽게 개선하여 시각적 피드백을 강화했습니다. (`b505747`)
-- **플레이 페이지 레이아웃**: 게임 목록을 수직 리스트(카드형) 형태로 변경하여 정보 가독성을 높였습니다. (`cd43947`)
-- **게임 오버 화면**: 3D 카드 효과와 개선된 레이아웃으로 게임 오버 화면을 게임화(Gamification)했습니다. (`ff45222`)
-
-### 🛠️ 시스템 아키텍처
-- **확장형 i18n 구조**: 전역 번역과 게임별 개별 번역을 분리하는 하이브리드 아키텍처를 도입했습니다. (`0067a52`)
-- **게임 레지스트리**: 새로운 게임을 쉽게 등록하고 관리할 수 있는 `Registry` 시스템을 구축하고, 첫 번째 수학 게임을 마이그레이션했습니다. (`38e7395`)
-- **전역 BGM 설정**: `Layout1`에 전역 배경음악(BGM) 토글 기능을 추가했습니다. (`5d59f84`)
-
-### 🎨 UI 디테일
-- **대시보드 & 시작 화면**: 대시보드 정렬을 수정하고 시작 버튼 및 게임 영역 테마를 세련되게 다듬었습니다. (`fd37bfe`, `28c5af5`)
+### 🧩 게임 로직 & UI
+- **2025-12-07**
+  - **Round & Round Counting Improvements**:
+    - Implemented **Progressive Difficulty**: Starts with 3x3 grid (Level 1) and expands to 4x4 (Level 2+) after 3 consecutive wins.
+    - **Responsive Layout**: Game area now scales dynamically (max 600px) with perfect square aspect ratio.
+    - **Optimized UI**: Dynamic font sizing and grid adjustments prevent overflow on mobile devices.
+  - **Refined Animations**: Enhanced "Round Counting" animation with overlapping star bursts and smoother timing.
+  - **Play Page Layout**: Updated standard game list to use a vertical card layout for better readability.
+  - **Game Over Screen**: Added 3D card effects and gamified the results screen.
+  - **Architecture**:
+    - Introduced `registry.ts` for centralized game management.
+    - Implemented Hybrid i18n architecture (Global + Game-specific).
+  - **UI Refinements**: Added global BGM toggle, improved dashboard alignment.
 
 ## 2025-12-04 (Previous Updates)
 

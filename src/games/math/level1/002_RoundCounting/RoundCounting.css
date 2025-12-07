@@ -75,25 +75,59 @@
     animation: found-item 0.4s ease-in-out;
 }
 
+/* Responsive Container */
+.responsive-game-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    padding-bottom: 1rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    /* container-type moved to grid */
+}
+
+.grid-wrapper {
+    flex: 1;
+    width: 100%;
+    min-height: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1rem;
+    container-type: size;
+    /* Allows children to size relative to this container's dimensions */
+}
+
 /* Grid Layout */
 .round-counting-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    grid-template-rows: repeat(4, 1fr);
-    gap: 0.5rem;
-    /* gap-2 equivalent */
-    width: 100%;
-    height: 100%;
-    /* Fill available height */
-    max-height: 100%;
-    /* content-box */
+    /* Default to 4 if not set, but JS handles it */
+    grid-template-columns: repeat(var(--grid-cols, 4), minmax(0, 1fr));
+    grid-template-rows: repeat(var(--grid-cols, 4), minmax(0, 1fr));
+    gap: 0.75rem;
+
+    /* Standard Responsive Square Logic */
+    /* Try to be wide, but constrained by height and aspect ratio */
+    width: 90%;
+    height: auto;
+
+    /* Never exceed container bounds */
+    max-width: 100%;
+    max-height: 90%;
+    /* Match width margin logic for symmetry */
+
     aspect-ratio: 1/1;
-    /* Keep grid square */
-    margin: 0 auto;
-    min-height: 0;
-    /* Allow shrinking in flex container */
-    max-width: none;
-    /* Remove fixed width constraint, let aspect ratio handle it */
+
+    /* Self-contained for query units of children */
+    container-type: size;
+    box-sizing: border-box;
+    margin: auto;
+
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* Grid Item Button */
@@ -101,30 +135,40 @@
     width: 100%;
     height: 100%;
     /* Fill grid cell */
-    border-radius: 0.75rem;
-    /* rounded-xl */
+    border-radius: 15%;
+
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 2.25rem;
-    /* text-4xl */
-    line-height: 2.5rem;
+
+    /* Robust responsive font sizing */
+    /* Reduced to 56cqw as requested */
+    font-size: clamp(1rem, calc(56cqw / var(--grid-cols, 4)), 3.5rem);
+    line-height: 1;
+
+    /* Slightly shrink visual size to prevent edge usage overlap */
+    transform: scale(0.92);
+
     transition: all 0.3s ease-in-out;
     background-color: #e9d5ff;
-    /* bg-purple-200 */
     border: none;
     cursor: pointer;
     box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+
+    /* Prevent overflow */
+    overflow: hidden;
 }
 
 .grid-item-btn:hover:not(:disabled) {
     background-color: #d8b4fe;
     /* bg-purple-300 */
-    transform: scale(1.1);
+    transform: scale(1.02);
+    /* scale up relative to 0.92 base */
 }
 
 .grid-item-btn:active:not(:disabled) {
-    transform: scale(1.0);
+    transform: scale(0.92);
+    /* Return to base scale */
 }
 
 .grid-item-btn:disabled {

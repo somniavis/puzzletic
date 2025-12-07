@@ -64,7 +64,7 @@ export const RoundCounting: React.FC<RoundCountingProps> = ({ onExit }) => {
             engine={layoutEngine as any}
             onExit={onExit}
         >
-            <div className="flex flex-col items-center w-full h-full max-w-md mx-auto px-4 pb-4">
+            <div className="responsive-game-container">
                 {/* Power-ups */}
                 <div className="flex justify-center gap-4 mb-4">
                     <button
@@ -115,28 +115,32 @@ export const RoundCounting: React.FC<RoundCountingProps> = ({ onExit }) => {
                             <span className="text-3xl font-bold mx-2">x</span>
                             <span className="target-count">{currentProblem.targetCount - foundIds.length}</span>
                         </div>
+                        <div className="grid-wrapper">
+                            <div
+                                className="round-counting-grid"
+                                style={{ '--grid-cols': currentProblem.cols } as React.CSSProperties}
+                            >
+                                {currentProblem.gridItems.map((item, index) => {
+                                    const isFound = foundIds.includes(item.id);
+                                    const isIncorrect = incorrectClickIndex === index;
+                                    const isShufflingItem = isShuffling;
 
-                        <div className="round-counting-grid">
-                            {currentProblem.gridItems.map((item, index) => {
-                                const isFound = foundIds.includes(item.id);
-                                const isIncorrect = incorrectClickIndex === index;
-                                const isShufflingItem = isShuffling;
-
-                                return (
-                                    <button
-                                        key={item.id}
-                                        onClick={() => handleItemClick(index)}
-                                        disabled={isFound || isShuffling || gameState.gameOver}
-                                        className={`grid-item-btn 
-                                            ${isFound ? 'grid-item-found animate-found' : ''} 
-                                            ${isIncorrect ? 'grid-item-wrong animate-shake' : ''}
-                                            ${isShufflingItem ? 'grid-item-shuffling' : ''}
-                                        `}
-                                    >
-                                        {item.emoji}
-                                    </button>
-                                );
-                            })}
+                                    return (
+                                        <button
+                                            key={item.id}
+                                            onClick={() => handleItemClick(index)}
+                                            disabled={isFound || isShuffling || gameState.gameOver}
+                                            className={`grid-item-btn
+                                                ${isFound ? 'grid-item-found animate-found' : ''}
+                                                ${isIncorrect ? 'grid-item-wrong animate-shake' : ''}
+                                                ${isShufflingItem ? 'grid-item-shuffling' : ''}
+                                            `}
+                                        >
+                                            {item.emoji}
+                                        </button>
+                                    );
+                                })}
+                            </div>
                         </div>
                     </>
                 )}
