@@ -20,27 +20,67 @@ interface PowerUpBtnProps {
 }
 
 const PowerUpBtn: React.FC<PowerUpBtnProps> = ({ count, color, icon, title, onClick, disabledConfig, status }) => {
-    const colorStyles = {
-        blue: { normal: 'bg-blue-500 hover:bg-blue-600 shadow-md', active: 'bg-blue-400 ring-4 ring-blue-200 shadow-md', maxed: 'bg-blue-300 cursor-not-allowed' },
-        red: { normal: 'bg-red-500 hover:bg-red-600 shadow-md', active: 'bg-red-400 ring-4 ring-red-200 shadow-md', maxed: 'bg-red-300 cursor-not-allowed' },
-        yellow: { normal: 'bg-yellow-500 hover:bg-yellow-600 shadow-md', active: 'bg-yellow-400 ring-4 ring-yellow-200 shadow-md', maxed: 'bg-yellow-300 cursor-not-allowed' }
+    // Explicit colors to guarantee correct rendering and avoid global CSS overrides
+    const colors = {
+        blue: { normal: '#3b82f6', maxed: '#93c5fd' }, // blue-500, blue-300
+        red: { normal: '#ef4444', maxed: '#fca5a5' }, // red-500, red-300
+        yellow: { normal: '#eab308', maxed: '#fde047' } // yellow-500, yellow-300
     };
 
-    const getColorClass = () => {
-        if (count === 0) return 'backdrop-blur-sm cursor-not-allowed shadow-none border border-white/20';
-        return colorStyles[color][status];
+    const isHereActive = status === 'active';
+    const isActuallyDisabled = count === 0 && !isHereActive;
+
+    const getButtonStyle = (): React.CSSProperties => {
+        if (isHereActive) {
+            // Active: Bright Yellow background, Black text
+            return {
+                backgroundColor: '#facc15', // yellow-400
+                color: '#000000',
+                transform: 'scale(1.1)',
+                zIndex: 10
+            };
+        }
+        if (isActuallyDisabled) {
+            // Disabled (0 count): Glass effect
+            return {
+                backgroundColor: 'rgba(255, 255, 255, 0.3)',
+                color: '#ffffff',
+                cursor: 'not-allowed',
+                backdropFilter: 'blur(4px)',
+                border: '1px solid rgba(255, 255, 255, 0.2)'
+            };
+        }
+        // Normal/Maxed state
+        return {
+            backgroundColor: colors[color][status === 'maxed' ? 'maxed' : 'normal'],
+            color: '#ffffff',
+            cursor: status === 'maxed' ? 'not-allowed' : 'pointer'
+        };
     };
+
+    const handleClick = () => {
+        if (disabledConfig || count === 0) return;
+        onClick();
+    };
+
+    // Base layout classes
+    const baseClasses = "relative p-2 rounded-full transition-all shadow-md flex items-center justify-center mr-3";
+    // Add ring for active state
+    const activeClasses = isHereActive ? "ring-4 ring-yellow-200" : "";
 
     return (
         <button
-            onClick={onClick}
-            disabled={count === 0 || disabledConfig}
-            style={{ backgroundColor: count === 0 ? 'rgba(255, 255, 255, 0.3)' : undefined }}
-            className={`relative p-2 rounded-full transition-all text-white ${getColorClass()}`}
+            onClick={handleClick}
+            disabled={isActuallyDisabled}
+            style={getButtonStyle()}
+            className={`${baseClasses} ${activeClasses}`}
             title={title}
         >
             {icon}
-            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center shadow-sm">
+            <span
+                className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center shadow-sm"
+                style={{ zIndex: 20 }}
+            >
                 {count}
             </span>
         </button>
@@ -109,7 +149,7 @@ export const RoundCounting: React.FC<RoundCountingProps> = ({ onExit }) => {
         >
             <div className="responsive-game-container">
                 {/* Power-ups */}
-                <div className="w-full flex justify-start gap-4 mb-4 px-2">
+                <div className="w-full flex justify-start gap-6 mb-4 px-2">
                     <PowerUpBtn
                         count={powerUps.timeFreeze}
                         color="blue"
@@ -142,14 +182,7 @@ export const RoundCounting: React.FC<RoundCountingProps> = ({ onExit }) => {
                 {currentProblem && (
                     <>
                         <div className="target-display-card">
-                            <span className="text-gray-500 font-medium mr-2">
-                                {t('games.math-01-round-counting.target', {
-                                    count: currentProblem.targetCount - foundIds.length,
-                                    emoji: ''
-                                })}
-                            </span>
                             <span className="target-emoji">{currentProblem.targetEmoji}</span>
-                            <span className="text-3xl font-bold mx-2">x</span>
                             <span className="target-count">{currentProblem.targetCount - foundIds.length}</span>
                         </div>
                         <div className="grid-wrapper">
