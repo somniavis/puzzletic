@@ -1,33 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
 
 /* Animations */
-@keyframes float {
-    0% {
-        transform: translateY(0px) rotate(0deg);
-        opacity: 1;
-    }
-
-    100% {
-        transform: translateY(-100px) rotate(360deg);
-        opacity: 0;
-    }
-}
-
-@keyframes float-up {
-    0% {
-        transform: translateY(0) scale(1);
-        opacity: 1;
-    }
-
-    100% {
-        transform: translateY(-30px) scale(1.2);
-        opacity: 0;
-    }
-}
-
-.animate-float-up {
-    animation: float-up 1.5s ease-out forwards;
-}
+/* float and float-up removed as they are unused */
 
 @keyframes shake {
 

@@ -9,6 +9,44 @@ interface RoundCountingProps {
     onExit: () => void;
 }
 
+interface PowerUpBtnProps {
+    count: number;
+    color: 'blue' | 'red' | 'yellow';
+    icon: string;
+    title: string;
+    onClick: () => void;
+    disabledConfig: boolean;
+    status: 'active' | 'maxed' | 'normal';
+}
+
+const PowerUpBtn: React.FC<PowerUpBtnProps> = ({ count, color, icon, title, onClick, disabledConfig, status }) => {
+    const colorStyles = {
+        blue: { normal: 'bg-blue-500 hover:bg-blue-600 shadow-md', active: 'bg-blue-400 ring-4 ring-blue-200 shadow-md', maxed: 'bg-blue-300 cursor-not-allowed' },
+        red: { normal: 'bg-red-500 hover:bg-red-600 shadow-md', active: 'bg-red-400 ring-4 ring-red-200 shadow-md', maxed: 'bg-red-300 cursor-not-allowed' },
+        yellow: { normal: 'bg-yellow-500 hover:bg-yellow-600 shadow-md', active: 'bg-yellow-400 ring-4 ring-yellow-200 shadow-md', maxed: 'bg-yellow-300 cursor-not-allowed' }
+    };
+
+    const getColorClass = () => {
+        if (count === 0) return 'backdrop-blur-sm cursor-not-allowed shadow-none border border-white/20';
+        return colorStyles[color][status];
+    };
+
+    return (
+        <button
+            onClick={onClick}
+            disabled={count === 0 || disabledConfig}
+            style={{ backgroundColor: count === 0 ? 'rgba(255, 255, 255, 0.3)' : undefined }}
+            className={`relative p-2 rounded-full transition-all text-white ${getColorClass()}`}
+            title={title}
+        >
+            {icon}
+            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center shadow-sm">
+                {count}
+            </span>
+        </button>
+    );
+};
+
 export const RoundCounting: React.FC<RoundCountingProps> = ({ onExit }) => {
     const { t, i18n } = useTranslation();
     const {
@@ -72,57 +110,33 @@ export const RoundCounting: React.FC<RoundCountingProps> = ({ onExit }) => {
             <div className="responsive-game-container">
                 {/* Power-ups */}
                 <div className="w-full flex justify-start gap-4 mb-4 px-2">
-                    <button
-                        onClick={() => usePowerUp('timeFreeze')}
-                        disabled={powerUps.timeFreeze === 0 || timeFrozen}
-                        style={{ backgroundColor: powerUps.timeFreeze === 0 ? 'rgba(255, 255, 255, 0.3)' : undefined }}
-                        className={`relative p-2 rounded-full transition-all text-white 
-                            ${powerUps.timeFreeze === 0
-                                ? 'backdrop-blur-sm cursor-not-allowed shadow-none border border-white/20'
-                                : timeFrozen
-                                    ? 'bg-blue-400 ring-4 ring-blue-200 shadow-md'
-                                    : 'bg-blue-500 hover:bg-blue-600 shadow-md'}`}
+                    <PowerUpBtn
+                        count={powerUps.timeFreeze}
+                        color="blue"
+                        icon="❄️"
                         title={t('games.math-01-round-counting.powerups.freeze')}
-                    >
-                        ❄️
-                        <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center shadow-sm">
-                            {powerUps.timeFreeze}
-                        </span>
-                    </button>
-                    <button
-                        onClick={() => usePowerUp('extraLife')}
-                        disabled={powerUps.extraLife === 0 || gameState.lives >= 3}
-                        style={{ backgroundColor: powerUps.extraLife === 0 ? 'rgba(255, 255, 255, 0.3)' : undefined }}
-                        className={`relative p-2 rounded-full transition-all text-white
-                            ${powerUps.extraLife === 0
-                                ? 'backdrop-blur-sm cursor-not-allowed shadow-none border border-white/20'
-                                : gameState.lives >= 3
-                                    ? 'bg-red-300 cursor-not-allowed'
-                                    : 'bg-red-500 hover:bg-red-600 shadow-md'}`}
+                        onClick={() => usePowerUp('timeFreeze')}
+                        disabledConfig={timeFrozen}
+                        status={timeFrozen ? 'active' : 'normal'}
+                    />
+                    <PowerUpBtn
+                        count={powerUps.extraLife}
+                        color="red"
+                        icon="❤️"
                         title={t('games.math-01-round-counting.powerups.life')}
-                    >
-                        ❤️
-                        <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center shadow-sm">
-                            {powerUps.extraLife}
-                        </span>
-                    </button>
-                    <button
-                        onClick={() => usePowerUp('doubleScore')}
-                        disabled={powerUps.doubleScore === 0 || doubleScoreActive}
-                        style={{ backgroundColor: powerUps.doubleScore === 0 ? 'rgba(255, 255, 255, 0.3)' : undefined }}
-                        className={`relative p-2 rounded-full transition-all text-white
-                            ${powerUps.doubleScore === 0
-                                ? 'backdrop-blur-sm cursor-not-allowed shadow-none border border-white/20'
-                                : doubleScoreActive
-                                    ? 'bg-yellow-400 ring-4 ring-yellow-200 shadow-md'
-                                    : 'bg-yellow-500 hover:bg-yellow-600 shadow-md'}`}
+                        onClick={() => usePowerUp('extraLife')}
+                        disabledConfig={gameState.lives >= 3}
+                        status={gameState.lives >= 3 ? 'maxed' : 'normal'}
+                    />
+                    <PowerUpBtn
+                        count={powerUps.doubleScore}
+                        color="yellow"
+                        icon="⚡"
                         title={t('games.math-01-round-counting.powerups.double')}
-                    >
-                        ⚡
-                        <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center shadow-sm">
-                            {powerUps.doubleScore}
-                        </span>
-                    </button>
+                        onClick={() => usePowerUp('doubleScore')}
+                        disabledConfig={doubleScoreActive}
+                        status={doubleScoreActive ? 'active' : 'normal'}
+                    />
                 </div>
 
                 {currentProblem && (
