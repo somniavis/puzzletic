@@ -5,6 +5,8 @@ import { playButtonSound } from '../utils/sound';
 import { useNurturing } from '../contexts/NurturingContext';
 import { GAMES } from '../games/registry';
 import type { GameCategory, GameDifficulty, GameManifest } from '../games/types';
+import numberMatchEn from '../games/math/level1/001_NumberMatch/locales/en';
+import roundCountingEn from '../games/math/level1/002_RoundCounting/locales/en';
 
 const CATEGORY_ICONS: Record<GameCategory, string> = {
     math: '🔢',
@@ -17,7 +19,7 @@ interface PlayPageProps {
 }
 
 export const PlayPage: React.FC<PlayPageProps> = ({ onNavigate }) => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const { setGameDifficulty } = useNurturing();
     const [selectedCategory, setSelectedCategory] = useState<GameCategory>('math');
     const [selectedDifficulty, setSelectedDifficulty] = useState<GameDifficulty>(1);
@@ -31,6 +33,15 @@ export const PlayPage: React.FC<PlayPageProps> = ({ onNavigate }) => {
             setGameDifficulty(null);
         };
     }, [setGameDifficulty, selectedDifficulty]);
+
+    // Preload Game Translations ensure titles look correct immediately
+    useEffect(() => {
+        // Number Match
+        i18n.addResourceBundle('en', 'translation', { games: { 'math-01': numberMatchEn } }, true, true);
+
+        // Round Counting
+        i18n.addResourceBundle('en', 'translation', { games: { 'math-01-round-counting': roundCountingEn } }, true, true);
+    }, [i18n]);
 
     const filteredGames = GAMES.filter(
         game => game.category === selectedCategory && game.level === selectedDifficulty

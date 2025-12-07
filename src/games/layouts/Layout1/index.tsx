@@ -1,4 +1,5 @@
 import React, { useRef } from 'react';
+import { useSound } from '../../../contexts/SoundContext';
 import { useTranslation } from 'react-i18next';
 import {
     Coins, Flame, Heart, Clock,
@@ -36,7 +37,7 @@ export const Layout1: React.FC<Layout1Props> = ({
     } = engine;
 
     const { t } = useTranslation();
-    // Removed local sound state to use global system settings
+    const { settings, toggleBgm } = useSound();
     const gameOverRef = useRef<HTMLDivElement>(null);
 
     // Play sound on effects
@@ -65,7 +66,9 @@ export const Layout1: React.FC<Layout1Props> = ({
             <div className="layout1-container">
                 <header className="layout1-header">
                     <button className="icon-btn" onClick={() => { playButtonSound(); onExit(); }} style={{ fontSize: '1.5rem' }}>🔙</button>
-                    {/* Sound Toggle removed - using system settings */}
+                    <button className="icon-btn" onClick={() => { playButtonSound(); toggleBgm(); }} style={{ fontSize: '1.5rem' }}>
+                        {settings.bgmEnabled ? '🎵' : '🔇'}
+                    </button>
                 </header>
 
                 <div className="overlay-screen start-screen-layout">
@@ -114,6 +117,9 @@ export const Layout1: React.FC<Layout1Props> = ({
             <div className="layout1-container">
                 <header className="layout1-header">
                     <button className="icon-btn" onClick={() => { playButtonSound(); onExit(); }} style={{ fontSize: '1.5rem' }}>🔙</button>
+                    <button className="icon-btn" onClick={() => { playButtonSound(); toggleBgm(); }} style={{ fontSize: '1.5rem' }}>
+                        {settings.bgmEnabled ? '🎵' : '🔇'}
+                    </button>
                 </header>
 
                 <div className="overlay-screen start-screen-layout">
@@ -184,6 +190,9 @@ export const Layout1: React.FC<Layout1Props> = ({
             <header className="layout1-header">
                 <button className="icon-btn" onClick={() => { playButtonSound(); onExit(); }} style={{ fontSize: '1.5rem' }}>🔙</button>
                 <div className="header-title">{title}</div>
+                <button className="icon-btn" onClick={() => { playButtonSound(); toggleBgm(); }} style={{ fontSize: '1.5rem' }}>
+                    {settings.bgmEnabled ? '🎵' : '🔇'}
+                </button>
             </header>
 
             <div className="layout1-dashboard">
