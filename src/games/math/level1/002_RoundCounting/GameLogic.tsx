@@ -268,7 +268,7 @@ export const useRoundCountingLogic = () => {
                 });
 
                 // Check for powerups
-                if ((gameState.streak + 1) % 3 === 0 && Math.random() > 0.5) {
+                if ((gameState.streak + 1) % 3 === 0 && Math.random() > 0.45) {
                     const types: (keyof typeof powerUps)[] = ['timeFreeze', 'extraLife', 'doubleScore'];
                     const type = types[Math.floor(Math.random() * types.length)];
                     setPowerUps(prev => ({ ...prev, [type]: prev[type] + 1 }));
