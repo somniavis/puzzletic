@@ -53,7 +53,6 @@
 .responsive-game-container {
     display: flex;
     flex-direction: column;
-    /* align-items: center; Removed to allow full width children like power-ups to align naturally (stretch) */
     width: 100%;
     height: 100%;
     max-width: 600px;
@@ -61,7 +60,8 @@
     padding-bottom: 1rem;
     padding-left: 1rem;
     padding-right: 1rem;
-    /* container-type moved to grid */
+    min-width: 0;
+    /* Important for flex child shrinking */
 }
 
 .grid-wrapper {
@@ -73,7 +73,8 @@
     justify-content: center;
     margin-top: 1rem;
     container-type: size;
-    /* Allows children to size relative to this container's dimensions */
+    min-width: 0;
+    /* Important for flex child shrinking */
 }
 
 /* Grid Layout */
@@ -104,6 +105,9 @@
     box-sizing: border-box;
 
     transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+
+    min-width: 0;
+    /* Allow grid to shrink below min-content */
 }
 
 /* Grid Item Button */
