@@ -22,7 +22,7 @@ interface PlayPageProps {
 
 export const PlayPage: React.FC<PlayPageProps> = ({ onNavigate }) => {
     const { t, i18n } = useTranslation();
-    const { setGameDifficulty } = useNurturing();
+    const { setGameDifficulty, pauseTick, resumeTick } = useNurturing();
 
     const [selectedCategory, setSelectedCategory] = useState<GameCategory>('math');
     const [selectedDifficulty, setSelectedDifficulty] = useState<GameDifficulty>(1);
@@ -30,12 +30,16 @@ export const PlayPage: React.FC<PlayPageProps> = ({ onNavigate }) => {
     const [activeGame, setActiveGame] = useState<GameManifest | null>(null);
 
     // Set Game Difficulty when entering Play Page or changing difficulty, unset when leaving
+    // Set Game Difficulty and Pause Tick when entering Play Page
     useEffect(() => {
         setGameDifficulty(selectedDifficulty);
+        pauseTick(); // Pause the game loop
+
         return () => {
             setGameDifficulty(null);
+            resumeTick(); // Resume the game loop
         };
-    }, [setGameDifficulty, selectedDifficulty]);
+    }, [setGameDifficulty, selectedDifficulty, pauseTick, resumeTick]);
 
     // Preload Game Translations ensure titles look correct immediately
     useEffect(() => {

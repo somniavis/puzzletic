@@ -10,18 +10,18 @@
   min-width: 200px;
 }
 
-.stat-icon {
+.nurturing-stat .stat-icon {
   font-size: 24px;
   min-width: 30px;
   text-align: center;
 }
 
-.stat-info {
+.nurturing-stat .stat-info {
   flex: 1;
   min-width: 80px;
 }
 
-.stat-label {
+.nurturing-stat .stat-label {
   font-size: 12px;
   font-weight: 600;
   color: #666;
@@ -29,14 +29,14 @@
   letter-spacing: 0.5px;
 }
 
-.stat-value {
+.nurturing-stat .stat-value {
   font-size: 16px;
   font-weight: 700;
   color: #333;
   margin-top: 2px;
 }
 
-.stat-bar {
+.nurturing-stat .stat-bar {
   flex: 1;
   height: 8px;
   background: rgba(0, 0, 0, 0.1);
@@ -45,7 +45,7 @@
   position: relative;
 }
 
-.stat-bar-fill {
+.nurturing-stat .stat-bar-fill {
   height: 100%;
   background: linear-gradient(90deg, #4caf50, #8bc34a);
   border-radius: 4px;
@@ -96,18 +96,24 @@
 
 /* 애니메이션 */
 @keyframes pulse-warning {
-  0%, 100% {
+
+  0%,
+  100% {
     box-shadow: 0 2px 8px rgba(255, 152, 0, 0.3);
   }
+
   50% {
     box-shadow: 0 2px 16px rgba(255, 152, 0, 0.6);
   }
 }
 
 @keyframes pulse-critical {
-  0%, 100% {
+
+  0%,
+  100% {
     box-shadow: 0 2px 8px rgba(244, 67, 54, 0.4);
   }
+
   50% {
     box-shadow: 0 2px 20px rgba(244, 67, 54, 0.8);
   }
@@ -120,15 +126,15 @@
     padding: 8px;
   }
 
-  .stat-icon {
+  .nurturing-stat .stat-icon {
     font-size: 20px;
   }
 
-  .stat-label {
+  .nurturing-stat .stat-label {
     font-size: 10px;
   }
 
-  .stat-value {
+  .nurturing-stat .stat-value {
     font-size: 14px;
   }
 }
