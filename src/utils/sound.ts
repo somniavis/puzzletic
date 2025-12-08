@@ -343,8 +343,16 @@ export const playClearSound = (volume: number = 0.5): void => {
  */
 export const startBackgroundMusic = async (): Promise<void> => {
   if (isBgmEnabled()) {
-    await soundManager.initBgm();
-    soundManager.playBgm();
+    try {
+      await soundManager.initBgm();
+      soundManager.playBgm();
+    } catch (error) {
+      if (error instanceof Error && error.name === 'NotAllowedError') {
+        console.log('🔇 Audio autoplay blocked. Waiting for user interaction...');
+      } else {
+        console.error('Failed to start background music:', error);
+      }
+    }
   }
 };
 

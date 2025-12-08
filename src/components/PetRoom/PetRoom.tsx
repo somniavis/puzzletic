@@ -16,7 +16,7 @@ import { Bug } from '../Bug/Bug';
 import { SettingsMenu } from '../SettingsMenu/SettingsMenu';
 import { GiftBox } from '../GiftBox/GiftBox';
 import { calculateClickResponse, getClickEmotionCategory } from '../../constants/personality';
-import { playButtonSound, playJelloClickSound, playEatingSound, playCleaningSound } from '../../utils/sound';
+import { playButtonSound, playJelloClickSound, playEatingSound, playCleaningSound, startBackgroundMusic } from '../../utils/sound';
 import { RoomBackground } from './RoomBackground';
 import { MenuModal } from './MenuModal';
 import './PetRoom.css';
@@ -66,6 +66,24 @@ export const PetRoom: React.FC<PetRoomProps> = ({
       setIsLoading(false);
     }, 1000);
     return () => clearTimeout(timer);
+  }, []);
+
+  // Global Interaction Listener for Lazy BGM Start
+  useEffect(() => {
+    const handleFirstInteraction = () => {
+      startBackgroundMusic();
+      // Remove listeners after first attempt
+      window.removeEventListener('click', handleFirstInteraction);
+      window.removeEventListener('touchstart', handleFirstInteraction);
+    };
+
+    window.addEventListener('click', handleFirstInteraction);
+    window.addEventListener('touchstart', handleFirstInteraction);
+
+    return () => {
+      window.removeEventListener('click', handleFirstInteraction);
+      window.removeEventListener('touchstart', handleFirstInteraction);
+    };
   }, []);
 
 
