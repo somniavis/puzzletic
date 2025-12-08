@@ -978,8 +978,8 @@ export const PetRoom: React.FC<PetRoomProps> = ({
       {/* Bottom Action Bar - Visible but disabled when in GiftBox mode */}
       <div className="action-bar">
         <button
-          className="action-btn action-btn--small"
-          onClick={() => { playButtonSound(); toggleFoodMenu(); }}
+          className={`nav-btn ${showFoodMenu ? 'active' : ''}`}
+          onClick={toggleFoodMenu}
           disabled={action !== 'idle' && action !== 'eating' && action !== 'sick' || showGiftBox}
           title={t('actions.feed')}
         >
@@ -988,7 +988,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({
 
         <button
           className="action-btn action-btn--small"
-          onClick={() => { playButtonSound(); toggleMedicineMenu(); }}
+          onClick={toggleMedicineMenu}
           disabled={action !== 'idle' && action !== 'sick' || showGiftBox}
           title={t('actions.medicine')}
         >
@@ -1006,7 +1006,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({
 
         <button
           className="action-btn action-btn--small"
-          onClick={() => { playButtonSound(); toggleCleanMenu(); }}
+          onClick={toggleCleanMenu}
           disabled={action !== 'idle' || showGiftBox}
           title={t('actions.clean')}
         >
