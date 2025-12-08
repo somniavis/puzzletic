@@ -678,13 +678,11 @@ export const PetRoom: React.FC<PetRoomProps> = ({
         <button
           className="shop-btn-floating"
           onClick={toggleShopMenu}
-          disabled={action !== 'idle'}
+          disabled={action !== 'idle' || showGiftBox}
           title={t('shop.menu.title', 'Shop')}
         >
           <span className="action-icon">🛖</span>
-        </button>
-
-        {/* 가출 경고 메시지 (죽음 상태가 아닐 때만 표시) */}
+        </button> {/* 가출 경고 메시지 (죽음 상태가 아닐 때만 표시) */}
         {nurturing.abandonmentStatus.level !== 'normal' && nurturing.abandonmentStatus.level !== 'abandoned' && (
           <div className={`abandonment-alert abandonment-alert--${nurturing.abandonmentStatus.level}`}>
             <span className="abandonment-alert__icon">
@@ -977,52 +975,55 @@ export const PetRoom: React.FC<PetRoomProps> = ({
         onNavigate={onNavigate}
       />
 
-      {/* Bottom Action Bar */}
+      {/* Bottom Action Bar - Visible but disabled when in GiftBox mode */}
       <div className="action-bar">
         <button
           className="action-btn action-btn--small"
-          onClick={toggleFoodMenu}
-          disabled={action !== 'idle' || !!flyingFood || isShowering || isBrushing || isCleaning}
+          onClick={() => { playButtonSound(); toggleFoodMenu(); }}
+          disabled={action !== 'idle' && action !== 'eating' && action !== 'sick' || showGiftBox}
           title={t('actions.feed')}
         >
           <span className="action-icon">🍖</span>
         </button>
+
         <button
           className="action-btn action-btn--small"
-          onClick={toggleMedicineMenu}
-          disabled={action !== 'idle' || !!flyingFood || isShowering || isBrushing || isCleaning}
+          onClick={() => { playButtonSound(); toggleMedicineMenu(); }}
+          disabled={action !== 'idle' && action !== 'sick' || showGiftBox}
           title={t('actions.medicine')}
         >
           <span className="action-icon">💊</span>
         </button>
+
         <button
           className="action-btn action-btn--main"
           onClick={handlePlay}
-          disabled={action !== 'idle' || !!flyingFood || isShowering || isBrushing || isCleaning}
+          disabled={action !== 'idle' || showGiftBox}
         >
           <span className="action-icon-large">🎾</span>
           <span className="action-label">{t('actions.play')}</span>
         </button>
+
         <button
           className="action-btn action-btn--small"
-          onClick={toggleCleanMenu}
-          disabled={action !== 'idle' || !!flyingFood || isShowering || isBrushing || isCleaning}
+          onClick={() => { playButtonSound(); toggleCleanMenu(); }}
+          disabled={action !== 'idle' || showGiftBox}
           title={t('actions.clean')}
         >
           <span className="action-icon">✨</span>
         </button>
+
         <button
           className="action-btn action-btn--small"
           onClick={() => {
             playButtonSound();
             setShowSettingsMenu(true);
           }}
-          disabled={action !== 'idle' || !!flyingFood || isShowering || isBrushing || isCleaning}
+          disabled={action !== 'idle' || showGiftBox}
           title={t('actions.settings')}
         >
           <span className="action-icon">⚙️</span>
         </button>
-
       </div>
     </div >
   );
