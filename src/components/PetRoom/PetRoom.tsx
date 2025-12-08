@@ -978,7 +978,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({
       {/* Bottom Action Bar - Visible but disabled when in GiftBox mode */}
       <div className="action-bar">
         <button
-          className={`nav-btn ${showFoodMenu ? 'active' : ''}`}
+          className="action-btn action-btn--small"
           onClick={toggleFoodMenu}
           disabled={action !== 'idle' && action !== 'eating' && action !== 'sick' || showGiftBox}
           title={t('actions.feed')}
