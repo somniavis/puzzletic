@@ -115,6 +115,9 @@ class SoundManager {
       return;
     }
 
+    // Optimistically mark as complete to prevent race conditions (double loading)
+    this.preloadComplete.add(soundUrl);
+
     const pool: HTMLAudioElement[] = [];
 
     for (let i = 0; i < this.poolSize; i++) {
@@ -122,18 +125,19 @@ class SoundManager {
       audio.preload = 'auto';
       audio.src = soundUrl;
 
-      // 모바일 최적화: 즉시 버퍼 로드 시작
+      // Mobile optimization: start loading immediately
       audio.load();
 
-      // loadeddata로 변경 - canplaythrough보다 더 빨리 완료됨
+      // loadeddata is faster than canplaythrough
       await new Promise<void>((resolve) => {
         audio.addEventListener('loadeddata', () => resolve(), { once: true });
         audio.addEventListener('error', () => {
           console.warn(`Failed to preload sound: ${soundUrl}`);
-          resolve(); // 실패해도 계속 진행
+          // Keep it in complete set to prevent endless retries
+          resolve();
         }, { once: true });
 
-        // 타임아웃 추가 - 최대 3초 대기
+        // Timeout fallback
         setTimeout(() => resolve(), 3000);
       });
 
@@ -141,7 +145,6 @@ class SoundManager {
     }
 
     this.audioPool.set(soundUrl, pool);
-    this.preloadComplete.add(soundUrl);
     console.log(`✅ Preloaded sound: ${soundUrl}`);
   }
 
