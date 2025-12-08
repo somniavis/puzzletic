@@ -230,6 +230,186 @@
     gap: 0.5rem;
 }
 
+/* Compact Header for Game Over */
+.game-over-header-compact {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1.5rem 0 1rem;
+    gap: 0.5rem;
+}
+
+.game-over-icon {
+    font-size: 3.5rem;
+    line-height: 1;
+    animation: bounce 1s infinite;
+}
+
+.game-over-title {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #1e293b;
+    margin: 0;
+}
+
+/* Split Result Cards Layout */
+.result-cards-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    width: 100%;
+    padding: 0 0.5rem;
+}
+
+.result-card {
+    background: white;
+    border-radius: 1rem;
+    padding: 1rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    border: 2px solid #e2e8f0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.result-card.main-stats {
+    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+    border-color: #cbd5e1;
+}
+
+/* Split Rewards Grid */
+.rewards-grid-split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    width: 100%;
+}
+
+.reward-card-split {
+    border-radius: 1rem;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    box-shadow: 0 4px 0 rgba(0, 0, 0, 0.1);
+    border: 2px solid transparent;
+}
+
+.reward-card-split.xp {
+    background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%);
+    /* Purple */
+    border-color: #d8b4fe;
+    box-shadow: 0 4px 0 #c084fc;
+}
+
+.reward-card-split.glo {
+    background: linear-gradient(135deg, #fef9c3 0%, #fef08a 100%);
+    /* Yellow */
+    border-color: #fde047;
+    box-shadow: 0 4px 0 #eab308;
+}
+
+.result-card.rewards {
+    background: linear-gradient(135deg, #fdf4ff 0%, #fae8ff 100%);
+    border-color: #e879f9;
+    /* Purple-ish pink */
+    box-shadow: 0 4px 0 #d946ef;
+}
+
+/* Main Score Display */
+.score-display-large {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.score-label {
+    font-size: 0.875rem;
+    color: #64748b;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.score-value-huge {
+    font-size: 3rem;
+    font-weight: 900;
+    line-height: 1;
+    color: #b45309;
+    /* Matches Coin color darkened */
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-shadow: 2px 2px 0 rgba(255, 255, 255, 1);
+}
+
+/* Sub Stats Row (Streak, Accuracy) */
+.sub-stats-row {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    gap: 1.5rem;
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 2px dashed #e2e8f0;
+}
+
+.sub-stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.sub-stat-label {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    font-weight: 600;
+}
+
+.sub-stat-value {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: #475569;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+/* Reward Layout */
+.rewards-content {
+    display: flex;
+    width: 100%;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.reward-unit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.125rem;
+}
+
+.reward-icon {
+    font-size: 2rem;
+    margin-bottom: -0.25rem;
+}
+
+.reward-amount {
+    font-size: 1.75rem;
+    font-weight: 800;
+}
+
+.reward-label {
+    font-size: 0.875rem;
+    font-weight: 700;
+    opacity: 0.8;
+}
+
+/* Override existing classes if needed or just use new ones */
 .section-title::before {
     content: '📖';
 }

@@ -20,6 +20,7 @@ export const useGameEngine = (config: GameEngineConfig = {}) => {
     const [difficultyLevel, setDifficultyLevel] = useState(1);
     const [streak, setStreak] = useState(0);
     const [bestStreak, setBestStreak] = useState(0);
+    const [stats, setStats] = useState({ correct: 0, wrong: 0 });
 
     // Internal counters
     const [consecutiveCorrect, setConsecutiveCorrect] = useState(0);
@@ -74,6 +75,7 @@ export const useGameEngine = (config: GameEngineConfig = {}) => {
         setDeadline(Date.now() + initialTime * 1000);
         setQuestionStartTime(Date.now());
         setAchievements({ firstCorrect: false, lightningSpeed: false, streakMaster: false, master: false });
+        setStats({ correct: 0, wrong: 0 });
     }, [initialLives, initialTime]);
 
     const submitAnswer = useCallback((isCorrect: boolean) => {
@@ -82,6 +84,7 @@ export const useGameEngine = (config: GameEngineConfig = {}) => {
 
         if (isCorrect) {
             setGameState('correct');
+            setStats(prev => ({ ...prev, correct: prev.correct + 1 }));
             const newStreak = streak + 1;
             setStreak(newStreak);
             setBestStreak(prev => Math.max(prev, newStreak));
@@ -113,6 +116,7 @@ export const useGameEngine = (config: GameEngineConfig = {}) => {
 
         } else {
             setGameState('wrong');
+            setStats(prev => ({ ...prev, wrong: prev.wrong + 1 }));
             setStreak(0);
             setConsecutiveCorrect(0);
             setConsecutiveWrong(prev => prev + 1);
@@ -159,6 +163,7 @@ export const useGameEngine = (config: GameEngineConfig = {}) => {
         streak,
         bestStreak,
         achievements,
+        stats,
         gameOverReason,
         startGame,
         submitAnswer,

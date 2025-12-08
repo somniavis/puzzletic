@@ -35,6 +35,7 @@ export const Layout1: React.FC<Layout1Props> = ({
     const {
         gameState, score, lives, timeLeft,
         streak, bestStreak,
+        stats, // Destructure stats
         gameOverReason,
         startGame
     } = engine;
@@ -51,10 +52,12 @@ export const Layout1: React.FC<Layout1Props> = ({
     // Calculate and award rewards on Game Over
     React.useEffect(() => {
         if (gameState === 'gameover' && !rewardResult) {
+            const totalAttempts = (stats?.correct || 0) + (stats?.wrong || 0);
+            const accuracyVal = totalAttempts > 0 ? (stats?.correct || 0) / totalAttempts : 0;
+
             const calculated = calculateMinigameReward({
                 difficulty: engine.difficultyLevel as MinigameDifficulty,
-                // score removed as it's not part of MinigameResult
-                accuracy: 1.0, // Simplification: Perfect accuracy assumed for reward calc base (score reflects performance)
+                accuracy: accuracyVal,
                 isPerfect: lives === 3,
                 masteryBonus: 1.0
             }, evolutionStage as any);
@@ -173,48 +176,61 @@ export const Layout1: React.FC<Layout1Props> = ({
                 </header>
 
                 <div className="overlay-screen start-screen-layout">
-                    <div className="start-header-section">
-                        <div style={{ fontSize: '4rem', marginBottom: '0.5rem' }}>
+                    {/* Compact Header */}
+                    <div className="game-over-header-compact">
+                        <div className="game-over-icon">
                             {gameOverReason === 'cleared' ? '🏆' : '🏁'}
                         </div>
-                        <h1 className="game-title">{t('common.gameOver') || 'Game Over!'}</h1>
+                        <h1 className="game-over-title">
+                            {gameOverReason === 'cleared' ? (t('common.stageClear') || 'Stage Clear!') : (t('common.gameOver') || 'Game Over!')}
+                        </h1>
                     </div>
 
-                    <div ref={gameOverRef} className="start-content-scroll custom-scrollbar">
-                        <div className="how-to-play-box result-box">
-                            <h3 className="section-title">{t('common.results') || 'Final Results'}</h3>
+                    <div ref={gameOverRef} className="start-content-scroll custom-scrollbar" style={{ marginTop: '0.5rem' }}>
+                        <div className="result-cards-container">
 
-                            <div className="result-grid">
-                                <div className="result-item highlight">
-                                    <span className="result-label">{t('common.finalScore') || 'Final Score'}</span>
-                                    <span className="result-value text-blue" style={{ color: '#b45309' }}>
-                                        <Coins size={24} className="text-yellow-500" fill="#f59e0b" /> {score}
+                            {/* Box 1: Game Stats */}
+                            <div className="result-card main-stats">
+                                <div className="score-display-large">
+                                    <span className="score-label">{t('common.finalScore') || 'FINAL SCORE'}</span>
+                                    <span className="score-value-huge">
+                                        {score}
                                     </span>
                                 </div>
-                                <div className="result-item">
-                                    <span className="result-label">{t('common.bestStreak') || 'Best Streak'}</span>
-                                    <span className="result-value text-orange">
-                                        <Flame size={20} className="text-orange-500" /> {bestStreak}
-                                    </span>
+                                <div className="sub-stats-row">
+                                    <div className="sub-stat-item">
+                                        <span className="sub-stat-label">{t('common.bestStreak') || 'BEST STREAK'}</span>
+                                        <span className="sub-stat-value text-orange">
+                                            <Flame size={18} className="text-orange-500" /> {bestStreak}
+                                        </span>
+                                    </div>
+                                    <div className="sub-stat-item">
+                                        <span className="sub-stat-label">ACCURACY</span>
+                                        <span className="sub-stat-value text-blue">
+                                            {/* Display calculated accuracy from render time (or use stats directly if loop risk) */}
+                                            {(() => {
+                                                const total = (stats?.correct || 0) + (stats?.wrong || 0);
+                                                return total > 0 ? Math.round(((stats?.correct || 0) / total) * 100) : 0;
+                                            })()}%
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
 
-                            <div className="divider"></div>
-
-                            <div className="result-grid">
-                                <div className="result-item">
-                                    <span className="result-label">{t('common.earnedXp') || 'Earned XP'}</span>
-                                    <span className="result-value text-purple">
-                                        <span>✨</span> +{earnedXp}
-                                    </span>
+                            {/* Box 2: Rewards (Split & Colored) */}
+                            <div className="rewards-grid-split">
+                                <div className="reward-card-split xp">
+                                    <span className="reward-icon">✨</span>
+                                    <span className="reward-amount text-purple">+{earnedXp}</span>
+                                    <span className="reward-label text-purple">XP</span>
                                 </div>
-                                <div className="result-item">
-                                    <span className="result-label">{t('common.earnedGlo') || 'Earned Glo'}</span>
-                                    <span className="result-value text-yellow">
-                                        <span>💰</span> +{earnedGlo}
-                                    </span>
+                                <div className="reward-card-split glo">
+                                    <span className="reward-icon">💰</span>
+                                    <span className="reward-amount text-yellow">+{earnedGlo}</span>
+                                    <span className="reward-label text-yellow">GLO</span>
                                 </div>
                             </div>
+
                         </div>
                     </div>
 
