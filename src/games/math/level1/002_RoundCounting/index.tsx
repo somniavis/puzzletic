@@ -132,7 +132,8 @@ export const RoundCounting: React.FC<RoundCountingProps> = ({ onExit }) => {
         onResume: startGame,
         onExit: onExit,
         onRestart: () => window.location.reload(),
-        lastEvent: lastEvent
+        lastEvent: lastEvent,
+        stats: gameState.stats // Pass stats to layout
     };
 
     return (

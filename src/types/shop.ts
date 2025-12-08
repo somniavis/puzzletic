@@ -29,7 +29,7 @@ export const SHOP_ITEMS: ShopItem[] = [
         nameKey: 'shop.items.forest_ground',
         descriptionKey: 'shop.items.forest_ground.desc',
         category: 'ground',
-        price: 500,
+        price: 110,
         icon: '🌲',
     },
     {
@@ -38,8 +38,16 @@ export const SHOP_ITEMS: ShopItem[] = [
         descriptionKey: 'shop.items.tropical_ground.desc',
         icon: '🏝️',
         category: 'ground',
-        price: 150,
+        price: 300,
         isOwned: false,
+    },
+    {
+        id: 'desert_ground',
+        nameKey: 'shop.items.desert_ground',
+        descriptionKey: 'shop.items.desert_ground.desc',
+        price: 350,
+        category: 'ground',
+        icon: '🏜️',
     },
     {
         id: 'arctic_ground',
@@ -47,7 +55,7 @@ export const SHOP_ITEMS: ShopItem[] = [
         descriptionKey: 'shop.items.arctic_ground.desc',
         icon: '❄️',
         category: 'ground',
-        price: 200,
+        price: 400,
         isOwned: false,
     },
     {
@@ -56,15 +64,7 @@ export const SHOP_ITEMS: ShopItem[] = [
         descriptionKey: 'shop.items.volcanic_ground.desc',
         icon: '🌋',
         category: 'ground',
-        price: 250,
+        price: 500,
         isOwned: false,
-    },
-    {
-        id: 'desert_ground',
-        nameKey: 'shop.items.desert_ground',
-        descriptionKey: 'shop.items.desert_ground.desc',
-        price: 200,
-        category: 'ground',
-        icon: '🏜️',
     },
 ];

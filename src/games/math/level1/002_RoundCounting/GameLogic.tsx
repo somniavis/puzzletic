@@ -27,13 +27,17 @@ export interface GameState {
     gameOver: boolean;
     gameOverReason?: 'time' | 'lives' | 'cleared';
     isPlaying: boolean;
+    stats: {
+        correct: number;
+        wrong: number;
+    };
 }
 
 const ITEMS = [
     // Mammals
     '🐒', '🦍', '🦧', '🐕', '🐩', '🐈‍⬛', '🐅', '🐆', '🐎', '🦌', '🦬', '🐂', '🐃', '🐄', '🐖', '🐏', '🐐', '🐪', '🦙', '🦒', '🐘', '🦣', '🦏', '🦛', '🐁', '🐀', '🐇', '🐿️', '🦫', '🦔', '🦇', '🦥', '🦦', '🦨', '🦘', '🦡', '🦝', '🦓',
     // Birds
-    '🦃', '🐓', '🕊️', '🦅', '🦆', '🦢', '🦉', '🦤', '🦩', '🦜', '🐦',
+    '🦃', '🐓', '🕊️', '🦅', '🦆', '🦢', '🦉', '🦤', '🦩', '🦜',
     // Sea & others
     '🐳', '🐬', '🦭', '🐟', '🐠', '🐡', '🦈', '🐙', '🦑', '🦐', '🦞', '🦀', '🪼',
     '🐌', '🦋', '🐛', '🐜', '🐝', '🪲', '🐞', '🦗', '🕷️', '🦂'
@@ -63,12 +67,16 @@ const generateProblem = (difficulty: number): Problem => {
         // Intermediate+: 4x4
         cols = 4;
         gridSize = 16;
+
+
         if (difficulty === 2) {
-            // Level 2
-            targetCount = Math.floor(Math.random() * 5) + 3;
+            // Level 2: 3~5 uniform
+            // Math.random() * 3 is 0~2, +3 is 3~5
+            targetCount = Math.floor(Math.random() * 3) + 3;
         } else {
-            // Level 3
-            targetCount = Math.floor(Math.random() * 5) + 5;
+            // Level 3: 2~9 uniform
+            // Math.random() * 8 is 0~7, +2 is 2~9
+            targetCount = Math.floor(Math.random() * 8) + 2;
         }
     }
 
@@ -115,6 +123,7 @@ export const useRoundCountingLogic = () => {
         difficultyLevel: 1,
         gameOver: false,
         isPlaying: false,
+        stats: { correct: 0, wrong: 0 }
     });
 
     const [currentProblem, setCurrentProblem] = useState<Problem | null>(null);
@@ -143,7 +152,8 @@ export const useRoundCountingLogic = () => {
             gameOver: false,
             isPlaying: false,
             streak: 0,
-            bestStreak: prev.bestStreak // Preserve session best
+            bestStreak: prev.bestStreak, // Preserve session best
+            stats: { correct: 0, wrong: 0 }
         }));
         setLastEvent(null);
     }, []);
@@ -174,7 +184,8 @@ export const useRoundCountingLogic = () => {
             lives: 3,
             timeLeft: 60,
             streak: 0,
-            difficultyLevel: initialDifficulty
+            difficultyLevel: initialDifficulty,
+            stats: { correct: 0, wrong: 0 }
         }));
     }, []);
 
@@ -263,7 +274,8 @@ export const useRoundCountingLogic = () => {
                         score: prev.score + totalAdd,
                         streak: newStreak,
                         bestStreak: newBestStreak,
-                        timeLeft: prev.timeLeft + (currentProblem.difficulty === 3 ? 5 : 2) // Time bonus for clear
+                        timeLeft: prev.timeLeft + (currentProblem.difficulty === 3 ? 5 : 2), // Time bonus for clear
+                        stats: { ...prev.stats, correct: prev.stats.correct + 1 }
                     };
                 });
 
@@ -304,7 +316,8 @@ export const useRoundCountingLogic = () => {
                     lives: newLives,
                     streak: 0,
                     gameOver: newLives <= 0,
-                    gameOverReason: newLives <= 0 ? 'lives' : undefined
+                    gameOverReason: newLives <= 0 ? 'lives' : undefined,
+                    stats: { ...prev.stats, wrong: prev.stats.wrong + 1 }
                 };
             });
             adjustDifficulty(false);
