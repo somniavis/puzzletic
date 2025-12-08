@@ -86,9 +86,9 @@
     gap: 5px;
 
     /* Mobile-Focused Responsive Logic */
-    /* Ensure it fills the box but remains square and contained */
-    width: 100%;
-    height: auto;
+    /* Use container query units to fit strictly within the smallest dimension (width or height) */
+    width: 100cqmin;
+    height: 100cqmin;
     max-width: 100%;
     max-height: 100%;
     aspect-ratio: 1/1;
@@ -121,9 +121,8 @@
 
     /* Robust responsive font sizing */
     /* Robust responsive font sizing using Container Query Min Dimension (cqmin) */
-    /* This ensures emojis scale down based on the container's smallest dimension (width OR height) */
-    /* ~60% of a single cell size (100% / cols * 0.6) */
-    font-size: clamp(0.5rem, calc(60cqmin / var(--grid-cols, 4)), 3.5rem);
+    /* Reduced scale factor to 45cqmin to prevent visual overlap */
+    font-size: clamp(0.5rem, calc(45cqmin / var(--grid-cols, 4)), 3rem);
     line-height: 1;
 
     /* Slightly shrink visual size to prevent edge usage overlap */
