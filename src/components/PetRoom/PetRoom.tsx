@@ -51,12 +51,23 @@ export const PetRoom: React.FC<PetRoomProps> = ({
   const nurturing = useNurturing();
 
   // Resume tick when entering Pet Room (safety check)
-  // Resume tick when entering Pet Room (safety check)
   useEffect(() => {
     if (!showGiftBox) {
       nurturing.resumeTick();
     }
   }, [nurturing.resumeTick, showGiftBox]);
+
+  // Loading State
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    // Simulate loading delay for better UX (preloading assets masking)
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, []);
+
 
   const [position, setPosition] = useState({ x: 50, y: 50 }); // percentage position
   const [isMoving, setIsMoving] = useState(false);
@@ -595,6 +606,16 @@ export const PetRoom: React.FC<PetRoomProps> = ({
 
   return (
     <div className="pet-room">
+      {/* Loading Overlay */}
+      {isLoading && (
+        <div className="loading-overlay">
+          <div className="loading-spinner-container">
+            <div className="loading-spinner">🐾</div>
+            <div className="loading-text">Loading...</div>
+          </div>
+        </div>
+      )}
+
       {/* Top Header with Character Info */}
       <div className="game-header">
         <div className="character-profile">

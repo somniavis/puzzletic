@@ -341,8 +341,9 @@ export const playClearSound = (volume: number = 0.5): void => {
  * 배경음악을 재생합니다.
  * 설정에서 BGM이 활성화된 경우에만 재생됩니다.
  */
-export const startBackgroundMusic = (): void => {
+export const startBackgroundMusic = async (): Promise<void> => {
   if (isBgmEnabled()) {
+    await soundManager.initBgm();
     soundManager.playBgm();
   }
 };
