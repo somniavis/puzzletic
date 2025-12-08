@@ -83,10 +83,10 @@
     /* Default to 4 if not set, but JS handles it */
     grid-template-columns: repeat(var(--grid-cols, 4), minmax(0, 1fr));
     grid-template-rows: repeat(var(--grid-cols, 4), minmax(0, 1fr));
-    gap: 0.4rem;
+    gap: 5px;
 
     /* Mobile-Focused Responsive Logic */
-    /* Restore width 100% to ensure it fills the box, but respect Aspect Ratio and Max Height */
+    /* Ensure it fills the box but remains square and contained */
     width: 100%;
     height: auto;
     max-width: 100%;
@@ -120,8 +120,10 @@
     justify-content: center;
 
     /* Robust responsive font sizing */
-    /* Reduced to 56cqw as requested */
-    font-size: clamp(1rem, calc(56cqw / var(--grid-cols, 4)), 3.5rem);
+    /* Robust responsive font sizing using Container Query Min Dimension (cqmin) */
+    /* This ensures emojis scale down based on the container's smallest dimension (width OR height) */
+    /* ~60% of a single cell size (100% / cols * 0.6) */
+    font-size: clamp(0.5rem, calc(60cqmin / var(--grid-cols, 4)), 3.5rem);
     line-height: 1;
 
     /* Slightly shrink visual size to prevent edge usage overlap */
