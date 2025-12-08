@@ -207,7 +207,7 @@ export const RoundCounting: React.FC<RoundCountingProps> = ({ onExit }) => {
                                                 ${isShufflingItem ? 'grid-item-shuffling' : ''}
                                             `}
                                         >
-                                            {item.emoji}
+                                            <span className="emoji-content">{item.emoji}</span>
                                         </button>
                                     );
                                 })}
