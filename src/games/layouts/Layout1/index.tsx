@@ -53,6 +53,8 @@ export const Layout1: React.FC<Layout1Props> = ({
 
     // High Score State
     const [highScore, setHighScore] = React.useState<number>(0);
+    const [prevBest, setPrevBest] = React.useState<number>(0);
+    const initialBestRef = React.useRef<number>(0); // Store initial best for stable comparison
     const [isNewRecord, setIsNewRecord] = React.useState(false);
 
     // Load High Score on Mount
@@ -61,7 +63,9 @@ export const Layout1: React.FC<Layout1Props> = ({
             const savedkey = `minigame_highscore_${gameId}`;
             const savedScore = localStorage.getItem(savedkey);
             if (savedScore) {
-                setHighScore(parseInt(savedScore, 10));
+                const parsed = parseInt(savedScore, 10);
+                setHighScore(parsed);
+                initialBestRef.current = parsed; // Capture stable initial best
             }
         }
     }, [gameId]);
@@ -87,14 +91,16 @@ export const Layout1: React.FC<Layout1Props> = ({
             if (gameId) {
                 const savedkey = `minigame_highscore_${gameId}`;
                 const currentScore = score;
-                const savedBest = parseInt(localStorage.getItem(savedkey) || '0', 10);
+                // Compare against stable ref, not live localStorage which might be updated by strict mode double-run
+                const stableBest = initialBestRef.current;
 
-                if (currentScore > savedBest) {
+                if (currentScore > stableBest) {
                     localStorage.setItem(savedkey, currentScore.toString());
+                    setPrevBest(stableBest);
                     setHighScore(currentScore);
                     setIsNewRecord(true);
                 } else {
-                    setHighScore(savedBest);
+                    setHighScore(stableBest);
                     setIsNewRecord(false);
                 }
             }
@@ -225,25 +231,26 @@ export const Layout1: React.FC<Layout1Props> = ({
                         <div className="result-cards-container">
 
                             {/* Box 1: Game Stats */}
+                            {/* Box 1: Game Stats */}
                             <div className="result-card main-stats">
                                 <div className="score-display-wrapper">
-                                    {/* Sub Score Display (Left) */}
-                                    <div className="score-display-sub">
-                                        <span className="sub-score-label">
-                                            {isNewRecord ? (t('common.previousBest') || 'PREV BEST') : (score < highScore ? (t('common.finalScore') || 'FINAL SCORE') : (t('common.bestScore') || 'BEST SCORE'))}
+                                    {/* Left Side: ALWAYS Final Score (Big) */}
+                                    <div className="score-display-large">
+                                        <span className="score-label">
+                                            {isNewRecord ? (t('common.newRecord') || 'NEW RECORD!') : (t('common.finalScore') || 'FINAL SCORE')}
                                         </span>
-                                        <span className="sub-score-value">
-                                            {isNewRecord ? highScore : (score < highScore ? score : highScore)}
+                                        <span className={`score-value-huge ${isNewRecord ? 'record-pulse' : ''}`}>
+                                            {score}
                                         </span>
                                     </div>
 
-                                    {/* Main Score Display (Right/Center) */}
-                                    <div className="score-display-large">
-                                        <span className="score-label">
-                                            {isNewRecord ? (t('common.newRecord') || 'NEW RECORD!') : (score < highScore ? (t('common.bestScore') || 'BEST SCORE') : (t('common.finalScore') || 'FINAL SCORE'))}
+                                    {/* Right Side: ALWAYS Best/Prev Score (Small) */}
+                                    <div className="score-display-sub">
+                                        <span className="sub-score-label">
+                                            {isNewRecord ? (t('common.previousBest') || 'PREV BEST') : (t('common.bestScore') || 'BEST SCORE')}
                                         </span>
-                                        <span className={`score-value-huge ${isNewRecord ? 'record-pulse' : ''}`}>
-                                            {isNewRecord ? score : (score < highScore ? highScore : score)}
+                                        <span className="sub-score-value">
+                                            {isNewRecord ? prevBest : highScore}
                                         </span>
                                     </div>
                                 </div>
