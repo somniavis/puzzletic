@@ -64,7 +64,7 @@ const PowerUpBtn: React.FC<PowerUpBtnProps> = ({ count, color, icon, title, onCl
     };
 
     // Base layout classes
-    const baseClasses = "relative p-2 rounded-full transition-all shadow-md flex items-center justify-center mr-3";
+    const baseClasses = "relative p-2 rounded-full transition-all shadow-md flex items-center justify-center";
     // Add ring for active state
     const activeClasses = isHereActive ? "ring-4 ring-yellow-200" : "";
 
@@ -151,7 +151,7 @@ export const RoundCounting: React.FC<RoundCountingProps> = ({ onExit }) => {
         >
             <div className="responsive-game-container">
                 {/* Power-ups */}
-                <div className="w-full flex justify-start gap-6 mb-4 px-2">
+                <div className="w-full flex justify-start gap-4 mb-4 px-4">
                     <PowerUpBtn
                         count={powerUps.timeFreeze}
                         color="blue"
