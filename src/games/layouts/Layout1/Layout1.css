@@ -320,6 +320,41 @@
 }
 
 /* Main Score Display */
+.score-display-wrapper {
+    display: flex;
+    align-items: flex-end;
+    /* Align bottom to match baseline somewhat */
+    justify-content: center;
+    gap: 1.5rem;
+    width: 100%;
+}
+
+.score-display-sub {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    /* Right align the small stats */
+    justify-content: center;
+    opacity: 0.7;
+    margin-bottom: 0.5rem;
+    /* Tiny visual adjustments */
+}
+
+.sub-score-label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: #94a3b8;
+    text-transform: uppercase;
+}
+
+.sub-score-value {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #64748b;
+    line-height: 1.1;
+}
+
+
 .score-display-large {
     display: flex;
     flex-direction: column;
@@ -344,6 +379,12 @@
     align-items: center;
     gap: 0.5rem;
     text-shadow: 2px 2px 0 rgba(255, 255, 255, 1);
+}
+
+.score-value-huge.record-pulse {
+    animation: bounce 1s infinite;
+    color: #ea580c;
+    /* Orange-600 */
 }
 
 /* Sub Stats Row (Streak, Accuracy) */

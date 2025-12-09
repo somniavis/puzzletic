@@ -16,6 +16,7 @@ import type { RewardCalculation, MinigameDifficulty } from '../../../types/gameM
 interface Layout1Props {
     title: string;
     subtitle?: string;
+    gameId?: string; // Optional for backward compatibility, but recommended
     description?: string;
     instructions?: { icon?: string; title: string; description: string }[];
     engine: ReturnType<typeof useGameEngine>;
@@ -26,6 +27,7 @@ interface Layout1Props {
 export const Layout1: React.FC<Layout1Props> = ({
     title,
     subtitle,
+    gameId,
     description,
     instructions,
     engine,
@@ -49,9 +51,25 @@ export const Layout1: React.FC<Layout1Props> = ({
     const { evolutionStage, addRewards } = useNurturing();
     const [rewardResult, setRewardResult] = React.useState<RewardCalculation | null>(null);
 
-    // Calculate and award rewards on Game Over
+    // High Score State
+    const [highScore, setHighScore] = React.useState<number>(0);
+    const [isNewRecord, setIsNewRecord] = React.useState(false);
+
+    // Load High Score on Mount
+    React.useEffect(() => {
+        if (gameId) {
+            const savedkey = `minigame_highscore_${gameId}`;
+            const savedScore = localStorage.getItem(savedkey);
+            if (savedScore) {
+                setHighScore(parseInt(savedScore, 10));
+            }
+        }
+    }, [gameId]);
+
+    // Calculate and award rewards on Game Over + Check High Score
     React.useEffect(() => {
         if (gameState === 'gameover' && !rewardResult) {
+            // ... existing reward logic ...
             const totalAttempts = (stats?.correct || 0) + (stats?.wrong || 0);
             const accuracyVal = totalAttempts > 0 ? (stats?.correct || 0) / totalAttempts : 0;
 
@@ -64,10 +82,27 @@ export const Layout1: React.FC<Layout1Props> = ({
 
             setRewardResult(calculated);
             addRewards(calculated.xpEarned, calculated.gloEarned);
+
+            // High Score Logic
+            if (gameId) {
+                const savedkey = `minigame_highscore_${gameId}`;
+                const currentScore = score;
+                const savedBest = parseInt(localStorage.getItem(savedkey) || '0', 10);
+
+                if (currentScore > savedBest) {
+                    localStorage.setItem(savedkey, currentScore.toString());
+                    setHighScore(currentScore);
+                    setIsNewRecord(true);
+                } else {
+                    setHighScore(savedBest);
+                    setIsNewRecord(false);
+                }
+            }
         } else if (gameState === 'playing' || gameState === 'idle') {
             if (rewardResult) setRewardResult(null);
+            setIsNewRecord(false);
         }
-    }, [gameState, rewardResult, score, lives, engine.difficultyLevel, evolutionStage, addRewards]);
+    }, [gameState, rewardResult, score, lives, engine.difficultyLevel, evolutionStage, addRewards, gameId, stats]);
 
     React.useEffect(() => {
         if (lastEvent) {
@@ -191,11 +226,26 @@ export const Layout1: React.FC<Layout1Props> = ({
 
                             {/* Box 1: Game Stats */}
                             <div className="result-card main-stats">
-                                <div className="score-display-large">
-                                    <span className="score-label">{t('common.finalScore') || 'FINAL SCORE'}</span>
-                                    <span className="score-value-huge">
-                                        {score}
-                                    </span>
+                                <div className="score-display-wrapper">
+                                    {/* Sub Score Display (Left) */}
+                                    <div className="score-display-sub">
+                                        <span className="sub-score-label">
+                                            {isNewRecord ? (t('common.previousBest') || 'PREV BEST') : (score < highScore ? (t('common.finalScore') || 'FINAL SCORE') : (t('common.bestScore') || 'BEST SCORE'))}
+                                        </span>
+                                        <span className="sub-score-value">
+                                            {isNewRecord ? highScore : (score < highScore ? score : highScore)}
+                                        </span>
+                                    </div>
+
+                                    {/* Main Score Display (Right/Center) */}
+                                    <div className="score-display-large">
+                                        <span className="score-label">
+                                            {isNewRecord ? (t('common.newRecord') || 'NEW RECORD!') : (score < highScore ? (t('common.bestScore') || 'BEST SCORE') : (t('common.finalScore') || 'FINAL SCORE'))}
+                                        </span>
+                                        <span className={`score-value-huge ${isNewRecord ? 'record-pulse' : ''}`}>
+                                            {isNewRecord ? score : (score < highScore ? highScore : score)}
+                                        </span>
+                                    </div>
                                 </div>
                                 <div className="sub-stats-row">
                                     <div className="sub-stat-item">

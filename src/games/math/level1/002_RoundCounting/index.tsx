@@ -140,6 +140,7 @@ export const RoundCounting: React.FC<RoundCountingProps> = ({ onExit }) => {
         <Layout1
             title={t('games.math-01-round-counting.title')}
             subtitle={t('games.math-01-round-counting.sub')}
+            gameId="math-01-round-counting"
             engine={layoutEngine as any}
             instructions={[
                 { icon: '🎯', title: t('games.math-01-round-counting.howToPlay.goal.title'), description: t('games.math-01-round-counting.howToPlay.goal.desc') },
