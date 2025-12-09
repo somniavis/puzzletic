@@ -1,0 +1,370 @@
+/* FruitSlice.css */
+
+/* Keyframes */
+@keyframes shake {
+
+    10%,
+    90% {
+        transform: translate3d(-1px, 0, 0);
+    }
+
+    20%,
+    80% {
+        transform: translate3d(2px, 0, 0);
+    }
+
+    30%,
+    50%,
+    70% {
+        transform: translate3d(-4px, 0, 0);
+    }
+
+    40%,
+    60% {
+        transform: translate3d(4px, 0, 0);
+    }
+}
+
+.animate-shake {
+    animation: shake 0.5s cubic-bezier(.36, .07, .19, .97) both;
+}
+
+@keyframes float {
+    0% {
+        transform: translateY(0px);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+}
+
+.animate-float {
+    animation: float 1s ease-out forwards;
+}
+
+@keyframes fruit-pop-in {
+    0% {
+        transform: scale(0) rotate(-180deg);
+        opacity: 0;
+    }
+
+    60% {
+        transform: scale(1.1) rotate(10deg);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(1) rotate(0deg);
+        opacity: 1;
+    }
+}
+
+.fruit-enter {
+    animation: fruit-pop-in 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+/* Slice Animations */
+@keyframes slice-left {
+    0% {
+        transform: translateX(0) rotate(0);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateX(-50px) rotate(-20deg) scale(0.9);
+        opacity: 0;
+    }
+}
+
+@keyframes slice-right {
+    0% {
+        transform: translateX(0) rotate(0);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateX(50px) rotate(20deg) scale(0.9);
+        opacity: 0;
+    }
+}
+
+@keyframes knife-slice-action {
+    0% {
+        transform: translate(-50%, -150%) rotate(0deg) scale(1.2);
+        opacity: 1;
+    }
+
+    30% {
+        transform: translate(-50%, -50%) rotate(-45deg) scale(1.2);
+        /* Hit fruit at 45deg left */
+    }
+
+    100% {
+        transform: translate(-100%, 100%) rotate(-90deg) scale(1.2);
+        /* Continue slice motion out */
+        opacity: 0;
+    }
+}
+
+.knife-slicing-anim {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform-origin: center bottom;
+    animation: knife-slice-action 0.4s ease-in forwards;
+    z-index: 50;
+    pointer-events: none;
+}
+
+
+/* Layout */
+.fruit-slice-game {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem;
+    max-width: 600px;
+    margin: 0 auto;
+    user-select: none;
+    /* Prevent text selection during drag */
+    touch-action: none;
+    /* Prevent scroll on mobile while playing */
+}
+
+/* Equation Board */
+.equation-board {
+    background: white;
+    padding: 1rem 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    font-size: 2rem;
+    font-weight: bold;
+    color: #374151;
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 2rem;
+    width: 100%;
+}
+
+.equation-part {
+    display: inline-flex;
+    align-items: center;
+}
+
+.mystery-box {
+    width: 3rem;
+    height: 3rem;
+    border: 2px dashed #9CA3AF;
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 0.5rem;
+    color: #9CA3AF;
+}
+
+/* Fruit Area */
+.fruit-stage {
+    flex: 1;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    min-height: 200px;
+    padding-bottom: 2rem;
+    /* Adjusted to 2rem for balanced spacing */
+}
+
+.target-fruit {
+    font-size: 8rem;
+    position: relative;
+    transition: transform 0.2s;
+    cursor: pointer;
+    display: inline-block;
+    /* Ensure width wraps content so 50% clip is accurate */
+    line-height: 1;
+    /* Minimize vertical gap */
+}
+
+/* Fruit Background Target */
+.fruit-target-bg {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 3rem;
+    border-radius: 2rem;
+    position: relative;
+    transition: background-color 0.3s ease;
+    border: 2px solid transparent;
+    /* Prepare for border color transition */
+}
+
+/* Sliced Wrapper & Inner from previous step */
+.target-fruit.sliced {
+    /* visibility: hidden; Removed because it hid children */
+    background: transparent;
+    /* Ensure no background issues */
+}
+
+.sliced-wrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 10;
+}
+
+.sliced-inner {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 8rem;
+    /* Match target-fruit size */
+    line-height: 1;
+}
+
+.sliced-wrapper.left {
+    animation: slice-left 1s ease-out forwards;
+}
+
+.sliced-wrapper.right {
+    animation: slice-right 1s ease-out forwards;
+}
+
+/* Hint Overlay on Fruit */
+.hint-overlay {
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 1rem;
+    white-space: nowrap;
+    animation: float 2s ease-out forwards;
+    pointer-events: none;
+}
+
+/* Power-Up Container */
+.power-up-container {
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    /* Force left align */
+    gap: 1rem;
+    /* Tighter gap (gap-4 equivalent) */
+    padding: 0 1rem;
+    margin-bottom: 1rem;
+}
+
+/* Knife Rack */
+.knife-rack {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    width: 100%;
+    padding-bottom: 2rem;
+    flex-wrap: wrap;
+}
+
+/* Realistic Knife Styling */
+.number-knife {
+    width: 60px;
+    height: 140px;
+    /* Taller for handle + blade */
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    /* Align content to bottom */
+    cursor: grab;
+    position: relative;
+    transition: transform 0.1s;
+    box-shadow: none;
+    /* Shadow handled by parts */
+}
+
+/* Blade */
+.number-knife::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 90px;
+    background: linear-gradient(135deg, #f3f4f6 0%, #d1d5db 100%);
+    /* Silver blade */
+    border: 1px solid #9ca3af;
+    border-bottom: none;
+    border-radius: 5px 5px 0 0;
+    /* Rounded tip */
+    clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);
+    /* Rectangle for now, maybe custom shape */
+    /* Let's try a Chef knife shape: curved top right */
+    border-radius: 60% 100% 0 0 / 100% 30% 0 0;
+    z-index: 1;
+    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Handle */
+.number-knife::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    width: 24px;
+    height: 50px;
+    background: #4a3828;
+    /* Wood handle */
+    border-radius: 0 0 4px 4px;
+    z-index: 2;
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+/* Connection bolster */
+.number-knife-bolster {
+    position: absolute;
+    bottom: 50px;
+    width: 30px;
+    height: 8px;
+    background: #1f2937;
+    z-index: 3;
+    border-radius: 2px;
+}
+
+.knife-value {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #374151;
+    z-index: 4;
+    position: absolute;
+    top: 30px;
+    /* Position on blade */
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+.number-knife:active {
+    cursor: grabbing;
+    transform: scale(1.05) rotate(-5deg);
+    /* Slight tilt when grabbing */
+}
+
+.number-knife.dragging {
+    opacity: 0.5;
+}

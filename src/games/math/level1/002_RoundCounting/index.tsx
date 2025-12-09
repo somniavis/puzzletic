@@ -44,7 +44,7 @@ const PowerUpBtn: React.FC<PowerUpBtnProps> = ({ count, color, icon, title, onCl
             // Disabled (0 count): Glass effect
             return {
                 backgroundColor: 'rgba(255, 255, 255, 0.3)',
-                color: '#ffffff',
+                color: '#9CA3AF', // Gray-400 for visibility (was white)
                 cursor: 'not-allowed',
                 backdropFilter: 'blur(4px)',
                 border: '1px solid rgba(255, 255, 255, 0.2)'
@@ -78,7 +78,7 @@ const PowerUpBtn: React.FC<PowerUpBtnProps> = ({ count, color, icon, title, onCl
         >
             {icon}
             <span
-                className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center shadow-sm"
+                className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center shadow-sm"
                 style={{ zIndex: 20 }}
             >
                 {count}
