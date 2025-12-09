@@ -169,17 +169,17 @@ export const useFruitSliceLogic = () => {
         setCurrentProblem(generateProblem(initialDifficulty));
         setQuestionStartTime(Date.now());
 
-        setGameState({
+        setGameState(prev => ({
+            ...prev,
             score: 0,
             lives: 3,
             timeLeft: 60,
             streak: 0,
-            bestStreak: 0,
             difficultyLevel: initialDifficulty,
             gameOver: false,
             isPlaying: true,
             stats: { correct: 0, wrong: 0 }
-        });
+        }));
     }, []);
 
     const stopTimer = useCallback(() => {
