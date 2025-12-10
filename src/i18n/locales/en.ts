@@ -480,7 +480,7 @@ export const en = {
       passwordPlaceholder: 'Enter your password',
       action: 'Log In 🔑',
       or: 'OR',
-      signup: 'Sign Up with Email ✉️',
+      signup: 'Sign Up with Email',
       backToHome: 'Back to Home'
     },
     signup: {

@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import './Auth.css';
 import { playButtonSound } from '../utils/sound';
 import { useTranslation } from 'react-i18next';
-import { auth } from '../firebase';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth, googleProvider, appleProvider } from '../firebase';
+import { signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
 
 import { useNavigate } from 'react-router-dom';
 
@@ -33,6 +33,30 @@ export const LoginPage: React.FC = () => {
             }
 
             alert(errorMessage);
+        }
+    };
+
+    const handleGoogleLogin = async () => {
+        playButtonSound();
+        try {
+            await signInWithPopup(auth, googleProvider);
+            console.log('Google Login successful');
+            navigate('/home');
+        } catch (error: any) {
+            console.error('Google Login failed:', error);
+            alert("Google Sign-In failed ❌. Please try again.");
+        }
+    };
+
+    const handleAppleLogin = async () => {
+        playButtonSound();
+        try {
+            await signInWithPopup(auth, appleProvider);
+            console.log('Apple Login successful');
+            navigate('/home');
+        } catch (error: any) {
+            console.error('Apple Login failed:', error);
+            alert("Apple Sign-In failed ❌. Please check your configuration.");
         }
     };
 
@@ -97,9 +121,51 @@ export const LoginPage: React.FC = () => {
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                     <button
-                        className="auth-btn auth-btn--secondary"
-                        onClick={handleGoToSignup}
+                        type="button"
+                        className="auth-btn auth-btn--google"
+                        onClick={handleGoogleLogin}
+                        style={{
+                            backgroundColor: '#ffffff',
+                            color: '#757575',
+                            border: '1px solid #ddd',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '8px',
+                            fontSize: '15px'
+                        }}
                     >
+                        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" style={{ width: '18px', height: '18px' }} />
+                        Sign in with Google
+                    </button>
+
+                    {/* 
+                    <button 
+                        type="button" 
+                        className="auth-btn auth-btn--apple"
+                        onClick={handleAppleLogin}
+                        style={{ backgroundColor: '#000000', color: '#ffffff', border: '1px solid #000', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+                    >
+                        <span style={{ fontSize: '18px' }}></span>
+                        Sign in with Apple
+                    </button> 
+                    */}
+
+                    <button
+                        className="auth-btn"
+                        onClick={handleGoToSignup}
+                        style={{
+                            backgroundColor: '#FFD700', /* Stronger Gold */
+                            color: '#4d3e2f',
+                            border: '1px solid #d4961f',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '8px',
+                            fontSize: '15px'
+                        }}
+                    >
+                        <span style={{ fontSize: '18px' }}>✉️</span>
                         {t('auth.login.signup')}
                     </button>
                 </div>

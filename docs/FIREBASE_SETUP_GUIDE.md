@@ -38,3 +38,15 @@ const firebaseConfig = {
   appId: "..."
 };
 ```
+
+## 4단계: 보안 설정 (Authorized Domains) 🛡️
+
+Firebase는 **승인된 도메인(Authorized Domains)** 목록에 있는 주소에서 오는 로그인 요청만 허용합니다.
+
+1.  **Firebase 콘솔** > **Authentication** > **Settings** (또는 Sign-in method 탭의 아래쪽)로 이동합니다.
+2.  **Authorized Domains** (승인된 도메인) 섹션을 찾습니다.
+3.  **`localhost`**가 목록에 있는지 확인합니다.
+    -   `localhost`는 "내 컴퓨터"를 의미하며, 개발 중에는 꼭 필요합니다.
+4.  (나중에) 실제 웹사이트를 배포하면, 그 도메인(예: `www.myapp.com`)을 여기에 **도메인 추가** 버튼을 눌러 꼭 등록해야 합니다.
+
+> ⚠️ 이 설정이 없으면 "Google Sign-In failed" 같은 오류가 발생하며 로그인이 차단됩니다.
