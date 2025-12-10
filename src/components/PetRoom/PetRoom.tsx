@@ -106,6 +106,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({
   const [isBrushing, setIsBrushing] = useState(false);
   const [isCleaning, setIsCleaning] = useState(false);
   // Modal visibility now defaults to false, but we'll trigger it via useEffect if needed
+  const [activeCleaningToolId, setActiveCleaningToolId] = useState<string | null>(null);
   const [showNicknameModal, setShowNicknameModal] = useState(false);
   // Track if nickname step is done so we can show the box
   const [isNicknameSet, setIsNicknameSet] = useState(false);
@@ -481,7 +482,10 @@ export const PetRoom: React.FC<PetRoomProps> = ({
   };
 
   const handleClean = (tool: CleaningTool) => {
-    playCleaningSound();
+    // Prevent multiple actions
+    if (isCleaning || isShowering || isBrushing || action !== 'idle') return;
+
+    playButtonSound();
     setActiveCleaningToolId(tool.id);
     switch (tool.id) {
       case 'broom':
@@ -873,7 +877,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({
               key={food.id}
               className="food-item"
               onClick={() => handleFeed(food)}
-              disabled={action !== 'idle' || nurturing.glo < food.price}
+              disabled={action !== 'idle' || flyingFood !== null || nurturing.glo < food.price}
             >
               <span className="food-item-icon">{food.icon}</span>
               <span className="food-item-name">{t(food.nameKey)}</span>
@@ -907,7 +911,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({
               key={medicine.id}
               className="food-item"
               onClick={() => handleGiveMedicine(medicine)}
-              disabled={action !== 'idle' || nurturing.glo < medicine.price || nurturing.stats.health >= 60}
+              disabled={action !== 'idle' || flyingFood !== null || nurturing.glo < medicine.price || nurturing.stats.health >= 60}
             >
               <span className="food-item-icon">{medicine.icon}</span>
               <span className="food-item-name">{t(medicine.nameKey)}</span>
