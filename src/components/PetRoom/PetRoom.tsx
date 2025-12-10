@@ -21,11 +21,12 @@ import { RoomBackground } from './RoomBackground';
 import { MenuModal } from './MenuModal';
 import './PetRoom.css';
 
+import { useNavigate } from 'react-router-dom';
+
 interface PetRoomProps {
   character: Character;
   speciesId: CharacterSpeciesId;
   onStatsChange: (stats: Partial<Character['stats']>) => void;
-  onNavigate?: (page: 'gallery' | 'stats' | 'play') => void;
   showGiftBox?: boolean;
   onOpenGift?: () => void;
   mood?: CharacterMood;
@@ -38,13 +39,13 @@ export const PetRoom: React.FC<PetRoomProps> = ({
   character,
   speciesId,
   onStatsChange,
-  onNavigate,
   showGiftBox = false,
   onOpenGift,
   mood = 'neutral',
   action = 'idle',
   onActionChange
 }) => {
+  const navigate = useNavigate();
   const { t } = useTranslation();
 
   // 양육 시스템 사용
@@ -549,9 +550,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({
 
   const handlePlay = () => {
     playButtonSound();
-    if (onNavigate) {
-      onNavigate('play');
-    }
+    navigate('/play');
   };
 
   const handlePoopClick = (poopId: string, happinessBonus: number = 0) => {
@@ -972,7 +971,6 @@ export const PetRoom: React.FC<PetRoomProps> = ({
       <SettingsMenu
         isOpen={showSettingsMenu}
         onClose={() => setShowSettingsMenu(false)}
-        onNavigate={onNavigate}
       />
 
       {/* Bottom Action Bar - Visible but disabled when in GiftBox mode */}

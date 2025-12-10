@@ -1,21 +1,24 @@
+
 import { useState, useEffect } from 'react'
 import './App.css'
-import { CharacterAdmin } from './pages/CharacterAdmin'
 import { PetRoom } from './components/PetRoom/PetRoom'
-import { CHARACTERS } from './components/characters'
 import { createCharacter } from './data/characters'
 import type { CharacterAction, CharacterMood, Character } from './types/character'
 import { NurturingProvider, useNurturing } from './contexts/NurturingContext'
 import { SoundProvider } from './contexts/SoundContext'
-import { AuthProvider } from './contexts/AuthContext'
+import { AuthProvider, useAuth } from './contexts/AuthContext'
 import { preloadSounds, playJelloClickSound } from './utils/sound'
 
-import { PlayPage } from './pages/PlayPage'
+// React Router
+import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom'
 
+// Pages
+import { PlayPage } from './pages/PlayPage'
 import { LoginPage } from './pages/LoginPage'
 import { SignupPage } from './pages/SignupPage'
+import { StatsPage } from './pages/StatsPage'
+import { GalleryPage } from './pages/GalleryPage'
 
-type Page = 'home' | 'gallery' | 'stats' | 'play' | 'login' | 'signup';
 type CharacterSpeciesId =
   | 'yellowJello'
   | 'redJello'
@@ -30,8 +33,17 @@ type CharacterSpeciesId =
   | 'oliveJello'
   | 'cyanJello';
 
+// Protected Route Wrapper
+const ProtectedRoute = ({ children }: { children: React.ReactElement }) => {
+  const { user, loading } = useAuth();
+  if (loading) return <div>Loading...</div>; // Or a splash screen
+  if (!user) return <Navigate to="/login" replace />;
+  return children;
+};
+
 function AppContent() {
-  const [currentPage, setCurrentPage] = useState<Page>('login') // Start at login for demo
+  const navigate = useNavigate();
+  // currentPage state is removed in favor of URL routing
   const [selectedSpeciesId, setSelectedSpeciesId] = useState<CharacterSpeciesId>('yellowJello')
   const [character, setCharacter] = useState(() => createCharacter('yellowJello'))
   const [mood, setMood] = useState<CharacterMood>('neutral')
@@ -62,10 +74,11 @@ function AppContent() {
     const id = speciesId as CharacterSpeciesId;
     setSelectedSpeciesId(id)
     setCharacter(createCharacter(id))
-    setCurrentPage('home')
     // Reset mood and action when changing character
     setMood('neutral')
     setAction('idle')
+    // Navigate to home after selection
+    navigate('/home');
   }
 
   const handleMoodChange = (newMood: CharacterMood) => {
@@ -116,123 +129,77 @@ function AppContent() {
   };
 
   return (
-    <>
-      {currentPage === 'play' ? (
-        <PlayPage onNavigate={(page) => setCurrentPage(page as Page)} />
-      ) : currentPage === 'login' ? (
-        <LoginPage onNavigate={(page) => setCurrentPage(page as Page)} />
-      ) : currentPage === 'signup' ? (
-        <SignupPage onNavigate={(page) => setCurrentPage(page as Page)} />
-      ) : currentPage === 'gallery' ? (
-        <>
-          <div className="page-nav">
-            <button onClick={() => setCurrentPage('home')}>🏠 Home</button>
-            <button onClick={() => setCurrentPage('stats')}>📊 Stats</button>
-          </div>
-          <CharacterAdmin onCharacterSelect={handleCharacterSelect} />
-        </>
-      ) : currentPage === 'stats' ? (
-        <>
-          <div className="page-nav">
-            <button onClick={() => setCurrentPage('home')}>🏠 Home</button>
-            <button onClick={() => setCurrentPage('gallery')}>🖼️ Gallery</button>
-          </div>
-          <div className="app">
-            <div className="app-header">
-              <h1>Puzzletic - Stats</h1>
-              <p>Character Details & Controls</p>
-            </div>
+    <Routes>
+      {/* Public Routes */}
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/signup" element={<SignupPage />} />
 
-            <div className="character-stage">
-              {(() => {
-                const CharacterComponent = CHARACTERS[selectedSpeciesId];
-                return (
-                  <CharacterComponent
-                    character={character}
-                    size="large"
-                    mood={mood}
-                    action={action}
-                    onClick={() => handleActionChange('jumping')}
-                  />
-                );
-              })()}
-            </div>
+      {/* Protected Routes */}
+      <Route path="/home" element={
+        <ProtectedRoute>
+          <PetRoom
+            character={character}
+            speciesId={selectedSpeciesId}
+            onStatsChange={handleStatsChange}
+            mood={mood}
+            action={action}
+            showGiftBox={!nurturing.hasCharacter}
+            onOpenGift={handleGiftOpen}
+            onMoodChange={handleMoodChange}
+            onActionChange={handleActionChange}
+          />
+        </ProtectedRoute>
+      } />
 
-            <div className="controls">
-              <div className="control-section">
-                <h3>Mood</h3>
-                <div className="button-group">
-                  <button onClick={() => handleMoodChange('happy')}>Happy</button>
-                  <button onClick={() => handleMoodChange('neutral')}>Neutral</button>
-                  <button onClick={() => handleMoodChange('sad')}>Sad</button>
-                  <button onClick={() => handleMoodChange('excited')}>Excited</button>
-                  <button onClick={() => handleMoodChange('sleeping')}>Sleeping</button>
-                </div>
-              </div>
+      <Route path="/play" element={
+        <ProtectedRoute>
+          <PlayPage />
+        </ProtectedRoute>
+      } />
 
-              <div className="control-section">
-                <h3>Actions</h3>
-                <div className="button-group">
-                  <button onClick={() => handleActionChange('idle')}>Idle</button>
-                  <button onClick={() => handleActionChange('jumping')}>Jump</button>
-                  <button onClick={() => handleActionChange('happy')}>Wiggle</button>
-                  <button onClick={() => handleActionChange('playing')}>Play</button>
-                </div>
-              </div>
-            </div>
+      <Route path="/play/:gameId" element={
+        <ProtectedRoute>
+          <PlayPage />
+        </ProtectedRoute>
+      } />
 
-            <div className="character-info">
-              <h3>{character.name}</h3>
-              <div className="stats">
-                <div className="stat">
-                  <span>Level:</span> <strong>{character.level}</strong>
-                </div>
-                <div className="stat">
-                  <span>Health:</span> <strong>{character.stats.health}%</strong>
-                </div>
-                <div className="stat">
-                  <span>Happiness:</span> <strong>{character.stats.happiness}%</strong>
-                </div>
-                <div className="stat">
-                  <span>Hunger:</span> <strong>{character.stats.hunger}%</strong>
-                </div>
-                <div className="stat">
-                  <span>Hygiene:</span> <strong>{character.stats.hygiene}%</strong>
-                </div>
-                <div className="stat">
-                  <span>Fatigue:</span> <strong>{character.stats.fatigue}%</strong>
-                </div>
-              </div>
-            </div>
-          </div>
-        </>
-      ) : (
-        <PetRoom
-          character={character}
-          speciesId={selectedSpeciesId}
-          onStatsChange={handleStatsChange}
-          onNavigate={(page) => setCurrentPage(page as Page)}
-          mood={mood}
-          action={action}
-          showGiftBox={!nurturing.hasCharacter}
-          onOpenGift={handleGiftOpen}
-          onMoodChange={handleMoodChange}
-          onActionChange={handleActionChange}
-        />
-      )}
-    </>
+      <Route path="/stats" element={
+        <ProtectedRoute>
+          <StatsPage
+            character={character}
+            selectedSpeciesId={selectedSpeciesId}
+            mood={mood}
+            action={action}
+            onMoodChange={handleMoodChange}
+            onActionChange={handleActionChange}
+          />
+        </ProtectedRoute>
+      } />
+
+      <Route path="/gallery" element={
+        <ProtectedRoute>
+          <GalleryPage onCharacterSelect={handleCharacterSelect} />
+        </ProtectedRoute>
+      } />
+
+      {/* Default Redirect */}
+      <Route path="/" element={<Navigate to="/home" replace />} />
+      <Route path="*" element={<Navigate to="/home" replace />} />
+    </Routes>
   )
 }
 
 function App() {
   return (
-    <SoundProvider>
-      <AuthProvider>
-        <NurturingProvider>
-          <AppContent />
-        </NurturingProvider>
-      </AuthProvider>
-    </SoundProvider>
+    <BrowserRouter>
+      <SoundProvider>
+        <AuthProvider>
+          <NurturingProvider>
+            <AppContent />
+          </NurturingProvider>
+        </AuthProvider>
+      </SoundProvider>
+    </BrowserRouter>
   )
 }
 

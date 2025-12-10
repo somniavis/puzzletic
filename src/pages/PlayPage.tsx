@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate, useParams } from 'react-router-dom';
 import './PlayPage.css';
 import { playButtonSound } from '../utils/sound';
 import { useNurturing } from '../contexts/NurturingContext';
-import { GAMES } from '../games/registry';
+import { GAMES, getGameById } from '../games/registry';
 import type { GameCategory, GameDifficulty, GameManifest } from '../games/types';
 import numberMatchEn from '../games/math/level1/001_NumberMatch/locales/en';
 import roundCountingEn from '../games/math/level1/002_RoundCounting/locales/en';
@@ -14,20 +15,20 @@ const CATEGORY_ICONS: Record<GameCategory, string> = {
     sw: '💻'
 };
 
+interface PlayPageProps { }
 
-
-interface PlayPageProps {
-    onNavigate: (page: 'home') => void;
-}
-
-export const PlayPage: React.FC<PlayPageProps> = ({ onNavigate }) => {
+export const PlayPage: React.FC<PlayPageProps> = () => {
+    const navigate = useNavigate();
+    const { gameId } = useParams();
     const { t, i18n } = useTranslation();
     const { setGameDifficulty, pauseTick, resumeTick } = useNurturing();
 
     const [selectedCategory, setSelectedCategory] = useState<GameCategory>('math');
     const [selectedDifficulty, setSelectedDifficulty] = useState<GameDifficulty>(1);
     const [isControlsOpen, setIsControlsOpen] = useState(true);
-    const [activeGame, setActiveGame] = useState<GameManifest | null>(null);
+
+    // Derive active game from URL
+    const activeGame = gameId ? getGameById(gameId) : null;
 
     // Set Game Difficulty when entering Play Page or changing difficulty, unset when leaving
     // Set Game Difficulty and Pause Tick when entering Play Page
@@ -56,7 +57,7 @@ export const PlayPage: React.FC<PlayPageProps> = ({ onNavigate }) => {
 
     const handleHomeClick = () => {
         playButtonSound();
-        onNavigate('home');
+        navigate('/home');
     };
 
     const handleToggleControls = () => {
@@ -76,12 +77,12 @@ export const PlayPage: React.FC<PlayPageProps> = ({ onNavigate }) => {
 
     const handlePlayClick = (game: GameManifest) => {
         playButtonSound();
-        setActiveGame(game);
+        navigate(`/play/${game.id}`);
     };
 
     const handleExitGame = () => {
         playButtonSound();
-        setActiveGame(null);
+        navigate('/play');
     };
 
     // If a game is active, render it full screen
@@ -94,6 +95,7 @@ export const PlayPage: React.FC<PlayPageProps> = ({ onNavigate }) => {
         );
     }
 
+    // ... (rest of the render function remains the same)
     return (
         <div className="play-page">
             <header className="play-header">

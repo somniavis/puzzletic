@@ -5,11 +5,11 @@ import { useTranslation } from 'react-i18next';
 import { auth } from '../firebase';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 
-interface LoginPageProps {
-    onNavigate: (page: string) => void;
-}
+import { useNavigate } from 'react-router-dom';
 
-export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
+// interface LoginPageProps removed as it's no longer needed (or empty)
+export const LoginPage: React.FC = () => {
+    const navigate = useNavigate();
     const { t } = useTranslation();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -21,7 +21,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
         try {
             await signInWithEmailAndPassword(auth, email, password);
             console.log('Login successful');
-            onNavigate('home');
+            navigate('/home');
         } catch (error: any) {
             console.error('Login failed:', error);
             let errorMessage = "Login failed! ❌";
@@ -38,19 +38,21 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
 
     const handleGoToSignup = () => {
         playButtonSound();
-        onNavigate('signup');
+        navigate('/signup');
     };
 
-    const handleHomeClick = () => {
+    const handleBackToHome = () => {
         playButtonSound();
-        onNavigate('home');
+        // For now, back to home logic or main landing. 
+        // If unauthenticated, maybe stay here? But let's assume home is protected.
+        navigate('/');
     };
 
     return (
         <div className="auth-page">
             {/* Back to Home Button */}
             <div className="back-btn-container">
-                <button className="back-btn" onClick={handleHomeClick} title={t('auth.login.backToHome')}>
+                <button className="back-btn" onClick={handleBackToHome} title={t('auth.login.backToHome')}>
                     🏠
                 </button>
             </div>

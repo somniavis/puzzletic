@@ -5,11 +5,10 @@ import { useTranslation } from 'react-i18next';
 import { auth } from '../firebase';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 
-interface SignupPageProps {
-    onNavigate: (page: string) => void;
-}
+import { useNavigate } from 'react-router-dom';
 
-export const SignupPage: React.FC<SignupPageProps> = ({ onNavigate }) => {
+export const SignupPage: React.FC = () => {
+    const navigate = useNavigate();
     const { t } = useTranslation();
     const [formData, setFormData] = useState({
         email: '',
@@ -43,7 +42,7 @@ export const SignupPage: React.FC<SignupPageProps> = ({ onNavigate }) => {
 
             console.log('Signup successful:', formData.email);
             alert(t('auth.signup.success'));
-            onNavigate('login');
+            navigate('/login');
         } catch (error: any) {
             console.error('Signup failed:', error);
             let errorMessage = "Registration failed! ❌";
@@ -62,7 +61,7 @@ export const SignupPage: React.FC<SignupPageProps> = ({ onNavigate }) => {
 
     const handleBackToLogin = () => {
         playButtonSound();
-        onNavigate('login');
+        navigate('/login');
     };
 
     return (

@@ -4,15 +4,17 @@ import { playButtonSound } from '../../utils/sound';
 import { useSound } from '../../contexts/SoundContext';
 import './SettingsMenu.css';
 
+import { useNavigate } from 'react-router-dom';
+
 interface SettingsMenuProps {
   isOpen: boolean;
   onClose: () => void;
-  onNavigate?: (page: 'gallery' | 'stats') => void;
 }
 
 type MenuView = 'main' | 'sound' | 'language' | 'admin';
 
-export const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose, onNavigate }) => {
+export const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose }) => {
+  const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const { settings, toggleBgm, toggleSfx } = useSound();
   const [currentView, setCurrentView] = useState<MenuView>('main');
@@ -65,13 +67,13 @@ export const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose, onN
 
   const handleNavigateToGallery = () => {
     playButtonSound();
-    onNavigate?.('gallery');
+    navigate('/gallery');
     onClose();
   };
 
   const handleNavigateToStats = () => {
     playButtonSound();
-    onNavigate?.('stats');
+    navigate('/stats');
     onClose();
   };
 
