@@ -7,6 +7,7 @@ import { createCharacter } from './data/characters'
 import type { CharacterAction, CharacterMood, Character } from './types/character'
 import { NurturingProvider, useNurturing } from './contexts/NurturingContext'
 import { SoundProvider } from './contexts/SoundContext'
+import { AuthProvider } from './contexts/AuthContext'
 import { preloadSounds, playJelloClickSound } from './utils/sound'
 
 import { PlayPage } from './pages/PlayPage'
@@ -226,9 +227,11 @@ function AppContent() {
 function App() {
   return (
     <SoundProvider>
-      <NurturingProvider>
-        <AppContent />
-      </NurturingProvider>
+      <AuthProvider>
+        <NurturingProvider>
+          <AppContent />
+        </NurturingProvider>
+      </AuthProvider>
     </SoundProvider>
   )
 }

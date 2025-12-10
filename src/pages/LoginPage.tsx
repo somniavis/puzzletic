@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import './Auth.css';
 import { playButtonSound } from '../utils/sound';
 import { useTranslation } from 'react-i18next';
+import { auth } from '../firebase';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 
 interface LoginPageProps {
     onNavigate: (page: string) => void;
@@ -12,12 +14,26 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
-    const handleLogin = (e: React.FormEvent) => {
+    const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         playButtonSound();
-        // Simulate login success for UI demo
-        console.log('Logging in with:', email, password);
-        onNavigate('home');
+
+        try {
+            await signInWithEmailAndPassword(auth, email, password);
+            console.log('Login successful');
+            onNavigate('home');
+        } catch (error: any) {
+            console.error('Login failed:', error);
+            let errorMessage = "Login failed! ❌";
+
+            if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+                errorMessage = "Invalid email or password. Please check again.";
+            } else if (error.code === 'auth/too-many-requests') {
+                errorMessage = "Too many failed attempts. Please try again later.";
+            }
+
+            alert(errorMessage);
+        }
     };
 
     const handleGoToSignup = () => {
