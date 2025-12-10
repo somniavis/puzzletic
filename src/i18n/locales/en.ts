@@ -470,6 +470,38 @@ export const en = {
       stats: 'Stats',
     },
   },
+  auth: {
+    login: {
+      title: 'Hello there!',
+      subtitle: 'Log in to meet your jello 🐾',
+      email: 'Email',
+      emailPlaceholder: 'Enter your email',
+      password: 'Password',
+      passwordPlaceholder: 'Enter your password',
+      action: 'Log In 🔑',
+      or: 'OR',
+      signup: 'Sign Up with Email ✉️',
+      backToHome: 'Back to Home'
+    },
+    signup: {
+      title: 'Join Grogro Jello!',
+      subtitle: 'Create account to raise your jello 🐣',
+      emailLabel: 'Email (ID)',
+      emailPlaceholder: 'hello@example.com',
+      nicknameLabel: 'Nickname',
+      nicknamePlaceholder: 'Your jello calls you...',
+      passwordLabel: 'Password',
+      passwordPlaceholder: 'Secret password',
+      confirmPasswordLabel: 'Confirm Password',
+      confirmPasswordPlaceholder: 'Type it again',
+      action: 'Register ✨',
+      haveAccount: 'Already have an account?',
+      loginLink: 'Log In Here',
+      backToLogin: 'Back to Login',
+      passwordMismatch: 'Passwords do not match! ❌',
+      success: 'Registration Successful! Welcome to Grogro Jello! 🎉'
+    }
+  },
   play: {
     title: 'Play & Learn',
     home: 'Home',

@@ -11,7 +11,10 @@ import { preloadSounds, playJelloClickSound } from './utils/sound'
 
 import { PlayPage } from './pages/PlayPage'
 
-type Page = 'home' | 'gallery' | 'stats' | 'play';
+import { LoginPage } from './pages/LoginPage'
+import { SignupPage } from './pages/SignupPage'
+
+type Page = 'home' | 'gallery' | 'stats' | 'play' | 'login' | 'signup';
 type CharacterSpeciesId =
   | 'yellowJello'
   | 'redJello'
@@ -27,7 +30,7 @@ type CharacterSpeciesId =
   | 'cyanJello';
 
 function AppContent() {
-  const [currentPage, setCurrentPage] = useState<Page>('home')
+  const [currentPage, setCurrentPage] = useState<Page>('login') // Start at login for demo
   const [selectedSpeciesId, setSelectedSpeciesId] = useState<CharacterSpeciesId>('yellowJello')
   const [character, setCharacter] = useState(() => createCharacter('yellowJello'))
   const [mood, setMood] = useState<CharacterMood>('neutral')
@@ -115,6 +118,10 @@ function AppContent() {
     <>
       {currentPage === 'play' ? (
         <PlayPage onNavigate={(page) => setCurrentPage(page as Page)} />
+      ) : currentPage === 'login' ? (
+        <LoginPage onNavigate={(page) => setCurrentPage(page as Page)} />
+      ) : currentPage === 'signup' ? (
+        <SignupPage onNavigate={(page) => setCurrentPage(page as Page)} />
       ) : currentPage === 'gallery' ? (
         <>
           <div className="page-nav">
