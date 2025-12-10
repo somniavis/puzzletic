@@ -48,17 +48,19 @@ export const LoginPage: React.FC = () => {
         }
     };
 
-    const handleAppleLogin = async () => {
-        playButtonSound();
-        try {
-            await signInWithPopup(auth, appleProvider);
-            console.log('Apple Login successful');
-            navigate('/home');
-        } catch (error: any) {
-            console.error('Apple Login failed:', error);
-            alert("Apple Sign-In failed ❌. Please check your configuration.");
-        }
-    };
+    /*
+        const handleAppleLogin = async () => {
+            playButtonSound();
+            try {
+                await signInWithPopup(auth, appleProvider);
+                console.log('Apple Login successful');
+                navigate('/home');
+            } catch (error: any) {
+                 console.error('Apple Login failed:', error);
+                 alert("Apple Sign-In failed ❌. Please check your configuration.");
+            }
+        };
+    */
 
     const handleGoToSignup = () => {
         playButtonSound();
