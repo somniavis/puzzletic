@@ -67,21 +67,19 @@ export const LoginPage: React.FC = () => {
         navigate('/signup');
     };
 
+    /*
     const handleBackToHome = () => {
         playButtonSound();
         // For now, back to home logic or main landing. 
         // If unauthenticated, maybe stay here? But let's assume home is protected.
         navigate('/');
     };
+    */
 
     return (
         <div className="auth-page">
             {/* Back to Home Button */}
-            <div className="back-btn-container">
-                <button className="back-btn" onClick={handleBackToHome} title={t('auth.login.backToHome')}>
-                    🏠
-                </button>
-            </div>
+            {/* Back to Home Button Removed per user request */}
 
             <div className="auth-container">
                 <header className="auth-header">
@@ -124,7 +122,7 @@ export const LoginPage: React.FC = () => {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                     <button
                         type="button"
-                        className="auth-btn auth-btn--google"
+                        className="auth-btn"
                         onClick={handleGoogleLogin}
                         style={{
                             backgroundColor: '#ffffff',
@@ -134,7 +132,10 @@ export const LoginPage: React.FC = () => {
                             alignItems: 'center',
                             justifyContent: 'center',
                             gap: '8px',
-                            fontSize: '15px'
+                            fontSize: '15px',
+                            width: '100%',
+                            height: '56px',
+                            boxSizing: 'border-box'
                         }}
                     >
                         <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" style={{ width: '18px', height: '18px' }} />
@@ -164,7 +165,10 @@ export const LoginPage: React.FC = () => {
                             alignItems: 'center',
                             justifyContent: 'center',
                             gap: '8px',
-                            fontSize: '15px'
+                            fontSize: '15px',
+                            width: '100%',
+                            height: '56px',
+                            boxSizing: 'border-box'
                         }}
                     >
                         <span style={{ fontSize: '18px' }}>✉️</span>

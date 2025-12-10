@@ -19,6 +19,7 @@ import { calculateClickResponse, getClickEmotionCategory } from '../../constants
 import { playButtonSound, playJelloClickSound, playEatingSound, playCleaningSound, startBackgroundMusic } from '../../utils/sound';
 import { RoomBackground } from './RoomBackground';
 import { MenuModal } from './MenuModal';
+import { GiftBoxModal } from '../GiftBoxModal';
 import './PetRoom.css';
 
 import { useNavigate } from 'react-router-dom';
@@ -104,7 +105,32 @@ export const PetRoom: React.FC<PetRoomProps> = ({
   const [isShowering, setIsShowering] = useState(false);
   const [isBrushing, setIsBrushing] = useState(false);
   const [isCleaning, setIsCleaning] = useState(false);
-  const [activeCleaningToolId, setActiveCleaningToolId] = useState<string | null>(null);
+  // Modal visibility now defaults to false, but we'll trigger it via useEffect if needed
+  const [showNicknameModal, setShowNicknameModal] = useState(false);
+  // Track if nickname step is done so we can show the box
+  const [isNicknameSet, setIsNicknameSet] = useState(false);
+
+  // Auto-show modal if we are in "GiftBox mode" (new user) and haven't set nickname yet
+  useEffect(() => {
+    if (showGiftBox && !isNicknameSet) {
+      // Delay for smooth entrance
+      const timer = setTimeout(() => {
+        setShowNicknameModal(true);
+      }, 1500); // 1.5s delay
+      return () => clearTimeout(timer);
+    }
+  }, [showGiftBox, isNicknameSet]);
+
+  // When box is clicked (after nickname is set), just open the gift
+  const handleGiftBoxClick = () => {
+    onOpenGift?.();
+  };
+
+  const handleNicknameComplete = (_nickname: string) => {
+    setShowNicknameModal(false);
+    setIsNicknameSet(true);
+    // Box appears now. User must click it to open.
+  };
 
   const showBubble = (category: EmotionCategory, level: 1 | 2 | 3) => {
     setBubble({ category, level, key: Date.now() });
@@ -804,7 +830,10 @@ export const PetRoom: React.FC<PetRoomProps> = ({
               </div>
             )}
             {showGiftBox ? (
-              <GiftBox onOpen={onOpenGift || (() => { })} />
+              // Only show the box if nickname is already set (user clicked "Start")
+              isNicknameSet ? (
+                <GiftBox onOpen={handleGiftBoxClick} />
+              ) : null // Hide box while modal is open (or before)
             ) : (
               <CharacterComponent
                 character={character}
@@ -1023,6 +1052,9 @@ export const PetRoom: React.FC<PetRoomProps> = ({
           <span className="action-icon">⚙️</span>
         </button>
       </div>
+      {showNicknameModal && (
+        <GiftBoxModal onComplete={handleNicknameComplete} />
+      )}
     </div >
   );
 };

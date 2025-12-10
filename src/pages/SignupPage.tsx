@@ -12,7 +12,6 @@ export const SignupPage: React.FC = () => {
     const { t } = useTranslation();
     const [formData, setFormData] = useState({
         email: '',
-        nickname: '',
         password: '',
         confirmPassword: ''
     });
@@ -66,11 +65,7 @@ export const SignupPage: React.FC = () => {
 
     return (
         <div className="auth-page">
-            <div className="back-btn-container">
-                <button className="back-btn" onClick={handleBackToLogin} title={t('auth.signup.backToLogin')}>
-                    ⬅️
-                </button>
-            </div>
+            {/* Back Button removed per user request */}
 
             <div className="auth-container">
                 <header className="auth-header">
@@ -87,19 +82,6 @@ export const SignupPage: React.FC = () => {
                             className="form-input"
                             placeholder={t('auth.signup.emailPlaceholder')}
                             value={formData.email}
-                            onChange={handleChange}
-                            required
-                        />
-                    </div>
-
-                    <div className="form-group">
-                        <label className="form-label">{t('auth.signup.nicknameLabel')}</label>
-                        <input
-                            type="text"
-                            name="nickname"
-                            className="form-input"
-                            placeholder={t('auth.signup.nicknamePlaceholder')}
-                            value={formData.nickname}
                             onChange={handleChange}
                             required
                         />
