@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import './Auth.css';
 import { playButtonSound } from '../utils/sound';
 import { useTranslation } from 'react-i18next';
-import { auth, googleProvider, appleProvider } from '../firebase';
+import { auth, googleProvider } from '../firebase';
 import { signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
 
 import { useNavigate } from 'react-router-dom';
