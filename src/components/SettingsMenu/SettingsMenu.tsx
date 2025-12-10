@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { playButtonSound } from '../../utils/sound';
 import { useSound } from '../../contexts/SoundContext';
+import { useAuth } from '../../contexts/AuthContext';
 import './SettingsMenu.css';
 
 import { useNavigate } from 'react-router-dom';
@@ -17,6 +18,7 @@ export const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose }) =
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const { settings, toggleBgm, toggleSfx } = useSound();
+  const { logout } = useAuth();
   const [currentView, setCurrentView] = useState<MenuView>('main');
 
   if (!isOpen) return null;
@@ -77,6 +79,17 @@ export const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose }) =
     onClose();
   };
 
+  const handleLogout = async () => {
+    playButtonSound();
+    try {
+      await logout();
+      onClose();
+      // Navigation to login is handled by ProtectedRoute in App.tsx
+    } catch (error) {
+      console.error('Failed to logout:', error);
+    }
+  };
+
   return (
     <div className="food-menu-overlay" onClick={handleClose}>
       <div className="food-menu" onClick={(e) => e.stopPropagation()}>
@@ -113,6 +126,11 @@ export const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose }) =
             <button className="food-item" onClick={handleAdminClick}>
               <span className="food-item-icon">🔧</span>
               <span className="food-item-name">{t('settings.admin.title')}</span>
+            </button>
+
+            <button className="food-item" onClick={handleLogout}>
+              <span className="food-item-icon">🚪</span>
+              <span className="food-item-name">Logout</span>
             </button>
           </div>
         )}
