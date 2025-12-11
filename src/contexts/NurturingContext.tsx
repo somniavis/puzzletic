@@ -104,14 +104,114 @@ interface NurturingProviderProps {
   children: React.ReactNode;
 }
 
+import { useAuth } from './AuthContext';
+import { syncUserData, fetchUserData } from '../services/syncService';
+
+// ... existing imports ...
+
 export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }) => {
+  const { user } = useAuth(); // Import user from AuthContext
+
   // 상태
   const [state, setState] = useState<NurturingPersistentState>(() => {
+    // ... existing init ...
     const loaded = loadNurturingState();
     const { updatedState } = applyOfflineProgress(loaded);
     saveNurturingState(updatedState);
     return updatedState;
   });
+
+  // ... existing code ...
+
+  // Cloud Sync: Fetch on Login
+  useEffect(() => {
+    if (user) {
+      console.log('☁️ Fetching cloud data for user:', user.uid);
+      fetchUserData(user).then((cloudData) => {
+        if (cloudData) {
+          console.log('☁️ Cloud data found, syncing core stats...', cloudData);
+          setState((prev) => {
+            const newState = {
+              ...prev,
+              evolutionStage: cloudData.level,
+              xp: cloudData.xp,
+              glo: cloudData.glo,
+              inventory: cloudData.inventory,
+            };
+            saveNurturingState(newState);
+            return newState;
+          });
+        } else {
+          console.log('☁️ No cloud data found, using local state.');
+        }
+      });
+    }
+  }, [user]);
+
+  // ... existing code (tick, interval) ...
+
+  const addRewards = useCallback((xpAmount: number, gloAmount: number) => {
+    setState((currentState) => {
+      const { newXP, newStage, evolved } = addXPAndCheckEvolution(
+        currentState.xp || 0,
+        (currentState.evolutionStage || 1) as any,
+        xpAmount
+      );
+
+      const newState = {
+        ...currentState,
+        xp: newXP,
+        evolutionStage: newStage,
+        glo: (currentState.glo || 0) + gloAmount,
+        totalCurrencyEarned: (currentState.totalCurrencyEarned || 0) + gloAmount,
+      };
+
+      if (evolved) {
+        console.log(`🎉 EVOLUTION! Stage ${newStage}`);
+        // TODO: Trigger visual celebration
+      }
+
+      saveNurturingState(newState);
+
+      // Cloud Sync (Core Data Changed)
+      if (user) syncUserData(user, newState);
+
+      return newState;
+    });
+  }, [user]);
+
+  // ... (existing actions) ...
+
+  const purchaseItem = useCallback((itemId: string, price: number): boolean => {
+    let success = false;
+    setState((currentState) => {
+      // 이미 보유 중이면 성공 처리 (돈 차감 안 함)
+      if (currentState.inventory?.includes(itemId)) {
+        success = true;
+        return currentState;
+      }
+
+      // 돈 부족
+      if ((currentState.glo || 0) < price) {
+        success = false;
+        return currentState;
+      }
+
+      success = true;
+      const newState = {
+        ...currentState,
+        glo: (currentState.glo || 0) - price,
+        inventory: [...(currentState.inventory || []), itemId],
+      };
+      saveNurturingState(newState);
+
+      // Cloud Sync (Inventory/Economy Changed)
+      if (user) syncUserData(user, newState);
+
+      return newState;
+    });
+    return success;
+  }, [user]);
 
   const [condition, setCondition] = useState<CharacterCondition>(() =>
     evaluateCondition(state.stats)
@@ -421,32 +521,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     return success;
   }, []);
 
-  const purchaseItem = useCallback((itemId: string, price: number): boolean => {
-    let success = false;
-    setState((currentState) => {
-      // 이미 보유 중이면 성공 처리 (돈 차감 안 함)
-      if (currentState.inventory?.includes(itemId)) {
-        success = true;
-        return currentState;
-      }
 
-      // 돈 부족
-      if ((currentState.glo || 0) < price) {
-        success = false;
-        return currentState;
-      }
-
-      success = true;
-      const newState = {
-        ...currentState,
-        glo: (currentState.glo || 0) - price,
-        inventory: [...(currentState.inventory || []), itemId],
-      };
-      saveNurturingState(newState);
-      return newState;
-    });
-    return success;
-  }, []);
 
   const cleanAll = useCallback((): ActionResult => {
     setState((currentState) => {
@@ -714,31 +789,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     });
   }, []);
 
-  const addRewards = useCallback((xpAmount: number, gloAmount: number) => {
-    setState((currentState) => {
-      const { newXP, newStage, evolved } = addXPAndCheckEvolution(
-        currentState.xp || 0,
-        (currentState.evolutionStage || 1) as any,
-        xpAmount
-      );
 
-      const newState = {
-        ...currentState,
-        xp: newXP,
-        evolutionStage: newStage,
-        glo: (currentState.glo || 0) + gloAmount,
-        totalCurrencyEarned: (currentState.totalCurrencyEarned || 0) + gloAmount,
-      };
-
-      if (evolved) {
-        console.log(`🎉 EVOLUTION! Stage ${newStage}`);
-        // TODO: Trigger visual celebration
-      }
-
-      saveNurturingState(newState);
-      return newState;
-    });
-  }, []);
 
   // 가출 상태 UI 정보
   const abandonmentStatus = getAbandonmentStatusUI(state.abandonmentState, Date.now());
