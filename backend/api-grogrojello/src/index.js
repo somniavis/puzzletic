@@ -57,20 +57,21 @@ export default {
 			if (request.method === 'POST') {
 				try {
 					const body = await request.json();
-					const { email, displayName, level, xp, gro, inventory, createdAt } = body;
+					const { email, displayName, level, xp, gro, currentLand, inventory, createdAt } = body;
 
 					// Use current timestamp for sync time
 					const now = Date.now();
 
 					const stmt = env.DB.prepare(`
-            INSERT INTO users (uid, email, display_name, level, xp, gro, inventory, created_at, last_synced_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO users (uid, email, display_name, level, xp, gro, current_land, inventory, created_at, last_synced_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT(uid) DO UPDATE SET
               email = excluded.email,
               display_name = excluded.display_name,
               level = excluded.level,
               xp = excluded.xp,
               gro = excluded.gro,
+              current_land = excluded.current_land,
               inventory = excluded.inventory,
               last_synced_at = excluded.last_synced_at
           `).bind(
@@ -80,6 +81,7 @@ export default {
 						level || 1,
 						xp || 0,
 						gro || 0,
+						currentLand || 'default_ground',
 						JSON.stringify(inventory || []),
 						createdAt || null,
 						now

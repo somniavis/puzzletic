@@ -54,6 +54,7 @@ interface NurturingContextValue {
   bugs: Bug[];
   condition: CharacterCondition;
   gro: number;
+  currentLand: string;
   totalCurrencyEarned: number;
   studyCount: number;
   isTickActive: boolean;
@@ -79,6 +80,7 @@ interface NurturingContextValue {
   clickBug: (bugId: string) => void;
   spendGro: (amount: number) => boolean;
   purchaseItem: (itemId: string, price: number) => boolean;
+  equipLand: (landId: string) => boolean;
   inventory: string[];
 
   // 유틸리티
@@ -137,6 +139,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
               evolutionStage: cloudData.level,
               xp: cloudData.xp,
               gro: cloudData.gro,
+              currentLand: cloudData.current_land || 'default_ground',
               inventory: cloudData.inventory,
             };
             saveNurturingState(newState);
@@ -238,6 +241,26 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     });
     return success;
   }, [user]);
+
+  const equipLand = useCallback((landId: string): boolean => {
+    let success = false;
+    setState((currentState) => {
+      // Must own the item or it be default
+      if (landId !== 'default_ground' && !currentState.inventory?.includes(landId)) {
+        console.warn('Cannot equip land not in inventory:', landId);
+        return currentState;
+      }
+
+      success = true;
+      const newState = {
+        ...currentState,
+        currentLand: landId,
+      };
+      saveNurturingState(newState);
+      return newState;
+    });
+    return success;
+  }, []);
 
   const [condition, setCondition] = useState<CharacterCondition>(() =>
     evaluateCondition(state.stats)
@@ -827,6 +850,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     poops: state.poops,
     bugs: state.bugs || [],
     condition,
+    currentLand: state.currentLand,
     gro: state.gro,
     totalCurrencyEarned: state.totalCurrencyEarned,
     studyCount: state.studyCount,
@@ -851,6 +875,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     clickBug,
     spendGro,
     purchaseItem,
+    equipLand,
     inventory: state.inventory || ['default_ground'],
     resetGame,
     pauseTick,

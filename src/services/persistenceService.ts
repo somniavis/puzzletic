@@ -35,6 +35,7 @@ const createDefaultState = (): NurturingPersistentState => {
       isActive: true,
     },
     gro: 9999,
+    currentLand: 'default_ground',
     totalCurrencyEarned: 0,
     studyCount: 0,
     abandonmentState: { ...DEFAULT_ABANDONMENT_STATE },
@@ -171,6 +172,11 @@ export const loadNurturingState = (): NurturingPersistentState => {
     // inventory가 없으면 기본값 추가
     if (!loaded.inventory) {
       loaded.inventory = ['default_ground'];
+    }
+
+    // currentLand가 없으면 기본값 설정
+    if (!loaded.currentLand) {
+      loaded.currentLand = 'default_ground';
     }
 
     // GP -> XP 마이그레이션

@@ -146,6 +146,7 @@ export interface NurturingPersistentState {
   lastActiveTime: number;
   tickConfig: GameTickConfig;
   gro: number; // 재화 (currency)
+  currentLand: string; // 현재 장착 중인 배경 (Land ID)
   totalCurrencyEarned: number;
   studyCount: number;
   abandonmentState: AbandonmentState;  // 가출 상태

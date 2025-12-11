@@ -15,6 +15,7 @@ export interface CloudUserData {
     level: number;
     xp: number;
     gro: number;
+    current_land: string;
     inventory: string[];
     created_at: number;
     last_synced_at: number;
@@ -65,6 +66,7 @@ export const syncUserData = async (
             level: state.evolutionStage || 1,
             xp: state.xp || 0,
             gro: state.gro || 0,
+            currentLand: state.currentLand,
             inventory: state.inventory || [],
             createdAt: user.metadata.creationTime ? new Date(user.metadata.creationTime).getTime() : Date.now(),
         };

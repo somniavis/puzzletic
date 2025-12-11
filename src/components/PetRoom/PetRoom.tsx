@@ -98,7 +98,6 @@ export const PetRoom: React.FC<PetRoomProps> = ({
   const [showSettingsMenu, setShowSettingsMenu] = useState(false);
   const [selectedFoodCategory, setSelectedFoodCategory] = useState<FoodCategory>('fruit');
   const [selectedShopCategory, setSelectedShopCategory] = useState<ShopCategory>('ground');
-  const [currentBackground, setCurrentBackground] = useState<string>('default_ground');
   const [bubble, setBubble] = useState<{ category: EmotionCategory; level: 1 | 2 | 3; key: number } | null>(null);
   const [lastBubbleTime, setLastBubbleTime] = useState(0);
   const [flyingFood, setFlyingFood] = useState<{ icon: string; key: number; type: 'food' | 'pill' | 'syringe' } | null>(null);
@@ -403,7 +402,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({
     if (isOwned) {
       // Equip if owned
       if (item.category === 'ground') {
-        setCurrentBackground(item.id);
+        nurturing.equipLand(item.id);
         showBubble('joy', 1);
       }
     } else {
@@ -415,7 +414,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({
           showBubble('joy', 2);
           // Auto-equip after purchase
           if (item.category === 'ground') {
-            setCurrentBackground(item.id);
+            nurturing.equipLand(item.id);
           }
         }
       } else {
@@ -636,7 +635,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({
   const [lightningStyle, setLightningStyle] = useState<React.CSSProperties>({});
 
   useEffect(() => {
-    if (currentBackground === 'volcanic_ground') {
+    if (nurturing.currentLand === 'volcanic_ground') {
       const updateLightning = () => {
         setLightningStyle({
           top: `${Math.random() * 15 + 2}%`,
@@ -649,7 +648,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({
       const interval = setInterval(updateLightning, 8000); // Change position every 8s
       return () => clearInterval(interval);
     }
-  }, [currentBackground]);
+  }, [nurturing.currentLand]);
 
   return (
     <div className="pet-room">
@@ -743,7 +742,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({
           </div>
         )}
         <RoomBackground
-          background={currentBackground}
+          background={nurturing.currentLand}
           showGiftBox={showGiftBox}
           lightningStyle={lightningStyle}
         />
@@ -978,15 +977,15 @@ export const PetRoom: React.FC<PetRoomProps> = ({
           {filteredShopItems.map((item) => (
             <button
               key={item.id}
-              className={`food-item ${currentBackground === item.id ? 'active-item' : ''}`}
+              className={`food-item ${nurturing.currentLand === item.id ? 'active-item' : ''}`}
               onClick={() => handleShopItemClick(item)}
-              style={currentBackground === item.id ? { borderColor: '#FFD700', backgroundColor: '#FFF9E6' } : {}}
+              style={nurturing.currentLand === item.id ? { borderColor: '#FFD700', backgroundColor: '#FFF9E6' } : {}}
             >
               <span className="food-item-icon">{item.icon}</span>
               <span className="food-item-name">{t(item.nameKey)}</span>
               <div className="food-item-effects">
                 {nurturing.inventory.includes(item.id) ? (
-                  currentBackground === item.id ? (
+                  nurturing.currentLand === item.id ? (
                     <span className="food-item-price">✅ Owned</span>
                   ) : (
                     <span className="food-item-price">Owned</span>
