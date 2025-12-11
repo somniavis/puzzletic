@@ -97,7 +97,7 @@ export const en = {
     howToPlay: 'How to Play',
     results: 'Final Results',
     earnedXp: 'XP',
-    earnedGlo: 'Glo',
+    earnedGro: 'Gro',
   },
   food: {
     menu: {

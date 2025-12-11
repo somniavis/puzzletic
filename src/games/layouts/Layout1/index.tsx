@@ -85,7 +85,7 @@ export const Layout1: React.FC<Layout1Props> = ({
             }, evolutionStage as any);
 
             setRewardResult(calculated);
-            addRewards(calculated.xpEarned, calculated.gloEarned);
+            addRewards(calculated.xpEarned, calculated.groEarned);
 
             // High Score Logic
             if (gameId) {
@@ -205,7 +205,7 @@ export const Layout1: React.FC<Layout1Props> = ({
     // Render Game Over Screen
     if (gameState === 'gameover') {
         const earnedXp = rewardResult?.xpEarned || 0;
-        const earnedGlo = rewardResult?.gloEarned || 0;
+        const earnedGro = rewardResult?.groEarned || 0;
 
         return (
             <div className="layout1-container">
@@ -281,10 +281,10 @@ export const Layout1: React.FC<Layout1Props> = ({
                                     <span className="reward-amount text-purple">+{earnedXp}</span>
                                     <span className="reward-label text-purple">XP</span>
                                 </div>
-                                <div className="reward-card-split glo">
+                                <div className="reward-card-split gro">
                                     <span className="reward-icon">💰</span>
-                                    <span className="reward-amount text-yellow">+{earnedGlo}</span>
-                                    <span className="reward-label text-yellow">GLO</span>
+                                    <span className="reward-amount text-yellow">+{earnedGro}</span>
+                                    <span className="reward-label text-yellow">GRO</span>
                                 </div>
                             </div>
 

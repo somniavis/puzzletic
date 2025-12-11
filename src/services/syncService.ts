@@ -14,7 +14,7 @@ export interface CloudUserData {
     display_name: string | null;
     level: number;
     xp: number;
-    glo: number;
+    gro: number;
     inventory: string[];
     created_at: number;
     last_synced_at: number;
@@ -26,11 +26,12 @@ export interface CloudUserData {
 export const fetchUserData = async (user: User): Promise<CloudUserData | null> => {
     try {
         const token = await user.getIdToken();
-        const response = await fetch(`${API_BASE_URL}/api/users/${user.uid}`, {
+        const response = await fetch(`${API_BASE_URL}/api/users/${user.uid}?t=${Date.now()}`, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json',
+                'Cache-Control': 'no-cache',
             },
         });
 
@@ -48,7 +49,7 @@ export const fetchUserData = async (user: User): Promise<CloudUserData | null> =
 
 /**
  * Sync (Upsert) user data to Cloudflare
- * triggers on core data changes (XP, Glo, Inventory)
+ * triggers on core data changes (XP, Gro, Inventory)
  */
 export const syncUserData = async (
     user: User,
@@ -63,7 +64,7 @@ export const syncUserData = async (
             displayName: user.displayName,
             level: state.evolutionStage || 1,
             xp: state.xp || 0,
-            glo: state.glo || 0,
+            gro: state.gro || 0,
             inventory: state.inventory || [],
             createdAt: user.metadata.creationTime ? new Date(user.metadata.creationTime).getTime() : Date.now(),
         };
@@ -75,6 +76,7 @@ export const syncUserData = async (
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(payload),
+            keepalive: true, // Allow request to complete even if tab closes
         });
 
         if (!response.ok) {

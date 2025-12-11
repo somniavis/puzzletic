@@ -78,35 +78,35 @@ export const DIFFICULTY_REWARDS: Record<number, DifficultyReward> = {
   1: {
     difficulty: 1,
     multiplier: 1.0,
-    baseGlo: 5,
+    baseGro: 5,
     baseXP: 3,
     description: '단순 반복',
   },
   2: {
     difficulty: 2,
     multiplier: 1.5,
-    baseGlo: 7,
+    baseGro: 7,
     baseXP: 5,
     description: '기초 응용',
   },
   3: {
     difficulty: 3,
     multiplier: 2.5,
-    baseGlo: 10,
+    baseGro: 10,
     baseXP: 10,
     description: '사고력 필요',
   },
   4: {
     difficulty: 4,
     multiplier: 4.0,
-    baseGlo: 20,
+    baseGro: 20,
     baseXP: 20,
     description: '심화 과정',
   },
   5: {
     difficulty: 5,
     multiplier: 6.0,
-    baseGlo: 25,
+    baseGro: 25,
     baseXP: 40,
     description: '챌린지 (High Risk High Return)',
   },
@@ -144,7 +144,7 @@ export const DEFAULT_MASTERY_BONUS = 1.0;
  * - 쿨다운으로 남용 방지
  */
 export const PLAY_REWARD: PlayReward = {
-  baseGlo: 3,               // 기본 글로 (학습의 30~60%)
+  baseGro: 3,               // 기본 그로 (학습의 30~60%)
   baseXP: 2,                // 기본 경험치 (학습의 20~30%)
   happinessRequirement: 50, // 최소 행복도 50 필요
   cooldownMs: 60000,        // 1분 쿨다운
@@ -156,15 +156,15 @@ export const PLAY_REWARD: PlayReward = {
  */
 export const PLAY_HAPPINESS_BONUS = {
   excellent: {  // 행복도 >= 80
-    gloMultiplier: 2.0,
+    groMultiplier: 2.0,
     xpMultiplier: 1.5,
   },
   good: {       // 행복도 >= 65
-    gloMultiplier: 1.5,
+    groMultiplier: 1.5,
     xpMultiplier: 1.3,
   },
   normal: {     // 행복도 >= 50
-    gloMultiplier: 1.0,
+    groMultiplier: 1.0,
     xpMultiplier: 1.0,
   },
 };
@@ -319,7 +319,7 @@ export const GRADUATION_XP = 5000;
  * - 특별 보상 (글로)
  */
 export const GRADUATION_BONUS = {
-  gloReward: 1000,          // 졸업 시 보너스 글로 (GLO)
+  groReward: 1000,          // 졸업 시 보너스 그로 (GRO)
   achievementUnlock: true,  // 업적 해금
 };
 
@@ -334,7 +334,7 @@ export const POKEDEX_TOTAL_SPECIES = 10;
  * 도감 완성 보상
  */
 export const POKEDEX_COMPLETION_REWARD = {
-  gloReward: 10000,         // 완성 보너스 글로 (GLO)
+  groReward: 10000,         // 완성 보너스 그로 (GRO)
   specialTitle: 'Master Trainer',
   unlockSecret: true,       // 비밀 컨텐츠 해금
 };

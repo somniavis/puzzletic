@@ -12,7 +12,7 @@
 const SECRET_KEY = 'puzzleletic-2025-secret-key';
 
 // 민감한 필드 목록
-const SENSITIVE_FIELDS = ['glo', 'totalCurrencyEarned', 'studyCount'];
+const SENSITIVE_FIELDS = ['gro', 'totalCurrencyEarned', 'studyCount'];
 
 /**
  * 간단한 XOR 암호화

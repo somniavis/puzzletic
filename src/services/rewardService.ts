@@ -40,13 +40,13 @@ export const calculateMinigameReward = (
   }
 
   // 1. GLO 계산 (기존 방식 유지: Base * Multiplier)
-  const baseGlo = difficultyConfig.baseGlo;
+  const baseGro = difficultyConfig.baseGro;
   const difficultyMultiplier = difficultyConfig.multiplier;
   const accuracyMultiplier = result.accuracy;
   const masteryMultiplier = result.masteryBonus || DEFAULT_MASTERY_BONUS;
   const perfectMultiplier = result.isPerfect ? PERFECT_BONUS_MULTIPLIER : 1.0;
 
-  const gloBeforeBonus = baseGlo * difficultyMultiplier * accuracyMultiplier * masteryMultiplier;
+  const groBeforeBonus = baseGro * difficultyMultiplier * accuracyMultiplier * masteryMultiplier;
 
 
   // 2. XP 계산 (동적 스케일링: 현재 레벨 요구량 * 난이도 비중)
@@ -66,15 +66,15 @@ export const calculateMinigameReward = (
 
 
   // 3. 최종 결과 (반올림 및 퍼펙트 보너스)
-  const finalGlo = Math.round(gloBeforeBonus * perfectMultiplier);
+  const finalGro = Math.round(groBeforeBonus * perfectMultiplier);
   const finalXP = Math.round(xpBeforeBonus * perfectMultiplier);
 
   return {
-    gloEarned: finalGlo,
+    groEarned: finalGro,
     xpEarned: finalXP,
     perfectBonus: result.isPerfect,
     breakdown: {
-      baseReward: baseGlo, // 표기에 사용될 수 있으므로 GLO 베이스 유지/혹은 dynamicBaseGP로 교체? 
+      baseReward: baseGro, // 표기에 사용될 수 있으므로 GRO 베이스 유지 
       // UI에서 "기본 점수"를 보여줄 때 혼동 없도록 일단 GLO 기준 유지하거나 별도 필드 추가 고려.
       // 여기선 로직 호환성을 위해 유지.
       difficultyMultiplier,
@@ -94,37 +94,37 @@ export const calculateMinigameReward = (
  * - 행복도 >= 50: 기본 보상
  */
 export const calculatePlayReward = (happiness: number): {
-  gloEarned: number;
+  groEarned: number;
   xpEarned: number;
   bonus: 'excellent' | 'good' | 'normal' | null;
 } => {
   if (happiness < PLAY_REWARD.happinessRequirement) {
     return {
-      gloEarned: 0,
+      groEarned: 0,
       xpEarned: 0,
       bonus: null,
     };
   }
 
-  let gloMultiplier = 1.0;
+  let groMultiplier = 1.0;
   let xpMultiplier = 1.0;
   let bonus: 'excellent' | 'good' | 'normal' = 'normal';
 
   if (happiness >= 80) {
-    gloMultiplier = PLAY_HAPPINESS_BONUS.excellent.gloMultiplier;
+    groMultiplier = PLAY_HAPPINESS_BONUS.excellent.groMultiplier;
     xpMultiplier = PLAY_HAPPINESS_BONUS.excellent.xpMultiplier;
     bonus = 'excellent';
   } else if (happiness >= 65) {
-    gloMultiplier = PLAY_HAPPINESS_BONUS.good.gloMultiplier;
+    groMultiplier = PLAY_HAPPINESS_BONUS.good.groMultiplier;
     xpMultiplier = PLAY_HAPPINESS_BONUS.good.xpMultiplier;
     bonus = 'good';
   }
 
-  const gloEarned = Math.round(PLAY_REWARD.baseGlo * gloMultiplier);
+  const groEarned = Math.round(PLAY_REWARD.baseGro * groMultiplier);
   const xpEarned = Math.round(PLAY_REWARD.baseXP * xpMultiplier);
 
   return {
-    gloEarned,
+    groEarned,
     xpEarned,
     bonus,
   };
@@ -206,11 +206,11 @@ export const gainTendencyFromFeed = (currentTendencies: TendencyStats): Tendency
  * 난이도별 예상 보상 미리보기
  */
 export const previewRewardByDifficulty = (difficulty: MinigameDifficulty): {
-  minGlo: number;
-  maxGlo: number;
+  minGro: number;
+  maxGro: number;
   minXP: number;
   maxXP: number;
-  perfectGlo: number;
+  perfectGro: number;
   perfectXP: number;
 } => {
   const config = DIFFICULTY_REWARDS[difficulty];
@@ -222,23 +222,23 @@ export const previewRewardByDifficulty = (difficulty: MinigameDifficulty): {
   const multiplier = config.multiplier;
 
   // 최소 보상 (정답률 0%)
-  const minGlo = 0;
+  const minGro = 0;
   const minXP = 0;
 
   // 최대 보상 (정답률 100%, 보너스 제외)
-  const maxGlo = Math.round(config.baseGlo * multiplier);
+  const maxGro = Math.round(config.baseGro * multiplier);
   const maxXP = Math.round(config.baseXP * multiplier);
 
   // 퍼펙트 보상 (정답률 100% + 퍼펙트 보너스)
-  const perfectGlo = Math.round(maxGlo * PERFECT_BONUS_MULTIPLIER);
+  const perfectGro = Math.round(maxGro * PERFECT_BONUS_MULTIPLIER);
   const perfectXP = Math.round(maxXP * PERFECT_BONUS_MULTIPLIER);
 
   return {
-    minGlo,
-    maxGlo,
+    minGro,
+    maxGro,
     minXP,
     maxXP,
-    perfectGlo,
+    perfectGro,
     perfectXP,
   };
 };

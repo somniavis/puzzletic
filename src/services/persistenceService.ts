@@ -34,7 +34,7 @@ const createDefaultState = (): NurturingPersistentState => {
       lastTickTime: Date.now(),
       isActive: true,
     },
-    glo: 9999,
+    gro: 9999,
     totalCurrencyEarned: 0,
     studyCount: 0,
     abandonmentState: { ...DEFAULT_ABANDONMENT_STATE },
@@ -88,7 +88,7 @@ export const loadNurturingState = (): NurturingPersistentState => {
         // 조작이 감지되면 민감한 데이터만 초기화
         loaded = protectedState;
         delete loaded._enc;
-        loaded.glo = 9999;
+        loaded.gro = 9999;
         loaded.totalCurrencyEarned = 0;
         loaded.studyCount = 0;
       }
@@ -131,9 +131,16 @@ export const loadNurturingState = (): NurturingPersistentState => {
       loaded.bugs = [];
     }
 
+    // glo -> gro migration
+    if (loaded.glo !== undefined && loaded.gro === undefined) {
+      console.log('🔄 Migrating old data: Glo -> Gro');
+      loaded.gro = loaded.glo;
+      delete loaded.glo;
+    }
+
     // glo가 없거나 0이면 9999으로 초기화 (테스트용)
-    if (loaded.glo === undefined || loaded.glo === 0) {
-      loaded.glo = 9999;
+    if (loaded.gro === undefined || loaded.gro === 0) {
+      loaded.gro = 9999;
     }
 
     // 똥 데이터 마이그레이션: cleanlinessDebuff → healthDebuff

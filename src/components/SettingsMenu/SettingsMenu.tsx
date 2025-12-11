@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { playButtonSound } from '../../utils/sound';
 import { useSound } from '../../contexts/SoundContext';
 import { useAuth } from '../../contexts/AuthContext';
+import { useNurturing } from '../../contexts/NurturingContext';
 import './SettingsMenu.css';
 
 import { useNavigate } from 'react-router-dom';
@@ -19,15 +20,37 @@ export const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose }) =
   const { t, i18n } = useTranslation();
   const { settings, toggleBgm, toggleSfx } = useSound();
   const { logout } = useAuth();
+  const { saveToCloud } = useNurturing();
   const [currentView, setCurrentView] = useState<MenuView>('main');
+  const [isSaving, setIsSaving] = useState(false);
 
   if (!isOpen) return null;
 
   const handleClose = () => {
     playButtonSound();
     setCurrentView('main');
+    setIsSaving(false); // Reset state
     onClose();
   };
+
+  const handleSaveClick = async () => {
+    playButtonSound();
+    if (isSaving) return;
+
+    setIsSaving(true);
+    const success = await saveToCloud();
+
+    // Show visual feedback (e.g. keep "Saving..." for a moment or show "Saved!")
+    // For now, we simulate a small delay if quick, or just reset.
+    // Ideally we would change text to "Saved!" then revert.
+
+    setTimeout(() => {
+      setIsSaving(false);
+      if (success) alert("Saved to Cloud! ☁️");
+      else alert("Save failed. Please try again.");
+    }, 500);
+  };
+
 
   const handleBack = () => {
     playButtonSound();
@@ -113,6 +136,11 @@ export const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose }) =
         {/* Main Menu */}
         {currentView === 'main' && (
           <div className="food-items-grid">
+            <button className="food-item" onClick={handleSaveClick} disabled={isSaving}>
+              <span className="food-item-icon">☁️</span>
+              <span className="food-item-name">{isSaving ? 'Saving...' : 'Cloud Save'}</span>
+            </button>
+
             <button className="food-item" onClick={handleSoundClick}>
               <span className="food-item-icon">🔊</span>
               <span className="food-item-name">{t('settings.sound.title')}</span>

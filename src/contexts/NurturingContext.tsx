@@ -53,7 +53,7 @@ interface NurturingContextValue {
   poops: Poop[];
   bugs: Bug[];
   condition: CharacterCondition;
-  glo: number;
+  gro: number;
   totalCurrencyEarned: number;
   studyCount: number;
   isTickActive: boolean;
@@ -63,7 +63,7 @@ interface NurturingContextValue {
   maxStats: () => ActionResult;
   xp: number;
   evolutionStage: number;
-  addRewards: (xp: number, glo: number) => void;
+  addRewards: (xp: number, gro: number) => void;
 
   // 행동 (Actions)
   feed: (food: FoodItem) => ActionResult;
@@ -77,7 +77,7 @@ interface NurturingContextValue {
   study: () => ActionResult;
   clickPoop: (poopId: string, happinessBonus?: number) => void;
   clickBug: (bugId: string) => void;
-  spendGlo: (amount: number) => boolean;
+  spendGro: (amount: number) => boolean;
   purchaseItem: (itemId: string, price: number) => boolean;
   inventory: string[];
 
@@ -88,6 +88,7 @@ interface NurturingContextValue {
   setGameDifficulty: (difficulty: number | null) => void;
   hasCharacter: boolean;
   completeCharacterCreation: () => void;
+  saveToCloud: () => Promise<boolean>;
 }
 
 const NurturingContext = createContext<NurturingContextValue | undefined>(undefined);
@@ -135,22 +136,53 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
               ...prev,
               evolutionStage: cloudData.level,
               xp: cloudData.xp,
-              glo: cloudData.glo,
+              gro: cloudData.gro,
               inventory: cloudData.inventory,
             };
             saveNurturingState(newState);
             return newState;
           });
-        } else {
-          console.log('☁️ No cloud data found, using local state.');
         }
       });
     }
   }, [user]);
 
-  // ... existing code (tick, interval) ...
+  // Cloud Sync: Auto-Save every 5 minutes
+  useEffect(() => {
+    if (!user) return;
 
-  const addRewards = useCallback((xpAmount: number, gloAmount: number) => {
+    const AUTO_SAVE_INTERVAL = 10 * 60 * 1000; // 10 minutes
+    console.log('☁️ Auto-save timer started');
+
+    const timer = setInterval(() => {
+      console.log('☁️ Triggering auto-save...');
+      syncUserData(user, state);
+    }, AUTO_SAVE_INTERVAL);
+
+    return () => clearInterval(timer);
+  }, [user, state]); // Deps: user (active), state (latest data)
+
+  // Cloud Sync: Save on Window Close
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      if (user) {
+        syncUserData(user, state);
+      }
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [user, state]);
+
+  // Manual Save Function (Exposed)
+  const saveToCloud = useCallback(async () => {
+    if (!user) return false;
+    console.log('☁️ Manual save requested...');
+    return await syncUserData(user, state);
+  }, [user, state]);
+
+  // ... existing code ...
+
+  const addRewards = useCallback((xpAmount: number, groAmount: number) => {
     setState((currentState) => {
       const { newXP, newStage, evolved } = addXPAndCheckEvolution(
         currentState.xp || 0,
@@ -162,8 +194,8 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
         ...currentState,
         xp: newXP,
         evolutionStage: newStage,
-        glo: (currentState.glo || 0) + gloAmount,
-        totalCurrencyEarned: (currentState.totalCurrencyEarned || 0) + gloAmount,
+        gro: (currentState.gro || 0) + groAmount,
+        totalCurrencyEarned: (currentState.totalCurrencyEarned || 0) + groAmount,
       };
 
       if (evolved) {
@@ -172,10 +204,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
       }
 
       saveNurturingState(newState);
-
-      // Cloud Sync (Core Data Changed)
-      if (user) syncUserData(user, newState);
-
+      // Removed immediate syncUserData(user, newState);
       return newState;
     });
   }, [user]);
@@ -192,7 +221,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
       }
 
       // 돈 부족
-      if ((currentState.glo || 0) < price) {
+      if ((currentState.gro || 0) < price) {
         success = false;
         return currentState;
       }
@@ -200,14 +229,11 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
       success = true;
       const newState = {
         ...currentState,
-        glo: (currentState.glo || 0) - price,
+        gro: (currentState.gro || 0) - price,
         inventory: [...(currentState.inventory || []), itemId],
       };
       saveNurturingState(newState);
-
-      // Cloud Sync (Inventory/Economy Changed)
-      if (user) syncUserData(user, newState);
-
+      // Removed immediate syncUserData(user, newState);
       return newState;
     });
     return success;
@@ -487,7 +513,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
       const newState: NurturingPersistentState = {
         ...currentState,
         stats: newStats,
-        glo: (currentState.glo || 0) + currencyEarned,
+        gro: (currentState.gro || 0) + currencyEarned,
         totalCurrencyEarned: currentState.totalCurrencyEarned + currencyEarned,
         studyCount: currentState.studyCount + 1,
         lastActiveTime: Date.now(),
@@ -502,10 +528,10 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     return result;
   }, []);
 
-  const spendGlo = useCallback((amount: number): boolean => {
+  const spendGro = useCallback((amount: number): boolean => {
     let success = false;
     setState((currentState) => {
-      if ((currentState.glo || 0) < amount) {
+      if ((currentState.gro || 0) < amount) {
         success = false;
         return currentState;
       }
@@ -513,7 +539,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
       success = true;
       const newState = {
         ...currentState,
-        glo: (currentState.glo || 0) - amount,
+        gro: (currentState.gro || 0) - amount,
       };
       saveNurturingState(newState);
       return newState;
@@ -791,6 +817,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
 
 
 
+
   // 가출 상태 UI 정보
   const abandonmentStatus = getAbandonmentStatusUI(state.abandonmentState, Date.now());
 
@@ -800,7 +827,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     poops: state.poops,
     bugs: state.bugs || [],
     condition,
-    glo: state.glo,
+    gro: state.gro,
     totalCurrencyEarned: state.totalCurrencyEarned,
     studyCount: state.studyCount,
     isTickActive: state.tickConfig.isActive,
@@ -822,7 +849,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     study,
     clickPoop,
     clickBug,
-    spendGlo,
+    spendGro,
     purchaseItem,
     inventory: state.inventory || ['default_ground'],
     resetGame,
@@ -831,11 +858,12 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     setGameDifficulty,
     hasCharacter: state.hasCharacter ?? false,
     completeCharacterCreation,
+    saveToCloud, // Expose new function
   }), [
     state.stats,
     state.poops,
     state.bugs,
-    state.glo,
+    state.gro,
     state.totalCurrencyEarned,
     state.studyCount,
     state.tickConfig.isActive,
@@ -857,7 +885,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     study,
     clickPoop,
     clickBug,
-    spendGlo,
+    spendGro,
     purchaseItem,
     resetGame,
     pauseTick,

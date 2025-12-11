@@ -349,11 +349,11 @@ export const PetRoom: React.FC<PetRoomProps> = ({
   };
 
   const handleFeed = (food: FoodItem) => {
-    if (nurturing.glo < food.price) {
+    if (nurturing.gro < food.price) {
       showBubble('worried', 2); // Not enough money
       return;
     }
-    nurturing.spendGlo(food.price);
+    nurturing.spendGro(food.price);
     playButtonSound();
     setShowFoodMenu(false);
 
@@ -408,7 +408,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({
       }
     } else {
       // Purchase if not owned
-      if (nurturing.glo >= item.price) {
+      if (nurturing.gro >= item.price) {
         const success = nurturing.purchaseItem(item.id, item.price);
         if (success) {
           playCleaningSound();
@@ -433,11 +433,11 @@ export const PetRoom: React.FC<PetRoomProps> = ({
   };
 
   const handleGiveMedicine = (medicine: MedicineItem) => {
-    if (nurturing.glo < medicine.price) {
+    if (nurturing.gro < medicine.price) {
       showBubble('worried', 2); // Not enough money
       return;
     }
-    nurturing.spendGlo(medicine.price);
+    nurturing.spendGro(medicine.price);
     playButtonSound();
     setShowMedicineMenu(false);
 
@@ -520,8 +520,8 @@ export const PetRoom: React.FC<PetRoomProps> = ({
         }
         break;
       case 'shower':
-        if (nurturing.glo >= tool.price) {
-          nurturing.spendGlo(tool.price);
+        if (nurturing.gro >= tool.price) {
+          nurturing.spendGro(tool.price);
           nurturing.takeShower();
           playCleaningSound();
           showBubble('joy', 2);
@@ -532,10 +532,10 @@ export const PetRoom: React.FC<PetRoomProps> = ({
         }
         break;
       case 'robot_cleaner':
-        if (nurturing.glo >= tool.price) {
+        if (nurturing.gro >= tool.price) {
           if (nurturing.poops.length > 0 || nurturing.bugs.length > 0) {
             setIsCleaning(true);
-            nurturing.spendGlo(tool.price);
+            nurturing.spendGro(tool.price);
             setTimeout(() => playCleaningSound(), 100);
             nurturing.cleanAll();
             showBubble('joy', 3);
@@ -548,8 +548,8 @@ export const PetRoom: React.FC<PetRoomProps> = ({
         }
         break;
       case 'toothbrush':
-        if (nurturing.glo >= tool.price) {
-          nurturing.spendGlo(tool.price);
+        if (nurturing.gro >= tool.price) {
+          nurturing.spendGro(tool.price);
           nurturing.brushTeeth();
           playCleaningSound();
           showBubble('joy', 2);
@@ -560,8 +560,8 @@ export const PetRoom: React.FC<PetRoomProps> = ({
         }
         break;
       case 'max_stats':
-        if (nurturing.glo >= tool.price) {
-          nurturing.spendGlo(tool.price);
+        if (nurturing.gro >= tool.price) {
+          nurturing.spendGro(tool.price);
           nurturing.maxStats();
           playCleaningSound();
           showBubble('joy', 3);
@@ -678,7 +678,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({
             <div className="profile-name">{character.name}</div>
             <div className="profile-stats-row">
               <div className="profile-level">{t('character.profile.level', { level: character.level })}</div>
-              <div className="profile-glo">💰 {nurturing.glo}</div>
+              <div className="profile-gro">💰 {nurturing.gro}</div>
             </div>
           </div>
         </div>
@@ -877,7 +877,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({
               key={food.id}
               className="food-item"
               onClick={() => handleFeed(food)}
-              disabled={action !== 'idle' || flyingFood !== null || nurturing.glo < food.price}
+              disabled={action !== 'idle' || flyingFood !== null || nurturing.gro < food.price}
             >
               <span className="food-item-icon">{food.icon}</span>
               <span className="food-item-name">{t(food.nameKey)}</span>
@@ -911,7 +911,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({
               key={medicine.id}
               className="food-item"
               onClick={() => handleGiveMedicine(medicine)}
-              disabled={action !== 'idle' || flyingFood !== null || nurturing.glo < medicine.price || nurturing.stats.health >= 60}
+              disabled={action !== 'idle' || flyingFood !== null || nurturing.gro < medicine.price || nurturing.stats.health >= 60}
             >
               <span className="food-item-icon">{medicine.icon}</span>
               <span className="food-item-name">{t(medicine.nameKey)}</span>
@@ -938,8 +938,8 @@ export const PetRoom: React.FC<PetRoomProps> = ({
                 action !== 'idle' ||
                 (tool.id === 'broom' && nurturing.poops.length === 0) ||
                 (tool.id === 'newspaper' && nurturing.bugs.length === 0) ||
-                (tool.id === 'shower' && nurturing.glo < tool.price) ||
-                (tool.id === 'robot_cleaner' && (nurturing.glo < tool.price || (nurturing.poops.length === 0 && nurturing.bugs.length === 0)))
+                (tool.id === 'shower' && nurturing.gro < tool.price) ||
+                (tool.id === 'robot_cleaner' && (nurturing.gro < tool.price || (nurturing.poops.length === 0 && nurturing.bugs.length === 0)))
               }
             >
               <span className="food-item-icon">{tool.icon}</span>
