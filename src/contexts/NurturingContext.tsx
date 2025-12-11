@@ -154,7 +154,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
   useEffect(() => {
     if (!user) return;
 
-    const AUTO_SAVE_INTERVAL = 10 * 60 * 1000; // 10 minutes
+    const AUTO_SAVE_INTERVAL = 15 * 60 * 1000; // 15 minutes
     console.log('☁️ Auto-save timer started');
 
     const timer = setInterval(() => {
