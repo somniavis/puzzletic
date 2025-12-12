@@ -192,7 +192,13 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     }
   }, [user]);
 
-  // Cloud Sync: Auto-Save every 5 minutes
+  // Keep state ref for event handlers (if needed for timer)
+  const stateRef = useRef(state);
+  useEffect(() => {
+    stateRef.current = state;
+  }, [state]);
+
+  // Cloud Sync: Auto-Save every 15 minutes (RESTORED)
   useEffect(() => {
     if (!user) return;
 
@@ -201,22 +207,14 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
 
     const timer = setInterval(() => {
       console.log('☁️ Triggering auto-save...');
-      syncUserData(user, state);
+      // Use ref to avoid resetting timer on state change
+      if (stateRef.current) {
+        syncUserData(user, stateRef.current);
+      }
     }, AUTO_SAVE_INTERVAL);
 
     return () => clearInterval(timer);
-  }, [user, state]); // Deps: user (active), state (latest data)
-
-  // Cloud Sync: Save on Window Close
-  useEffect(() => {
-    const handleBeforeUnload = () => {
-      if (user) {
-        syncUserData(user, state);
-      }
-    };
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
-  }, [user, state]);
+  }, [user]); // Only restart if User changes. State is accessed via Ref.
 
   // Manual Save Function (Exposed)
   const saveToCloud = useCallback(async () => {

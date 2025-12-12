@@ -107,6 +107,9 @@ export const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose }) =
   const handleLogout = async () => {
     playButtonSound();
     try {
+      // "Safe Save": Sync before logging out
+      await saveToCloud();
+
       await logout();
       onClose();
       // Navigation to login is handled by ProtectedRoute in App.tsx
