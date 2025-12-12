@@ -135,7 +135,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
         if (!result.success) {
           console.warn('☁️ Fetch failed:', result.error);
           if (!result.notFound) {
-            alert(`Sync Error: ${result.error}\n(Local data will be used)`);
+            alert(`Sync Error: ${result.error}\nUID: ${user.uid}\n(Local data will be used)`);
           }
           return;
         }
@@ -160,7 +160,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
 
             if (fullState && typeof fullState === 'object') {
               console.log('📦 Restoring full game state from cloud', fullState);
-              alert(`Cloud Data Loaded!\nGro: ${cloudData.gro}\nXP: ${cloudData.xp}\nInv: ${cloudData.inventory?.length}\nState Inv: ${fullState.inventory?.length}`);
+              alert(`Cloud Data Loaded!\nUID: ${user.uid}\nGro: ${cloudData.gro}\nInv: ${cloudData.inventory?.length}`);
               newState = {
                 ...prev,
                 ...fullState,
