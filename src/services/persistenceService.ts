@@ -34,7 +34,7 @@ const createDefaultState = (): NurturingPersistentState => {
       lastTickTime: Date.now(),
       isActive: true,
     },
-    gro: 9999,
+    gro: 20,
     currentLand: 'default_ground',
     totalCurrencyEarned: 0,
     studyCount: 0,
@@ -89,7 +89,7 @@ export const loadNurturingState = (): NurturingPersistentState => {
         // 조작이 감지되면 민감한 데이터만 초기화
         loaded = protectedState;
         delete loaded._enc;
-        loaded.gro = 9999;
+        loaded.gro = 20;
         loaded.totalCurrencyEarned = 0;
         loaded.studyCount = 0;
       }
@@ -139,9 +139,9 @@ export const loadNurturingState = (): NurturingPersistentState => {
       delete loaded.glo;
     }
 
-    // glo가 없거나 0이면 9999으로 초기화 (테스트용)
-    if (loaded.gro === undefined || loaded.gro === 0) {
-      loaded.gro = 9999;
+    // glo가 없거나 0이면 20으로 초기화 (테스트용/기본값)
+    if (loaded.gro === undefined) {
+      loaded.gro = 20;
     }
 
     // 똥 데이터 마이그레이션: cleanlinessDebuff → healthDebuff

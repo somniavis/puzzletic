@@ -12,9 +12,9 @@ export const TICK_INTERVAL_MS = 13000; // 13초 (조금 더 여유있게)
 
 // ==================== 초기 스탯 ====================
 export const DEFAULT_NURTURING_STATS: NurturingStats = {
-  fullness: 80,      // 포만감
-  health: 100,       // 건강 (청결도 + 질병 통합)
-  happiness: 70,     // 행복도
+  fullness: 93,      // 포만감
+  health: 96,        // 건강 (청결도 + 질병 통합)
+  happiness: 100,    // 행복도
 };
 
 // ==================== 스탯 범위 ====================

@@ -18,6 +18,7 @@ import type { MedicineItem } from '../types/medicine';
 import type { CleaningTool } from '../types/cleaning';
 import {
   TICK_INTERVAL_MS,
+  DEFAULT_NURTURING_STATS,
 } from '../constants/nurturing';
 import {
   loadNurturingState,
@@ -133,10 +134,13 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
       console.log('☁️ Fetching cloud data for user:', user.uid);
       fetchUserData(user).then((result) => {
         if (!result.success) {
-          console.warn('☁️ Fetch failed:', result.error);
-          // if (!result.notFound) {
-          //   alert(`Sync Error: ${result.error}\nUID: ${user.uid}\n(Local data will be used)`);
-          // }
+          if (result.notFound) {
+            console.log('☁️ New user detected (no cloud data). Resetting local state.');
+            const newState = resetNurturingState();
+            setState(newState);
+          } else {
+            console.warn('☁️ Fetch failed:', result.error);
+          }
           return;
         }
 
@@ -813,13 +817,25 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
   }, []);
 
   const resetGame = useCallback(() => {
-    const newState = resetNurturingState();
-    setState({
-      ...newState,
-      hasCharacter: false, // Reset character state
-      gameDifficulty: null, // Reset game difficulty
+    setState((currentState) => {
+      // Keep existing Gro
+      const existingGro = currentState.gro || 20;
+
+      const newState = resetNurturingState();
+
+      const preservedState = {
+        ...newState,
+        gro: existingGro,
+        hasCharacter: false, // Reset character state
+        gameDifficulty: null, // Reset game difficulty
+      };
+
+      saveNurturingState(preservedState);
+      return preservedState;
     });
-    setCondition(evaluateCondition(newState.stats));
+    // setCondition is updated via state change effect or we can calculate it manually if needed, 
+    // but setState is async-ish. However, for immediate feedback:
+    setCondition(evaluateCondition(DEFAULT_NURTURING_STATS));
   }, []);
 
   const completeCharacterCreation = useCallback(() => {

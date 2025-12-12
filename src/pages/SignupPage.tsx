@@ -3,7 +3,7 @@ import './Auth.css';
 import { playButtonSound } from '../utils/sound';
 import { useTranslation } from 'react-i18next';
 import { auth } from '../firebase';
-import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
 
 import { useNavigate } from 'react-router-dom';
 
@@ -14,7 +14,6 @@ export const SignupPage: React.FC = () => {
         email: '',
         password: '',
         confirmPassword: '',
-        nickname: ''
     });
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -35,14 +34,7 @@ export const SignupPage: React.FC = () => {
         }
 
         try {
-            const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
-
-            // Set Display Name (Nickname)
-            if (formData.nickname) {
-                await updateProfile(userCredential.user, {
-                    displayName: formData.nickname
-                });
-            }
+            await createUserWithEmailAndPassword(auth, formData.email, formData.password);
 
             console.log('Signup successful:', formData.email);
             alert(t('auth.signup.success'));
@@ -79,20 +71,6 @@ export const SignupPage: React.FC = () => {
                 </header>
 
                 <form className="auth-form" onSubmit={handleSignup}>
-                    <div className="form-group">
-                        <label className="form-label">Nickname (Max 10)</label>
-                        <input
-                            type="text"
-                            name="nickname"
-                            className="form-input"
-                            placeholder="Enter nickname"
-                            value={formData.nickname}
-                            onChange={handleChange}
-                            maxLength={10}
-                            required
-                        />
-                    </div>
-
                     <div className="form-group">
                         <label className="form-label">{t('auth.signup.emailLabel')}</label>
                         <input
