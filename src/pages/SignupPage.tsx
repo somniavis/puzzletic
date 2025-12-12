@@ -3,7 +3,7 @@ import './Auth.css';
 import { playButtonSound } from '../utils/sound';
 import { useTranslation } from 'react-i18next';
 import { auth } from '../firebase';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 
 import { useNavigate } from 'react-router-dom';
 
@@ -13,7 +13,8 @@ export const SignupPage: React.FC = () => {
     const [formData, setFormData] = useState({
         email: '',
         password: '',
-        confirmPassword: ''
+        confirmPassword: '',
+        nickname: ''
     });
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -34,14 +35,18 @@ export const SignupPage: React.FC = () => {
         }
 
         try {
-            await createUserWithEmailAndPassword(auth, formData.email, formData.password);
+            const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
 
-            // Note: Ideally we would update the profile with nickname here,
-            // but for MVP we just create the account.
+            // Set Display Name (Nickname)
+            if (formData.nickname) {
+                await updateProfile(userCredential.user, {
+                    displayName: formData.nickname
+                });
+            }
 
             console.log('Signup successful:', formData.email);
             alert(t('auth.signup.success'));
-            navigate('/login');
+            navigate('/home');
         } catch (error: any) {
             console.error('Signup failed:', error);
             let errorMessage = "Registration failed! ❌";
@@ -74,6 +79,20 @@ export const SignupPage: React.FC = () => {
                 </header>
 
                 <form className="auth-form" onSubmit={handleSignup}>
+                    <div className="form-group">
+                        <label className="form-label">Nickname (Max 10)</label>
+                        <input
+                            type="text"
+                            name="nickname"
+                            className="form-input"
+                            placeholder="Enter nickname"
+                            value={formData.nickname}
+                            onChange={handleChange}
+                            maxLength={10}
+                            required
+                        />
+                    </div>
+
                     <div className="form-group">
                         <label className="form-label">{t('auth.signup.emailLabel')}</label>
                         <input

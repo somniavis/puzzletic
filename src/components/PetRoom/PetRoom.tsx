@@ -23,6 +23,7 @@ import { GiftBoxModal } from '../GiftBoxModal';
 import './PetRoom.css';
 
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
 
 interface PetRoomProps {
   character: Character;
@@ -51,6 +52,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({
 
   // 양육 시스템 사용
   const nurturing = useNurturing();
+  const { user } = useAuth();
 
   // Resume tick when entering Pet Room (safety check)
   useEffect(() => {
@@ -650,6 +652,15 @@ export const PetRoom: React.FC<PetRoomProps> = ({
     }
   }, [nurturing.currentLand]);
 
+  const getDisplayName = () => {
+    if (user?.displayName) {
+      // Split "Yellow Jello" -> ["Yellow", "Jello"] -> "Jello"
+      const speciesSuffix = character.name.includes(' ') ? character.name.split(' ').pop() : 'Jello';
+      return `${user.displayName} ${speciesSuffix}`;
+    }
+    return character.name;
+  };
+
   return (
     <div className="pet-room">
       {/* Loading Overlay */}
@@ -674,7 +685,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({
             />
           </div>
           <div className="profile-info">
-            <div className="profile-name">{character.name}</div>
+            <div className="profile-name">{getDisplayName()}</div>
             <div className="profile-stats-row">
               <div className="profile-level">{t('character.profile.level', { level: character.level })}</div>
               <div className="profile-gro">💰 {nurturing.gro}</div>
