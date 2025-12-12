@@ -137,6 +137,9 @@
   background: linear-gradient(180deg, #87CEEB 0%, #E0F6FF 100%);
   overflow: hidden;
   position: relative;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
 }
 
 /* Game Header */
