@@ -11,6 +11,7 @@ import { SHOP_ITEMS, SHOP_CATEGORIES, type ShopItem, type ShopCategory } from '.
 import { EmotionBubble } from '../EmotionBubble/EmotionBubble';
 import type { EmotionCategory } from '../../types/emotion';
 import { useNurturing } from '../../contexts/NurturingContext';
+import { useEmotionBubbles } from '../../hooks/useEmotionBubbles';
 import { Poop } from '../Poop/Poop';
 import { Bug } from '../Bug/Bug';
 import { SettingsMenu } from '../SettingsMenu/SettingsMenu';
@@ -101,7 +102,6 @@ export const PetRoom: React.FC<PetRoomProps> = ({
   const [selectedFoodCategory, setSelectedFoodCategory] = useState<FoodCategory>('fruit');
   const [selectedShopCategory, setSelectedShopCategory] = useState<ShopCategory>('ground');
   const [bubble, setBubble] = useState<{ category: EmotionCategory; level: 1 | 2 | 3; key: number } | null>(null);
-  const [lastBubbleTime, setLastBubbleTime] = useState(0);
   const [flyingFood, setFlyingFood] = useState<{ icon: string; key: number; type: 'food' | 'pill' | 'syringe' } | null>(null);
   const [isShowering, setIsShowering] = useState(false);
   const [isBrushing, setIsBrushing] = useState(false);
@@ -136,7 +136,6 @@ export const PetRoom: React.FC<PetRoomProps> = ({
 
   const showBubble = (category: EmotionCategory, level: 1 | 2 | 3) => {
     setBubble({ category, level, key: Date.now() });
-    setLastBubbleTime(Date.now());
     setTimeout(() => setBubble(null), 3000); // Hide bubble after 3 seconds
   };
 
@@ -178,158 +177,14 @@ export const PetRoom: React.FC<PetRoomProps> = ({
     return () => clearInterval(interval);
   }, [isMoving, action, isShowering, showGiftBox]);
 
-  // 상태 변화에 따른 무드/액션 업데이트
-  // Periodic emotion bubble system - shows bubbles based on current state
-  useEffect(() => {
-    const checkAndShowBubble = () => {
-      const now = Date.now();
-      const timeSinceLastBubble = now - lastBubbleTime;
-
-      // Don't show bubble if one was shown recently (less than 8 seconds ago)
-      if (timeSinceLastBubble < 8000) {
-        return;
-      }
-
-      // Don't show bubble if currently showing one
-      if (bubble !== null) {
-        return;
-      }
-
-      const { happiness, health, fullness } = nurturing.stats;
-      const { condition } = nurturing;
-
-      // Debug log - 상태 확인용 (개발 중)
-      console.log('🎈 Bubble Check:', {
-        happiness,
-        health,
-        fullness,
-        condition
-      });
-
-      // ==================== 위급 상태 (Critical) ====================
-
-      // 1. 매우 위급: 건강 20 미만 (즉시 치료 필요)
-      if (health < 20) {
-        console.log('→ Showing: Critical Health');
-        showBubble('sick', 3);
-        return;
-      }
-
-      // 2. 위급: 아픔 상태 + 건강 50 미만
-      if (condition.isSick && health < 50) {
-        console.log('→ Showing: Very Sick');
-        showBubble('sick', 2);
-        return;
-      }
-
-      // 3. 매우 배고픔: 포만감 10 미만 (즉시 먹이 필요)
-      if (fullness < 10) {
-        console.log('→ Showing: Critical Hunger');
-        showBubble('worried', 3);
-        return;
-      }
-
-      // 4. 배고픔: 배고픔 상태 + 포만감 30 미만
-      if (condition.isHungry && fullness < 30) {
-        console.log('→ Showing: Very Hungry');
-        showBubble('worried', 2);
-        return;
-      }
-
-      // 5. 똥이 많을 때 (3개 이상)
-      if (nurturing.poops.length >= 3) {
-        console.log('→ Showing: Too Much Poop');
-        showBubble('worried', 3);
-        return;
-      }
-
-      // 6. 똥이 있을 때 (1-2개)
-      if (nurturing.poops.length > 0) {
-        console.log('→ Showing: Needs Cleaning');
-        showBubble('worried', 1);
-        return;
-      }
-
-      // ==================== 불만족 상태 (Unhappy) ====================
-
-      // 7. 매우 불행: 행복도 20 미만
-      if (happiness < 20) {
-        console.log('→ Showing: Very Unhappy');
-        showBubble('worried', 3);
-        return;
-      }
-
-      // 8. 약간 불행: 행복도 40 미만
-      if (happiness < 40) {
-        console.log('→ Showing: Unhappy');
-        showBubble('worried', 1);
-        return;
-      }
-
-      // ==================== 주의 상태 (Warning) ====================
-
-      // 9. 약한 질병: 아픔 상태 (건강은 50 이상)
-      if (condition.isSick) {
-        console.log('→ Showing: Mildly Sick');
-        showBubble('sick', 1);
-        return;
-      }
-
-      // 10. 약간 배고픔: 포만감 50 미만
-      if (fullness < 50) {
-        console.log('→ Showing: Slightly Hungry');
-        showBubble('neutral', 2);
-        return;
-      }
-
-      // 11. 약간 피곤함: 행복도 60 미만
-      if (happiness < 60) {
-        console.log('→ Showing: Slightly Tired');
-        showBubble('neutral', 1);
-        return;
-      }
-
-      // ==================== 만족 상태 (Satisfied) ====================
-
-      // 12. 매우 행복: 모든 스탯이 높음
-      if (happiness > 85 && fullness > 70 && health > 80) {
-        console.log('→ Showing: Very Happy');
-        showBubble('joy', 3);
-        return;
-      }
-
-      // 14. 행복: 주요 스탯이 높음
-      if (happiness > 70 && fullness > 60 && health > 60) {
-        console.log('→ Showing: Happy');
-        showBubble('joy', 2);
-        return;
-      }
-
-      // 15. 만족: 행복도 60 이상
-      if (happiness > 60) {
-        console.log('→ Showing: Content');
-        showBubble('joy', 1);
-        return;
-      }
-
-      // ==================== 기본 상태 (Default) ====================
-
-      // 16. 평범한 상태 (아무 조건도 만족하지 않음)
-      console.log('→ Showing: Neutral');
-      showBubble('neutral', 1);
-    };
-
-    // Initial check after 2 seconds
-    const initialTimeout = setTimeout(checkAndShowBubble, 2000);
-
-    // Check every 10 seconds for periodic bubbles
-    const bubbleInterval = setInterval(checkAndShowBubble, 10000);
-
-    return () => {
-      clearTimeout(initialTimeout);
-      clearInterval(bubbleInterval);
-    };
-  }, [nurturing.stats, nurturing.condition, bubble, lastBubbleTime]);
+  // 상태 변화에 따른 무드/액션 업데이트 - Custom Hook 사용
+  useEmotionBubbles({
+    stats: nurturing.stats,
+    condition: nurturing.condition,
+    poops: nurturing.poops,
+    showBubble,
+    bubble
+  });
 
   // 건강 상태에 따른 아이콘 반환
   const getHealthIcon = (health: number): string => {

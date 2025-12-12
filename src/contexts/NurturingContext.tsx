@@ -411,189 +411,127 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
 
   // ==================== 행동 함수 ====================
 
-  const feed = useCallback((food: FoodItem): ActionResult => {
-    let result: ActionResult & { pendingPoopScheduled?: PendingPoop } = { success: false, statChanges: {} };
+  // ==================== 행동 함수 (Actions) ====================
+
+  /**
+   * 상태 업데이트를 처리하는 제네릭 헬퍼 함수
+   * 중복되는 상태 저장, 조건 평가, 리턴 처리를 통합
+   */
+  const performAction = useCallback(<T extends ActionResult>(
+    actionFn: (currentState: NurturingPersistentState) => T,
+    onSuccess?: (result: T, newState: NurturingPersistentState) => Partial<NurturingPersistentState>
+  ): T => {
+    let result: T = { success: false, statChanges: {} } as T;
 
     setState((currentState) => {
-      result = serviceFeed(currentState.stats, food.id, currentState.poops, currentState.pendingPoops || []);
+      // 1. 서비스 함수 실행
+      result = actionFn(currentState);
 
       if (!result.success) {
         return currentState;
       }
 
-      // 스탯 업데이트
+      // 2. 기본 스탯 업데이트 (모든 행동 공통)
+      const currentStats = currentState.stats;
+      const statChanges = result.statChanges || {};
+
       const newStats: NurturingStats = {
-        fullness: clampStat(currentState.stats.fullness + (result.statChanges.fullness || 0)),
-        health: clampStat(currentState.stats.health + (result.statChanges.health || 0)),
-        happiness: clampStat(currentState.stats.happiness + (result.statChanges.happiness || 0)),
+        fullness: clampStat(currentStats.fullness + (statChanges.fullness || 0)),
+        health: clampStat(currentStats.health + (statChanges.health || 0)),
+        happiness: clampStat(currentStats.happiness + (statChanges.happiness || 0)),
       };
 
-      // 예약된 똥 추가
-      let newPendingPoops = currentState.pendingPoops || [];
-      if (result.pendingPoopScheduled) {
-        newPendingPoops = [...newPendingPoops, result.pendingPoopScheduled];
-        console.log('💩 똥 예약됨!', Math.round((result.pendingPoopScheduled.scheduledAt - Date.now()) / 1000), '초 후');
-      }
-
-      const newState: NurturingPersistentState = {
+      // 3. 기본 새 상태 생성
+      let newState: NurturingPersistentState = {
         ...currentState,
         stats: newStats,
-        pendingPoops: newPendingPoops,
         lastActiveTime: Date.now(),
       };
 
+      // 4. 추가 상태 업데이트 (콜백)
+      if (onSuccess) {
+        const additionalUpdates = onSuccess(result, newState);
+        newState = { ...newState, ...additionalUpdates };
+      }
+
+      // 5. 저장 및 조건 평가
       saveNurturingState(newState);
-      setCondition(evaluateCondition(newStats, currentState.isSick)); // 질병 상태 유지
+      // 질병 상태가 변경되었을 수 있으므로 newState.isSick 확인
+      setCondition(evaluateCondition(newState.stats, newState.isSick));
 
       return newState;
     });
 
     return result;
   }, []);
+
+  const feed = useCallback((food: FoodItem): ActionResult => {
+    return performAction(
+      (currentState) => serviceFeed(currentState.stats, food.id, currentState.poops, currentState.pendingPoops || []),
+      (result, _newState) => {
+        // 예약된 똥 처리
+        if ('pendingPoopScheduled' in result && result.pendingPoopScheduled) {
+          const pending = result.pendingPoopScheduled as PendingPoop;
+          console.log('💩 똥 예약됨!', Math.round((pending.scheduledAt - Date.now()) / 1000), '초 후');
+          return {
+            pendingPoops: [...(_newState.pendingPoops || []), pending]
+          };
+        }
+        return {};
+      }
+    );
+  }, [performAction]);
 
   const giveMedicine = useCallback((medicine: MedicineItem): ActionResult => {
-    let result: ActionResult & { cureProgressDelta?: number } = { success: false, statChanges: {} };
+    return performAction(
+      (currentState) => serviceGiveMedicine(currentState.stats, medicine.id, currentState.isSick),
+      (result, currentState) => {
+        // 질병 치료 진행도 처리
+        let newIsSick = currentState.isSick;
+        let newSickProgress = currentState.sickProgress || 0;
 
-    setState((currentState) => {
-      // 질병 상태 전달
-      result = serviceGiveMedicine(currentState.stats, medicine.id, currentState.isSick);
+        // 타입 가드: cureProgressDelta가 있는지 확인
+        const cureDelta = (result as any).cureProgressDelta;
 
-      if (!result.success) {
-        return currentState;
-      }
-
-      const newStats: NurturingStats = {
-        fullness: currentState.stats.fullness,
-        health: clampStat(currentState.stats.health + (result.statChanges.health || 0)),
-        happiness: clampStat(currentState.stats.happiness + (result.statChanges.happiness || 0)),
-      };
-
-      // 질병 치료 진행도 업데이트
-      let newIsSick = currentState.isSick;
-      let newSickProgress = currentState.sickProgress || 0;
-
-      if (result.cureProgressDelta && result.cureProgressDelta > 0) {
-        newSickProgress += result.cureProgressDelta;
-
-        // 치료 완료 체크 (2포인트 이상이면 완치)
-        if (newSickProgress >= 2) {
-          newIsSick = false;
-          newSickProgress = 0;
-          console.log('💊 질병이 완치되었습니다!');
-        } else {
-          console.log(`💊 치료 진행 중... (${newSickProgress}/2)`);
+        if (cureDelta && cureDelta > 0) {
+          newSickProgress += cureDelta;
+          if (newSickProgress >= 2) {
+            newIsSick = false;
+            newSickProgress = 0;
+            console.log('💊 질병이 완치되었습니다!');
+          } else {
+            console.log(`💊 치료 진행 중... (${newSickProgress}/2)`);
+          }
         }
+        return { isSick: newIsSick, sickProgress: newSickProgress };
       }
-
-      const newState: NurturingPersistentState = {
-        ...currentState,
-        stats: newStats,
-        isSick: newIsSick, // 상태 업데이트
-        sickProgress: newSickProgress, // 진행도 업데이트
-        lastActiveTime: Date.now(),
-      };
-
-      saveNurturingState(newState);
-      setCondition(evaluateCondition(newStats, newIsSick));
-
-      return newState;
-    });
-
-    return result;
-  }, []);
+    );
+  }, [performAction]);
 
   const clean = useCallback((_tool: CleaningTool): ActionResult => {
-    let result: ActionResult = { success: false, statChanges: {} };
-
-    setState((currentState) => {
-      // serviceClean signature: (stats, poops)
-      // Note: We are ignoring tool.id for now as the service doesn't support it yet.
-      // If tool specific logic is needed, actionService.ts needs to be updated first.
-      result = serviceClean(currentState.stats, currentState.poops);
-
-      const newStats: NurturingStats = {
-        fullness: currentState.stats.fullness,
-        health: clampStat(currentState.stats.health + (result.statChanges.health || 0)),
-        happiness: clampStat(currentState.stats.happiness + (result.statChanges.happiness || 0)),
-      };
-
-      const newState: NurturingPersistentState = {
-        ...currentState,
-        stats: newStats,
-        poops: [], // 모든 똥 제거
-        lastActiveTime: Date.now(),
-      };
-
-      saveNurturingState(newState);
-      setCondition(evaluateCondition(newStats));
-
-      return newState;
-    });
-
-    return result;
-  }, []);
+    return performAction(
+      (currentState) => serviceClean(currentState.stats, currentState.poops),
+      () => ({ poops: [] }) // 모든 똥 제거
+    );
+  }, [performAction]);
 
   const play = useCallback((): ActionResult => {
-    let result: ActionResult = { success: false, statChanges: {} };
-
-    setState((currentState) => {
-      result = servicePlay(currentState.stats);
-
-      const newStats: NurturingStats = {
-        fullness: clampStat(currentState.stats.fullness + (result.statChanges.fullness || 0)),
-        health: currentState.stats.health,
-        happiness: clampStat(currentState.stats.happiness + (result.statChanges.happiness || 0)),
-      };
-
-      const newState: NurturingPersistentState = {
-        ...currentState,
-        stats: newStats,
-        lastActiveTime: Date.now(),
-      };
-
-      saveNurturingState(newState);
-      setCondition(evaluateCondition(newStats));
-
-      return newState;
-    });
-
-    return result;
-  }, []);
+    return performAction((currentState) => servicePlay(currentState.stats));
+  }, [performAction]);
 
   const study = useCallback((): ActionResult => {
-    let result: ActionResult = { success: false, statChanges: {} };
-
-    setState((currentState) => {
-      result = serviceStudy(currentState.stats);
-
-      if (!result.success) {
-        return currentState;
+    return performAction(
+      (currentState) => serviceStudy(currentState.stats),
+      (result, currentState) => {
+        const currencyEarned = result.sideEffects?.currencyEarned || 0;
+        return {
+          gro: (currentState.gro || 0) + currencyEarned,
+          totalCurrencyEarned: currentState.totalCurrencyEarned + currencyEarned,
+          studyCount: currentState.studyCount + 1,
+        };
       }
-
-      const newStats: NurturingStats = {
-        fullness: clampStat(currentState.stats.fullness + (result.statChanges.fullness || 0)),
-        health: currentState.stats.health,
-        happiness: clampStat(currentState.stats.happiness + (result.statChanges.happiness || 0)),
-      };
-
-      const currencyEarned = result.sideEffects?.currencyEarned || 0;
-      const newState: NurturingPersistentState = {
-        ...currentState,
-        stats: newStats,
-        gro: (currentState.gro || 0) + currencyEarned,
-        totalCurrencyEarned: currentState.totalCurrencyEarned + currencyEarned,
-        studyCount: currentState.studyCount + 1,
-        lastActiveTime: Date.now(),
-      };
-
-      saveNurturingState(newState);
-      setCondition(evaluateCondition(newStats));
-
-      return newState;
-    });
-
-    return result;
-  }, []);
+    );
+  }, [performAction]);
 
   const spendGro = useCallback((amount: number): boolean => {
     let success = false;
@@ -613,8 +551,6 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     });
     return success;
   }, []);
-
-
 
   const cleanAll = useCallback((): ActionResult => {
     setState((currentState) => {
@@ -643,14 +579,14 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
   }, []);
 
   const maxStats = useCallback((): ActionResult => {
+    // maxStats는 로직이 단순해서 performAction을 안쓰고 직접 set하지만, 일관성을 위해 래핑 가능
+    // 단, maxStats는 'stats'를 강제로 덮어씌우므로 performAction의 상대적 업데이트와 다름.
+    // 별도 유지 혹은 performAction 수정 필요. 여기서는 기존 유지하되 중복만 제거.
+    // ...기존 로직이 더 직관적이므로 maxStats는 유지.
+    let result: ActionResult = { success: true, statChanges: {}, message: '회복됨' };
     setState((currentState) => {
-      const newStats: NurturingStats = {
-        fullness: 100,
-        health: 100,
-        happiness: 100,
-      };
-
-      const newState: NurturingPersistentState = {
+      const newStats = { fullness: 100, health: 100, happiness: 100 };
+      const newState = {
         ...currentState,
         stats: newStats,
         isSick: false,
@@ -659,77 +595,19 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
       };
       saveNurturingState(newState);
       setCondition(evaluateCondition(newStats));
+      result = { success: true, statChanges: newStats, message: '모든 상태가 회복되었습니다!' };
       return newState;
     });
-
-    return {
-      success: true,
-      statChanges: { fullness: 100, health: 100, happiness: 100 },
-      message: '모든 상태가 회복되었습니다!',
-    };
+    return result;
   }, []);
 
   const takeShower = useCallback((): ActionResult => {
-    let result: ActionResult = { success: false, statChanges: {} };
-
-    setState((currentState) => {
-      result = serviceTakeShower(currentState.stats);
-
-      if (!result.success) {
-        return currentState;
-      }
-
-      const newStats: NurturingStats = {
-        ...currentState.stats,
-        health: clampStat(currentState.stats.health + (result.statChanges.health || 0)),
-        happiness: clampStat(currentState.stats.happiness + (result.statChanges.happiness || 0)),
-      };
-
-      const newState: NurturingPersistentState = {
-        ...currentState,
-        stats: newStats,
-        lastActiveTime: Date.now(),
-      };
-
-      saveNurturingState(newState);
-      setCondition(evaluateCondition(newStats));
-
-      return newState;
-    });
-
-    return result;
-  }, []);
+    return performAction((currentState) => serviceTakeShower(currentState.stats));
+  }, [performAction]);
 
   const brushTeeth = useCallback((): ActionResult => {
-    let result: ActionResult = { success: false, statChanges: {} };
-
-    setState((currentState) => {
-      result = serviceBrushTeeth(currentState.stats);
-
-      if (!result.success) {
-        return currentState;
-      }
-
-      const newStats: NurturingStats = {
-        ...currentState.stats,
-        health: clampStat(currentState.stats.health + (result.statChanges.health || 0)),
-        happiness: clampStat(currentState.stats.happiness + (result.statChanges.happiness || 0)),
-      };
-
-      const newState: NurturingPersistentState = {
-        ...currentState,
-        stats: newStats,
-        lastActiveTime: Date.now(),
-      };
-
-      saveNurturingState(newState);
-      setCondition(evaluateCondition(newStats));
-
-      return newState;
-    });
-
-    return result;
-  }, []);
+    return performAction((currentState) => serviceBrushTeeth(currentState.stats));
+  }, [performAction]);
 
   const clickPoop = useCallback((poopId: string, happinessBonus: number = 0) => {
     setState((currentState) => {
