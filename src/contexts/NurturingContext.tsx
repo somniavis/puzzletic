@@ -150,7 +150,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
 
             if (fullState && typeof fullState === 'object') {
               console.log('📦 Restoring full game state from cloud', fullState);
-              // alert('Cloud Save Loaded!'); // Debugging
+              alert(`Cloud Data Loaded!\nGro: ${cloudData.gro}\nXP: ${cloudData.xp}\nInv: ${cloudData.inventory?.length}\nState Inv: ${fullState.inventory?.length}`);
               newState = {
                 ...prev,
                 ...fullState,
