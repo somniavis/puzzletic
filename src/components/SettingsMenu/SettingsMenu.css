@@ -63,3 +63,15 @@
   color: #666;
   font-weight: normal;
 }
+
+/* Cloud Save Status Styles */
+.save-success {
+  background: linear-gradient(135deg, #e6ffee 0%, #ccffdd 100%) !important;
+  border-color: #66cc80 !important;
+  transition: all 0.3s ease;
+}
+
+.save-success .food-item-name {
+  color: #2e7d32;
+  font-weight: bold;
+}

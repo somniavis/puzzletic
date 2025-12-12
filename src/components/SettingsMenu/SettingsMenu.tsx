@@ -22,33 +22,35 @@ export const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose }) =
   const { logout } = useAuth();
   const { saveToCloud } = useNurturing();
   const [currentView, setCurrentView] = useState<MenuView>('main');
-  const [isSaving, setIsSaving] = useState(false);
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'success' | 'error'>('idle');
 
   if (!isOpen) return null;
 
   const handleClose = () => {
     playButtonSound();
     setCurrentView('main');
-    setIsSaving(false); // Reset state
+    setSaveStatus('idle'); // Reset state
     onClose();
   };
 
   const handleSaveClick = async () => {
     playButtonSound();
-    if (isSaving) return;
+    if (saveStatus === 'saving') return;
 
-    setIsSaving(true);
+    setSaveStatus('saving');
     const success = await saveToCloud();
 
-    // Show visual feedback (e.g. keep "Saving..." for a moment or show "Saved!")
-    // For now, we simulate a small delay if quick, or just reset.
-    // Ideally we would change text to "Saved!" then revert.
-
-    setTimeout(() => {
-      setIsSaving(false);
-      if (success) alert("Saved to Cloud! ☁️");
-      else alert("Save failed. Please try again.");
-    }, 500);
+    if (success) {
+      setSaveStatus('success');
+      setTimeout(() => {
+        setSaveStatus('idle');
+      }, 2000);
+    } else {
+      setSaveStatus('error');
+      setTimeout(() => {
+        setSaveStatus('idle');
+      }, 2000);
+    }
   };
 
 
@@ -136,9 +138,19 @@ export const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose }) =
         {/* Main Menu */}
         {currentView === 'main' && (
           <div className="food-items-grid">
-            <button className="food-item" onClick={handleSaveClick} disabled={isSaving}>
-              <span className="food-item-icon">☁️</span>
-              <span className="food-item-name">{isSaving ? 'Saving...' : 'Cloud Save'}</span>
+            <button className={`food-item ${saveStatus === 'success' ? 'save-success' : ''}`} onClick={handleSaveClick} disabled={saveStatus === 'saving'}>
+              <span className="food-item-icon">
+                {saveStatus === 'saving' && '⏳'}
+                {saveStatus === 'success' && '✅'}
+                {saveStatus === 'error' && '❌'}
+                {saveStatus === 'idle' && '☁️'}
+              </span>
+              <span className="food-item-name">
+                {saveStatus === 'saving' && 'Saving...'}
+                {saveStatus === 'success' && 'Saved!'}
+                {saveStatus === 'error' && 'Failed'}
+                {saveStatus === 'idle' && 'Cloud Save'}
+              </span>
             </button>
 
             <button className="food-item" onClick={handleSoundClick}>
