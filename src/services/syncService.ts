@@ -17,6 +17,7 @@ export interface CloudUserData {
     gro: number;
     current_land: string;
     inventory: string[];
+    game_data?: NurturingPersistentState; // Optional full state
     created_at: number;
     last_synced_at: number;
 }
@@ -68,6 +69,7 @@ export const syncUserData = async (
             gro: state.gro || 0,
             currentLand: state.currentLand,
             inventory: state.inventory || [],
+            gameData: state, // Store FULL state for persistence
             createdAt: user.metadata.creationTime ? new Date(user.metadata.creationTime).getTime() : Date.now(),
         };
 

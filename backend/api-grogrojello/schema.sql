@@ -8,6 +8,7 @@ CREATE TABLE users (
   gro INTEGER DEFAULT 0,
   current_land TEXT DEFAULT 'default_ground',
   inventory TEXT DEFAULT '[]',
+  game_data TEXT,
   created_at INTEGER,
   last_synced_at INTEGER
 );

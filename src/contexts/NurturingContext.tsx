@@ -130,18 +130,39 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
   useEffect(() => {
     if (user) {
       console.log('☁️ Fetching cloud data for user:', user.uid);
-      fetchUserData(user).then((cloudData) => {
+      fetchUserData(user).then((cloudData: any) => {
         if (cloudData) {
-          console.log('☁️ Cloud data found, syncing core stats...', cloudData);
+          console.log('☁️ Cloud data found, syncing...', cloudData);
           setState((prev) => {
-            const newState = {
-              ...prev,
-              evolutionStage: cloudData.level,
-              xp: cloudData.xp,
-              gro: cloudData.gro,
-              currentLand: cloudData.current_land || 'default_ground',
-              inventory: cloudData.inventory,
-            };
+            // If full game state exists, use it. Otherwise, merge core stats.
+            const fullState = cloudData.gameData || cloudData.game_data;
+
+            let newState: NurturingPersistentState;
+
+            if (fullState && typeof fullState === 'object') {
+              console.log('📦 Restoring full game state from cloud');
+              newState = {
+                ...prev,
+                ...fullState,
+                // Ensure core tracking fields are synced from columns as well (Double Check)
+                gro: cloudData.gro ?? fullState.gro,
+                xp: cloudData.xp ?? fullState.xp,
+                evolutionStage: cloudData.level ?? fullState.evolutionStage,
+                inventory: cloudData.inventory ?? fullState.inventory,
+                currentLand: cloudData.current_land || fullState.currentLand || 'default_ground',
+              };
+            } else {
+              console.log('⚠️ No full state found, syncing core stats only');
+              newState = {
+                ...prev,
+                evolutionStage: cloudData.level,
+                xp: cloudData.xp,
+                gro: cloudData.gro,
+                currentLand: cloudData.current_land || 'default_ground',
+                inventory: cloudData.inventory,
+              };
+            }
+
             saveNurturingState(newState);
             return newState;
           });
