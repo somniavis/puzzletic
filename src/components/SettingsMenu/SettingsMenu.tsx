@@ -22,29 +22,53 @@ export const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose }) =
   const { logout } = useAuth();
   const { saveToCloud } = useNurturing();
   const [currentView, setCurrentView] = useState<MenuView>('main');
-  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'success' | 'error'>('idle');
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'success' | 'error' | 'cooldown'>('idle');
+  const [cooldownTime, setCooldownTime] = useState(0);
 
   if (!isOpen) return null;
 
   const handleClose = () => {
     playButtonSound();
     setCurrentView('main');
-    setSaveStatus('idle'); // Reset state
+    // Don't reset if in cooldown to persist protection while menu is closed? 
+    // Actually simplicity: reset valid status, keep cooldown if feasible. 
+    // For now, let's reset status to idle but if we want strictly block, we'd need global state or context.
+    // Given the request is "abnormally pressed", simple local state throttling is a good start.
+    // If user closes and reopens, they might bypass. 
+    // Optimization: Move throttling to Context? 
+    // User asked "Save Button". Let's throttle button.
+    if (saveStatus !== 'cooldown') setSaveStatus('idle');
     onClose();
   };
 
   const handleSaveClick = async () => {
     playButtonSound();
-    if (saveStatus === 'saving') return;
+    if (saveStatus === 'saving' || saveStatus === 'cooldown') return;
+
+    // Double check timestamp throttling locally if needed, but state machine handles it.
 
     setSaveStatus('saving');
     const success = await saveToCloud();
 
     if (success) {
       setSaveStatus('success');
+      // Start Cooldown (e.g. 1 minute)
       setTimeout(() => {
-        setSaveStatus('idle');
-      }, 2000);
+        setSaveStatus('cooldown');
+        setCooldownTime(60);
+
+        // Count down
+        const timer = setInterval(() => {
+          setCooldownTime(prev => {
+            if (prev <= 1) {
+              clearInterval(timer);
+              setSaveStatus('idle');
+              return 0;
+            }
+            return prev - 1;
+          });
+        }, 1000);
+      }, 2000); // 2s show "Saved!"
     } else {
       setSaveStatus('error');
       setTimeout(() => {
@@ -141,17 +165,19 @@ export const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose }) =
         {/* Main Menu */}
         {currentView === 'main' && (
           <div className="food-items-grid">
-            <button className={`food-item ${saveStatus === 'success' ? 'save-success' : ''}`} onClick={handleSaveClick} disabled={saveStatus === 'saving'}>
+            <button className={`food-item ${saveStatus === 'success' ? 'save-success' : ''}`} onClick={handleSaveClick} disabled={saveStatus === 'saving' || saveStatus === 'cooldown'}>
               <span className="food-item-icon">
                 {saveStatus === 'saving' && '⏳'}
                 {saveStatus === 'success' && '✅'}
                 {saveStatus === 'error' && '❌'}
+                {saveStatus === 'cooldown' && '🛑'}
                 {saveStatus === 'idle' && '☁️'}
               </span>
               <span className="food-item-name">
                 {saveStatus === 'saving' && 'Saving...'}
                 {saveStatus === 'success' && 'Saved!'}
                 {saveStatus === 'error' && 'Failed'}
+                {saveStatus === 'cooldown' && `Wait ${cooldownTime}s`}
                 {saveStatus === 'idle' && 'Cloud Save'}
               </span>
             </button>
