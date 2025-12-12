@@ -135,12 +135,22 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
           console.log('☁️ Cloud data found, syncing...', cloudData);
           setState((prev) => {
             // If full game state exists, use it. Otherwise, merge core stats.
-            const fullState = cloudData.gameData || cloudData.game_data;
+            let fullState = cloudData.gameData || cloudData.game_data;
+
+            // Handle if D1 returned string and backend didn't parse (robustness)
+            if (typeof fullState === 'string') {
+              try {
+                fullState = JSON.parse(fullState);
+              } catch (e) {
+                console.error('Failed to parse game_data string:', e);
+              }
+            }
 
             let newState: NurturingPersistentState;
 
             if (fullState && typeof fullState === 'object') {
-              console.log('📦 Restoring full game state from cloud');
+              console.log('📦 Restoring full game state from cloud', fullState);
+              // alert('Cloud Save Loaded!'); // Debugging
               newState = {
                 ...prev,
                 ...fullState,
@@ -150,6 +160,8 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
                 evolutionStage: cloudData.level ?? fullState.evolutionStage,
                 inventory: cloudData.inventory ?? fullState.inventory,
                 currentLand: cloudData.current_land || fullState.currentLand || 'default_ground',
+                // Explicitly ensure hasCharacter is restored
+                hasCharacter: fullState.hasCharacter ?? prev.hasCharacter,
               };
             } else {
               console.log('⚠️ No full state found, syncing core stats only');
