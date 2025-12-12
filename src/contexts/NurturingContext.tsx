@@ -130,7 +130,17 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
   useEffect(() => {
     if (user) {
       console.log('☁️ Fetching cloud data for user:', user.uid);
-      fetchUserData(user).then((cloudData: any) => {
+      console.log('☁️ Fetching cloud data for user:', user.uid);
+      fetchUserData(user).then((result) => {
+        if (!result.success) {
+          console.warn('☁️ Fetch failed:', result.error);
+          if (!result.notFound) {
+            alert(`Sync Error: ${result.error}\n(Local data will be used)`);
+          }
+          return;
+        }
+
+        const cloudData = result.data;
         if (cloudData) {
           console.log('☁️ Cloud data found, syncing...', cloudData);
           setState((prev) => {

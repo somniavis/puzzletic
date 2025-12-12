@@ -17,7 +17,8 @@ export interface CloudUserData {
     gro: number;
     current_land: string;
     inventory: string[];
-    game_data?: NurturingPersistentState; // Optional full state
+    game_data?: string; // Raw JSON string from D1 column
+    gameData?: NurturingPersistentState; // Parsed object from backend
     created_at: number;
     last_synced_at: number;
 }
@@ -25,7 +26,11 @@ export interface CloudUserData {
 /**
  * Fetch user data from Cloudflare
  */
-export const fetchUserData = async (user: User): Promise<CloudUserData | null> => {
+export type FetchUserResult =
+    | { success: true; data: CloudUserData }
+    | { success: false; error: string; notFound?: boolean };
+
+export const fetchUserData = async (user: User): Promise<FetchUserResult> => {
     try {
         const token = await user.getIdToken();
         const response = await fetch(`${API_BASE_URL}/api/users/${user.uid}?t=${Date.now()}`, {
@@ -42,10 +47,14 @@ export const fetchUserData = async (user: User): Promise<CloudUserData | null> =
         }
 
         const json = await response.json();
-        return json.found ? json.data : null;
-    } catch (error) {
+        if (json.found) {
+            return { success: true, data: json.data };
+        } else {
+            return { success: false, error: 'User not found in cloud', notFound: true };
+        }
+    } catch (error: any) {
         console.warn('Failed to fetch cloud data:', error);
-        return null;
+        return { success: false, error: error.message || 'Unknown error' };
     }
 };
 
