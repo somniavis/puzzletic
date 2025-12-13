@@ -233,20 +233,30 @@ export const PetRoom: React.FC<PetRoomProps> = ({
         const result = nurturing.feed(food);
 
         if (result.success) {
-          showBubble('playful', 1);
+          // 500ms 후 행복한 상태로 전환 (약 먹기 로직과 동일하게 맞춤)
+          setTimeout(() => {
+            showBubble('playful', 1);
+            onActionChange?.('happy');
 
-          // 똥 생성시 알림
-          if (result.sideEffects?.poopCreated) {
+            // 똥 생성시 알림
+            if (result.sideEffects?.poopCreated) {
+              setTimeout(() => {
+                showBubble('neutral', 1);
+              }, 1500);
+            }
+
             setTimeout(() => {
-              showBubble('neutral', 1);
-            }, 1500);
-          }
+              onActionChange?.('idle');
+              setIsSequenceActive(false); // Sequence finished
+            }, 2000);
+          }, 500);
+        } else {
+          // 실패 시 바로 복귀
+          setTimeout(() => {
+            onActionChange?.('idle');
+            setIsSequenceActive(false);
+          }, 1500);
         }
-
-        setTimeout(() => {
-          onActionChange?.('idle');
-          setIsSequenceActive(false); // Sequence finished
-        }, 1500);
       }, 100); // 100ms buffer
 
     }, 1200); // 애니메이션 시간 (1.2s)
