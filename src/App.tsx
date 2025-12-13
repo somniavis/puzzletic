@@ -22,16 +22,9 @@ import { GalleryPage } from './pages/GalleryPage'
 type CharacterSpeciesId =
   | 'yellowJello'
   | 'redJello'
-  | 'limeJello'
   | 'mintJello'
   | 'blueJello'
-  | 'creamJello'
-  | 'purpleJello'
-  | 'skyJello'
-  | 'brownJello'
-  | 'orangeJello'
-  | 'oliveJello'
-  | 'cyanJello';
+  | 'purpleJello';
 
 // Protected Route Wrapper
 const ProtectedRoute = ({ children }: { children: React.ReactElement }) => {
@@ -106,7 +99,7 @@ function AppContent() {
 
   const handleGiftOpen = () => {
     // Pick a random species
-    const validSpecies: CharacterSpeciesId[] = ['yellowJello', 'blueJello', 'purpleJello', 'limeJello', 'orangeJello', 'creamJello'];
+    const validSpecies: CharacterSpeciesId[] = ['yellowJello', 'blueJello', 'purpleJello', 'redJello', 'mintJello'];
     const randomSpecies = validSpecies[Math.floor(Math.random() * validSpecies.length)];
 
     // Create new character

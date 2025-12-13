@@ -24,7 +24,7 @@ export const RedJello: React.FC<RedJelloProps> = ({
   };
 
   const getImageUrl = () => {
-    return 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgC4hy1fOzO4iZ75moVbVu4SqZVuJRs-dmNl59RLkrbRhDLJC6qhq1qNLVD9upZN1CUHLhmu4GVZAJVq37jrFiQE6aPBDS0Z6VaFbw_GjJFN205jgfy2R6T4Z-z1ZH9No2kALcWmZxjM668DSpctXoP7jXUUXDHkYjo_5GiQzHpkC8q2DpWPHzBjR1GSbc/s185/slime1-2.png';
+    return 'https://pub-1411335941ed4406b5f667f40e04a814.r2.dev/jello_img/jello-red-1.png';
   };
 
   const sizeInPixels = getSizeInPixels();

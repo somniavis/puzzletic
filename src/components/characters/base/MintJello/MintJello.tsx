@@ -26,7 +26,7 @@ export const MintJello: React.FC<MintJelloProps> = ({
   // Base image URL (stage 1)
   const getImageUrl = () => {
     // You can add different images for different moods/actions if needed
-    return 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg14xQR92IIXYOmxM0ykDxQT0FOB0qS51P3U_zme8m7x-YItAVFHslH8ELNnoaeu1_HnifLRXYoKJBBJTgMWWqM3nyEiZhBI4BNCOMqINk4ZGuzJWfiJN9CuYDjlRDRQLtZL5V1Uu4VCwEq9yKe4EtF-YMd9XI6-DylHuEp9ztIRyf9ylsb49qSCmsqNJQ/s185/slime1-4.png';
+    return 'https://pub-1411335941ed4406b5f667f40e04a814.r2.dev/jello_img/jello-mint-1.png';
   };
 
   const sizeInPixels = getSizeInPixels();

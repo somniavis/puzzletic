@@ -26,7 +26,7 @@ export const BlueJello: React.FC<BlueJelloProps> = ({
   // Base image URL (stage 1)
   const getImageUrl = () => {
     // You can add different images for different moods/actions if needed
-    return 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj7B_XMYTTfjPCJW_YFMpN-pcTn7bVvTlcifAcNTJuwLMW5OgWXnCWcQUj_1UAR-NbAO9K8-hC1tqQn0KFYAgwwMayCAQL_SWwXPBWGp6DlaiFcN0nHGPS3do1FGYngJJPdaef-O_cym23QUYhypCatxKve4cIGgwuoCsJ66gwFIjc9gfMy-TGAnvCTK7A/s185/slime1-5.png';
+    return 'https://pub-1411335941ed4406b5f667f40e04a814.r2.dev/jello_img/jello-blue-1.png';
   };
 
   const sizeInPixels = getSizeInPixels();

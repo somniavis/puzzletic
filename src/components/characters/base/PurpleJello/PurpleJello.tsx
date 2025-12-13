@@ -26,7 +26,7 @@ export const PurpleJello: React.FC<PurpleJelloProps> = ({
   // Base image URL (stage 1)
   const getImageUrl = () => {
     // You can add different images for different moods/actions if needed
-    return 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjItO-N-JseI-Wgy8_2rcjrqFLMTKzXZfy6QA-aFybdohVYcQ9ZJ_PiK957_y_yePXr6lHEsDuMaxrSpDFTO_8cbqvQ7yGoq6Rg_lxGPPZmGzQuJa-8LZJOcwzTWt8nWcWYZIoFOfj5H1E7tkVRylBf0vRRl78isbHjb2Zx39twSm9rSEHhA_cYry0WbB8/s185/slime1-7.png';
+    return 'https://pub-1411335941ed4406b5f667f40e04a814.r2.dev/jello_img/jello-purple-1.png';
   };
 
   const sizeInPixels = getSizeInPixels();
