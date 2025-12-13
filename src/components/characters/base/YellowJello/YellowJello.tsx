@@ -26,7 +26,7 @@ export const YellowJello: React.FC<YellowJelloProps> = ({
   // Base image URL (stage 1)
   const getImageUrl = () => {
     // You can add different images for different moods/actions if needed
-    return 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhM7Keo6QrfjhrWbe5uy3bcIYBoj-YWGloRPfBcRxC8Ch1Vz5dMZBlY-PvuKGXPMOr-etzKr5rdCf_rTgeiRtUjZ6rIpH0Po4_TWOTmsWFccuqfubA8C8pnV9Eo0WVPDMertRrtzlT3AUoQSWjM8rReHkXAyKiDl6zBqoxvLtD9kEu7svHr6qInSX5x9IM/s185/slime1-1.png';
+    return 'https://pub-1411335941ed4406b5f667f40e04a814.r2.dev/jello_img/jello-yello-tmp2.png';
   };
 
   const sizeInPixels = getSizeInPixels();
