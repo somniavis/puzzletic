@@ -21,6 +21,7 @@ export const CHARACTER_SPECIES: Record<string, CharacterSpecies> = {
         requiredLevel: 10,
         requiredAffection: 50,
         description: 'A pear-shaped yellow jello with evolved features.',
+        imageUrl: 'https://pub-1411335941ed4406b5f667f40e04a814.r2.dev/jello_img/jello-yello-2.png',
       },
       {
         stage: 3,
@@ -65,6 +66,7 @@ export const CHARACTER_SPECIES: Record<string, CharacterSpecies> = {
         requiredLevel: 10,
         requiredAffection: 50,
         description: 'A devilish red jello with horn-like features.',
+        imageUrl: 'https://pub-1411335941ed4406b5f667f40e04a814.r2.dev/jello_img/jello-red-2.png',
       },
       {
         stage: 3,
@@ -109,6 +111,7 @@ export const CHARACTER_SPECIES: Record<string, CharacterSpecies> = {
         requiredLevel: 10,
         requiredAffection: 50,
         description: 'A mint jello with sprout-like features.',
+        imageUrl: 'https://pub-1411335941ed4406b5f667f40e04a814.r2.dev/jello_img/jello-mint-2.png',
       },
       {
         stage: 3,
@@ -152,7 +155,8 @@ export const CHARACTER_SPECIES: Record<string, CharacterSpecies> = {
         name: 'Blue Cat Jello',
         requiredLevel: 10,
         requiredAffection: 50,
-        description: 'A blue jello with cat-like ears and features.',
+        description: 'A blue jello with cat-like features.',
+        imageUrl: 'https://pub-1411335941ed4406b5f667f40e04a814.r2.dev/jello_img/jello-blue-2.png',
       },
       {
         stage: 3,
@@ -197,6 +201,7 @@ export const CHARACTER_SPECIES: Record<string, CharacterSpecies> = {
         requiredLevel: 10,
         requiredAffection: 50,
         description: 'A purple jello with imp-like features.',
+        imageUrl: 'https://pub-1411335941ed4406b5f667f40e04a814.r2.dev/jello_img/jello-purple-2.png',
       },
       {
         stage: 3,
