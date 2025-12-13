@@ -26,7 +26,7 @@ export const YellowJello: React.FC<YellowJelloProps> = ({
   // Base image URL (stage 1)
   const getImageUrl = () => {
     // You can add different images for different moods/actions if needed
-    return 'https://pub-1411335941ed4406b5f667f40e04a814.r2.dev/jello_img/jello-yello-tmp3.png';
+    return 'https://pub-1411335941ed4406b5f667f40e04a814.r2.dev/jello_img/jello-yello-tmp4.png';
   };
 
   const sizeInPixels = getSizeInPixels();
