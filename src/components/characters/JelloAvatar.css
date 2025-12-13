@@ -32,10 +32,7 @@
     animation: slime-wiggle 1.2s ease-in-out infinite;
 }
 
-.jello-avatar--eating {
-    /* User requested "wobbly" hover effect for eating */
-    animation: slime-hover-pulse 0.4s ease-in-out infinite;
-}
+
 
 .jello-avatar--sleeping {
     animation: slime-sleep 2s ease-in-out infinite;
@@ -147,18 +144,7 @@
     }
 }
 
-/* Eating animation */
-@keyframes slime-eat {
 
-    0%,
-    100% {
-        transform: scale(1);
-    }
-
-    50% {
-        transform: scale(1.15, 0.9);
-    }
-}
 
 /* Sleeping animation - slow gentle breathing */
 @keyframes slime-sleep {
@@ -175,28 +161,8 @@
     }
 }
 
-/* Chewing animation - Explicit wobble/squash as requested ("꿀렁꿀렁") */
-@keyframes slime-chew {
-
-    0%,
-    100% {
-        transform: scale(1, 1);
-    }
-
-    25% {
-        transform: scale(1.1, 0.9);
-    }
-
-    50% {
-        transform: scale(0.9, 1.1);
-    }
-
-    75% {
-        transform: scale(1.05, 0.95);
-    }
-}
 
 .jello-avatar--eating {
-    /* Use the new distinct chewing animation */
-    animation: slime-chew 0.4s ease-in-out infinite !important;
+    /* Match hover animation exactly as requested */
+    animation: slime-hover-pulse 0.6s ease-in-out infinite !important;
 }

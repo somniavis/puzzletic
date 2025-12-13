@@ -111,6 +111,8 @@ export const PetRoom: React.FC<PetRoomProps> = ({
   const [showNicknameModal, setShowNicknameModal] = useState(false);
   // Track if nickname step is done so we can show the box
   const [isNicknameSet, setIsNicknameSet] = useState(false);
+  // Manual sequence lock to bridge gaps between animation states (e.g. food disappearing -> action starting)
+  const [isSequenceActive, setIsSequenceActive] = useState(false);
 
   // Auto-show modal if we are in "GiftBox mode" (new user) and haven't set nickname yet
   useEffect(() => {
@@ -214,31 +216,40 @@ export const PetRoom: React.FC<PetRoomProps> = ({
     setShowFoodMenu(false);
 
     // 음식 먹는 애니메이션 시작 + 사운드
-    console.log('🍎 HandleFeed triggered:', food.nameKey);
+    setIsSequenceActive(true);
     setFlyingFood({ icon: food.icon, key: Date.now(), type: 'food' });
     playEatingSound();
 
     // 애니메이션 완료 후 실제 먹이기 실행
+    // 애니메이션 완료 후 실제 먹이기 실행
     setTimeout(() => {
-      setFlyingFood(null);
-      onActionChange?.('eating');
+      setFlyingFood(null); // 1. Remove food first
 
-      // 양육 시스템으로 먹이기 실행
-      const result = nurturing.feed(food);
+      // 2. Short buffer to ensure food is gone before jello starts moving
+      setTimeout(() => {
+        onActionChange?.('eating');
 
-      if (result.success) {
-        showBubble('playful', 1);
+        // 양육 시스템으로 먹이기 실행
+        const result = nurturing.feed(food);
 
-        // 똥 생성시 알림
-        if (result.sideEffects?.poopCreated) {
-          setTimeout(() => {
-            showBubble('neutral', 1);
-          }, 1500);
+        if (result.success) {
+          showBubble('playful', 1);
+
+          // 똥 생성시 알림
+          if (result.sideEffects?.poopCreated) {
+            setTimeout(() => {
+              showBubble('neutral', 1);
+            }, 1500);
+          }
         }
-      }
 
-      setTimeout(() => onActionChange?.('idle'), 1500);
-    }, 1200); // 애니메이션 시간
+        setTimeout(() => {
+          onActionChange?.('idle');
+          setIsSequenceActive(false); // Sequence finished
+        }, 1500);
+      }, 100); // 100ms buffer
+
+    }, 1200); // 애니메이션 시간 (1.2s)
   };
 
   const toggleFoodMenu = () => {
@@ -300,6 +311,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({
 
     // 약/주사 애니메이션 시작
     const isSyringe = medicine.id === 'syringe';
+    setIsSequenceActive(true);
     setFlyingFood({
       icon: medicine.icon,
       key: Date.now(),
@@ -316,25 +328,33 @@ export const PetRoom: React.FC<PetRoomProps> = ({
     // 애니메이션 완료 후 실제 약 먹이기 실행
     setTimeout(() => {
       setFlyingFood(null);
-      onActionChange?.(isSyringe ? 'sick' : 'eating'); // 주사는 아파함, 알약은 먹음
 
-      // 양육 시스템으로 약 먹이기 실행
-      const result = nurturing.giveMedicine(medicine);
+      setTimeout(() => {
+        onActionChange?.(isSyringe ? 'sick' : 'eating'); // 주사는 아파함, 알약은 먹음
 
-      if (result.success) {
-        setTimeout(() => {
-          showBubble('sick', 1); // Show relief
-          onActionChange?.('happy'); // 기뻐함
+        // 양육 시스템으로 약 먹이기 실행
+        const result = nurturing.giveMedicine(medicine);
 
+        if (result.success) {
+          setTimeout(() => {
+            showBubble('sick', 1); // Show relief
+            onActionChange?.('happy'); // 기뻐함
+
+            setTimeout(() => {
+              onActionChange?.('idle');
+              showBubble('joy', 1);
+              setIsSequenceActive(false); // Sequence finished
+            }, 2000);
+          }, 500); // 먹는 모션 후 반응
+        } else {
+          // Maybe show a "can't use this now" bubble
           setTimeout(() => {
             onActionChange?.('idle');
-            showBubble('joy', 1);
-          }, 2000);
-        }, 500); // 먹는 모션 후 반응
-      } else {
-        // Maybe show a "can't use this now" bubble
-        setTimeout(() => onActionChange?.('idle'), 1500);
-      }
+            setIsSequenceActive(false);
+          }, 1500);
+        }
+      }, 100);
+
     }, 1200); // 애니메이션 시간
   };
 
@@ -521,6 +541,15 @@ export const PetRoom: React.FC<PetRoomProps> = ({
     return character.name;
   };
 
+  // Check if any critical action/animation is currently in progress
+  const isActionInProgress =
+    action !== 'idle' ||
+    flyingFood !== null ||
+    isShowering ||
+    isBrushing ||
+    isCleaning ||
+    isSequenceActive;
+
   return (
     <div className="pet-room">
       {/* Loading Overlay */}
@@ -577,7 +606,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({
         <button
           className="shop-btn-floating"
           onClick={toggleShopMenu}
-          disabled={action !== 'idle' || showGiftBox}
+          disabled={isActionInProgress || showGiftBox}
           title={t('shop.menu.title', 'Shop')}
         >
           <span className="action-icon">🛖</span>
@@ -881,7 +910,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({
         <button
           className="action-btn action-btn--small"
           onClick={toggleFoodMenu}
-          disabled={action !== 'idle' && action !== 'eating' && action !== 'sick' || showGiftBox}
+          disabled={isActionInProgress || showGiftBox}
           title={t('actions.feed')}
         >
           <span className="action-icon">🍖</span>
@@ -890,7 +919,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({
         <button
           className="action-btn action-btn--small"
           onClick={toggleMedicineMenu}
-          disabled={action !== 'idle' && action !== 'sick' || showGiftBox}
+          disabled={isActionInProgress || showGiftBox}
           title={t('actions.medicine')}
         >
           <span className="action-icon">💊</span>
@@ -899,7 +928,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({
         <button
           className="action-btn action-btn--main"
           onClick={handlePlay}
-          disabled={action !== 'idle' || showGiftBox}
+          disabled={isActionInProgress || showGiftBox}
         >
           <span className="action-icon-large">🎾</span>
           <span className="action-label">{t('actions.play')}</span>
@@ -908,7 +937,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({
         <button
           className="action-btn action-btn--small"
           onClick={toggleCleanMenu}
-          disabled={action !== 'idle' || showGiftBox}
+          disabled={isActionInProgress || showGiftBox}
           title={t('actions.clean')}
         >
           <span className="action-icon">✨</span>

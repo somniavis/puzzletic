@@ -20,10 +20,7 @@ export const JelloAvatar: React.FC<JelloAvatarProps> = ({
     const targetSpeciesId = speciesId || character.speciesId;
     const species = CHARACTER_SPECIES[targetSpeciesId];
 
-    // Debug render action
-    if (action === 'eating') {
-        console.log('🍽️ JelloAvatar rendering action:', action);
-    }
+
 
     // If species not found (e.g. invalid ID), render placeholder or nothing
     if (!species) {
@@ -48,6 +45,7 @@ export const JelloAvatar: React.FC<JelloAvatarProps> = ({
 
     return (
         <div
+            key={`${targetSpeciesId}-${action}`}
             className={`jello-avatar jello-avatar--${action}`}
             onClick={onClick}
             style={{
