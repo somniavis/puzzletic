@@ -28,6 +28,7 @@ export interface CharacterEvolution {
   requiredLevel: number;
   requiredAffection: number;
   description?: string;
+  imageUrl?: string; // URL for the character image (optional for backward compatibility initially)
 }
 
 // 캐릭터 성격 특성

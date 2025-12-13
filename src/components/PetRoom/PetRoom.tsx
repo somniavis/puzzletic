@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Character, CharacterMood, CharacterAction } from '../../types/character';
-import { CHARACTERS } from '../characters';
+import { JelloAvatar } from '../characters/JelloAvatar';
 import { FOOD_ITEMS, FOOD_CATEGORIES, type FoodItem, type FoodCategory } from '../../types/food';
 import { MEDICINE_ITEMS, type MedicineItem } from '../../types/medicine';
 import { CLEANING_TOOLS, type CleaningTool } from '../../types/cleaning';
@@ -214,6 +214,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({
     setShowFoodMenu(false);
 
     // 음식 먹는 애니메이션 시작 + 사운드
+    console.log('🍎 HandleFeed triggered:', food.nameKey);
     setFlyingFood({ icon: food.icon, key: Date.now(), type: 'food' });
     playEatingSound();
 
@@ -486,7 +487,11 @@ export const PetRoom: React.FC<PetRoomProps> = ({
     });
   };
 
-  const CharacterComponent = CHARACTERS[speciesId as keyof typeof CHARACTERS];
+  /* 
+    Legacy component lookup removed.
+    Using generic JelloAvatar component.
+  */
+  const CharacterComponent = JelloAvatar;
 
   // Lightning Effect State
   const [lightningStyle, setLightningStyle] = useState<React.CSSProperties>({});

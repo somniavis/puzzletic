@@ -30,8 +30,8 @@ export const CharacterAdmin: React.FC<CharacterAdminProps> = ({ onCharacterSelec
   return (
     <div className="character-admin">
       <div className="admin-header">
-        <h1>Character Gallery</h1>
-        <p>Browse all characters by evolution stage</p>
+        <h1>Jello Gallery</h1>
+        <p>Browse all Jellos by evolution stage</p>
       </div>
 
       <div className="stage-selector">
@@ -59,15 +59,33 @@ export const CharacterAdmin: React.FC<CharacterAdminProps> = ({ onCharacterSelec
           <span className="stage-label">Stage 3</span>
           <span className="stage-sublabel">Master</span>
         </button>
+        <button
+          className={`stage-btn ${selectedStage === 4 ? 'active' : ''}`}
+          onClick={() => handleStageChange(4)}
+        >
+          <span className="stage-icon">🌟</span>
+          <span className="stage-label">Stage 4</span>
+          <span className="stage-sublabel">Legendary</span>
+        </button>
+        <button
+          className={`stage-btn ${selectedStage === 5 ? 'active' : ''}`}
+          onClick={() => handleStageChange(5)}
+        >
+          <span className="stage-icon">🪐</span>
+          <span className="stage-label">Stage 5</span>
+          <span className="stage-sublabel">Mythical</span>
+        </button>
       </div>
 
       <div className="gallery-container">
         <div className="gallery-info">
-          <h2>Stage {selectedStage} Characters</h2>
+          <h2>Stage {selectedStage} Jellos</h2>
           <p>
-            {selectedStage === 1 && 'These are the starter characters available for adoption.'}
-            {selectedStage === 2 && 'Characters evolve to this stage with training and care.'}
-            {selectedStage === 3 && 'The ultimate form - achieved through mastery and dedication.'}
+            {selectedStage === 1 && 'These are the starter Jellos available for adoption.'}
+            {selectedStage === 2 && 'Jellos evolve to this stage with training and care.'}
+            {selectedStage === 3 && 'A powerful form achieved through mastery and dedication.'}
+            {selectedStage === 4 && 'Legends say these Jellos possess immense power.'}
+            {selectedStage === 5 && 'The ultimate form, radiating god-like energy.'}
           </p>
         </div>
 

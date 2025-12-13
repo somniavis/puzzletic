@@ -19,12 +19,7 @@ import { SignupPage } from './pages/SignupPage'
 import { StatsPage } from './pages/StatsPage'
 import { GalleryPage } from './pages/GalleryPage'
 
-type CharacterSpeciesId =
-  | 'yellowJello'
-  | 'redJello'
-  | 'mintJello'
-  | 'blueJello'
-  | 'purpleJello';
+import { CHARACTER_SPECIES, type CharacterSpeciesId } from './data/species';
 
 // Protected Route Wrapper
 const ProtectedRoute = ({ children }: { children: React.ReactElement }) => {
@@ -98,8 +93,8 @@ function AppContent() {
   }
 
   const handleGiftOpen = () => {
-    // Pick a random species
-    const validSpecies: CharacterSpeciesId[] = ['yellowJello', 'blueJello', 'purpleJello', 'redJello', 'mintJello'];
+    // Pick a random species dynamically
+    const validSpecies = Object.keys(CHARACTER_SPECIES) as CharacterSpeciesId[];
     const randomSpecies = validSpecies[Math.floor(Math.random() * validSpecies.length)];
 
     // Create new character

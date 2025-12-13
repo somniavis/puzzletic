@@ -593,7 +593,8 @@
 .eating-food {
   position: absolute;
   font-size: 3rem;
-  z-index: 20;
+  z-index: 100;
+  /* Boosted z-index for visibility */
   pointer-events: none;
   transform: translateX(-50%) translateY(0);
   animation: eat-food 1.2s ease-out forwards;
@@ -621,7 +622,8 @@
 .injecting-medicine {
   position: absolute;
   font-size: 3rem;
-  z-index: 20;
+  z-index: 100;
+  /* Boosted z-index for visibility */
   pointer-events: none;
   /* Start from top-left relative to the pet position */
   transform-origin: center center;

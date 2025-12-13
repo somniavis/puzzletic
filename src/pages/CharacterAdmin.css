@@ -1,5 +1,10 @@
 .character-admin {
-  min-height: 100vh;
+  height: 100vh;
+  /* Changed from min-height to restrict to viewport */
+  overflow-y: auto;
+  /* Enable internal scrolling */
+  -webkit-overflow-scrolling: touch;
+  /* iOS smooth scrolling */
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   padding: 2rem;
 }

@@ -13,6 +13,7 @@ export const CHARACTER_SPECIES: Record<string, CharacterSpecies> = {
         requiredLevel: 1,
         requiredAffection: 0,
         description: 'A tiny yellow jello, soft and squishy.',
+        imageUrl: 'https://pub-1411335941ed4406b5f667f40e04a814.r2.dev/jello_img/jello-yello-1.png',
       },
       {
         stage: 2,
@@ -56,6 +57,7 @@ export const CHARACTER_SPECIES: Record<string, CharacterSpecies> = {
         requiredLevel: 1,
         requiredAffection: 0,
         description: 'A tiny red jello, bouncy and bright.',
+        imageUrl: 'https://pub-1411335941ed4406b5f667f40e04a814.r2.dev/jello_img/jello-red-1.png',
       },
       {
         stage: 2,
@@ -99,6 +101,7 @@ export const CHARACTER_SPECIES: Record<string, CharacterSpecies> = {
         requiredLevel: 1,
         requiredAffection: 0,
         description: 'A tiny mint jello, cool and refreshing.',
+        imageUrl: 'https://pub-1411335941ed4406b5f667f40e04a814.r2.dev/jello_img/jello-mint-1.png',
       },
       {
         stage: 2,
@@ -142,6 +145,7 @@ export const CHARACTER_SPECIES: Record<string, CharacterSpecies> = {
         requiredLevel: 1,
         requiredAffection: 0,
         description: 'A tiny blue jello, calm and serene.',
+        imageUrl: 'https://pub-1411335941ed4406b5f667f40e04a814.r2.dev/jello_img/jello-blue-1.png',
       },
       {
         stage: 2,
@@ -185,6 +189,7 @@ export const CHARACTER_SPECIES: Record<string, CharacterSpecies> = {
         requiredLevel: 1,
         requiredAffection: 0,
         description: 'A tiny purple jello, mysterious and charming.',
+        imageUrl: 'https://pub-1411335941ed4406b5f667f40e04a814.r2.dev/jello_img/jello-purple-1.png',
       },
       {
         stage: 2,
