@@ -37,6 +37,7 @@ export const CHARACTER_SPECIES: Record<string, CharacterSpecies> = {
         requiredLevel: 40,
         requiredAffection: 90,
         description: 'A star-shaped golden jello shining like the sun.',
+        imageUrl: 'https://pub-1411335941ed4406b5f667f40e04a814.r2.dev/jello_img/jello-yello-4L.png',
       },
       {
         stage: 5,
@@ -83,6 +84,7 @@ export const CHARACTER_SPECIES: Record<string, CharacterSpecies> = {
         requiredLevel: 40,
         requiredAffection: 90,
         description: 'A fearsome demon lord jello with blazing horns.',
+        imageUrl: 'https://pub-1411335941ed4406b5f667f40e04a814.r2.dev/jello_img/jello-red-4L.png',
       },
       {
         stage: 5,
@@ -129,6 +131,7 @@ export const CHARACTER_SPECIES: Record<string, CharacterSpecies> = {
         requiredLevel: 40,
         requiredAffection: 90,
         description: 'A phoenix-like mint jello with icy wings.',
+        imageUrl: 'https://pub-1411335941ed4406b5f667f40e04a814.r2.dev/jello_img/jello-mint-4L.png',
       },
       {
         stage: 5,
@@ -175,6 +178,7 @@ export const CHARACTER_SPECIES: Record<string, CharacterSpecies> = {
         requiredLevel: 40,
         requiredAffection: 90,
         description: 'A sea serpent-like blue jello from the depths.',
+        imageUrl: 'https://pub-1411335941ed4406b5f667f40e04a814.r2.dev/jello_img/jello-blue-4L.png',
       },
       {
         stage: 5,
@@ -221,6 +225,7 @@ export const CHARACTER_SPECIES: Record<string, CharacterSpecies> = {
         requiredLevel: 40,
         requiredAffection: 90,
         description: 'A wizard-like purple jello wielding arcane powers.',
+        imageUrl: 'https://pub-1411335941ed4406b5f667f40e04a814.r2.dev/jello_img/jello-purple-4L.png',
       },
       {
         stage: 5,
