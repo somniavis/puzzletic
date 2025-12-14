@@ -3,10 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useNurturing } from '../contexts/NurturingContext';
 import { CHARACTER_SPECIES } from '../data/species';
-import { JelloAvatar } from '../components/characters/JelloAvatar';
-import { createCharacter } from '../data/characters';
-import type { EvolutionStage } from '../types/character';
-import { Lock } from 'lucide-react';
+import { EvolutionNode } from '../components/Encyclopedia/EvolutionNode';
 import './EncyclopediaPage.css';
 
 // Color themes for each species
@@ -33,26 +30,6 @@ export const EncyclopediaPage: React.FC = () => {
         return speciesUnlocks ? speciesUnlocks.includes(stage) : false;
     };
 
-    const renderCell = (speciesId: string, stage: number) => {
-        // Create a temporary character object for rendering the avatar
-        // Removed useMemo as this function is called inside a loop/conditionally
-        const tempCharacter = createCharacter(speciesId);
-        tempCharacter.evolutionStage = stage as EvolutionStage;
-
-        return (
-            <div className="node-avatar-wrapper">
-                <JelloAvatar
-                    character={tempCharacter}
-                    speciesId={speciesId}
-                    size="small"
-                    action="idle"
-                    mood="neutral"
-                    disableAnimation={true}
-                />
-            </div>
-        );
-    };
-
     return (
         <div className="encyclopedia-page">
             <header className="encyclopedia-header">
@@ -69,7 +46,6 @@ export const EncyclopediaPage: React.FC = () => {
 
                         return (
                             <div key={species.id} className="species-track-section">
-                                {/* ... content ... */}
                                 <div className="species-info">
                                     <span
                                         className="species-name"
@@ -100,20 +76,13 @@ export const EncyclopediaPage: React.FC = () => {
                                                         )
                                                     )}
 
-                                                    {/* Node */}
+                                                    {/* Node Component */}
                                                     <div className="track-node-wrapper">
-                                                        <div className={`evolution-node ${unlocked ? 'unlocked' : 'locked'} ${stage === 5 ? 'hidden-node' : ''}`}>
-                                                            {unlocked ? (
-                                                                renderCell(species.id, stage)
-                                                            ) : (
-                                                                <div className="node-locked-content">
-                                                                    <Lock size={20} className="node-lock-icon" />
-                                                                    <span className="node-stage-label">
-                                                                        {stage === 5 ? '?' : stage}
-                                                                    </span>
-                                                                </div>
-                                                            )}
-                                                        </div>
+                                                        <EvolutionNode
+                                                            speciesId={species.id}
+                                                            stage={stage}
+                                                            isUnlocked={unlocked}
+                                                        />
                                                     </div>
                                                 </React.Fragment>
                                             );
