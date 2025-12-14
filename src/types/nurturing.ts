@@ -159,4 +159,5 @@ export interface NurturingPersistentState {
   evolutionStage: number; // 진화 단계 (1-5)
   speciesId?: string; // Current Jello Species ID
   history?: import('./character').CharacterHistory; // Hidden Evolution Tracking
+  unlockedJellos?: Record<string, number[]>; // Encyclopedia: { 'yellowJello': [1, 2], 'redJello': [1] }
 }

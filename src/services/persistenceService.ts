@@ -50,6 +50,7 @@ const createDefaultState = (): NurturingPersistentState => {
       actionsPerformed: {},
       totalLifetimeGroEarned: 0,
     },
+    unlockedJellos: {},
   };
 };
 
@@ -210,6 +211,24 @@ export const loadNurturingState = (): NurturingPersistentState => {
 
     if (!loaded.speciesId) {
       loaded.speciesId = 'yellowJello';
+    }
+
+    // 도감 초기화 (기존 유저 마이그레이션)
+    if (!loaded.unlockedJellos) {
+      console.log('🔄 Init encyclopedia for existing user');
+      loaded.unlockedJellos = {};
+
+      // 현재 키우고 있는 젤로의 모든 이전 단계 해금 처리
+      // (예: 현재 3단계라면 1, 2, 3단계 모두 해금된 것으로 간주)
+      if (loaded.speciesId && loaded.evolutionStage) {
+        const currentSpecies = loaded.speciesId;
+        const currentStage = loaded.evolutionStage;
+        const unlockedStages = [];
+        for (let i = 1; i <= currentStage; i++) {
+          unlockedStages.push(i);
+        }
+        loaded.unlockedJellos[currentSpecies] = unlockedStages;
+      }
     }
 
     return loaded as NurturingPersistentState;

@@ -18,6 +18,7 @@ import { LoginPage } from './pages/LoginPage'
 import { SignupPage } from './pages/SignupPage'
 import { StatsPage } from './pages/StatsPage'
 import { GalleryPage } from './pages/GalleryPage'
+import { EncyclopediaPage } from './pages/EncyclopediaPage'
 
 import { CHARACTER_SPECIES, type CharacterSpeciesId } from './data/species';
 
@@ -73,7 +74,7 @@ function AppContent() {
     setSelectedSpeciesId(id)
 
     // Update context
-    nurturing.setSpeciesId(id);
+    nurturing.setCharacterState(id, stage);
 
     const newCharacter = createCharacter(id);
     newCharacter.evolutionStage = stage; // Set the specific stage
@@ -121,7 +122,7 @@ function AppContent() {
 
     // Mark character as created in persistent state
     nurturing.completeCharacterCreation();
-    nurturing.setSpeciesId(randomSpecies);
+    nurturing.setCharacterState(randomSpecies, 1);
 
     // Trigger excitement
     setMood('excited');
@@ -185,6 +186,12 @@ function AppContent() {
       <Route path="/gallery" element={
         <ProtectedRoute>
           <GalleryPage onCharacterSelect={handleCharacterSelect} />
+        </ProtectedRoute>
+      } />
+
+      <Route path="/encyclopedia" element={
+        <ProtectedRoute>
+          <EncyclopediaPage />
         </ProtectedRoute>
       } />
 

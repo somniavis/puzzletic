@@ -67,6 +67,8 @@ interface NurturingContextValue {
   xp: number;
   evolutionStage: number;
   speciesId?: string;
+  unlockedJellos?: Record<string, number[]>;
+  setCharacterState: (id: string, stage: number) => void;
   addRewards: (xp: number, gro: number) => void;
 
   // 행동 (Actions)
@@ -94,7 +96,6 @@ interface NurturingContextValue {
   hasCharacter: boolean;
   completeCharacterCreation: () => void;
   saveToCloud: () => Promise<boolean>;
-  setSpeciesId: (id: string) => void;
 }
 
 const NurturingContext = createContext<NurturingContextValue | undefined>(undefined);
@@ -264,6 +265,22 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
         gro: (currentState.gro || 0) + groAmount,
         totalCurrencyEarned: (currentState.totalCurrencyEarned || 0) + groAmount,
       };
+
+      // Encyclopedia Unlock Logic
+      if (evolved && currentState.speciesId) {
+        const speciesId = currentState.speciesId;
+        const unlockedMap = newState.unlockedJellos || {};
+        const currentUnlocks = unlockedMap[speciesId] || [];
+
+        if (!currentUnlocks.includes(newStage)) {
+          // Add new stage
+          const updatedUnlocks = [...currentUnlocks, newStage].sort((a, b) => a - b);
+          newState.unlockedJellos = {
+            ...unlockedMap,
+            [speciesId]: updatedUnlocks
+          };
+        }
+      }
 
       if (evolved) {
         console.log(`🎉 EVOLUTION! Stage ${newStage}`);
@@ -843,9 +860,31 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     });
   }, []);
 
-  const setSpeciesId = useCallback((id: string) => {
+  // Updated to handle both species and stage (from Gallery/Admin)
+  const setCharacterState = useCallback((id: string, stage: number) => {
     setState(currentState => {
-      const newState = { ...currentState, speciesId: id };
+      // 1. 기본 상태 업데이트
+      const newState = {
+        ...currentState,
+        speciesId: id,
+        evolutionStage: stage
+      };
+
+      // 2. 도감 해금 처리 (Unlock Encyclopedia)
+      // 해당 종의 1부터 현재 stage까지 모두 해금
+      const unlockedMap = newState.unlockedJellos || {};
+      const currentUnlocks = unlockedMap[id] || [];
+      const newUnlocks = new Set(currentUnlocks);
+
+      for (let i = 1; i <= stage; i++) {
+        newUnlocks.add(i);
+      }
+
+      newState.unlockedJellos = {
+        ...unlockedMap,
+        [id]: Array.from(newUnlocks).sort((a, b) => a - b)
+      };
+
       saveNurturingState(newState);
       return newState;
     });
@@ -875,11 +914,12 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
 
     evolutionStage: state.evolutionStage || 1,
     speciesId: state.speciesId, // Expose speciesId
+    unlockedJellos: state.unlockedJellos,
     maxStats,
     addRewards,
     feed,
     giveMedicine,
-    setSpeciesId,
+    setCharacterState,
     clean,
     cleanBug,
     cleanAll,
