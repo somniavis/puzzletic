@@ -29,6 +29,7 @@ export const CHARACTER_SPECIES: Record<string, CharacterSpecies> = {
         requiredLevel: 25,
         requiredAffection: 80,
         description: 'A radiant yellow jello that glows brilliantly.',
+        imageUrl: 'https://pub-1411335941ed4406b5f667f40e04a814.r2.dev/jello_img/jello-yello-3.png',
       },
       {
         stage: 4,
@@ -74,6 +75,7 @@ export const CHARACTER_SPECIES: Record<string, CharacterSpecies> = {
         requiredLevel: 25,
         requiredAffection: 80,
         description: 'A deep crimson jello radiating power.',
+        imageUrl: 'https://pub-1411335941ed4406b5f667f40e04a814.r2.dev/jello_img/jello-red-3.png',
       },
       {
         stage: 4,
@@ -119,6 +121,7 @@ export const CHARACTER_SPECIES: Record<string, CharacterSpecies> = {
         requiredLevel: 25,
         requiredAffection: 80,
         description: 'A frosty arctic jello with icy beauty.',
+        imageUrl: 'https://pub-1411335941ed4406b5f667f40e04a814.r2.dev/jello_img/jello-mint-3.png',
       },
       {
         stage: 4,
@@ -164,6 +167,7 @@ export const CHARACTER_SPECIES: Record<string, CharacterSpecies> = {
         requiredLevel: 25,
         requiredAffection: 80,
         description: 'A majestic ocean jello with deep wisdom.',
+        imageUrl: 'https://pub-1411335941ed4406b5f667f40e04a814.r2.dev/jello_img/jello-blue-3.png',
       },
       {
         stage: 4,
@@ -209,6 +213,7 @@ export const CHARACTER_SPECIES: Record<string, CharacterSpecies> = {
         requiredLevel: 25,
         requiredAffection: 80,
         description: 'A regal purple jello fit for royalty.',
+        imageUrl: 'https://pub-1411335941ed4406b5f667f40e04a814.r2.dev/jello_img/jello-purple-3.png',
       },
       {
         stage: 4,
