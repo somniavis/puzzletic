@@ -5,6 +5,7 @@ import './JelloAvatar.css';
 
 interface JelloAvatarProps extends CharacterComponentProps {
     speciesId?: string; // Optional override, otherwise use character.speciesId
+    disableAnimation?: boolean; // New prop to stop float/bounce
 }
 
 export const JelloAvatar: React.FC<JelloAvatarProps> = ({
@@ -14,13 +15,11 @@ export const JelloAvatar: React.FC<JelloAvatarProps> = ({
     action = 'idle',
     mood: _mood = 'neutral',
     onClick,
+    disableAnimation = false,
 }) => {
     // Use passed speciesId or fall back to character's speciesId
-    // This allows previewing other species with a dummy character object if needed
     const targetSpeciesId = speciesId || character.speciesId;
     const species = CHARACTER_SPECIES[targetSpeciesId];
-
-
 
     // If species not found (e.g. invalid ID), render placeholder or nothing
     if (!species) {
@@ -46,7 +45,7 @@ export const JelloAvatar: React.FC<JelloAvatarProps> = ({
     return (
         <div
             key={`${targetSpeciesId}-${action}`}
-            className={`jello-avatar jello-avatar--${action}`}
+            className={`jello-avatar jello-avatar--${action} ${disableAnimation ? 'no-animation' : ''}`}
             onClick={onClick}
             style={{
                 width: sizeInPixels,

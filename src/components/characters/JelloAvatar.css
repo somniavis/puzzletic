@@ -38,6 +38,30 @@
     animation: slime-sleep 2s ease-in-out infinite;
 }
 
+/* Idle Float Animation */
+@keyframes float {
+    0% {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+
+    100% {
+        transform: translateY(0px);
+    }
+}
+
+.jello-avatar--idle {
+    animation: float 3s ease-in-out infinite;
+}
+
+.jello-avatar.no-animation {
+    animation: none !important;
+    transform: none !important;
+}
+
 /* Idle state - gentle floating */
 @keyframes slime-idle-float {
 

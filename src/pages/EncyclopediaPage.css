@@ -182,7 +182,7 @@
 }
 
 .encyclopedia-cell.unlocked {
-    /* Default style */
+    position: relative;
 }
 
 .encyclopedia-cell.locked {
@@ -225,56 +225,51 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
     width: 100%;
     height: 100%;
-    padding: 0.5rem;
+    padding: 0;
+    /* Remove padding to let wrapper fill */
     box-sizing: border-box;
-}
-
-.jello-wrapper {
-    flex: 1;
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    position: relative;
+    /* Context for absolute name */
 }
 
 /* Scale down avatar to fit */
 .jello-scale-wrapper {
-    transform: scale(0.7);
+    transform: scale(0.6);
+    /* Slightly increased from 0.5 for balance */
     display: flex;
     align-items: center;
     justify-content: center;
+    width: 100%;
+    height: 100%;
 }
 
-.jello-name {
-    font-size: 0.65rem;
-    font-weight: 700;
-    text-align: center;
+.jello-wrapper {
     width: 100%;
-    color: #4d3e2f;
-    background: rgba(255, 255, 255, 0.8);
-    border-radius: 4px;
-    padding: 2px 4px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    margin-top: auto;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 0;
+    left: 0;
 }
 
 .locked-content {
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 0.5rem;
-    opacity: 0.6;
+    width: 100%;
     height: 100%;
+    opacity: 0.5;
 }
 
 .lock-icon {
     color: #6d4e3f;
+    /* Size is controlled by props, but we can ensure it doesn't shrink */
+    flex-shrink: 0;
 }
 
 /* Mobile Responsiveness */

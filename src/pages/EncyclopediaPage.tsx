@@ -5,7 +5,7 @@ import { CHARACTER_SPECIES } from '../data/species';
 import { JelloAvatar } from '../components/characters/JelloAvatar';
 import { createCharacter } from '../data/characters';
 import type { EvolutionStage } from '../types/character';
-import { X, Lock } from 'lucide-react';
+import { Lock } from 'lucide-react';
 import './EncyclopediaPage.css';
 
 export const EncyclopediaPage: React.FC = () => {
@@ -13,11 +13,7 @@ export const EncyclopediaPage: React.FC = () => {
     const { unlockedJellos } = useNurturing();
     const speciesList = Object.values(CHARACTER_SPECIES);
 
-    const getJelloName = (speciesId: string, stage: number) => {
-        const species = CHARACTER_SPECIES[speciesId];
-        const evolution = species.evolutions.find(e => e.stage === stage);
-        return evolution?.name || species.name;
-    };
+
 
     const isUnlocked = (speciesId: string, stage: number) => {
         return unlockedJellos?.[speciesId]?.includes(stage);
@@ -37,25 +33,21 @@ export const EncyclopediaPage: React.FC = () => {
             <div className={`encyclopedia-cell ${unlocked ? 'unlocked' : 'locked'} ${stage === 5 ? 'hidden-stage' : ''}`}>
                 <div className="cell-content">
                     {unlocked ? (
-                        <>
-                            <div className="jello-wrapper">
-                                <div className="jello-scale-wrapper">
-                                    <JelloAvatar
-                                        character={tempCharacter}
-                                        speciesId={speciesId}
-                                        size="small"
-                                        action="idle"
-                                        mood="neutral"
-                                    />
-                                </div>
+                        <div className="jello-wrapper">
+                            <div className="jello-scale-wrapper">
+                                <JelloAvatar
+                                    character={tempCharacter}
+                                    speciesId={speciesId}
+                                    size="small"
+                                    action="idle"
+                                    mood="neutral"
+                                    disableAnimation={true}
+                                />
                             </div>
-                            <div className="jello-name">{getJelloName(speciesId, stage)}</div>
-                        </>
+                        </div>
                     ) : (
                         <div className="locked-content">
-                            {/* Option: Show silhouette if previous stage unlocked? For now, lock icon */}
-                            <Lock size={24} className="lock-icon" />
-                            <div className="jello-name">???</div>
+                            <Lock size={32} className="lock-icon" />
                         </div>
                     )}
                 </div>
