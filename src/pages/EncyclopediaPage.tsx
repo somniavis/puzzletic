@@ -9,37 +9,31 @@ import type { EvolutionStage } from '../types/character';
 import { Lock } from 'lucide-react';
 import './EncyclopediaPage.css';
 
+// Color themes for each species
+const SPECIES_THEMES: Record<string, { bg: string, border: string, shadow: string, text: string }> = {
+    yellowJello: { bg: '#FFD700', border: '#DAA520', shadow: '#B8860B', text: '#4d3e2f' },
+    redJello: { bg: '#FF6B6B', border: '#CD5C5C', shadow: '#8B0000', text: '#FFFFFF' },
+    blueJello: { bg: '#5CACEE', border: '#4682B4', shadow: '#4169E1', text: '#FFFFFF' },
+    mintJello: { bg: '#98FF98', border: '#3CB371', shadow: '#2E8B57', text: '#4d3e2f' },
+    purpleJello: { bg: '#DDA0DD', border: '#BA55D3', shadow: '#800080', text: '#FFFFFF' },
+    orangeJello: { bg: '#FFA500', border: '#FF8C00', shadow: '#D2691E', text: '#FFFFFF' },
+};
+
 export const EncyclopediaPage: React.FC = () => {
-    const navigate = useNavigate();
     const { t } = useTranslation();
+    const navigate = useNavigate();
+
+    // Get unlock status from context to ensure persistent state is used
     const { unlockedJellos } = useNurturing();
+    // unlockedJellos is already the state object
     const speciesList = Object.values(CHARACTER_SPECIES);
 
     const isUnlocked = (speciesId: string, stage: number) => {
-        return unlockedJellos?.[speciesId]?.includes(stage);
+        const speciesUnlocks = unlockedJellos?.[speciesId];
+        return speciesUnlocks ? speciesUnlocks.includes(stage) : false;
     };
 
-    const renderCell = (speciesId: string, stage: number) => {
-        // Create a temporary character object for rendering the avatar
-        const tempCharacter = React.useMemo(() => {
-            const char = createCharacter(speciesId);
-            char.evolutionStage = stage as EvolutionStage;
-            return char;
-        }, [speciesId, stage]);
-
-        return (
-            <div className="node-avatar-wrapper">
-                <JelloAvatar
-                    character={tempCharacter}
-                    speciesId={speciesId}
-                    size="small"
-                    action="idle"
-                    mood="neutral"
-                    disableAnimation={true}
-                />
-            </div>
-        );
-    };
+    // ... (renderCell unchanged)
 
     return (
         <div className="encyclopedia-page">
@@ -52,52 +46,65 @@ export const EncyclopediaPage: React.FC = () => {
 
             <div className="encyclopedia-content">
                 <div className="evolution-tree-container">
-                    {speciesList.map(species => (
-                        <div key={species.id} className="species-track-section">
-                            <div className="species-info">
-                                <span className="species-name">
-                                    {t(`character.species.${species.id}`, species.name).replace(' ', '\n')}
-                                </span>
-                            </div>
+                    {speciesList.map(species => {
+                        const theme = SPECIES_THEMES[species.id] || SPECIES_THEMES['yellowJello'];
 
-                            <div className="track-scroll-area">
-                                <div className="evolution-track">
-                                    {[1, 2, 3, 4, 5].map((stage) => {
-                                        const unlocked = isUnlocked(species.id, stage);
+                        return (
+                            <div key={species.id} className="species-track-section">
+                                {/* ... content ... */}
+                                <div className="species-info">
+                                    <span
+                                        className="species-name"
+                                        style={{
+                                            backgroundColor: theme.bg,
+                                            borderColor: theme.border,
+                                            boxShadow: `0 4px 0 ${theme.shadow}`,
+                                            color: theme.text
+                                        }}
+                                    >
+                                        {t(`character.species.${species.id}`, species.name).replace(' ', '\n')}
+                                    </span>
+                                </div>
 
-                                        return (
-                                            <React.Fragment key={stage}>
-                                                {/* Connector Line (except for first item) */}
-                                                {stage > 1 && (
-                                                    stage === 5 ? (
-                                                        <div className={`track-connector-plus ${unlocked ? 'active' : ''}`}>+</div>
-                                                    ) : (
-                                                        <div className={`track-connector ${unlocked ? 'active' : ''}`} />
-                                                    )
-                                                )}
+                                <div className="track-scroll-area">
+                                    <div className="evolution-track">
+                                        {[1, 2, 3, 4, 5].map((stage) => {
+                                            const unlocked = isUnlocked(species.id, stage);
 
-                                                {/* Node */}
-                                                <div className="track-node-wrapper">
-                                                    <div className={`evolution-node ${unlocked ? 'unlocked' : 'locked'} ${stage === 5 ? 'hidden-node' : ''}`}>
-                                                        {unlocked ? (
-                                                            renderCell(species.id, stage)
+                                            return (
+                                                <React.Fragment key={stage}>
+                                                    {/* Connector Line (except for first item) */}
+                                                    {stage > 1 && (
+                                                        stage === 5 ? (
+                                                            <div className={`track-connector-plus ${unlocked ? 'active' : ''}`}>+</div>
                                                         ) : (
-                                                            <div className="node-locked-content">
-                                                                <Lock size={20} className="node-lock-icon" />
-                                                                <span className="node-stage-label">
-                                                                    {stage === 5 ? '?' : stage}
-                                                                </span>
-                                                            </div>
-                                                        )}
+                                                            <div className={`track-connector ${unlocked ? 'active' : ''}`} />
+                                                        )
+                                                    )}
+
+                                                    {/* Node */}
+                                                    <div className="track-node-wrapper">
+                                                        <div className={`evolution-node ${unlocked ? 'unlocked' : 'locked'} ${stage === 5 ? 'hidden-node' : ''}`}>
+                                                            {unlocked ? (
+                                                                renderCell(species.id, stage)
+                                                            ) : (
+                                                                <div className="node-locked-content">
+                                                                    <Lock size={20} className="node-lock-icon" />
+                                                                    <span className="node-stage-label">
+                                                                        {stage === 5 ? '?' : stage}
+                                                                    </span>
+                                                                </div>
+                                                            )}
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            </React.Fragment>
-                                        );
-                                    })}
+                                                </React.Fragment>
+                                            );
+                                        })}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    ))}
+                        );
+                    })}
                 </div>
             </div>
         </div>

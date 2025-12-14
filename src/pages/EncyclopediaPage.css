@@ -111,11 +111,10 @@
     font-size: 1rem;
     font-weight: 800;
     color: #4d3e2f;
-    background: #FFD700;
     padding: 0.5rem 1rem;
     border-radius: 12px;
-    border: 3px solid #DAA520;
-    box-shadow: 0 4px 0 #B8860B;
+    border: 3px solid;
+    /* Color driven by inline style */
     text-align: center;
     width: 100%;
     line-height: 1.2;
