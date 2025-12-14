@@ -64,15 +64,17 @@
 }
 
 /* Content Area */
+/* Content Area */
 .encyclopedia-content {
     flex: 1;
     overflow-y: auto;
     min-height: 0;
     /* Critical for flex scrolling */
-    padding: 20px;
+    padding: 0;
+    /* Remove padding so sticky header hits top */
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    /* gap: 20px; Removed gap as padding is handled inside now */
     max-width: 1200px;
     margin: 0 auto;
     width: 100%;
@@ -89,15 +91,16 @@
     background: #FDF5E6;
     /* Match header background */
     border-radius: 20px;
-    padding: 0;
-    /* REMOVE internal padding to allow full-width header */
-    padding-bottom: 1.5rem;
-    /* Only bottom padding needed */
+    padding: 1.5rem;
+    /* Add padding back here */
     border: 4px solid #8B4513;
     /* Solid border instead of dashed */
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
     /* Lifted paper effect */
-    /* overflow: hidden; - Removed to fix vertical scrolling issues */
+    margin: 20px;
+    /* Add margin for desktop "floating" look */
+    position: relative;
+    /* Ensure stacking context */
 }
 
 /* Grid Headers */
@@ -110,15 +113,23 @@
     top: 0;
     background: #FDF5E6;
     /* Same as container */
-    z-index: 5;
+    z-index: 100;
+    /* High z-index to stay on top of rows */
 
     /* Padding applied directly to the row to align with content */
-    padding: 1.5rem;
+    padding: 1rem 0;
+    /* Vertical padding only, horizontal handled by grid padding */
     padding-bottom: 1rem;
 
     border-bottom: 3px solid rgba(139, 69, 19, 0.2);
     /* Subtle separator */
-    border-radius: 16px 16px 0 0;
+
+    /* Compensate for Grid padding to hit the literal edge? 
+       No, header clips to content box. 
+       If margin or padding exists above, sticky stops at edge of that box.
+       To prevent content scrolling "above" header in the padding area:
+       We rely on Opaque Background. 
+    */
 }
 
 /* Grid Headers Column - Remove individual background as row has it */
@@ -142,7 +153,7 @@
     gap: 1rem;
     align-items: center;
     /* Apply same padding as header to align columns perfectly */
-    padding: 0 1.5rem;
+    padding: 0;
 }
 
 .grid-header-row-label {

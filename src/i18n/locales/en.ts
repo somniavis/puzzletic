@@ -470,6 +470,13 @@ export const en = {
       stats: 'Stats',
     },
   },
+  encyclopedia: {
+    title: 'Encyclopedia',
+    home: 'Home',
+    species: 'Species',
+    stage: 'Stage {{stage}}',
+    hidden: 'HIDDEN',
+  },
   auth: {
     login: {
       title: 'Hello there!',

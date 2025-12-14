@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useNurturing } from '../contexts/NurturingContext';
 import { CHARACTER_SPECIES } from '../data/species';
 import { JelloAvatar } from '../components/characters/JelloAvatar';
@@ -10,10 +11,9 @@ import './EncyclopediaPage.css';
 
 export const EncyclopediaPage: React.FC = () => {
     const navigate = useNavigate();
+    const { t } = useTranslation();
     const { unlockedJellos } = useNurturing();
     const speciesList = Object.values(CHARACTER_SPECIES);
-
-
 
     const isUnlocked = (speciesId: string, stage: number) => {
         return unlockedJellos?.[speciesId]?.includes(stage);
@@ -58,9 +58,9 @@ export const EncyclopediaPage: React.FC = () => {
     return (
         <div className="encyclopedia-page">
             <header className="encyclopedia-header">
-                <h1>📚 Encyclopedia</h1>
+                <h1>📚 {t('encyclopedia.title')}</h1>
                 <button className="close-button" onClick={() => navigate('/home')}>
-                    🏠 Home
+                    🏠 {t('encyclopedia.home')}
                 </button>
             </header>
 
@@ -68,10 +68,10 @@ export const EncyclopediaPage: React.FC = () => {
                 <div className="encyclopedia-grid">
                     {/* Header Row */}
                     <div className="grid-header-row">
-                        <div className="grid-header-col" style={{ visibility: 'hidden' }}>Species</div>
+                        <div className="grid-header-col" style={{ visibility: 'hidden' }}>{t('encyclopedia.species')}</div>
                         {[1, 2, 3, 4, 5].map(stage => (
                             <div key={stage} className="grid-header-col">
-                                {stage === 5 ? 'HIDDEN' : `Stage ${stage}`}
+                                {stage === 5 ? t('encyclopedia.hidden') : t('encyclopedia.stage', { stage })}
                             </div>
                         ))}
                     </div>
@@ -80,7 +80,7 @@ export const EncyclopediaPage: React.FC = () => {
                     {speciesList.map(species => (
                         <div key={species.id} className="grid-row">
                             <div className="grid-header-row-label">
-                                <span className="species-label-text">{species.name.replace(' Jello', '')}</span>
+                                <span className="species-label-text">{t(`character.species.${species.id}`, species.name.replace(' Jello', ''))}</span>
                             </div>
                             {[1, 2, 3, 4, 5].map(stage => (
                                 <div key={`${species.id}-${stage}`} className="grid-cell-wrapper">
