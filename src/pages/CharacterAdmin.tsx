@@ -5,7 +5,7 @@ import { CharacterGallery } from '../components/CharacterGallery/CharacterGaller
 import './CharacterAdmin.css';
 
 interface CharacterAdminProps {
-  onCharacterSelect?: (speciesId: string) => void;
+  onCharacterSelect?: (speciesId: string, stage: EvolutionStage) => void;
 }
 
 export const CharacterAdmin: React.FC<CharacterAdminProps> = ({ onCharacterSelect }) => {
@@ -20,10 +20,10 @@ export const CharacterAdmin: React.FC<CharacterAdminProps> = ({ onCharacterSelec
 
   const handleSpeciesSelect = (speciesId: string) => {
     setSelectedSpecies(speciesId);
-    console.log('Selected species:', speciesId);
+    console.log('Selected species:', speciesId, 'Stage:', selectedStage);
     // Call parent callback if provided
     if (onCharacterSelect) {
-      onCharacterSelect(speciesId);
+      onCharacterSelect(speciesId, selectedStage);
     }
   };
 

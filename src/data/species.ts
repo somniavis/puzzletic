@@ -236,6 +236,53 @@ export const CHARACTER_SPECIES: Record<string, CharacterSpecies> = {
       },
     ],
   },
+  orangeJello: {
+    id: 'orangeJello',
+    name: 'Orange Jello',
+    description: 'A tangy and zestful orange jello full of vitamins.',
+    personality: 'energetic',
+    evolutions: [
+      {
+        stage: 1,
+        name: 'Orange Jello',
+        requiredLevel: 1,
+        requiredAffection: 0,
+        description: 'A tiny orange jello, bursting with energy.',
+        imageUrl: 'https://pub-1411335941ed4406b5f667f40e04a814.r2.dev/jello_img/jello-orange-1.png',
+      },
+      {
+        stage: 2,
+        name: 'Mandarin Jello',
+        requiredLevel: 10,
+        requiredAffection: 50,
+        description: 'A sweet mandarin jello with a refreshing scent.',
+        imageUrl: 'https://pub-1411335941ed4406b5f667f40e04a814.r2.dev/jello_img/jello-orange-2.png',
+      },
+      {
+        stage: 3,
+        name: 'Citrus Burst Jello',
+        requiredLevel: 25,
+        requiredAffection: 80,
+        description: 'A vibrant citrus jello that energizes everyone around.',
+        imageUrl: 'https://pub-1411335941ed4406b5f667f40e04a814.r2.dev/jello_img/jello-orange-3.png',
+      },
+      {
+        stage: 4,
+        name: 'Vitamin King Jello',
+        requiredLevel: 40,
+        requiredAffection: 90,
+        description: 'The ultimate orange jello, the embodiment of vitality.',
+        imageUrl: 'https://pub-1411335941ed4406b5f667f40e04a814.r2.dev/jello_img/jello-orange-4L.png',
+      },
+      {
+        stage: 5,
+        name: 'Eternal Sun Jello',
+        requiredLevel: 60,
+        requiredAffection: 100,
+        description: 'A jello radiating eternal warmth and life.',
+      },
+    ],
+  },
 };
 
 // Export type for species IDs

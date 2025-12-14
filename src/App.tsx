@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import './App.css'
 import { PetRoom } from './components/PetRoom/PetRoom'
 import { createCharacter } from './data/characters'
-import type { CharacterAction, CharacterMood, Character } from './types/character'
+import type { CharacterAction, CharacterMood, Character, EvolutionStage } from './types/character'
 import { NurturingProvider, useNurturing } from './contexts/NurturingContext'
 import { SoundProvider } from './contexts/SoundContext'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
@@ -58,10 +58,14 @@ function AppContent() {
     preloadSounds();
   }, []);
 
-  const handleCharacterSelect = (speciesId: string) => {
+  const handleCharacterSelect = (speciesId: string, stage: EvolutionStage = 1) => {
     const id = speciesId as CharacterSpeciesId;
     setSelectedSpeciesId(id)
-    setCharacter(createCharacter(id))
+
+    const newCharacter = createCharacter(id);
+    newCharacter.evolutionStage = stage; // Set the specific stage
+    setCharacter(newCharacter);
+
     // Reset mood and action when changing character
     setMood('neutral')
     setAction('idle')
