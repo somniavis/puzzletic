@@ -549,7 +549,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
   const clean = useCallback((_tool: CleaningTool): ActionResult => {
     return performAction(
       (currentState) => serviceClean(currentState.stats, currentState.poops),
-      (result, currentState) => {
+      (_result, currentState) => {
         const newHistory = {
           ...(currentState.history || {
             foodsEaten: {}, gamesPlayed: {}, actionsPerformed: {}, totalLifetimeGroEarned: 0
@@ -565,7 +565,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
 
   const play = useCallback((): ActionResult => {
     return performAction((currentState) => servicePlay(currentState.stats),
-      (result, currentState) => {
+      (_result, currentState) => {
         const newHistory = {
           ...(currentState.history || {
             foodsEaten: {}, gamesPlayed: {}, actionsPerformed: {}, totalLifetimeGroEarned: 0

@@ -64,7 +64,7 @@ function AppContent() {
       console.log('🔄 Restoring species from persistence:', nurturing.speciesId);
       const restoredId = nurturing.speciesId as CharacterSpeciesId;
       setSelectedSpeciesId(restoredId);
-      setCharacter(prev => createCharacter(restoredId));
+      setCharacter(() => createCharacter(restoredId));
     }
   }, [nurturing.speciesId]); // Only trigger when persisted speciesId changes
 
