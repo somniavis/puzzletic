@@ -33,7 +33,25 @@ export const EncyclopediaPage: React.FC = () => {
         return speciesUnlocks ? speciesUnlocks.includes(stage) : false;
     };
 
-    // ... (renderCell unchanged)
+    const renderCell = (speciesId: string, stage: number) => {
+        // Create a temporary character object for rendering the avatar
+        // Removed useMemo as this function is called inside a loop/conditionally
+        const tempCharacter = createCharacter(speciesId);
+        tempCharacter.evolutionStage = stage as EvolutionStage;
+
+        return (
+            <div className="node-avatar-wrapper">
+                <JelloAvatar
+                    character={tempCharacter}
+                    speciesId={speciesId}
+                    size="small"
+                    action="idle"
+                    mood="neutral"
+                    disableAnimation={true}
+                />
+            </div>
+        );
+    };
 
     return (
         <div className="encyclopedia-page">
