@@ -49,8 +49,6 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    width: auto;
-    height: auto;
 }
 
 .close-button:hover {
@@ -63,156 +61,222 @@
     box-shadow: 0 0 0 #3d2e1f;
 }
 
-/* Content Area */
-/* Content Area */
+/* Evolution Tree Container */
 .encyclopedia-content {
     flex: 1;
     overflow-y: auto;
-    min-height: 0;
-    /* Critical for flex scrolling */
-    padding: 0;
-    /* Remove padding so sticky header hits top */
+    padding: 20px;
     display: flex;
     flex-direction: column;
-    /* gap: 20px; Removed gap as padding is handled inside now */
-    max-width: 1200px;
-    margin: 0 auto;
     width: 100%;
     box-sizing: border-box;
 }
 
-.encyclopedia-grid {
+.evolution-tree-container {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
-    min-width: 600px;
-    /* Ensure horizontal scroll on small screens */
-    padding-bottom: 2rem;
-    background: #FDF5E6;
-    /* Match header background */
-    border-radius: 20px;
-    padding: 1.5rem;
-    /* Add padding back here */
-    border: 4px solid #8B4513;
-    /* Solid border instead of dashed */
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
-    /* Lifted paper effect */
-    margin: 20px;
-    /* Add margin for desktop "floating" look */
-    position: relative;
-    /* Ensure stacking context */
-}
-
-/* Grid Headers */
-.grid-header-row {
-    display: grid;
-    grid-template-columns: 80px repeat(5, minmax(0, 1fr));
-    gap: 1rem;
-    margin-bottom: 0.5rem;
-    position: sticky;
-    top: 0;
-    background: #FDF5E6;
-    /* Same as container */
-    z-index: 100;
-    /* High z-index to stay on top of rows */
-
-    /* Padding applied directly to the row to align with content */
-    padding: 1rem 0;
-    /* Vertical padding only, horizontal handled by grid padding */
-    padding-bottom: 1rem;
-
-    border-bottom: 3px solid rgba(139, 69, 19, 0.2);
-    /* Subtle separator */
-
-    /* Compensate for Grid padding to hit the literal edge? 
-       No, header clips to content box. 
-       If margin or padding exists above, sticky stops at edge of that box.
-       To prevent content scrolling "above" header in the padding area:
-       We rely on Opaque Background. 
-    */
-}
-
-/* Grid Headers Column - Remove individual background as row has it */
-.grid-header-col {
-    text-align: center;
-    font-weight: 800;
-    font-size: 0.9rem;
-    color: #8B4513;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    padding: 0.5rem;
-    background: rgba(255, 255, 255, 0.5);
-    /* Keep slightly distinct pill */
-    border-radius: 8px;
-}
-
-/* Rows */
-.grid-row {
-    display: grid;
-    grid-template-columns: 80px repeat(5, minmax(0, 1fr));
-    gap: 1rem;
-    align-items: center;
-    /* Apply same padding as header to align columns perfectly */
-    padding: 0;
-}
-
-.grid-header-row-label {
-    font-weight: 800;
-    font-size: 0.9rem;
-    color: #4d3e2f;
-    text-align: right;
-    padding-right: 0.5rem;
-    text-transform: uppercase;
-    line-height: 1.2;
-}
-
-.species-label-text {
-    background: #FFF9E6;
-    padding: 4px 8px;
-    border-radius: 8px;
-    border: 2px solid #8B4513;
-    display: inline-block;
-    box-shadow: 0 2px 0 #8B4513;
-}
-
-/* Cells - Card Style */
-.encyclopedia-cell {
+    gap: 2rem;
+    max-width: 1000px;
+    margin: 0 auto;
     width: 100%;
-    /* Force width to fill minmax(0, 1fr) */
-    aspect-ratio: 1;
-    background: linear-gradient(180deg, #FFFFFF 0%, #F5F5DC 100%);
-    border-radius: 16px;
-    border: 3px solid #8B4513;
+}
+
+/* Species Track Section */
+.species-track-section {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 20px;
+    padding: 1rem;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    border: 3px solid #fff;
+    display: flex;
+    flex-direction: row;
+    /* Ensure row layout */
+    align-items: center;
+    /* Center horizontally */
+    gap: 1rem;
+    flex-wrap: nowrap;
+    /* Prevent wrapping */
+}
+
+.species-info {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 140px;
+    /* Fixed width for alignment */
+    flex-shrink: 0;
+}
+
+.species-name {
+    font-size: 1rem;
+    font-weight: 800;
+    color: #4d3e2f;
+    background: #FFD700;
+    padding: 0.5rem 1rem;
+    border-radius: 12px;
+    border: 3px solid #DAA520;
+    box-shadow: 0 4px 0 #B8860B;
+    text-align: center;
+    width: 100%;
+    line-height: 1.2;
+    white-space: pre-line;
+}
+
+/* Scrollable Track Area */
+.track-scroll-area {
+    /* width: 100%; Removed to prevent forcing wrap */
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 20px 10px;
+    /* More vertical padding for hover effects */
+    margin: -20px 0;
+    /* Compensate for padding */
+    /* Hide scrollbar */
+    scrollbar-width: thin;
+    scrollbar-color: #8B4513 transparent;
+    flex: 1;
+    /* Take remaining space */
+    min-width: 0;
+    /* Allow flex item to shrink below content size if needed */
+}
+
+.track-scroll-area::-webkit-scrollbar {
+    height: 8px;
+}
+
+.track-scroll-area::-webkit-scrollbar-thumb {
+    background-color: #8B4513;
+    border-radius: 4px;
+}
+
+.evolution-track {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    /* Fill available space */
+    padding: 0 10px;
+}
+
+/* Connectors */
+.track-connector {
+    /* width: 40px; Removed fixed width */
+    height: 6px;
+    background: #e0e0e0;
+    border-radius: 3px;
+    margin: 0 -2px;
+    /* Overlap slightly */
+    position: relative;
+    z-index: 1;
+    flex-grow: 1;
+    /* Stretch to fill space */
+    min-width: 30px;
+    /* Ensure minimum spacing */
+}
+
+.track-connector.active {
+    background: #8B4513;
+    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.1);
+}
+
+/* Plus Connector Logic */
+.track-connector-plus {
+    /* width: 40px; Removed fixed width */
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #e0e0e0;
+    margin: 0 -2px;
+    /* Standardize overlap to match lines */
+    position: relative;
+    z-index: 1;
+    flex-grow: 1;
+    /* Stretch to fill space */
+    min-width: 30px;
+}
+
+.track-connector-plus.active {
+    color: #8B4513;
+    text-shadow: 0 2px 0 rgba(0, 0, 0, 0.1);
+}
+
+/* Node Wrapper */
+.track-node-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    position: relative;
+    z-index: 2;
+    flex-shrink: 0;
+    /* Prevent nodes from squishing */
+}
+
+/* Evolution Node */
+.evolution-node {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: #fff;
+    border: 4px solid #e0e0e0;
     display: flex;
     align-items: center;
     justify-content: center;
     position: relative;
-    overflow: hidden;
-    transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    /* overflow: hidden; */
+    /* Removed overflow hidden to allow pseudo-element to render outside clip-path if needed */
+    box-shadow: 0 4px 0 #ccc;
+    z-index: 2;
+}
+
+.evolution-node.unlocked {
+    border-color: #8B4513;
     box-shadow: 0 4px 0 #6B3513;
+    background: radial-gradient(circle, #fff 60%, #FFF8DC 100%);
+    cursor: pointer;
 }
 
-.encyclopedia-cell.unlocked {
+.evolution-node.unlocked:hover {
+    transform: scale(1.1) translateY(-2px);
+    box-shadow: 0 8px 0 #6B3513, 0 10px 15px rgba(0, 0, 0, 0.2);
+}
+
+.evolution-node.locked {
+    background: #f5f5f5;
+}
+
+/* Hexagon for Hidden Node (Premium Square Button) */
+.evolution-node.hidden-node {
+    border: none;
+    border-radius: 20px;
+    /* Rounded square like standard buttons */
+    /* Outer Border Gradient with Shine Animation */
+    background: linear-gradient(135deg, #FFD700 0%, #B8860B 25%, #FFF8DC 50%, #B8860B 75%, #FFD700 100%);
+    background-size: 300% 300%;
+    animation: goldShine 4s ease-in-out infinite;
+
+    /* Use drops-shadow for depth */
+    box-shadow: 0 6px 0 #946c1e, 0 8px 10px rgba(0, 0, 0, 0.3);
+    width: 86px;
+    height: 86px;
+
+    /* Remove clip-path to revert to square */
+    clip-path: none;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
     position: relative;
+    /* Ensure stacking context */
+    overflow: visible;
+    margin-bottom: 6px;
+    /* Compensate for drop-shadow */
 }
 
-.encyclopedia-cell.locked {
-    background: #e0e0e0;
-    border-color: #9e9e9e;
-    box-shadow: 0 4px 0 #757575;
-}
-
-.encyclopedia-cell.hidden-stage {
-    border-color: #DAA520;
-    /* Golden border */
-    background: linear-gradient(135deg, #FFF8DC 0%, #FFD700 20%, #FFF8DC 40%);
-    background-size: 200% 200%;
-    animation: shine 3s infinite linear;
-    box-shadow: 0 4px 0 #B8860B;
-    /* Golden shadow */
-}
-
-@keyframes shine {
+@keyframes goldShine {
     0% {
         background-position: 0% 50%;
     }
@@ -226,74 +290,110 @@
     }
 }
 
-.encyclopedia-cell.unlocked:hover {
-    transform: translateY(-4px) scale(1.05);
-    box-shadow: 0 8px 0 #6B3513, 0 10px 15px rgba(0, 0, 0, 0.2);
-    z-index: 2;
+
+/* Inner Solid Background (The "Card") */
+.evolution-node.hidden-node::after {
+    content: '';
+    position: absolute;
+    inset: 4px;
+    /* Creates the border thickness */
+    background: #FFF8DC;
+    /* Lighter inner gold/cream */
+    border-radius: 16px;
+    /* Match outer radius minus inset */
+
+    /* Remove clip-path */
+    clip-path: none;
+    z-index: 1;
+    /* Above outer gradient */
 }
 
-.cell-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 100%;
-    padding: 0;
-    /* Remove padding to let wrapper fill */
-    box-sizing: border-box;
-    position: relative;
-    /* Context for absolute name */
-}
-
-/* Scale down avatar to fit */
-.jello-scale-wrapper {
-    transform: scale(0.6);
-    /* Slightly increased from 0.5 for balance */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 100%;
-}
-
-.jello-wrapper {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+/* Inner Highlight/Shine (Optional extra glare) */
+.evolution-node.hidden-node::before {
+    content: '';
     position: absolute;
     top: 0;
     left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, transparent 40%);
+    z-index: 2;
+    /* Shine on top of background */
+    pointer-events: none;
+    border-radius: 20px;
 }
 
-.locked-content {
+/* Inner content must be on top of everything */
+.evolution-node.hidden-node .node-locked-content {
+    z-index: 3;
+    position: relative;
+    color: #B8860B;
+    /* Dark Gold Text */
+    padding-bottom: 0;
+    /* Center normally */
+}
+
+/* Node Content */
+.node-avatar-wrapper {
+    width: 100%;
+    height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 100%;
-    height: 100%;
-    opacity: 0.5;
+    transform: scale(0.65);
+    /* Scale jello down to fit circle */
 }
 
-.lock-icon {
-    color: #6d4e3f;
-    /* Size is controlled by props, but we can ensure it doesn't shrink */
-    flex-shrink: 0;
+.node-locked-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #9e9e9e;
 }
 
-/* Mobile Responsiveness */
+.node-stage-label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    margin-top: 2px;
+}
+
+/* Mobile Adjustments */
 @media (max-width: 768px) {
     .encyclopedia-content {
-        overflow-x: auto;
         padding: 10px;
     }
 
-    .encyclopedia-grid {
+    .species-track-section {
+        /* Keep row layout on mobile */
         padding: 10px;
+        gap: 0.5rem;
+        border-radius: 16px;
     }
 
-    /* Sticky first column ? Complex with current grid. 
-     Just allowing scroll is safer for now. */
+    .species-info {
+        width: 80px;
+        /* Smaller width for mobile */
+    }
+
+    .species-name {
+        font-size: 0.8rem;
+        /* Smaller font */
+        padding: 0.4rem;
+        white-space: pre-line;
+        /* Allow newlines */
+    }
+
+    .evolution-node {
+        width: 60px;
+        height: 60px;
+    }
+
+    .evolution-node.hidden-node {
+        width: 66px;
+        height: 66px;
+    }
+
+    .track-connector {
+        width: 20px;
+    }
 }

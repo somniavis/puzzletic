@@ -20,8 +20,6 @@ export const EncyclopediaPage: React.FC = () => {
     };
 
     const renderCell = (speciesId: string, stage: number) => {
-        const unlocked = isUnlocked(speciesId, stage);
-
         // Create a temporary character object for rendering the avatar
         const tempCharacter = React.useMemo(() => {
             const char = createCharacter(speciesId);
@@ -30,27 +28,15 @@ export const EncyclopediaPage: React.FC = () => {
         }, [speciesId, stage]);
 
         return (
-            <div className={`encyclopedia-cell ${unlocked ? 'unlocked' : 'locked'} ${stage === 5 ? 'hidden-stage' : ''}`}>
-                <div className="cell-content">
-                    {unlocked ? (
-                        <div className="jello-wrapper">
-                            <div className="jello-scale-wrapper">
-                                <JelloAvatar
-                                    character={tempCharacter}
-                                    speciesId={speciesId}
-                                    size="small"
-                                    action="idle"
-                                    mood="neutral"
-                                    disableAnimation={true}
-                                />
-                            </div>
-                        </div>
-                    ) : (
-                        <div className="locked-content">
-                            <Lock size={32} className="lock-icon" />
-                        </div>
-                    )}
-                </div>
+            <div className="node-avatar-wrapper">
+                <JelloAvatar
+                    character={tempCharacter}
+                    speciesId={speciesId}
+                    size="small"
+                    action="idle"
+                    mood="neutral"
+                    disableAnimation={true}
+                />
             </div>
         );
     };
@@ -65,28 +51,51 @@ export const EncyclopediaPage: React.FC = () => {
             </header>
 
             <div className="encyclopedia-content">
-                <div className="encyclopedia-grid">
-                    {/* Header Row */}
-                    <div className="grid-header-row">
-                        <div className="grid-header-col" style={{ visibility: 'hidden' }}>{t('encyclopedia.species')}</div>
-                        {[1, 2, 3, 4, 5].map(stage => (
-                            <div key={stage} className="grid-header-col">
-                                {stage === 5 ? t('encyclopedia.hidden') : t('encyclopedia.stage', { stage })}
-                            </div>
-                        ))}
-                    </div>
-
-                    {/* Species Rows */}
+                <div className="evolution-tree-container">
                     {speciesList.map(species => (
-                        <div key={species.id} className="grid-row">
-                            <div className="grid-header-row-label">
-                                <span className="species-label-text">{t(`character.species.${species.id}`, species.name.replace(' Jello', ''))}</span>
+                        <div key={species.id} className="species-track-section">
+                            <div className="species-info">
+                                <span className="species-name">
+                                    {t(`character.species.${species.id}`, species.name).replace(' ', '\n')}
+                                </span>
                             </div>
-                            {[1, 2, 3, 4, 5].map(stage => (
-                                <div key={`${species.id}-${stage}`} className="grid-cell-wrapper">
-                                    {renderCell(species.id, stage)}
+
+                            <div className="track-scroll-area">
+                                <div className="evolution-track">
+                                    {[1, 2, 3, 4, 5].map((stage) => {
+                                        const unlocked = isUnlocked(species.id, stage);
+
+                                        return (
+                                            <React.Fragment key={stage}>
+                                                {/* Connector Line (except for first item) */}
+                                                {stage > 1 && (
+                                                    stage === 5 ? (
+                                                        <div className={`track-connector-plus ${unlocked ? 'active' : ''}`}>+</div>
+                                                    ) : (
+                                                        <div className={`track-connector ${unlocked ? 'active' : ''}`} />
+                                                    )
+                                                )}
+
+                                                {/* Node */}
+                                                <div className="track-node-wrapper">
+                                                    <div className={`evolution-node ${unlocked ? 'unlocked' : 'locked'} ${stage === 5 ? 'hidden-node' : ''}`}>
+                                                        {unlocked ? (
+                                                            renderCell(species.id, stage)
+                                                        ) : (
+                                                            <div className="node-locked-content">
+                                                                <Lock size={20} className="node-lock-icon" />
+                                                                <span className="node-stage-label">
+                                                                    {stage === 5 ? '?' : stage}
+                                                                </span>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </React.Fragment>
+                                        );
+                                    })}
                                 </div>
-                            ))}
+                            </div>
                         </div>
                     ))}
                 </div>
