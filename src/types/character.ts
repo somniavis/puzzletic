@@ -28,7 +28,26 @@ export interface CharacterEvolution {
   requiredLevel: number;
   requiredAffection: number;
   description?: string;
-  imageUrl?: string; // URL for the character image (optional for backward compatibility initially)
+  imageUrl?: string; // URL for the character image
+  unlockConditions?: EvolutionConditions; // Conditional evolution requirements (Hidden Stage)
+}
+
+// Evolution Condition Config
+export interface EvolutionConditions {
+  minLevel?: number;           // Basic requirement (usually 60 for Stage 5)
+  minAffection?: number;       // Basic requirement
+  foodsEaten?: Record<string, number>; // e.g. { 'orange': 50 }
+  gamesPlayed?: Record<string, number>; // e.g. { 'fruitSlash': 10 }
+  minHappinessAvg?: number;    // Average happiness maintained? (Complex to track, maybe just current?)
+  requiredActionCount?: Record<string, number>; // e.g. { 'study': 100, 'clean': 20 }
+}
+
+// History Tracking (Efficient Counters)
+export interface CharacterHistory {
+  foodsEaten: Record<string, number>; // { 'apple': 5, 'orange': 12 ... }
+  gamesPlayed: Record<string, number>; // { 'fruitSlash': 15 ... }
+  actionsPerformed: Record<string, number>; // { 'study': 5, 'clean': 3, 'shower': 10 }
+  totalLifetimeGroEarned: number;
 }
 
 // 캐릭터 성격 특성
@@ -79,6 +98,7 @@ export interface Character {
     exploration: number;
   };
   jelloSpecies?: string | null; // 진화 분기 종류 (4단계부터)
+  history?: CharacterHistory; // Hidden Evolution Tracking
   gamesPlayed: number; // 플레이한 게임 수
   lastPlayTime?: number | null; // 마지막 놀이 시간 (쿨다운용)
 }

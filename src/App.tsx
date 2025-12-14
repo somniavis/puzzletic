@@ -58,9 +58,22 @@ function AppContent() {
     preloadSounds();
   }, []);
 
+  // Sync speciesId from Nurturing Context
+  useEffect(() => {
+    if (nurturing.speciesId && nurturing.speciesId !== selectedSpeciesId) {
+      console.log('🔄 Restoring species from persistence:', nurturing.speciesId);
+      const restoredId = nurturing.speciesId as CharacterSpeciesId;
+      setSelectedSpeciesId(restoredId);
+      setCharacter(prev => createCharacter(restoredId));
+    }
+  }, [nurturing.speciesId]); // Only trigger when persisted speciesId changes
+
   const handleCharacterSelect = (speciesId: string, stage: EvolutionStage = 1) => {
     const id = speciesId as CharacterSpeciesId;
     setSelectedSpeciesId(id)
+
+    // Update context
+    nurturing.setSpeciesId(id);
 
     const newCharacter = createCharacter(id);
     newCharacter.evolutionStage = stage; // Set the specific stage
@@ -108,6 +121,7 @@ function AppContent() {
 
     // Mark character as created in persistent state
     nurturing.completeCharacterCreation();
+    nurturing.setSpeciesId(randomSpecies);
 
     // Trigger excitement
     setMood('excited');

@@ -8,6 +8,7 @@ import type {
   TendencyStats,
   JelloSpecies,
 } from '../types/gameMechanics';
+import type { CharacterHistory, EvolutionConditions } from '../types/character';
 import {
   EVOLUTION_STAGES,
   EVOLUTION_BRANCH_STAGE,
@@ -20,8 +21,64 @@ import {
 /**
  * XP를 기반으로 현재 진화 단계 계산
  */
-export const calculateEvolutionStage = (currentXP: number): EvolutionStage => {
-  if (currentXP >= EVOLUTION_STAGES[5].requiredXP) return 5;
+/**
+ * Check if the character meets hidden evolution conditions
+ */
+export const checkEvolutionConditions = (
+  history: CharacterHistory | undefined,
+  conditions: EvolutionConditions | undefined
+): boolean => {
+  // If no conditions are set, it's not a restricted evolution (or logic doesn't apply)
+  // But here we use this to BLOCK stage 5 if conditions exist and aren't met.
+  // If conditions is undefined, we assume it's NOT a hidden stage or it's allowed?
+  // User logic: Level 60 -> Check Condition -> If met Stage 5, else Stage 4.
+  if (!conditions) return true; // No special conditions, proceed based on level
+  if (!history) return false; // Conditions exist but no history to check against
+
+  // Check Foods
+  if (conditions.foodsEaten) {
+    for (const [foodId, count] of Object.entries(conditions.foodsEaten)) {
+      if ((history.foodsEaten[foodId] || 0) < count) return false;
+    }
+  }
+
+  // Check Games
+  if (conditions.gamesPlayed) {
+    for (const [gameId, count] of Object.entries(conditions.gamesPlayed)) {
+      if ((history.gamesPlayed[gameId] || 0) < count) return false;
+    }
+  }
+
+  // Check Actions
+  if (conditions.requiredActionCount) {
+    for (const [actionId, count] of Object.entries(conditions.requiredActionCount)) {
+      if ((history.actionsPerformed[actionId] || 0) < count) return false;
+    }
+  }
+
+  // Check Min Happiness (Current check for now, later avg if implemented)
+  // Note: Happiness is in 'stats', not 'history'. This function might need stats too.
+  // For now, let's assume history tracks "accumulated happy events" or similar if needed.
+  // Or simply rely on history metrics.
+
+  return true;
+};
+
+/**
+ * XP를 기반으로 현재 진화 단계 계산
+ * 조건부 진화(Stage 5) 지원
+ */
+export const calculateEvolutionStage = (
+  currentXP: number,
+  history?: CharacterHistory,
+  unlockConditions?: EvolutionConditions
+): EvolutionStage => {
+  if (currentXP >= EVOLUTION_STAGES[5].requiredXP) {
+    if (checkEvolutionConditions(history, unlockConditions)) {
+      return 5;
+    }
+    return 4; // XP는 충분하지만 조건 미달성 시 4단계 유지
+  }
   if (currentXP >= EVOLUTION_STAGES[4].requiredXP) return 4;
   if (currentXP >= EVOLUTION_STAGES[3].requiredXP) return 3;
   if (currentXP >= EVOLUTION_STAGES[2].requiredXP) return 2;
@@ -137,7 +194,9 @@ export const canBranch = (currentStage: EvolutionStage, tendencies: TendencyStat
 export const addXPAndCheckEvolution = (
   currentXP: number,
   currentStage: EvolutionStage,
-  xpToAdd: number
+  xpToAdd: number,
+  history?: CharacterHistory,
+  unlockConditions?: EvolutionConditions
 ): {
   newXP: number;
   newStage: EvolutionStage;
@@ -145,7 +204,7 @@ export const addXPAndCheckEvolution = (
   stageInfo?: typeof EVOLUTION_STAGES[keyof typeof EVOLUTION_STAGES];
 } => {
   const newXP = currentXP + xpToAdd;
-  const newStage = calculateEvolutionStage(newXP);
+  const newStage = calculateEvolutionStage(newXP, history, unlockConditions);
   const evolved = newStage > currentStage;
 
   return {

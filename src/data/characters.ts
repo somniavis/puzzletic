@@ -46,5 +46,11 @@ export const createCharacter = (speciesId: string, customName?: string): Charact
     },
     gamesPlayed: 0,
     lastPlayTime: null,
+    history: {
+      foodsEaten: {},
+      gamesPlayed: {},
+      actionsPerformed: {},
+      totalLifetimeGroEarned: 0,
+    },
   };
 };

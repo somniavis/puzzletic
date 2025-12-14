@@ -26,6 +26,7 @@ import {
   applyOfflineProgress,
   resetNurturingState,
 } from '../services/persistenceService';
+import { CHARACTER_SPECIES } from '../data/species';
 import {
   executeGameTick,
   evaluateCondition,
@@ -65,6 +66,7 @@ interface NurturingContextValue {
   maxStats: () => ActionResult;
   xp: number;
   evolutionStage: number;
+  speciesId?: string;
   addRewards: (xp: number, gro: number) => void;
 
   // 행동 (Actions)
@@ -92,6 +94,7 @@ interface NurturingContextValue {
   hasCharacter: boolean;
   completeCharacterCreation: () => void;
   saveToCloud: () => Promise<boolean>;
+  setSpeciesId: (id: string) => void;
 }
 
 const NurturingContext = createContext<NurturingContextValue | undefined>(undefined);
@@ -231,10 +234,27 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
 
   const addRewards = useCallback((xpAmount: number, groAmount: number) => {
     setState((currentState) => {
+      // Get unlock conditions for stage 5 if relevant
+      // We look up species data if we have an ID
+      let conditions = undefined;
+      if (currentState.speciesId && CHARACTER_SPECIES[currentState.speciesId]) {
+        // Stage 5 is index 4 if array is 0-indexed, but evolutions array structure in species.ts:
+        // evolutions: [ {stage: 1..}, {stage: 2..} ..]
+        // Actually, let's verify species.ts structure.
+        // Usually it's an array. If we want stage 5, we look for stage 5 entry.
+        const species = CHARACTER_SPECIES[currentState.speciesId];
+        const stage5 = species.evolutions.find(e => e.stage === 5);
+        if (stage5) {
+          conditions = stage5.unlockConditions;
+        }
+      }
+
       const { newXP, newStage, evolved } = addXPAndCheckEvolution(
         currentState.xp || 0,
         (currentState.evolutionStage || 1) as any,
-        xpAmount
+        xpAmount,
+        currentState.history,
+        conditions
       );
 
       const newState = {
@@ -469,15 +489,25 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     return performAction(
       (currentState) => serviceFeed(currentState.stats, food.id, currentState.poops, currentState.pendingPoops || []),
       (result, _newState) => {
+        // Update history
+        const newHistory = {
+          ...(_newState.history || {
+            foodsEaten: {}, gamesPlayed: {}, actionsPerformed: {}, totalLifetimeGroEarned: 0
+          })
+        };
+        newHistory.foodsEaten = { ...newHistory.foodsEaten };
+        newHistory.foodsEaten[food.id] = (newHistory.foodsEaten[food.id] || 0) + 1;
+
         // 예약된 똥 처리
         if ('pendingPoopScheduled' in result && result.pendingPoopScheduled) {
           const pending = result.pendingPoopScheduled as PendingPoop;
           console.log('💩 똥 예약됨!', Math.round((pending.scheduledAt - Date.now()) / 1000), '초 후');
           return {
-            pendingPoops: [...(_newState.pendingPoops || []), pending]
+            pendingPoops: [...(_newState.pendingPoops || []), pending],
+            history: newHistory
           };
         }
-        return {};
+        return { history: newHistory };
       }
     );
   }, [performAction]);
@@ -486,6 +516,14 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     return performAction(
       (currentState) => serviceGiveMedicine(currentState.stats, medicine.id, currentState.isSick),
       (result, currentState) => {
+        const newHistory = {
+          ...(currentState.history || {
+            foodsEaten: {}, gamesPlayed: {}, actionsPerformed: {}, totalLifetimeGroEarned: 0
+          })
+        };
+        newHistory.actionsPerformed = { ...newHistory.actionsPerformed };
+        newHistory.actionsPerformed['giveMedicine'] = (newHistory.actionsPerformed['giveMedicine'] || 0) + 1;
+
         // 질병 치료 진행도 처리
         let newIsSick = currentState.isSick;
         let newSickProgress = currentState.sickProgress || 0;
@@ -503,7 +541,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
             console.log(`💊 치료 진행 중... (${newSickProgress}/2)`);
           }
         }
-        return { isSick: newIsSick, sickProgress: newSickProgress };
+        return { isSick: newIsSick, sickProgress: newSickProgress, history: newHistory };
       }
     );
   }, [performAction]);
@@ -511,12 +549,34 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
   const clean = useCallback((_tool: CleaningTool): ActionResult => {
     return performAction(
       (currentState) => serviceClean(currentState.stats, currentState.poops),
-      () => ({ poops: [] }) // 모든 똥 제거
+      (result, currentState) => {
+        const newHistory = {
+          ...(currentState.history || {
+            foodsEaten: {}, gamesPlayed: {}, actionsPerformed: {}, totalLifetimeGroEarned: 0
+          })
+        };
+        newHistory.actionsPerformed = { ...newHistory.actionsPerformed };
+        newHistory.actionsPerformed['clean'] = (newHistory.actionsPerformed['clean'] || 0) + 1;
+
+        return { poops: [], history: newHistory };
+      }
     );
   }, [performAction]);
 
   const play = useCallback((): ActionResult => {
-    return performAction((currentState) => servicePlay(currentState.stats));
+    return performAction((currentState) => servicePlay(currentState.stats),
+      (result, currentState) => {
+        const newHistory = {
+          ...(currentState.history || {
+            foodsEaten: {}, gamesPlayed: {}, actionsPerformed: {}, totalLifetimeGroEarned: 0
+          })
+        };
+        newHistory.actionsPerformed = { ...newHistory.actionsPerformed };
+        newHistory.actionsPerformed['play'] = (newHistory.actionsPerformed['play'] || 0) + 1;
+        // Note: Specific game stats are handled in specific game components/pages usually, 
+        // but generic 'play' action is tracked here.
+        return { history: newHistory };
+      });
   }, [performAction]);
 
   const study = useCallback((): ActionResult => {
@@ -524,10 +584,21 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
       (currentState) => serviceStudy(currentState.stats),
       (result, currentState) => {
         const currencyEarned = result.sideEffects?.currencyEarned || 0;
+
+        const newHistory = {
+          ...(currentState.history || {
+            foodsEaten: {}, gamesPlayed: {}, actionsPerformed: {}, totalLifetimeGroEarned: 0
+          })
+        };
+        newHistory.actionsPerformed = { ...newHistory.actionsPerformed };
+        newHistory.actionsPerformed['study'] = (newHistory.actionsPerformed['study'] || 0) + 1;
+        newHistory.totalLifetimeGroEarned = (newHistory.totalLifetimeGroEarned || 0) + currencyEarned;
+
         return {
           gro: (currentState.gro || 0) + currencyEarned,
           totalCurrencyEarned: currentState.totalCurrencyEarned + currencyEarned,
           studyCount: currentState.studyCount + 1,
+          history: newHistory
         };
       }
     );
@@ -772,6 +843,14 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     });
   }, []);
 
+  const setSpeciesId = useCallback((id: string) => {
+    setState(currentState => {
+      const newState = { ...currentState, speciesId: id };
+      saveNurturingState(newState);
+      return newState;
+    });
+  }, []);
+
 
 
 
@@ -793,11 +872,14 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     abandonmentStatus,
     isSick: state.isSick || false,
     xp: state.xp || 0,
+
     evolutionStage: state.evolutionStage || 1,
+    speciesId: state.speciesId, // Expose speciesId
     maxStats,
     addRewards,
     feed,
     giveMedicine,
+    setSpeciesId,
     clean,
     cleanBug,
     cleanAll,

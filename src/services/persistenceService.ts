@@ -43,6 +43,13 @@ const createDefaultState = (): NurturingPersistentState => {
     hasCharacter: false,
     xp: 0,
     evolutionStage: 1, // Start at Egg
+    speciesId: 'yellowJello',
+    history: {
+      foodsEaten: {},
+      gamesPlayed: {},
+      actionsPerformed: {},
+      totalLifetimeGroEarned: 0,
+    },
   };
 };
 
@@ -188,6 +195,21 @@ export const loadNurturingState = (): NurturingPersistentState => {
     // XP가 없으면 0으로 초기화
     if (loaded.xp === undefined) {
       loaded.xp = 0;
+    }
+
+    // History 초기화
+    if (!loaded.history) {
+      console.log('🔄 Init history for existing user');
+      loaded.history = {
+        foodsEaten: {},
+        gamesPlayed: {},
+        actionsPerformed: {},
+        totalLifetimeGroEarned: 0,
+      };
+    }
+
+    if (!loaded.speciesId) {
+      loaded.speciesId = 'yellowJello';
     }
 
     return loaded as NurturingPersistentState;
