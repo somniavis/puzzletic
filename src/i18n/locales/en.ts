@@ -47,9 +47,12 @@ export const en = {
       'Sapphire Jello': 'Sapphire Jello',
       'Ocean Jello': 'Ocean Jello',
       // Cream Jello
+      // Cream Jello
       'Cream Jello': 'Cream Jello',
-      'Ivory Jello': 'Ivory Jello',
-      'Pearl Jello': 'Pearl Jello',
+      'Whipped Cream Jello': 'Whipped Cream Jello',
+      'Milky Pudding Jello': 'Milky Pudding Jello',
+      'Angel Cake Jello': 'Angel Cake Jello',
+      'Celestial Cream Jello': 'Celestial Cream Jello',
       // Purple Jello
       'Purple Jello': 'Purple Jello',
       'Amethyst Jello': 'Amethyst Jello',

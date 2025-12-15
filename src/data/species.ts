@@ -283,6 +283,53 @@ export const CHARACTER_SPECIES: Record<string, CharacterSpecies> = {
       },
     ],
   },
+  creamJello: {
+    id: 'creamJello',
+    name: 'Cream Jello',
+    description: 'A soft and fluffy cream jello with a gentle heart.',
+    personality: 'calm',
+    evolutions: [
+      {
+        stage: 1,
+        name: 'Cream Jello',
+        requiredLevel: 1,
+        requiredAffection: 0,
+        description: 'A tiny cream jello, soft as a cloud.',
+        imageUrl: 'https://pub-1411335941ed4406b5f667f40e04a814.r2.dev/jello_img/jello-cream-1.png',
+      },
+      {
+        stage: 2,
+        name: 'Whipped Cream Jello',
+        requiredLevel: 10,
+        requiredAffection: 50,
+        description: 'A fluffy jello topped with sweet whipped cream.',
+        imageUrl: 'https://pub-1411335941ed4406b5f667f40e04a814.r2.dev/jello_img/jello-cream-2.png',
+      },
+      {
+        stage: 3,
+        name: 'Milky Pudding Jello',
+        requiredLevel: 25,
+        requiredAffection: 80,
+        description: 'A smooth pudding-like jello that wobbles delightfully.',
+        imageUrl: 'https://pub-1411335941ed4406b5f667f40e04a814.r2.dev/jello_img/jello-cream-3.png',
+      },
+      {
+        stage: 4,
+        name: 'Angel Cake Jello',
+        requiredLevel: 40,
+        requiredAffection: 90,
+        description: 'A divine jello resembling a heavenly cake.',
+        imageUrl: 'https://pub-1411335941ed4406b5f667f40e04a814.r2.dev/jello_img/jello-cream-4L.png',
+      },
+      {
+        stage: 5,
+        name: 'Celestial Cream Jello',
+        requiredLevel: 60,
+        requiredAffection: 100,
+        description: 'The ultimate cream jello, pure and heavenly.',
+      },
+    ],
+  },
 };
 
 // Export type for species IDs
