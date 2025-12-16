@@ -42,6 +42,10 @@ export const JelloAvatar: React.FC<JelloAvatarProps> = ({
     };
     const sizeInPixels = getSizeInPixels();
 
+    // Visual balancing: Stage 1 & 2 images have less whitespace, so they appear larger.
+    // We add padding to shrink them slightly relative to the container.
+    const containerPadding = (stage <= 2) ? (size === 'small' ? '8px' : '12px') : 0;
+
     return (
         <div
             key={`${targetSpeciesId}-${action}`}
@@ -50,6 +54,8 @@ export const JelloAvatar: React.FC<JelloAvatarProps> = ({
             style={{
                 width: sizeInPixels,
                 height: sizeInPixels,
+                padding: containerPadding,
+                boxSizing: 'border-box', // Ensure padding shrinks the content
             }}
         >
             {imageUrl ? (

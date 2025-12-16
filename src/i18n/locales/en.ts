@@ -474,7 +474,7 @@ export const en = {
     },
   },
   encyclopedia: {
-    title: 'Encyclopedia',
+    title: 'My Jello Box',
     home: 'Home',
     species: 'Species',
     stage: 'Stage {{stage}}',
