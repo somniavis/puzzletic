@@ -53,6 +53,12 @@ export const en = {
       'Milky Pudding Jello': 'Milky Pudding Jello',
       'Angel Cake Jello': 'Angel Cake Jello',
       'Celestial Cream Jello': 'Celestial Cream Jello',
+      // Pink Jello
+      'Pink Jello': 'Pink Jello',
+      'Heart Jello': 'Heart Jello',
+      'Cupid Jello': 'Cupid Jello',
+      'Rose Angel Jello': 'Rose Angel Jello',
+      'Goddess of Love Jello': 'Goddess of Love Jello',
       // Purple Jello
       'Purple Jello': 'Purple Jello',
       'Amethyst Jello': 'Amethyst Jello',

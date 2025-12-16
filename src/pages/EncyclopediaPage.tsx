@@ -15,6 +15,7 @@ const SPECIES_THEMES: Record<string, { bg: string, border: string, shadow: strin
     purpleJello: { bg: '#DDA0DD', border: '#BA55D3', shadow: '#800080', text: '#FFFFFF' },
     orangeJello: { bg: '#FFA500', border: '#FF8C00', shadow: '#D2691E', text: '#FFFFFF' },
     creamJello: { bg: '#FFFDD0', border: '#F5DEB3', shadow: '#D2B48C', text: '#4d3e2f' },
+    pinkJello: { bg: '#FFB6C1', border: '#FF69B4', shadow: '#C71585', text: '#4d3e2f' },
 };
 
 export const EncyclopediaPage: React.FC = () => {

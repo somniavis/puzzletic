@@ -330,6 +330,53 @@ export const CHARACTER_SPECIES: Record<string, CharacterSpecies> = {
       },
     ],
   },
+  pinkJello: {
+    id: 'pinkJello',
+    name: 'Pink Jello',
+    description: 'A lovely pink jello, full of affection and sweetness.',
+    personality: 'affectionate',
+    evolutions: [
+      {
+        stage: 1,
+        name: 'Pink Jello',
+        requiredLevel: 1,
+        requiredAffection: 0,
+        description: 'A tiny pink jello, radiating love.',
+        imageUrl: 'https://pub-1411335941ed4406b5f667f40e04a814.r2.dev/jello_img/jello-pink-1.png',
+      },
+      {
+        stage: 2,
+        name: 'Heart Jello',
+        requiredLevel: 10,
+        requiredAffection: 50,
+        description: 'A jello shaped like a heart, beating with affection.',
+        imageUrl: 'https://pub-1411335941ed4406b5f667f40e04a814.r2.dev/jello_img/jello-pink-2.png',
+      },
+      {
+        stage: 3,
+        name: 'Cupid Jello',
+        requiredLevel: 25,
+        requiredAffection: 80,
+        description: 'A jello with tiny wings, spreading love everywhere.',
+        imageUrl: 'https://pub-1411335941ed4406b5f667f40e04a814.r2.dev/jello_img/jello-pink-3.png',
+      },
+      {
+        stage: 4,
+        name: 'Rose Angel Jello',
+        requiredLevel: 40,
+        requiredAffection: 90,
+        description: 'An angelic pink jello blooming like a beautiful rose.',
+        imageUrl: 'https://pub-1411335941ed4406b5f667f40e04a814.r2.dev/jello_img/jello-pink-4L.png',
+      },
+      {
+        stage: 5,
+        name: 'Goddess of Love Jello',
+        requiredLevel: 60,
+        requiredAffection: 100,
+        description: 'The ultimate pink jello, the embodiment of pure love.',
+      },
+    ],
+  },
 };
 
 // Export type for species IDs
