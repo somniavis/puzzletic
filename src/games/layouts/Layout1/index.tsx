@@ -45,7 +45,8 @@ export const Layout1: React.FC<Layout1Props> = ({
     const lastEvent = (engine as any).lastEvent;
 
     // Manage overlapping animation bursts
-    const [activeBursts, setActiveBursts] = React.useState<{ id: number; type: 'correct' | 'wrong' }[]>([]);
+    // const [activeBursts, setActiveBursts] = React.useState<{ id: number; type: 'correct' | 'wrong' }[]>([]); // Replaced by Particles
+
     const [showShake, setShowShake] = React.useState(false);
 
     const { evolutionStage, addRewards } = useNurturing();
@@ -56,6 +57,34 @@ export const Layout1: React.FC<Layout1Props> = ({
     const [prevBest, setPrevBest] = React.useState<number>(0);
     const initialBestRef = React.useRef<number>(0); // Store initial best for stable comparison
     const [isNewRecord, setIsNewRecord] = React.useState(false);
+
+    // Particle System
+    const [particles, setParticles] = React.useState<{ id: number; emoji: string; x: number; y: number; vx: number; vy: number; }[]>([]);
+
+    // Debug: Log particle count
+    React.useEffect(() => {
+        if (particles.length > 0) {
+            console.log('Layout1: Particles active:', particles.length);
+        }
+    }, [particles]);
+
+    const generateParticles = (type: 'correct' | 'wrong', count = 10, emojiOverride?: string) => {
+        const newParticles = [];
+        for (let i = 0; i < count; i++) {
+            newParticles.push({
+                id: Math.random(),
+                // 정답일 때 사용할 이모지들
+                emoji: emojiOverride || (type === 'correct' ? ['🎉', '✨', '❤️', '💯', '🌟'][Math.floor(Math.random() * 5)] : '❌'),
+                x: Math.random() * 100, // 화면 가로 위치 (%)
+                y: Math.random() * 100, // 화면 세로 위치 (%)
+                vx: (Math.random() - 0.5) * 4, // 가로 속도
+                vy: (Math.random() - 0.5) * 4  // 세로 속도
+            });
+        }
+        setParticles(newParticles);
+        // 2초 뒤에 입자들을 제거하여 메모리 관리
+        setTimeout(() => setParticles([]), 2000);
+    };
 
     // Load High Score on Mount
     React.useEffect(() => {
@@ -110,16 +139,20 @@ export const Layout1: React.FC<Layout1Props> = ({
         }
     }, [gameState, rewardResult, score, lives, engine.difficultyLevel, evolutionStage, addRewards, gameId, stats]);
 
+    const processedEventIds = useRef<Set<number>>(new Set());
+
     React.useEffect(() => {
         if (lastEvent) {
+            // Prevent duplicate processing of the same event ID
+            if (processedEventIds.current.has(lastEvent.id)) return;
+            processedEventIds.current.add(lastEvent.id);
+
             if (lastEvent.type === 'correct') {
-                const newBurst = { id: lastEvent.id, type: lastEvent.type };
-                setActiveBursts(prev => [...prev, newBurst as any]);
-                // Remove after 2.5s (animation duration + buffer)
-                setTimeout(() => {
-                    setActiveBursts(prev => prev.filter(b => b.id !== newBurst.id));
-                }, 2500);
+                console.log('Layout1: Processing CORRECT event', lastEvent.id);
+                playClearSound();
+                generateParticles('correct', 15); // Adjust count as desired, user snippet said 10, but 12 was previous star count. Let's stick to user request or something reasonable. User said count=10 default. Let's use 10-15.
             } else if (lastEvent.type === 'wrong') {
+                playJelloClickSound();
                 setShowShake(true);
                 setTimeout(() => setShowShake(false), 500);
             }
@@ -138,9 +171,6 @@ export const Layout1: React.FC<Layout1Props> = ({
             playJelloClickSound();
         }
     }, [lastEvent]);
-    // Remove old sound effect dependency on gameState
-    // React.useEffect(() => { if (gameState === 'correct') playJelloClickSound(); }, [gameState]); 
-
     const handleDownload = async () => {
         if (!gameOverRef.current) return;
         try {
@@ -353,25 +383,19 @@ export const Layout1: React.FC<Layout1Props> = ({
                     {children}
                 </div>
 
-                {/* Feedback Overlay (Correct/Wrong) - Overlapping Bursts */}
-                {activeBursts.map(burst => (
-                    <React.Fragment key={burst.id}>
-                        {/* Spawn multiple stars with random offsets */}
-                        {[...Array(12)].map((_, i) => (
-                            <div
-                                key={i}
-                                className="celebration-star"
-                                style={{
-                                    left: `${50 + (Math.random() * 60 - 30)}%`,
-                                    top: `${50 + (Math.random() * 60 - 30)}%`,
-                                    animationDelay: `${Math.random() * 0.2}s`,
-                                    fontSize: `${0.8 + Math.random() * 1.2}rem`
-                                }}
-                            >
-                                🌟
-                            </div>
-                        ))}
-                    </React.Fragment>
+                {/* Feedback Overlay (Correct/Wrong) - Particles */}
+                {particles.map(p => (
+                    <div
+                        key={p.id}
+                        className="particle"
+                        style={{
+                            left: `${p.x}%`,
+                            top: `${p.y}%`,
+                            animation: 'particleFloatUp 2s ease-out forwards' // 아래의 float 애니메이션 적용
+                        }}
+                    >
+                        {p.emoji}
+                    </div>
                 ))}
 
                 {showShake && (

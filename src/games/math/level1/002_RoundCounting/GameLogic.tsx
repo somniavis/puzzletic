@@ -274,7 +274,7 @@ export const useRoundCountingLogic = () => {
                         score: prev.score + totalAdd,
                         streak: newStreak,
                         bestStreak: newBestStreak,
-                        timeLeft: prev.timeLeft + (currentProblem.difficulty === 3 ? 5 : 2), // Time bonus for clear
+
                         stats: { ...prev.stats, correct: prev.stats.correct + 1 }
                     };
                 });

@@ -704,14 +704,15 @@
 }
 
 /* Floating Particles (Simplified) */
-@keyframes floatUp {
+/* Float Animation for Particles */
+@keyframes particleFloatUp {
     0% {
-        transform: translateY(0);
+        transform: translateY(0px) rotate(0deg);
         opacity: 1;
     }
 
     100% {
-        transform: translateY(-50px);
+        transform: translateY(-100px) rotate(360deg);
         opacity: 0;
     }
 }
@@ -719,36 +720,7 @@
 .particle {
     position: absolute;
     pointer-events: none;
-    animation: floatUp 1s ease-out forwards;
-    font-size: 2rem;
-}
-
-/* Spin and Rise Celebration Animation */
-@keyframes spinAndRise {
-    0% {
-        opacity: 0;
-        transform: translate(-50%, -50%) rotate(0deg) scale(0.5);
-    }
-
-    40% {
-        opacity: 1;
-        transform: translate(-50%, -60px) rotate(90deg) scale(1.0);
-    }
-
-    100% {
-        opacity: 0;
-        transform: translate(-50%, -150px) rotate(180deg) scale(0.5);
-    }
-}
-
-.celebration-star {
-    position: absolute;
-    pointer-events: none;
-    font-size: 2rem;
-    animation: spinAndRise 2s cubic-bezier(0.2, 0.6, 0.35, 1) forwards;
-    z-index: 100;
-    left: 50%;
-    top: 50%;
-    /* Soft gold glow */
-    text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+    font-size: 1.6rem;
+    /* Base size, though inline style might control it or be standard */
+    z-index: 9999;
 }

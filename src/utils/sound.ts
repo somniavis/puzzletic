@@ -373,3 +373,13 @@ export const stopBackgroundMusic = (): void => {
 export const setBackgroundMusicVolume = (volume: number): void => {
   soundManager.setBgmVolume(volume);
 };
+
+/**
+ * 퐁당/물소리 사운드를 재생합니다. (임시로 eating 사운드 사용)
+ * @param volume 볼륨 (0.0 ~ 1.0, 기본값: 0.5)
+ */
+export const playPlopSound = (volume: number = 0.5): void => {
+  if (!isSfxEnabled()) return;
+  // TODO: Add specific plop sound to SOUNDS
+  soundManager.play(SOUNDS.eating, volume);
+};
