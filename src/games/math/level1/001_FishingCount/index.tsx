@@ -200,14 +200,23 @@ export const FishingCount: React.FC<FishingCountProps> = ({ onExit }) => {
                         <div className="net-label">DROP HERE</div>
                     </div>
 
-                    {/* Coral Decorations */}
-                    <div className="coral-deco large" style={{ left: '5%' }}>🪸</div>
-                    <div className="coral-deco small" style={{ left: '15%' }}>🪸</div>
-                    <div className="coral-deco" style={{ left: '25%' }}>🪸</div>
+                    {/* Coral & Decor Mix */}
+                    <div className="rock-deco" style={{ left: '2%' }}>🪨</div>
+                    <div className="coral-deco large" style={{ left: '8%' }}>🪸</div>
+                    <div className="shell-deco" style={{ left: '18%' }}>🐚</div>
+                    <div className="coral-deco small" style={{ left: '22%' }}>🪸</div>
 
-                    <div className="coral-deco small" style={{ right: '25%' }}>🪸</div>
-                    <div className="coral-deco large" style={{ right: '10%' }}>🪸</div>
-                    <div className="coral-deco" style={{ right: '5%' }}>🪸</div>
+                    {/* Moved coral further left to avoid Net intersection */}
+                    <div className="coral-deco" style={{ left: '30%' }}>🪸</div>
+
+                    <div className="coral-deco small" style={{ right: '35%' }}>🪸</div>
+
+                    {/* Rocks: Diagonal overlap, Upper one bigger, Lower one smaller */}
+                    <div className="rock-deco" style={{ right: '15%', bottom: '18px', fontSize: '3.2rem', zIndex: 0 }}>🪨</div>
+                    <div className="rock-deco" style={{ right: '22%', bottom: '5px', fontSize: '2rem', zIndex: 2 }}>🪨</div>
+
+                    <div className="coral-deco large" style={{ right: '5%' }}>🪸</div>
+                    <div className="shell-deco" style={{ right: '2%' }}>🐚</div>
                 </div>
             </div>
         </Layout1>
