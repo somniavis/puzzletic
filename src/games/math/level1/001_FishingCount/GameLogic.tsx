@@ -106,14 +106,26 @@ export const useFishingCountLogic = () => {
         if (requestRef.current) cancelAnimationFrame(requestRef.current);
     }, []);
 
+    const lastTimeRef = useRef<number>(0);
+
     // Game Loop for Movement
-    const updatePositions = useCallback(() => {
+    const updatePositions = useCallback((timestamp: number) => {
         if (!gameState.isPlaying) return;
+
+        if (lastTimeRef.current === 0) {
+            lastTimeRef.current = timestamp;
+        }
+
+        const deltaTime = timestamp - lastTimeRef.current;
+        const timeScale = deltaTime / 16.67; // Normalize to 60FPS (16.67ms per frame)
+
+        // Cap max timescale to prevent huge jumps if tab was inactive
+        const cappedTimeScale = Math.min(timeScale, 3.0);
 
         setAnimals(prevAnimals => {
             return prevAnimals.map(animal => {
-                let newX = animal.x + animal.vx;
-                let newY = animal.y + animal.vy;
+                let newX = animal.x + (animal.vx * cappedTimeScale);
+                let newY = animal.y + (animal.vy * cappedTimeScale);
 
                 // Bounce off walls (0-100%)
                 if (newX <= 0 || newX >= 90) { // Assuming 10% width item roughly
@@ -129,11 +141,13 @@ export const useFishingCountLogic = () => {
             });
         });
 
+        lastTimeRef.current = timestamp;
         requestRef.current = requestAnimationFrame(updatePositions);
     }, [gameState.isPlaying]);
 
     useEffect(() => {
         if (gameState.isPlaying) {
+            lastTimeRef.current = 0; // Reset time tracking on start/resume
             requestRef.current = requestAnimationFrame(updatePositions);
         }
         return () => {
