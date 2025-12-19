@@ -40,6 +40,7 @@ export const useFishingCountLogic = () => {
     const [animals, setAnimals] = useState<Animal[]>([]);
 
     const [lastEvent, setLastEvent] = useState<{ type: 'correct' | 'wrong', id: number } | null>(null);
+    const [roundStartTime, setRoundStartTime] = useState<number>(0);
 
     // Bounds for the pond (will be updated via resize observer or ref, but for now fixed simple percentage logic)
     const containerRef = useRef<HTMLDivElement>(null);
@@ -50,6 +51,7 @@ export const useFishingCountLogic = () => {
         const count = Math.floor(Math.random() * 5) + 1;
         setTargetCount(count);
         setCaughtCount(0);
+        setRoundStartTime(Date.now());
 
         // Random animal
         const target = SEA_ANIMALS[Math.floor(Math.random() * SEA_ANIMALS.length)];
@@ -200,9 +202,19 @@ export const useFishingCountLogic = () => {
                 playButtonSound();
                 setGameState(prev => {
                     const newStreak = prev.streak + 1;
-                    // Score calculation: Base round points + Streak bonus
-                    // ex: 100 points per fish in target + 50 * streak
-                    const gainedScore = (100 * targetCount) + (50 * newStreak);
+
+                    // Standardized Score Logic
+                    // 1. Base Score: 50 * targetCount
+                    const baseScore = 50 * targetCount;
+
+                    // 2. Time Bonus: (10 - secondsTaken) * 5, max 50 points
+                    const responseTime = Date.now() - roundStartTime;
+                    const timeBonus = Math.max(0, 10 - Math.floor(responseTime / 1000)) * 5;
+
+                    // 3. Streak Bonus: streak * 10 (standardized)
+                    const streakBonus = newStreak * 10;
+
+                    const gainedScore = baseScore + timeBonus + streakBonus;
 
                     return {
                         ...prev,
@@ -230,7 +242,7 @@ export const useFishingCountLogic = () => {
                 };
             });
         }
-    }, [animals, targetAnimal, caughtCount, targetCount, generateRound, setLastEvent, gameState.isPlaying]);
+    }, [animals, targetAnimal, caughtCount, targetCount, generateRound, setLastEvent, gameState.isPlaying, roundStartTime]);
 
     return {
         gameState,

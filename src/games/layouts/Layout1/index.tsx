@@ -163,14 +163,7 @@ export const Layout1: React.FC<Layout1Props> = ({
     const { settings, toggleBgm } = useSound();
     const gameOverRef = useRef<HTMLDivElement>(null);
 
-    // Play sound on effects (migrated from singular state)
-    React.useEffect(() => {
-        if (lastEvent?.type === 'correct') {
-            playClearSound();
-        } else if (lastEvent?.type === 'wrong') {
-            playJelloClickSound();
-        }
-    }, [lastEvent]);
+
     const handleDownload = async () => {
         if (!gameOverRef.current) return;
         try {
