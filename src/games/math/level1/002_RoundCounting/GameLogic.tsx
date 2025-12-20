@@ -350,7 +350,7 @@ export const useRoundCountingLogic = () => {
     }, [setupNewGame, stopTimer]);
 
     return {
-        gameState,
+        ...gameState, // Expose score, lives, timeLeft, Streak, bestStreak, difficultyLevel, gameOverReason, stats
         currentProblem,
         foundIds,
         incorrectClickIndex,

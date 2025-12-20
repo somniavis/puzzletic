@@ -89,8 +89,20 @@ const PowerUpBtn: React.FC<PowerUpBtnProps> = ({ count, color, icon, title, onCl
 
 export const RoundCounting: React.FC<RoundCountingProps> = ({ onExit }) => {
     const { t, i18n } = useTranslation();
+    const useRoundCountingLogicReturns = useRoundCountingLogic();
     const {
-        gameState,
+        // Flattened GameState properties
+        score,
+        lives,
+        timeLeft,
+        streak,
+        bestStreak,
+        gameOver, // Use correct property name
+        isPlaying,
+        gameOverReason,
+        difficultyLevel,
+        stats,
+
         currentProblem,
         foundIds,
         incorrectClickIndex,
@@ -103,7 +115,7 @@ export const RoundCounting: React.FC<RoundCountingProps> = ({ onExit }) => {
         usePowerUp,
         stopTimer,
         lastEvent
-    } = useRoundCountingLogic();
+    } = useRoundCountingLogicReturns;
 
     useEffect(() => {
         // Preload resources if needed
@@ -117,23 +129,26 @@ export const RoundCounting: React.FC<RoundCountingProps> = ({ onExit }) => {
         return () => stopTimer();
     }, []);
 
+    const derivedGameState = gameOver ? 'gameover' : (isPlaying ? 'playing' : 'idle');
+
     const layoutEngine = {
-        gameState: gameState.gameOver ? 'gameover' : (gameState.isPlaying ? 'playing' : 'idle'),
-        score: gameState.score,
-        lives: gameState.lives,
-        timeLeft: gameState.timeLeft,
-        streak: gameState.streak,
-        bestStreak: gameState.bestStreak,
-        gameOverReason: gameState.gameOverReason,
-        difficultyLevel: gameState.difficultyLevel,
+        ...useRoundCountingLogicReturns,
+        gameState: derivedGameState, // Use derived state
+        score,
+        lives,
+        timeLeft,
+        streak,
+        bestStreak,
+        gameOverReason,
+        difficultyLevel,
         maxLevel: 3,
-        startGame: startGame, // Required by Layout1 restart button
+        startGame: startGame,
         onPause: stopTimer,
         onResume: startGame,
         onExit: onExit,
         onRestart: () => window.location.reload(),
         lastEvent: lastEvent,
-        stats: gameState.stats // Pass stats to layout
+        stats
     };
 
     return (
@@ -167,8 +182,8 @@ export const RoundCounting: React.FC<RoundCountingProps> = ({ onExit }) => {
                         icon="❤️"
                         title={t('games.math-01-round-counting.powerups.life')}
                         onClick={() => usePowerUp('extraLife')}
-                        disabledConfig={gameState.lives >= 3}
-                        status={gameState.lives >= 3 ? 'maxed' : 'normal'}
+                        disabledConfig={lives >= 3}
+                        status={lives >= 3 ? 'maxed' : 'normal'} // Use flattened lives
                     />
                     <PowerUpBtn
                         count={powerUps.doubleScore}
@@ -201,7 +216,7 @@ export const RoundCounting: React.FC<RoundCountingProps> = ({ onExit }) => {
                                         <button
                                             key={item.id}
                                             onClick={() => handleItemClick(index)}
-                                            disabled={isFound || isShuffling || gameState.gameOver}
+                                            disabled={isFound || isShuffling || gameOver} // Use flattened gameOver
                                             className={`grid-item-btn
                                                 ${isFound ? 'grid-item-found animate-found' : ''}
                                                 ${isIncorrect ? 'grid-item-wrong animate-shake' : ''}

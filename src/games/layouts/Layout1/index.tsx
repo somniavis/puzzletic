@@ -6,7 +6,7 @@ import {
     Download, RotateCcw
 } from 'lucide-react';
 import { toPng } from 'html-to-image';
-import { playButtonSound, playJelloClickSound, playClearSound, playEatingSound } from '../../../utils/sound';
+import { playButtonSound, playJelloClickSound, playClearSound, playEatingSound, startBackgroundMusic } from '../../../utils/sound';
 import './Layout1.css';
 import { useGameEngine } from './useGameEngine';
 import { useNurturing } from '../../../contexts/NurturingContext';
@@ -41,6 +41,16 @@ export const Layout1: React.FC<Layout1Props> = ({
         gameOverReason,
         startGame
     } = engine;
+
+    const { settings, toggleBgm } = useSound();
+
+    // Enforce BGM Playback when game is active or idle (if enabled)
+    // This fixes issues where BGM stops (e.g. after Game Over) and doesn't resume strictly via SoundContext
+    React.useEffect(() => {
+        if (settings.bgmEnabled && (gameState === 'playing' || gameState === 'idle')) {
+            startBackgroundMusic();
+        }
+    }, [gameState, settings.bgmEnabled]);
 
     const lastEvent = (engine as any).lastEvent;
 
@@ -176,7 +186,6 @@ export const Layout1: React.FC<Layout1Props> = ({
     }, [lastEvent]);
 
     const { t } = useTranslation();
-    const { settings, toggleBgm } = useSound();
     const gameOverRef = useRef<HTMLDivElement>(null);
 
 

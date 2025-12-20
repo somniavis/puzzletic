@@ -12,18 +12,19 @@ interface FishingCountProps {
 
 export const FishingCount: React.FC<FishingCountProps> = ({ onExit }) => {
     const { t, i18n } = useTranslation();
+    const useFishingCountLogicReturns = useFishingCountLogic();
     const {
-        gameState,
+        animals,
+        containerRef,
         targetAnimal,
         targetCount,
         caughtCount,
-        animals,
-        containerRef,
+        handleCatch,
         startGame,
         stopGame,
-        handleCatch,
-        lastEvent
-    } = useFishingCountLogic();
+        isPlaying,
+        isGameOver
+    } = useFishingCountLogicReturns;
 
     const [draggedAnimalId, setDraggedAnimalId] = useState<number | null>(null);
     const [netHighlight, setNetHighlight] = useState(false);
@@ -42,27 +43,22 @@ export const FishingCount: React.FC<FishingCountProps> = ({ onExit }) => {
     }, []);
 
     // Layout Engine Adaptor
+    const derivedGameState = isGameOver ? 'gameover' : (isPlaying ? 'playing' : 'idle');
+
     const layoutEngine = {
-        gameState: gameState.isGameOver ? 'gameover' : (gameState.isPlaying ? 'playing' : 'idle'),
-        score: gameState.score,
-        lives: gameState.lives,
-        timeLeft: gameState.timeLeft,
-        streak: gameState.streak,
-        bestStreak: gameState.bestStreak,
-        gameOverReason: gameState.gameOverReason,
-        difficultyLevel: 1,
-        maxLevel: 1,
-        startGame: startGame,
+        ...useFishingCountLogicReturns,
+        gameState: derivedGameState,
         onPause: stopGame,
-        onResume: startGame, // Resume logic same as start for now/simple pause
-        onExit: onExit,
+        onResume: startGame,
         onRestart: startGame,
-        lastEvent: lastEvent
+        onExit: onExit,
+        difficultyLevel: 1,
+        maxLevel: 1
     };
 
     // --- Custom Drag Handling ---
     const handleDragStart = (e: React.MouseEvent | React.TouchEvent, id: number) => {
-        if (!gameState.isPlaying) return;
+        if (!isPlaying) return;
 
         // Prevent default browser drag only if it is not custom logic
         // But for MouseEvent we might need e.preventDefault() to stop text selection?

@@ -256,7 +256,7 @@ export const useFishingCountLogic = () => {
     }, [animals, targetAnimal, caughtCount, targetCount, generateRound, setLastEvent, gameState.isPlaying, roundStartTime]);
 
     return {
-        gameState,
+        ...gameState, // Expose score, lives, timeLeft, streak, bestStreak, gameOverReason, stats
         targetAnimal,
         targetCount,
         caughtCount,
@@ -265,6 +265,7 @@ export const useFishingCountLogic = () => {
         startGame,
         stopGame,
         handleCatch,
-        lastEvent
+        lastEvent,
+        difficultyLevel: 1 // FishingCount currently fixed diff or needs to use it from state if added
     };
 };
