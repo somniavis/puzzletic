@@ -6,7 +6,7 @@ import {
     Download, RotateCcw
 } from 'lucide-react';
 import { toPng } from 'html-to-image';
-import { playButtonSound, playJelloClickSound, playClearSound } from '../../../utils/sound';
+import { playButtonSound, playJelloClickSound, playClearSound, playEatingSound } from '../../../utils/sound';
 import './Layout1.css';
 import { useGameEngine } from './useGameEngine';
 import { useNurturing } from '../../../contexts/NurturingContext';
@@ -48,6 +48,7 @@ export const Layout1: React.FC<Layout1Props> = ({
     // const [activeBursts, setActiveBursts] = React.useState<{ id: number; type: 'correct' | 'wrong' }[]>([]); // Replaced by Particles
 
     const [showShake, setShowShake] = React.useState(false);
+    const [showSuccessFlash, setShowSuccessFlash] = React.useState(false);
 
     const { evolutionStage, addRewards } = useNurturing();
     const [rewardResult, setRewardResult] = React.useState<RewardCalculation | null>(null);
@@ -148,9 +149,24 @@ export const Layout1: React.FC<Layout1Props> = ({
             processedEventIds.current.add(lastEvent.id);
 
             if (lastEvent.type === 'correct') {
-                console.log('Layout1: Processing CORRECT event', lastEvent.id);
-                playClearSound();
-                generateParticles('correct', 15); // Adjust count as desired, user snippet said 10, but 12 was previous star count. Let's stick to user request or something reasonable. User said count=10 default. Let's use 10-15.
+                // Progressive Feedback Logic
+                // If isFinal is explicitly false, it is an intermediate step (small feedback)
+                // If isFinal is true OR undefined, it is a final step/single-step game (big feedback)
+                const isFinal = lastEvent.isFinal !== false;
+
+                if (isFinal) {
+                    // Final / Round Clear: Big Feedback
+                    playClearSound(); // Cleaning Sound
+                    generateParticles('correct', 20); // More particles for celebration
+                    setShowSuccessFlash(true);
+                    setTimeout(() => setShowSuccessFlash(false), 500);
+                } else {
+                    // Intermediate: Small Feedback
+                    // Use a lighter sound (e.g., eating or button click)
+                    // Currently using Eating sound as requested/suggested
+                    playEatingSound();
+                    generateParticles('correct', 5, '✨'); // Fewer, smaller particles (Sparkles)
+                }
             } else if (lastEvent.type === 'wrong') {
                 playJelloClickSound();
                 setShowShake(true);
@@ -400,6 +416,15 @@ export const Layout1: React.FC<Layout1Props> = ({
                     }}>
                         <div style={{ fontSize: '4rem', animation: 'bounce 0.5s' }}>💔</div>
                     </div>
+                )}
+
+                {showSuccessFlash && (
+                    <div style={{
+                        position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
+                        background: 'rgba(34, 197, 94, 0.2)', // green-500 equivalent with opacity
+                        pointerEvents: 'none', borderRadius: '1rem',
+                        transition: 'opacity 0.2s ease-out'
+                    }} />
                 )}
             </main>
         </div>

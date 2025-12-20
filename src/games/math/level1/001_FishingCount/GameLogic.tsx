@@ -19,6 +19,10 @@ export interface GameState {
     isGameOver: boolean;
     isPlaying: boolean;
     gameOverReason?: 'time' | 'lives';
+    stats: {
+        correct: number;
+        wrong: number;
+    };
 }
 
 const SEA_ANIMALS = ['🐳', '🐋', '🐬', '🦭', '🐟', '🐠', '🐡', '🦈', '🐙', '🪼', '🦀', '🦞', '🦐', '🦑'];
@@ -32,6 +36,7 @@ export const useFishingCountLogic = () => {
         bestStreak: 0,
         isGameOver: false,
         isPlaying: false,
+        stats: { correct: 0, wrong: 0 }
     });
 
     const [targetAnimal, setTargetAnimal] = useState<string>('');
@@ -39,7 +44,7 @@ export const useFishingCountLogic = () => {
     const [caughtCount, setCaughtCount] = useState<number>(0);
     const [animals, setAnimals] = useState<Animal[]>([]);
 
-    const [lastEvent, setLastEvent] = useState<{ type: 'correct' | 'wrong', id: number } | null>(null);
+    const [lastEvent, setLastEvent] = useState<{ type: 'correct' | 'wrong', isFinal?: boolean, id: number } | null>(null);
     const [roundStartTime, setRoundStartTime] = useState<number>(0);
 
     // Bounds for the pond (will be updated via resize observer or ref, but for now fixed simple percentage logic)
@@ -98,7 +103,8 @@ export const useFishingCountLogic = () => {
             streak: 0,
             bestStreak: 0,
             isGameOver: false,
-            isPlaying: true
+            isPlaying: true,
+            stats: { correct: 0, wrong: 0 }
         });
         generateRound();
     }, [generateRound]);
@@ -189,31 +195,34 @@ export const useFishingCountLogic = () => {
             // playPlopSound(); // Removed as per user request to use only cleaning sound: Use cleaning sound only
 
             // Trigger Layout1 feedback
-            setLastEvent({ type: 'correct', id: Date.now() });
-
             const newCaught = caughtCount + 1;
             setCaughtCount(newCaught);
+
+            const isRoundComplete = newCaught >= targetCount;
+            // isFinal: true if round complete, false if intermediate
+            setLastEvent({ type: 'correct', isFinal: isRoundComplete, id: Date.now() });
 
             // Remove animal
             setAnimals(prev => prev.filter(a => a.id !== animalId));
 
-            if (newCaught >= targetCount) {
+            // Update Correct Stats immediately
+            setGameState(prev => ({
+                ...prev,
+                stats: { ...prev.stats, correct: prev.stats.correct + 1 }
+            }));
+
+            if (isRoundComplete) {
                 // Round Win - Update Score & Streak HERE
                 playButtonSound();
                 setGameState(prev => {
                     const newStreak = prev.streak + 1;
 
                     // Standardized Score Logic
-                    // 1. Base Score: 50 * targetCount
+                    // ... score calc ...
                     const baseScore = 50 * targetCount;
-
-                    // 2. Time Bonus: (10 - secondsTaken) * 5, max 50 points
                     const responseTime = Date.now() - roundStartTime;
                     const timeBonus = Math.max(0, 10 - Math.floor(responseTime / 1000)) * 5;
-
-                    // 3. Streak Bonus: streak * 10 (standardized)
                     const streakBonus = newStreak * 10;
-
                     const gainedScore = baseScore + timeBonus + streakBonus;
 
                     return {
@@ -221,6 +230,7 @@ export const useFishingCountLogic = () => {
                         streak: newStreak,
                         bestStreak: Math.max(prev.bestStreak, newStreak),
                         score: prev.score + gainedScore,
+                        // stats updated separately above to ensure it counts per item
                     };
                 });
                 setTimeout(generateRound, 500);
@@ -238,7 +248,8 @@ export const useFishingCountLogic = () => {
                     streak: 0, // Reset streak
                     isGameOver: isOver,
                     isPlaying: !isOver,
-                    gameOverReason: isOver ? 'lives' : undefined
+                    gameOverReason: isOver ? 'lives' : undefined,
+                    stats: { ...prev.stats, wrong: prev.stats.wrong + 1 }
                 };
             });
         }

@@ -135,7 +135,7 @@ export const useRoundCountingLogic = () => {
     const [timeFrozen, setTimeFrozen] = useState(false);
     const [doubleScoreActive, setDoubleScoreActive] = useState(false);
     const [questionStartTime, setQuestionStartTime] = useState(0);
-    const [lastEvent, setLastEvent] = useState<{ type: 'correct' | 'wrong', id: number } | null>(null);
+    const [lastEvent, setLastEvent] = useState<{ type: 'correct' | 'wrong', isFinal?: boolean, id: number } | null>(null);
 
     // Initialize/Reset Game
     const setupNewGame = useCallback(() => {
@@ -226,14 +226,13 @@ export const useRoundCountingLogic = () => {
             // Generate new problem
             // Ensure ID/content is slightly different if needed, but random is usually enough.
             // With enough entropy in generateProblem, collision is unlikely, but let's be safe.
-            let newProblem = generateProblem(level);
-
-            // Simple check to prevent identical consecutive target
             // We can't access 'currentProblem' inside the setGameState callback safely if strict mode, 
             // but for this logic we just generate fresh.
             // If we really want to ensure no repeat target:
             // This requires correct closure or ref usage.
             // For now, simple generation is 99% fine.
+            let newProblem = generateProblem(level);
+
 
             setCurrentProblem(newProblem);
             setFoundIds([]);
@@ -255,9 +254,16 @@ export const useRoundCountingLogic = () => {
             setFoundIds(newFoundIds);
 
             // Trigger feedback event
-            setLastEvent({ type: 'correct', id: Date.now() });
+            const isRoundComplete = newFoundIds.length === currentProblem.targetCount;
+            setLastEvent({ type: 'correct', isFinal: isRoundComplete, id: Date.now() });
 
-            if (newFoundIds.length === currentProblem.targetCount) {
+            // Update stats immediately for every correct click
+            setGameState(prev => ({
+                ...prev,
+                stats: { ...prev.stats, correct: prev.stats.correct + 1 }
+            }));
+
+            if (isRoundComplete) {
                 // Round Complete
                 const responseTime = Date.now() - questionStartTime;
                 const baseScore = currentProblem.difficulty * 50;
@@ -274,8 +280,7 @@ export const useRoundCountingLogic = () => {
                         score: prev.score + totalAdd,
                         streak: newStreak,
                         bestStreak: newBestStreak,
-
-                        stats: { ...prev.stats, correct: prev.stats.correct + 1 }
+                        // stats updated separately above
                     };
                 });
 
