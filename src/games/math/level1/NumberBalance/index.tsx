@@ -153,6 +153,10 @@ export const NumberBalance: React.FC<NumberBalanceProps> = ({ onExit }) => {
     const handlePointerDown = (e: React.PointerEvent, item: NumberItem) => {
         if (!engine.isPlaying || gameOver) return;
 
+        // CRITICAL for iOS: Prevent default touch actions (scrolling, zooming, selection)
+        // This stops the browser from hijacking the pointer stream
+        e.preventDefault();
+
         const target = e.currentTarget as HTMLElement;
         const rect = target.getBoundingClientRect();
 
@@ -176,6 +180,8 @@ export const NumberBalance: React.FC<NumberBalanceProps> = ({ onExit }) => {
         ghost.style.height = `${rect.height}px`;
         ghost.style.pointerEvents = 'none'; // Let events pass to underlying elements
         ghost.style.zIndex = '9999';
+        ghost.style.willChange = 'transform'; // Optimize for animation
+        ghost.style.transform = 'translate3d(0,0,0)'; // Promote to composite layer
         document.body.appendChild(ghost);
         ghostRef.current = ghost;
 
