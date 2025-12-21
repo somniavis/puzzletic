@@ -4,11 +4,13 @@ import type { GameManifest, GameCategory, GameDifficulty } from './types';
 import { manifest as FishingCountManifest } from './math/level1/001_FishingCount';
 import { manifest as RoundCountingManifest } from './math/level1/002_RoundCounting';
 import { manifest as FruitSliceManifest } from './math/level1/003_FruitSlice';
+import { manifest as NumberBalanceManifest } from './math/level1/004_NumberBalance';
 
 export const GAMES: GameManifest[] = [
     FishingCountManifest,
     RoundCountingManifest,
     FruitSliceManifest,
+    NumberBalanceManifest,
 ];
 
 export const getGames = (category?: GameCategory, level?: GameDifficulty): GameManifest[] => {

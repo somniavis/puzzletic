@@ -1,0 +1,335 @@
+/* Main Container */
+.number-balance-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    padding-bottom: 0;
+    overflow: hidden;
+}
+
+/* Scale System */
+.scale-wrapper {
+    flex: 1;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    margin-top: 1rem;
+}
+
+/* The Beam */
+/* The Beam */
+/* The Beam */
+.balance-assembly {
+    position: relative;
+    width: 100%;
+    height: 160px;
+    /* Encompass beam + stand height */
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    /* Anchor beam to top */
+    margin-top: 20px;
+    /* Slight visual adjustment */
+}
+
+.scale-beam-container {
+    width: 70%;
+    max-width: 500px;
+    height: 10px;
+    position: relative;
+    transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+    /* Pivot point is center */
+    transform-origin: center center;
+    z-index: 2;
+    /* In front of stand */
+}
+
+.scale-beam-bar {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(180deg, #475569 0%, #1e293b 100%);
+    border-radius: 5px;
+    position: relative;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Center Pivot Stand */
+.scale-stand {
+    width: 20px;
+    height: 120px;
+    background: linear-gradient(90deg, #64748b 0%, #334155 100%);
+    border-radius: 4px 4px 0 0;
+    position: absolute;
+    top: 5px;
+    /* Start from center of beam */
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1;
+    /* Behind beam */
+}
+
+.scale-stand-base {
+    width: 100px;
+    height: 20px;
+    background: #1e293b;
+    border-radius: 10px 10px 0 0;
+    position: absolute;
+    top: 125px;
+    /* stand height + offset */
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1;
+}
+
+/* Pans */
+.scale-pan {
+    position: absolute;
+    width: 120px;
+    height: 100px;
+    /* String length */
+    top: 5px;
+    /* Attach to beam */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transform-origin: top center;
+    /* Counter-rotate to keep pans level when beam tilts */
+    transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.pan-left {
+    left: 0;
+}
+
+.pan-right {
+    right: 0;
+}
+
+.pan-string-left,
+.pan-string-right {
+    width: 2px;
+    height: 80px;
+    background: rgba(0, 0, 0, 0.3);
+    position: absolute;
+    top: 0;
+}
+
+.pan-string-left {
+    transform: rotate(15deg);
+    transform-origin: top center;
+}
+
+.pan-string-right {
+    right: 20%;
+    transform: rotate(-15deg);
+    transform-origin: top center;
+}
+
+.pan-string-left-inner,
+.pan-string-right-inner {
+    width: 2px;
+    height: 80px;
+    background: rgba(0, 0, 0, 0.3);
+    position: absolute;
+    top: 0;
+}
+
+.pan-string-left-inner {
+    right: 20%;
+    transform: rotate(-15deg);
+    transform-origin: top center;
+}
+
+.pan-string-right-inner {
+    left: 20%;
+    transform: rotate(15deg);
+    transform-origin: top center;
+}
+
+.pan-plate {
+    width: 130px;
+    height: 20px;
+    position: absolute;
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    z-index: 10;
+}
+
+.pan-plate-visual {
+    width: 100%;
+    height: 20px;
+    background: linear-gradient(180deg, #e2e8f0 0%, #cbd5e1 100%);
+    border-radius: 4px;
+    border-bottom: 3px solid #94a3b8;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    pointer-events: none;
+}
+
+.pan-drop-zone {
+    height: 120px;
+    /* Expand hit area */
+}
+
+/* Items on Pan */
+.pan-content {
+    position: absolute;
+    bottom: 22px;
+    /* Sit on plate */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    pointer-events: none;
+    /* Let clicks pass through if needed */
+}
+
+.item-stack-row {
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+    flex-wrap: wrap-reverse;
+}
+
+/* Number Block Visuals */
+.number-block {
+    background: #ffffff;
+    border: 3px solid #3b82f6;
+    border-radius: 12px;
+    width: 80px;
+    height: 80px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 0 #2563eb;
+    position: relative;
+    cursor: grab;
+    user-select: none;
+    touch-action: none;
+    transition: transform 0.1s;
+    background-size: cover;
+}
+
+.number-block:active {
+    cursor: grabbing;
+    transform: scale(1.05);
+}
+
+.number-block.dragging {
+    opacity: 0.5;
+    transform: scale(1.1);
+    z-index: 1000;
+}
+
+.block-number {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #1e293b;
+    line-height: 1;
+}
+
+.block-emojis {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 2px;
+    margin-top: 4px;
+    max-width: 70px;
+}
+
+.emoji-icon {
+    font-size: 1rem;
+    /* 0.8 * 1.25 */
+    line-height: 1;
+}
+
+/* Target Block (Left Side) */
+.target-block {
+    background: #f8fafc;
+    border-color: #ef4444;
+    box-shadow: 0 4px 0 #dc2626;
+    cursor: default;
+    width: 100px;
+    height: 100px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.target-block .block-number {
+    font-size: 2.5rem;
+}
+
+.target-block .emoji-icon {
+    font-size: 1.2rem;
+    /* 1.0 * 1.2 */
+}
+
+/* Options Area */
+.options-area {
+    width: 100%;
+    padding: 1rem;
+    background: linear-gradient(180deg, #eff6ff 0%, #dbeafe 100%);
+    /* Subtle Blue Gradient */
+    border: 2px solid #bfdbfe;
+    /* Slight border definition */
+    backdrop-filter: blur(8px);
+    border-radius: 0;
+    margin-bottom: 0px;
+    margin-top: auto;
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    min-height: 100px;
+}
+
+.drop-zone-highlight {
+    box-shadow: 0 0 15px 5px rgba(59, 130, 246, 0.5);
+    border-radius: 50%;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 600px) {
+    .scale-beam-container {
+        width: 90%;
+    }
+
+    .scale-pan {
+        width: 100px;
+    }
+
+    .pan-plate {
+        width: 110px;
+    }
+
+    .number-block {
+        width: 65px;
+        height: 65px;
+    }
+
+    .block-number {
+        font-size: 1.5rem;
+    }
+
+    .emoji-icon {
+        font-size: 0.85rem;
+        /* 0.7 * 1.2 */
+    }
+
+    .target-block {
+        width: 80px;
+        height: 80px;
+    }
+}

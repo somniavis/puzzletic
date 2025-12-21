@@ -421,7 +421,8 @@ export const Layout1: React.FC<Layout1Props> = ({
                         position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
                         background: 'rgba(239, 68, 68, 0.2)',
-                        pointerEvents: 'none', borderRadius: '1rem'
+                        pointerEvents: 'none', borderRadius: '1rem',
+                        zIndex: 5000
                     }}>
                         <div style={{ fontSize: '4rem', animation: 'bounce 0.5s' }}>💔</div>
                     </div>
@@ -432,7 +433,8 @@ export const Layout1: React.FC<Layout1Props> = ({
                         position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
                         background: 'rgba(34, 197, 94, 0.2)', // green-500 equivalent with opacity
                         pointerEvents: 'none', borderRadius: '1rem',
-                        transition: 'opacity 0.2s ease-out'
+                        transition: 'opacity 0.2s ease-out',
+                        zIndex: 5000
                     }} />
                 )}
             </main>

@@ -1,3 +1,8 @@
+import fishingCountEn from '../../games/math/level1/001_FishingCount/locales/en';
+import roundCountingEn from '../../games/math/level1/002_RoundCounting/locales/en';
+import fruitSliceEn from '../../games/math/level1/003_FruitSlice/locales/en';
+import numberBalanceEn from '../../games/math/level1/004_NumberBalance/locales/en';
+
 export const en = {
   character: {
     profile: {
@@ -538,35 +543,10 @@ export const en = {
     },
   },
   games: {
-    'math-01': {
-      title: 'Number Match',
-      sub: 'Basic Addition',
-      desc: 'Match the numbers to solve the puzzle!',
-      howToPlay: {
-        goal: { title: 'Goal', desc: 'Find two numbers that add up to the target number.' },
-        time: { title: 'Time', desc: 'You have 60 seconds. Correct answers add time!' },
-        lives: { title: 'Lives', desc: 'You have 3 lives. Wrong answers cost a life.' }
-      }
-    },
-    'math-01-fruit-slice': {
-      title: "Fruit Slash",
-      sub: "Cut the fruit with the right number!",
-      desc: "Calculate the missing number and slice the fruit to make a healthy snack.",
-      howToPlay: {
-        goal: {
-          title: "Goal",
-          desc: "Solve the equation by finding the correct missing number."
-        },
-        action: {
-          title: "Slice",
-          desc: "Drag the number knife to the fruit to slice it."
-        },
-        items: {
-          title: "Power-ups",
-          desc: "Use Freeze, Extra Life, and Double Score items to boost your game!"
-        }
-      }
-    }
+    'math-01-fishing-count': fishingCountEn,
+    'math-01-round-counting': roundCountingEn,
+    'math-01-fruit-slice': fruitSliceEn,
+    'math-01-number-balance': numberBalanceEn,
   },
 } as const;
 
