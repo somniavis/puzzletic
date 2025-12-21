@@ -44,3 +44,14 @@ src/
 │   └── StatsPage.tsx    (New: Extracted from App.tsx)
 └── App.tsx          # Main Router and Provider setup
 ```
+
+## 4. Game Registry Architecture
+The mini-games are managed through a scalable registry system to allow easy reordering and expansion.
+
+### Registry (`src/games/registry.ts`)
+- **Centralized Control**: Manages the list of active games and their display order.
+- **Level-Based Grouping**: Games are imported and grouped by level/category in the `GAMES` array.
+- **Order-Independent naming**: Game folders and IDs do NOT use numeric prefixes (e.g. `FishingCount`, `math-fishing-count`). Ordering is strictly defined by the array order in this file.
+
+### Game Manifest
+Each game exports a `manifest` object defining its metadata (ID, title, category, level, component). This metadata drives the UI in `PlayPage.tsx` and `LevelSelect` screens.

@@ -76,9 +76,11 @@ export const FruitSlice: React.FC<FruitSliceProps> = ({ onExit }) => {
 
     // Load translations
     useEffect(() => {
-        const newResources = { en: { translation: { games: { 'math-01-fruit-slice': manifest_en } } } };
-        Object.keys(newResources).forEach(lang => i18n.addResourceBundle(lang, 'translation', newResources[lang as keyof typeof newResources].translation, true, true));
-        return () => stopTimer();
+        const newResources = { en: { translation: { games: { 'math-fruit-slice': manifest_en } } } };
+        Object.keys(newResources).forEach(lang => {
+            i18n.addResourceBundle(lang, 'translation', newResources[lang as keyof typeof newResources].translation, true, true);
+        });
+        // startGame handled by Layout start screen interaction
     }, []);
 
     // Drag & Drop State
@@ -193,46 +195,31 @@ export const FruitSlice: React.FC<FruitSliceProps> = ({ onExit }) => {
 
     return (
         <Layout1
-            title={t('games.math-01-fruit-slice.title')}
-            subtitle={t('games.math-01-fruit-slice.sub')}
-            gameId="math-01-fruit-slice"
-            engine={layoutEngine as any}
+            title={t('games.math-fruit-slice.title')}
+            subtitle={t('games.math-fruit-slice.sub')}
+            gameId="math-fruit-slice"
+            engine={layoutEngine as any} // Cast safely as types match structure
             instructions={[
-                { icon: '🤏', title: t('games.math-01-fruit-slice.howToPlay.goal.title'), description: t('games.math-01-fruit-slice.howToPlay.goal.desc') },
-                { icon: '🔪', title: t('games.math-01-fruit-slice.howToPlay.action.title'), description: t('games.math-01-fruit-slice.howToPlay.action.desc') },
-                { icon: '⚡', title: t('games.math-01-fruit-slice.howToPlay.items.title'), description: t('games.math-01-fruit-slice.howToPlay.items.desc') }
+                { icon: '🍉', title: t('games.math-fruit-slice.howToPlay.goal.title'), description: t('games.math-fruit-slice.howToPlay.goal.desc') },
+                { icon: '🔪', title: t('games.math-fruit-slice.howToPlay.action.title'), description: t('games.math-fruit-slice.howToPlay.action.desc') },
+                { icon: '🔢', title: t('games.math-fruit-slice.howToPlay.math.title'), description: t('games.math-fruit-slice.howToPlay.math.desc') }
             ]}
             onExit={onExit}
         >
-            <div className="fruit-slice-game">
-
-                <div className="power-up-container">
+            <div className="fruit-slice-container">
+                {/* Power Ups */}
+                <div className="w-full flex justify-start gap-4 mb-2 px-4 z-10">
                     <PowerUpBtn
-                        count={powerUps.timeFreeze}
-                        color="blue"
-                        icon="❄️"
-                        title={t('games.math-01-fruit-slice.powerups.freeze')}
-                        onClick={() => usePowerUp('timeFreeze')}
-                        disabledConfig={timeFrozen}
-                        status={timeFrozen ? 'active' : 'normal'}
+                        count={powerUps.timeFreeze} color="blue" icon="❄️" title={t('games.math-fruit-slice.powerups.freeze')}
+                        onClick={() => usePowerUp('timeFreeze')} disabledConfig={timeFrozen} status={timeFrozen ? 'active' : 'normal'}
                     />
                     <PowerUpBtn
-                        count={powerUps.extraLife}
-                        color="red"
-                        icon="❤️"
-                        title={t('games.math-01-fruit-slice.powerups.life')}
-                        onClick={() => usePowerUp('extraLife')}
-                        disabledConfig={gameState.lives >= 3}
-                        status={gameState.lives >= 3 ? 'maxed' : 'normal'}
+                        count={powerUps.extraLife} color="red" icon="❤️" title={t('games.math-fruit-slice.powerups.life')}
+                        onClick={() => usePowerUp('extraLife')} disabledConfig={gameState.lives >= 3} status={gameState.lives >= 3 ? 'maxed' : 'normal'}
                     />
                     <PowerUpBtn
-                        count={powerUps.doubleScore}
-                        color="yellow"
-                        icon="⚡"
-                        title={t('games.math-01-fruit-slice.powerups.double')}
-                        onClick={() => usePowerUp('doubleScore')}
-                        disabledConfig={doubleScoreActive}
-                        status={doubleScoreActive ? 'active' : 'normal'}
+                        count={powerUps.doubleScore} color="yellow" icon="⚡" title={t('games.math-fruit-slice.powerups.double')}
+                        onClick={() => usePowerUp('doubleScore')} disabledConfig={doubleScoreActive} status={doubleScoreActive ? 'active' : 'normal'}
                     />
                 </div>
 
@@ -328,13 +315,13 @@ export const FruitSlice: React.FC<FruitSliceProps> = ({ onExit }) => {
 import type { GameManifest } from '../../../types';
 
 export const manifest: GameManifest = {
-    id: 'math-01-fruit-slice',
-    title: 'Fruit Slash',
-    titleKey: 'games.math-01-fruit-slice.title',
-    subtitle: 'Cut the fruit with the right number!',
-    subtitleKey: 'games.math-01-fruit-slice.sub',
-    description: 'Calculate the missing number and slice the fruit to make a healthy snack.',
-    descriptionKey: 'games.math-01-fruit-slice.desc',
+    id: 'math-fruit-slice',
+    title: 'Fruit Slice',
+    titleKey: 'games.math-fruit-slice.title',
+    subtitle: 'Slice the fruits!',
+    subtitleKey: 'games.math-fruit-slice.sub',
+    description: 'Slice matching fruits to count correctly.',
+    descriptionKey: 'games.math-fruit-slice.desc',
     category: 'math',
     level: 1,
     component: FruitSlice,

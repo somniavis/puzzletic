@@ -77,7 +77,7 @@ export const NumberBalance: React.FC<NumberBalanceProps> = ({ onExit }) => {
 
     // Load locales
     useEffect(() => {
-        const newResources = { en: { translation: { games: { 'math-01-number-balance': manifest_en } } } };
+        const newResources = { en: { translation: { games: { 'math-number-balance': manifest_en } } } };
         Object.keys(newResources).forEach(lang => {
             i18n.addResourceBundle(lang, 'translation', newResources[lang as keyof typeof newResources].translation, true, true);
         });
@@ -194,14 +194,14 @@ export const NumberBalance: React.FC<NumberBalanceProps> = ({ onExit }) => {
 
     return (
         <Layout1
-            title={t('games.math-01-number-balance.title')}
-            subtitle={t('games.math-01-number-balance.sub')}
-            gameId="math-01-number-balance"
+            title={t('games.math-number-balance.title')}
+            subtitle={t('games.math-number-balance.sub')}
+            gameId="math-number-balance"
             engine={layoutEngine as any} // Cast safely as types match structure
             instructions={[
-                { icon: '⚖️', title: t('games.math-01-number-balance.howToPlay.goal.title'), description: t('games.math-01-number-balance.howToPlay.goal.desc') },
-                { icon: '👆', title: t('games.math-01-number-balance.howToPlay.action.title'), description: t('games.math-01-number-balance.howToPlay.action.desc') },
-                { icon: '🔢', title: t('games.math-01-number-balance.howToPlay.math.title'), description: t('games.math-01-number-balance.howToPlay.math.desc') }
+                { icon: '⚖️', title: t('games.math-number-balance.howToPlay.goal.title'), description: t('games.math-number-balance.howToPlay.goal.desc') },
+                { icon: '👆', title: t('games.math-number-balance.howToPlay.action.title'), description: t('games.math-number-balance.howToPlay.action.desc') },
+                { icon: '🔢', title: t('games.math-number-balance.howToPlay.math.title'), description: t('games.math-number-balance.howToPlay.math.desc') }
             ]}
             onExit={onExit}
         >
@@ -210,15 +210,15 @@ export const NumberBalance: React.FC<NumberBalanceProps> = ({ onExit }) => {
                 {/* Power Ups */}
                 <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-start', gap: '1rem', marginBottom: '0.5rem', paddingLeft: '1rem', zIndex: 10 }}>
                     <PowerUpBtn
-                        count={powerUps.timeFreeze} color="blue" icon="❄️" title={t('games.math-01-number-balance.powerups.freeze')}
+                        count={powerUps.timeFreeze} color="blue" icon="❄️" title={t('games.math-number-balance.powerups.freeze')}
                         onClick={() => usePowerUp('timeFreeze')} disabledConfig={timeFrozen} status={timeFrozen ? 'active' : 'normal'}
                     />
                     <PowerUpBtn
-                        count={powerUps.extraLife} color="red" icon="❤️" title={t('games.math-01-number-balance.powerups.life')}
+                        count={powerUps.extraLife} color="red" icon="❤️" title={t('games.math-number-balance.powerups.life')}
                         onClick={() => usePowerUp('extraLife')} disabledConfig={lives >= 3} status={lives >= 3 ? 'maxed' : 'normal'}
                     />
                     <PowerUpBtn
-                        count={powerUps.doubleScore} color="yellow" icon="⚡" title={t('games.math-01-number-balance.powerups.double')}
+                        count={powerUps.doubleScore} color="yellow" icon="⚡" title={t('games.math-number-balance.powerups.double')}
                         onClick={() => usePowerUp('doubleScore')} disabledConfig={doubleScoreActive} status={doubleScoreActive ? 'active' : 'normal'}
                     />
                 </div>
@@ -306,13 +306,13 @@ export const NumberBalance: React.FC<NumberBalanceProps> = ({ onExit }) => {
 import type { GameManifest } from '../../../types';
 
 export const manifest: GameManifest = {
-    id: 'math-01-number-balance',
+    id: 'math-number-balance',
     title: 'Number Balance',
-    titleKey: 'games.math-01-number-balance.title',
+    titleKey: 'games.math-number-balance.title',
     subtitle: 'Balance the scale!',
-    subtitleKey: 'games.math-01-number-balance.sub',
+    subtitleKey: 'games.math-number-balance.sub',
     description: 'Find two numbers that add up to the target weight.',
-    descriptionKey: 'games.math-01-number-balance.desc',
+    descriptionKey: 'games.math-number-balance.desc',
     category: 'math',
     level: 1,
     component: NumberBalance,

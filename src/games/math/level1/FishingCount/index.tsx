@@ -31,15 +31,11 @@ export const FishingCount: React.FC<FishingCountProps> = ({ onExit }) => {
     const draggingRef = useRef<{ id: number; startX: number; startY: number; currentX: number; currentY: number } | null>(null);
 
     useEffect(() => {
-        // Load locales
-        const newResources = {
-            en: { translation: { games: { 'math-01-fishing-count': manifest_en } } }
-        };
+        const newResources = { en: { translation: { games: { 'math-fishing-count': manifest_en } } } };
         Object.keys(newResources).forEach(lang => {
             i18n.addResourceBundle(lang, 'translation', newResources[lang as keyof typeof newResources].translation, true, true);
         });
-
-        return () => stopGame();
+        // startGame handled by Layout start screen interaction
     }, []);
 
     // Layout Engine Adaptor
@@ -137,13 +133,14 @@ export const FishingCount: React.FC<FishingCountProps> = ({ onExit }) => {
 
     return (
         <Layout1
-            title={t('games.math-01-fishing-count.title')}
-            subtitle={t('games.math-01-fishing-count.sub')}
-            gameId="math-01-fishing-count"
-            engine={layoutEngine as any}
+            title={t('games.math-fishing-count.title')}
+            subtitle={t('games.math-fishing-count.sub')}
+            gameId="math-fishing-count"
+            engine={layoutEngine as any} // Cast safely
             instructions={[
-                { icon: '🎯', title: t('games.math-01-fishing-count.howToPlay.goal.title'), description: t('games.math-01-fishing-count.howToPlay.goal.desc') },
-                { icon: '👆', title: t('games.math-01-fishing-count.howToPlay.controls.title'), description: t('games.math-01-fishing-count.howToPlay.controls.desc') }
+                { icon: '🐟', title: t('games.math-fishing-count.howToPlay.goal.title'), description: t('games.math-fishing-count.howToPlay.goal.desc') },
+                { icon: '👆', title: t('games.math-fishing-count.howToPlay.action.title'), description: t('games.math-fishing-count.howToPlay.action.desc') },
+                { icon: '🔢', title: t('games.math-fishing-count.howToPlay.math.title'), description: t('games.math-fishing-count.howToPlay.math.desc') }
             ]}
             onExit={onExit}
         >
@@ -220,13 +217,13 @@ export const FishingCount: React.FC<FishingCountProps> = ({ onExit }) => {
 };
 
 export const manifest: GameManifest = {
-    id: 'math-01-fishing-count',
+    id: 'math-fishing-count',
     title: 'Fishing Count',
-    titleKey: 'games.math-01-fishing-count.title',
-    subtitle: 'Catch them all!',
-    subtitleKey: 'games.math-01-fishing-count.sub',
-    description: 'Learn counting by fishing sea friends.',
-    descriptionKey: 'games.math-01-fishing-count.desc',
+    titleKey: 'games.math-fishing-count.title',
+    subtitle: 'Count the fish!',
+    subtitleKey: 'games.math-fishing-count.sub',
+    description: 'Catch the requested number of fish.',
+    descriptionKey: 'games.math-fishing-count.desc',
     category: 'math',
     level: 1,
     component: FishingCount,

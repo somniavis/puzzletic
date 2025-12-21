@@ -209,6 +209,24 @@ export const loadNurturingState = (): NurturingPersistentState => {
       };
     }
 
+    // Game ID Migration (math-01-X -> math-X)
+    if (loaded.history && loaded.history.gamesPlayed) {
+      const GAME_ID_MIGRATIONS: Record<string, string> = {
+        'math-01-fishing-count': 'math-fishing-count',
+        'math-01-round-counting': 'math-round-counting',
+        'math-01-fruit-slice': 'math-fruit-slice',
+        'math-01-number-balance': 'math-number-balance',
+      };
+
+      Object.entries(GAME_ID_MIGRATIONS).forEach(([oldId, newId]) => {
+        if (loaded.history.gamesPlayed[oldId]) {
+          console.log(`🔄 Migrating Game History: ${oldId} -> ${newId}`);
+          loaded.history.gamesPlayed[newId] = loaded.history.gamesPlayed[oldId];
+          delete loaded.history.gamesPlayed[oldId];
+        }
+      });
+    }
+
     if (!loaded.speciesId) {
       loaded.speciesId = 'yellowJello';
     }

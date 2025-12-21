@@ -1,7 +1,7 @@
-import fishingCountEn from '../../games/math/level1/001_FishingCount/locales/en';
-import roundCountingEn from '../../games/math/level1/002_RoundCounting/locales/en';
-import fruitSliceEn from '../../games/math/level1/003_FruitSlice/locales/en';
-import numberBalanceEn from '../../games/math/level1/004_NumberBalance/locales/en';
+import fishingCountEn from '../../games/math/level1/FishingCount/locales/en';
+import roundCountingEn from '../../games/math/level1/RoundCounting/locales/en';
+import fruitSliceEn from '../../games/math/level1/FruitSlice/locales/en';
+import numberBalanceEn from '../../games/math/level1/NumberBalance/locales/en';
 
 export const en = {
   character: {
@@ -543,10 +543,10 @@ export const en = {
     },
   },
   games: {
-    'math-01-fishing-count': fishingCountEn,
-    'math-01-round-counting': roundCountingEn,
-    'math-01-fruit-slice': fruitSliceEn,
-    'math-01-number-balance': numberBalanceEn,
+    'math-fishing-count': fishingCountEn,
+    'math-round-counting': roundCountingEn,
+    'math-fruit-slice': fruitSliceEn,
+    'math-number-balance': numberBalanceEn,
   },
 } as const;
 

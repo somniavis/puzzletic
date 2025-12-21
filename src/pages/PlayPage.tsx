@@ -6,8 +6,8 @@ import { playButtonSound } from '../utils/sound';
 import { useNurturing } from '../contexts/NurturingContext';
 import { GAMES, getGameById } from '../games/registry';
 import type { GameCategory, GameDifficulty, GameManifest } from '../games/types';
-import fishingCountEn from '../games/math/level1/001_FishingCount/locales/en';
-import roundCountingEn from '../games/math/level1/002_RoundCounting/locales/en';
+import fishingCountEn from '../games/math/level1/FishingCount/locales/en';
+import roundCountingEn from '../games/math/level1/RoundCounting/locales/en';
 
 const CATEGORY_ICONS: Record<GameCategory, string> = {
     math: '🔢',
@@ -44,11 +44,10 @@ export const PlayPage: React.FC<PlayPageProps> = () => {
 
     // Preload Game Translations ensure titles look correct immediately
     useEffect(() => {
-        // Fishing Count (New 001)
-        i18n.addResourceBundle('en', 'translation', { games: { 'math-01-fishing-count': fishingCountEn } }, true, true);
-
-        // Round Counting
-        i18n.addResourceBundle('en', 'translation', { games: { 'math-01-round-counting': roundCountingEn } }, true, true);
+        // fishingCountEn and roundCountingEn are imported but better to rely on central en.ts if possible.
+        // However, if we keep this logic, we must use correct keys.
+        i18n.addResourceBundle('en', 'translation', { games: { 'math-fishing-count': fishingCountEn } }, true, true);
+        i18n.addResourceBundle('en', 'translation', { games: { 'math-round-counting': roundCountingEn } }, true, true);
     }, [i18n]);
 
     const filteredGames = GAMES.filter(
