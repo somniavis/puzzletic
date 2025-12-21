@@ -137,6 +137,7 @@ export const useNumberBalanceLogic = () => {
     }, []);
 
     const startGame = useCallback(() => {
+        setIsChecking(false); // Reset check lock
         setGameState(prev => ({
             ...prev,
             isPlaying: true,
@@ -158,7 +159,7 @@ export const useNumberBalanceLogic = () => {
     const [isChecking, setIsChecking] = useState(false);
 
     const checkAnswer = useCallback((rightWeight: number, target: number, targetEmoji: string) => {
-        if (isChecking) return;
+        if (isChecking || gameState.gameOver) return;
         setIsChecking(true);
 
         // Validation: Correct Sum AND Correct Emoji Type
@@ -225,7 +226,7 @@ export const useNumberBalanceLogic = () => {
                         setIsChecking(false);
                     }, 800);
                 } else {
-                    setIsChecking(false); // Game Over, release lock just in case
+                    // Game Over: Keep isChecking=true to prevent loop
                 }
             }
         }, 500); // 500ms delay to see the balance
