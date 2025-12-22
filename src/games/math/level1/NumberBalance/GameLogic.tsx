@@ -75,50 +75,94 @@ export const useNumberBalanceLogic = () => {
         }
 
         // Find a valid pair (A + B = Target)
+        // Since target >= 2, we can always find at least one pair of positive integers
         const a = Math.floor(Math.random() * (target - 1)) + 1;
         const b = target - a;
 
         // Create Options (4 items)
-        // 1. Correct A (Correct Value, Correct Emoji)
-        // 2. Correct B (Correct Value, Correct Emoji)
-        // 3. Distractor 1 (Similar Value, WRONG Emoji) - Tricky!
-        // 4. Distractor 2 (Random Value, Correct Emoji) - Tricky!
+        // 1. Correct A
+        // 2. Correct B
+        // 3 & 4. Distractors
 
         const optionsRaw: NumberItem[] = [
             { id: Math.random(), value: a, emoji: emoji },
             { id: Math.random(), value: b, emoji: emoji }
         ];
 
-        // Distractor 1: Wrong Emoji (Value MUST NOT be Target to enforce 2-item rule)
-        // If distractor value equals target (impossible if a,b < target), but for safety:
-        // Actually a and b are parts of target, so they are always < target.
-        // But what if we want a random distractor?
-        // Let's stick to using A or B or a random close number, but strictly != target.
+        // --- Distractor Logic ---
+        // Helper to get a safe random number distinct from exclusions
+        // maxT is the upper bound (exclusive) for valid values (value < target)
+        // BUT if target is small (e.g. 2, 3), valid values < target might be exhausted by A/B.
+        // e.g. Target=2 => a=1, b=1. Valid < 2 is only 1. Since 1 is excluded (a/b), NO valid < target exists!
+        // FIX: Allow distractors >= target if strictly needed, OR just ensure distinct ID/Emoji?
+        // User requested "value < target" so it's not obviously wrong by size.
+        // IF target is too small (e.g. 2 or 3), strict "< target" with unique values is impossible or rare.
+        // Strategy: Try to pick < target. If impossible/fails, pick target+1 or just any random 1-9 to unblock.
 
-        let d1Val = Math.random() > 0.5 ? a : b;
-        // Optional: randomization
-        if (Math.random() > 0.7) {
-            d1Val = Math.floor(Math.random() * 9) + 1;
-            while (d1Val === target) {
-                d1Val = Math.floor(Math.random() * 9) + 1;
+        const getSafeDistractorValue = (excludeVals: number[], maxLimit: number) => {
+            // 1. Try to find good candidates < maxLimit
+            const candidates = [];
+            for (let i = 1; i < maxLimit; i++) {
+                if (!excludeVals.includes(i)) candidates.push(i);
             }
+
+            if (candidates.length > 0) {
+                // Pick random from safe candidates
+                return candidates[Math.floor(Math.random() * candidates.length)];
+            }
+
+            // 2. Fallback: If no valid candidates < target (e.g. target=2), 
+            // we MUST violate the rule or reuse a value. 
+            // Reusing value with SAME emoji makes it identical to correct answer -> Bad.
+            // Reusing value with WRONG emoji is fine.
+            // Picking value > target is safer fallback than freezing.
+
+            // Let's pick a random number 1-9 that's NOT in exclusions if possible
+            const backupCandidates = [];
+            for (let i = 1; i <= 9; i++) {
+                if (!excludeVals.includes(i)) backupCandidates.push(i);
+            }
+
+            if (backupCandidates.length > 0) {
+                return backupCandidates[Math.floor(Math.random() * backupCandidates.length)];
+            }
+
+            // Last Resort (Should never happen with 1-9 range and few exclusions)
+            return Math.floor(Math.random() * 9) + 1;
+        };
+
+        // Distractor 1
+        let d1Val: number;
+        let d1Emoji: string;
+
+        // 50% chance for Same Emoji (Harder logic logic) vs Wrong Emoji
+        if (Math.random() < 0.5) {
+            // Harder: Same Emoji -> Value MUST be different from A and B (and Target)
+            d1Emoji = emoji;
+            d1Val = getSafeDistractorValue([a, b], target);
+        } else {
+            // Classic: Wrong Emoji
+            d1Emoji = wrongEmoji;
+            // Can reuse A or B values to be tricky
+            d1Val = Math.random() > 0.5 ? a : b;
         }
 
         optionsRaw.push({
             id: Math.random(),
             value: d1Val,
-            emoji: wrongEmoji
+            emoji: d1Emoji
         });
 
-        // Distractor 2: Correct Emoji, Wrong Value (MUST NOT be Target)
-        let wrongValue = Math.floor(Math.random() * 9) + 1;
-        // Avoid A, B (correct parts) and TARGET (to prevent single-item balance)
-        while (wrongValue === a || wrongValue === b || wrongValue === target) {
-            wrongValue = Math.floor(Math.random() * 9) + 1;
-        }
+        // Distractor 2: Same Emoji, Wrong Value
+        // Must be different from A, B, and D1 (if D1 is same emoji)
+        const exclusions = [a, b];
+        if (d1Emoji === emoji) exclusions.push(d1Val);
+
+        const d2Val = getSafeDistractorValue(exclusions, target);
+
         optionsRaw.push({
             id: Math.random(),
-            value: wrongValue,
+            value: d2Val,
             emoji: emoji
         });
 
