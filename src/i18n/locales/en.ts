@@ -113,6 +113,10 @@ export const en = {
     earnedXp: 'XP',
     earnedGro: 'Gro',
   },
+  evolution: {
+    title: 'EVOLUTION!',
+    continue: 'Tap to Continue',
+  },
   food: {
     menu: {
       title: 'Food',

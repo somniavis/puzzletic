@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react'
 import './App.css'
 import { PetRoom } from './components/PetRoom/PetRoom'
+import { EvolutionAnimation } from './components/EvolutionAnimation/EvolutionAnimation'
 import { createCharacter } from './data/characters'
 import type { CharacterAction, CharacterMood, Character, EvolutionStage } from './types/character'
 import { NurturingProvider, useNurturing } from './contexts/NurturingContext'
@@ -20,7 +21,7 @@ import { StatsPage } from './pages/StatsPage'
 import { GalleryPage } from './pages/GalleryPage'
 import { EncyclopediaPage } from './pages/EncyclopediaPage'
 
-import { CHARACTER_SPECIES, type CharacterSpeciesId } from './data/species';
+import { CHARACTER_SPECIES, type CharacterSpeciesId, getEvolutionName } from './data/species';
 
 // Protected Route Wrapper
 const ProtectedRoute = ({ children }: { children: React.ReactElement }) => {
@@ -59,15 +60,40 @@ function AppContent() {
     preloadSounds();
   }, []);
 
-  // Sync speciesId from Nurturing Context
+  // Sync speciesId AND evolutionStage from Nurturing Context
   useEffect(() => {
-    if (nurturing.speciesId && nurturing.speciesId !== selectedSpeciesId) {
-      console.log('🔄 Restoring species from persistence:', nurturing.speciesId);
-      const restoredId = nurturing.speciesId as CharacterSpeciesId;
-      setSelectedSpeciesId(restoredId);
-      setCharacter(() => createCharacter(restoredId));
+    const contextSpeciesId = nurturing.speciesId as CharacterSpeciesId;
+    const contextStage = nurturing.evolutionStage as EvolutionStage;
+
+    if (!contextSpeciesId) return;
+
+    // Check if we need to update
+    const needsUpdate =
+      contextSpeciesId !== character.speciesId ||
+      contextStage !== character.evolutionStage;
+
+    if (needsUpdate) {
+      console.log('🔄 Syncing character from context:', {
+        from: { id: character.speciesId, stage: character.evolutionStage },
+        to: { id: contextSpeciesId, stage: contextStage }
+      });
+
+      setSelectedSpeciesId(contextSpeciesId);
+
+      setCharacter(prev => {
+        // Create new character base
+        const newChar = createCharacter(contextSpeciesId);
+        // FORCE update stage and name
+        newChar.evolutionStage = contextStage || 1;
+        newChar.name = getEvolutionName(contextSpeciesId, newChar.evolutionStage);
+
+        // Preserve other transient stats if needed, or rely on context for those?
+        // The PetRoom uses nurturing.stats for most things, but 'character' prop 
+        // controls the Avatar rendering (species/stage).
+        return newChar;
+      });
     }
-  }, [nurturing.speciesId]); // Only trigger when persisted speciesId changes
+  }, [nurturing.speciesId, nurturing.evolutionStage, character.speciesId, character.evolutionStage]);
 
   const handleCharacterSelect = (speciesId: string, stage: EvolutionStage = 1) => {
     const id = speciesId as CharacterSpeciesId;
@@ -136,69 +162,80 @@ function AppContent() {
   };
 
   return (
-    <Routes>
-      {/* Public Routes */}
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/signup" element={<SignupPage />} />
+    <>
+      <Routes>
+        {/* Public Routes */}
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/signup" element={<SignupPage />} />
 
-      {/* Protected Routes */}
-      <Route path="/home" element={
-        <ProtectedRoute>
-          <PetRoom
-            character={character}
-            speciesId={selectedSpeciesId}
-            onStatsChange={handleStatsChange}
-            mood={mood}
-            action={action}
-            showGiftBox={!nurturing.hasCharacter}
-            onOpenGift={handleGiftOpen}
-            onMoodChange={handleMoodChange}
-            onActionChange={handleActionChange}
+        {/* Protected Routes */}
+        <Route path="/home" element={
+          <ProtectedRoute>
+            <PetRoom
+              character={character}
+              speciesId={selectedSpeciesId}
+              onStatsChange={handleStatsChange}
+              mood={mood}
+              action={action}
+              showGiftBox={!nurturing.hasCharacter}
+              onOpenGift={handleGiftOpen}
+              onMoodChange={handleMoodChange}
+              onActionChange={handleActionChange}
+            />
+          </ProtectedRoute>
+        } />
+
+        <Route path="/play" element={
+          <ProtectedRoute>
+            <PlayPage />
+          </ProtectedRoute>
+        } />
+
+        <Route path="/play/:gameId" element={
+          <ProtectedRoute>
+            <PlayPage />
+          </ProtectedRoute>
+        } />
+
+        <Route path="/stats" element={
+          <ProtectedRoute>
+            <StatsPage
+              character={character}
+              selectedSpeciesId={selectedSpeciesId}
+              mood={mood}
+              action={action}
+              onMoodChange={handleMoodChange}
+              onActionChange={handleActionChange}
+            />
+          </ProtectedRoute>
+        } />
+
+        <Route path="/gallery" element={
+          <ProtectedRoute>
+            <GalleryPage onCharacterSelect={handleCharacterSelect} />
+          </ProtectedRoute>
+        } />
+
+        <Route path="/encyclopedia" element={
+          <ProtectedRoute>
+            <EncyclopediaPage />
+          </ProtectedRoute>
+        } />
+
+        {/* Default Redirect */}
+        <Route path="/" element={<Navigate to="/home" replace />} />
+        <Route path="*" element={<Navigate to="/home" replace />} />
+      </Routes>
+      {
+        nurturing.isEvolving && nurturing.speciesId && (
+          <EvolutionAnimation
+            speciesId={nurturing.speciesId as any}
+            newStage={nurturing.evolutionStage as any}
+            onComplete={nurturing.completeEvolutionAnimation}
           />
-        </ProtectedRoute>
-      } />
-
-      <Route path="/play" element={
-        <ProtectedRoute>
-          <PlayPage />
-        </ProtectedRoute>
-      } />
-
-      <Route path="/play/:gameId" element={
-        <ProtectedRoute>
-          <PlayPage />
-        </ProtectedRoute>
-      } />
-
-      <Route path="/stats" element={
-        <ProtectedRoute>
-          <StatsPage
-            character={character}
-            selectedSpeciesId={selectedSpeciesId}
-            mood={mood}
-            action={action}
-            onMoodChange={handleMoodChange}
-            onActionChange={handleActionChange}
-          />
-        </ProtectedRoute>
-      } />
-
-      <Route path="/gallery" element={
-        <ProtectedRoute>
-          <GalleryPage onCharacterSelect={handleCharacterSelect} />
-        </ProtectedRoute>
-      } />
-
-      <Route path="/encyclopedia" element={
-        <ProtectedRoute>
-          <EncyclopediaPage />
-        </ProtectedRoute>
-      } />
-
-      {/* Default Redirect */}
-      <Route path="/" element={<Navigate to="/home" replace />} />
-      <Route path="*" element={<Navigate to="/home" replace />} />
-    </Routes>
+        )
+      }
+    </>
   )
 }
 

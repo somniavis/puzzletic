@@ -95,7 +95,10 @@ interface NurturingContextValue {
   setGameDifficulty: (difficulty: number | null) => void;
   hasCharacter: boolean;
   completeCharacterCreation: () => void;
+
   saveToCloud: () => Promise<boolean>;
+  isEvolving: boolean;
+  completeEvolutionAnimation: () => void;
 }
 
 const NurturingContext = createContext<NurturingContextValue | undefined>(undefined);
@@ -129,7 +132,33 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     return updatedState;
   });
 
-  // ... existing code ...
+
+  // Evolution Animation State (Transient)
+  const [isEvolving, setIsEvolving] = useState(false);
+
+  const completeEvolutionAnimation = useCallback(() => {
+    setIsEvolving(false);
+  }, []);
+
+  // Effect to separate Evolution triggering from State logic
+  // This ensures animation triggers whenever stage increases, regardless of source (game, debug, sync?)
+  // Note: Sync might cause issues if syncing a higher level account. 
+  // We might want to skip animation on initial load/sync. 
+  // Initial load is handled by `prevStageRef` initializing with current state.
+  const prevStageRef = useRef(state.evolutionStage);
+
+  useEffect(() => {
+    // Only trigger if stage INCREASED and we have a previous valid stage
+    const prev = prevStageRef.current || 1;
+    const current = state.evolutionStage || 1;
+
+    if (current > prev) {
+      console.log(`✨ Evolution detected via Effect: ${prev} -> ${current}`);
+      setIsEvolving(true);
+    }
+    prevStageRef.current = current;
+  }, [state.evolutionStage]);
+
 
   // Cloud Sync: Fetch on Login
   useEffect(() => {
@@ -282,9 +311,10 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
         }
       }
 
+
       if (evolved) {
         console.log(`🎉 EVOLUTION! Stage ${newStage}`);
-        // TODO: Trigger visual celebration
+        // Animation handled by useEffect monitoring state.evolutionStage
       }
 
       saveNurturingState(newState);
@@ -940,6 +970,8 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     hasCharacter: state.hasCharacter ?? false,
     completeCharacterCreation,
     saveToCloud, // Expose new function
+    isEvolving,
+    completeEvolutionAnimation,
   }), [
     state.stats,
     state.poops,
@@ -973,7 +1005,10 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     resumeTick,
     setGameDifficulty,
     completeCharacterCreation,
-    addRewards
+    addRewards,
+    saveToCloud,
+    isEvolving,
+    completeEvolutionAnimation
   ]);
 
   return <NurturingContext.Provider value={value}>{children}</NurturingContext.Provider>;
