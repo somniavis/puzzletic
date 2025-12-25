@@ -82,7 +82,7 @@ function AppContent() {
 
       setSelectedSpeciesId(contextSpeciesId);
 
-      setCharacter(prev => {
+      setCharacter(() => {
         // Create new character base
         const newChar = createCharacter(contextSpeciesId);
         // FORCE update stage and name
