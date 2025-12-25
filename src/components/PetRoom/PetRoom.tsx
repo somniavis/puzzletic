@@ -166,8 +166,8 @@ export const PetRoom: React.FC<PetRoomProps> = ({
       // 30% 확률로 이동
       if (Math.random() > 0.3) return;
 
-      const newX = 5 + Math.random() * 90; // 5% ~ 95% (Entire width)
-      const newY = 2 + Math.random() * 73; // 2% ~ 75% (Entire floor: Bottom 0% to Horizon ~80%)
+      const newX = 6 + Math.random() * 88; // 6% ~ 94%
+      const newY = 6 + Math.random() * 69; // 6% ~ 75%
 
       setIsMoving(true);
       setPosition({ x: newX, y: newY });
