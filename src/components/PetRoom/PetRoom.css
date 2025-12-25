@@ -284,10 +284,229 @@
   background: linear-gradient(180deg, #DEB887 0%, #D2691E 100%);
   box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.2);
   flex-shrink: 0;
+  box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.2);
+  flex-shrink: 0;
   z-index: 1;
 }
 
-/* Default Ground Override to maintain original look (approx 60/40) */
+/* Shape Land Background (Forest Structure Match) */
+.room-background.shape_ground {
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.room-background.shape_ground .room-wall {
+  position: relative !important;
+  height: 50vh !important;
+  width: 100%;
+  order: -1 !important;
+  inset: auto !important;
+  background: linear-gradient(180deg, #E6E6FA 0%, #B2CCFF 100%);
+  border-bottom: none;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.room-background.shape_ground .room-floor {
+  position: relative !important;
+  height: 80vh !important;
+  width: 100%;
+  inset: auto !important;
+  margin-top: -30vh !important;
+  /* Soft Cream/Vanilla Floor - Elegant & Warm */
+  background-color: #FFF9E6;
+  /* Creamy Vanilla */
+  background-image:
+    linear-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
+  background-size: 30px 30px;
+  /* Detailed grid */
+  background-position: center bottom;
+  box-shadow: inset 0 10px 20px rgba(230, 230, 250, 0.2);
+  /* Very subtle lavender tint shadow */
+  border-top-left-radius: 50% 40px;
+  border-top-right-radius: 50% 40px;
+  z-index: 1;
+}
+
+.shape-bg-gradient {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 30%, rgba(255, 255, 255, 0.4) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+/* Shape Lake (Middle Layer) */
+.room-background.shape_ground .shape-lake {
+  position: absolute;
+  left: 0;
+  bottom: 60%;
+  /* Aligned with forest-lake */
+  width: 100%;
+  height: 120px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.4) 0%, rgba(135, 206, 235, 0.2) 100%);
+  clip-path: ellipse(70% 60% at 50% 100%);
+  z-index: 0;
+  filter: blur(2px);
+  animation: lake-ripple 5s ease-in-out infinite alternate;
+}
+
+@keyframes lake-ripple {
+  0% {
+    transform: scaleY(0.95);
+    opacity: 0.6;
+  }
+
+  100% {
+    transform: scaleY(1.05);
+    opacity: 0.8;
+  }
+}
+
+.shape-bg-gradient {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 30%, rgba(255, 255, 255, 0.4) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.shape-item {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.6);
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  pointer-events: none;
+  animation: float-shape infinite ease-in-out;
+}
+
+.shape-circle {
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, rgba(255, 230, 230, 0.9), rgba(255, 182, 193, 0.5));
+  box-shadow: 0 4px 10px rgba(255, 182, 193, 0.3);
+}
+
+.shape-square {
+  border-radius: 4px;
+  background: linear-gradient(135deg, rgba(173, 216, 230, 0.8), rgba(135, 206, 235, 0.5));
+  transform: rotate(15deg);
+  animation: float-rotate-square infinite linear;
+}
+
+.shape-triangle {
+  width: 0 !important;
+  height: 0 !important;
+  background: none;
+  border: none;
+  border-left: 15px solid transparent;
+  border-right: 15px solid transparent;
+  border-bottom: 30px solid rgba(255, 255, 224, 0.8);
+  filter: drop-shadow(0 4px 6px rgba(255, 215, 0, 0.2));
+  animation: float-shape infinite ease-in-out;
+}
+
+/* Override inline width/height for triangle */
+.shape-triangle[style] {
+  width: 0 !important;
+  height: 0 !important;
+}
+
+@keyframes float-shape {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-15px);
+  }
+}
+
+@keyframes float-rotate-square {
+  0% {
+    transform: translateY(0) rotate(0deg);
+  }
+
+  50% {
+    transform: translateY(-10px) rotate(180deg);
+  }
+
+  100% {
+    transform: translateY(0) rotate(360deg);
+  }
+}
+
+/* Decorative Structures */
+.shape-structure {
+  position: absolute;
+  bottom: 0;
+  z-index: 1;
+}
+
+.structure-left {
+  left: 10%;
+  width: 60px;
+  height: 120px;
+  background:
+    radial-gradient(circle at 50% 20%, #FFB6C1 20px, transparent 21px),
+    linear-gradient(#B0E0E6 60%, transparent 0);
+  background-size: 100% 40px, 40px 100%;
+  background-repeat: no-repeat;
+  background-position: center top, center bottom;
+}
+
+.structure-right {
+  right: 15%;
+  width: 80px;
+  height: 100px;
+  background:
+    conic-gradient(from 45deg at 50% 50%, #FFDAB9 25%, transparent 0),
+    linear-gradient(#E6E6FA 100%, transparent 0);
+  background-size: 60px 60px, 40px 100%;
+  background-position: center top, center bottom;
+  background-repeat: no-repeat;
+}
+
+.shape-star {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background: #FFFACD;
+  clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+  animation: twinkle 3s infinite ease-in-out;
+}
+
+.star-1 {
+  top: 10%;
+  left: 20%;
+  animation-delay: 0s;
+}
+
+.star-2 {
+  top: 15%;
+  right: 25%;
+  animation-delay: 1s;
+}
+
+.star-3 {
+  top: 5%;
+  left: 50%;
+  animation-delay: 2s;
+}
+
+@keyframes twinkle {
+
+  0%,
+  100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}
+
 /* Default Ground Override: Full height floor with light yellow wall color */
 .room-background.default_ground .room-wall {
   display: none;
@@ -2450,4 +2669,34 @@
 .reset-btn:hover {
   background: #cc0000;
   transform: scale(1.05);
+}
+
+/* Custom Shop Icon for Shape Land */
+.custom-icon-shape-ground {
+  display: inline-block;
+  width: 44px;
+  height: 44px;
+  /* Matches ~3rem font size comfortably */
+  background: linear-gradient(180deg, #E6E6FA 0%, #B2CCFF 100%);
+  /* Wall Gradient */
+  border-radius: 12px;
+  border: 3px solid #FFF9E6;
+  /* Cream border */
+  box-shadow: 0 4px 6px rgba(178, 204, 255, 0.4);
+  position: relative;
+  vertical-align: middle;
+}
+
+/* Geometric decoration (Circle) inside icon */
+.custom-icon-shape-ground::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 18px;
+  height: 18px;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 50%;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
 }

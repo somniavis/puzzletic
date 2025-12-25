@@ -67,4 +67,13 @@ export const SHOP_ITEMS: ShopItem[] = [
         price: 500,
         isOwned: false,
     },
+    {
+        id: 'shape_ground',
+        nameKey: 'shop.items.shape_ground', // "Shape Land"
+        descriptionKey: 'shop.items.shape_ground.desc',
+        icon: '💠',
+        category: 'ground',
+        price: 450,
+        isOwned: false,
+    },
 ];

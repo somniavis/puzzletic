@@ -27,6 +27,25 @@ export const RoomBackground: React.FC<RoomBackgroundProps> = React.memo(({
         });
     }, []);
 
+    // Generate random floating shapes for Shape Land
+    const shapeElements = useMemo(() => {
+        return Array.from({ length: 40 }).map((_, i) => {
+            const types = ['circle', 'triangle', 'square'];
+            const type = types[Math.floor(Math.random() * types.length)];
+            const size = 15 + Math.random() * 35; // 15px ~ 50px
+            return {
+                id: i,
+                type,
+                left: `${Math.random() * 90 + 5}%`, // 5% ~ 95%
+                top: `${Math.random() * 60 + 5}%`, // 5% ~ 65% (Air)
+                size: `${size}px`,
+                delay: `${Math.random() * 5}s`,
+                duration: `${3 + Math.random() * 4}s`, // 3s ~ 7s
+                color: `rgba(255, 255, 255, ${0.4 + Math.random() * 0.4})` // Semi-transparent white
+            };
+        });
+    }, []);
+
     const currentBackground = showGiftBox ? 'default_ground' : background;
 
     return (
@@ -115,6 +134,35 @@ export const RoomBackground: React.FC<RoomBackgroundProps> = React.memo(({
                         <div className="star-3" />
                         <div className="star-4" />
                         <div className="iceberg-1" />
+                    </>
+                )}
+                {currentBackground === 'shape_ground' && (
+                    <>
+                        <div className="shape-bg-gradient" />
+                        {shapeElements.map((shape) => (
+                            <div
+                                key={shape.id}
+                                className={`shape-item shape-${shape.type}`}
+                                style={{
+                                    left: shape.left,
+                                    top: shape.top,
+                                    width: shape.size,
+                                    height: shape.size,
+                                    animationDelay: shape.delay,
+                                    animationDuration: shape.duration,
+                                    opacity: 0.6
+                                }}
+                            />
+                        ))}
+                        {/* Middle Layer: Shape Lake */}
+                        <div className="shape-lake" />
+
+                        {/* Decorative Large Shapes */}
+                        <div className="shape-structure structure-left" />
+                        <div className="shape-structure structure-right" />
+                        <div className="shape-star star-1" />
+                        <div className="shape-star star-2" />
+                        <div className="shape-star star-3" />
                     </>
                 )}
             </div>

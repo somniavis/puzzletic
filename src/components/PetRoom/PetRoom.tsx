@@ -892,7 +892,13 @@ export const PetRoom: React.FC<PetRoomProps> = ({
               onClick={() => handleShopItemClick(item)}
               style={nurturing.currentLand === item.id ? { borderColor: '#FFD700', backgroundColor: '#FFF9E6' } : {}}
             >
-              <span className="food-item-icon">{item.icon}</span>
+              <span className="food-item-icon">
+                {item.id === 'shape_ground' ? (
+                  <span className="custom-icon-shape-ground" />
+                ) : (
+                  item.icon
+                )}
+              </span>
               <span className="food-item-name">{t(item.nameKey)}</span>
               <div className="food-item-effects">
                 {nurturing.inventory.includes(item.id) ? (

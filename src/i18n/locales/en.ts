@@ -278,6 +278,8 @@ export const en = {
       'desert_ground.desc': 'Endless sand dunes.',
       forest_ground: 'Deep Forest',
       'forest_ground.desc': 'A lush green forest.',
+      shape_ground: 'Pastel Plaza',
+      'shape_ground.desc': 'A soft, dreamy pastel world.',
     },
   },
   actions: {
