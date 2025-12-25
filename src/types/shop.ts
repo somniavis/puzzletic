@@ -76,4 +76,13 @@ export const SHOP_ITEMS: ShopItem[] = [
         price: 450,
         isOwned: false,
     },
+    {
+        id: 'sweet_ground',
+        nameKey: 'shop.items.sweet_ground',
+        descriptionKey: 'shop.items.sweet_ground.desc',
+        icon: '🍭',
+        category: 'ground',
+        price: 500,
+        isOwned: false,
+    },
 ];

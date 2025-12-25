@@ -280,6 +280,8 @@ export const en = {
       'forest_ground.desc': 'A lush green forest.',
       shape_ground: 'Pastel Plaza',
       'shape_ground.desc': 'A soft, dreamy pastel world.',
+      sweet_ground: 'Sweet Delight',
+      'sweet_ground.desc': 'A delicious world of candy and treats.',
     },
   },
   actions: {
