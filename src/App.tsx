@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import './App.css'
 import { PetRoom } from './components/PetRoom/PetRoom'
 import { EvolutionAnimation } from './components/EvolutionAnimation/EvolutionAnimation'
+import { GraduationAnimation } from './components/GraduationAnimation/GraduationAnimation'
 import { createCharacter } from './data/characters'
 import type { CharacterAction, CharacterMood, Character, EvolutionStage } from './types/character'
 import { NurturingProvider, useNurturing } from './contexts/NurturingContext'
@@ -70,12 +71,13 @@ function AppContent() {
     // Check if we need to update
     const needsUpdate =
       contextSpeciesId !== character.speciesId ||
-      contextStage !== character.evolutionStage;
+      contextStage !== character.evolutionStage ||
+      (nurturing.characterName && nurturing.characterName !== character.name);
 
     if (needsUpdate) {
       console.log('🔄 Syncing character from context:', {
-        from: { id: character.speciesId, stage: character.evolutionStage },
-        to: { id: contextSpeciesId, stage: contextStage }
+        from: { id: character.speciesId, stage: character.evolutionStage, name: character.name },
+        to: { id: contextSpeciesId, stage: contextStage, name: nurturing.characterName }
       });
 
       setSelectedSpeciesId(contextSpeciesId);
@@ -85,15 +87,20 @@ function AppContent() {
         const newChar = createCharacter(contextSpeciesId);
         // FORCE update stage and name
         newChar.evolutionStage = contextStage || 1;
-        newChar.name = getEvolutionName(contextSpeciesId, newChar.evolutionStage);
 
-        // Preserve other transient stats if needed, or rely on context for those?
-        // The PetRoom uses nurturing.stats for most things, but 'character' prop 
-        // controls the Avatar rendering (species/stage).
+        // Sync Name: Use persisted name if available, otherwise default to evolution name
+        if (nurturing.characterName) {
+          newChar.name = nurturing.characterName;
+        } else {
+          newChar.name = getEvolutionName(contextSpeciesId, newChar.evolutionStage);
+        }
+
+        // Preserve other transient stats if needed
+        // Note: Resetting character here effectively resets mood/action unless preserved
         return newChar;
       });
     }
-  }, [nurturing.speciesId, nurturing.evolutionStage, character.speciesId, character.evolutionStage]);
+  }, [nurturing.speciesId, nurturing.evolutionStage, nurturing.characterName, character.speciesId, character.evolutionStage, character.name]);
 
   const handleCharacterSelect = (speciesId: string, stage: EvolutionStage = 1) => {
     const id = speciesId as CharacterSpeciesId;
@@ -229,9 +236,18 @@ function AppContent() {
       {
         nurturing.isEvolving && nurturing.speciesId && (
           <EvolutionAnimation
-            speciesId={nurturing.speciesId as any}
-            newStage={nurturing.evolutionStage as any}
+            speciesId={nurturing.speciesId as CharacterSpeciesId}
+            newStage={nurturing.evolutionStage as EvolutionStage}
             onComplete={nurturing.completeEvolutionAnimation}
+          />
+        )
+      }
+      {
+        nurturing.isGraduating && nurturing.speciesId && (
+          <GraduationAnimation
+            speciesId={nurturing.speciesId as CharacterSpeciesId}
+            currentStage={nurturing.evolutionStage as EvolutionStage}
+            onComplete={() => nurturing.completeGraduationAnimation(character.name)}
           />
         )
       }

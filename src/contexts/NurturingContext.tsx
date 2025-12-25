@@ -25,6 +25,8 @@ import {
   saveNurturingState,
   applyOfflineProgress,
   resetNurturingState,
+  saveToHallOfFame,
+  startNewGeneration,
 } from '../services/persistenceService';
 import { CHARACTER_SPECIES } from '../data/species';
 import {
@@ -67,8 +69,10 @@ interface NurturingContextValue {
   xp: number;
   evolutionStage: number;
   speciesId?: string;
+  characterName?: string;
   unlockedJellos?: Record<string, number[]>;
   setCharacterState: (id: string, stage: number) => void;
+  setCharacterName: (name: string) => void;
   addRewards: (xp: number, gro: number) => void;
 
   // 행동 (Actions)
@@ -99,6 +103,8 @@ interface NurturingContextValue {
   saveToCloud: () => Promise<boolean>;
   isEvolving: boolean;
   completeEvolutionAnimation: () => void;
+  isGraduating: boolean; // Stage 4 -> Graduation
+  completeGraduationAnimation: (name: string) => void;
 }
 
 const NurturingContext = createContext<NurturingContextValue | undefined>(undefined);
@@ -140,6 +146,40 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     setIsEvolving(false);
   }, []);
 
+  // Graduation Animation State
+  const [isGraduating, setIsGraduating] = useState(false);
+
+  // Import persistence functions needed
+  // Note: They are already imported at top? No, check imports.
+  // We need saveToHallOfFame and startNewGeneration from ../services/persistenceService
+
+  const completeGraduationAnimation = useCallback((name: string) => {
+    // 1. Create Hall Of Fame Entry
+    const entry: import('../types/nurturing').HallOfFameEntry = {
+      id: Date.now().toString(),
+      name: name || 'Jello',
+      speciesId: state.speciesId || 'yellowJello',
+      finalStage: state.evolutionStage || 4,
+      graduatedAt: Date.now(),
+      finalStats: state.stats
+    };
+
+    // 2. Save Entry to Persistent Storage
+    // We use functional update pattern or direct calls if state is current
+
+    // We need to import these functions if not available
+
+    let nextState = saveToHallOfFame(state, entry);
+
+    // 3. Reset Game (Soft Reset)
+    nextState = startNewGeneration(nextState);
+
+    // 4. Update State
+    setState(nextState);
+    setIsGraduating(false);
+    setIsEvolving(false); // Force clear any pending evolution animation (e.g. from debug trigger)
+  }, [state]);
+
   // Effect to separate Evolution triggering from State logic
   // This ensures animation triggers whenever stage increases, regardless of source (game, debug, sync?)
   // Note: Sync might cause issues if syncing a higher level account. 
@@ -152,8 +192,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     const prev = prevStageRef.current || 1;
     const current = state.evolutionStage || 1;
 
-    if (current > prev) {
-      console.log(`✨ Evolution detected via Effect: ${prev} -> ${current}`);
+    if (current > prev && current > 1) {
       setIsEvolving(true);
     }
     prevStageRef.current = current;
@@ -163,7 +202,6 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
   // Cloud Sync: Fetch on Login
   useEffect(() => {
     if (user) {
-      console.log('☁️ Fetching cloud data for user:', user.uid);
       console.log('☁️ Fetching cloud data for user:', user.uid);
       fetchUserData(user).then((result) => {
         if (!result.success) {
@@ -208,6 +246,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
                 currentLand: cloudData.current_land || fullState.currentLand || 'default_ground',
                 // Explicitly ensure hasCharacter is restored
                 hasCharacter: fullState.hasCharacter ?? prev.hasCharacter,
+                characterName: fullState.characterName,
               };
             } else {
               console.log('⚠️ No full state found, syncing core stats only');
@@ -243,7 +282,6 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     console.log('☁️ Auto-save timer started');
 
     const timer = setInterval(() => {
-      console.log('☁️ Triggering auto-save...');
       // Use ref to avoid resetting timer on state change
       if (stateRef.current) {
         syncUserData(user, stateRef.current);
@@ -279,14 +317,30 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
         }
       }
 
-      const { newXP, newStage, evolved } = addXPAndCheckEvolution(
+      const { newXP, newStage, evolved, canGraduate } = addXPAndCheckEvolution(
         currentState.xp || 0,
-        (currentState.evolutionStage || 1) as any,
+        (currentState.evolutionStage || 1) as import('../types/character').EvolutionStage,
         xpAmount,
         currentState.history,
         conditions
       );
 
+      // Trigger animation if stage changed
+      // Note: We don't set isEvolving here directly to keep it decoupled, 
+      // but if we wanted to be explicit we could.
+      // However, the useEffect below watches for stage change.
+
+      // Handle Graduation
+      if (canGraduate) {
+        setIsGraduating(true);
+      }
+
+      // Handle Evolution (useEffect handles this usually, but let's double check)
+      // The existing useEffect relies on state.evolutionStage changing.
+      // If evolved is true, state.evolutionStage will change below.
+
+      // Persist Species if Stage 4 (Branching) or earlier
+      // ... (existing logic)oAmount,
       const newState = {
         ...currentState,
         xp: newXP,
@@ -920,6 +974,17 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     });
   }, []);
 
+  const setCharacterName = useCallback((name: string) => {
+    setState(currentState => {
+      const newState = {
+        ...currentState,
+        characterName: name,
+      };
+      saveNurturingState(newState);
+      return newState;
+    });
+  }, []);
+
 
 
 
@@ -944,12 +1009,14 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
 
     evolutionStage: state.evolutionStage || 1,
     speciesId: state.speciesId, // Expose speciesId
+    characterName: state.characterName,
     unlockedJellos: state.unlockedJellos,
     maxStats,
     addRewards,
     feed,
     giveMedicine,
     setCharacterState,
+    setCharacterName,
     clean,
     cleanBug,
     cleanAll,
@@ -972,6 +1039,8 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     saveToCloud, // Expose new function
     isEvolving,
     completeEvolutionAnimation,
+    isGraduating,
+    completeGraduationAnimation,
   }), [
     state.stats,
     state.poops,
@@ -1008,7 +1077,9 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     addRewards,
     saveToCloud,
     isEvolving,
-    completeEvolutionAnimation
+    completeEvolutionAnimation,
+    isGraduating,
+    completeGraduationAnimation
   ]);
 
   return <NurturingContext.Provider value={value}>{children}</NurturingContext.Provider>;

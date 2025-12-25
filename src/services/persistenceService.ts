@@ -51,6 +51,7 @@ const createDefaultState = (): NurturingPersistentState => {
       totalLifetimeGroEarned: 0,
     },
     unlockedJellos: {},
+    hallOfFame: [],
   };
 };
 
@@ -249,6 +250,11 @@ export const loadNurturingState = (): NurturingPersistentState => {
       }
     }
 
+    // Init Hall of Fame
+    if (!loaded.hallOfFame) {
+      loaded.hallOfFame = [];
+    }
+
     return loaded as NurturingPersistentState;
   } catch (error) {
     console.error('Failed to load nurturing state:', error);
@@ -411,6 +417,57 @@ export const addCurrency = (
     ...currentState,
     totalCurrencyEarned: currentState.totalCurrencyEarned + amount,
     studyCount: currentState.studyCount + 1,
+  };
+
+  saveNurturingState(newState);
+  return newState;
+};
+
+/**
+ * 명예의 전당 저장
+ */
+export const saveToHallOfFame = (
+  currentState: NurturingPersistentState,
+  entry: import('../types/nurturing').HallOfFameEntry
+): NurturingPersistentState => {
+  const newState = {
+    ...currentState,
+    hallOfFame: [...(currentState.hallOfFame || []), entry],
+  };
+  saveNurturingState(newState);
+  return newState;
+};
+
+/**
+ * 새로운 세대 시작 (Soft Reset)
+ * 재화, 도감, 인벤토리, 명예의 전당 유지
+ * 캐릭터 상태, 히스토리 초기화
+ */
+export const startNewGeneration = (
+  currentState: NurturingPersistentState
+): NurturingPersistentState => {
+  const defaultState = createDefaultState();
+  const newState = {
+    ...defaultState,
+    // Keep persistent data
+    gro: currentState.gro,
+    totalCurrencyEarned: currentState.totalCurrencyEarned,
+    studyCount: currentState.studyCount,
+    inventory: currentState.inventory,
+    unlockedJellos: currentState.unlockedJellos,
+    hallOfFame: currentState.hallOfFame || [],
+    gameDifficulty: currentState.gameDifficulty,
+    // Reset Character (handled by createDefaultState, but ensuring here)
+    hasCharacter: false, // Will trigger egg selection
+    xp: 0,
+    evolutionStage: 1,
+    speciesId: 'yellowJello', // Reset to default until selection
+    history: {
+      foodsEaten: {},
+      gamesPlayed: {},
+      actionsPerformed: {},
+      totalLifetimeGroEarned: 0,
+    },
   };
 
   saveNurturingState(newState);

@@ -108,32 +108,34 @@ export const PetRoom: React.FC<PetRoomProps> = ({
   const [isCleaning, setIsCleaning] = useState(false);
   // Modal visibility now defaults to false, but we'll trigger it via useEffect if needed
   const [activeCleaningToolId, setActiveCleaningToolId] = useState<string | null>(null);
+  // Modal visibility
   const [showNicknameModal, setShowNicknameModal] = useState(false);
-  // Track if nickname step is done so we can show the box
-  const [isNicknameSet, setIsNicknameSet] = useState(false);
   // Manual sequence lock to bridge gaps between animation states (e.g. food disappearing -> action starting)
   const [isSequenceActive, setIsSequenceActive] = useState(false);
 
-  // Auto-show modal if we are in "GiftBox mode" (new user) and haven't set nickname yet
+  // Auto-show modal AFTER box is opened (character exists, but no name set yet)
   useEffect(() => {
-    if (showGiftBox && !isNicknameSet) {
-      // Delay for smooth entrance
+    // If box is NOT showing (means we have a character) AND nickname is not persisted/set
+    if (!showGiftBox && !nurturing.characterName && !showNicknameModal) {
+      // Delay for smooth transition after box opens
       const timer = setTimeout(() => {
         setShowNicknameModal(true);
       }, 1500); // 1.5s delay
       return () => clearTimeout(timer);
     }
-  }, [showGiftBox, isNicknameSet]);
+  }, [showGiftBox, nurturing.characterName, showNicknameModal]);
 
   // When box is clicked (after nickname is set), just open the gift
   const handleGiftBoxClick = () => {
     onOpenGift?.();
   };
 
-  const handleNicknameComplete = (_nickname: string) => {
+  const handleNicknameComplete = (nickname: string) => {
     setShowNicknameModal(false);
-    setIsNicknameSet(true);
-    // Box appears now. User must click it to open.
+    // Update context persistence
+    if (nickname) {
+      nurturing.setCharacterName(nickname);
+    }
   };
 
   const showBubble = (category: EmotionCategory, level: 1 | 2 | 3) => {
@@ -620,7 +622,9 @@ export const PetRoom: React.FC<PetRoomProps> = ({
           title={t('shop.menu.title', 'Shop')}
         >
           <span className="action-icon">🛖</span>
-        </button> {/* 가출 경고 메시지 (죽음 상태가 아닐 때만 표시) */}
+        </button>
+
+        {/* 가출 경고 메시지 (죽음 상태가 아닐 때만 표시) */}
         {nurturing.abandonmentStatus.level !== 'normal' && nurturing.abandonmentStatus.level !== 'abandoned' && (
           <div className={`abandonment-alert abandonment-alert--${nurturing.abandonmentStatus.level}`}>
             <span className="abandonment-alert__icon">
@@ -743,10 +747,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({
               </div>
             )}
             {showGiftBox ? (
-              // Only show the box if nickname is already set (user clicked "Start")
-              isNicknameSet ? (
-                <GiftBox onOpen={handleGiftBoxClick} />
-              ) : null // Hide box while modal is open (or before)
+              <GiftBox onOpen={handleGiftBoxClick} />
             ) : (
               <CharacterComponent
                 character={character}

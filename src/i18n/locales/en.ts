@@ -117,6 +117,11 @@ export const en = {
     title: 'EVOLUTION!',
     continue: 'Tap to Continue',
   },
+  graduation: {
+    title: 'Goodbye, Jello!',
+    message: "Your Jello has grown up and is off to see the world! 🌍",
+    action: "See you again!",
+  },
   food: {
     menu: {
       title: 'Food',

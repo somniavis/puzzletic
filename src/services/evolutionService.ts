@@ -201,16 +201,28 @@ export const addXPAndCheckEvolution = (
   newXP: number;
   newStage: EvolutionStage;
   evolved: boolean;
+  canGraduate: boolean; // Added flag
   stageInfo?: typeof EVOLUTION_STAGES[keyof typeof EVOLUTION_STAGES];
 } => {
   const newXP = currentXP + xpToAdd;
   const newStage = calculateEvolutionStage(newXP, history, unlockConditions);
   const evolved = newStage > currentStage;
 
+  // Check graduation condition:
+  // 1. Current Stage is 4
+  // 2. XP met Stage 5 requirement (5000)
+  // 3. Did NOT evolve to Stage 5 (meaning conditions failed or hidden logic blocked it)
+  // 4. Actually, calculateEvolutionStage returns 4 if conditions fail even if XP is enough.
+  const isCappedStage4 =
+    currentStage === 4 &&
+    newStage === 4 &&
+    newXP >= EVOLUTION_STAGES[5].requiredXP;
+
   return {
     newXP,
     newStage,
     evolved,
+    canGraduate: isCappedStage4,
     stageInfo: evolved ? EVOLUTION_STAGES[newStage] : undefined,
   };
 };

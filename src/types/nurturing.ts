@@ -137,6 +137,16 @@ export interface AbandonmentStatusUI {
   countdown?: string;     // "3일 5시간 12분"
 }
 
+// 명예의 전당 (Hall of Fame / Gallery)
+export interface HallOfFameEntry {
+  id: string; // Unique ID (timestamp based)
+  name: string;
+  speciesId: string;
+  finalStage: number; // usually 4
+  graduatedAt: number; // timestamp
+  finalStats: NurturingStats;
+}
+
 // 지속 상태 (Persistent State)
 export interface NurturingPersistentState {
   stats: NurturingStats;
@@ -157,7 +167,9 @@ export interface NurturingPersistentState {
   sickProgress?: number; // 질병 치료 진행도 (0~2, 2면 완치)
   xp: number; // 경험치 (Experience Point)
   evolutionStage: number; // 진화 단계 (1-5)
+  characterName?: string; // Character Nickname
   speciesId?: string; // Current Jello Species ID
   history?: import('./character').CharacterHistory; // Hidden Evolution Tracking
   unlockedJellos?: Record<string, number[]>; // Encyclopedia: { 'yellowJello': [1, 2], 'redJello': [1] }
+  hallOfFame?: HallOfFameEntry[]; // 졸업한 젤로 목록
 }
