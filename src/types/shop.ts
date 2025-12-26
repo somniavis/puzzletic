@@ -85,4 +85,22 @@ export const SHOP_ITEMS: ShopItem[] = [
         price: 500,
         isOwned: false,
     },
+    {
+        id: 'night_city',
+        nameKey: 'shop.items.night_city',
+        descriptionKey: 'shop.items.night_city.desc',
+        icon: '🌃',
+        category: 'ground',
+        price: 1500,
+        isOwned: false,
+    },
+    {
+        id: 'layout1_template',
+        nameKey: 'shop.items.layout1_template',
+        descriptionKey: 'shop.items.layout1_template.desc',
+        icon: '🏗️',
+        category: 'ground',
+        price: 0,
+        isOwned: false,
+    },
 ];
