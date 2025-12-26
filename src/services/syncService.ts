@@ -59,6 +59,30 @@ export const fetchUserData = async (user: User): Promise<FetchUserResult> => {
 };
 
 /**
+ * Sanitize payload for D1 compatibility
+ * Replaces undefined with null
+ * Ensures numeric values are finite
+ */
+const sanitizePayload = (data: any): any => {
+    if (data === undefined) return null;
+    if (data === null) return null;
+    if (typeof data === 'number') {
+        return Number.isFinite(data) ? data : 0;
+    }
+    if (Array.isArray(data)) {
+        return data.map(item => sanitizePayload(item));
+    }
+    if (typeof data === 'object') {
+        const sanitized: any = {};
+        for (const [key, value] of Object.entries(data)) {
+            sanitized[key] = sanitizePayload(value);
+        }
+        return sanitized;
+    }
+    return data;
+};
+
+/**
  * Sync (Upsert) user data to Cloudflare
  * triggers on core data changes (XP, Gro, Inventory)
  */
@@ -69,18 +93,34 @@ export const syncUserData = async (
     try {
         const token = await user.getIdToken();
 
-        // Extract only core data
-        const payload = {
+        // Prepare payload with snake_case for D1
+        // We stringify game_data here to ensure strict storage as string if needed,
+        // or passing as object if backend handles it.
+        // Based on typical D1 setups, sending structured JSON is better, but let's match the interface hints.
+        // Let's stick to the previous robust approach: camelCase keys might be failing if backend expects snake_case.
+
+        const rawPayload = {
+            // Common Fields
             email: user.email,
-            displayName: user.displayName,
-            level: state.evolutionStage || 1,
             xp: state.xp || 0,
             gro: state.gro || 0,
-            currentLand: state.currentLand,
             inventory: state.inventory || [],
-            gameData: state, // Store FULL state for persistence
+
+            // Snake_case (D1 Standard)
+            display_name: user.displayName,
+            level: state.evolutionStage || 1,
+            current_land: state.currentLand || 'default_ground',
+            game_data: JSON.stringify(state),
+            created_at: user.metadata.creationTime ? new Date(user.metadata.creationTime).getTime() : Date.now(),
+
+            // CamelCase (Legacy/Fallback Support)
+            displayName: user.displayName,
+            currentLand: state.currentLand,
+            gameData: state,
             createdAt: user.metadata.creationTime ? new Date(user.metadata.creationTime).getTime() : Date.now(),
         };
+
+        const payload = sanitizePayload(rawPayload);
 
         const response = await fetch(`${API_BASE_URL}/api/users/${user.uid}`, {
             method: 'POST',
@@ -93,7 +133,8 @@ export const syncUserData = async (
         });
 
         if (!response.ok) {
-            throw new Error(`Sync Error: ${response.status}`);
+            const errorText = await response.text();
+            throw new Error(`Sync Error: ${response.status} - ${errorText}`);
         }
 
         const json = await response.json();

@@ -139,6 +139,10 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     return updatedState;
   });
 
+  // Track previous stage to detect evolution (for animation)
+  // We initialize it with the current stage to avoid triggering animation on first render
+  const prevStageRef = useRef(state.evolutionStage);
+
   // Track user changes and update storage key
   useEffect(() => {
     setCurrentUserId(user?.uid || null);
@@ -148,6 +152,11 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
       console.log('🔄 User changed, loading user-specific data for:', user.uid);
       const userState = loadNurturingState();
       const { updatedState } = applyOfflineProgress(userState);
+
+      // Update prevStageRef to match the new state's stage
+      // This prevents triggering evolution animation when loading a higher-level user
+      prevStageRef.current = updatedState.evolutionStage;
+
       setState(updatedState);
       saveNurturingState(updatedState);
     }
@@ -199,7 +208,6 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
   // Note: Sync might cause issues if syncing a higher level account. 
   // We might want to skip animation on initial load/sync. 
   // Initial load is handled by `prevStageRef` initializing with current state.
-  const prevStageRef = useRef(state.evolutionStage);
 
   useEffect(() => {
     // Only trigger if stage INCREASED and we have a previous valid stage
@@ -304,6 +312,11 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
                 currentLand: cloudData.current_land || 'default_ground',
                 inventory: cloudData.inventory,
               };
+            }
+
+            // Sync prevStageRef to suppress evolution animation on cloud sync
+            if (newState.evolutionStage !== prev.evolutionStage) {
+              prevStageRef.current = newState.evolutionStage;
             }
 
             saveNurturingState(newState);

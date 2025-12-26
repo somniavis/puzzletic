@@ -9,7 +9,7 @@ export const ProfilePage: React.FC = () => {
     const navigate = useNavigate();
     const { t } = useTranslation();
     const { user } = useAuth();
-    const { pauseTick, resumeTick } = useNurturing();
+    const { pauseTick, resumeTick, gro, xp, addRewards } = useNurturing();
     // Simulate Premium Status for UI Demo
     const [isPremium, setIsPremium] = React.useState(false);
 
@@ -90,6 +90,49 @@ export const ProfilePage: React.FC = () => {
                     <button className="jello-box-link" onClick={() => navigate('/jellobox')}>
                         📚 {t('profile.myJelloBox')}
                     </button>
+                </section>
+
+                {/* DEBUG Section - Remove before production */}
+                <section className="profile-section" style={{ background: '#ffebee', border: '2px dashed #f44336' }}>
+                    <p style={{ color: '#c62828', fontWeight: 'bold', marginBottom: '0.5rem' }}>🔧 DEBUG MODE (GRO: {gro} | XP: {xp})</p>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                        <button
+                            style={{
+                                background: '#4CAF50',
+                                color: 'white',
+                                padding: '12px 24px',
+                                borderRadius: '12px',
+                                border: 'none',
+                                fontWeight: 'bold',
+                                cursor: 'pointer',
+                                flex: 1
+                            }}
+                            onClick={() => {
+                                addRewards(0, 200); // Add 0 XP, 200 GRO
+                                alert(`✅ Added 200 GRO!\nNew total: ${gro + 200}`);
+                            }}
+                        >
+                            💰 +200 GRO
+                        </button>
+                        <button
+                            style={{
+                                background: '#2196F3',
+                                color: 'white',
+                                padding: '12px 24px',
+                                borderRadius: '12px',
+                                border: 'none',
+                                fontWeight: 'bold',
+                                cursor: 'pointer',
+                                flex: 1
+                            }}
+                            onClick={() => {
+                                addRewards(50, 0); // Add 50 XP, 0 GRO
+                                alert(`✅ Added 50 XP!\nNew total: ${xp + 50}`);
+                            }}
+                        >
+                            ⭐ +50 XP
+                        </button>
+                    </div>
                 </section>
             </div>
         </div>
