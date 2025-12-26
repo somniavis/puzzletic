@@ -16,8 +16,30 @@ import {
 import { calculateOfflineProgress, checkAbandonmentState } from './gameTickService';
 import { protectData, restoreData } from './simpleEncryption';
 
-const STORAGE_KEY = 'puzzleletic_nurturing_state_v4';
-const CHECKSUM_KEY = 'puzzleletic_checksum';
+const STORAGE_KEY_PREFIX = 'puzzleletic_nurturing_state_v4';
+const CHECKSUM_KEY_PREFIX = 'puzzleletic_checksum';
+
+// Module-level user ID tracking for user-specific storage
+let currentUserId: string | null = null;
+
+/**
+ * Set the current user ID for user-specific localStorage
+ * Call this when user logs in/out
+ */
+export const setCurrentUserId = (userId: string | null) => {
+  currentUserId = userId;
+  console.log('📦 PersistenceService: User ID set to', userId);
+};
+
+// Generate user-specific storage keys
+const getStorageKey = (userId?: string) => {
+  const id = userId || currentUserId;
+  return id ? `${STORAGE_KEY_PREFIX}_${id}` : STORAGE_KEY_PREFIX;
+};
+const getChecksumKey = (userId?: string) => {
+  const id = userId || currentUserId;
+  return id ? `${CHECKSUM_KEY_PREFIX}_${id}` : CHECKSUM_KEY_PREFIX;
+};
 
 /**
  * 기본 상태 생성
@@ -59,14 +81,14 @@ const createDefaultState = (): NurturingPersistentState => {
  * 상태 저장 (localStorage)
  * 민감한 데이터(glo, totalCurrencyEarned 등)를 암호화하여 저장
  */
-export const saveNurturingState = (state: NurturingPersistentState): void => {
+export const saveNurturingState = (state: NurturingPersistentState, userId?: string): void => {
   try {
     // 민감한 데이터 암호화 및 체크섬 생성
     const { protectedData, checksum } = protectData(state);
 
     const serialized = JSON.stringify(protectedData);
-    localStorage.setItem(STORAGE_KEY, serialized);
-    localStorage.setItem(CHECKSUM_KEY, checksum);
+    localStorage.setItem(getStorageKey(userId), serialized);
+    localStorage.setItem(getChecksumKey(userId), checksum);
   } catch (error) {
     console.error('Failed to save nurturing state:', error);
   }
@@ -76,10 +98,10 @@ export const saveNurturingState = (state: NurturingPersistentState): void => {
  * 상태 불러오기 (localStorage)
  * 암호화된 민감한 데이터 복원 및 무결성 검증
  */
-export const loadNurturingState = (): NurturingPersistentState => {
+export const loadNurturingState = (userId?: string): NurturingPersistentState => {
   try {
-    const serialized = localStorage.getItem(STORAGE_KEY);
-    const storedChecksum = localStorage.getItem(CHECKSUM_KEY);
+    const serialized = localStorage.getItem(getStorageKey(userId));
+    const storedChecksum = localStorage.getItem(getChecksumKey(userId));
 
     if (!serialized) {
       // 저장된 데이터 없음 - 새로 시작

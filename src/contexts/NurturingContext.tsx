@@ -27,6 +27,7 @@ import {
   resetNurturingState,
   saveToHallOfFame,
   startNewGeneration,
+  setCurrentUserId,
 } from '../services/persistenceService';
 import { CHARACTER_SPECIES } from '../data/species';
 import {
@@ -131,13 +132,26 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
 
   // 상태
   const [state, setState] = useState<NurturingPersistentState>(() => {
-    // ... existing init ...
+    // Initial load without user ID (will be reloaded when user is set)
     const loaded = loadNurturingState();
     const { updatedState } = applyOfflineProgress(loaded);
     saveNurturingState(updatedState);
     return updatedState;
   });
 
+  // Track user changes and update storage key
+  useEffect(() => {
+    setCurrentUserId(user?.uid || null);
+
+    // When user changes, reload their data
+    if (user?.uid) {
+      console.log('🔄 User changed, loading user-specific data for:', user.uid);
+      const userState = loadNurturingState();
+      const { updatedState } = applyOfflineProgress(userState);
+      setState(updatedState);
+      saveNurturingState(updatedState);
+    }
+  }, [user?.uid]);
 
   // Evolution Animation State (Transient)
   const [isEvolving, setIsEvolving] = useState(false);
@@ -236,16 +250,22 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
             if (fullState && typeof fullState === 'object') {
               console.log('📦 Cloud State Check:', { cloudTime: fullState.lastActiveTime, localTime: prev.lastActiveTime });
 
-              // 클라우드 데이터가 로컬보다 과거거나 같으면, 로컬 데이터 유지 (덮어쓰기 방지)
-              // 단, 다른 기기에서 진행했을 수도 있으므로 정말 신중해야 함.
-              // 여기서는 간단히 타임스탬프 비교.
+              // Check if this user has ever synced on THIS device before
+              const syncFlagKey = `puzzleletic_synced_${user.uid}`;
+              const hasEverSyncedOnThisDevice = localStorage.getItem(syncFlagKey) === 'true';
+
               const cloudTime = fullState.lastActiveTime || 0;
               const localTime = prev.lastActiveTime || 0;
 
               // Check if local state has meaningful progress (not just a fresh default state)
               const isLocalMeaningful = prev.hasCharacter || prev.totalCurrencyEarned > 0 || prev.evolutionStage > 1;
 
-              if (localTime >= cloudTime && isLocalMeaningful) {
+              // First time sync on this device? Always use cloud data.
+              if (!hasEverSyncedOnThisDevice) {
+                console.log('🆕 First sync for this user on this device. Using cloud data.');
+                // Mark as synced for future sessions
+                localStorage.setItem(syncFlagKey, 'true');
+              } else if (localTime >= cloudTime && isLocalMeaningful) {
                 console.log('✨ Local state is newer AND meaningful. Keeping local state and syncing to cloud.');
                 // 합집합 인벤토리 (혹시 모를 누락 방지)
                 const mergedInventory = Array.from(new Set([...(prev.inventory || []), ...(fullState.inventory || [])]));
