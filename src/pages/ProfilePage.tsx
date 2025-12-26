@@ -1,15 +1,25 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
+import { useNurturing } from '../contexts/NurturingContext';
 import './ProfilePage.css';
 
 export const ProfilePage: React.FC = () => {
     const navigate = useNavigate();
     const { t } = useTranslation();
     const { user } = useAuth();
+    const { pauseTick, resumeTick } = useNurturing();
     // Simulate Premium Status for UI Demo
     const [isPremium, setIsPremium] = React.useState(false);
+
+    // Pause ticks when entering Profile page, resume when leaving
+    useEffect(() => {
+        pauseTick();
+        return () => {
+            resumeTick();
+        };
+    }, [pauseTick, resumeTick]);
 
     const handlePurchase = () => {
         if (window.confirm("Simulate Premium Purchase?")) {
@@ -43,7 +53,7 @@ export const ProfilePage: React.FC = () => {
                         </div>
                     </div>
 
-                    {!isPremium ? (
+                    {!isPremium && (
                         <div className="premium-upgrade-area">
                             <p className="upgrade-prompt">{t('profile.upgradePrompt')}</p>
                             <div className="subscription-options">
@@ -73,13 +83,6 @@ export const ProfilePage: React.FC = () => {
                                 </button>
                             </div>
                             <p className="cancel-text">{t('profile.cancelPolicy')}</p>
-                        </div>
-                    ) : (
-                        <div className="premium-active-view">
-                            <div className="premium-card-gold">
-                                <h3>👑 {t('profile.premiumActive.title')}</h3>
-                                <p>{t('profile.premiumActive.desc')}</p>
-                            </div>
                         </div>
                     )}
                 </section>

@@ -5,13 +5,13 @@ import numberBalanceEn from '../../games/math/level1/NumberBalance/locales/en';
 
 export const en = {
   profile: {
-    title: 'My Profile',
+    title: 'Profile',
     home: 'Home',
     signedInAs: 'Signed in as',
     guestUser: 'Guest User',
     status: {
-      premium: 'PREMIUM',
-      free: 'FREE',
+      premium: '👑 PREMIUM',
+      free: 'TRIAL',
       premiumLabel: '✨ Premium Member',
       freeLabel: '🌱 Free Plan',
     },

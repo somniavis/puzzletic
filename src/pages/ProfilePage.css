@@ -78,7 +78,7 @@
 .profile-section {
     background: rgba(255, 255, 255, 0.9);
     border-radius: 20px;
-    padding: 1.5rem 1.5rem 0.8rem 1.5rem;
+    padding: 1.5rem;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
     border: 3px solid #fff;
     display: flex;
@@ -109,11 +109,45 @@
     overflow: hidden;
 }
 
-/* Premium Active State (Gold Theme) */
+/* Premium Active State (Animated Gold Border like Hidden Jello) */
 .account-status-card.premium-active {
-    background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
-    box-shadow: 0 6px 0 #B8860B;
-    color: #854d0e;
+    border: none;
+    background: linear-gradient(135deg, #FFD700 0%, #B8860B 25%, #FFF8DC 50%, #B8860B 75%, #FFD700 100%);
+    background-size: 300% 300%;
+    animation: goldShine 4s ease-in-out infinite;
+    box-shadow: 0 6px 0 #946c1e, 0 8px 10px rgba(0, 0, 0, 0.3);
+    overflow: visible;
+}
+
+@keyframes goldShine {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+/* Inner Background for Premium Card */
+.account-status-card.premium-active::after {
+    content: '';
+    position: absolute;
+    inset: 4px;
+    background: #FFF8DC;
+    border-radius: 16px;
+    z-index: 0;
+}
+
+/* Content on top of inner background */
+.account-status-card.premium-active .sub-info-left,
+.account-status-card.premium-active .sub-price-right {
+    position: relative;
+    z-index: 1;
 }
 
 .account-status-card.premium-active .sub-title {
