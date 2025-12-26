@@ -42,14 +42,12 @@ export const ProfilePage: React.FC = () => {
 
                     {/* Account Status Card (Designed like Subscription Buttons) */}
                     <div className={`account-status-card ${isPremium ? 'premium-active' : ''}`}>
+                        <span className={`status-badge ${isPremium ? 'premium' : 'free'}`}>
+                            {isPremium ? t('profile.status.premium') : t('profile.status.free')}
+                        </span>
                         <div className="sub-info-left">
                             <span className="sub-title">{t('profile.signedInAs')}</span>
                             <span className="sub-desc">{user?.email || t('profile.guestUser')}</span>
-                        </div>
-                        <div className="sub-price-right">
-                            <div className={`status-badge-pill ${isPremium ? 'premium' : 'free'}`}>
-                                {isPremium ? t('profile.status.premium') : t('profile.status.free')}
-                            </div>
                         </div>
                     </div>
 

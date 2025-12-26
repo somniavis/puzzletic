@@ -143,6 +143,14 @@
     z-index: 0;
 }
 
+/* Premium Status Badge - higher z-index and positioned to match border */
+.account-status-card.premium-active .status-badge {
+    top: 4px;
+    right: 4px;
+    border-top-right-radius: 16px;
+    z-index: 3;
+}
+
 /* Content on top of inner background */
 .account-status-card.premium-active .sub-info-left,
 .account-status-card.premium-active .sub-price-right {
@@ -159,26 +167,29 @@
     font-weight: 700;
 }
 
-/* Status Badge Pill */
-.status-badge-pill {
-    padding: 6px 16px;
-    border-radius: 12px;
-    font-size: 0.9rem;
+/* Status Badge (like Best Value badge, but top-right) */
+.status-badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    font-size: 0.85rem;
     font-weight: 800;
+    padding: 6px 16px;
+    border-bottom-left-radius: 14px;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    z-index: 2;
 }
 
-.status-badge-pill.free {
+.status-badge.free {
     background: #374151;
     color: #9CA3AF;
-    border: 2px solid #4B5563;
+    box-shadow: -2px 2px 0 rgba(0, 0, 0, 0.1);
 }
 
-.status-badge-pill.premium {
-    background: #fff;
-    color: #DAA520;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+.status-badge.premium {
+    background: #FFD700;
+    color: #854d0e;
+    box-shadow: -2px 2px 0 rgba(0, 0, 0, 0.1);
 }
 
 /* Upgrade Prompt */
