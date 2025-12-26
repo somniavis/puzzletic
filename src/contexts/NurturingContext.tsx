@@ -242,8 +242,11 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
               const cloudTime = fullState.lastActiveTime || 0;
               const localTime = prev.lastActiveTime || 0;
 
-              if (localTime >= cloudTime) {
-                console.log('✨ Local state is newer or same. Keeping local state and syncing to cloud.');
+              // Check if local state has meaningful progress (not just a fresh default state)
+              const isLocalMeaningful = prev.hasCharacter || prev.totalCurrencyEarned > 0 || prev.evolutionStage > 1;
+
+              if (localTime >= cloudTime && isLocalMeaningful) {
+                console.log('✨ Local state is newer AND meaningful. Keeping local state and syncing to cloud.');
                 // 합집합 인벤토리 (혹시 모를 누락 방지)
                 const mergedInventory = Array.from(new Set([...(prev.inventory || []), ...(fullState.inventory || [])]));
 
