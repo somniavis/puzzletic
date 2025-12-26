@@ -4,6 +4,38 @@ import fruitSliceEn from '../../games/math/level1/FruitSlice/locales/en';
 import numberBalanceEn from '../../games/math/level1/NumberBalance/locales/en';
 
 export const en = {
+  profile: {
+    title: 'My Profile',
+    home: 'Home',
+    signedInAs: 'Signed in as',
+    guestUser: 'Guest User',
+    status: {
+      premium: 'PREMIUM',
+      free: 'FREE',
+      premiumLabel: '✨ Premium Member',
+      freeLabel: '🌱 Free Plan',
+    },
+    upgradePrompt: 'Upgrade to Premium',
+    subscription: {
+      quarterly: {
+        title: 'Billed quarterly',
+        desc: 'Now $3.45',
+      },
+      yearly: {
+        title: 'Billed annually',
+        desc: 'Total $12.00',
+        badge: 'Best Value',
+      },
+      unit: '/ month',
+      currency: 'USD',
+    },
+    cancelPolicy: 'All plans can be cancelled anytime.',
+    premiumActive: {
+      title: 'You are a Premium Member!',
+      desc: 'Thank you for your support.',
+    },
+    myJelloBox: 'My Jello Box',
+  },
   character: {
     profile: {
       level: 'Lv.{{level}}',

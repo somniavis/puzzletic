@@ -576,7 +576,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({
 
       {/* Top Header with Character Info */}
       <div className="game-header">
-        <div className="character-profile" onClick={() => navigate('/encyclopedia')} style={{ cursor: 'pointer' }}>
+        <div className="character-profile" onClick={() => navigate('/profile')} style={{ cursor: 'pointer' }}>
           <div className="profile-avatar">
             <CharacterComponent
               character={character}

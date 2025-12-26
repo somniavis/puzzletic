@@ -21,6 +21,7 @@ import { SignupPage } from './pages/SignupPage'
 import { StatsPage } from './pages/StatsPage'
 import { GalleryPage } from './pages/GalleryPage'
 import { EncyclopediaPage } from './pages/EncyclopediaPage'
+import { ProfilePage } from './pages/ProfilePage'
 
 import { CHARACTER_SPECIES, type CharacterSpeciesId, getEvolutionName } from './data/species';
 
@@ -226,6 +227,12 @@ function AppContent() {
         <Route path="/encyclopedia" element={
           <ProtectedRoute>
             <EncyclopediaPage />
+          </ProtectedRoute>
+        } />
+
+        <Route path="/profile" element={
+          <ProtectedRoute>
+            <ProfilePage />
           </ProtectedRoute>
         } />
 

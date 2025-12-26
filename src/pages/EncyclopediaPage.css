@@ -15,7 +15,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 1rem 1.5rem;
+    padding: 0.7rem 1.5rem;
     background: linear-gradient(180deg, #5a9c7d 0%, #4a8c6d 100%);
     border-bottom: 5px solid #3a6c4d;
     box-shadow: 0 4px 0 rgba(0, 0, 0, 0.2);
@@ -39,16 +39,17 @@
     background: linear-gradient(180deg, #7d5e4f 0%, #6d4e3f 100%);
     border: 3px solid #4d3e2f;
     border-radius: 12px;
-    padding: 8px 16px;
+    padding: 8px 12px;
     color: white;
-    font-weight: 700;
+    font-weight: 800;
     cursor: pointer;
     box-shadow: 0 4px 0 #3d2e1f;
     transition: all 0.1s;
-    font-size: 1rem;
+    font-size: 1.2rem;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    justify-content: center;
+    line-height: 1;
 }
 
 .close-button:hover {

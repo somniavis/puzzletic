@@ -36,8 +36,8 @@ export const EncyclopediaPage: React.FC = () => {
         <div className="encyclopedia-page">
             <header className="encyclopedia-header">
                 <h1>📚 {t('encyclopedia.title')}</h1>
-                <button className="close-button" onClick={() => navigate('/home')}>
-                    🏠 {t('encyclopedia.home')}
+                <button className="close-button" onClick={() => navigate('/profile')} aria-label="Back">
+                    ←
                 </button>
             </header>
 

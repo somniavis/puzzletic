@@ -101,8 +101,8 @@ export const PlayPage: React.FC<PlayPageProps> = () => {
                 <h1>🎮 {t('play.title')}</h1>
                 <div className="header-actions" style={{ display: 'flex', gap: '0.5rem' }}>
 
-                    <button className="nav-btn" onClick={handleHomeClick}>
-                        🏠 {t('play.home')}
+                    <button className="close-button" onClick={handleHomeClick} aria-label="Close">
+                        ✕
                     </button>
                 </div>
             </header>
