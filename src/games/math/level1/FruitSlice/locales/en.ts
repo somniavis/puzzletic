@@ -11,9 +11,9 @@ const manifest = {
             title: "Slice",
             desc: "Drag the number knife to the fruit to slice it."
         },
-        items: {
-            title: "Power-ups",
-            desc: "Use Freeze, Extra Life, and Double Score items to boost your game!"
+        math: {
+            title: "Math",
+            desc: "Find the missing number to complete the equation."
         }
     },
     powerups: {

@@ -11,9 +11,9 @@ export default {
             title: "Action",
             desc: "Drag and drop moving animals into the box."
         },
-        controls: {
-            title: "Controls",
-            desc: "Touch and drag to catch!"
+        math: {
+            title: "Math",
+            desc: "Count carefully to reach the target number."
         }
     }
 };
