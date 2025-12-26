@@ -91,7 +91,7 @@ export const SHOP_ITEMS: ShopItem[] = [
         descriptionKey: 'shop.items.night_city.desc',
         icon: '🌃',
         category: 'ground',
-        price: 1500,
+        price: 500,
         isOwned: false,
     },
     {

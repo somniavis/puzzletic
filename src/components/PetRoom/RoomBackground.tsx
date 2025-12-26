@@ -191,7 +191,15 @@ const SweetGround = React.memo(() => (
     <>
         <div className="rainbow-sky" />
         <div className="cloud-candy-1" />
-        <div className="cloud-candy-2" />
+        <div className="cloud-candy-2">
+            <div className="candy-rain">
+                <div className="star-drop d1" />
+                <div className="star-drop d2" />
+                <div className="star-drop d3" />
+                <div className="star-drop d4" />
+                <div className="star-drop d5" />
+            </div>
+        </div>
         <div className="star-candy-1" />
         <div className="star-candy-2" />
         <div className="star-candy-3" />
