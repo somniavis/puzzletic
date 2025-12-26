@@ -224,7 +224,7 @@ function AppContent() {
           </ProtectedRoute>
         } />
 
-        <Route path="/encyclopedia" element={
+        <Route path="/jellobox" element={
           <ProtectedRoute>
             <EncyclopediaPage />
           </ProtectedRoute>

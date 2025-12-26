@@ -89,7 +89,7 @@ export const ProfilePage: React.FC = () => {
 
                 {/* Section 3: My Jello Box Link */}
                 <section className="profile-section">
-                    <button className="jello-box-link" onClick={() => navigate('/encyclopedia')}>
+                    <button className="jello-box-link" onClick={() => navigate('/jellobox')}>
                         📚 {t('profile.myJelloBox')}
                     </button>
                 </section>
