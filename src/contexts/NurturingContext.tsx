@@ -234,21 +234,44 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
             let newState: NurturingPersistentState;
 
             if (fullState && typeof fullState === 'object') {
-              console.log('📦 Restoring full game state from cloud', fullState);
+              console.log('📦 Cloud State Check:', { cloudTime: fullState.lastActiveTime, localTime: prev.lastActiveTime });
+
+              // 클라우드 데이터가 로컬보다 과거거나 같으면, 로컬 데이터 유지 (덮어쓰기 방지)
+              // 단, 다른 기기에서 진행했을 수도 있으므로 정말 신중해야 함.
+              // 여기서는 간단히 타임스탬프 비교.
+              const cloudTime = fullState.lastActiveTime || 0;
+              const localTime = prev.lastActiveTime || 0;
+
+              if (localTime >= cloudTime) {
+                console.log('✨ Local state is newer or same. Keeping local state and syncing to cloud.');
+                // 합집합 인벤토리 (혹시 모를 누락 방지)
+                const mergedInventory = Array.from(new Set([...(prev.inventory || []), ...(fullState.inventory || [])]));
+
+                const mergedState = {
+                  ...prev,
+                  inventory: mergedInventory
+                };
+
+                // 로컬이 최신이므로 클라우드를 최신으로 업데이트
+                syncUserData(user, mergedState);
+                return mergedState;
+              }
+
+              console.log('⚠️ Cloud state is newer. Restoring from cloud.');
               newState = {
-                ...prev,
-                ...fullState,
-                // Ensure core tracking fields are synced from columns as well (Double Check)
+                ...prev, // 기본값 유지
+                ...fullState, // 클라우드 값 덮어쓰기
+                // Core fields merge
                 gro: cloudData.gro ?? fullState.gro,
                 xp: cloudData.xp ?? fullState.xp,
                 evolutionStage: cloudData.level ?? fullState.evolutionStage,
                 inventory: cloudData.inventory ?? fullState.inventory,
                 currentLand: cloudData.current_land || fullState.currentLand || 'default_ground',
-                // Explicitly ensure hasCharacter is restored
                 hasCharacter: fullState.hasCharacter ?? prev.hasCharacter,
-                characterName: fullState.characterName,
+                characterName: fullState.characterName || prev.characterName,
               };
             } else {
+              // ... fallback logic unchanged ...
               console.log('⚠️ No full state found, syncing core stats only');
               newState = {
                 ...prev,
