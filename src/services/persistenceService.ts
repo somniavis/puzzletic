@@ -65,7 +65,7 @@ export const createDefaultState = (): NurturingPersistentState => {
     hasCharacter: false,
     xp: 0,
     evolutionStage: 1, // Start at Egg
-    speciesId: 'yellowJello',
+    // speciesId: undefined, 
     history: {
       foodsEaten: {},
       gamesPlayed: {},
@@ -250,9 +250,10 @@ export const loadNurturingState = (userId?: string): NurturingPersistentState =>
       });
     }
 
-    if (!loaded.speciesId) {
-      loaded.speciesId = 'yellowJello';
-    }
+    // If usage of speciesId is critical, handle it in UI, not by forcing data here.
+    // if (!loaded.speciesId) {
+    //   loaded.speciesId = 'yellowJello';
+    // }
 
     // 도감 초기화 (기존 유저 마이그레이션)
     if (!loaded.unlockedJellos) {
@@ -260,8 +261,8 @@ export const loadNurturingState = (userId?: string): NurturingPersistentState =>
       loaded.unlockedJellos = {};
 
       // 현재 키우고 있는 젤로의 모든 이전 단계 해금 처리
-      // (예: 현재 3단계라면 1, 2, 3단계 모두 해금된 것으로 간주)
-      if (loaded.speciesId && loaded.evolutionStage) {
+      // 단, 캐릭터가 생성된 상태여야 함 (hasCharacter check)
+      if (loaded.hasCharacter && loaded.speciesId && loaded.evolutionStage) {
         const currentSpecies = loaded.speciesId;
         const currentStage = loaded.evolutionStage;
         const unlockedStages = [];
@@ -483,7 +484,7 @@ export const startNewGeneration = (
     hasCharacter: false, // Will trigger egg selection
     xp: 0,
     evolutionStage: 1,
-    speciesId: 'yellowJello', // Reset to default until selection
+    // speciesId: undefined, // Reset to undefined until selection
     history: {
       foodsEaten: {},
       gamesPlayed: {},

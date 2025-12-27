@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import './App.css'
 import { PetRoom } from './components/PetRoom/PetRoom'
 import { EvolutionAnimation } from './components/EvolutionAnimation/EvolutionAnimation'
@@ -144,7 +144,13 @@ function AppContent() {
     console.log('Stats changed:', newStats)
   }
 
+  // Prevent double-click/race conditions during gift opening
+  const isOpeningRef = useRef(false);
+
   const handleGiftOpen = () => {
+    if (isOpeningRef.current) return;
+    isOpeningRef.current = true;
+
     // Pick a random species dynamically
     const validSpecies = Object.keys(CHARACTER_SPECIES) as CharacterSpeciesId[];
     const randomSpecies = validSpecies[Math.floor(Math.random() * validSpecies.length)];
@@ -166,6 +172,7 @@ function AppContent() {
     setTimeout(() => {
       setMood('neutral');
       setAction('idle');
+      // No need to reset ref as GiftBox should disappear
     }, 3000);
   };
 

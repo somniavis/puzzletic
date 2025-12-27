@@ -268,9 +268,23 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
       if (!result.success) {
         if (result.notFound) {
           // New user: no cloud data exists
-          // Keep local state and upload to cloud (first sync)
-          console.log('☁️ New user detected. Uploading local state to cloud.');
-          syncUserData(user, stateRef.current);
+          // If local guest has progress (hasCharacter), sync it.
+          // Otherwise, sync a fresh clean state to avoid garbage data.
+          console.log('☁️ New user detected.');
+          if (stateRef.current.hasCharacter) {
+            console.log('☁️ Syncing guest progress to new account.');
+            // Promote Guest: Sync local state to Cloud AND re-save to Local with user ID
+            const guestState = stateRef.current;
+            syncUserData(user, guestState);
+            saveNurturingState(guestState, user.uid); // Lock this data to the new user ID
+          } else {
+            console.log('☁️ Initializing fresh account state.');
+            // Fresh Start: Create clean state, Sync to Cloud, AND Overwrite Local with user ID
+            const cleanState = createDefaultState();
+            syncUserData(user, cleanState);
+            setState({ ...cleanState, lastActiveTime: Date.now() });
+            saveNurturingState(cleanState, user.uid); // Ensure local storage is wiped of old guest data
+          }
         } else {
           console.warn('☁️ Fetch failed:', result.error);
         }

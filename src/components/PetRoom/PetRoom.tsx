@@ -578,15 +578,19 @@ export const PetRoom: React.FC<PetRoomProps> = ({
       <div className="game-header">
         <div className="character-profile" onClick={() => navigate('/profile')} style={{ cursor: 'pointer' }}>
           <div className="profile-avatar">
-            <CharacterComponent
-              character={character}
-              size="small"
-              mood={mood}
-              action="idle"
-            />
+            {!showGiftBox ? (
+              <CharacterComponent
+                character={character}
+                size="small"
+                mood={mood}
+                action="idle"
+              />
+            ) : (
+              <div className="profile-avatar-placeholder" style={{ width: '100%', height: '100%', borderRadius: '50%', background: 'rgba(0,0,0,0.1)' }} />
+            )}
           </div>
           <div className="profile-info">
-            <div className="profile-name">{getDisplayName()}</div>
+            <div className="profile-name">{!showGiftBox ? getDisplayName() : '-'}</div>
             <div className="profile-stats-row">
               <div className="profile-level">{t('character.profile.level', { level: character.level })}</div>
               <div className="profile-gro">💰 {nurturing.gro}</div>

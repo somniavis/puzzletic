@@ -44,7 +44,18 @@
                                                 │ (15분/Save/로그아웃)
                                                 ▼
 [로그인] <──────────────────────────────── [Cloudflare D1]
+[로그인] <──────────────────────────────── [Cloudflare D1]
 ```
+
+### 신규 유저 온보딩 (New User Flow)
+신규 유저(D1에 데이터 없음)의 경우, 로컬 데이터 상태에 따라 두 가지로 분기합니다:
+1.  **Guest Promotion** (`hasCharacter: true`):
+    *   게스트 플레이 기록이 있으면 이를 **새 계정으로 승계**합니다.
+    *   동작: `Sync to Cloud` + `Save to Local (User ID)`
+2.  **Fresh Start** (`hasCharacter: false`):
+    *   게스트 기록이 없으면 **완전히 초기화된 상태**로 시작합니다.
+    *   동작: `Create Default State` + `Sync to Cloud` + `Overwrite Local (User ID)`
+    *   *목적: 이전 게스트의 잔여 데이터(오류 등)가 새 계정에 넘어가는 것을 방지*
 
 ### 로그인 시 동작
 1. `fetchUserData(user)` 호출
@@ -155,6 +166,33 @@ puzzleletic_checksum_{userId}
 - **원인**: `game_data` 파싱 실패 가능
 - **해결**: Worker에서 JSON.stringify/parse 확인
 
-### Save 버튼 실패
-- **확인**: Console에서 `☁️ Sync failed:` 에러 메시지 확인
-- **일반적 원인**: 네트워크, 토큰 만료, D1 타입 에러
+### Save 버튼 실패/지연
+- **확인**: Console에서 `☁️ Sync failed:` 에러 또는 `☁️ Sync timed out` 확인
+- **최적화**: `syncService.ts`에 5초 타임아웃 적용됨 (무한 대기 방지)
+
+---
+
+## 최적화 전략 (Performance & Optimization)
+
+### 1. 네트워크 타임아웃 (Network Timeout)
+- **문제**: 해외 서버/Cold Start로 인한 저장 지연 시 앱이 멈추는 현상
+- **해결**: 모든 Sync 요청에 `AbortController`를 사용하여 **5초 타임아웃** 적용
+- **효과**: 네트워크가 불안정해도 UX가 Block되지 않음 (최대 5초 대기 후 제어권 반환)
+
+### 2. 백그라운드 틱 제어 (Tick Control)
+- **문제**: 로그아웃 후에도 `setInterval`이 돌아가며 리소스 소모
+- **해결**: `NurturingContext`의 틱 타이머에 `!user` 체크 추가
+- **효과**: 로그아웃 즉시 타이머 해제 (ClearInterval), 불필요한 연산 방지
+
+### 3. 데이터 초기화 안정성 (Safe Initialization)
+- **문제**: 구버전 클라우드 데이터가 신규 필드(예: `unlockedJellos`)를 덮어써서 `undefined` 발생
+- **해결**: `createDefaultState()`와 병합하는 전략 사용
+  ```typescript
+  const restoredState = {
+    ...createDefaultState(), // 1. 최신 기본 구조 보장
+    ...cloudData,            // 2. 클라우드 데이터 덮어쓰기
+    lastActiveTime: Date.now()
+  };
+  ```
+- **효과**: 스키마 변경 시 별도의 복잡한 마이그레이션 함수 없이도 구조적 안정성 확보
+

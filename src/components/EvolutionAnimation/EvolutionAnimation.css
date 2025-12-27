@@ -129,16 +129,19 @@
     }
 
     50% {
-        transform: scale(1.05);
+        transform: scale(0.85);
+        /* Reduced from 1.05 */
         opacity: 1;
     }
 
     70% {
-        transform: scale(0.9);
+        transform: scale(0.72);
+        /* Reduced from 0.9 */
     }
 
     100% {
-        transform: scale(1);
+        transform: scale(0.8);
+        /* Final size 80% */
     }
 }
 

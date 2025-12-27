@@ -54,8 +54,8 @@
 
 .graduation-avatar {
     z-index: 2;
-    transform: scale(0.9);
-    /* Reduced scale slightly as requested */
+    transform: scale(0.72);
+    /* Reduced scale to 80% of previous size (0.9 * 0.8 = 0.72) */
 }
 
 .graduation-luggage {
