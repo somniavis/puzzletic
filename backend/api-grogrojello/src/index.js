@@ -28,8 +28,6 @@ export default {
 			// GET: Retrieve User Data
 			if (request.method === 'GET') {
 				try {
-					// Binding name matches what triggered in creating DB, likely 'grogrojello_db' or 'DB'
-					// We set it to 'DB' in previous step via cli input
 					const stmt = env.DB.prepare('SELECT * FROM users WHERE uid = ?').bind(uid);
 					const result = await stmt.first();
 
@@ -37,6 +35,16 @@ export default {
 						return new Response(JSON.stringify({ found: false }), {
 							headers: { ...corsHeaders, 'Content-Type': 'application/json' }
 						});
+					}
+
+					// Check Subscription Expiry
+					const now = Date.now();
+					if (result.is_premium === 1 && result.subscription_end && result.subscription_end < now) {
+						console.log(`[Subscription] Expired for user ${uid}. Downgrading.`);
+						result.is_premium = 0;
+						// Update DB asynchronously to avoid blocking read too much, or just return downgraded state
+						// Ideally update DB:
+						await env.DB.prepare('UPDATE users SET is_premium = 0 WHERE uid = ?').bind(uid).run();
 					}
 
 					// Parse JSON fields
@@ -56,6 +64,52 @@ export default {
 
 			// POST: Sync/Upsert User Data
 			if (request.method === 'POST') {
+				// Check if this is a purchase request (sub-path)
+				// Since we are inside /api/users/:uid block, check if url ends with /purchase
+				if (path.endsWith('/purchase')) {
+					try {
+						const body = await request.json();
+						const { planId } = body; // '3_months' or '12_months'
+
+						if (!['3_months', '12_months'].includes(planId)) {
+							return new Response(JSON.stringify({ error: 'Invalid Plan ID' }), { status: 400, headers: corsHeaders });
+						}
+
+						const now = Date.now();
+						let duration = 0;
+						if (planId === '3_months') duration = 90 * 24 * 60 * 60 * 1000;
+						if (planId === '12_months') duration = 365 * 24 * 60 * 60 * 1000;
+
+						// Get current end date to extend it if already active
+						const currentStmt = env.DB.prepare('SELECT subscription_end FROM users WHERE uid = ?').bind(uid);
+						const currentData = await currentStmt.first();
+
+						let newEnd = now + duration;
+						// If currently active, extend from current end date
+						if (currentData && currentData.subscription_end > now) {
+							newEnd = currentData.subscription_end + duration;
+						}
+
+						// Update DB
+						await env.DB.prepare(`
+							UPDATE users 
+							SET is_premium = 1, subscription_end = ?, subscription_plan = ? 
+							WHERE uid = ?
+						`).bind(newEnd, planId, uid).run();
+
+						return new Response(JSON.stringify({ success: true, is_premium: 1, subscription_end: newEnd, plan: planId }), {
+							headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+						});
+
+					} catch (err) {
+						return new Response(JSON.stringify({ error: err.message }), {
+							status: 500,
+							headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+						});
+					}
+				}
+
+				// --- Normal Sync Logic (POST /api/users/:uid) ---
 				try {
 					const body = await request.json();
 					// Accept both snake_case (new) and camelCase (legacy) field names

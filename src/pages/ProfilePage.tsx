@@ -9,9 +9,8 @@ export const ProfilePage: React.FC = () => {
     const navigate = useNavigate();
     const { t } = useTranslation();
     const { user } = useAuth();
-    const { pauseTick, resumeTick, gro, xp, addRewards } = useNurturing();
-    // Simulate Premium Status for UI Demo
-    const [isPremium, setIsPremium] = React.useState(false);
+    const { pauseTick, resumeTick, gro, xp, addRewards, subscription, purchasePlan } = useNurturing();
+    const isPremium = subscription.isPremium;
 
     // Pause ticks when entering Profile page, resume when leaving
     useEffect(() => {
@@ -21,9 +20,14 @@ export const ProfilePage: React.FC = () => {
         };
     }, [pauseTick, resumeTick]);
 
-    const handlePurchase = () => {
-        if (window.confirm("Simulate Premium Purchase?")) {
-            setIsPremium(true);
+    const handlePurchase = async (plan: '3_months' | '12_months') => {
+        if (window.confirm(`Confirm purchase for ${plan === '3_months' ? '3 Months' : '1 Year'}?`)) {
+            const success = await purchasePlan(plan);
+            if (success) {
+                alert("Purchase Successful! (Mock)");
+            } else {
+                alert("Purchase Failed. See console.");
+            }
         }
     };
 
@@ -48,6 +52,11 @@ export const ProfilePage: React.FC = () => {
                         <div className="sub-info-left">
                             <span className="sub-title">{t('profile.signedInAs')}</span>
                             <span className="sub-desc">{user?.email || t('profile.guestUser')}</span>
+                            {isPremium && subscription.expiryDate && (
+                                <span className="sub-desc" style={{ fontSize: '0.8rem', opacity: 0.8 }}>
+                                    Expires: {new Date(subscription.expiryDate).toLocaleDateString()}
+                                </span>
+                            )}
                         </div>
                     </div>
 
@@ -56,7 +65,7 @@ export const ProfilePage: React.FC = () => {
                             <p className="upgrade-prompt">{t('profile.upgradePrompt')}</p>
                             <div className="subscription-options">
                                 {/* Quarterly Card */}
-                                <button className="sub-btn quarterly" onClick={handlePurchase}>
+                                <button className="sub-btn quarterly" onClick={() => handlePurchase('3_months')}>
                                     <div className="sub-info-left">
                                         <span className="sub-title">{t('profile.subscription.quarterly.title')}</span>
                                         <span className="sub-desc">{t('profile.subscription.quarterly.desc')}</span>
@@ -68,7 +77,7 @@ export const ProfilePage: React.FC = () => {
                                 </button>
 
                                 {/* Yearly Card */}
-                                <button className="sub-btn yearly" onClick={handlePurchase}>
+                                <button className="sub-btn yearly" onClick={() => handlePurchase('12_months')}>
                                     <span className="sub-badge">{t('profile.subscription.yearly.badge')}</span>
                                     <div className="sub-info-left">
                                         <span className="sub-title">{t('profile.subscription.yearly.title')}</span>

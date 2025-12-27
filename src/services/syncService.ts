@@ -21,6 +21,10 @@ export interface CloudUserData {
     gameData?: NurturingPersistentState; // Parsed object from backend
     created_at: number;
     last_synced_at: number;
+    // Subscription fields
+    is_premium?: number; // 0 or 1
+    subscription_end?: number; // timestamp
+    subscription_plan?: string;
 }
 
 /**
@@ -73,6 +77,38 @@ const sanitizeForD1 = (obj: any): any => {
         result[key] = sanitizeForD1(value);
     }
     return result;
+};
+
+/**
+ * Purchase Subscription
+ * Calls the dedicated purchase endpoint to process subscription
+ */
+export const purchaseSubscription = async (
+    user: User,
+    planId: '3_months' | '12_months'
+): Promise<{ success: boolean; is_premium?: number; subscription_end?: number; plan?: string }> => {
+    try {
+        const token = await user.getIdToken();
+        const response = await fetch(`${API_BASE_URL}/api/users/${user.uid}/purchase`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ planId }),
+        });
+
+        if (!response.ok) {
+            const text = await response.text();
+            throw new Error(text);
+        }
+
+        const json = await response.json();
+        return json;
+    } catch (error: any) {
+        console.error('Purchase failed:', error);
+        return { success: false };
+    }
 };
 
 /**

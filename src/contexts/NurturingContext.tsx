@@ -106,6 +106,10 @@ interface NurturingContextValue {
   completeEvolutionAnimation: () => void;
   isGraduating: boolean; // Stage 4 -> Graduation
   completeGraduationAnimation: (name: string) => void;
+
+  // Subscription
+  subscription: SubscriptionState;
+  purchasePlan: (planId: '3_months' | '12_months') => Promise<boolean>;
 }
 
 const NurturingContext = createContext<NurturingContextValue | undefined>(undefined);
@@ -123,9 +127,13 @@ interface NurturingProviderProps {
 }
 
 import { useAuth } from './AuthContext';
-import { syncUserData, fetchUserData } from '../services/syncService';
+import { syncUserData, fetchUserData, purchaseSubscription } from '../services/syncService';
 
-// ... existing imports ...
+interface SubscriptionState {
+  isPremium: boolean;
+  plan: '3_months' | '12_months' | null;
+  expiryDate: number | null; // Timestamp
+}
 
 export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }) => {
   const { user } = useAuth(); // Import user from AuthContext
@@ -138,6 +146,34 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     saveNurturingState(updatedState);
     return updatedState;
   });
+
+  // Subscription State (Not persistent in localStorage by default to ensure validity)
+  const [subscription, setSubscription] = useState<SubscriptionState>({
+    isPremium: false,
+    plan: null,
+    expiryDate: null,
+  });
+
+  // Purchase Plan Handlere
+  const purchasePlan = useCallback(async (planId: '3_months' | '12_months'): Promise<boolean> => {
+    if (!user) return false;
+
+    console.log(`Processing purchase for plan: ${planId}`);
+    const result = await purchaseSubscription(user, planId);
+
+    if (result.success) {
+      console.log('Purchase successful!', result);
+      setSubscription({
+        isPremium: !!result.is_premium,
+        plan: result.plan as any,
+        expiryDate: result.subscription_end || null,
+      });
+      return true;
+    } else {
+      console.error('Purchase failed.');
+      return false;
+    }
+  }, [user]);
 
   // Track previous stage to detect evolution (for animation)
   // We initialize it with the current stage to avoid triggering animation on first render
@@ -242,6 +278,16 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
 
       // Cloud data exists: parse and use it
       const cloudData = result.data;
+
+      // Update Subscription State
+      if (cloudData.is_premium !== undefined) {
+        setSubscription({
+          isPremium: !!cloudData.is_premium,
+          plan: cloudData.subscription_plan as any || null,
+          expiryDate: cloudData.subscription_end || null,
+        });
+      }
+
       let fullState = cloudData.gameData || cloudData.game_data;
 
       // Handle JSON string (D1 returns string)
@@ -1055,6 +1101,10 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     completeEvolutionAnimation,
     isGraduating,
     completeGraduationAnimation,
+
+    // Subscription
+    subscription,
+    purchasePlan,
   }), [
     state.stats,
     state.poops,
@@ -1093,7 +1143,9 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     isEvolving,
     completeEvolutionAnimation,
     isGraduating,
-    completeGraduationAnimation
+    completeGraduationAnimation,
+    subscription,
+    purchasePlan,
   ]);
 
   return <NurturingContext.Provider value={value}>{children}</NurturingContext.Provider>;
