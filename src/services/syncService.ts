@@ -158,25 +158,41 @@ export const syncUserData = async (
         // Debug: Log the exact payload being sent
         console.log('☁️ Payload being sent:', JSON.stringify(sanitizedPayload, null, 2));
 
-        const response = await fetch(`${API_BASE_URL}/api/users/${user.uid}`, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(sanitizedPayload),
-            keepalive: true,
-        });
+        // Create AbortController for timeout
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
 
-        if (!response.ok) {
-            const errorText = await response.text();
-            console.error('☁️ Sync failed:', response.status, errorText);
-            throw new Error(`Sync Error: ${response.status} - ${errorText}`);
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/users/${user.uid}`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(sanitizedPayload),
+                keepalive: true,
+                signal: controller.signal,
+            });
+
+            clearTimeout(timeoutId);
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error('☁️ Sync failed:', response.status, errorText);
+                throw new Error(`Sync Error: ${response.status} - ${errorText}`);
+            }
+
+            const json = await response.json();
+            console.log('☁️ Sync complete:', json.success ? '✅' : '❌');
+            return json.success;
+        } catch (error: any) {
+            clearTimeout(timeoutId);
+            if (error.name === 'AbortError') {
+                console.error('☁️ Sync timed out after 5s');
+                return false;
+            }
+            throw error;
         }
-
-        const json = await response.json();
-        console.log('☁️ Sync complete:', json.success ? '✅' : '❌');
-        return json.success;
     } catch (error: any) {
         console.error('☁️ Sync error details:', error?.message || error);
         return false;

@@ -23,6 +23,7 @@ import {
 import {
   loadNurturingState,
   saveNurturingState,
+  createDefaultState,
   applyOfflineProgress,
   resetNurturingState,
   saveToHallOfFame,
@@ -313,7 +314,9 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
       }
 
       // Trust cloud data: overwrite localStorage
+      // Use createDefaultState() as a base to ensure new fields (like unlockedJellos) are present even if missing in cloud data
       const restoredState: NurturingPersistentState = {
+        ...createDefaultState(),
         ...fullState,
         // Ensure lastActiveTime is updated
         lastActiveTime: Date.now(),
@@ -566,12 +569,16 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
 
   // 게임 틱 시작
   useEffect(() => {
-    if (!state.tickConfig.isActive) {
+    // 로그아웃 상태이거나 틱 비활성화 시 중단
+    if (!user || !state.tickConfig.isActive) {
+      // 이미 실행 중인 인터벌이 있으면 정리
+      if (tickIntervalRef.current) {
+        clearInterval(tickIntervalRef.current);
+        tickIntervalRef.current = null;
+      }
       return;
     }
 
-    // 초기 틱 (제거: 일시정지 해제 시 즉시 감소 방지)
-    // runGameTick();
     console.log('⏰ Tick started (Interval set)');
 
     // 인터벌 설정
@@ -584,7 +591,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
         clearInterval(tickIntervalRef.current);
       }
     };
-  }, [state.tickConfig.isActive, runGameTick]);
+  }, [state.tickConfig.isActive, runGameTick, user]);
 
   // ==================== 행동 함수 ====================
 
@@ -1109,7 +1116,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     state.stats,
     state.poops,
     state.bugs,
-    state.gro,
+    state.gro, // Ensure array start is correct
     state.totalCurrencyEarned,
     state.studyCount,
     state.tickConfig.isActive,
@@ -1118,6 +1125,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     state.hasCharacter,
     state.xp,
     state.evolutionStage,
+    state.unlockedJellos, // Added dependency
     condition,
     abandonmentStatus,
     feed,

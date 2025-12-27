@@ -44,7 +44,7 @@ const getChecksumKey = (userId?: string) => {
 /**
  * 기본 상태 생성
  */
-const createDefaultState = (): NurturingPersistentState => {
+export const createDefaultState = (): NurturingPersistentState => {
   return {
     stats: { ...DEFAULT_NURTURING_STATS },
     poops: [],

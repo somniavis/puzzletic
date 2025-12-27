@@ -27,6 +27,9 @@ export const EncyclopediaPage: React.FC = () => {
     // unlockedJellos is already the state object
     const speciesList = Object.values(CHARACTER_SPECIES);
 
+
+
+
     const isUnlocked = (speciesId: string, stage: number) => {
         const speciesUnlocks = unlockedJellos?.[speciesId];
         return speciesUnlocks ? speciesUnlocks.includes(stage) : false;
