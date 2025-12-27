@@ -56,35 +56,33 @@ export const fetchUserData = async (user: User): Promise<FetchUserResult> => {
         console.warn('Failed to fetch cloud data:', error);
         return { success: false, error: error.message || 'Unknown error' };
     }
-};
+}
 
 /**
- * Sanitize payload for D1 compatibility
- * Replaces undefined with null
- * Ensures numeric values are finite
+ * Sanitize object for D1 storage
+ * D1 doesn't support 'undefined' values - converts them to null
  */
-const sanitizePayload = (data: any): any => {
-    if (data === undefined) return null;
-    if (data === null) return null;
-    if (typeof data === 'number') {
-        return Number.isFinite(data) ? data : 0;
+const sanitizeForD1 = (obj: any): any => {
+    if (obj === undefined) return null;
+    if (obj === null) return null;
+    if (typeof obj !== 'object') return obj;
+    if (Array.isArray(obj)) return obj.map(sanitizeForD1);
+
+    const result: Record<string, any> = {};
+    for (const [key, value] of Object.entries(obj)) {
+        result[key] = sanitizeForD1(value);
     }
-    if (Array.isArray(data)) {
-        return data.map(item => sanitizePayload(item));
-    }
-    if (typeof data === 'object') {
-        const sanitized: any = {};
-        for (const [key, value] of Object.entries(data)) {
-            sanitized[key] = sanitizePayload(value);
-        }
-        return sanitized;
-    }
-    return data;
+    return result;
 };
 
 /**
- * Sync (Upsert) user data to Cloudflare
- * triggers on core data changes (XP, Gro, Inventory)
+ * Sync (Upsert) user data to Cloudflare D1
+ * 
+ * HYBRID STORAGE ARCHITECTURE:
+ * - game_data (JSON string): Contains FULL game state - this is the source of truth
+ * - Individual columns (level, xp, gro, etc.): For D1 dashboard/statistics queries only
+ * 
+ * On sync: We send both, but game_data is what gets restored on login
  */
 export const syncUserData = async (
     user: User,
@@ -93,34 +91,36 @@ export const syncUserData = async (
     try {
         const token = await user.getIdToken();
 
-        // Prepare payload with snake_case for D1
-        // We stringify game_data here to ensure strict storage as string if needed,
-        // or passing as object if backend handles it.
-        // Based on typical D1 setups, sending structured JSON is better, but let's match the interface hints.
-        // Let's stick to the previous robust approach: camelCase keys might be failing if backend expects snake_case.
-
-        const rawPayload = {
-            // Common Fields
+        // Prepare payload - clean and simple
+        const payload = {
+            // User info
             email: user.email,
+            display_name: user.displayName || state.characterName || 'Player',
+
+            // Individual columns (for D1 statistics/dashboard)
+            level: state.evolutionStage || 1,
             xp: state.xp || 0,
             gro: state.gro || 0,
+            current_land: state.currentLand || 'default_ground',
             inventory: state.inventory || [],
 
-            // Snake_case (D1 Standard)
-            display_name: user.displayName,
-            level: state.evolutionStage || 1,
-            current_land: state.currentLand || 'default_ground',
-            game_data: JSON.stringify(state),
-            created_at: user.metadata.creationTime ? new Date(user.metadata.creationTime).getTime() : Date.now(),
+            // Full game state (source of truth for restoration)
+            // Must sanitize to convert undefined → null (D1 requirement)
+            game_data: JSON.stringify(sanitizeForD1(state)),
 
-            // CamelCase (Legacy/Fallback Support)
-            displayName: user.displayName,
-            currentLand: state.currentLand,
-            gameData: state,
-            createdAt: user.metadata.creationTime ? new Date(user.metadata.creationTime).getTime() : Date.now(),
+            // Timestamps
+            created_at: user.metadata.creationTime
+                ? new Date(user.metadata.creationTime).getTime()
+                : Date.now(),
         };
 
-        const payload = sanitizePayload(rawPayload);
+        console.log('☁️ Syncing to cloud...', { level: payload.level, xp: payload.xp, gro: payload.gro });
+
+        // Sanitize entire payload to remove any undefined values
+        const sanitizedPayload = sanitizeForD1(payload);
+
+        // Debug: Log the exact payload being sent
+        console.log('☁️ Payload being sent:', JSON.stringify(sanitizedPayload, null, 2));
 
         const response = await fetch(`${API_BASE_URL}/api/users/${user.uid}`, {
             method: 'POST',
@@ -128,19 +128,22 @@ export const syncUserData = async (
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(payload),
-            keepalive: true, // Allow request to complete even if tab closes
+            body: JSON.stringify(sanitizedPayload),
+            keepalive: true,
         });
 
         if (!response.ok) {
             const errorText = await response.text();
+            console.error('☁️ Sync failed:', response.status, errorText);
             throw new Error(`Sync Error: ${response.status} - ${errorText}`);
         }
 
         const json = await response.json();
+        console.log('☁️ Sync complete:', json.success ? '✅' : '❌');
         return json.success;
-    } catch (error) {
-        console.warn('Failed to sync cloud data:', error);
+    } catch (error: any) {
+        console.error('☁️ Sync error details:', error?.message || error);
         return false;
     }
 };
+

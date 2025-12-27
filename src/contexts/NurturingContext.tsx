@@ -220,111 +220,62 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     prevStageRef.current = current;
   }, [state.evolutionStage]);
 
-
-  // Cloud Sync: Fetch on Login
+  // ==================== HYBRID STORAGE: Cloud Sync on Login ====================
+  // On login: D1 data is trusted and overwrites localStorage
+  // This ensures cross-device consistency
   useEffect(() => {
-    if (user) {
-      console.log('☁️ Fetching cloud data for user:', user.uid);
-      fetchUserData(user).then((result) => {
-        if (!result.success) {
-          if (result.notFound) {
-            console.log('☁️ New user detected (no cloud data). Resetting local state.');
-            const newState = resetNurturingState();
-            setState(newState);
-          } else {
-            console.warn('☁️ Fetch failed:', result.error);
-          }
+    if (!user) return;
+
+    console.log('☁️ Fetching cloud data for user:', user.uid);
+    fetchUserData(user).then((result) => {
+      if (!result.success) {
+        if (result.notFound) {
+          // New user: no cloud data exists
+          // Keep local state and upload to cloud (first sync)
+          console.log('☁️ New user detected. Uploading local state to cloud.');
+          syncUserData(user, stateRef.current);
+        } else {
+          console.warn('☁️ Fetch failed:', result.error);
+        }
+        return;
+      }
+
+      // Cloud data exists: parse and use it
+      const cloudData = result.data;
+      let fullState = cloudData.gameData || cloudData.game_data;
+
+      // Handle JSON string (D1 returns string)
+      if (typeof fullState === 'string') {
+        try {
+          fullState = JSON.parse(fullState);
+        } catch (e) {
+          console.error('Failed to parse game_data:', e);
           return;
         }
+      }
 
-        const cloudData = result.data;
-        if (cloudData) {
-          console.log('☁️ Cloud data found, syncing...', cloudData);
-          setState((prev) => {
-            // If full game state exists, use it. Otherwise, merge core stats.
-            let fullState = cloudData.gameData || cloudData.game_data;
+      if (!fullState || typeof fullState !== 'object') {
+        console.warn('☁️ Invalid game_data, keeping local state');
+        return;
+      }
 
-            // Handle if D1 returned string and backend didn't parse (robustness)
-            if (typeof fullState === 'string') {
-              try {
-                fullState = JSON.parse(fullState);
-              } catch (e) {
-                console.error('Failed to parse game_data string:', e);
-              }
-            }
+      console.log('☁️ Cloud data found. Restoring from cloud.');
 
-            let newState: NurturingPersistentState;
+      // Sync prevStageRef to prevent evolution animation on load
+      if (fullState.evolutionStage) {
+        prevStageRef.current = fullState.evolutionStage;
+      }
 
-            if (fullState && typeof fullState === 'object') {
-              console.log('📦 Cloud State Check:', { cloudTime: fullState.lastActiveTime, localTime: prev.lastActiveTime });
+      // Trust cloud data: overwrite localStorage
+      const restoredState: NurturingPersistentState = {
+        ...fullState,
+        // Ensure lastActiveTime is updated
+        lastActiveTime: Date.now(),
+      };
 
-              // Check if this user has ever synced on THIS device before
-              const syncFlagKey = `puzzleletic_synced_${user.uid}`;
-              const hasEverSyncedOnThisDevice = localStorage.getItem(syncFlagKey) === 'true';
-
-              const cloudTime = fullState.lastActiveTime || 0;
-              const localTime = prev.lastActiveTime || 0;
-
-              // Check if local state has meaningful progress (not just a fresh default state)
-              const isLocalMeaningful = prev.hasCharacter || prev.totalCurrencyEarned > 0 || prev.evolutionStage > 1;
-
-              // First time sync on this device? Always use cloud data.
-              if (!hasEverSyncedOnThisDevice) {
-                console.log('🆕 First sync for this user on this device. Using cloud data.');
-                // Mark as synced for future sessions
-                localStorage.setItem(syncFlagKey, 'true');
-              } else if (localTime >= cloudTime && isLocalMeaningful) {
-                console.log('✨ Local state is newer AND meaningful. Keeping local state and syncing to cloud.');
-                // 합집합 인벤토리 (혹시 모를 누락 방지)
-                const mergedInventory = Array.from(new Set([...(prev.inventory || []), ...(fullState.inventory || [])]));
-
-                const mergedState = {
-                  ...prev,
-                  inventory: mergedInventory
-                };
-
-                // 로컬이 최신이므로 클라우드를 최신으로 업데이트
-                syncUserData(user, mergedState);
-                return mergedState;
-              }
-
-              console.log('⚠️ Cloud state is newer. Restoring from cloud.');
-              newState = {
-                ...prev, // 기본값 유지
-                ...fullState, // 클라우드 값 덮어쓰기
-                // Core fields merge
-                gro: cloudData.gro ?? fullState.gro,
-                xp: cloudData.xp ?? fullState.xp,
-                evolutionStage: cloudData.level ?? fullState.evolutionStage,
-                inventory: cloudData.inventory ?? fullState.inventory,
-                currentLand: cloudData.current_land || fullState.currentLand || 'default_ground',
-                hasCharacter: fullState.hasCharacter ?? prev.hasCharacter,
-                characterName: fullState.characterName || prev.characterName,
-              };
-            } else {
-              // ... fallback logic unchanged ...
-              console.log('⚠️ No full state found, syncing core stats only');
-              newState = {
-                ...prev,
-                evolutionStage: cloudData.level,
-                xp: cloudData.xp,
-                gro: cloudData.gro,
-                currentLand: cloudData.current_land || 'default_ground',
-                inventory: cloudData.inventory,
-              };
-            }
-
-            // Sync prevStageRef to suppress evolution animation on cloud sync
-            if (newState.evolutionStage !== prev.evolutionStage) {
-              prevStageRef.current = newState.evolutionStage;
-            }
-
-            saveNurturingState(newState);
-            return newState;
-          });
-        }
-      });
-    }
+      setState(restoredState);
+      saveNurturingState(restoredState);
+    });
   }, [user]);
 
   // Keep state ref for event handlers (if needed for timer)
@@ -954,9 +905,13 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
         hasCharacter: true,
       };
       saveNurturingState(newState);
+      // Sync to cloud immediately to persist character creation
+      if (user) {
+        syncUserData(user, newState);
+      }
       return newState;
     });
-  }, []);
+  }, [user]);
 
   const pauseTick = useCallback(() => {
     console.log('⏸️ Pausing tick...');

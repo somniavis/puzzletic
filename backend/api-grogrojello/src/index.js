@@ -58,7 +58,16 @@ export default {
 			if (request.method === 'POST') {
 				try {
 					const body = await request.json();
-					const { email, displayName, level, xp, gro, currentLand, inventory, gameData, createdAt } = body;
+					// Accept both snake_case (new) and camelCase (legacy) field names
+					const email = body.email;
+					const displayName = body.display_name || body.displayName;
+					const level = body.level;
+					const xp = body.xp;
+					const gro = body.gro;
+					const currentLand = body.current_land || body.currentLand;
+					const inventory = body.inventory;
+					const gameData = body.game_data || body.gameData;
+					const createdAt = body.created_at || body.createdAt;
 
 					// --- Security Validation Start ---
 					const MAX_GRO_DELTA = 3000; // Max Gro gain allowed per sync (15 min)
@@ -124,14 +133,14 @@ export default {
               last_synced_at = excluded.last_synced_at
           `).bind(
 						uid,
-						email,
-						displayName,
+						email || null,
+						displayName || null,
 						level || 1,
 						xp || 0,
 						gro || 0,
 						currentLand || 'default_ground',
 						JSON.stringify(inventory || []),
-						JSON.stringify(gameData || {}),
+						typeof gameData === 'string' ? gameData : JSON.stringify(gameData || {}),
 						createdAt || null,
 						now
 					);

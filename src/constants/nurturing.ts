@@ -187,7 +187,7 @@ export const BUG_CONFIG = {
   MAX_BUGS: 5,
   SPAWN_INTERVAL: 60 * 1000, // 1분마다 체크 (실제로는 틱마다 확률 체크)
   FLY_SPAWN_CHANCE_PER_POOP: 0.1, // 똥 1개당 10%
-  MOSQUITO_SPAWN_CHANCE: 0.05,    // 5% 확률
+  MOSQUITO_SPAWN_CHANCE: 0.04,    // 4% 확률
   HEALTH_DEBUFF_PER_BUG: -0.5,    // 벌레 1마리당 건강 감소
   HAPPINESS_DEBUFF_PER_BUG: -0.5, // 벌레 1마리당 행복 감소
 };
