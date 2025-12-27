@@ -100,9 +100,9 @@
     justify-content: space-between;
     align-items: center;
     padding: 1rem 1.5rem;
-    background: #1E2530;
+    background: #374151;
     border-radius: 20px;
-    box-shadow: 0 6px 0 #111827;
+    box-shadow: 0 6px 0 #1f2937;
     color: white;
     margin-bottom: 0.5rem;
     position: relative;
@@ -181,8 +181,8 @@
 }
 
 .status-badge.free {
-    background: #374151;
-    color: #9CA3AF;
+    background: #1E2530;
+    color: white;
     box-shadow: -2px 2px 0 rgba(0, 0, 0, 0.1);
 }
 
