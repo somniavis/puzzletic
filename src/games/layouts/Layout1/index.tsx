@@ -1,5 +1,6 @@
 import React, { useRef } from 'react';
 import { useSound } from '../../../contexts/SoundContext';
+import { useAuth } from '../../../contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
 import {
     Coins, Flame, Heart, Clock,
@@ -98,17 +99,31 @@ export const Layout1: React.FC<Layout1Props> = ({
     };
 
     // Load High Score on Mount
+    const { user } = useAuth();
+
+    // User-specific storage key helper
+    const getHighScoreKey = (gId: string) => {
+        if (user?.uid) {
+            return `minigame_highscore_${user.uid}_${gId}`;
+        }
+        return `minigame_highscore_${gId}`;
+    };
+
     React.useEffect(() => {
         if (gameId) {
-            const savedkey = `minigame_highscore_${gameId}`;
+            const savedkey = getHighScoreKey(gameId);
             const savedScore = localStorage.getItem(savedkey);
             if (savedScore) {
                 const parsed = parseInt(savedScore, 10);
                 setHighScore(parsed);
                 initialBestRef.current = parsed; // Capture stable initial best
+            } else {
+                // Reset if no score found for this user (crucial for user switching)
+                setHighScore(0);
+                initialBestRef.current = 0;
             }
         }
-    }, [gameId]);
+    }, [gameId, user?.uid]);
 
     // Calculate and award rewards on Game Over + Check High Score
     React.useEffect(() => {
@@ -129,26 +144,37 @@ export const Layout1: React.FC<Layout1Props> = ({
 
             // High Score Logic
             if (gameId) {
-                const savedkey = `minigame_highscore_${gameId}`;
+                const savedkey = getHighScoreKey(gameId);
                 const currentScore = score;
-                // Compare against stable ref, not live localStorage which might be updated by strict mode double-run
-                const stableBest = initialBestRef.current;
 
-                if (currentScore > stableBest) {
+                // Get fresh high score from storage for accurate comparison
+                const storedScore = localStorage.getItem(savedkey);
+                const currentBest = storedScore ? parseInt(storedScore, 10) : 0;
+
+                // Use stableBest for "Prev Best" display if we break the record
+                // If it's the first time playing on this device/account (0), Prev Best will be 0.
+                const prevRecord = currentBest;
+
+                if (currentScore > currentBest) {
                     localStorage.setItem(savedkey, currentScore.toString());
-                    setPrevBest(stableBest);
+                    setPrevBest(prevRecord);
                     setHighScore(currentScore);
                     setIsNewRecord(true);
+
+                    // Update the ref for next round within the same mount session
+                    initialBestRef.current = currentScore;
                 } else {
-                    setHighScore(stableBest);
+                    setHighScore(currentBest);
                     setIsNewRecord(false);
+                    // Ensure prevBest is not displayed as 0 if it's just a normal game
+                    setPrevBest(currentBest);
                 }
             }
         } else if (gameState === 'playing' || gameState === 'idle') {
             if (rewardResult) setRewardResult(null);
             setIsNewRecord(false);
         }
-    }, [gameState, rewardResult, score, lives, engine.difficultyLevel, evolutionStage, addRewards, gameId, stats]);
+    }, [gameState, rewardResult, score, lives, engine.difficultyLevel, evolutionStage, addRewards, gameId, stats, user?.uid]);
 
     const processedEventIds = useRef<Set<number>>(new Set());
 
