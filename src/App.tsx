@@ -147,6 +147,14 @@ function AppContent() {
   // Prevent double-click/race conditions during gift opening
   const isOpeningRef = useRef(false);
 
+  // Reset the lock when there is no character (Gift Box is visible)
+  // This ensures that if a user resets the game or logs out/in, the box can be opened again.
+  useEffect(() => {
+    if (!nurturing.hasCharacter) {
+      isOpeningRef.current = false;
+    }
+  }, [nurturing.hasCharacter]);
+
   const handleGiftOpen = () => {
     if (isOpeningRef.current) return;
     isOpeningRef.current = true;
