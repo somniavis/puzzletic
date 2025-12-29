@@ -12,14 +12,14 @@ export const CLEANING_TOOLS: CleaningTool[] = [
     nameKey: 'cleanMenu.toothbrush.name',
     descriptionKey: 'cleanMenu.toothbrush.effect',
     icon: '🪥',
-    price: 3,
+    price: 1,
   },
   {
     id: 'shower',
     nameKey: 'cleanMenu.shower.name',
     descriptionKey: 'cleanMenu.shower.effect',
     icon: '🛁',
-    price: 5,
+    price: 3,
   },
   {
     id: 'broom',
@@ -40,13 +40,6 @@ export const CLEANING_TOOLS: CleaningTool[] = [
     nameKey: 'cleanMenu.robot_cleaner.name',
     descriptionKey: 'cleanMenu.robot_cleaner.effect',
     icon: '🖲️',
-    price: 50,
-  },
-  {
-    id: 'max_stats',
-    nameKey: 'cleanMenu.max_stats.name',
-    descriptionKey: 'cleanMenu.max_stats.effect',
-    icon: '🌟',
-    price: 50,
+    price: 30,
   },
 ];

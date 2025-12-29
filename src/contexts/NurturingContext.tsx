@@ -803,16 +803,19 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
 
   const cleanAll = useCallback((): ActionResult => {
     setState((currentState) => {
+      const poopCount = currentState.poops.length;
+      const bonus = poopCount * 2;
+
       const newStats: NurturingStats = {
         ...currentState.stats,
-        happiness: clampStat(currentState.stats.happiness + 10),
+        happiness: clampStat(currentState.stats.happiness + bonus),
+        health: clampStat(currentState.stats.health + bonus),
       };
 
       const newState: NurturingPersistentState = {
         ...currentState,
         stats: newStats,
         poops: [],
-        bugs: [],
         lastActiveTime: Date.now(),
       };
       saveNurturingState(newState);
@@ -823,7 +826,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     return {
       success: true,
       statChanges: {},
-      message: '모든 오염물을 청소했습니다!',
+      message: '모든 똥을 치웠어요!',
     };
   }, []);
 
@@ -869,6 +872,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
       const newStats: NurturingStats = {
         ...currentState.stats,
         happiness: clampStat(currentState.stats.happiness + happinessBonus),
+        health: clampStat(currentState.stats.health + 2), // Broom Effect: +2 Health
       };
 
       const newState: NurturingPersistentState = {
@@ -895,12 +899,20 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
 
       const updatedBugs = bugs.filter(b => b.id !== bugId);
 
+      const newStats: NurturingStats = {
+        ...currentState.stats,
+        happiness: clampStat(currentState.stats.happiness + 3),
+        health: clampStat(currentState.stats.health + 1),
+      };
+
       const newState: NurturingPersistentState = {
         ...currentState,
+        stats: newStats,
         bugs: updatedBugs,
       };
 
       saveNurturingState(newState);
+      setCondition(evaluateCondition(newStats)); // Condition update needed
 
       return newState;
     });
@@ -923,6 +935,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
       const newStats: NurturingStats = {
         ...currentState.stats,
         happiness: clampStat(currentState.stats.happiness + 3),
+        health: clampStat(currentState.stats.health + 1),
       };
 
       const newState: NurturingPersistentState = {
@@ -935,7 +948,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
       saveNurturingState(newState);
       setCondition(evaluateCondition(newStats));
 
-      result = { success: true, statChanges: { happiness: 3 }, message: '벌레 1마리를 제거했습니다!' };
+      result = { success: true, statChanges: { happiness: 3, health: 1 }, message: '벌레 1마리를 제거했습니다!' };
 
       return newState;
     });

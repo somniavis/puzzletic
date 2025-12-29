@@ -18,15 +18,15 @@ export const MEDICINE_ITEMS: MedicineItem[] = [
       health: 7,
       happiness: -5,
     },
-    price: 20,
+    price: 15,
   },
   {
     id: 'syringe',
     nameKey: 'medicine.items.syringe',
     icon: '💉',
     effects: {
-      health: 25,
-      happiness: -15,
+      health: 50,
+      happiness: -10,
     },
     price: 50,
   },

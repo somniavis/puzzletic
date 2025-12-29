@@ -179,7 +179,7 @@
 #### 파일 구조 (Small Number Economy)
 - `src/constants/gameMechanics.ts`: Rebalanced evolution & rewards.
 - `src/types/food.ts`: Updated prices (3~40 GRO).
-- `src/types/medicine.ts`: Updated prices (20, 50 GRO).
+- `src/types/medicine.ts`: Updated prices (15, 50 GRO).
 - `src/types/shop.ts`: Updated land prices (100~500 GRO).
 - `src/services/rewardService.ts`: Understanding System implemented.
 
@@ -201,7 +201,7 @@
 
 ### 경제 밸런스
 - **평균 수입**: 판당 8~20 GRO
-- **지출**: 음식 3~10 GRO, 약 20 GRO
+- **지출**: 음식 3~10 GRO, 약 15 GRO
 - **목표**: "성실히 플레이하면 먹고 사는데 지장 없으나, 프리미엄(땅, 케이크)을 사려면 노력해야 함."
 
 ---

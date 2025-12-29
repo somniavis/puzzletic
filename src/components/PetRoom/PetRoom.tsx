@@ -384,7 +384,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({
           setTimeout(() => {
             const poopToClean = nurturing.poops[0];
             if (poopToClean) {
-              handlePoopClick(poopToClean.id, 3);
+              handlePoopClick(poopToClean.id, 2);
             }
           }, 500);
           setTimeout(() => setIsCleaning(false), 1000);
@@ -401,7 +401,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({
             } else {
               // Fallback if no specific bug found (shouldn't happen due to check)
               playCleaningSound();
-              nurturing.cleanBug();
+              nurturing.cleanBug(); // Context implementation handles +1/+3
               showBubble('playful', 1);
             }
           }, 500);
@@ -422,7 +422,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({
         break;
       case 'robot_cleaner':
         if (nurturing.gro >= tool.price) {
-          if (nurturing.poops.length > 0 || nurturing.bugs.length > 0) {
+          if (nurturing.poops.length > 0) {
             setIsCleaning(true);
             nurturing.spendGro(tool.price);
             setTimeout(() => playCleaningSound(), 100);

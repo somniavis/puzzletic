@@ -9,7 +9,7 @@ export const ProfilePage: React.FC = () => {
     const navigate = useNavigate();
     const { t } = useTranslation();
     const { user } = useAuth();
-    const { pauseTick, resumeTick, gro, xp, addRewards, subscription, purchasePlan } = useNurturing();
+    const { pauseTick, resumeTick, gro, xp, addRewards, maxStats, subscription, purchasePlan } = useNurturing();
     const isPremium = subscription.isPremium;
 
     // Pause ticks when entering Profile page, resume when leaving
@@ -104,7 +104,7 @@ export const ProfilePage: React.FC = () => {
                 {/* DEBUG Section - Remove before production */}
                 <section className="profile-section" style={{ background: '#ffebee', border: '2px dashed #f44336' }}>
                     <p style={{ color: '#c62828', fontWeight: 'bold', marginBottom: '0.5rem' }}>🔧 DEBUG MODE (GRO: {gro} | XP: {xp})</p>
-                    <div style={{ display: 'flex', gap: '8px' }}>
+                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                         <button
                             style={{
                                 background: '#4CAF50',
@@ -140,6 +140,24 @@ export const ProfilePage: React.FC = () => {
                             }}
                         >
                             ⭐ +50 XP
+                        </button>
+                        <button
+                            style={{
+                                background: '#9C27B0',
+                                color: 'white',
+                                padding: '12px 24px',
+                                borderRadius: '12px',
+                                border: 'none',
+                                fontWeight: 'bold',
+                                cursor: 'pointer',
+                                flex: 1
+                            }}
+                            onClick={() => {
+                                const result = maxStats();
+                                alert(result.message);
+                            }}
+                        >
+                            🌟 Max Stats
                         </button>
                     </div>
                 </section>

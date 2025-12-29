@@ -148,13 +148,13 @@ export const MEDICINE_EFFECTS: Record<string, MedicineEffect> = MEDICINE_ITEMS.r
 
 // 청소 효과 (Cleaning Effect)
 export const CLEAN_EFFECT = {
-  health: 5,           // 건강 증가 (환경 개선 효과)
-  happiness: 10,       // "깨끗해져서 기분이 좋아짐"
+  health: 2,           // 건강 증가 (환경 개선 효과)
+  happiness: 2,       // "깨끗해져서 기분이 좋아짐"
 };
 
 // 샤워 효과 (Shower Effect)
 export const SHOWER_EFFECT = {
-  health: 3,
+  health: 5,
   happiness: 5,
 };
 
