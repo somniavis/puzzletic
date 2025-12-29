@@ -18,7 +18,7 @@ export const MEDICINE_ITEMS: MedicineItem[] = [
       health: 7,
       happiness: -5,
     },
-    price: 50,
+    price: 20,
   },
   {
     id: 'syringe',
@@ -28,6 +28,6 @@ export const MEDICINE_ITEMS: MedicineItem[] = [
       health: 25,
       happiness: -15,
     },
-    price: 150,
+    price: 50,
   },
 ];

@@ -51,6 +51,9 @@ export interface RewardCalculation {
     accuracyMultiplier: number;    // 정답률 배율
     masteryMultiplier: number;     // 숙련도 배율
     perfectMultiplier: number;     // 퍼펙트 배율 (1.2 또는 1.0)
+    cappedXP?: boolean;            // XP 제한 적용 여부
+    originalXP?: number;           // XP 제한 전 원래 XP
+    bonusGro?: number;             // XP 제한으로 인한 추가 GRO
   };
 }
 

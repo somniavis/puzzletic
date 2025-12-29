@@ -12,8 +12,6 @@ import type {
 } from '../types/gameMechanics';
 import {
   DIFFICULTY_REWARDS,
-  DIFFICULTY_SCALING_PERCENTAGES,
-  EVOLUTION_STAGES,
   PERFECT_BONUS_MULTIPLIER,
   DEFAULT_MASTERY_BONUS,
   PLAY_REWARD,
@@ -50,37 +48,70 @@ export const calculateMinigameReward = (
 
 
   // 2. XP 계산 (동적 스케일링: 현재 레벨 요구량 * 난이도 비중)
-  // 다음 단계로 넘어가기 위한 필요 XP량 (Delta) 조회
-  // 5단계(만렙)인 경우 5단계 도달치(3000)를 기준으로 함 (파밍)
-  const targetStage = (currentStage < 5 ? currentStage + 1 : 5) as EvolutionStage;
-  const xpRequirement = EVOLUTION_STAGES[targetStage].requiredXPFromPrevious;
+  // [변경 사항] XP는 고정 XP 테이블을 사용하도록 변경 (DifficultyConfig.baseXP)
+  // 이전 로직(현재 단계 요구량 비례)은 인플레이션 우려로 폐기하고, 고정값 사용.
+  const baseXP = difficultyConfig.baseXP;
+  // XP는 Multiplier를 적용하지 않음 (게임 디자인: 고난이도는 이미 baseXP가 높음)
+  // 단, 정확도와 숙련도, 퍼펙트는 적용.
+  let xpBeforeBonus = baseXP * accuracyMultiplier * masteryMultiplier;
 
-  // 난이도별 비중 가져오기 (예: 난이도 1 = 2%, 난이도 5 = 12%)
-  const percentage = DIFFICULTY_SCALING_PERCENTAGES[result.difficulty] || 0.02;
+  // 3. 이해도 시스템 (Understanding System) 적용
+  // 젤로는 자신의 단계 + 1 레벨까지만 이해(Understanding) 가능
+  // 예: 1단계(알) -> Lv 2까지 이해. Lv 3부터는 XP 제한.
+  // 예: 3단계(아동기) -> Lv 4까지 이해. Lv 5부터는 XP 제한.
+  const understandingLimit = Math.min(5, currentStage + 1);
+  let isCapped = false;
+  let bonusGro = 0;
+  let originalXP = 0;
 
-  // 기본 XP (Base XP)
-  // 주의: 난이도 계수(difficultyMultiplier)는 이미 percentage에 포함되어 있으므로 중복 적용하지 않음
-  const dynamicBaseXP = xpRequirement * percentage;
+  if (result.difficulty > understandingLimit) {
+    isCapped = true;
+    // 제한된 레벨의 baseXP를 가져옴
+    const limitConfig = DIFFICULTY_REWARDS[understandingLimit];
+    const maxBaseXP = limitConfig.baseXP;
 
-  const xpBeforeBonus = dynamicBaseXP * accuracyMultiplier * masteryMultiplier;
+    // 원래 받을 뻔 했던 XP 계산 (기록용)
+    originalXP = Math.round(xpBeforeBonus * perfectMultiplier);
 
+    // 실제 XP는 제한된 레벨 기준으로 재계산 (Multiplier 등 동일 적용)
+    // xpBeforeBonus 자체를 캡핑된 baseXP 기준으로 변경
+    const cappedXpBeforeBonus = maxBaseXP * accuracyMultiplier * masteryMultiplier;
 
-  // 3. 최종 결과 (반올림 및 퍼펙트 보너스)
-  const finalGro = Math.round(groBeforeBonus * perfectMultiplier);
+    // 손실된 XP 계산 (보너스 전 원시값 기준)
+    const lostRawXP = Math.max(0, xpBeforeBonus - cappedXpBeforeBonus);
+
+    // 손실된 XP를 보너스 GRO로 변환 (0.5배) - 반올림 처리
+    // 퍼펙트 보너스까지 적용된 최종 손실분을 계산해야 공정함
+    const lostFinalXP = Math.round(lostRawXP * perfectMultiplier);
+    bonusGro = Math.round(lostFinalXP * 0.5);
+
+    // xpBeforeBonus 업데이트
+    xpBeforeBonus = cappedXpBeforeBonus;
+  }
+
+  // 4. 최종 결과 (반올림 및 퍼펙트 보너스)
+  // GRO는 원래 계산대로 (이해도 제한 없음, 오히려 보너스 추가)
+  let finalGro = Math.round(groBeforeBonus * perfectMultiplier);
   const finalXP = Math.round(xpBeforeBonus * perfectMultiplier);
+
+  // 보너스 GRO 추가
+  if (bonusGro > 0) {
+    finalGro += bonusGro;
+  }
 
   return {
     groEarned: finalGro,
     xpEarned: finalXP,
     perfectBonus: result.isPerfect,
     breakdown: {
-      baseReward: baseGro, // 표기에 사용될 수 있으므로 GRO 베이스 유지 
-      // UI에서 "기본 점수"를 보여줄 때 혼동 없도록 일단 GLO 기준 유지하거나 별도 필드 추가 고려.
-      // 여기선 로직 호환성을 위해 유지.
+      baseReward: baseGro,
       difficultyMultiplier,
       accuracyMultiplier,
       masteryMultiplier,
       perfectMultiplier,
+      cappedXP: isCapped,
+      originalXP: isCapped ? originalXP : undefined,
+      bonusGro: isCapped ? bonusGro : undefined,
     },
   };
 };
