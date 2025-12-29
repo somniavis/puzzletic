@@ -60,6 +60,11 @@ useEffect(() => {
 }, [pauseTick, resumeTick]);
 ```
 
+### 5. Debug Mode (Dev Only)
+- Located at the bottom of the profile page.
+- Allows adding GRO/XP and fully restoring stats (**Max Stats**).
+- **Max Stats**: Instantly sets Fullness, Health, Happiness to 100 and cures illness.
+
 ---
 
 ## Route Configuration

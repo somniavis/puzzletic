@@ -179,7 +179,7 @@
 #### 파일 구조 (Small Number Economy)
 - `src/constants/gameMechanics.ts`: Rebalanced evolution & rewards.
 - `src/types/food.ts`: Updated prices (3~40 GRO).
-- `src/types/medicine.ts`: Updated prices (15, 50 GRO).
+- `src/types/medicine.ts`: Updated prices (Pill 15, Syringe 50 GRO).
 - `src/types/shop.ts`: Updated land prices (100~500 GRO).
 - `src/services/rewardService.ts`: Understanding System implemented.
 
