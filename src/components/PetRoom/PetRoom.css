@@ -146,13 +146,11 @@
   z-index: 90;
   padding: 0;
   transition: transform 0.1s;
-  animation: shake 3s cubic-bezier(.36, .07, .19, .97) infinite;
   transform-origin: center bottom;
 }
 
 .premium-btn-floating .action-icon {
-  font-size: 3.5rem;
-  /* Reduced to 3.5rem */
+  font-size: 3rem;
   line-height: 1;
   filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
 }
@@ -166,7 +164,7 @@
   padding: 2px 8px;
   /* Slightly reduced padding */
   border-radius: 12px;
-  margin-top: -5px;
+  margin-top: -3px;
   /* Adjusted margin for smaller icon */
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   border: 2px solid #fff;
@@ -187,42 +185,7 @@
   transform: scale(0.95);
 }
 
-@keyframes shake {
 
-  0%,
-  80% {
-    transform: rotate(0deg);
-  }
-
-  82% {
-    transform: rotate(15deg);
-  }
-
-  84% {
-    transform: rotate(-15deg);
-  }
-
-  86% {
-    transform: rotate(10deg);
-  }
-
-  88% {
-    transform: rotate(-10deg);
-  }
-
-  90% {
-    transform: rotate(5deg);
-  }
-
-  92% {
-    transform: rotate(-5deg);
-  }
-
-  94%,
-  100% {
-    transform: rotate(0deg);
-  }
-}
 
 .pet-room {
   display: flex;
