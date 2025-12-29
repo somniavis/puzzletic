@@ -82,7 +82,7 @@ interface NurturingContextValue {
   giveMedicine: (medicine: MedicineItem) => ActionResult;
   clean: (tool: CleaningTool) => ActionResult;
   cleanBug: () => ActionResult;
-  cleanAll: () => ActionResult;
+  cleanAll: (cost?: number) => ActionResult;
   takeShower: () => ActionResult;
   brushTeeth: () => ActionResult;
   play: () => ActionResult;
@@ -801,33 +801,59 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     return success;
   }, []);
 
-  const cleanAll = useCallback((): ActionResult => {
+  const cleanAll = useCallback((cost: number = 0): ActionResult => {
+    let result: ActionResult = { success: false, statChanges: {} };
+
     setState((currentState) => {
+      // 1. Check Money
+      if ((currentState.gro || 0) < cost) {
+        result = { success: false, statChanges: {}, message: '돈이 부족해요!' };
+        return currentState;
+      }
+
       const poopCount = currentState.poops.length;
-      const bonus = poopCount * 2;
+      const bugCount = (currentState.bugs || []).length;
+
+      if (poopCount === 0 && bugCount === 0) {
+        // Technically this check is done in UI, but good for safety
+        result = { success: false, statChanges: {}, message: '청소할 것이 없어요.' };
+        return currentState;
+      }
+
+      // Bonus Calculation
+      // Poop: +2 Health, +2 Happiness
+      // Bug: +1 Health, +3 Happiness
+      const healthBonus = (poopCount * 2) + (bugCount * 1);
+      const happinessBonus = (poopCount * 2) + (bugCount * 3);
 
       const newStats: NurturingStats = {
         ...currentState.stats,
-        happiness: clampStat(currentState.stats.happiness + bonus),
-        health: clampStat(currentState.stats.health + bonus),
+        happiness: clampStat(currentState.stats.happiness + happinessBonus),
+        health: clampStat(currentState.stats.health + healthBonus),
       };
 
       const newState: NurturingPersistentState = {
         ...currentState,
+        gro: (currentState.gro || 0) - cost,
         stats: newStats,
         poops: [],
+        bugs: [],
         lastActiveTime: Date.now(),
       };
+
       saveNurturingState(newState);
       setCondition(evaluateCondition(newStats));
+
+      result = {
+        success: true,
+        statChanges: { happiness: happinessBonus, health: healthBonus },
+        message: `말끔히 청소했어요! (똥 ${poopCount}, 벌레 ${bugCount})`
+      };
+
       return newState;
     });
 
-    return {
-      success: true,
-      statChanges: {},
-      message: '모든 똥을 치웠어요!',
-    };
+    return result;
   }, []);
 
   const maxStats = useCallback((): ActionResult => {

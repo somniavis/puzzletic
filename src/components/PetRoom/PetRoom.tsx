@@ -422,12 +422,20 @@ export const PetRoom: React.FC<PetRoomProps> = ({
         break;
       case 'robot_cleaner':
         if (nurturing.gro >= tool.price) {
-          if (nurturing.poops.length > 0) {
+          if (nurturing.poops.length > 0 || nurturing.bugs.length > 0) {
             setIsCleaning(true);
-            nurturing.spendGro(tool.price);
+            // nurturing.spendGro(tool.price); // Handled in cleanAll
             setTimeout(() => playCleaningSound(), 100);
-            nurturing.cleanAll();
-            showBubble('joy', 3);
+
+            const result = nurturing.cleanAll(tool.price);
+
+            if (result.success) {
+              showBubble('joy', 3);
+            } else {
+              // Should not happen due to outer gro check, but safety
+              showBubble('worried', 2);
+            }
+
             setTimeout(() => setIsCleaning(false), 2000);
           } else {
             showBubble('neutral', 1); // Nothing to clean
@@ -628,6 +636,22 @@ export const PetRoom: React.FC<PetRoomProps> = ({
           <span className="action-icon">🛖</span>
         </button>
 
+        {/* Premium Purchase Button (Below Shop Button) */}
+        {!nurturing.subscription.isPremium && !showGiftBox && (
+          <button
+            className="premium-btn-floating"
+            onClick={() => {
+              playButtonSound();
+              navigate('/profile');
+            }}
+            disabled={isActionInProgress}
+            title={t('profile.upgradePrompt', 'Upgrade to Premium')}
+          >
+            <span className="action-icon">🎁</span>
+            <span className="premium-label">Premium</span>
+          </button>
+        )}
+
         {/* 가출 경고 메시지 (죽음 상태가 아닐 때만 표시) */}
         {nurturing.abandonmentStatus.level !== 'normal' && nurturing.abandonmentStatus.level !== 'abandoned' && (
           <div className={`abandonment-alert abandonment-alert--${nurturing.abandonmentStatus.level}`}>
@@ -726,7 +750,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({
             {/* 청소 이펙트 */}
             {isCleaning && activeCleaningToolId === 'broom' && <div className="cleaning-effect">🧹</div>}
             {isCleaning && activeCleaningToolId === 'newspaper' && <div className="cleaning-effect">🗞️</div>}
-            {isCleaning && activeCleaningToolId === 'robot_cleaner' && <div className="cleaning-effect">🤖</div>}
+            {isCleaning && activeCleaningToolId === 'robot_cleaner' && <div className="cleaning-effect">🖲️</div>}
             {isCleaning && activeCleaningToolId === 'max_stats' && <div className="cleaning-effect">🌟</div>}
 
             {/* 양치 이펙트 */}

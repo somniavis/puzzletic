@@ -8,20 +8,6 @@ export interface CleaningTool {
 
 export const CLEANING_TOOLS: CleaningTool[] = [
   {
-    id: 'toothbrush',
-    nameKey: 'cleanMenu.toothbrush.name',
-    descriptionKey: 'cleanMenu.toothbrush.effect',
-    icon: '🪥',
-    price: 1,
-  },
-  {
-    id: 'shower',
-    nameKey: 'cleanMenu.shower.name',
-    descriptionKey: 'cleanMenu.shower.effect',
-    icon: '🛁',
-    price: 3,
-  },
-  {
     id: 'broom',
     nameKey: 'cleanMenu.broom.name',
     descriptionKey: 'cleanMenu.broom.effect',
@@ -34,6 +20,20 @@ export const CLEANING_TOOLS: CleaningTool[] = [
     descriptionKey: 'cleanMenu.newspaper.effect',
     icon: '🗞️',
     price: 0,
+  },
+  {
+    id: 'toothbrush',
+    nameKey: 'cleanMenu.toothbrush.name',
+    descriptionKey: 'cleanMenu.toothbrush.effect',
+    icon: '🪥',
+    price: 1,
+  },
+  {
+    id: 'shower',
+    nameKey: 'cleanMenu.shower.name',
+    descriptionKey: 'cleanMenu.shower.effect',
+    icon: '🛁',
+    price: 3,
   },
   {
     id: 'robot_cleaner',
