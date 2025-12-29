@@ -4,7 +4,7 @@
 
 **컨셉**: 다회차 육성 및 도감 수집형 에듀테크 게임.
 
-**목표**: 1,000개의 학습 미니게임을 통해 다양한 조건을 만족시켜, 총 10종류(확장가능)의 최종 진화 젤로(Jello)를 모두 수집(졸업)하는 것.
+**목표**: 학습 미니게임을 통해 조건을 만족시켜, 총 10종류(확장가능)의 최종 진화 젤로(Jello)를 모두 수집(졸업)하는 것.
 
 캐릭터가 영원히 사는 것이 아니라, **5단계(성체)가 되면 '졸업(독립)'**을 하고 도감에 등록된 후 떠납니다. 그리고 유저는 다시 **1단계(알)**부터 시작합니다.
 
@@ -12,58 +12,67 @@
 
 1. **시작**: 알(Egg)에서 시작
 2. **육성**: 양육(상태 관리) + 학습(미니게임) 병행
-3. **성장**: 경험치(GP) 축적을 통한 5단계 진화
+3. **성장**: 경험치(XP) 축적을 통한 5단계 진화
 4. **졸업(Reset)**: 5단계 달성 시 캐릭터는 **도감에 등록되고 떠남**
-5. **계승**: 획득한 재화(glo)는 유지한 채 **새로운 알 육성 시작**
+5. **계승**: 획득한 재화(GRO)는 유지한 채 **새로운 알 육성 시작**
 
 ---
 
 ## 2. 진화 시스템 (Evolution System)
 
-### 🧬 진화 단계 (Lifecycle)
+### 🧬 진화 단계 (Lifecycle - Rebalanced)
 
-| **단계 (Stage)** | **명칭** | **필요 누적 GP** | **구간 필요 GP** | **예상 플레이 횟수** | **성장 체감** |
-| --- | --- | --- | --- | --- | --- |
+**New Growth Curve**: 초반은 빠르고, 후반은 인내심이 필요한 장기 성장 곡선.
+
+| **단계 (Stage)** | **명칭** | **필요 누적 XP** | **구간 필요 XP** | **예상 플레이 횟수** | **성장 체감** |
+| :--- | :--- | :--- | :--- | :--- | :--- |
 | **1단계** | 알 | 0 | 0 | - | 시작 |
-| **2단계** | 유아기 | **100** | 100 | **10판** | "어? 금방 깨어나네?" (튜토리얼) |
-| **3단계** | 아동기 | **500** | 400 | **50판** (누적) | "이제 좀 게임답네." (본격 시작) |
-| **4단계** | **청소년기** | **2,000** | 1,500 | **200판** (누적) | **[분기점]** 성향이 결정되는 가장 중요한 시기 |
-| **5단계** | **성체 (졸업)** | **5,000** | 3,000 | **500판** (누적) | **[인내심]** 마지막 끈기가 필요한 구간 |
+| **2단계** | 유아기 | **50** | 50 | **약 15판** | "금방 깨어나네!" (튜토리얼, 3 XP/game) |
+| **3단계** | 아동기 | **550** | 500 | **약 60판** | "본격적인 시작" (8~10 XP/game) |
+| **4단계** | **청소년기** | **3,550** | 3,000 | **약 250판** | **[분기점]** 성향이 결정되는 시기 (15 XP/game) |
+| **5단계** | **성체 (졸업)** | **13,550** | 10,000 | **약 600판** | **[인내심]** 마지막 끈기, 졸업 가능 (15~25 XP/game) |
 
-**※ GP 기준**: 판당 10GP 기준 (난이도 3, 정답률 100% 가정)
+**※ XP 기준**: 난이도 및 보상 하향(Small Numbers) 적용
 
 ---
 
-## 3. 보상 시스템 (Rewards & Progression)
+## 3. 보상 시스템 (Rewards & Economy)
 
-### 💰 미니게임 보상 공식
+### 💰 "Small Numbers" & "Understanding" System
 
-학습 동기 부여를 위해 난이도와 정답률에 따라 보상을 차등 지급합니다.
+인플레이션을 방지하고 직관적인 경제를 위해 보상 숫자를 줄였으며, **이해도 시스템(Understanding System)**으로 광속 레벨업을 방지합니다.
 
-**공식**: `기본값 × 난이도 계수 × 정답률(0.0~1.0) × 숙련도 보너스 × 퍼펙트 보너스`
+#### 1. 난이도별 보상표 (Deflation Model)
 
-| **난이도 (Lv)** | **난이도 계수** | **글로(GLO) (glo)** | **경험치 (GP)** | **특징** |
-| --- | --- | --- | --- | --- |
-| **Lv 1** | 1.0 | 5 | 3 | 단순 반복 |
-| **Lv 2** | 1.5 | 7 | 5 | 기초 응용 |
-| **Lv 3** | 2.5 | 10 | 10 | 사고력 필요 |
-| **Lv 4** | 4.0 | 20 | 20 | 심화 과정 |
-| **Lv 5** | 6.0 | 25 | 40 | 챌린지 (High Risk High Return) |
+| **난이도 (Lv)** | **Base GRO** | **Base XP** | **Perfect GRO** | **특징** |
+| :--- | :--- | :--- | :--- | :--- |
+| **Lv 1** | **5** | **3** | 6 | 단순 반복 (알 권장) |
+| **Lv 2** | **8** | **6** | 10 | 기초 응용 (유아기 권장) |
+| **Lv 3** | **14** | **10** | 17 | 사고력 필요 (아동기 권장) |
+| **Lv 4** | **22** | **15** | 26 | 심화 과정 (청소년기 권장) |
+| **Lv 5** | **45** | **25** | 54 | **High Risk High Return** (성체 권장) |
 
-**퍼펙트 보너스**: 정답률 100% 시 최종 보상 **1.2배**
+*   **Perfect Bonus**: 정답률 100% 시 **1.2배** (GRO 및 XP)
+
+#### 2. 이해도 시스템 (Understanding System)
+*   **규칙**: 젤로는 `현재 단계 + 1` 난이도까지만 효율적으로 배울 수 있습니다.
+*   **XP Cap (성장 제한)**: 한계를 초과하는 난이도 플레이 시, XP 획득량이 `한계 레벨의 최대 XP`로 제한됩니다.
+    *   *예: 1단계(알)가 Lv.5 플레이 시 → XP는 6으로 제한됨 (Lv.2 기준)*
+*   **Bonus GRO (용돈)**: 제한된 XP만큼 **추가 GRO(용돈)**로 전환 지급됩니다. (비율 0.5)
+    *   *효과: 무리한 선행학습 시 성장은 느리지만 돈은 많이 범.*
 
 ### 🎮 놀이(Play) 보상
 
 행복도 기반 차등 보상 시스템:
 
-| **행복도** | **보너스 등급** | **글로(GLO)** | **GP** | **배율** |
-| --- | --- | --- | --- | --- |
-| **≥ 80** | Excellent | 6 | 3 | 2.0x / 1.5x |
-| **≥ 65** | Good | 4.5 | 2.6 | 1.5x / 1.3x |
-| **≥ 50** | Normal | 3 | 2 | 1.0x / 1.0x |
-| **< 50** | - | 0 | 0 | 불가 |
+| **행복도** | **보너스 등급** | **GRO Multiplier** | **XP Multiplier** |
+| :--- | :--- | :--- | :--- |
+| **Excellent (≥ 80)** | 2.0x | 1.5x |
+| **Good (≥ 65)** | 1.5x | 1.3x |
+| **Normal (≥ 50)** | 1.0x | 1.0x |
 
-**쿨다운**: 60초 (1분)
+*   기본 보상: 약 2~3 XP / 3~5 GRO (매우 작음)
+*   **쿨다운**: 60초 (1분)
 
 ---
 
@@ -74,7 +83,7 @@
 캐릭터의 활동에 따라 성향이 축적되며, 이는 4단계에서 **진화 분기**를 결정합니다.
 
 | **성향** | **영문** | **설명** |
-| --- | --- | --- |
+| :--- | :--- | :--- |
 | **지능** | Intelligence | 학습 활동으로 증가 |
 | **창의성** | Creativity | 고난이도 미니게임으로 증가 |
 | **신체** | Physical | 놀이 활동으로 증가 |
@@ -84,16 +93,8 @@
 
 ### 🎯 활동별 성향 증가량
 
-| **활동** | **성향 증가** |
-| --- | --- |
-| 미니게임 Lv1 | 지능 +1, 규율 +1 |
-| 미니게임 Lv2 | 지능 +2, 규율 +1 |
-| 미니게임 Lv3 | 지능 +3, 창의성 +1 |
-| 미니게임 Lv4 | 지능 +4, 창의성 +2 |
-| 미니게임 Lv5 | 지능 +5, 창의성 +3, 탐험성 +2 |
-| 놀이 | 신체 +2, 사회성 +1 |
-| 청소 | 규율 +1 |
-| 먹이기 | 사회성 +1 |
+*   미니게임 Lv 1~5에 따라 1~5점씩 차등 분배 (기존과 동일 패턴)
+*   놀이/청소/먹이기 활동으로 특정 성향 증가
 
 ---
 
@@ -104,7 +105,7 @@
 4단계(청소년기) 도달 시, **가장 높은 성향 2개의 조합**으로 최종 진화 종류가 결정됩니다.
 
 | **종류** | **주성향** | **부성향** | **설명** |
-| --- | --- | --- | --- |
+| :--- | :--- | :--- | :--- |
 | **Hero** (영웅) | 규율 | 신체 | 규율과 신체를 갖춘 영웅 |
 | **Genius** (천재) | 지능 | 창의성 | 지능과 창의성을 갖춘 천재 |
 | **Athlete** (운동선수) | 신체 | 규율 | 신체와 규율을 갖춘 운동선수 |
@@ -117,7 +118,7 @@
 | **Scholar** (학자) | 지능 | 탐험성 | 지능과 탐험성을 갖춘 학자 |
 
 **분기 조건**:
-- 4단계 도달
+- 4단계 도달 (누적 3,550 XP)
 - 최소 성향 값: **20 이상**
 - 가장 높은 성향 2개 조합으로 자동 결정
 
@@ -128,19 +129,19 @@
 ### 🎓 졸업 조건
 
 - **5단계(성체) 도달**
-- **누적 5000 GP 달성**
+- **누적 13,550 XP 달성** (성체 구간 완료)
 
 ### 🏆 졸업 보상
 
 | **항목** | **내용** |
-| --- | --- |
+| :--- | :--- |
 | **도감 등록** | 해당 젤로가 도감에 영구 등록 |
-| **보너스 글로(GLO)** | 1,000 글로(GLO) 지급 |
+| **보너스 GRO** | 1,000 GRO 지급 (다음 젤로 육성 자금) |
 | **업적 해금** | 졸업 관련 업적 획득 |
 
 졸업 후:
 - 캐릭터는 떠나고 도감에 기록됨
-- 글로(GLO)은 유지
+- GRO(재화)는 유지
 - 새로운 알(1단계)로 시작
 
 ---
@@ -154,208 +155,56 @@
 ### 📝 도감 엔트리 정보
 
 각 졸업한 젤로는 다음 정보가 기록됩니다:
-
-- 종류 (Species)
-- 이름 (유저가 지은 이름)
+- 종류 (Species) / 이름
 - 도달 단계 (5단계 = 졸업)
-- 총 획득 GP
-- 총 획득 글로(GLO)
-- 총 플레이 게임 수
-- 최종 성향 통계
-- 졸업 시간
-- 특별한 특성
+- 총 획득 XP / GRO
+- 총 플레이 게임 수 / 최종 성향 통계
+- 졸업 시간 / 특별한 특성
 
 ### 🏅 도감 완성 보상
 
 | **보상** | **내용** |
-| --- | --- |
-| **완성 보너스** | 10,000 글로(GLO) |
+| :--- | :--- |
+| **완성 보너스** | 10,000 GRO |
 | **특별 칭호** | "Master Trainer" |
 | **비밀 컨텐츠** | 숨겨진 기능 해금 |
 
 ---
 
-## 8. 구현 상태
+## 8. 구현 상태 (업데이트됨)
 
 ### ✅ 완료된 구현
 
-#### 파일 구조
-
-```
-src/
-├── types/
-│   ├── gameMechanics.ts        # 게임 메카닉스 타입 정의
-│   └── character.ts            # Character 타입에 GP, 글로(GLO) 필드 추가
-├── constants/
-│   └── gameMechanics.ts        # 진화 단계, 보상, 성향 상수
-└── services/
-    ├── evolutionService.ts     # 진화 로직 (GP 계산, 분기 결정)
-    ├── rewardService.ts        # 보상 계산 (미니게임, 놀이)
-    └── actionService.ts        # 놀이 함수에 보상 타입 추가
-```
+#### 파일 구조 (Small Number Economy)
+- `src/constants/gameMechanics.ts`: Rebalanced evolution & rewards.
+- `src/types/food.ts`: Updated prices (3~40 GRO).
+- `src/types/medicine.ts`: Updated prices (20, 50 GRO).
+- `src/types/shop.ts`: Updated land prices (100~500 GRO).
+- `src/services/rewardService.ts`: Understanding System implemented.
 
 #### 주요 기능
-
-1. **진화 시스템**
-   - `calculateEvolutionStage()`: GP로 현재 단계 계산
-   - `getGPToNextStage()`: 다음 단계까지 필요 GP
-   - `getEvolutionProgress()`: 진행률 계산
-   - `canGraduate()`: 졸업 가능 여부
-   - `determineJelloSpecies()`: 성향으로 종류 결정
-
-2. **보상 시스템**
-   - `calculateMinigameReward()`: 미니게임 보상 계산
-   - `calculatePlayReward()`: 놀이 보상 계산
-   - `previewRewardByDifficulty()`: 난이도별 예상 보상
-   - `checkPlayCooldown()`: 놀이 쿨다운 체크
-
-3. **성향 시스템**
-   - `gainTendencyFromMinigame()`: 미니게임으로 성향 증가
-   - `gainTendencyFromPlay()`: 놀이로 성향 증가
-   - `gainTendencyFromClean()`: 청소로 성향 증가
-   - `gainTendencyFromFeed()`: 먹이기로 성향 증가
-
-### 🔜 향후 통합 작업
-
-1. **미니게임 완료 시 보상 적용**
-   - 미니게임 결과 → `calculateMinigameReward()` 호출
-   - 캐릭터 GP, 글로(GLO) 업데이트
-   - 성향 증가
-   - 진화 체크
-
-2. **놀이 버튼 통합**
-   - `playWithCharacter()` → `calculatePlayReward()` 호출
-   - 쿨다운 체크
-   - 보상 적용
-
-3. **UI 표시**
-   - GP 바 / 진화 단계 표시
-   - 글로(GLO) 잔액 표시
-   - 성향 그래프
-   - 도감 화면
-
-4. **졸업 플로우**
-   - 5단계 도달 시 졸업 모달
-   - 도감 등록
-   - 새 알 생성
+1. **Understanding System**: 저단계 젤로의 고레벨 플레이 시 XP Cap & Bonus GRO 적용.
+2. **Deflationary Economy**: 모든 재화 수치 축소 및 현실화.
+3. **Slow Growth**: 성체까지 약 1000판 플레이 필요 (장기적 목표).
 
 ---
 
-## 9. 사용 예시
+## 9. 밸런싱 노트 (Updated)
 
-### 미니게임 완료 후 보상 계산
-
-```typescript
-import { calculateMinigameReward, gainTendencyFromMinigame } from './services/rewardService';
-import { addGPAndCheckEvolution } from './services/evolutionService';
-
-// 미니게임 결과
-const result = {
-  difficulty: 3,
-  accuracy: 0.9, // 90% 정답률
-  isPerfect: false,
-  masteryBonus: 1.0,
-};
-
-// 보상 계산
-const reward = calculateMinigameReward(result);
-console.log(reward.gloEarned); // 9 글로(GLO)
-console.log(reward.gpEarned); // 9 GP
-
-// 캐릭터 업데이트
-character.glo += reward.gloEarned;
-character.gp += reward.gpEarned;
-character.gamesPlayed += 1;
-
-// 성향 증가
-character.tendencies = gainTendencyFromMinigame(character.tendencies, 3);
-
-// 진화 체크
-const evolutionResult = addGPAndCheckEvolution(
-  character.gp - reward.gpEarned,
-  character.evolutionStage,
-  reward.gpEarned
-);
-
-if (evolutionResult.evolved) {
-  console.log(`진화! ${evolutionResult.stageInfo?.name}`);
-  character.evolutionStage = evolutionResult.newStage;
-}
-```
-
-### 놀이 보상 계산
-
-```typescript
-import { calculatePlayReward, checkPlayCooldown } from './services/rewardService';
-
-// 쿨다운 체크
-const cooldown = checkPlayCooldown(character.lastPlayTime);
-if (!cooldown.canPlay) {
-  console.log(`${cooldown.timeLeft}ms 후 다시 놀 수 있습니다.`);
-  return;
-}
-
-// 보상 계산
-const playReward = calculatePlayReward(character.stats.happiness);
-if (playReward.bonus === null) {
-  console.log('행복도가 너무 낮아 놀 수 없습니다.');
-  return;
-}
-
-// 적용
-character.glo += playReward.gloEarned;
-character.gp += playReward.gpEarned;
-character.lastPlayTime = Date.now();
-```
-
-### 졸업 체크
-
-```typescript
-import { canGraduate, determineJelloSpecies } from './services/evolutionService';
-
-if (canGraduate(character.gp, character.evolutionStage)) {
-  // 종류 결정
-  const species = determineJelloSpecies(character.tendencies);
-
-  // 도감 등록
-  const entry = {
-    species,
-    name: character.name,
-    stageReached: 5,
-    totalGPEarned: character.gp,
-    totalGloEarned: character.glo,
-    totalGamesPlayed: character.gamesPlayed,
-    tendencies: character.tendencies,
-    graduatedAt: Date.now(),
-  };
-
-  // 보너스 글로(GLO) 지급
-  playerProgress.totalGlo += 1000;
-
-  // 새 알 생성
-  // ...
-}
-```
-
----
-
-## 10. 밸런싱 노트
-
-### 진행 속도
-
-- **2단계**: 10게임 (약 10분) - 빠른 피드백
-- **3단계**: 50게임 누적 (약 50분) - 게임 본격 이해
-- **4단계**: 200게임 누적 (약 3시간) - 분기 결정
-- **5단계**: 500게임 누적 (약 8시간) - 한 사이클 완료
+### 진행 속도 (Target)
+- **1단계**: ~15판 (10~20분)
+- **2단계**: ~60판 (1~2시간)
+- **3단계**: ~250판 (3~5일)
+- **4단계**: ~600판 (1~2주)
+- **5단계**: 졸업 (총 3주~한달 예상)
 
 ### 경제 밸런스
-
-- 졸업 1회당 평균 글로(GLO) 획득: 약 3,000~5,000 글로(GLO)
-- 10종 완성 시 총 글로(GLO): 약 40,000~60,000 글로(GLO)
-- 글로(GLO) 사용처: 아이템 구매, 스킨 해금 등 (추후 확장)
+- **평균 수입**: 판당 8~20 GRO
+- **지출**: 음식 3~10 GRO, 약 20 GRO
+- **목표**: "성실히 플레이하면 먹고 사는데 지장 없으나, 프리미엄(땅, 케이크)을 사려면 노력해야 함."
 
 ---
 
-**문서 버전**: 1.0
-**최종 수정일**: 2025-11-26
+**문서 버전**: 2.0 (Economy Rebalance)
+**최종 수정일**: 2025-12-29
 **작성자**: grogrojello 개발팀

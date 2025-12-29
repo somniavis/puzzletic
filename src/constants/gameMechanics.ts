@@ -34,36 +34,46 @@ export const EVOLUTION_STAGES: Record<number, EvolutionStageInfo> = {
   2: {
     stage: 2,
     name: '유아기',
-    requiredXP: 100,
-    requiredXPFromPrevious: 100,
-    estimatedGames: 10,
+    requiredXP: 50, // 1단계 지속: 50 XP
+    requiredXPFromPrevious: 50,
+    estimatedGames: 15,
     description: '어? 금방 깨어나네? (튜토리얼)',
   },
   3: {
     stage: 3,
     name: '아동기',
-    requiredXP: 500,
-    requiredXPFromPrevious: 400,
-    estimatedGames: 50,
+    requiredXP: 550, // 2단계 지속: 500 XP
+    requiredXPFromPrevious: 500,
+    estimatedGames: 60,
     description: '이제 좀 게임답네 (본격 시작)',
   },
   4: {
     stage: 4,
     name: '청소년기',
-    requiredXP: 2000,
-    requiredXPFromPrevious: 1500,
-    estimatedGames: 200,
+    requiredXP: 3550, // 3단계 지속: 3000 XP
+    requiredXPFromPrevious: 3000,
+    estimatedGames: 250,
     description: '[분기점] 성향이 결정되는 가장 중요한 시기',
   },
   5: {
     stage: 5,
     name: '성체',
-    requiredXP: 5000,
-    requiredXPFromPrevious: 3000,
-    estimatedGames: 500,
+    requiredXP: 13550, // 4단계 지속: 10000 XP
+    requiredXPFromPrevious: 10000,
+    estimatedGames: 600,
     description: '[인내심] 마지막 끈기가 필요한 구간 - 졸업 가능',
   },
 };
+
+// ==================== 졸업(Graduation) 시스템 ====================
+
+/**
+ * 졸업 조건
+ * - 5단계(성체) 도달
+ * - 13550 XP 달성
+ */
+export const GRADUATION_STAGE = 5;
+export const GRADUATION_XP = 13550;
 
 // ==================== 보상 시스템 ====================
 
@@ -303,15 +313,7 @@ export const JELLO_SPECIES_CONDITIONS: Record<JelloSpecies, {
  */
 export const MIN_TENDENCY_FOR_BRANCH = 20;
 
-// ==================== 졸업(Graduation) 시스템 ====================
 
-/**
- * 졸업 조건
- * - 5단계(성체) 도달
- * - 5000 XP 달성
- */
-export const GRADUATION_STAGE = 5;
-export const GRADUATION_XP = 5000;
 
 /**
  * 졸업 보너스
