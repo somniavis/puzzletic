@@ -305,8 +305,9 @@
     cursor: grab;
     position: relative;
     transition: transform 0.1s;
-    box-shadow: none;
     /* Shadow handled by parts */
+    user-select: none;
+    -webkit-user-select: none;
 }
 
 /* Blade */
@@ -372,6 +373,10 @@
     /* Position relative */
     /* Position on blade */
     text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+    user-select: none;
+    -webkit-user-select: none;
+    pointer-events: none;
+    /* Text shouldn't catch events, passing them to parent container */
 }
 
 .number-knife:active {
