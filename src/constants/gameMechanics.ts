@@ -73,7 +73,7 @@ export const EVOLUTION_STAGES: Record<number, EvolutionStageInfo> = {
  * - 13550 XP 달성
  */
 export const GRADUATION_STAGE = 5;
-export const GRADUATION_XP = 13550;
+export const GRADUATION_XP = 15000; // 성체(13550) 이후 약 1500 XP(약 60~100판) 추가 플레이 필요
 
 // ==================== 보상 시스템 ====================
 
