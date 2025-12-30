@@ -86,21 +86,28 @@
 }
 
 /* Honeycomb Layout - Row Based */
+/* Honeycomb Layout - Row Based */
 .honeycomb-container {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    /* Determine Size based on smallest dimension to fit on screen */
-    width: 100cqmin;
-    height: 100cqmin;
-    max-width: 600px;
-    max-height: 600px;
+    /* Fill the container completely */
+    width: 100%;
+    height: 100%;
+    /* Remove pixel caps to allow full scaling */
+    max-width: none;
+    max-height: none;
 }
 
-/* Variable Defaults */
+/* Variable Defaults (Maximize Size with Aspect Ratio Check) */
 .honeycomb-container {
-    --hex-w: 22cqmin;
+    /* 
+       3x3 Grid Geometry: Width ~ 3.5 Hexes, Height ~ 2.9 Hexes 
+       Width Constraint: 95% / 3.5 = ~27cqi
+       Height Constraint: 95% / 2.9 = ~32cqb
+    */
+    --hex-w: min(27cqi, 32cqb);
     /* Width */
     --hex-h: calc(var(--hex-w) * 1.1547);
     /* Height: W * 2/sqrt(3) for pointy-topped */
@@ -112,7 +119,12 @@
 
 /* 4x4 Adjustment */
 .honeycomb-container.grid-4 {
-    --hex-w: 16cqmin;
+    /* 
+       4x4 Grid Geometry: Width ~ 4.5 Hexes, Height ~ 3.7 Hexes
+       Width Constraint: 95% / 4.5 = ~21cqi
+       Height Constraint: 95% / 3.7 = ~25cqb
+    */
+    --hex-w: min(21cqi, 25cqb);
 }
 
 .hex-row {

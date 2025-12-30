@@ -20,16 +20,26 @@ interface PowerUpBtnProps {
 }
 
 const PowerUpBtn: React.FC<PowerUpBtnProps> = ({ count, color, icon, title, onClick, disabledConfig, status }) => {
+    // Explicit colors to guarantee correct rendering and avoid global CSS overrides
     const colors = {
-        blue: { normal: '#3b82f6', maxed: '#93c5fd' },
-        red: { normal: '#ef4444', maxed: '#fca5a5' },
-        yellow: { normal: '#eab308', maxed: '#fde047' }
+        blue: { normal: '#3b82f6', maxed: '#93c5fd' }, // blue-500, blue-300
+        red: { normal: '#ef4444', maxed: '#fca5a5' }, // red-500, red-300
+        yellow: { normal: '#eab308', maxed: '#fde047' } // yellow-500, yellow-300
     };
+
     const isHereActive = status === 'active';
     const isActuallyDisabled = count === 0 && !isHereActive;
 
     const getButtonStyle = (): React.CSSProperties => {
-        if (isHereActive) return { backgroundColor: '#facc15', color: '#000000', transform: 'scale(1.1)', zIndex: 10 };
+        if (isHereActive) {
+            // Active: Bright Yellow background, Black text
+            return {
+                backgroundColor: '#facc15', // yellow-400
+                color: '#000000',
+                transform: 'scale(1.1)',
+                zIndex: 10
+            };
+        }
         if (isActuallyDisabled) {
             // Disabled (0 count): Glass effect
             return {
@@ -40,15 +50,28 @@ const PowerUpBtn: React.FC<PowerUpBtnProps> = ({ count, color, icon, title, onCl
                 border: '1px solid rgba(255, 255, 255, 0.2)'
             };
         }
-        return { backgroundColor: colors[color][status === 'maxed' ? 'maxed' : 'normal'], color: '#ffffff', cursor: status === 'maxed' ? 'not-allowed' : 'pointer' };
+        // Normal/Maxed state
+        return {
+            backgroundColor: colors[color][status === 'maxed' ? 'maxed' : 'normal'],
+            color: '#ffffff',
+            cursor: status === 'maxed' ? 'not-allowed' : 'pointer'
+        };
     };
+
+    const handleClick = () => {
+        if (disabledConfig || count === 0) return;
+        onClick();
+    };
+
+    const baseClasses = "relative p-2 rounded-full transition-all shadow-md flex items-center justify-center powerup-btn";
+    const activeClasses = isHereActive ? "ring-4 ring-yellow-200" : "";
 
     return (
         <button
-            onClick={() => !disabledConfig && count > 0 && onClick()}
+            onClick={handleClick}
             disabled={isActuallyDisabled}
             style={getButtonStyle()}
-            className={`relative p-2 rounded-full transition-all shadow-md flex items-center justify-center ${isHereActive ? "ring-4 ring-yellow-200" : ""}`}
+            className={`${baseClasses} ${activeClasses}`}
             title={title}
         >
             {icon}
@@ -207,31 +230,36 @@ export const FruitSlice: React.FC<FruitSliceProps> = ({ onExit }) => {
             onExit={onExit}
         >
             <div className="fruit-slice-container">
-                {/* Power Ups */}
-                <div className="w-full flex justify-start gap-4 mb-2 px-4 z-10">
-                    <PowerUpBtn
-                        count={powerUps.timeFreeze} color="blue" icon="❄️" title={t('games.math-fruit-slice.powerups.freeze')}
-                        onClick={() => usePowerUp('timeFreeze')} disabledConfig={timeFrozen} status={timeFrozen ? 'active' : 'normal'}
-                    />
-                    <PowerUpBtn
-                        count={powerUps.extraLife} color="red" icon="❤️" title={t('games.math-fruit-slice.powerups.life')}
-                        onClick={() => usePowerUp('extraLife')} disabledConfig={gameState.lives >= 3} status={gameState.lives >= 3 ? 'maxed' : 'normal'}
-                    />
-                    <PowerUpBtn
-                        count={powerUps.doubleScore} color="yellow" icon="⚡" title={t('games.math-fruit-slice.powerups.double')}
-                        onClick={() => usePowerUp('doubleScore')} disabledConfig={doubleScoreActive} status={doubleScoreActive ? 'active' : 'normal'}
-                    />
-                </div>
+                {/* Unified Header */}
+                <div className="slice-header">
+                    <div className="powerup-row">
+                        <PowerUpBtn
+                            count={powerUps.timeFreeze} color="blue" icon="❄️" title={t('games.math-fruit-slice.powerups.freeze')}
+                            onClick={() => usePowerUp('timeFreeze')} disabledConfig={timeFrozen} status={timeFrozen ? 'active' : 'normal'}
+                        />
+                        <PowerUpBtn
+                            count={powerUps.extraLife} color="red" icon="❤️" title={t('games.math-fruit-slice.powerups.life')}
+                            onClick={() => usePowerUp('extraLife')} disabledConfig={gameState.lives >= 3} status={gameState.lives >= 3 ? 'maxed' : 'normal'}
+                        />
+                        <PowerUpBtn
+                            count={powerUps.doubleScore} color="yellow" icon="⚡" title={t('games.math-fruit-slice.powerups.double')}
+                            onClick={() => usePowerUp('doubleScore')} disabledConfig={doubleScoreActive} status={doubleScoreActive ? 'active' : 'normal'}
+                        />
+                    </div>
 
-                {currentProblem && (
-                    <>
-                        <div className="equation-board">
+                    {currentProblem && (
+                        <div className="target-display-card">
                             <span className="equation-part">{currentProblem.fruit.equationA}</span>
                             <span>-</span>
                             <div className="mystery-box">?</div>
                             <span>=</span>
                             <span className="equation-part">{currentProblem.fruit.equationResult}</span>
                         </div>
+                    )}
+                </div>
+
+                {currentProblem && (
+                    <>
 
                         <div className="fruit-stage">
                             {/* Visual Slicing Knife Animation */}

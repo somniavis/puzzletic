@@ -137,22 +137,48 @@
     /* Prevent scroll on mobile while playing */
 }
 
-/* Equation Board */
-.equation-board {
-    background: white;
-    padding: 1rem 2rem;
-    border-radius: 1rem;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    font-size: clamp(1.5rem, 5vmin, 2rem);
-    /* Responsive font */
-    font-weight: bold;
-    color: #374151;
+/* Unified Header (NumberHive style) */
+.slice-header {
+    width: 100%;
+    padding: 1rem;
     display: flex;
-    gap: 0.5rem;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
+    z-index: 10;
+}
+
+.powerup-row {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    justify-content: flex-start;
+    width: 100%;
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+.powerup-btn {
+    border: none;
+    cursor: pointer;
+}
+
+/* Target Display - Unified Style */
+.target-display-card {
+    background-color: white;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.75rem;
     margin-bottom: 2rem;
     width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+
+    font-size: clamp(1.5rem, 5vmin, 2rem);
+    font-weight: bold;
+    color: #374151;
 }
 
 .equation-part {
@@ -265,17 +291,7 @@
     pointer-events: none;
 }
 
-/* Power-Up Container */
-.power-up-container {
-    width: 100%;
-    display: flex;
-    justify-content: flex-start;
-    /* Force left align */
-    gap: 1rem;
-    /* Tighter gap (gap-4 equivalent) */
-    padding: 0 1rem;
-    margin-bottom: 1rem;
-}
+/* Power-Up Container removed - using .powerup-row */
 
 /* Knife Rack */
 .knife-rack {
