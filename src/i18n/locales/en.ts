@@ -1,5 +1,6 @@
 import fishingCountEn from '../../games/math/level1/FishingCount/locales/en';
 import roundCountingEn from '../../games/math/level1/RoundCounting/locales/en';
+import numberHiveEn from '../../games/math/level1/NumberHive/locales/en';
 import fruitSliceEn from '../../games/math/level1/FruitSlice/locales/en';
 import numberBalanceEn from '../../games/math/level1/NumberBalance/locales/en';
 
@@ -582,6 +583,7 @@ export const en = {
       level: 'Level',
     },
     categories: {
+      brain: 'BRAIN',
       math: 'MATH',
       science: 'SCIENCE',
       sw: 'SW',
@@ -594,6 +596,7 @@ export const en = {
   games: {
     'math-fishing-count': fishingCountEn,
     'math-round-counting': roundCountingEn,
+    'math-number-hive': numberHiveEn,
     'math-fruit-slice': fruitSliceEn,
     'math-number-balance': numberBalanceEn,
   },

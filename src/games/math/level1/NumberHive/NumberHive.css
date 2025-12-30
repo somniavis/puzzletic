@@ -1,0 +1,284 @@
+.number-hive-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* Removed custom background to use Layout1 default */
+    position: relative;
+    overflow: hidden;
+}
+
+/* Header with Target Info */
+.hive-header {
+    width: 100%;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    /* Removed background and border to blend with Layout1 */
+    z-index: 10;
+}
+
+.powerup-row {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    justify-content: flex-start;
+    /* RoundCounting uses justify-start */
+    width: 100%;
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+.powerup-btn {
+    /* Removed fixed sizing to match RoundCounting (relies on padding) */
+    border: none;
+    cursor: pointer;
+}
+
+/* Target Display - Matched to RoundCounting */
+.target-display-card {
+    background-color: white;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    padding: 0.75rem;
+    border-radius: 0.75rem;
+    margin-bottom: 1rem;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.target-emoji {
+    font-size: 3rem;
+    line-height: 1;
+}
+
+.target-count {
+    font-size: 3rem;
+    font-weight: 700;
+    color: #1f2937;
+}
+
+/* Cleanup old classes if not used */
+.target-display {
+    display: none;
+}
+
+.target-number-large {
+    display: none;
+}
+
+/* Honeycomb Grid */
+.hive-grid-area {
+    flex: 1;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    container-type: size;
+    /* Enable container query units */
+    overflow: hidden;
+}
+
+/* Honeycomb Layout - Row Based */
+.honeycomb-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    /* Determine Size based on smallest dimension to fit on screen */
+    width: 100cqmin;
+    height: 100cqmin;
+    max-width: 600px;
+    max-height: 600px;
+}
+
+/* Variable Defaults */
+.honeycomb-container {
+    --hex-w: 22cqmin;
+    /* Width */
+    --hex-h: calc(var(--hex-w) * 1.1547);
+    /* Height: W * 2/sqrt(3) for pointy-topped */
+    --hex-gap: 1.5cqmin;
+    /* Uniform gap */
+    --row-stagger: calc((var(--hex-w) + var(--hex-gap)) / 2);
+    /* Exact half-width stagger */
+}
+
+/* 4x4 Adjustment */
+.honeycomb-container.grid-4 {
+    --hex-w: 16cqmin;
+}
+
+.hex-row {
+    display: flex;
+    justify-content: center;
+    /* 
+       Vertical Stacking Math for Pointy-Topped Hex:
+       Distance between row centers = 0.75 * Height + Vertical_Gap
+       Element Height = Height
+       Margin needed = Distance - Height = -0.25 * Height + Vertical_Gap
+    */
+    margin-top: calc(var(--hex-h) * -0.25 + var(--hex-gap));
+    pointer-events: none;
+}
+
+/* First row reset */
+.hex-row:first-child {
+    margin-top: 0;
+}
+
+/* 
+   Horizontal Stagger Math:
+   To center the zigzag block:
+   Row A starts at X.
+   Row B needs to be shifted by 0.5 * (Width + Gap).
+   To center them relative to the container's vertical centerline:
+   Row A: Shift Left by 0.25 * (Width + Gap)
+   Row B: Shift Right by 0.25 * (Width + Gap)
+   Difference = 0.5 * ... -> Perfect zigzag.
+*/
+
+/* Even rows shifted right */
+.hex-row:nth-child(even) {
+    transform: translateX(calc(var(--row-stagger) * 0.5));
+}
+
+/* Odd rows shifted left */
+.hex-row:nth-child(odd) {
+    transform: translateX(calc(var(--row-stagger) * -0.5));
+}
+
+.hex-cell {
+    position: relative;
+    width: var(--hex-w);
+    height: var(--hex-h);
+    /* Hexagon Aspect Ratio */
+    margin: 0 calc(var(--hex-gap) / 2);
+
+    /* Spotted Honey Effect */
+    background-color: #fcd34d;
+    background-image:
+        radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.5) 0%, transparent 20%),
+        radial-gradient(circle at 75% 65%, rgba(217, 119, 6, 0.3) 0%, transparent 40%),
+        radial-gradient(circle at 40% 80%, rgba(217, 119, 6, 0.15) 0%, transparent 30%);
+
+    box-shadow: inset 0 0 8px rgba(180, 83, 9, 0.3);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+
+    cursor: pointer;
+    font-size: calc(var(--hex-w) * 0.5);
+    font-weight: 800;
+    color: #78350f;
+    user-select: none;
+
+    pointer-events: auto;
+    /* Re-enable clicks */
+
+    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), background-color 0.2s;
+    /* Clean fuzzy edges */
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+}
+
+.hex-cell:hover {
+    transform: scale(1.05);
+    background-color: #fbbf24;
+    background-image:
+        radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.6) 0%, transparent 20%),
+        radial-gradient(circle at 75% 65%, rgba(180, 83, 9, 0.3) 0%, transparent 40%);
+    z-index: 10;
+}
+
+.hex-cell:active {
+    transform: scale(0.95);
+}
+
+.hex-cell.revealed {
+    /* Spotted Blue Jelly */
+    background-color: #3b82f6;
+    background-image:
+        radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.4) 0%, transparent 20%),
+        radial-gradient(circle at 75% 65%, rgba(30, 58, 138, 0.3) 0%, transparent 40%);
+    box-shadow: inset 0 0 8px rgba(30, 58, 138, 0.3);
+    color: white;
+    cursor: default;
+    pointer-events: none;
+    animation: pop-in 0.3s ease-out;
+}
+
+.hex-cell.shaking {
+    /* Spotted Red Jam */
+    animation: shake-hex 0.4s cubic-bezier(.36, .07, .19, .97) both;
+    background-color: #ef4444;
+    background-image:
+        radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.4) 0%, transparent 20%),
+        radial-gradient(circle at 75% 65%, rgba(153, 27, 27, 0.3) 0%, transparent 40%);
+    color: white;
+}
+
+@keyframes shake-hex {
+
+    10%,
+    90% {
+        transform: translate3d(-1px, 0, 0);
+    }
+
+    20%,
+    80% {
+        transform: translate3d(2px, 0, 0);
+    }
+
+    30%,
+    50%,
+    70% {
+        transform: translate3d(-4px, 0, 0);
+    }
+
+    40%,
+    60% {
+        transform: translate3d(4px, 0, 0);
+    }
+}
+
+@keyframes pop-in {
+    0% {
+        transform: scale(0);
+        opacity: 0;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Background Decor */
+.bee-deco {
+    position: absolute;
+    font-size: 3rem;
+    opacity: 0.1;
+    pointer-events: none;
+    animation: float 5s ease-in-out infinite;
+    /* Ensure z-index is low so it doesn't block clicks (pointer-events: none handles click, but visual layering) */
+    z-index: 0;
+}
+
+.bee-inner {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.bee-flipped {
+    transform: scaleX(-1);
+}

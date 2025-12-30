@@ -1,7 +1,7 @@
 import type { ComponentType } from 'react';
 
 export type GameDifficulty = 1 | 2 | 3 | 4 | 5;
-export type GameCategory = 'math' | 'science' | 'sw';
+export type GameCategory = 'brain' | 'math' | 'science' | 'sw';
 
 export interface GameManifest {
     /** Unique identifier for the game (e.g., 'math-level1-simple') */

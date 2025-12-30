@@ -10,6 +10,7 @@ import fishingCountEn from '../games/math/level1/FishingCount/locales/en';
 import roundCountingEn from '../games/math/level1/RoundCounting/locales/en';
 
 const CATEGORY_ICONS: Record<GameCategory, string> = {
+    brain: '🧠',
     math: '🔢',
     science: '🧪',
     sw: '💻'
@@ -123,7 +124,7 @@ export const PlayPage: React.FC<PlayPageProps> = () => {
                         <div className="controls-body">
                             <div className="control-group">
                                 <div className="category-selector">
-                                    {(['math', 'science', 'sw'] as GameCategory[]).map(cat => (
+                                    {(['math', 'brain', 'science', 'sw'] as GameCategory[]).map(cat => (
                                         <button
                                             key={cat}
                                             className={`category-btn ${selectedCategory === cat ? 'active' : ''}`}
