@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { playButtonSound, playJelloClickSound, playEatingSound } from '../../../../utils/sound';
+import { playButtonSound, playEatingSound } from '../../../../utils/sound';
 
 export interface HiveCell {
     id: number;
