@@ -191,10 +191,10 @@ export const useFishingCountLogic = () => {
         // ...
         // Correct Catch
         if (animal.type === targetAnimal) {
-            // Sound is handled by Layout1 (playClearSound -> cleaning sound) via lastEvent
+            // Sound is handled by Layout0 (playClearSound -> cleaning sound) via lastEvent
             // playPlopSound(); // Removed as per user request to use only cleaning sound: Use cleaning sound only
 
-            // Trigger Layout1 feedback
+            // Trigger Layout0 feedback
             const newCaught = caughtCount + 1;
             setCaughtCount(newCaught);
 

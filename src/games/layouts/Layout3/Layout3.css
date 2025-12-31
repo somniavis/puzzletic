@@ -1,4 +1,4 @@
-/* Layout3.css - Based on Layout2, optimized for PowerUp Only Games (No Target Box) */
+/* Layout3.css - Based on Layout1 but optimized for PowerUp Games */
 
 .layout3-container {
     position: absolute;
@@ -69,7 +69,7 @@
     background: rgba(255, 255, 255, 0.5);
 }
 
-/* Dashboard (Score, Lives, etc) - Identical to Layout1/2 */
+/* Dashboard (Score, Lives, etc) - Identical to Layout1 */
 .layout3-dashboard {
     max-width: 37.5rem;
     margin: 4.5rem auto 1rem;
@@ -139,7 +139,7 @@
     overflow: hidden;
 }
 
-/* Layout3 Specific Sub-Header (PowerUps ONLY) */
+/* Layout3 Specific Sub-Header (PowerUps + Target) */
 .layout3-sub-header {
     width: 100%;
     padding: 1rem 1rem 0 1rem;
@@ -154,11 +154,34 @@
 .powerup-row {
     display: flex;
     gap: 0.5rem;
-    /* Remove large bottom margin as there is no target box below */
-    margin-bottom: 0;
+    margin-bottom: 0.7rem;
     justify-content: flex-start;
-    /* Center PowerUps if they are the only thing? Or keep aligned left? Usually center looks better if alone */
     width: 100%;
+}
+
+/* Target Display Card - Styles extracted from NumberHive */
+.target-display-card {
+    background-color: white;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    padding: 0.75rem;
+    border-radius: 0.75rem;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    /* No margin-bottom */
+}
+
+.target-emoji {
+    font-size: 3rem;
+    line-height: 1;
+}
+
+.target-count {
+    font-size: 3rem;
+    font-weight: 700;
+    color: #1f2937;
 }
 
 /* Content Wrapper for Game Board */
@@ -194,7 +217,10 @@
     padding: 0;
 }
 
-/* Start/Game Over Styles */
+/* ... (Start/Game Over styles same as Layout1, omitted here if assuming shared class usage, but copying key parts is safer for isolation) ... */
+/* Simplified for this file, assuming most are utility or shared, but for safety I'll include key Layout1 structural classes but renamed to layout2 if needed, 
+   but screens often share logic. I'll re-include the critical Overlay/Button styles. */
+
 .start-screen-layout {
     display: flex;
     flex-direction: column;

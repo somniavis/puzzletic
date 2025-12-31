@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Layout2 } from '../../../layouts/Layout2';
+import { Layout3 } from '../../../layouts/Layout3';
 import { useFruitSliceLogic, FRUITS } from './GameLogic';
 import manifest_en from './locales/en';
 import './FruitSlice.css';
@@ -136,7 +136,7 @@ export const FruitSlice: React.FC<FruitSliceProps> = ({ onExit }) => {
         }
     ];
 
-    // Build custom Target text for Layout2
+    // Build custom Target text for Layout3
     const targetLabel = currentProblem ? (
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', width: '100%', justifyContent: 'center' }}>
             <span className="equation-part" style={{ fontSize: '2.5rem', lineHeight: 1 }}>{currentProblem.fruit.equationA}</span>
@@ -161,7 +161,7 @@ export const FruitSlice: React.FC<FruitSliceProps> = ({ onExit }) => {
     ) : null;
 
     return (
-        <Layout2
+        <Layout3
             title={t('games.math-fruit-slice.title')}
             subtitle={t('games.math-fruit-slice.sub')}
             gameId="math-fruit-slice"
@@ -174,8 +174,8 @@ export const FruitSlice: React.FC<FruitSliceProps> = ({ onExit }) => {
             onExit={onExit}
             powerUps={powerUpConfig}
             target={{
-                // Layout2 expects value/icon/label. Using 'value' slot to render complex ReactNode via type coercion or adaptation
-                // Layout2 renders: {target.icon && ...} <span className="target-count">{target.value}</span>
+                // Layout3 expects value/icon/label. Using 'value' slot to render complex ReactNode via type coercion or adaptation
+                // Layout3 renders: {target.icon && ...} <span className="target-count">{target.value}</span>
                 // So we pass the complex JSX as 'value'
                 value: targetLabel as any,
                 icon: "" // No separate icon needed as it's part of the equation
@@ -251,7 +251,7 @@ export const FruitSlice: React.FC<FruitSliceProps> = ({ onExit }) => {
                     </>
                 )}
             </div>
-        </Layout2>
+        </Layout3>
     );
 };
 

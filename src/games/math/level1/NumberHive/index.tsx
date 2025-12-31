@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Layout2 } from '../../../layouts/Layout2';
+import { Layout3 } from '../../../layouts/Layout3';
 import { useNumberHiveLogic } from './GameLogic';
 import manifest_en from './locales/en';
 import './NumberHive.css';
@@ -81,7 +81,7 @@ export const NumberHive: React.FC<NumberHiveProps> = ({ onExit }) => {
     ];
 
     return (
-        <Layout2
+        <Layout3
             title={t('games.math-number-hive.title')}
             subtitle={t('games.math-number-hive.sub')}
             gameId="math-number-hive"
@@ -140,7 +140,7 @@ export const NumberHive: React.FC<NumberHiveProps> = ({ onExit }) => {
                     </div>
                 )}
             </>
-        </Layout2>
+        </Layout3>
     );
 };
 

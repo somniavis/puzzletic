@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Layout2 } from '../../../layouts/Layout2';
+import { Layout3 } from '../../../layouts/Layout3';
 import { useMathArcheryLogic } from './GameLogic';
 import manifest_en from './locales/en';
 import './MathArchery.css';
@@ -129,7 +129,7 @@ export const MathArchery: React.FC<MathArcheryProps> = ({ onExit }) => {
     }
 
     return (
-        <Layout2
+        <Layout3
             title={t('games.math-archery.title')}
             subtitle={t('games.math-archery.sub')}
             gameId="math-archery"
@@ -216,7 +216,7 @@ export const MathArchery: React.FC<MathArcheryProps> = ({ onExit }) => {
                     </div>
                 </div>
             </div>
-        </Layout2>
+        </Layout3>
     );
 };
 

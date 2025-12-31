@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Layout3 } from '../../../layouts/Layout3';
+import { Layout2 } from '../../../layouts/Layout2';
 import { useNumberBalanceLogic } from './GameLogic';
 import type { NumberItem } from './GameLogic';
 
@@ -133,7 +133,7 @@ export const NumberBalance: React.FC<NumberBalanceProps> = ({ onExit }) => {
     ];
 
     return (
-        <Layout3
+        <Layout2
             title={t('games.math-number-balance.title')}
             subtitle={t('games.math-number-balance.sub')}
             gameId="math-number-balance"
@@ -219,7 +219,7 @@ export const NumberBalance: React.FC<NumberBalanceProps> = ({ onExit }) => {
                     </>
                 )}
             </div>
-        </Layout3>
+        </Layout2>
     );
 };
 

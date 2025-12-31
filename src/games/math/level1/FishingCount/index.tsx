@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Layout1 } from '../../../layouts/Layout1';
+import { Layout0 } from '../../../layouts/Layout0';
 import { useFishingCountLogic } from './GameLogic';
 import manifest_en from './locales/en';
 import './FishingCount.css';
@@ -132,7 +132,7 @@ export const FishingCount: React.FC<FishingCountProps> = ({ onExit }) => {
 
 
     return (
-        <Layout1
+        <Layout0
             title={t('games.math-fishing-count.title')}
             subtitle={t('games.math-fishing-count.sub')}
             gameId="math-fishing-count"
@@ -212,7 +212,7 @@ export const FishingCount: React.FC<FishingCountProps> = ({ onExit }) => {
                     <div className="shell-deco" style={{ right: '2%' }}>🐚</div>
                 </div>
             </div>
-        </Layout1>
+        </Layout0>
     );
 };
 

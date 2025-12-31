@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Layout2 } from '../../../layouts/Layout2';
+import { Layout3 } from '../../../layouts/Layout3';
 import { useRoundCountingLogic } from './GameLogic';
 import manifest_en from './locales/en';
 import './RoundCounting.css';
@@ -102,7 +102,7 @@ export const RoundCounting: React.FC<RoundCountingProps> = ({ onExit }) => {
     const targetValue = currentProblem ? (currentProblem.targetCount - foundIds.length) : 0;
 
     return (
-        <Layout2
+        <Layout3
             title={t('games.math-round-counting.title')}
             subtitle={t('games.math-round-counting.sub')}
             gameId="math-round-counting"
@@ -150,7 +150,7 @@ export const RoundCounting: React.FC<RoundCountingProps> = ({ onExit }) => {
                     </div>
                 )}
             </div>
-        </Layout2>
+        </Layout3>
     );
 };
 

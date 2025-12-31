@@ -8,8 +8,8 @@ import {
 } from 'lucide-react';
 import { toPng } from 'html-to-image';
 import { playButtonSound, playJelloClickSound, playClearSound, playEatingSound, startBackgroundMusic } from '../../../utils/sound';
-import './Layout3.css'; // Use Layout3 CSS
-import { useGameEngine } from '../Layout1/useGameEngine';
+import './Layout3.css';
+import { useGameEngine } from '../Layout0/useGameEngine'; // Reuse existing hook
 import { useNurturing } from '../../../contexts/NurturingContext';
 import { calculateMinigameReward } from '../../../services/rewardService';
 import type { RewardCalculation, MinigameDifficulty } from '../../../types/gameMechanics';
@@ -25,8 +25,13 @@ interface Layout3Props {
     engine: ReturnType<typeof useGameEngine>;
     onExit: () => void;
     children: React.ReactNode;
-    // Props for Layout3 - PowerUps only, no Target
+    // New Props for Layout3
     powerUps: PowerUpBtnProps[];
+    target: {
+        value: number | string;
+        icon?: string;
+        label?: string;
+    };
 }
 
 export const Layout3: React.FC<Layout3Props> = ({
@@ -38,7 +43,8 @@ export const Layout3: React.FC<Layout3Props> = ({
     engine,
     onExit,
     children,
-    powerUps
+    powerUps,
+    target
 }) => {
     const {
         gameState, score, lives, timeLeft,
@@ -185,6 +191,8 @@ export const Layout3: React.FC<Layout3Props> = ({
     };
 
     if (gameState === 'idle') {
+        // ... Start Screen logic identical to Layout0 ...
+        // For brevity in this task, I am copying it but replacing class names to layout2 if needed or keeping generic
         return (
             <div className="layout3-container">
                 <header className="layout3-header">
@@ -194,6 +202,7 @@ export const Layout3: React.FC<Layout3Props> = ({
                     </button>
                 </header>
                 <div className="overlay-screen start-screen-layout">
+                    {/* ... Start Content ... */}
                     <div className="start-header-section">
                         <h1 className="game-title">{title}</h1>
                         {subtitle && <h2 className="game-subtitle">{subtitle}</h2>}
@@ -226,6 +235,7 @@ export const Layout3: React.FC<Layout3Props> = ({
     }
 
     if (gameState === 'gameover') {
+        // ... Game Over Screen logic identical to Layout0 ...
         const earnedXp = rewardResult?.xpEarned || 0;
         const earnedGro = rewardResult?.groEarned || 0;
         return (
@@ -242,6 +252,7 @@ export const Layout3: React.FC<Layout3Props> = ({
                         <h1 className="game-over-title">{gameOverReason === 'cleared' ? (t('common.stageClear') || 'Stage Clear!') : (t('common.gameOver') || 'Game Over!')}</h1>
                     </div>
                     <div ref={gameOverRef} className="start-content-scroll custom-scrollbar" style={{ marginTop: '0.5rem' }}>
+                        {/* Result Cards similar to Layout0 */}
                         <div className="result-cards-container">
                             <div className="result-card main-stats">
                                 <div className="score-display-wrapper">
@@ -325,12 +336,16 @@ export const Layout3: React.FC<Layout3Props> = ({
             </div>
 
             <main className="layout3-game-area">
-                {/* Layout3 Specific: PowerUps ONLY (No Target) */}
+                {/* Layout3 Specific: Common Header (PowerUps + Target) */}
                 <div className="layout3-sub-header">
                     <div className="powerup-row">
                         {powerUps.map((p, idx) => (
                             <PowerUpBtn key={idx} {...p} />
                         ))}
+                    </div>
+                    <div className="target-display-card">
+                        {target.icon && <span className="target-emoji">{target.icon}</span>}
+                        <span className="target-count">{target.value}</span>
                     </div>
                 </div>
 

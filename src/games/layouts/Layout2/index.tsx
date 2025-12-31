@@ -8,8 +8,8 @@ import {
 } from 'lucide-react';
 import { toPng } from 'html-to-image';
 import { playButtonSound, playJelloClickSound, playClearSound, playEatingSound, startBackgroundMusic } from '../../../utils/sound';
-import './Layout2.css';
-import { useGameEngine } from '../Layout1/useGameEngine'; // Reuse existing hook
+import './Layout2.css'; // Use Layout2 CSS
+import { useGameEngine } from '../Layout0/useGameEngine';
 import { useNurturing } from '../../../contexts/NurturingContext';
 import { calculateMinigameReward } from '../../../services/rewardService';
 import type { RewardCalculation, MinigameDifficulty } from '../../../types/gameMechanics';
@@ -25,13 +25,8 @@ interface Layout2Props {
     engine: ReturnType<typeof useGameEngine>;
     onExit: () => void;
     children: React.ReactNode;
-    // New Props for Layout2
+    // Props for Layout2 - PowerUps only, no Target
     powerUps: PowerUpBtnProps[];
-    target: {
-        value: number | string;
-        icon?: string;
-        label?: string;
-    };
 }
 
 export const Layout2: React.FC<Layout2Props> = ({
@@ -43,8 +38,7 @@ export const Layout2: React.FC<Layout2Props> = ({
     engine,
     onExit,
     children,
-    powerUps,
-    target
+    powerUps
 }) => {
     const {
         gameState, score, lives, timeLeft,
@@ -191,8 +185,6 @@ export const Layout2: React.FC<Layout2Props> = ({
     };
 
     if (gameState === 'idle') {
-        // ... Start Screen logic identical to Layout1 ...
-        // For brevity in this task, I am copying it but replacing class names to layout2 if needed or keeping generic
         return (
             <div className="layout2-container">
                 <header className="layout2-header">
@@ -202,7 +194,6 @@ export const Layout2: React.FC<Layout2Props> = ({
                     </button>
                 </header>
                 <div className="overlay-screen start-screen-layout">
-                    {/* ... Start Content ... */}
                     <div className="start-header-section">
                         <h1 className="game-title">{title}</h1>
                         {subtitle && <h2 className="game-subtitle">{subtitle}</h2>}
@@ -235,7 +226,6 @@ export const Layout2: React.FC<Layout2Props> = ({
     }
 
     if (gameState === 'gameover') {
-        // ... Game Over Screen logic identical to Layout1 ...
         const earnedXp = rewardResult?.xpEarned || 0;
         const earnedGro = rewardResult?.groEarned || 0;
         return (
@@ -252,7 +242,6 @@ export const Layout2: React.FC<Layout2Props> = ({
                         <h1 className="game-over-title">{gameOverReason === 'cleared' ? (t('common.stageClear') || 'Stage Clear!') : (t('common.gameOver') || 'Game Over!')}</h1>
                     </div>
                     <div ref={gameOverRef} className="start-content-scroll custom-scrollbar" style={{ marginTop: '0.5rem' }}>
-                        {/* Result Cards similar to Layout1 */}
                         <div className="result-cards-container">
                             <div className="result-card main-stats">
                                 <div className="score-display-wrapper">
@@ -336,16 +325,12 @@ export const Layout2: React.FC<Layout2Props> = ({
             </div>
 
             <main className="layout2-game-area">
-                {/* Layout2 Specific: Common Header (PowerUps + Target) */}
+                {/* Layout2 Specific: PowerUps ONLY (No Target) */}
                 <div className="layout2-sub-header">
                     <div className="powerup-row">
                         {powerUps.map((p, idx) => (
                             <PowerUpBtn key={idx} {...p} />
                         ))}
-                    </div>
-                    <div className="target-display-card">
-                        {target.icon && <span className="target-emoji">{target.icon}</span>}
-                        <span className="target-count">{target.value}</span>
                     </div>
                 </div>
 
