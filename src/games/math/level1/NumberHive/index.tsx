@@ -40,19 +40,21 @@ const PowerUpBtn: React.FC<PowerUpBtnProps> = ({ count, color, icon, title, onCl
                 backgroundColor: '#facc15', // yellow-400
                 color: '#000000',
                 transform: 'scale(1.1)',
-                zIndex: 10
+                zIndex: 10,
+                border: '1px solid #eab308', // Darker yellow border
+                boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)' // Floating shadow
             };
         }
         if (isActuallyDisabled) {
-            // Disabled (0 count): Glass effect
+            // Disabled (0 count): White Card style (Empty Slot look)
             return {
                 width: '3.5rem', height: '2rem', // Fixed size
                 display: 'flex', justifyContent: 'center', alignItems: 'center', padding: 0, // Force Center
-                backgroundColor: 'rgba(255, 255, 255, 0.3)',
-                color: '#9CA3AF', // Gray-400 for visibility (was white)
+                backgroundColor: '#ffffff', // White background
+                color: '#e5e7eb', // Gray-200 for placeholder icon (faint)
                 cursor: 'not-allowed',
-                backdropFilter: 'blur(4px)',
-                border: '1px solid rgba(0, 0, 0, 0.1)' // Faint border for visibility
+                border: '1px solid #e5e7eb', // Faint border
+                boxShadow: '0 2px 4px rgba(0,0,0,0.05)' // Subtle shadow for empty state
             };
         }
         // Normal/Maxed state
@@ -61,7 +63,9 @@ const PowerUpBtn: React.FC<PowerUpBtnProps> = ({ count, color, icon, title, onCl
             display: 'flex', justifyContent: 'center', alignItems: 'center', padding: 0, // Force Center
             backgroundColor: colors[color][status === 'maxed' ? 'maxed' : 'normal'],
             color: '#ffffff',
-            cursor: status === 'maxed' ? 'not-allowed' : 'pointer'
+            cursor: status === 'maxed' ? 'not-allowed' : 'pointer',
+            border: '1px solid rgba(0,0,0,0.1)', // Border for definition
+            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)' // Standard shadow
         };
     };
 
