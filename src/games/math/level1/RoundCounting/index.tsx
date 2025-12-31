@@ -165,5 +165,5 @@ export const manifest: GameManifest = {
     category: 'math',
     level: 1,
     component: RoundCounting,
-    thumbnail: '🔢'
+    thumbnail: '🌀'
 };

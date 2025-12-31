@@ -1,5 +1,5 @@
 const manifest = {
-    title: "Fruit Slash",
+    title: "Fruit Slice",
     sub: "Cut the fruit with the right number!",
     desc: "Calculate the missing number and slice the fruit to make a healthy snack.",
     howToPlay: {
