@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { playButtonSound, playEatingSound, playJelloClickSound } from '../../../../utils/sound';
+import { playButtonSound, playEatingSound } from '../../../../utils/sound';
 
 export interface GameState {
     score: number;
@@ -248,8 +248,7 @@ export const useNumberBalanceLogic = () => {
 
             } else {
                 // Wrong
-                // Sound handled by Layout1 via lastEvent, but calling directly for redundancy/immediacy
-                playJelloClickSound();
+                // Sound handled by Layout via lastEvent
                 setLastEvent({ type: 'wrong', id: Date.now() }); // Trigger shake
 
                 setGameState(prev => {
