@@ -187,31 +187,4 @@
     transform: scale(0.95);
 }
 
-/* Target Display */
-.target-display-card {
-    background-color: white;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    padding: 0.75rem;
-    border-radius: 0.75rem;
-    /* rounded-xl */
-    margin-bottom: 1rem;
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 1rem;
-}
-
-.target-emoji {
-    font-size: 3rem;
-    /* text-5xl */
-    line-height: 1;
-}
-
-.target-count {
-    font-size: 3rem;
-    /* text-5xl */
-    font-weight: 700;
-    color: #1f2937;
-    /* text-gray-800 */
-}
+/* Target Display styles removed - Now Handling by Layout2.css */
