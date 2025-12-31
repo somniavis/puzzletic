@@ -245,7 +245,12 @@ class SoundManager {
     }
 
     this.bgmAudio.play().catch((error) => {
-      console.warn('Background music playback failed:', error);
+      // 자동 재생 정책으로 인한 에러는 경고가 아닌 정보로 로그
+      if (error.name === 'NotAllowedError') {
+        console.log('🔇 BGM waiting for user interaction...');
+      } else {
+        console.warn('Background music playback failed:', error);
+      }
     });
   }
 

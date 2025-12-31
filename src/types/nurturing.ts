@@ -167,6 +167,7 @@ export interface NurturingPersistentState {
   sickProgress?: number; // 질병 치료 진행도 (0~2, 2면 완치)
   xp: number; // 경험치 (Experience Point)
   evolutionStage: number; // 진화 단계 (1-5)
+  lastSeenStage?: number; // 마지막으로 본 진화 단계 (애니메이션 중복 방지용)
   characterName?: string; // Character Nickname
   speciesId?: string; // Current Jello Species ID
   history?: import('./character').CharacterHistory; // Hidden Evolution Tracking

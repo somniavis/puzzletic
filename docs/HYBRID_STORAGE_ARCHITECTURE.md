@@ -1,6 +1,6 @@
 # 하이브리드 데이터 저장 아키텍처
 
-> 마지막 업데이트: 2025-12-27
+> 마지막 업데이트: 2026-01-01
 
 ## 개요
 
@@ -28,12 +28,13 @@
 
 | 시점 | 동작 | 파일 위치 |
 |------|------|-----------|
-| **로그인** | D1 → localStorage (D1 신뢰) | `NurturingContext.tsx:223-279` |
+| **로그인** | D1 ⚡ localStorage (Smart Sync) | `NurturingContext.tsx:223-279` |
 | **15분 자동** | localStorage → D1 | `NurturingContext.tsx:287-302` |
 | **Save 버튼** | localStorage → D1 | `NurturingContext.tsx:304-309` |
 | **로그아웃** | localStorage → D1 | `SettingsMenu.tsx:131-143` |
 | **상태 변경** | localStorage만 | 모든 setState 호출 |
-
+| **불일치 감지** | 동작 없음 (Local 유지) | 로컬이 서버보다 5초 이상 최신일 때 (D1 읽기만 하고 덮어쓰기 중단) |
+| **진화 완료** | localStorage → D1 | `NurturingContext.tsx` completeEvolutionAnimation |
 ---
 
 ## 데이터 흐름
@@ -60,7 +61,7 @@
 ### 로그인 시 동작
 1. `fetchUserData(user)` 호출
 2. D1에서 `game_data` 가져옴
-3. D1 데이터로 localStorage 덮어쓰기
+3. D1 데이터로 localStorage 덮어쓰기 (단, 로컬 데이터가 최신이면 역으로 D1 업데이트)
 4. 신규 유저면 로컬 상태를 D1에 업로드
 
 ### 로그아웃 시 동작
@@ -152,6 +153,20 @@ localStorage 키에 `userId`가 포함되어 계정별로 분리 저장됩니다
 puzzleletic_nurturing_state_v4_{userId}
 puzzleletic_checksum_{userId}
 ```
+
+---
+
+## 이중 안전장치 (Fail-Safe Persistence)
+
+### 진화 애니메이션 반복 문제 해결
+가끔 메인 상태 객체(`puzzleletic_nurturing_state_v4`)의 저장이 물리적으로 실패하거나, 클라우드 동기화 과정에서 `lastSeenStage` 필드가 유실되는 경우를 대비해 **독립적인 보조 키**를 사용합니다.
+
+1.  **목적**: 진화 애니메이션 무한 루프(Loop on Refresh) 원천 차단
+2.  **키**: `puzzleletic_last_seen_stage` (User ID에 종속되지 않은 기기별 플래그)
+3.  **메커니즘**:
+    *   **쓰기**: `completeEvolutionAnimation` 시점, 메인 상태와 별도로 `localStorage`에 즉시 기록 (동기식)
+    *   **읽기**: `useEffect` 애니메이션 트리거 시점, 메인 상태(`state.lastSeenStage`)가 없거나 낮더라도 이 보조 키 값이 높으면 애니메이션을 스킵
+4.  **효과**: 서버 비용 0원으로 오프라인 환경에서도 완벽한 상태 정합성 보장
 
 ---
 

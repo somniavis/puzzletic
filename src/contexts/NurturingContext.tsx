@@ -23,12 +23,14 @@ import {
 import {
   loadNurturingState,
   saveNurturingState,
-  createDefaultState,
   applyOfflineProgress,
   resetNurturingState,
+  createDefaultState,
+  setCurrentUserId,
   saveToHallOfFame,
   startNewGeneration,
-  setCurrentUserId,
+  saveFailSafeLastSeenStage,
+  getFailSafeLastSeenStage
 } from '../services/persistenceService';
 import { CHARACTER_SPECIES } from '../data/species';
 import {
@@ -176,9 +178,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     }
   }, [user]);
 
-  // Track previous stage to detect evolution (for animation)
-  // We initialize it with the current stage to avoid triggering animation on first render
-  const prevStageRef = useRef(state.evolutionStage);
+
 
   // Track user changes and update storage key
   useEffect(() => {
@@ -190,9 +190,15 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
       const userState = loadNurturingState();
       const { updatedState } = applyOfflineProgress(userState);
 
-      // Update prevStageRef to match the new state's stage
-      // This prevents triggering evolution animation when loading a higher-level user
-      prevStageRef.current = updatedState.evolutionStage;
+      // Update prevStageRef assignment removed (using lastSeenStage)
+
+      // Sync independent key if state has higher value
+      if (updatedState.lastSeenStage) {
+        const currentStored = getFailSafeLastSeenStage() || 0;
+        if (updatedState.lastSeenStage > currentStored) {
+          saveFailSafeLastSeenStage(updatedState.lastSeenStage);
+        }
+      }
 
       setState(updatedState);
       saveNurturingState(updatedState);
@@ -203,8 +209,25 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
   const [isEvolving, setIsEvolving] = useState(false);
 
   const completeEvolutionAnimation = useCallback(() => {
+    setState(currentState => {
+      const newState = {
+        ...currentState,
+        lastSeenStage: currentState.evolutionStage
+      };
+
+      // Emergency Persistence: Save to independent key
+      saveFailSafeLastSeenStage(currentState.evolutionStage);
+
+      saveNurturingState(newState);
+      // Essential: immediate cloud save to lock in this milestone (Evolution)
+      if (user) {
+        console.log('☁️ Evolution milestone reached. Syncing to cloud...');
+        syncUserData(user, newState);
+      }
+      return newState;
+    });
     setIsEvolving(false);
-  }, []);
+  }, [user]);
 
   // Graduation Animation State
   const [isGraduating, setIsGraduating] = useState(false);
@@ -246,16 +269,44 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
   // We might want to skip animation on initial load/sync. 
   // Initial load is handled by `prevStageRef` initializing with current state.
 
+  // Effect to separate Evolution triggering from State logic
+  // This ensures animation triggers whenever stage increases beyond what was last seen
+  // Effect to separate Evolution triggering from State logic
+  // This ensures animation triggers whenever stage increases beyond what was last seen
   useEffect(() => {
-    // Only trigger if stage INCREASED and we have a previous valid stage
-    const prev = prevStageRef.current || 1;
     const current = state.evolutionStage || 1;
 
-    if (current > prev && current > 1) {
+    // Robust Persistence Check:
+    // 1. Check State (Primary)
+    // 2. Check Independent Storage (Fail-safe for "Loop on Refresh" bug)
+    let lastSeen = state.lastSeenStage;
+
+    const failSafeStored = getFailSafeLastSeenStage();
+
+    if (lastSeen === undefined) {
+      if (failSafeStored !== null) {
+        lastSeen = failSafeStored;
+      } else {
+        // Fallback: assume current stage is seen if nothing overrides it (migration)
+        lastSeen = current;
+      }
+    } else {
+      // Even if state has it, check if local storage has a HIGHER value (more recent)
+      if (failSafeStored !== null && failSafeStored > lastSeen) {
+        lastSeen = failSafeStored;
+      }
+    }
+
+    // Force update state if we found a better value in local storage
+    if (lastSeen !== state.lastSeenStage && lastSeen !== undefined) {
+      // We can't setState here easily without causing loop, but we can prevent animation
+    }
+
+    if (current > lastSeen) {
+      console.log(`✨ Evolution detected! Stage ${lastSeen} -> ${current}`);
       setIsEvolving(true);
     }
-    prevStageRef.current = current;
-  }, [state.evolutionStage]);
+  }, [state.evolutionStage, state.lastSeenStage]);
 
   // ==================== HYBRID STORAGE: Cloud Sync on Login ====================
   // On login: D1 data is trusted and overwrites localStorage
@@ -320,21 +371,43 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
         return;
       }
 
-      console.log('☁️ Cloud data found. Restoring from cloud.');
+      console.log('☁️ Cloud data found. Checking versions...');
 
-      // Sync prevStageRef to prevent evolution animation on load
-      if (fullState.evolutionStage) {
-        prevStageRef.current = fullState.evolutionStage;
+      // Smart Sync: Compare local vs cloud timestamps
+      // If local data is significantly newer (e.g. > 1 minute), keep local and push to cloud
+      // This prevents "Return to Previous" issues on refresh/cross-device
+      const cloudTime = fullState.lastActiveTime || 0;
+      const localTime = stateRef.current.lastActiveTime || 0;
+
+      // Use a tolerance of 5 seconds to avoid clock skew issues, but prefer stricter check if needed
+      // If Local is newer by more than 5s, we trust Local
+      if (localTime > cloudTime + 5000) {
+        console.log(`☁️ Cloud data is stale! (Local: ${new Date(localTime).toLocaleTimeString()} vs Cloud: ${new Date(cloudTime).toLocaleTimeString()})`);
+        console.log('☁️ Keeping local data (Lazy Sync: will sync on next auto-save/logout)');
+        // FIX: Do NOT write to cloud immediately to save costs.
+        // Just skip the restore process and let the local data persist.
+        // The existing auto-save timer (15 min) or manual save will handle it later.
+        return;
       }
+
+      console.log('☁️ Cloud data is newer or consistent. Restoring from cloud.');
 
       // Trust cloud data: overwrite localStorage
       // Use createDefaultState() as a base to ensure new fields (like unlockedJellos) are present even if missing in cloud data
       const restoredState: NurturingPersistentState = {
         ...createDefaultState(),
         ...fullState,
-        // Ensure lastActiveTime is updated
+        // Ensure lastActiveTime is updated to now if we just pulled it
         lastActiveTime: Date.now(),
       };
+
+      // Ensure lastSeenStage logic is consistent with evolutionStage
+      // Ensure lastSeenStage logic is consistent with evolutionStage
+      // If cloud is missing lastSeenStage (legacy), assume it's same as stats (already seen)
+      // explicit check on fullState because createDefaultState() injects '1' which might be wrong for high level legacy users
+      if (fullState.lastSeenStage === undefined) {
+        restoredState.lastSeenStage = restoredState.evolutionStage;
+      }
 
       setState(restoredState);
       saveNurturingState(restoredState);

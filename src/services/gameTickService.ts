@@ -234,10 +234,13 @@ export const executeGameTick = (
     }
   }
 
-  // ==================== E. 스탯 범위 제한 ====================
-  newStats.fullness = clampStat(newStats.fullness);
-  newStats.health = clampStat(newStats.health);
-  newStats.happiness = clampStat(newStats.happiness);
+  // ==================== E. 스탯 범위 제한 및 소수점 보정 ====================
+  // 부동소수점 오차 방지를 위해 소수점 2자리까지만 유지
+  const roundStat = (val: number) => Math.round(val * 100) / 100;
+
+  newStats.fullness = clampStat(roundStat(newStats.fullness));
+  newStats.health = clampStat(roundStat(newStats.health));
+  newStats.happiness = clampStat(roundStat(newStats.happiness));
 
   // ==================== F. 결과 반환 ====================
   const statChanges: Partial<NurturingStats> = {
@@ -312,10 +315,12 @@ export const calculateOfflineProgress = (
     }
   }
 
-  // 최종 범위 제한
-  stats.fullness = clampStat(stats.fullness);
-  stats.health = clampStat(stats.health);
-  stats.happiness = clampStat(stats.happiness);
+  // 최종 범위 제한 및 소수점 보정
+  const roundStat = (val: number) => Math.round(val * 100) / 100;
+
+  stats.fullness = clampStat(roundStat(stats.fullness));
+  stats.health = clampStat(roundStat(stats.health));
+  stats.happiness = clampStat(roundStat(stats.happiness));
 
   return {
     finalStats: stats,

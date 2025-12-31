@@ -41,6 +41,29 @@ const getChecksumKey = (userId?: string) => {
   return id ? `${CHECKSUM_KEY_PREFIX}_${id}` : CHECKSUM_KEY_PREFIX;
 };
 
+const FAILSAFE_LAST_SEEN_KEY = 'puzzleletic_last_seen_stage';
+
+/** 
+ * Fail-safe persistence for lastSeenStage 
+ * Bypasses main state blob to prevent loops on data merging/corruption 
+ */
+export const saveFailSafeLastSeenStage = (stage: number) => {
+  try {
+    localStorage.setItem(FAILSAFE_LAST_SEEN_KEY, String(stage));
+  } catch (e) {
+    console.warn('Failed to save fail-safe lastSeenStage:', e);
+  }
+};
+
+export const getFailSafeLastSeenStage = (): number | null => {
+  try {
+    const stored = localStorage.getItem(FAILSAFE_LAST_SEEN_KEY);
+    return stored ? parseInt(stored, 10) : null;
+  } catch (e) {
+    return null;
+  }
+};
+
 /**
  * 기본 상태 생성
  */
@@ -65,6 +88,7 @@ export const createDefaultState = (): NurturingPersistentState => {
     hasCharacter: false,
     xp: 0,
     evolutionStage: 1, // Start at Egg
+    lastSeenStage: 1, // Start at Egg (seen)
     // speciesId: undefined, 
     history: {
       foodsEaten: {},
