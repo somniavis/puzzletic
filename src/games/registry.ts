@@ -6,6 +6,7 @@ import { manifest as L1_RoundCounting } from './math/level1/RoundCounting';
 import { manifest as L1_NumberHive } from './math/level1/NumberHive';
 import { manifest as L1_NumberBalance } from './math/level1/NumberBalance';
 import { manifest as L1_FruitSlice } from './math/level1/FruitSlice';
+import { manifest as L1_MathArchery } from './math/level1/MathArchery';
 
 // --- Level 2 Games (TBD) ---
 // import ...
@@ -17,6 +18,7 @@ export const GAMES: GameManifest[] = [
     L1_NumberHive,
     L1_NumberBalance,
     L1_FruitSlice,
+    L1_MathArchery,
 
     // [Level 2] -----------------------------------------------------------
     // ...

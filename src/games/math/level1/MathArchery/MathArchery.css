@@ -1,0 +1,152 @@
+/* MathArchery.css */
+.math-archery-container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(to bottom, #f0f9ff, #e0f2fe);
+    touch-action: none;
+    /* Prevent scroll on drag */
+}
+
+/* Ensure Layout2 Spacing Consistency */
+.layout2-sub-header .powerup-row {
+    margin-bottom: 0.7rem !important;
+}
+
+/* Targets */
+.archery-target {
+    position: absolute;
+    width: 70px;
+    height: 70px;
+    background: white;
+    border: 5px solid #ef4444;
+    /* Outer Ring Red */
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.5rem;
+    color: #1e293b;
+    /* Extra White Outer Ring via Shadow */
+    box-shadow: 0 0 0 6px white, 0 0 0 7px #cbd5e1, 0 4px 6px 6px rgba(0, 0, 0, 0.1);
+    transform: translate(-50%, -50%);
+    /* Center on coordinate */
+    z-index: 10;
+    transition: transform 0.2s;
+}
+
+.archery-target::before {
+    content: '';
+    position: absolute;
+    width: 46px;
+    height: 46px;
+    border: 5px solid #3b82f6;
+    /* Blue Ring */
+    background: #fef9c3;
+    /* Light Yellow for Text Contrast */
+    border-radius: 50%;
+}
+
+.archery-target::after {
+    content: none;
+    /* Removed as requested */
+}
+
+.archery-target-text {
+    position: relative;
+    z-index: 20;
+    font-family: monospace;
+    /* Background removed as requested */
+}
+
+/* Arrow Projectile */
+.arrow-projectile {
+    position: absolute;
+    width: 10px;
+    height: 60px;
+    /* Increased length (was 40px) */
+    background: #475569;
+    border-radius: 2px;
+    transform-origin: center center;
+    pointer-events: none;
+    z-index: 15;
+}
+
+.arrow-projectile::before {
+    content: '';
+    position: absolute;
+    top: -15px;
+    /* Extended forward (was -10px) */
+    left: 50%;
+    transform: translateX(-50%);
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 16px solid #475569;
+    /* Larger arrowhead */
+    /* Arrowhead */
+}
+
+.arrow-projectile::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 12px;
+    height: 8px;
+    background: #dc2626;
+    /* Fletching */
+    clip-path: polygon(0 0, 50% 100%, 100% 0);
+}
+
+/* Bow Control */
+.bow-control-area {
+    position: absolute;
+    bottom: 5%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 120px;
+    height: 120px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 20;
+}
+
+.bow-visual {
+    width: 120px;
+    height: 120px;
+    position: relative;
+    /* Border removed to use SVG */
+}
+
+.bow-string {
+    position: absolute;
+    bottom: 0;
+    left: -6px;
+    right: -6px;
+    height: 2px;
+    background: #cbd5e1;
+}
+
+/* Dynamic String when pulling */
+.bow-string-pulled {
+    position: absolute;
+    top: 50px;
+    /* Anchor points */
+    /* Handled by inline SVG for dynamic pulling */
+}
+
+.aim-guide {
+    position: absolute;
+    bottom: 50%;
+    left: 50%;
+    width: 2px;
+    height: 100px;
+    background: rgba(0, 0, 0, 0.1);
+    transform-origin: bottom center;
+    pointer-events: none;
+    border-top: 1px dashed rgba(0, 0, 0, 0.3);
+}

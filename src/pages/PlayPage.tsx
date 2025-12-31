@@ -81,7 +81,6 @@ export const PlayPage: React.FC<PlayPageProps> = () => {
     };
 
     const handleExitGame = () => {
-        playButtonSound();
         navigate('/play');
     };
 
