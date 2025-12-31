@@ -34,6 +34,7 @@ const PowerUpBtn: React.FC<PowerUpBtnProps> = ({ count, color, icon, title, onCl
         if (isHereActive) {
             // Active: Bright Yellow background, Black text
             return {
+                width: '3rem', height: '3rem', borderRadius: '50%', // Force Circle
                 backgroundColor: '#facc15', // yellow-400
                 color: '#000000',
                 transform: 'scale(1.1)',
@@ -43,15 +44,17 @@ const PowerUpBtn: React.FC<PowerUpBtnProps> = ({ count, color, icon, title, onCl
         if (isActuallyDisabled) {
             // Disabled (0 count): Glass effect
             return {
+                width: '3rem', height: '3rem', borderRadius: '50%', // Force Circle
                 backgroundColor: 'rgba(255, 255, 255, 0.3)',
                 color: '#9CA3AF', // Gray-400 for visibility (was white)
                 cursor: 'not-allowed',
                 backdropFilter: 'blur(4px)',
-                border: '1px solid rgba(255, 255, 255, 0.2)'
+                border: '2px solid rgba(0, 0, 0, 0.1)' // Faint border for visibility
             };
         }
         // Normal/Maxed state
         return {
+            width: '3rem', height: '3rem', borderRadius: '50%', // Force Circle
             backgroundColor: colors[color][status === 'maxed' ? 'maxed' : 'normal'],
             color: '#ffffff',
             cursor: status === 'maxed' ? 'not-allowed' : 'pointer'
@@ -63,7 +66,8 @@ const PowerUpBtn: React.FC<PowerUpBtnProps> = ({ count, color, icon, title, onCl
         onClick();
     };
 
-    const baseClasses = "relative p-2 rounded-full transition-all shadow-md flex items-center justify-center powerup-btn";
+    // Base layout classes: Fixed width/height for perfect circle
+    const baseClasses = "relative w-12 h-12 rounded-full transition-all shadow-md flex items-center justify-center flex-shrink-0 powerup-btn";
     const activeClasses = isHereActive ? "ring-4 ring-yellow-200" : "";
 
     return (
