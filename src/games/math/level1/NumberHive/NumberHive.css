@@ -9,68 +9,7 @@
     overflow: hidden;
 }
 
-/* Header with Target Info */
-.hive-header {
-    width: 100%;
-    padding: 1rem 1rem 0 1rem;
-    /* Removed bottom padding for visual centering of grid below */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    /* Removed background and border to blend with Layout1 */
-    z-index: 10;
-}
-
-.powerup-row {
-    display: flex;
-    gap: 0.5rem;
-    margin-bottom: 0.7rem;
-    justify-content: flex-start;
-    /* RoundCounting uses justify-start */
-    width: 100%;
-    /* padding removed to align with target card */
-}
-
-.powerup-btn {
-    /* Removed fixed sizing to match RoundCounting (relies on padding) */
-    border: none;
-    cursor: pointer;
-}
-
-/* Target Display - Matched to RoundCounting */
-.target-display-card {
-    background-color: white;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    padding: 0.75rem;
-    border-radius: 0.75rem;
-    /* margin-bottom removed for perfect vertical centering of grid below */
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 1rem;
-}
-
-.target-emoji {
-    font-size: 3rem;
-    line-height: 1;
-}
-
-.target-count {
-    font-size: 3rem;
-    font-weight: 700;
-    color: #1f2937;
-}
-
-/* Cleanup old classes if not used */
-.target-display {
-    display: none;
-}
-
-.target-number-large {
-    display: none;
-}
+/* Removed Header Styles - Now Handling by Layout2.css */
 
 /* Honeycomb Grid */
 .hive-grid-area {

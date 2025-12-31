@@ -137,66 +137,7 @@
     /* Prevent scroll on mobile while playing */
 }
 
-/* Unified Header (NumberHive style) */
-.slice-header {
-    width: 100%;
-    padding: 1rem 1rem 0 1rem;
-    /* Removed bottom padding for visual centering */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    z-index: 10;
-}
-
-.powerup-row {
-    display: flex;
-    gap: 0.5rem;
-    margin-bottom: 0.7rem;
-    justify-content: flex-start;
-    width: 100%;
-    /* padding removed to align with target card */
-}
-
-.powerup-btn {
-    border: none;
-    cursor: pointer;
-}
-
-/* Target Display - Unified Style */
-.target-display-card {
-    background-color: white;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    padding: 0.75rem 1.5rem;
-    border-radius: 0.75rem;
-    /* margin-bottom removed for perfect vertical centering */
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-
-    font-size: clamp(1.5rem, 5vmin, 2rem);
-    font-weight: bold;
-    color: #374151;
-}
-
-.equation-part {
-    display: inline-flex;
-    align-items: center;
-}
-
-.mystery-box {
-    width: 3rem;
-    height: 3rem;
-    border: 2px dashed #9CA3AF;
-    border-radius: 0.5rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 0.5rem;
-    color: #9CA3AF;
-}
+/* Removed Header Styles - Now Handling by Layout2.css */
 
 /* Fruit Area */
 .fruit-stage {
