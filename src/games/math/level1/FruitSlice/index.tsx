@@ -35,6 +35,8 @@ const PowerUpBtn: React.FC<PowerUpBtnProps> = ({ count, color, icon, title, onCl
             // Active: Bright Yellow background, Black text
             return {
                 width: '3rem', height: '3rem', borderRadius: '50%', // Force Circle
+                display: 'flex', justifyContent: 'center', alignItems: 'center', padding: 0, // Force Center
+                fontSize: '1.5rem',
                 backgroundColor: '#facc15', // yellow-400
                 color: '#000000',
                 transform: 'scale(1.1)',
@@ -45,6 +47,8 @@ const PowerUpBtn: React.FC<PowerUpBtnProps> = ({ count, color, icon, title, onCl
             // Disabled (0 count): Glass effect
             return {
                 width: '3rem', height: '3rem', borderRadius: '50%', // Force Circle
+                display: 'flex', justifyContent: 'center', alignItems: 'center', padding: 0, // Force Center
+                fontSize: '1.5rem', // Consistent Icon Size
                 backgroundColor: 'rgba(255, 255, 255, 0.3)',
                 color: '#9CA3AF', // Gray-400 for visibility (was white)
                 cursor: 'not-allowed',
@@ -55,6 +59,8 @@ const PowerUpBtn: React.FC<PowerUpBtnProps> = ({ count, color, icon, title, onCl
         // Normal/Maxed state
         return {
             width: '3rem', height: '3rem', borderRadius: '50%', // Force Circle
+            display: 'flex', justifyContent: 'center', alignItems: 'center', padding: 0, // Force Center
+            fontSize: '1.5rem', // Consistent Icon Size
             backgroundColor: colors[color][status === 'maxed' ? 'maxed' : 'normal'],
             color: '#ffffff',
             cursor: status === 'maxed' ? 'not-allowed' : 'pointer'
@@ -79,7 +85,7 @@ const PowerUpBtn: React.FC<PowerUpBtnProps> = ({ count, color, icon, title, onCl
             title={title}
         >
             {icon}
-            <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center shadow-sm" style={{ zIndex: 20 }}>
+            <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center leading-none shadow-sm" style={{ zIndex: 20 }}>
                 {count}
             </span>
         </button>
