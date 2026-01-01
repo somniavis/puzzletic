@@ -6,7 +6,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: space-between;
-    padding: 1rem;
+    padding: 0.5rem;
     padding-bottom: 2rem;
     overflow: hidden;
     /* Prevent body scroll */
@@ -21,36 +21,48 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 1rem;
+    padding: 0.25rem;
 }
 
 .ten-frame-container {
-    width: 600px;
-    max-width: 100%;
+    width: 100%;
+    max-width: 800px;
+    /* Height must be 100% of parent for container query to work on size/height */
+    height: 100%;
     display: flex;
     flex-direction: column;
-    gap: 0.8rem;
+    /* Dynamic gap based on Container Height */
+    /* If 10 rows, 1% gap = 10% total. Safe. */
+    gap: min(0.5rem, 1cqh);
     align-items: center;
-    overflow-y: auto;
-    padding: 1rem 0.5rem;
-    container-type: inline-size;
+    justify-content: center;
+    /* Center content vertically */
+    overflow: hidden;
+    /* No scroll allowed, clip if must but logic should prevent it */
+    padding: 0.25rem;
+
+    /* Establish Container Query context */
+    container-type: size;
 }
 
 .ten-frame-row {
     display: grid;
     grid-template-columns: repeat(10, 1fr);
     width: 100%;
-    /* Soft Paper / Card Design */
+
+    /* Minimal padding to save space */
+    padding: 0.3rem;
+    gap: 0.2rem;
+
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(248, 250, 252, 0.9));
-    border: none;
-    border-radius: 1rem;
-    padding: 0.5rem;
-    gap: 0.3rem;
+    border-radius: 0.75rem;
     box-shadow:
         0 4px 6px -1px rgba(0, 0, 0, 0.05),
         0 2px 4px -1px rgba(0, 0, 0, 0.03),
         inset 0 0 0 2px rgba(255, 255, 255, 0.5);
-    /* Inner highlight */
+
+    /* Allow rows to shrink */
+    flex: 0 1 auto;
 }
 
 .grid-item {
@@ -58,12 +70,19 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 6.5cqw;
+    /* 
+       SCALING LOGIC (Robust Fit):
+       - Width Limit: 10 items/row. '6.5cqw' accounts for gaps/padding.
+       - Height Limit: 10 rows. 
+         Total height = 10 * H + 9 * Gap.
+         If H=6.5cqh and Gap=1cqh => 65 + 9 = 74%. Plenty of room for padding (26%).
+         Using 6.5cqh ensures it never overflows container height.
+    */
+    font-size: min(6.5cqw, 6.5cqh);
     line-height: 1;
     user-select: none;
 
-    /* Item styling */
-    border-radius: 0.5rem;
+    border-radius: 0.4rem;
     transition: all 0.2s ease-out;
 }
 
@@ -74,10 +93,8 @@
     box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02);
 }
 
-/* Optional: Slight pop effect for filled items */
 .grid-item:not(.empty) {
     background: rgba(255, 255, 255, 0.01);
-    /* Just for touch */
     filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.1));
 }
 
@@ -132,8 +149,6 @@
 
 /* Responsive Scaling */
 @media (max-width: 480px) {
-
-    /* No font-size fixed override, rely on cqw */
     .option-btn {
         padding: 0.5rem;
         font-size: 1.5rem;
@@ -146,13 +161,13 @@
         padding-bottom: 0.5rem;
     }
 
-    .question-prompt {
-        margin: 0.25rem 0;
-        font-size: 1.2rem;
+    .ten-frame-container {
+        max-width: 100%;
+        padding: 0;
     }
 
-    .ten-frame-container {
-        max-width: 70vh;
-        /* Constrain width to keep aspect ratio fit in height */
+    .question-prompt {
+        font-size: 1rem;
+        margin: 0.25rem;
     }
 }
