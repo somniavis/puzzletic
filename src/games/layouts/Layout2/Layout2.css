@@ -170,8 +170,8 @@
     /* Vertical Center */
     justify-content: center;
     /* Horizontal Center */
-    padding: 1rem;
-    /* Padding around the grid */
+    /* Padding around the grid - Removed Top Padding to prevent duplication with sub-header */
+    padding: 0 1rem 1rem 1rem;
     container-type: size;
     /* Enable CQ units for children */
     overflow: hidden;

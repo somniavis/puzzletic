@@ -10,6 +10,7 @@ import { manifest as L1_MathArchery } from './math/level1/MathArchery';
 
 // --- Level 2 Games (TBD) ---
 import { manifest as L2_TenFrameCount } from './math/level2/TenFrameCount';
+import { manifest as L2_Pinwheel } from './math/level2/PinwheelPop';
 
 export const GAMES: GameManifest[] = [
     // [Level 1] -----------------------------------------------------------
@@ -22,6 +23,7 @@ export const GAMES: GameManifest[] = [
 
     // [Level 2] -----------------------------------------------------------
     L2_TenFrameCount,
+    L2_Pinwheel,
 ];
 
 export const getGames = (category?: GameCategory, level?: GameDifficulty): GameManifest[] => {

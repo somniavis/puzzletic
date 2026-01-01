@@ -56,21 +56,8 @@ export const TenFrameCount: React.FC<TenFrameCountProps> = ({ onExit }) => {
                             const remainingItems = targetNumber - (rowIndex * 10);
                             const countInRow = Math.min(10, remainingItems);
 
-                            // Reverse index for animation delay because of column-reverse
-                            // Top visual row (index 0 in array) is actually at the bottom of the stack visually in column-reverse?
-                            // Wait, column-reverse means first child is at bottom.
-                            // We want bottom row (first child) to land first? Or top row to land first?
-                            // "Falling one by one" -> usually bottom one lands, then next one on top.
-                            // So Array index 0 (full row usually) corresponds to bottom.
-
-                            const delay = rowIndex * 0.15; // 0.15s stagger
-
                             return (
-                                <div
-                                    key={`${targetNumber}-${rowIndex}`}
-                                    className="ten-frame-row"
-                                    style={{ animationDelay: `${delay}s` }}
-                                >
+                                <div key={rowIndex} className="ten-frame-row">
                                     {/* Always render 10 slots to show the frame structure */}
                                     {Array.from({ length: 10 }).map((_, colIndex) => {
                                         const isFilled = colIndex < countInRow;
@@ -119,5 +106,5 @@ export const manifest: GameManifest = {
     category: 'math',
     level: 2, // First Level 2 Game
     component: TenFrameCount,
-    thumbnail: '🧮'
+    thumbnail: '🔢'
 };

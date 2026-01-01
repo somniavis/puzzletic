@@ -1,0 +1,453 @@
+/* Math Pinwheel Styles - Responsive Layout */
+
+/* Main Container */
+.pinwheel-pop-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    padding: 0;
+    overflow: hidden;
+    background: #f1f5f9;
+    /* Slate-100 background */
+}
+
+/* Visualization Area (Middle) */
+/* Scales and centers the pinwheel */
+.pinwheel-vis-area {
+    flex: 1;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    padding: 1rem;
+    overflow: hidden;
+}
+
+/* The Pretty Pole */
+.pinwheel-vis-area::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    /* Start from center */
+    bottom: -2rem;
+    /* Extend slightly into the options area gap */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 20px;
+    /* Slightly thicker for pattern visibility */
+    /* Patterned Pole: Soft Diagonal Stripes (Candy/Toy style) */
+    background: repeating-linear-gradient(45deg,
+            #cbd5e1,
+            #cbd5e1 10px,
+            #e2e8f0 10px,
+            #e2e8f0 20px);
+    border-radius: 0 0 10px 10px;
+    box-shadow: 2px 0 6px rgba(0, 0, 0, 0.15);
+    z-index: 0;
+    /* Behind the pinwheel */
+    border: 2px solid #94a3b8;
+    /* Thin border definition */
+}
+
+/* 
+   Pinwheel Wrapper
+   - Static normally.
+   - Spins 360 on finale.
+   - Size logic: Fits within the middle area, scaling up/down.
+   - Uses aspect-ratio to stay square.
+   - CONTAINER QUERY ROOT: Allows children to scale text relative to this box.
+*/
+.pinwheel-wrapper {
+    /* 
+       Responsive Sizing:
+       - Fits within the .pinwheel-vis-area (parent).
+       - Uses aspect-ratio to stay square.
+       - constrained by height (primary issue) and width.
+    */
+    /* Main driver: Height based scaling */
+    aspect-ratio: 1 / 1;
+    transform-origin: center center;
+
+    /* Enable Container Queries */
+    container-type: size;
+    container-name: pinwheel;
+
+    /* Ensure it sits above the pole */
+    position: relative;
+    z-index: 2;
+
+    /* Fixed Gap Logic */
+    --gap: 8px;
+
+    /* 
+       NumberHive-style Scaling Logic:
+       - We need to fit 4 blocks + 3 gaps in BOTH width and height.
+       - Logic: Block Size = (Available Space - Gaps) / 4
+       - We compare Available Width (100cqi) and Available Height (100cqb)
+       - We take the MINIMUM to ensure it fits in the smallest dimension (Containment).
+       - Padding safety: Use 90cqi/90cqb to leave breathing room.
+    */
+    --available-w: calc(90cqi - 3 * var(--gap));
+    --available-h: calc(90cqb - 3 * var(--gap));
+
+    --blk: min(calc(var(--available-w) / 4), calc(var(--available-h) / 4));
+
+    /* 
+       Center Offsets
+       - Calculated from the CENTER (50%, 50%)
+       - Inner Block Center: 0.5 * Gap + 0.5 * Block
+       - Outer Wing Center: Inner_Center + Gap + Block = 1.5 * Gap + 1.5 * Block
+    */
+    --off1: calc(0.5 * var(--gap) + 0.5 * var(--blk));
+    --off2: calc(1.5 * var(--gap) + 1.5 * var(--blk));
+
+    /* No generic width/height constraints on wrapper, the blocks define the size */
+    width: 100%;
+    height: 100%;
+    display: flex;
+    /* Center the "virtual" grid content */
+    align-items: center;
+    justify-content: center;
+}
+
+.pinwheel-wrapper.finale-spin {
+    animation: fullSpin 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes fullSpin {
+    0% {
+        transform: rotate(0deg) scale(1);
+    }
+
+    100% {
+        transform: rotate(720deg) scale(1);
+    }
+}
+
+/* Center Operator */
+.center-circle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    /* Size relative to block size but distinct */
+    width: calc(0.6 * var(--blk));
+    height: calc(0.6 * var(--blk));
+    transform: translate(-50%, -50%);
+    background: #1e293b;
+    border-radius: 50%;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 900;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+
+    /* Scale text with container width */
+    font-size: 8cqw;
+}
+
+/* Blocks */
+.pw-block {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    border-radius: 12%;
+    box-shadow: 0 4px 0 rgba(0, 0, 0, 0.1);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+    /* Scale text with container width */
+    font-size: 8cqw;
+
+    /* Dynamic Size, Auto Height, Fixed Aspect Ratio */
+    width: var(--blk);
+    height: auto;
+    aspect-ratio: 1 / 1;
+}
+
+/* Inner Blocks - Dark Gray Body (Reverted) */
+.inner-block {
+    background: #334155;
+    color: white;
+    z-index: 5;
+    border: 2px solid #cbd5e1;
+}
+
+/* Inner 2x2 Positioning (No Colors) */
+.inner-tl {
+    top: calc(50% - var(--off1));
+    left: calc(50% - var(--off1));
+    transform: translate(-50%, -50%);
+}
+
+.inner-tr {
+    top: calc(50% - var(--off1));
+    left: calc(50% + var(--off1));
+    transform: translate(-50%, -50%);
+}
+
+.inner-bl {
+    top: calc(50% + var(--off1));
+    left: calc(50% - var(--off1));
+    transform: translate(-50%, -50%);
+}
+
+.inner-br {
+    top: calc(50% + var(--off1));
+    left: calc(50% + var(--off1));
+    transform: translate(-50%, -50%);
+}
+
+
+/* Outer Blocks (Wings) */
+.outer-block {
+    /* Default: Neutral/Dim until interaction */
+    background: #e2e8f0;
+    color: #94a3b8;
+    /* Faded text for unsolved */
+    border: 3px solid #cbd5e1;
+    z-index: 4;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Active State: EMPHASIZE BORDER, Light Tint BG */
+.outer-block.active {
+    background: var(--wing-bg);
+    /* User requested very light tint of border color */
+    /* Use the wing's specific color variable for the border */
+    border: 4px solid var(--wing-active-border);
+    color: var(--wing-active-border);
+    /* Color text too */
+    transform: translate(var(--tx), var(--ty)) scale(1.15);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    z-index: 20;
+    /* Highest priority */
+    filter: brightness(1.05);
+}
+
+/* Dimmed State (Inactive/Unsolved) */
+.outer-block.dimmed {
+    opacity: 0.6;
+    transform: translate(var(--tx), var(--ty)) scale(0.92);
+    filter: grayscale(0.6);
+    background: #f1f5f9;
+}
+
+/* Solved State: PRETTY COLORS (Filled) */
+.outer-block.solved {
+    background: var(--wing-active-bg);
+    border-color: var(--wing-active-border);
+    color: white;
+    /* Slam animation */
+    animation: slamDown 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 4px 0 rgba(0, 0, 0, 0.1);
+    opacity: 1;
+    transform: translate(var(--tx), var(--ty)) scale(1);
+    filter: none;
+}
+
+@keyframes slamDown {
+    0% {
+        transform: translate(var(--tx), var(--ty)) scale(1.25);
+    }
+
+    50% {
+        transform: translate(var(--tx), var(--ty)) scale(0.9);
+    }
+
+    100% {
+        transform: translate(var(--tx), var(--ty)) scale(1);
+    }
+}
+
+/* 
+   Spiral Layout Implementation (Fixed Gap Logic)
+   Center 2x2 use --off1
+   Outer Wings use mixed --off1 and --off2
+*/
+
+/* Inner 2x2 */
+.inner-tl {
+    top: calc(50% - var(--off1));
+    left: calc(50% - var(--off1));
+    transform: translate(-50%, -50%);
+}
+
+.inner-tr {
+    top: calc(50% - var(--off1));
+    left: calc(50% + var(--off1));
+    transform: translate(-50%, -50%);
+}
+
+.inner-bl {
+    top: calc(50% + var(--off1));
+    left: calc(50% - var(--off1));
+    transform: translate(-50%, -50%);
+}
+
+.inner-br {
+    top: calc(50% + var(--off1));
+    left: calc(50% + var(--off1));
+    transform: translate(-50%, -50%);
+}
+
+/* 
+   Outer Wings - Colorful Definitions
+   Top: Rose/Red
+   Right: Amber/Yellow
+   Bottom: Emerald/Green
+   Left: Sky/Blue
+*/
+
+.outer-top {
+    top: calc(50% - var(--off2));
+    left: calc(50% - var(--off1));
+    /* Above TL */
+    --tx: -50%;
+    --ty: -50%;
+    transform: translate(-50%, -50%);
+
+    /* Colors */
+    --wing-bg: #f3e8ff;
+    /* Violet-100 */
+    --wing-text: #7e22ce;
+    /* Violet-700 */
+    --wing-border: #d8b4fe;
+    /* Violet-300 */
+    --wing-active-bg: #a855f7;
+    /* Violet-500 */
+    --wing-active-border: #7e22ce;
+}
+
+.outer-right {
+    top: calc(50% - var(--off1));
+    /* Right of TR */
+    left: calc(50% + var(--off2));
+    --tx: -50%;
+    --ty: -50%;
+    transform: translate(-50%, -50%);
+
+    /* Colors */
+    --wing-bg: #fef3c7;
+    /* Amber-100 */
+    --wing-text: #b45309;
+    /* Amber-700 */
+    --wing-border: #fcd34d;
+    /* Amber-300 */
+    --wing-active-bg: #f59e0b;
+    /* Amber-500 */
+    --wing-active-border: #b45309;
+}
+
+.outer-left {
+    top: calc(50% + var(--off1));
+    /* Left of BL */
+    left: calc(50% - var(--off2));
+    --tx: -50%;
+    --ty: -50%;
+    transform: translate(-50%, -50%);
+
+    /* Colors */
+    --wing-bg: #e0f2fe;
+    /* Sky-100 */
+    --wing-text: #0369a1;
+    /* Sky-700 */
+    --wing-border: #7dd3fc;
+    /* Sky-300 */
+    --wing-active-bg: #0ea5e9;
+    /* Sky-500 */
+    --wing-active-border: #0369a1;
+}
+
+.outer-bottom {
+    top: calc(50% + var(--off2));
+    /* Below BR */
+    left: calc(50% + var(--off1));
+    --tx: -50%;
+    --ty: -50%;
+    transform: translate(-50%, -50%);
+
+    /* Colors */
+    --wing-bg: #dcfce7;
+    /* Emerald-100 */
+    --wing-text: #15803d;
+    /* Emerald-700 */
+    --wing-border: #86efac;
+    /* Emerald-300 */
+    --wing-active-bg: #10b981;
+    /* Emerald-500 */
+    --wing-active-border: #047857;
+}
+
+/* Options Area (Bottom) - Matching NumberBalance style .options-area */
+.pinwheel-options {
+    width: 100%;
+    padding: 1rem;
+    background: linear-gradient(180deg, #eff6ff 0%, #dbeafe 100%);
+    border: 2px solid #bfdbfe;
+    backdrop-filter: blur(8px);
+    border-radius: 0.75rem;
+    /* Rounded Rectangle */
+    margin-top: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    min-height: 120px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+/* Option Buttons - Reverted to Original Wide Style */
+.pw-option-btn {
+    flex: 1;
+    max-width: 140px;
+    height: 80px;
+    background: white;
+    border: 3px solid #cbd5e1;
+    border-radius: 1rem;
+    padding: 0;
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: #334155;
+    cursor: pointer;
+    box-shadow: 0 6px 0 #94a3b8;
+    transition: all 0.1s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pw-option-btn:active {
+    transform: translateY(4px);
+    box-shadow: 0 0 0 #94a3b8;
+}
+
+.pw-option-btn:disabled,
+.pw-option-btn.disabled {
+    background: #f1f5f9;
+    border-color: #e2e8f0;
+    color: #cbd5e1;
+    box-shadow: none;
+    transform: translateY(4px);
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+/* Mobile Responsiveness adjustments */
+@media (max-width: 600px) {
+    .pinwheel-wrapper {
+        width: min(90vw, 55vh);
+    }
+
+    .pw-option-btn {
+        height: 70px;
+        font-size: 1.8rem;
+    }
+}

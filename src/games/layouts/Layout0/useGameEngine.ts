@@ -110,48 +110,56 @@ export const useGameEngine = (config: GameEngineConfig = {}) => {
         setStats({ correct: 0, wrong: 0 });
     }, [initialLives, initialTime]);
 
-    const submitAnswer = useCallback((isCorrect: boolean) => {
+    const submitAnswer = useCallback((isCorrect: boolean, options: { skipStreak?: boolean; skipDifficulty?: boolean; skipFeedback?: boolean } = {}) => {
         const now = Date.now();
         const responseTime = now - questionStartTime;
 
         if (isCorrect) {
-            setGameState('correct');
+            // Update State (unless skipped)
+            if (!options.skipFeedback) {
+                setGameState('correct');
+            }
+
             setStats(prev => ({ ...prev, correct: prev.correct + 1 }));
-            const newStreak = streak + 1;
-            setStreak(newStreak);
-            setBestStreak(prev => Math.max(prev, newStreak));
+
+            let newStreak = streak;
+            if (!options.skipStreak) {
+                newStreak = streak + 1;
+                setStreak(newStreak);
+                setBestStreak(prev => Math.max(prev, newStreak));
+            }
 
             // Difficulty Adjustment
-            const newConsecutiveCorrect = consecutiveCorrect + 1;
-            // Match MathArchery: Update every 5 consecutive correct answers
-            if (difficultyLevel < maxDifficulty && newConsecutiveCorrect >= 5) {
-                setDifficultyLevel(prev => prev + 1);
-                setConsecutiveCorrect(0);
-            } else {
-                setConsecutiveCorrect(newConsecutiveCorrect);
+            // Only count towards progression if difficulty update isn't skipped
+            let newConsecutiveCorrect = consecutiveCorrect;
+            if (!options.skipDifficulty) {
+                newConsecutiveCorrect = consecutiveCorrect + 1;
+                // Match MathArchery: Update every 5 consecutive correct answers
+                if (difficultyLevel < maxDifficulty && newConsecutiveCorrect >= 5) {
+                    setDifficultyLevel(prev => prev + 1);
+                    setConsecutiveCorrect(0);
+                } else {
+                    setConsecutiveCorrect(newConsecutiveCorrect);
+                }
             }
             setConsecutiveWrong(0);
 
             // Score Calculation
             let timeBonus = Math.max(0, 10 - Math.floor(responseTime / 1000)) * 5;
-            // Match MathArchery: 10 points per streak level (was 25)
+            // Streak Bonus - Use current streak (which might be unchanged if skipped)
             let streakBonus = streak * 10;
             let baseScore = difficultyLevel * 50;
             setScore(prev => prev + baseScore + timeBonus + streakBonus);
 
-            // Time Bonus - DISABLED requested by user
-            // const bonusTimeMs = difficultyLevel * 2000;
-            // setDeadline(prev => prev ? Math.min(prev + bonusTimeMs, Date.now() + 60000) : null);
-
             // Achievements
             if (!achievements.firstCorrect) setAchievements(prev => ({ ...prev, firstCorrect: true }));
             if (responseTime < 3000) setAchievements(prev => ({ ...prev, lightningSpeed: true }));
-            if (newStreak >= 5) setAchievements(prev => ({ ...prev, streakMaster: true }));
+            if (!options.skipStreak && newStreak >= 5) setAchievements(prev => ({ ...prev, streakMaster: true }));
 
         } else {
             setGameState('wrong');
             setStats(prev => ({ ...prev, wrong: prev.wrong + 1 }));
-            setStreak(0);
+            setStreak(0); // Wrong answer always resets streak? Yes.
             setConsecutiveCorrect(0);
             setConsecutiveWrong(prev => prev + 1);
             setLives(prev => {
@@ -171,11 +179,17 @@ export const useGameEngine = (config: GameEngineConfig = {}) => {
         }
 
         // Reset for next question (if not gameover)
+        // Skip restart timer if feedback was skipped (continuous play)
         if (lives > (isCorrect ? 0 : 1)) {
-            setTimeout(() => {
-                setGameState('playing');
+            if (isCorrect && options.skipFeedback) {
+                // Just reset start time for next question tracking
                 setQuestionStartTime(Date.now());
-            }, 1500);
+            } else {
+                setTimeout(() => {
+                    setGameState('playing');
+                    setQuestionStartTime(Date.now());
+                }, 1500);
+            }
         }
 
     }, [streak, difficultyLevel, consecutiveCorrect, consecutiveWrong, achievements, maxDifficulty, lives, questionStartTime]);

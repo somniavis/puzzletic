@@ -103,7 +103,6 @@ export const useTenFrameCountLogic = () => {
             // 2. Penalties
             // engine.updateLives(false) -> decrements life, checks gameover. 
             // NOTE: It does NOT set gameState='wrong' unless lives<=0. So this is safe!
-            engine.updateLives(false);
 
             // 3. Reset Streak
             engine.updateStreak(false);

@@ -267,8 +267,8 @@ export const Layout1: React.FC<Layout1Props> = ({
                                 </div>
                             </div>
                             <div className="rewards-grid-split">
-                                <div className="reward-card-split xp"><span className="reward-icon">✨</span><span className="reward-amount text-purple">+{earnedXp}</span><span className="reward-label">XP</span></div>
-                                <div className="reward-card-split gro"><span className="reward-icon">💰</span><span className="reward-amount text-yellow">+{earnedGro}</span><span className="reward-label">GRO</span></div>
+                                <div className="reward-card-split xp"><span className="reward-icon">✨</span><span className="reward-amount text-purple">+{earnedXp}</span><span className="reward-label text-purple">XP</span></div>
+                                <div className="reward-card-split gro"><span className="reward-icon">💰</span><span className="reward-amount text-yellow">+{earnedGro}</span><span className="reward-label text-yellow">GRO</span></div>
                             </div>
                         </div>
                     </div>
