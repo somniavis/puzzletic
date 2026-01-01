@@ -59,3 +59,16 @@
     transform-origin: 84px 93px;
     will-change: transform;
 }
+
+/* Accessibility & Low Power Mode Support */
+@media (prefers-reduced-motion: reduce) {
+
+    .blob-out-top,
+    .blob-in-top,
+    .blob-out-bottom,
+    .blob-in-bottom {
+        animation: none;
+        will-change: auto;
+        /* Save memory */
+    }
+}
