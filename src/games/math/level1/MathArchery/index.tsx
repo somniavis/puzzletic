@@ -4,12 +4,15 @@ import { Layout3 } from '../../../layouts/Layout3';
 import { useMathArcheryLogic } from './GameLogic';
 import manifest_en from './locales/en';
 import './MathArchery.css';
+import { BlobBackground } from '../../components/BlobBackground';
 import type { GameManifest } from '../../../types';
 import type { PowerUpBtnProps } from '../../../../components/Game/PowerUpBtn';
 
 interface MathArcheryProps {
+    // ... no changes to props ...
     onExit: () => void;
 }
+
 
 // Reusable Arrow Component
 const ArrowSVG = ({ style }: { style: React.CSSProperties }) => (
@@ -146,7 +149,9 @@ export const MathArchery: React.FC<MathArcheryProps> = ({ onExit }) => {
                 { icon: '🔢', title: t('games.math-archery.howToPlay.rule.title'), description: t('games.math-archery.howToPlay.rule.desc') }
             ]}
         >
+            <BlobBackground />
             <div className="math-archery-container"
+                style={{ zIndex: 10 }} /* Ensure above background */
                 onPointerDown={handlePointerDown}
                 onPointerMove={handlePointerMove}
                 onPointerUp={handlePointerUp}

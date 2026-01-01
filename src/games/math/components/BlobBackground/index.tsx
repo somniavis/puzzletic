@@ -1,7 +1,7 @@
 import React from 'react';
 import './BlobBackground.css';
 
-export const BlobBackground: React.FC = () => {
+export const BlobBackground = React.memo(() => {
     return (
         <div className="blob-bg-container">
             <svg
@@ -23,4 +23,4 @@ export const BlobBackground: React.FC = () => {
             </svg>
         </div>
     );
-};
+});

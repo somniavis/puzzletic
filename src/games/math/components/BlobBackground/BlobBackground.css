@@ -11,6 +11,11 @@
     pointer-events: none;
     /* Maintain the soft lavender base of the game */
     background-color: #faf5ff;
+
+    /* Optimization: Isolate painting and layout */
+    contain: strict;
+    /* Optimization: Hardware acceleration hint */
+    transform: translate3d(0, 0, 0);
 }
 
 .blob-svg {

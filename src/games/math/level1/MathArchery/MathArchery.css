@@ -4,7 +4,8 @@
     height: 100%;
     position: relative;
     overflow: hidden;
-    background: linear-gradient(to bottom, #f0f9ff, #e0f2fe);
+    background: transparent;
+    /* Updated to use BlobBackground */
     touch-action: none;
     /* Prevent scroll on drag */
 }
