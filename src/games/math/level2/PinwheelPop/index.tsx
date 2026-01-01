@@ -77,9 +77,10 @@ export const MathPinwheel: React.FC<MathPinwheelProps> = ({ onExit }) => {
                 { icon: '✨', title: t('games.pinwheel-pop.howToPlay.step2.title'), description: t('games.pinwheel-pop.howToPlay.step2.desc') },
             ]}
             onExit={onExit}
+            className="pinwheel-layout"
         >
             <div className="pinwheel-pop-container">
-                {/* Background Decor */}
+                {/* Background Decor (Inside Game Area) */}
                 <div className="bg-decor">
                     <div className="cloud cloud-1">☁️</div>
                     <div className="cloud cloud-2">☁️</div>

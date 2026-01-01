@@ -27,6 +27,7 @@ interface Layout2Props {
     children: React.ReactNode;
     // Props for Layout2 - PowerUps only, no Target
     powerUps: PowerUpBtnProps[];
+    className?: string; // Allow custom styling wrapper
 }
 
 export const Layout2: React.FC<Layout2Props> = ({
@@ -38,7 +39,8 @@ export const Layout2: React.FC<Layout2Props> = ({
     engine,
     onExit,
     children,
-    powerUps
+    powerUps,
+    className
 }) => {
     const {
         gameState, score, lives, timeLeft,
@@ -288,7 +290,7 @@ export const Layout2: React.FC<Layout2Props> = ({
     }
 
     return (
-        <div className="layout2-container">
+        <div className={`layout2-container ${className || ''}`}>
             <header className="layout2-header">
                 <button className="icon-btn" onClick={() => { playButtonSound(); onExit(); }} style={{ fontSize: '1.5rem' }}>🔙</button>
                 <div className="header-title">{title}</div>

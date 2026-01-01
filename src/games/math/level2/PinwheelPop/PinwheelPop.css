@@ -11,11 +11,18 @@
     position: relative;
     padding: 0;
     overflow: hidden;
-    background: linear-gradient(135deg, #caf0f8 0%, #dbeafe 100%);
-    border-radius: 0.75rem;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    /* Optional: Adds subtle depth */
+    /* Background handled by Layout override */
 }
+
+/* Layout Overrides for Pinwheel (Window to Sky) */
+.pinwheel-layout .layout2-game-area {
+    background: linear-gradient(135deg, #caf0f8 0%, #dbeafe 100%) !important;
+    border-color: #7dd3fc !important;
+    /* Sky Blue Border */
+    box-shadow: 0 6px 0 #38bdf8, 0 10px 15px rgba(0, 0, 0, 0.1) !important;
+}
+
+
 
 /* Background Decor */
 .bg-decor {

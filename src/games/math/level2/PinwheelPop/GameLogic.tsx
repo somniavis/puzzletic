@@ -53,42 +53,29 @@ export const usePinwheelLogic = () => {
         while (set.size < 3) {
             let distractor = correct + (Math.random() > 0.5 ? 10 : -10);
             if (Math.random() > 0.7) distractor = correct + (Math.random() > 0.5 ? 1 : -1);
-            if (distractor > 0 && distractor !== correct) set.add(distractor);
-            else set.add(correct + Math.floor(Math.random() * 20 - 10)); // Fallback
+
+            // Ensure positive
+            if (distractor <= 0) distractor = Math.abs(distractor) + 1; // Flip to positive
+            if (distractor === correct || distractor <= 0) distractor = correct + Math.floor(Math.random() * 10) + 1; // Fallback to definitely positive
+
+            set.add(distractor);
         }
-        return Array.from(set).sort(() => Math.random() - 0.5);
+        return Array.from(set).sort((a, b) => a - b); // Sort ascending (optional for number line feel) or random
     };
 
     const generateRound = useCallback((difficulty: number) => {
         let type: PinwheelProblemType = 'tens_ones_add';
-        let operator: '+' | '-' = '+';
+        // Revert to Addition Only
+        const operator: '+' | '-' = '+';
 
         // Difficulty mapping
         if (difficulty === 1) type = 'tens_ones_add';
         else if (difficulty === 2) type = 'tens_tens_add';
         else if (difficulty >= 3) {
-            // Mixed or Subtraction
-            operator = Math.random() > 0.5 ? '-' : '+';
-            type = 'tens_tens_sub';
+            type = 'tens_tens_add';
         }
 
         // Generate 4 Inner Numbers
-        // Important: For subtraction, simplistic random might create negative results.
-        // But design requires ONE center operator for ALL 4 wings.
-        // So we must ensure A op B is valid for ALL pairs if operator is '-'.
-        // Pairs: (0,1), (1,2), (2,3), (3,0).
-        // It's circular. It's mathematically hard to satisfy A>B, B>C, C>D, D>A strictly for positive integers (impossible actually, 20>10>5>20 NO).
-        // Solution: If operator is '-', we use ABS difference logic? Or ensure center is '+' for Level 2 "Tens+Tens"?
-        // User requested: "Tens + Ones", "Tens + Tens". No specific "Tens - Tens" hard requirement for Level 2? 
-        // Docs say "Tens - Tens" is Level 3.
-        // Let's stick to ADDITION for now to guarantee no negatives. 
-        // Or if '-', we swap operands in the logic (abs difference).
-
-        if (operator === '-') {
-            // Force Addition if we can't guarantee positivity easily in a cycle
-            operator = '+';
-        }
-
         const inners = [
             generateNumber(type),
             generateNumber(type),
@@ -96,7 +83,9 @@ export const usePinwheelLogic = () => {
             generateNumber(type)
         ];
 
-        // Targets: 
+
+
+        // Determine correct answer for the FIRST target stage (0)
         // Stage 0: Top (0 & 1)
         const targetA = inners[0];
         const targetB = inners[1];
