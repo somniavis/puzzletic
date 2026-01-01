@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { startBackgroundMusic, stopBackgroundMusic } from '../utils/sound';
+import { useAuth } from './AuthContext';
 
 interface SoundSettings {
   bgmEnabled: boolean;
@@ -17,6 +18,8 @@ const SoundContext = createContext<SoundContextType | undefined>(undefined);
 const STORAGE_KEY = 'puzzleletic_sound_settings';
 
 export const SoundProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { user } = useAuth(); // Access user state for BGM control
+
   const [settings, setSettings] = useState<SoundSettings>(() => {
     // Load from localStorage
     const saved = localStorage.getItem(STORAGE_KEY);
@@ -39,23 +42,22 @@ export const SoundProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
   }, [settings]);
 
-  // BGM 설정이 변경될 때 배경음 제어
+  // BGM control: depends on settings AND user login status
   useEffect(() => {
-    // 타이머를 사용하여 프리로드가 완료될 시간을 확보
     const timer = setTimeout(() => {
-      if (settings.bgmEnabled) {
+      // Only play if enabled AND user is logged in
+      if (settings.bgmEnabled && user) {
         startBackgroundMusic();
       } else {
         stopBackgroundMusic();
       }
-    }, 500); // 500ms 후 재생 시도
+    }, 500);
 
-    // cleanup
     return () => {
       clearTimeout(timer);
-      stopBackgroundMusic();
+      stopBackgroundMusic(); // Cleanup on unmount or change
     };
-  }, [settings.bgmEnabled]);
+  }, [settings.bgmEnabled, user]); // Re-run when user logs in/out
 
   const toggleBgm = () => {
     setSettings(prev => ({ ...prev, bgmEnabled: !prev.bgmEnabled }));

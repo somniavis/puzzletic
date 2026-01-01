@@ -280,13 +280,13 @@ function AppContent() {
 function App() {
   return (
     <BrowserRouter>
-      <SoundProvider>
-        <AuthProvider>
+      <AuthProvider>
+        <SoundProvider>
           <NurturingProvider>
             <AppContent />
           </NurturingProvider>
-        </AuthProvider>
-      </SoundProvider>
+        </SoundProvider>
+      </AuthProvider>
     </BrowserRouter>
   )
 }

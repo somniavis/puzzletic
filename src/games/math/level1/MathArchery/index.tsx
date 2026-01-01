@@ -4,7 +4,7 @@ import { Layout3 } from '../../../layouts/Layout3';
 import { useMathArcheryLogic } from './GameLogic';
 import manifest_en from './locales/en';
 import './MathArchery.css';
-import { BlobBackground } from '../../components/BlobBackground';
+import { RisingShapesBackground } from '../../components/RisingShapesBackground';
 import type { GameManifest } from '../../../types';
 import type { PowerUpBtnProps } from '../../../../components/Game/PowerUpBtn';
 
@@ -111,7 +111,7 @@ export const MathArchery: React.FC<MathArcheryProps> = ({ onExit }) => {
     const endX = 110;
     const midX = 60;
 
-    let stringPath = `M ${startX} ${tipY} L ${endX} ${tipY}`;
+    let stringPath = `M ${startX} ${tipY} L ${endX} ${tipY} `;
     let arrowRotation = -90; // Up
 
     if (dragStart && dragCurrent) {
@@ -122,7 +122,7 @@ export const MathArchery: React.FC<MathArcheryProps> = ({ onExit }) => {
         const pullX = Math.max(-50, Math.min(50, dx / 2));
         const pullY = Math.max(0, Math.min(80, dy / 2)); // Pull down positive
 
-        stringPath = `M ${startX} ${tipY} Q ${midX + pullX} ${tipY + pullY} ${endX} ${tipY}`;
+        stringPath = `M ${startX} ${tipY} Q ${midX + pullX} ${tipY + pullY} ${endX} ${tipY} `;
 
         // Arrow rotation
         arrowRotation = Math.atan2(-dy, -dx) * (180 / Math.PI);
@@ -149,78 +149,80 @@ export const MathArchery: React.FC<MathArcheryProps> = ({ onExit }) => {
                 { icon: '🔢', title: t('games.math-archery.howToPlay.rule.title'), description: t('games.math-archery.howToPlay.rule.desc') }
             ]}
         >
-            <BlobBackground />
-            <div className="math-archery-container"
-                style={{ zIndex: 10 }} /* Ensure above background */
-                onPointerDown={handlePointerDown}
-                onPointerMove={handlePointerMove}
-                onPointerUp={handlePointerUp}
-                onPointerCancel={handlePointerUp}
-                onPointerLeave={handlePointerUp}
-            >
-                {/* Targets */}
-                {currentProblem && currentProblem.options.map(opt => (
-                    <div key={opt.id} className="archery-target" style={{ left: `${opt.x}%`, top: `${opt.y}%` }}>
-                        <span className="archery-target-text">{opt.value}</span>
-                    </div>
-                ))}
+            <>
+                <RisingShapesBackground />
+                <div className="math-archery-container"
+                    style={{ zIndex: 10, position: 'relative' }} /* Ensure above background */
+                    onPointerDown={handlePointerDown}
+                    onPointerMove={handlePointerMove}
+                    onPointerUp={handlePointerUp}
+                    onPointerCancel={handlePointerUp}
+                    onPointerLeave={handlePointerUp}
+                >
+                    {/* Targets */}
+                    {currentProblem && currentProblem.options.map(opt => (
+                        <div key={opt.id} className="archery-target" style={{ left: `${opt.x}%`, top: `${opt.y}%` }}>
+                            <span className="archery-target-text">{opt.value}</span>
+                        </div>
+                    ))}
 
-                {/* Flying Arrow */}
-                {arrow && arrow.active && (
-                    <ArrowSVG
-                        style={{
-                            position: 'absolute',
-                            left: `${arrow.x}%`,
-                            top: `${arrow.y}%`,
-                            transform: `translate(-50%, -50%) rotate(${arrow.angle + 90}deg)`,
-                            zIndex: 15,
-                            pointerEvents: 'none'
-                        }}
-                    />
-                )}
+                    {/* Flying Arrow */}
+                    {arrow && arrow.active && (
+                        <ArrowSVG
+                            style={{
+                                position: 'absolute',
+                                left: `${arrow.x}%`,
+                                top: `${arrow.y}%`,
+                                transform: `translate(-50%, -50%) rotate(${arrow.angle + 90}deg)`,
+                                zIndex: 15,
+                                pointerEvents: 'none'
+                            }}
+                        />
+                    )}
 
-                {/* Bow & Arrow (Visual) */}
-                <div className="bow-control-area">
-                    <div className="bow-visual">
-                        {/* Bow Body and String SVG */}
-                        <svg width="120" height="120" style={{ position: 'absolute', top: 0, left: 0, overflow: 'visible' }}>
-                            {/* Cupid Bow Shape */}
-                            {/* Tips (10, 80) & (110, 80) */}
-                            {/* Handle (60, 30) */}
-                            {/* Curve: Tip -> Curve Out -> Curve In -> Handle -> ... */}
-                            <path
-                                d="M 10 80 
+                    {/* Bow & Arrow (Visual) */}
+                    <div className="bow-control-area">
+                        <div className="bow-visual">
+                            {/* Bow Body and String SVG */}
+                            <svg width="120" height="120" style={{ position: 'absolute', top: 0, left: 0, overflow: 'visible' }}>
+                                {/* Cupid Bow Shape */}
+                                {/* Tips (10, 80) & (110, 80) */}
+                                {/* Handle (60, 30) */}
+                                {/* Curve: Tip -> Curve Out -> Curve In -> Handle -> ... */}
+                                <path
+                                    d="M 10 80 
                                    C 0 60, 30 50, 45 40 
                                    Q 60 20, 75 40 
                                    C 90 50, 120 60, 110 80"
-                                fill="none"
-                                stroke="#854d0e"
-                                strokeWidth="8"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                            />
-                            {/* String */}
-                            <path d={stringPath} stroke="#cbd5e1" strokeWidth="2" fill="none" />
-                        </svg>
+                                    fill="none"
+                                    stroke="#854d0e"
+                                    strokeWidth="8"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                />
+                                {/* String */}
+                                <path d={stringPath} stroke="#cbd5e1" strokeWidth="2" fill="none" />
+                            </svg>
 
-                        {/* Resting/Pulled Arrow */}
-                        {(!arrow || !arrow.active) && (
-                            <ArrowSVG
-                                style={{
-                                    position: 'absolute',
-                                    // Start Arrow Nock at String Midpoint
-                                    // Base Y = 80 (String line). Arrow Height = 80. Center = 40.
-                                    // To place Nock (80) at String (80), Center must be at 40.
-                                    top: 40 + (dragCurrent && dragStart ? Math.min(60, (dragCurrent.y - dragStart.y) / 2) : 0),
-                                    left: '50%',
-                                    transform: `translate(-50%, -50%) rotate(${arrowRotation + 90}deg)`,
-                                    pointerEvents: 'none'
-                                }}
-                            />
-                        )}
+                            {/* Resting/Pulled Arrow */}
+                            {(!arrow || !arrow.active) && (
+                                <ArrowSVG
+                                    style={{
+                                        position: 'absolute',
+                                        // Start Arrow Nock at String Midpoint
+                                        // Base Y = 80 (String line). Arrow Height = 80. Center = 40.
+                                        // To place Nock (80) at String (80), Center must be at 40.
+                                        top: 40 + (dragCurrent && dragStart ? Math.min(60, (dragCurrent.y - dragStart.y) / 2) : 0),
+                                        left: '50%',
+                                        transform: `translate(-50%, -50%) rotate(${arrowRotation + 90}deg)`,
+                                        pointerEvents: 'none'
+                                    }}
+                                />
+                            )}
+                        </div>
                     </div>
                 </div>
-            </div>
+            </>
         </Layout3>
     );
 };
