@@ -11,8 +11,63 @@
     position: relative;
     padding: 0;
     overflow: hidden;
-    background: #f1f5f9;
-    /* Slate-100 background */
+    background: linear-gradient(135deg, #caf0f8 0%, #dbeafe 100%);
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    /* Optional: Adds subtle depth */
+}
+
+/* Background Decor */
+.bg-decor {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.cloud {
+    position: absolute;
+    opacity: 0.3;
+    filter: blur(1px);
+    animation: floatCloud 20s infinite ease-in-out alternate;
+}
+
+.cloud-1 {
+    top: 5%;
+    left: 5%;
+    font-size: 5rem;
+    animation-duration: 25s;
+}
+
+.cloud-2 {
+    top: 15%;
+    right: -5%;
+    font-size: 8rem;
+    animation-duration: 32s;
+    animation-delay: -5s;
+}
+
+.cloud-3 {
+    bottom: 25%;
+    left: -10%;
+    font-size: 6rem;
+    opacity: 0.25;
+    animation-duration: 28s;
+    animation-delay: -10s;
+}
+
+@keyframes floatCloud {
+    from {
+        transform: translateX(0) translateY(0);
+    }
+
+    to {
+        transform: translateX(30px) translateY(10px);
+    }
 }
 
 /* Visualization Area (Middle) */
@@ -438,6 +493,42 @@
     transform: translateY(4px);
     cursor: not-allowed;
     opacity: 0.6;
+}
+
+/* Wind Effect for Finale */
+.wind-effect {
+    position: absolute;
+    bottom: 5%;
+    right: 5%;
+    font-size: 6rem;
+    z-index: 50;
+    /* Flip to blow left towards center */
+    transform: scaleX(-1) rotate(-15deg);
+    animation: windBlow 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    pointer-events: none;
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.2));
+}
+
+@keyframes windBlow {
+    0% {
+        opacity: 0;
+        transform: scaleX(-1) rotate(-15deg) translate(-20px, 20px) scale(0.5);
+    }
+
+    20% {
+        opacity: 1;
+        transform: scaleX(-1) rotate(-15deg) translate(0, 0) scale(1.2);
+    }
+
+    80% {
+        opacity: 1;
+        transform: scaleX(-1) rotate(-15deg) translate(10px, -10px) scale(1);
+    }
+
+    100% {
+        opacity: 0;
+        transform: scaleX(-1) rotate(-15deg) translate(20px, -20px) scale(0.8);
+    }
 }
 
 /* Mobile Responsiveness adjustments */

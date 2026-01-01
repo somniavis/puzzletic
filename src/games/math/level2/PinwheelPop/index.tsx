@@ -79,6 +79,13 @@ export const MathPinwheel: React.FC<MathPinwheelProps> = ({ onExit }) => {
             onExit={onExit}
         >
             <div className="pinwheel-pop-container">
+                {/* Background Decor */}
+                <div className="bg-decor">
+                    <div className="cloud cloud-1">☁️</div>
+                    <div className="cloud cloud-2">☁️</div>
+                    <div className="cloud cloud-3">☁️</div>
+                </div>
+
                 {/* Pinwheel Visualization Area */}
                 <div className="pinwheel-vis-area">
                     <div className={`pinwheel-wrapper ${finalSpin ? 'finale-spin' : ''}`}>
@@ -116,6 +123,13 @@ export const MathPinwheel: React.FC<MathPinwheelProps> = ({ onExit }) => {
                             {outerAnswers[2] ?? '?'}
                         </div>
                     </div>
+
+                    {/* Wind Effect: Appears during finale spin */}
+                    {finalSpin && (
+                        <div className="wind-effect">
+                            🌬️
+                        </div>
+                    )}
                 </div>
 
                 {/* Answer Options */}
