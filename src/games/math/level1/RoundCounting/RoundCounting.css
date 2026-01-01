@@ -3,10 +3,11 @@
 /* Layout Override for Round Counting */
 .round-counting-theme .layout3-game-area {
     /* Premium Geometric: Diamond (Rhombus) Grid */
-    background-color: #ffffff;
+    background-color: #faf5ff;
+    /* Soft Lavender Tint */
     background-image:
-        repeating-linear-gradient(45deg, #f1f5f9 0, #f1f5f9 1px, transparent 0, transparent 15px),
-        repeating-linear-gradient(-45deg, #f1f5f9 0, #f1f5f9 1px, transparent 0, transparent 15px);
+        repeating-linear-gradient(45deg, #f7f0ff 0, #f7f0ff 1px, transparent 0, transparent 15px),
+        repeating-linear-gradient(-45deg, #f7f0ff 0, #f7f0ff 1px, transparent 0, transparent 15px);
     background-size: auto;
     background-position: 0 0;
 }
