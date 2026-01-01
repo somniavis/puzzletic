@@ -123,7 +123,8 @@ export const useGameEngine = (config: GameEngineConfig = {}) => {
 
             // Difficulty Adjustment
             const newConsecutiveCorrect = consecutiveCorrect + 1;
-            if (difficultyLevel < maxDifficulty && newConsecutiveCorrect >= 3) {
+            // Match MathArchery: Update every 5 consecutive correct answers
+            if (difficultyLevel < maxDifficulty && newConsecutiveCorrect >= 5) {
                 setDifficultyLevel(prev => prev + 1);
                 setConsecutiveCorrect(0);
             } else {
@@ -133,7 +134,8 @@ export const useGameEngine = (config: GameEngineConfig = {}) => {
 
             // Score Calculation
             let timeBonus = Math.max(0, 10 - Math.floor(responseTime / 1000)) * 5;
-            let streakBonus = streak * 25;
+            // Match MathArchery: 10 points per streak level (was 25)
+            let streakBonus = streak * 10;
             let baseScore = difficultyLevel * 50;
             setScore(prev => prev + baseScore + timeBonus + streakBonus);
 
