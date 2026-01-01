@@ -49,10 +49,13 @@
     /* Allow shrinking */
     min-height: 0;
 
+    /* STRICT CENTERING */
     align-items: center;
     justify-items: center;
+    align-content: center;
+    /* Ensure grid tracks are centered if height > content */
 
-    /* DYNAMIC PADDING & GAP: Scale with height to prevent alignment issues */
+    /* DYNAMIC PADDING & GAP */
     padding: min(0.3rem, 0.5cqh);
     gap: min(0.2rem, 0.3cqh);
 
@@ -69,12 +72,20 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    /* 
-       SCALING LOGIC v4:
-       - Reduced Height Limit to 6cqh.
-    */
+
+    /* SCALING LOGIC v5: Strict Centering Fix */
     font-size: min(2.5rem, 6.5cqw, 6cqh);
-    line-height: 1;
+
+    /* Remove line-height influence on centering */
+    line-height: normal;
+    /* Or specifically 0 for emojis if they have baseline issues, but normal acts better with flex usually.
+       Actually, `line-height: 1` can push baseline down. `0` centers the glyph bounding box often.
+       Let's try 1 but relies on Flexbox. Flexbox ignores line-height for alignment IF height is set? 
+       No, line-height affects the content size.
+       Let's use a trick: `line-height: 0` for emoji-only containers to kill baseline offset.
+    */
+    line-height: 0;
+
     user-select: none;
 
     width: 100%;
