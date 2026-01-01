@@ -24,15 +24,19 @@ export const PlayPage: React.FC<PlayPageProps> = () => {
     const { t, i18n } = useTranslation();
     const { setGameDifficulty, pauseTick, resumeTick } = useNurturing();
 
-    const [selectedCategory, setSelectedCategory] = useState<GameCategory>('math');
-    const [selectedDifficulty, setSelectedDifficulty] = useState<GameDifficulty>(1);
+    const [selectedCategory, setSelectedCategory] = useState<GameCategory>(() => {
+        return (sessionStorage.getItem('play_category') as GameCategory) || 'math';
+    });
+    const [selectedDifficulty, setSelectedDifficulty] = useState<GameDifficulty>(() => {
+        const stored = sessionStorage.getItem('play_difficulty');
+        return stored ? parseInt(stored, 10) as GameDifficulty : 1;
+    });
     const [isControlsOpen, setIsControlsOpen] = useState(true);
 
     // Derive active game from URL
     const activeGame = gameId ? getGameById(gameId) : null;
 
     // Set Game Difficulty when entering Play Page or changing difficulty, unset when leaving
-    // Set Game Difficulty and Pause Tick when entering Play Page
     useEffect(() => {
         setGameDifficulty(selectedDifficulty);
         pauseTick(); // Pause the game loop
@@ -68,11 +72,13 @@ export const PlayPage: React.FC<PlayPageProps> = () => {
     const handleCategorySelect = (cat: GameCategory) => {
         playButtonSound();
         setSelectedCategory(cat);
+        sessionStorage.setItem('play_category', cat);
     };
 
     const handleDifficultySelect = (level: GameDifficulty) => {
         playButtonSound();
         setSelectedDifficulty(level);
+        sessionStorage.setItem('play_difficulty', level.toString());
     };
 
     const handlePlayClick = (game: GameManifest) => {
