@@ -28,10 +28,12 @@
     height: 100%;
     display: flex;
     flex-direction: column;
-    /* Use standard small gap, but allow flex compression */
-    gap: 0.5vh;
+    /* Gap scales with height but has a reasonable base max */
+    gap: min(0.5rem, 1cqh);
     align-items: center;
+    /* Center vertically by default */
     justify-content: center;
+
     overflow: hidden;
     padding: 0.25rem;
     container-type: size;
@@ -42,15 +44,12 @@
     grid-template-columns: repeat(10, 1fr);
     width: 100%;
 
-    /* FLEX MODIFICATION: Force rows to share space equally */
-    flex: 1;
+    /* NATURAL SIZING: Use content size (auto) instead of forced expansion */
+    flex: 0 1 auto;
+
+    /* CRITICAL: Allow shrinking if container gets tight */
     min-height: 0;
-    /* Critical: Allows row to shrink below content size */
 
-    /* Don't let them get HUGE if there are few rows */
-    max-height: 12vh;
-
-    /* Center items in the forced height */
     align-items: center;
     justify-items: center;
 
@@ -71,16 +70,20 @@
     align-items: center;
     justify-content: center;
     /* 
-       Scaling Logic:
-       - Use cqh/cqw for font reference, but also constrain by height.
-       - 'min(..., ..., 100%)' 
+       SCALING LOGIC: "Standard size, shrinking if needed, never huge"
+       1. Base Limit: 2.5rem (Standard comfortable size)
+       2. Width Limit: 6.5cqw (Fit 10 across)
+       3. Height Limit: 7cqh (Fit 10-14 rows vertically)
+       
+       min() picks the SMALLEST.
+       - Large Screen: Picks 2.5rem (Standard).
+       - Small Width: Picks 6.5cqw.
+       - Small Height: Picks 7cqh.
     */
-    font-size: min(6cqw, 8cqh);
+    font-size: min(2.5rem, 6.5cqw, 7cqh);
     line-height: 1;
     user-select: none;
 
-    height: 100%;
-    /* Fill the row's forced height if needed (mostly for alignment) */
     width: 100%;
 
     border-radius: 0.4rem;
@@ -107,8 +110,6 @@
     margin: 0.5rem 0;
     text-align: center;
     flex-shrink: 0;
-    /* Ensure prompt doesn't get crushed too much, but allow it if critical */
-    min-height: 2rem;
 }
 
 /* Options Area (Bottom) */
