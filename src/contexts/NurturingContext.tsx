@@ -1076,6 +1076,13 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
       };
 
       saveNurturingState(preservedState);
+
+      // Force Sync to Cloud immediately to preventing "Zombie Data" restoration
+      // (Otherwise, "Fresh State" logic would overwrite this reset with old cloud data)
+      if (user) {
+        syncUserData(user, preservedState);
+      }
+
       return preservedState;
     });
     // setCondition is updated via state change effect or we can calculate it manually if needed, 
