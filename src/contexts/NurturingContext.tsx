@@ -380,8 +380,14 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
       const localTime = stateRef.current.lastActiveTime || 0;
 
       // Use a tolerance of 5 seconds to avoid clock skew issues, but prefer stricter check if needed
-      // If Local is newer by more than 5s, we trust Local
-      if (localTime > cloudTime + 5000) {
+      // If Local is newer by more than 5s, we usually trust Local... UNLESS Local is just a generic fresh state.
+
+      const isLocalFresh =
+        stateRef.current.xp === 0 &&
+        stateRef.current.totalCurrencyEarned === 0 &&
+        !stateRef.current.hasCharacter;
+
+      if (localTime > cloudTime + 5000 && !isLocalFresh) {
         console.log(`☁️ Cloud data is stale! (Local: ${new Date(localTime).toLocaleTimeString()} vs Cloud: ${new Date(cloudTime).toLocaleTimeString()})`);
         console.log('☁️ Keeping local data (Lazy Sync: will sync on next auto-save/logout)');
         // FIX: Do NOT write to cloud immediately to save costs.
