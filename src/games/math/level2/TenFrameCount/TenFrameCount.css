@@ -9,7 +9,6 @@
     padding: 0.5rem;
     padding-bottom: 2rem;
     overflow: hidden;
-    /* Prevent body scroll */
 }
 
 /* Grid Area (Top) */
@@ -17,7 +16,6 @@
     flex: 1;
     width: 100%;
     min-height: 0;
-    /* Critical for flex scrolling/shrinking */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -27,21 +25,15 @@
 .ten-frame-container {
     width: 100%;
     max-width: 800px;
-    /* Height must be 100% of parent for container query to work on size/height */
     height: 100%;
     display: flex;
     flex-direction: column;
-    /* Dynamic gap based on Container Height */
-    /* If 10 rows, 1% gap = 10% total. Safe. */
-    gap: min(0.5rem, 1cqh);
+    /* Use standard small gap, but allow flex compression */
+    gap: 0.5vh;
     align-items: center;
     justify-content: center;
-    /* Center content vertically */
     overflow: hidden;
-    /* No scroll allowed, clip if must but logic should prevent it */
     padding: 0.25rem;
-
-    /* Establish Container Query context */
     container-type: size;
 }
 
@@ -50,7 +42,18 @@
     grid-template-columns: repeat(10, 1fr);
     width: 100%;
 
-    /* Minimal padding to save space */
+    /* FLEX MODIFICATION: Force rows to share space equally */
+    flex: 1;
+    min-height: 0;
+    /* Critical: Allows row to shrink below content size */
+
+    /* Don't let them get HUGE if there are few rows */
+    max-height: 12vh;
+
+    /* Center items in the forced height */
+    align-items: center;
+    justify-items: center;
+
     padding: 0.3rem;
     gap: 0.2rem;
 
@@ -60,9 +63,6 @@
         0 4px 6px -1px rgba(0, 0, 0, 0.05),
         0 2px 4px -1px rgba(0, 0, 0, 0.03),
         inset 0 0 0 2px rgba(255, 255, 255, 0.5);
-
-    /* Allow rows to shrink */
-    flex: 0 1 auto;
 }
 
 .grid-item {
@@ -71,16 +71,17 @@
     align-items: center;
     justify-content: center;
     /* 
-       SCALING LOGIC (Robust Fit):
-       - Width Limit: 10 items/row. '6.5cqw' accounts for gaps/padding.
-       - Height Limit: 10 rows. 
-         Total height = 10 * H + 9 * Gap.
-         If H=6.5cqh and Gap=1cqh => 65 + 9 = 74%. Plenty of room for padding (26%).
-         Using 6.5cqh ensures it never overflows container height.
+       Scaling Logic:
+       - Use cqh/cqw for font reference, but also constrain by height.
+       - 'min(..., ..., 100%)' 
     */
-    font-size: min(6.5cqw, 6.5cqh);
+    font-size: min(6cqw, 8cqh);
     line-height: 1;
     user-select: none;
+
+    height: 100%;
+    /* Fill the row's forced height if needed (mostly for alignment) */
+    width: 100%;
 
     border-radius: 0.4rem;
     transition: all 0.2s ease-out;
@@ -106,6 +107,8 @@
     margin: 0.5rem 0;
     text-align: center;
     flex-shrink: 0;
+    /* Ensure prompt doesn't get crushed too much, but allow it if critical */
+    min-height: 2rem;
 }
 
 /* Options Area (Bottom) */
@@ -114,7 +117,6 @@
     max-width: 800px;
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    /* Single Row */
     gap: 0.75rem;
     flex-shrink: 0;
 }
@@ -169,5 +171,10 @@
     .question-prompt {
         font-size: 1rem;
         margin: 0.25rem;
+    }
+
+    .ten-frame-row {
+        gap: 0.1rem;
+        padding: 0.2rem;
     }
 }
