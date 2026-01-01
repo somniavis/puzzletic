@@ -4,7 +4,7 @@ import { Layout3 } from '../../../layouts/Layout3';
 import { useFruitSliceLogic, FRUITS } from './GameLogic';
 import manifest_en from './locales/en';
 import './FruitSlice.css';
-import { MathSymbolBackground } from '../../components/MathSymbolBackground';
+import { BlobBackground } from '../../components/BlobBackground';
 import type { GameManifest } from '../../../types';
 import type { PowerUpBtnProps } from '../../../../components/Game/PowerUpBtn';
 
@@ -187,7 +187,7 @@ export const FruitSlice: React.FC<FruitSliceProps> = ({ onExit }) => {
                 icon: "" // No separate icon needed as it's part of the equation
             }}
         >
-            <MathSymbolBackground />
+            <BlobBackground />
             <div className="fruit-slice-container" style={{ padding: 0, position: 'relative', zIndex: 10 }}>
                 {currentProblem && (
                     <>

@@ -8,16 +8,10 @@
     background-image: none;
     position: relative;
     /* Ensure container is relative for absolute bg */
-    /* Base Color: Soft Lavender */
-    background-color: #faf5ff;
+    /* Base Color: Handled by BlobBackground component */
+    background-color: transparent;
+    background-image: none;
 
-    /* Premium Geometric: Diamond (Rhombus) Grid */
-    background-image:
-        repeating-linear-gradient(45deg, #f7f0ff 0, #f7f0ff 1px, transparent 0, transparent 15px),
-        repeating-linear-gradient(-45deg, #f7f0ff 0, #f7f0ff 1px, transparent 0, transparent 15px);
-
-    background-size: auto;
-    background-position: 0 0;
     position: relative;
     /* Ensure container is relative for absolute bg */
 }

@@ -1,0 +1,56 @@
+/* BlobBackground.css */
+
+.blob-bg-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: 0;
+    pointer-events: none;
+    /* Maintain the soft lavender base of the game */
+    background-color: #faf5ff;
+}
+
+.blob-svg {
+    width: 100%;
+    height: 100%;
+    /* Ensure it behaves like a background cover */
+    object-fit: cover;
+}
+
+/* Animations */
+@keyframes blob-rotate {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.blob-out-top {
+    animation: blob-rotate 20s linear infinite;
+    transform-origin: 13px 25px;
+    will-change: transform;
+}
+
+.blob-in-top {
+    animation: blob-rotate 10s linear infinite;
+    transform-origin: 13px 25px;
+    will-change: transform;
+}
+
+.blob-out-bottom {
+    animation: blob-rotate 25s linear infinite;
+    transform-origin: 84px 93px;
+    will-change: transform;
+}
+
+.blob-in-bottom {
+    animation: blob-rotate 15s linear infinite;
+    transform-origin: 84px 93px;
+    will-change: transform;
+}

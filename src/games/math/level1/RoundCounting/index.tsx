@@ -5,6 +5,7 @@ import { useRoundCountingLogic } from './GameLogic';
 import manifest_en from './locales/en';
 
 import './RoundCounting.css';
+import { BlobBackground } from '../../components/BlobBackground';
 import type { GameManifest } from '../../../types';
 import type { PowerUpBtnProps } from '../../../../components/Game/PowerUpBtn';
 
@@ -121,6 +122,7 @@ export const RoundCounting: React.FC<RoundCountingProps> = ({ onExit }) => {
             }}
             className="round-counting-theme"
         >
+            <BlobBackground />
             <div className="responsive-game-container" style={{ padding: 0, position: 'relative', zIndex: 10 }}>
                 {currentProblem && (
                     <div className="grid-wrapper">
