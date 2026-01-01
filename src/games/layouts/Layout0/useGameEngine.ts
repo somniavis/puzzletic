@@ -37,6 +37,38 @@ export const useGameEngine = (config: GameEngineConfig = {}) => {
     const [deadline, setDeadline] = useState<number | null>(null);
     const [questionStartTime, setQuestionStartTime] = useState<number>(0);
     const [isTimeFrozen, setIsTimeFrozen] = useState(false);
+    const [lastEvent, setLastEvent] = useState<{ id: number; type: 'correct' | 'wrong'; isFinal?: boolean } | null>(null);
+
+    const registerEvent = useCallback((event: { type: 'correct' | 'wrong'; isFinal?: boolean }) => {
+        setLastEvent({ ...event, id: Date.now() });
+    }, []);
+
+    const updateScore = useCallback((amount: number) => setScore(prev => prev + amount), []);
+    const updateLives = useCallback((param: boolean | number) => {
+        if (typeof param === 'boolean') {
+            if (!param) setLives(prev => {
+                const newLives = prev - 1;
+                if (newLives <= 0) {
+                    setGameOverReason('lives');
+                    setTimeout(() => setGameState('gameover'), 1500);
+                }
+                return newLives;
+            });
+        } else {
+            setLives(param);
+        }
+    }, []);
+    const updateStreak = useCallback((hit: boolean) => {
+        if (hit) {
+            setStreak(prev => {
+                const n = prev + 1;
+                setBestStreak(b => Math.max(b, n));
+                return n;
+            });
+        } else {
+            setStreak(0);
+        }
+    }, []);
 
     // Timer Logic
     useEffect(() => {
@@ -168,5 +200,10 @@ export const useGameEngine = (config: GameEngineConfig = {}) => {
         startGame,
         submitAnswer,
         activatePowerUp,
+        lastEvent,
+        registerEvent,
+        updateScore,
+        updateLives,
+        updateStreak
     };
 };

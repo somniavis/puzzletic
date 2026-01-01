@@ -4,6 +4,7 @@ import numberHiveEn from '../../games/math/level1/NumberHive/locales/en';
 import fruitSliceEn from '../../games/math/level1/FruitSlice/locales/en';
 import numberBalanceEn from '../../games/math/level1/NumberBalance/locales/en';
 import mathArcheryEn from '../../games/math/level1/MathArchery/locales/en';
+import tenFrameCountEn from '../../games/math/level2/TenFrameCount/locales/en';
 
 export const en = {
   profile: {
@@ -601,6 +602,7 @@ export const en = {
     'math-fruit-slice': fruitSliceEn,
     'math-number-balance': numberBalanceEn,
     'math-archery': mathArcheryEn,
+    'ten-frame-count': tenFrameCountEn,
   },
 } as const;
 

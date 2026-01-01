@@ -9,7 +9,7 @@ import { manifest as L1_FruitSlice } from './math/level1/FruitSlice';
 import { manifest as L1_MathArchery } from './math/level1/MathArchery';
 
 // --- Level 2 Games (TBD) ---
-// import ...
+import { manifest as L2_TenFrameCount } from './math/level2/TenFrameCount';
 
 export const GAMES: GameManifest[] = [
     // [Level 1] -----------------------------------------------------------
@@ -21,7 +21,7 @@ export const GAMES: GameManifest[] = [
     L1_MathArchery,
 
     // [Level 2] -----------------------------------------------------------
-    // ...
+    L2_TenFrameCount,
 ];
 
 export const getGames = (category?: GameCategory, level?: GameDifficulty): GameManifest[] => {
