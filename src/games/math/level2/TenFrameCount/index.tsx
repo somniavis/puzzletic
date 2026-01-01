@@ -111,5 +111,5 @@ export const manifest: GameManifest = {
     category: 'math',
     level: 2, // First Level 2 Game
     component: TenFrameCount,
-    thumbnail: '🔢'
+    thumbnail: '🧱'
 };
