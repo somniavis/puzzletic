@@ -6,7 +6,7 @@ export const PINWHEEL_POP_CONSTANTS = {
     DIFFICULTY_CONFIG: {
         1: { type: 'tens_ones_add', range: [10, 90] },
         2: { type: 'tens_tens_add', range: [10, 90] },
-        3: { type: 'tens_tens_sub', range: [10, 90] },
-        4: { type: 'mixed', range: [10, 99] }
+        3: { type: 'tens_tens_add', range: [10, 90] }, // Cap at tens_tens_add for now
+        4: { type: 'tens_tens_add', range: [10, 99] }
     }
 } as const;

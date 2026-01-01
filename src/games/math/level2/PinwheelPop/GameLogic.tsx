@@ -2,10 +2,9 @@ import { useState, useCallback, useEffect } from 'react';
 import { useGameEngine } from '../../../layouts/Layout0/useGameEngine'; // Generic engine
 import { PINWHEEL_POP_CONSTANTS as CONSTS } from './constants';
 
-export type PinwheelProblemType = 'tens_ones_add' | 'tens_tens_add' | 'tens_tens_sub' | 'mixed';
+export type PinwheelProblemType = 'tens_ones_add' | 'tens_tens_add';
 
 interface PinwheelState {
-    centerOperator: '+' | '-';
     innerNumbers: number[]; // [TL, TR, BR, BL] - 4 numbers
     outerAnswers: (number | null)[]; // 4 slots, null = pending
     currentStage: number; // 0..3 (Pop-up index)
@@ -20,7 +19,6 @@ export const usePinwheelLogic = () => {
     });
 
     const [pinwheel, setPinwheel] = useState<PinwheelState>({
-        centerOperator: '+',
         innerNumbers: [0, 0, 0, 0],
         outerAnswers: [null, null, null, null],
         currentStage: 0,
@@ -40,11 +38,8 @@ export const usePinwheelLogic = () => {
                 ? Math.floor(Math.random() * 9 + 1) * 10 // Tens (10, 20..)
                 : Math.floor(Math.random() * 9 + 1);      // Ones (1..9)
         }
-        // Tens + Tens (e.g. 20 + 30)
-        if (type === 'tens_tens_add' || type === 'tens_tens_sub') {
-            return Math.floor(Math.random() * 9 + 1) * 10;
-        }
-        return Math.floor(Math.random() * 50 + 10);
+        // Tens + Tens (e.g. 20 + 30) - Default fallback
+        return Math.floor(Math.random() * 9 + 1) * 10;
     };
 
     const generateOptions = (correct: number): number[] => {
@@ -60,20 +55,14 @@ export const usePinwheelLogic = () => {
 
             set.add(distractor);
         }
-        return Array.from(set).sort((a, b) => a - b); // Sort ascending (optional for number line feel) or random
+        return Array.from(set).sort((a, b) => a - b);
     };
 
     const generateRound = useCallback((difficulty: number) => {
         let type: PinwheelProblemType = 'tens_ones_add';
-        // Revert to Addition Only
-        const operator: '+' | '-' = '+';
 
         // Difficulty mapping
-        if (difficulty === 1) type = 'tens_ones_add';
-        else if (difficulty === 2) type = 'tens_tens_add';
-        else if (difficulty >= 3) {
-            type = 'tens_tens_add';
-        }
+        if (difficulty >= 2) type = 'tens_tens_add';
 
         // Generate 4 Inner Numbers
         const inners = [
@@ -83,8 +72,6 @@ export const usePinwheelLogic = () => {
             generateNumber(type)
         ];
 
-
-
         // Determine correct answer for the FIRST target stage (0)
         // Stage 0: Top (0 & 1)
         const targetA = inners[0];
@@ -92,7 +79,6 @@ export const usePinwheelLogic = () => {
         const correct = targetA + targetB;
 
         setPinwheel({
-            centerOperator: operator,
             innerNumbers: inners,
             outerAnswers: [null, null, null, null],
             currentStage: 0,

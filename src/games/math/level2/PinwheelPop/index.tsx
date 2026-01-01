@@ -1,10 +1,11 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Layout2 } from '../../../layouts/Layout2';
 import { usePinwheelLogic } from './GameLogic';
 import manifest_en from './locales/en.ts';
 import './PinwheelPop.css';
 import type { GameManifest } from '../../../types';
+import type { PowerUpBtnProps } from '../../../../components/Game/PowerUpBtn';
 
 interface MathPinwheelProps {
     onExit: () => void;
@@ -14,7 +15,6 @@ export const MathPinwheel: React.FC<MathPinwheelProps> = ({ onExit }) => {
     const { t, i18n } = useTranslation();
     const logic = usePinwheelLogic();
     const {
-        centerOperator,
         innerNumbers,
         outerAnswers,
         currentStage,
@@ -27,7 +27,7 @@ export const MathPinwheel: React.FC<MathPinwheelProps> = ({ onExit }) => {
         finalSpin
     } = logic;
 
-    const powerUpConfig: any[] = [
+    const powerUpConfig = useMemo<PowerUpBtnProps[]>(() => [
         {
             count: powerUps.timeFreeze,
             color: "blue",
@@ -35,27 +35,27 @@ export const MathPinwheel: React.FC<MathPinwheelProps> = ({ onExit }) => {
             title: "Time Freeze",
             onClick: () => usePowerUp('timeFreeze'),
             disabledConfig: isTimeFrozen,
-            status: (isTimeFrozen ? 'active' : 'normal')
+            status: isTimeFrozen ? 'active' : 'normal'
         },
         {
             count: powerUps.extraLife,
-            color: "red",
+            color: "red" as const,
             icon: "❤️",
             title: "Extra Life",
             onClick: () => usePowerUp('extraLife'),
             disabledConfig: logic.lives >= 3,
-            status: (logic.lives >= 3 ? 'maxed' : 'normal')
+            status: logic.lives >= 3 ? 'maxed' : 'normal'
         },
         {
             count: powerUps.doubleScore,
-            color: "yellow",
+            color: "yellow" as const,
             icon: "⚡",
             title: "Double Score",
             onClick: () => usePowerUp('doubleScore'),
             disabledConfig: logic.doubleScoreActive,
-            status: (logic.doubleScoreActive ? 'active' : 'normal')
+            status: logic.doubleScoreActive ? 'active' : 'normal'
         }
-    ];
+    ], [powerUps, isTimeFrozen, logic.lives, logic.doubleScoreActive, usePowerUp]);
 
     // Load Translations
     useEffect(() => {
@@ -93,7 +93,7 @@ export const MathPinwheel: React.FC<MathPinwheelProps> = ({ onExit }) => {
 
                         {/* Center Operator */}
                         <div className="center-circle">
-                            {centerOperator}
+                            +
                         </div>
 
                         {/* Inner Blocks (Operands) */}
