@@ -139,9 +139,9 @@ export const useGameEngine = (config: GameEngineConfig = {}) => {
             let baseScore = difficultyLevel * 50;
             setScore(prev => prev + baseScore + timeBonus + streakBonus);
 
-            // Time Bonus
-            const bonusTimeMs = difficultyLevel * 2000;
-            setDeadline(prev => prev ? Math.min(prev + bonusTimeMs, Date.now() + 60000) : null);
+            // Time Bonus - DISABLED requested by user
+            // const bonusTimeMs = difficultyLevel * 2000;
+            // setDeadline(prev => prev ? Math.min(prev + bonusTimeMs, Date.now() + 60000) : null);
 
             // Achievements
             if (!achievements.firstCorrect) setAchievements(prev => ({ ...prev, firstCorrect: true }));
