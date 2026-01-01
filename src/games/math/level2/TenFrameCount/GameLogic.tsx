@@ -82,19 +82,26 @@ export const useTenFrameCountLogic = () => {
         if (engine.gameState !== 'playing') return;
 
         if (selected === gameState.targetNumber) {
-            engine.registerEvent({ type: 'correct', isFinal: true });
-            engine.updateScore(100); // Standard Score
-            engine.updateStreak(true);
+            // Use submitAnswer to handle stats, score, streak automatically
+            engine.submitAnswer(true);
+            engine.registerEvent({ type: 'correct', isFinal: true }); // Keep visual event if needed, or submitAnswer does it?
+            // submitAnswer sets gameState='correct', but registerEvent sets 'lastEvent' for Layout0 feedback.
+            // Layout0 uses lastEvent for particles/sounds. useGameEngine's submitAnswer sets gameState but maybe not lastEvent?
+            // Checking useGameEngine: submitAnswer DOES NOT call registerEvent. It sets gameState.
+            // But Layout0 feedback depends on lastEvent.
+            // So we need BOTH? Or should we use registerEvent?
+            // Wait, registerEvent JUST updates lastEvent.
+            // submitAnswer updates stats/score/lives.
+            // So we need submitAnswer(true) AND registerEvent(...).
 
             // Next Round
             setTimeout(() => {
                 generateQuestion(gameState.round + 1);
-            }, 1000); // Delay for visual feedback
+            }, 1000);
         } else {
+            engine.submitAnswer(false);
             engine.registerEvent({ type: 'wrong' });
-            engine.updateLives(false);
-            engine.updateStreak(false);
-            // Do NOT advance round on wrong answer, let them try or game over
+            // Do NOT advance round on wrong answer
         }
     };
 

@@ -52,9 +52,9 @@
     align-items: center;
     justify-items: center;
 
-    /* Tighter internal padding */
-    padding: 0.25rem;
-    gap: 0.2rem;
+    /* DYNAMIC PADDING & GAP: Scale with height to prevent alignment issues */
+    padding: min(0.3rem, 0.5cqh);
+    gap: min(0.2rem, 0.3cqh);
 
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(248, 250, 252, 0.9));
     border-radius: 0.75rem;
@@ -71,14 +71,7 @@
     justify-content: center;
     /* 
        SCALING LOGIC v4:
-       - Reduced Height Limit to 5.5cqh. 
-         (10 rows * 5.5 = 55%. Leaves 45% for padding, gaps, question, options).
-         (Wait, question/options are outside 'ten-frame-container'?)
-         No, 'ten-frame-container' is just the grid. 
-         So 10 rows * 5.5% = 55%. Plenty of room? 
-         Container height is the *available space in grid-display-area*.
-         So 10 rows * 8cqh = 80%. + Gaps.
-         Let's try 6cqh.
+       - Reduced Height Limit to 6cqh.
     */
     font-size: min(2.5rem, 6.5cqw, 6cqh);
     line-height: 1;
@@ -178,6 +171,5 @@
         gap: 0.1rem;
         padding: 0.2rem;
         border-radius: 0.5rem;
-        /* Smaller radius for tighter fit */
     }
 }
