@@ -17,7 +17,8 @@ export const TenFrameCount: React.FC<TenFrameCountProps> = ({ onExit }) => {
         targetNumber,
         options,
         emoji,
-        handleAnswer
+        handleAnswer,
+        round
     } = logic;
 
     // Load Translations
@@ -58,7 +59,7 @@ export const TenFrameCount: React.FC<TenFrameCountProps> = ({ onExit }) => {
 
                             return (
                                 <div
-                                    key={`${targetNumber}-${rowIndex}`}
+                                    key={`${targetNumber}-${rowIndex}-${round}`}
                                     className="ten-frame-row"
                                     style={{ animationDelay: `${rowIndex * 0.15}s` }}
                                 >

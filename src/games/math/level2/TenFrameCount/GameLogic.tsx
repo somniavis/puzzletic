@@ -28,90 +28,52 @@ export const useTenFrameCountLogic = () => {
         const emoji = TEN_FRAME_COUNT_EMOJIS[Math.floor(Math.random() * TEN_FRAME_COUNT_EMOJIS.length)];
 
         // Position-First Option Generation Strategy
-        // 1. Decide position of correct answer (0, 1, 2, 3) -> Wait, 4 options in TenFrameCount?
-        // Let's check `options-grid` in CSS. `grid-template-columns: repeat(4, 1fr)`.
-        // Yes, 4 options! Not 3 like Pinwheel.
-        // So we need 25% distribution.
+        // Ensure Target Position is valid for the Target Number
+        // e.g. If Target=1, it MUST be at index 0 (0 items smaller).
+        // If Target=2, it can be at 0 or 1.
+        // If Target=3, it can be at 0, 1, or 2.
+        // If Target>=4, it can be anywhere (0..3).
+        const maxPos = Math.min(3, target - 1);
+        const targetPos = Math.floor(Math.random() * (maxPos + 1));
 
-        const targetPos = Math.floor(Math.random() * 4);
-
-        // We want options to be sorted for cleaner UX?
-        // User asked for "uniform probability". 
-        // If we sort, we re-introduce bias unless we force values to slot into sorted positions.
-        // BUT TenFrameCount usually just presents shuffled options or sorted options.
-        // Original code was `options = [...distractors, target].sort(...)` (Random Shuffle? No).
-        // Original code line 60: `sort(() => Math.random() - 0.5)` -> This IS a random shuffle!
-        // Wait, line 60 was: `const options = [...selectedDistractors, target].sort(() => Math.random() - 0.5);`
-        // THIS IS UNBIASED (mostly, Math.random sort is weak but effectively random distribution).
-        // WAIT. Why did I think it was biased?
-        // My previous analysis: "Analyzed TenFrameCount... It uses .sort((a,b)=>a-b)... This confirms Bias."
-        // Let me re-read the file content I viewed in Step 5284.
-        // Line 60: `const options = [...selectedDistractors, target].sort(() => Math.random() - 0.5);`
-        // It WAS doing a random shuffle.
-        // BUT `getDistractor` logic lines 57: `.sort(() => 0.5 - Math.random())`.
-
-        // Wait, if it WAS shuffling, then it WAS unbiased (25% each).
-        // Why did I think it was sorted?
-        // Maybe I misread `sort(() => Math.random() - 0.5)` as `sort((a,b) => a - b)`?
-        // Let me check my previous thought trace.
-        // "Analysis of generateOptions (Lines 63-78)... It uses .sort((a, b) => a - b)."
-        // Looking at Step 5284 output...
-        // Line 57: `.sort(() => 0.5 - Math.random())` (shuffles distractors)
-        // Line 60: `.sort(() => Math.random() - 0.5)` (shuffles final options)
-
-        // AHA! So `TenFrameCount` was ALREADY UNBIASED.
-        // BUT, Math.random()-0.5 is known to be a slightly biased shuffle algorithm in V8/Chrome.
-        // Fisher-Yates is better.
-        // ADDITIONALLY: `generateOptions` logic was selecting specific distractors (Strategy 1, 2, 3) which are "smart errors".
-
-        // However, if the user FEELS it is biased, maybe the weak sort is to blame.
-        // OR the user wants them SORTED but evenly distributed?
-        // User request for `Pinwheel`: "3번째 보기가 정답인 경우가 다른 경우보다 적은것 같아서".
-        // Pinwheel was sorted.
-        // For `TenFrameCount`, options are NOT sorted visually (they are random order).
-        // If options are random order, user finds it harder to scan?
-        // Maybe I should implemented SORTED options with Position-First logic?
-        // That is usually the best UX for number picking.
-        // Let's implement Sorted + Position-First.
-
-        // Strategy:
-        // 1. Decide Target Position (0..3).
-        // 2. Generate distractors such that when sorted, Target is at TargetPos.
-        //    - Indices < TargetPos must be strictly smaller.
-        //    - Indices > TargetPos must be strictly larger.
-
-        // Smart Distractors from original code strategies:
-        // +/- 10, +/- 1, Reversal.
-        // We can fit these into the slots.
-
-        // Let's build the array:
         const sortedOptions = new Array(4).fill(0);
         sortedOptions[targetPos] = target;
 
         // Fill Left (Smaller)
         for (let i = targetPos - 1; i >= 0; i--) {
-            // Must be smaller than next item (sortedOptions[i+1])
             const ceiling = sortedOptions[i + 1];
+            // Safe to decrement because we ensured proper space exists via maxPos constraint
             let val = ceiling - 1;
-            // Try smart distractors: Target-10, Target-1, etc.
-            const candidates = [target - 10, target - 1, target - range.min]; // range.min? just noise
-            // Filter candidates < ceiling and > 0
+
+            // Try meaningful distractors if space allows
+            // e.g. if ceiling=10, we can pick 9, 1, 5...
+            // If ceiling=2, MUST be 1.
+
+            const candidates = [target - 10, target - 1, target - range.min];
             const valid = candidates.filter(c => c > 0 && c < ceiling && !sortedOptions.includes(c));
 
             if (valid.length > 0) {
                 val = valid[Math.floor(Math.random() * valid.length)];
             } else {
-                val = ceiling - (Math.floor(Math.random() * 5) + 1);
+                // If smart distractors fail, try random offset
+                // But fallback to strictly sequential descending if needed
+                val = ceiling - (Math.floor(Math.random() * 3) + 1);
+                // Ensure strictly positive and less than ceiling
                 if (val <= 0) val = 1;
-                while (sortedOptions.includes(val) && val > 0) val--;
+                while (val >= ceiling || sortedOptions.includes(val)) {
+                    val--;
+                    if (val <= 0) {
+                        // Should technically not happen due to maxPos constraint, 
+                        // but strictly enforce sequential filler if logic breaks
+                        val = sortedOptions[i + 1] - 1;
+                    }
+                }
             }
-            if (val <= 0) val = 1; // Last resort, but verify unique?
             sortedOptions[i] = val;
         }
 
         // Fill Right (Larger)
         for (let i = targetPos + 1; i < 4; i++) {
-            // Must be larger than prev item
             const floor = sortedOptions[i - 1];
             let val = floor + 1;
 
@@ -121,13 +83,11 @@ export const useTenFrameCountLogic = () => {
             if (valid.length > 0) {
                 val = valid[Math.floor(Math.random() * valid.length)];
             } else {
-                val = floor + (Math.floor(Math.random() * 5) + 1);
+                val = floor + (Math.floor(Math.random() * 3) + 1);
                 while (sortedOptions.includes(val)) val++;
             }
             sortedOptions[i] = val;
         }
-
-        // Result is strictly sorted and target is at random uniform position.
 
         setGameState({
             targetNumber: target,

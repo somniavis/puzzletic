@@ -1,4 +1,4 @@
-/* Math Grid Count Styles */
+/* Math Grid Count Styles - Brick Wall Theme */
 .math-grid-container {
     width: 100%;
     height: 100%;
@@ -9,6 +9,20 @@
     padding: 0.5rem;
     padding-bottom: 2rem;
     overflow: hidden;
+
+    /* Brick Wall Background */
+    background-color: #fdf6e3;
+    /* Warm beige base */
+    background-image:
+        linear-gradient(335deg, rgba(200, 150, 150, 0.1) 23px, transparent 23px),
+        linear-gradient(155deg, rgba(200, 150, 150, 0.1) 23px, transparent 23px),
+        linear-gradient(335deg, rgba(200, 150, 150, 0.1) 23px, transparent 23px),
+        linear-gradient(155deg, rgba(200, 150, 150, 0.1) 23px, transparent 23px);
+    background-size: 58px 58px;
+    background-position: 0px 2px, 4px 35px, 29px 31px, 34px 6px;
+
+    /* Overlay for warmth */
+    box-shadow: inset 0 0 100px rgba(255, 230, 200, 0.3);
 }
 
 /* Grid Area (Top) */
@@ -28,12 +42,9 @@
     height: 100%;
     display: flex;
     flex-direction: column-reverse;
-    /* Bottom-up stacking */
-    /* Tighter gap logic: Max 0.5rem, but shrink to 0.5% of height if needed */
     gap: min(0.5rem, 0.5cqh);
     align-items: center;
     justify-content: flex-start;
-    /* Start from bottom (because reserved) */
 
     overflow: hidden;
     padding: 0.25rem;
@@ -42,12 +53,12 @@
 
 @keyframes dropIn {
     0% {
-        transform: translateY(-50vh);
+        transform: translateY(-50vh) scale(0.9);
         opacity: 0;
     }
 
     100% {
-        transform: translateY(0);
+        transform: translateY(0) scale(1);
         opacity: 1;
     }
 }
@@ -56,32 +67,35 @@
     display: grid;
     grid-template-columns: repeat(10, 1fr);
     width: 100%;
-
-    /* Natural height */
     flex: 0 1 auto;
-
-    /* Allow shrinking */
     min-height: 0;
 
-    /* STRICT CENTERING */
     align-items: center;
     justify-items: center;
     align-content: center;
-    /* Ensure grid tracks are centered if height > content */
 
-    /* DYNAMIC PADDING & GAP */
     padding: min(0.3rem, 0.5cqh);
     gap: min(0.2rem, 0.3cqh);
 
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(248, 250, 252, 0.9));
+    /* Glass Panels Floating on Wall */
+    background: rgba(255, 255, 255, 0.85);
+    /* Whiter to stand out from bricks */
+    backdrop-filter: blur(4px);
+    border: 2px solid #e2e8f0;
+    border-bottom: 4px solid #cbd5e1;
+
     border-radius: 0.75rem;
     box-shadow:
         0 4px 6px -1px rgba(0, 0, 0, 0.05),
-        0 2px 4px -1px rgba(0, 0, 0, 0.03),
-        inset 0 0 0 2px rgba(255, 255, 255, 0.5);
+        0 10px 15px -3px rgba(0, 0, 0, 0.05);
 
-    /* Animation defaults - solid thud */
-    animation: dropIn 0.5s ease-out backwards;
+    animation: dropIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
+    transition: all 0.3s ease;
+}
+
+.ten-frame-row:hover {
+    transform: translateY(-2px);
+    border-color: #94a3b8;
 }
 
 .grid-item {
@@ -89,48 +103,42 @@
     display: flex;
     align-items: center;
     justify-content: center;
-
-    /* SCALING LOGIC v5: Strict Centering Fix */
     font-size: min(2.5rem, 6.5cqw, 6cqh);
-
-    /* Remove line-height influence on centering */
-    line-height: normal;
-    /* Or specifically 0 for emojis if they have baseline issues, but normal acts better with flex usually.
-       Actually, `line-height: 1` can push baseline down. `0` centers the glyph bounding box often.
-       Let's try 1 but relies on Flexbox. Flexbox ignores line-height for alignment IF height is set? 
-       No, line-height affects the content size.
-       Let's use a trick: `line-height: 0` for emoji-only containers to kill baseline offset.
-    */
     line-height: 0;
-
     user-select: none;
-
     width: 100%;
-
     border-radius: 0.4rem;
     transition: all 0.2s ease-out;
 }
 
 .grid-item.empty {
-    /* Subtle placeholder for empty slots */
-    background: rgba(203, 213, 225, 0.15);
-    border: 2px dashed rgba(203, 213, 225, 0.4);
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02);
+    /* Subtle placeholder */
+    background: rgba(203, 213, 225, 0.2);
+    border: 2px dashed rgba(203, 213, 225, 0.6);
 }
 
 .grid-item:not(.empty) {
-    background: rgba(255, 255, 255, 0.01);
-    filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.1));
+    /* No bg, just shadow */
+    filter: drop-shadow(0 4px 0px rgba(0, 0, 0, 0.15));
+    transform: scale(1.1);
 }
 
-/* Question Prompt */
+/* Question Prompt - Minimalist */
 .question-prompt {
-    font-size: 1.5rem;
+    font-size: 1.6rem;
     font-weight: 700;
-    color: #334155;
-    margin: 0.5rem 0;
+    color: #475569;
+    margin: 0.25rem 0;
     text-align: center;
     flex-shrink: 0;
+
+    /* Removed heavy box styling to save space */
+    background: transparent;
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8);
 }
 
 /* Options Area (Bottom) */
@@ -139,43 +147,55 @@
     max-width: 800px;
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 0.75rem;
+    gap: 1rem;
     flex-shrink: 0;
 }
 
 .option-btn {
     background: white;
-    border: 3px solid #e2e8f0;
-    border-radius: 1rem;
-    padding: 0.75rem;
-    font-size: 1.8rem;
-    font-weight: 800;
-    color: #1e293b;
+    border: 2px solid #e2e8f0;
+    border-bottom: 6px solid #cbd5e1;
+    border-radius: 1.25rem;
+    padding: 1rem;
+    font-size: 2rem;
+    font-weight: 900;
+    color: #475569;
     cursor: pointer;
-    box-shadow: 0 4px 0 #cbd5e1;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
     transition: all 0.1s;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
+/* Hover State */
 .option-btn:hover {
     transform: translateY(-2px);
-    border-color: #cbd5e1;
-    box-shadow: 0 6px 0 #94a3b8;
+    border-color: #94a3b8;
+    color: #334155;
+    background: #f8fafc;
 }
 
+/* Active State */
 .option-btn:active {
     transform: translateY(4px);
-    box-shadow: 0 0 0 #94a3b8;
-    border-color: #94a3b8;
+    border-bottom-width: 0px;
+    margin-top: 6px;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    background: #e2e8f0;
 }
 
 /* Responsive Scaling */
 @media (max-width: 480px) {
     .option-btn {
-        padding: 0.5rem;
-        font-size: 1.5rem;
+        padding: 0.75rem;
+        font-size: 1.6rem;
+        border-radius: 1rem;
+        border-bottom-width: 4px;
+    }
+
+    .options-grid {
+        gap: 0.5rem;
     }
 }
 
@@ -191,13 +211,21 @@
     }
 
     .question-prompt {
-        font-size: 1rem;
+        font-size: 1.2rem;
         margin: 0.25rem;
+        padding: 0.25rem 1rem;
     }
 
     .ten-frame-row {
         gap: 0.1rem;
         padding: 0.2rem;
         border-radius: 0.5rem;
+        background: rgba(255, 255, 255, 0.9);
+    }
+
+    .option-btn {
+        padding: 0.5rem;
+        font-size: 1.4rem;
+        border-bottom-width: 4px;
     }
 }
