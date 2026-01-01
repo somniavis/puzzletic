@@ -118,6 +118,7 @@ export const RoundCounting: React.FC<RoundCountingProps> = ({ onExit }) => {
                 value: targetValue,
                 icon: currentProblem?.targetEmoji || '❓'
             }}
+            className="round-counting-theme"
         >
             <div className="responsive-game-container" style={{ padding: 0 }}>
                 {currentProblem && (

@@ -32,6 +32,7 @@ interface Layout3Props {
         icon?: string;
         label?: string;
     };
+    className?: string;
 }
 
 export const Layout3: React.FC<Layout3Props> = ({
@@ -44,7 +45,8 @@ export const Layout3: React.FC<Layout3Props> = ({
     onExit,
     children,
     powerUps,
-    target
+    target,
+    className
 }) => {
     const {
         gameState, score, lives, timeLeft,
@@ -299,7 +301,7 @@ export const Layout3: React.FC<Layout3Props> = ({
     }
 
     return (
-        <div className="layout3-container">
+        <div className={`layout3-container ${className || ''}`}>
             <header className="layout3-header">
                 <button className="icon-btn" onClick={() => { playButtonSound(); onExit(); }} style={{ fontSize: '1.5rem' }}>🔙</button>
                 <div className="header-title">{title}</div>
