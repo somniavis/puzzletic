@@ -80,9 +80,9 @@ export const TenFrameCount: React.FC<TenFrameCountProps> = ({ onExit }) => {
 
                 {/* Answer Options */}
                 <div className="options-grid">
-                    {options.map((option, idx) => (
+                    {options.map((option) => (
                         <button
-                            key={idx}
+                            key={option} // Unique key to reset state/focus on change
                             className="option-btn"
                             onClick={() => handleAnswer(option)}
                         >
