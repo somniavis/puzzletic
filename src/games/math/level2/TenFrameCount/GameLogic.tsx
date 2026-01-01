@@ -22,8 +22,6 @@ export const useTenFrameCountLogic = () => {
         if (currentRound > 3) range = TEN_FRAME_COUNT_CONSTANTS.DIFFICULTY.FULL;
 
         // Generate Target Number
-        // Ensure it's not a multiple of 10 to keep the "incomplete row" concept visible initially?
-        // Actually multiples of 10 are fine too (0 ones).
         const target = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
 
         // Generate Emoji
@@ -79,29 +77,58 @@ export const useTenFrameCountLogic = () => {
 
 
     const handleAnswer = (selected: number) => {
-        if (engine.gameState !== 'playing') return;
+        // ALLOW 'wrong' state interaction to enable rapid retry
+        // engine.gameState checks if playing. 
+        // We want to allow clicking even if we just clicked wrong (which might put us in a brief state if we used submitAnswer(false)).
+        // But here we will NOT use submitAnswer(false) which blocks, we will manually handle penalty.
+
+        if (engine.gameState !== 'playing' && engine.gameState !== 'wrong') return;
 
         if (selected === gameState.targetNumber) {
-            // Use submitAnswer to handle stats, score, streak automatically
+            // Correct: Use full submitAnswer to handle score/streak/stats/progression
             engine.submitAnswer(true);
-            engine.registerEvent({ type: 'correct', isFinal: true }); // Keep visual event if needed, or submitAnswer does it?
-            // submitAnswer sets gameState='correct', but registerEvent sets 'lastEvent' for Layout0 feedback.
-            // Layout0 uses lastEvent for particles/sounds. useGameEngine's submitAnswer sets gameState but maybe not lastEvent?
-            // Checking useGameEngine: submitAnswer DOES NOT call registerEvent. It sets gameState.
-            // But Layout0 feedback depends on lastEvent.
-            // So we need BOTH? Or should we use registerEvent?
-            // Wait, registerEvent JUST updates lastEvent.
-            // submitAnswer updates stats/score/lives.
-            // So we need submitAnswer(true) AND registerEvent(...).
+            engine.registerEvent({ type: 'correct', isFinal: true });
 
             // Next Round
             setTimeout(() => {
                 generateQuestion(gameState.round + 1);
             }, 1000);
         } else {
-            engine.submitAnswer(false);
+            // Wrong: Manual handling to avoid '1.5s freeze' from engine.submitAnswer(false)
+            // We want "Rapid Retry" style.
+
+            // 1. Play feedback
             engine.registerEvent({ type: 'wrong' });
-            // Do NOT advance round on wrong answer
+
+            // 2. Penalties
+            // engine.updateLives(false) -> decrements life, checks gameover. 
+            // NOTE: It does NOT set gameState='wrong' unless lives<=0. So this is safe!
+            engine.updateLives(false);
+
+            // 3. Reset Streak
+            engine.updateStreak(false);
+
+            // 4. Update Stats Manually (since we skipped submitAnswer)
+            // We can't easily access 'stats' setter from here via 'engine' unless exposed?
+            // useGameEngine exposes 'stats' value but not 'setStats'.
+            // Actually, does 'submitAnswer(false)' strictly block?
+            // It sets setGameState('wrong').
+            // If we avoid submitAnswer(false), we avoid block.
+            // BUT we miss out on 'stats.wrong' increment.
+            // Let's check useGameEngine again... 'stats' is updated inside submitAnswer.
+            // We need a way to update stats without blocking.
+            // OR we accept blocking but remove the 'gameState !== playing' check?
+            // If we remove the check, handleAnswer runs. 
+            // calling submitAnswer(false) again while 'wrong' might be weird?
+            // It just sets state 'wrong' again (overlap timer). It works.
+
+            // Simplest fix is purely allowing the check at the top:
+            // if (engine.gameState !== 'playing' && engine.gameState !== 'wrong') return;
+            // AND calling submitAnswer(false).
+            // This will keep restarting the 1.5s timer but allowing inputs.
+            // It correctly updates stats/lives.
+
+            engine.submitAnswer(false);
         }
     };
 
