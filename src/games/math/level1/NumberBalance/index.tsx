@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Layout2 } from '../../../layouts/Layout2';
 import { useNumberBalanceLogic } from './GameLogic';
 import type { NumberItem } from './GameLogic';
+import { MathSymbolBackground } from '../../components/MathSymbolBackground';
 
 import manifest_en from './locales/en';
 import './NumberBalance.css';
@@ -146,6 +147,7 @@ export const NumberBalance: React.FC<NumberBalanceProps> = ({ onExit }) => {
             onExit={onExit}
             powerUps={powerUpConfig}
         >
+            <MathSymbolBackground />
             <div className="number-balance-container" style={{ padding: 0 }}>
                 {currentProblem && (
                     <>

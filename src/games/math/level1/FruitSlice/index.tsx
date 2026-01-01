@@ -4,6 +4,7 @@ import { Layout3 } from '../../../layouts/Layout3';
 import { useFruitSliceLogic, FRUITS } from './GameLogic';
 import manifest_en from './locales/en';
 import './FruitSlice.css';
+import { MathSymbolBackground } from '../../components/MathSymbolBackground';
 import type { GameManifest } from '../../../types';
 import type { PowerUpBtnProps } from '../../../../components/Game/PowerUpBtn';
 
@@ -12,6 +13,11 @@ interface FruitSliceProps {
 }
 
 export const FruitSlice: React.FC<FruitSliceProps> = ({ onExit }) => {
+    // ... code ...
+    // Note: I cannot replace the whole file, just the import section and the render section. 
+    // I will split this into two edits if needed, but I can use the provided context to do it carefully.
+    // Actually, stick to one edit per "chunk" logic.
+    // Let's do imports first.
     const { t, i18n } = useTranslation();
     const {
         gameState,
@@ -181,7 +187,8 @@ export const FruitSlice: React.FC<FruitSliceProps> = ({ onExit }) => {
                 icon: "" // No separate icon needed as it's part of the equation
             }}
         >
-            <div className="fruit-slice-container" style={{ padding: 0 }}>
+            <MathSymbolBackground />
+            <div className="fruit-slice-container" style={{ padding: 0, position: 'relative', zIndex: 10 }}>
                 {currentProblem && (
                     <>
                         <div className="fruit-stage">

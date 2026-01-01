@@ -8,6 +8,8 @@
     position: relative;
     padding-bottom: 0;
     overflow: hidden;
+    /* Ensure content sits above background */
+    z-index: 1;
 }
 
 /* Scale System */
