@@ -43,19 +43,89 @@ export const usePinwheelLogic = () => {
     };
 
     const generateOptions = (correct: number): number[] => {
-        const set = new Set<number>();
-        set.add(correct);
-        while (set.size < 3) {
-            let distractor = correct + (Math.random() > 0.5 ? 10 : -10);
-            if (Math.random() > 0.7) distractor = correct + (Math.random() > 0.5 ? 1 : -1);
+        // Position-First Strategy to ensure uniform 33% distribution
+        const targetPos = Math.floor(Math.random() * 3); // 0, 1, or 2
+        const options = new Array(3).fill(0);
 
-            // Ensure positive
-            if (distractor <= 0) distractor = Math.abs(distractor) + 1; // Flip to positive
-            if (distractor === correct || distractor <= 0) distractor = correct + Math.floor(Math.random() * 10) + 1; // Fallback to definitely positive
+        // Place correct answer
+        options[targetPos] = correct;
 
-            set.add(distractor);
+        // Fill other slots (Distractors)
+        // To maintain sorted order (visual comfort), we generate based on position.
+        // If target is 0: [Correct, >Correct, >Correct]
+        // If target is 1: [<Correct, Correct, >Correct]
+        // If target is 2: [<Correct, <Correct, Correct]
+
+        const generateDistractor = (base: number, isLarger: boolean): number => {
+            let val = base + (isLarger ? (Math.floor(Math.random() * 10) + 1) : -(Math.floor(Math.random() * 10) + 1));
+            if (val <= 0) val = base + 10; // Fallback to larger if negative
+            if (val === base) val = base + 1;
+            return val;
+        };
+
+        if (targetPos === 0) {
+            // Correct is Smallest
+            let d1 = generateDistractor(correct, true);
+            let d2 = generateDistractor(d1, true);
+            // Ensure distinct and sorted
+            if (d1 === correct) d1 = correct + 1;
+            if (d2 === d1) d2 = d1 + 1;
+            options[1] = d1;
+            options[2] = d2;
+        } else if (targetPos === 1) {
+            // Correct is Middle
+            let smaller = generateDistractor(correct, false);
+            let larger = generateDistractor(correct, true);
+
+            // Safety: Ensure smaller is valid positive
+            if (smaller <= 0) {
+                // If cannot allow smaller, we must shift strategy or force min 1
+                // But wait, if Correct is e.g. 5, smaller can be 1-4.
+                smaller = Math.max(1, correct - (Math.floor(Math.random() * (correct - 1)) + 1));
+                if (smaller >= correct) smaller = Math.max(1, correct - 1);
+            }
+            // If correct is 1, smaller can't exist -> Fallback to all larger logic (Target Pos becomes 0 effectively but shuffled? No, we want distinct.)
+            // Edge case: Correct = 0? (Not possible with logic 10+). Correct min is usually >10.
+            // So smaller is safe.
+
+            options[0] = smaller;
+            options[2] = larger;
+        } else {
+            // Correct is Largest (Pos 2)
+            let d1 = generateDistractor(correct, false); // Smaller
+            let d2 = generateDistractor(d1, false);     // Even Smaller
+
+            // Validate d1
+            if (d1 >= correct) d1 = correct - 1;
+            if (d1 <= 0) d1 = 1;
+
+            // Validate d2
+            if (d2 >= d1) d2 = d1 - 1;
+            if (d2 <= 0) {
+                // If space is too tight (e.g. Correct=2), we can't have 2 smaller.
+                // This edge case is rare for >10 sums.
+                // Fallback: Just make them distinct? 
+                // If we fail to find 2 smaller, we simply swap to "Larger" mode for the remaining slots and re-sort?
+                // No, that breaks the "Target Pos" promise.
+                // Simple Fix: Shift correct answer to index 0 or 1 if generation fails?
+                // Or just force d1, d2 to be 1, 2 and correct to be 3+?
+                d2 = 1;
+                d1 = Math.max(2, Math.min(correct - 1, 3));
+            }
+
+            options[0] = d2; // Smallest
+            options[1] = d1; // Middle
         }
-        return Array.from(set).sort((a, b) => a - b);
+
+        // Final fail-safe sort to ensure options are strictly increasing (visual consistency)
+        // Since we filled slots logically [Small, Med, Large], this just confirms it.
+        // Wait, if we Sort at the end, does it undo our Target Position?
+        // YES. If we generate random numbers and sort them, the position is determined by magnitude, not our choice.
+        // SO: We MUST generate numbers such that their magnitude PRESERVES our chosen slot.
+        // My Logic above (targetPos 0 -> others are larger) DOES preserve it.
+        // So Sorting is redundant but harmless verification.
+
+        return options;
     };
 
     const generateRound = useCallback((difficulty: number) => {

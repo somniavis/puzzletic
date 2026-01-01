@@ -57,7 +57,11 @@ export const TenFrameCount: React.FC<TenFrameCountProps> = ({ onExit }) => {
                             const countInRow = Math.min(10, remainingItems);
 
                             return (
-                                <div key={rowIndex} className="ten-frame-row">
+                                <div
+                                    key={`${targetNumber}-${rowIndex}`}
+                                    className="ten-frame-row"
+                                    style={{ animationDelay: `${rowIndex * 0.15}s` }}
+                                >
                                     {/* Always render 10 slots to show the frame structure */}
                                     {Array.from({ length: 10 }).map((_, colIndex) => {
                                         const isFilled = colIndex < countInRow;
