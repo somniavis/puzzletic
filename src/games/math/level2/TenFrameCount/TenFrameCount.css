@@ -27,15 +27,29 @@
     max-width: 800px;
     height: 100%;
     display: flex;
-    flex-direction: column;
+    flex-direction: column-reverse;
+    /* Bottom-up stacking */
     /* Tighter gap logic: Max 0.5rem, but shrink to 0.5% of height if needed */
     gap: min(0.5rem, 0.5cqh);
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
+    /* Start from bottom (because reserved) */
 
     overflow: hidden;
     padding: 0.25rem;
     container-type: size;
+}
+
+@keyframes dropIn {
+    0% {
+        transform: translateY(-50vh);
+        opacity: 0;
+    }
+
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
 }
 
 .ten-frame-row {
@@ -65,6 +79,9 @@
         0 4px 6px -1px rgba(0, 0, 0, 0.05),
         0 2px 4px -1px rgba(0, 0, 0, 0.03),
         inset 0 0 0 2px rgba(255, 255, 255, 0.5);
+
+    /* Animation defaults - solid thud */
+    animation: dropIn 0.5s ease-out backwards;
 }
 
 .grid-item {
