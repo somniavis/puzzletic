@@ -1,7 +1,7 @@
 import React from 'react';
 import { useSound } from '../../../../contexts/SoundContext';
 
-import { playButtonSound, startBackgroundMusic } from '../../../../utils/sound';
+import { startBackgroundMusic } from '../../../../utils/sound';
 import './Layout1.css';
 import { useGameEngine } from '../Layout0/useGameEngine';
 import type { MinigameDifficulty } from '../../../../types/gameMechanics';
@@ -87,7 +87,7 @@ export const Layout1: React.FC<Layout1Props> = ({
                     subtitle={subtitle}
                     description={description}
                     instructions={instructions}
-                    onStart={() => { playButtonSound(); startGame(); }}
+                    onStart={() => { startGame(); }}
                 />
             </div>
         );
@@ -115,7 +115,7 @@ export const Layout1: React.FC<Layout1Props> = ({
                     bestStreak={bestStreak}
                     stats={stats}
                     rewardResult={rewardResult}
-                    onRestart={() => { playButtonSound(); startGame(); }}
+                    onRestart={() => { startGame(); }}
                 />
             </div>
         );

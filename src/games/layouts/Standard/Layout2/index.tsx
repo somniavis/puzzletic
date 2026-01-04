@@ -1,6 +1,6 @@
 import React from 'react';
 import { useSound } from '../../../../contexts/SoundContext';
-import { playButtonSound, startBackgroundMusic } from '../../../../utils/sound';
+import { startBackgroundMusic } from '../../../../utils/sound';
 import './Layout2.css';
 import { useGameEngine } from '../Layout0/useGameEngine';
 import type { MinigameDifficulty } from '../../../../types/gameMechanics';
@@ -81,7 +81,7 @@ export const Layout2: React.FC<Layout2Props> = ({
             <div className={`layout2-container ${className || ''}`}>
                 {background && <div className="layout-background-layer">{background}</div>}
                 <GameLayoutHeader title={title} bgmEnabled={settings.bgmEnabled} onExit={onExit} onToggleBgm={toggleBgm} className="layout2-header" />
-                <GameStartScreen title={title} subtitle={subtitle} description={description} instructions={instructions} onStart={() => { playButtonSound(); startGame(); }} />
+                <GameStartScreen title={title} subtitle={subtitle} description={description} instructions={instructions} onStart={() => { startGame(); }} />
             </div>
         );
     }
@@ -92,7 +92,7 @@ export const Layout2: React.FC<Layout2Props> = ({
             <div className={`layout2-container ${className || ''}`}>
                 {background && <div className="layout-background-layer">{background}</div>}
                 <GameLayoutHeader title={title} bgmEnabled={settings.bgmEnabled} onExit={onExit} onToggleBgm={toggleBgm} className="layout2-header" />
-                <GameOverScreen title={title} gameOverReason={gameOverReason || 'time_up'} score={score} highScore={highScore} prevBest={prevBest} isNewRecord={isNewRecord} bestStreak={bestStreak} stats={stats} rewardResult={rewardResult} onRestart={() => { playButtonSound(); startGame(); }} />
+                <GameOverScreen title={title} gameOverReason={gameOverReason || 'time_up'} score={score} highScore={highScore} prevBest={prevBest} isNewRecord={isNewRecord} bestStreak={bestStreak} stats={stats} rewardResult={rewardResult} onRestart={() => { startGame(); }} />
             </div>
         );
     }
