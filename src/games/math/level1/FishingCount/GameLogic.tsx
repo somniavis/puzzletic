@@ -8,6 +8,7 @@ export interface Animal {
     y: number;
     vx: number;
     vy: number;
+    faceLeft: boolean;
 }
 
 export interface GameState {
@@ -91,7 +92,8 @@ export const useFishingCountLogic = () => {
             x: Math.random() * 80 + 10, // 10% to 90%
             y: Math.random() * 60 + 5, // 5% to 65% (avoid hitting net at bottom initially)
             vx: (Math.random() - 0.5) * 0.3, // Velocity
-            vy: (Math.random() - 0.5) * 0.3
+            vy: (Math.random() - 0.5) * 0.3,
+            faceLeft: Math.random() < 0.5 // 50% chance to face left (default) or right (flipped)
         };
     };
 

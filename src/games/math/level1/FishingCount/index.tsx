@@ -183,7 +183,13 @@ export const FishingCount: React.FC<FishingCountProps> = ({ onExit }) => {
                             onMouseDown={(e) => handleDragStart(e, animal.id)}
                             onTouchStart={(e) => handleDragStart(e, animal.id)}
                         >
-                            {animal.type}
+                            <span style={{
+                                display: 'inline-block',
+                                transform: animal.faceLeft ? 'scaleX(1)' : 'scaleX(-1)',
+                                pointerEvents: 'none' // Ensure clicks go to parent
+                            }}>
+                                {animal.type}
+                            </span>
                         </div>
                     ))}
 
