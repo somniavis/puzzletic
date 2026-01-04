@@ -158,67 +158,70 @@ export const FishingCount: React.FC<FishingCountProps> = ({ onExit }) => {
             ]}
             onExit={onExit}
         >
-            <div
-                className="fishing-count-container"
-                ref={containerRef}
-                onMouseMove={handleDragMove}
-                onTouchMove={handleDragMove}
-                onMouseUp={handleDragEnd}
-                onTouchEnd={handleDragEnd}
-                onMouseLeave={handleDragEnd}
-            >
+            <>
                 <FishingBackground />
+                <div
+                    className="fishing-count-container"
+                    ref={containerRef}
+                    onMouseMove={handleDragMove}
+                    onTouchMove={handleDragMove}
+                    onMouseUp={handleDragEnd}
+                    onTouchEnd={handleDragEnd}
+                    onMouseLeave={handleDragEnd}
+                >
 
-                {/* Pond & Animals */}
-                <div className="pond-area">
-                    {animals.map(animal => (
+
+                    {/* Pond & Animals */}
+                    <div className="pond-area">
+                        {animals.map(animal => (
+                            <div
+                                key={animal.id}
+                                id={`animal-${animal.id}`}
+                                className={`pond-animal ${draggedAnimalId === animal.id ? 'dragging' : ''}`}
+                                style={{
+                                    left: `${animal.x}%`,
+                                    top: `${animal.y}%`,
+                                }}
+                                onMouseDown={(e) => handleDragStart(e, animal.id)}
+                                onTouchStart={(e) => handleDragStart(e, animal.id)}
+                            >
+                                {animal.type}
+                            </div>
+                        ))}
+
+
+                        {/* Sand Ground */}
+                        <div className="sand-ground"></div>
+
+                        {/* Net */}
                         <div
-                            key={animal.id}
-                            id={`animal-${animal.id}`}
-                            className={`pond-animal ${draggedAnimalId === animal.id ? 'dragging' : ''}`}
-                            style={{
-                                left: `${animal.x}%`,
-                                top: `${animal.y}%`,
-                            }}
-                            onMouseDown={(e) => handleDragStart(e, animal.id)}
-                            onTouchStart={(e) => handleDragStart(e, animal.id)}
+                            id="fishing-net"
+                            className={`fishing-net-zone ${netHighlight ? 'highlight' : ''}`}
                         >
-                            {animal.type}
+                            <div className="net-emoji">🕸️</div>
+                            <div className="net-label">DROP HERE</div>
                         </div>
-                    ))}
 
+                        {/* Coral & Decor Mix */}
+                        <div className="rock-deco" style={{ left: '2%' }}>🪨</div>
+                        <div className="coral-deco large" style={{ left: '8%' }}>🪸</div>
+                        <div className="shell-deco" style={{ left: '18%' }}>🐚</div>
+                        <div className="coral-deco small" style={{ left: '22%' }}>🪸</div>
 
-                    {/* Sand Ground */}
-                    <div className="sand-ground"></div>
+                        {/* Moved coral further left to avoid Net intersection */}
+                        <div className="coral-deco" style={{ left: '30%' }}>🪸</div>
 
-                    {/* Net */}
-                    <div
-                        id="fishing-net"
-                        className={`fishing-net-zone ${netHighlight ? 'highlight' : ''}`}
-                    >
-                        <div className="net-emoji">🕸️</div>
-                        <div className="net-label">DROP HERE</div>
+                        <div className="coral-deco small" style={{ right: '35%' }}>🪸</div>
+
+                        {/* Rocks: Diagonal overlap, Upper one bigger, Lower one smaller */}
+                        <div className="rock-deco" style={{ right: '15%', bottom: '18px', fontSize: '3.2rem', zIndex: 0 }}>🪨</div>
+                        <div className="rock-deco" style={{ right: '22%', bottom: '5px', fontSize: '2rem', zIndex: 2 }}>🪨</div>
+
+                        <div className="coral-deco large" style={{ right: '5%' }}>🪸</div>
+                        <div className="shell-deco" style={{ right: '2%' }}>🐚</div>
                     </div>
-
-                    {/* Coral & Decor Mix */}
-                    <div className="rock-deco" style={{ left: '2%' }}>🪨</div>
-                    <div className="coral-deco large" style={{ left: '8%' }}>🪸</div>
-                    <div className="shell-deco" style={{ left: '18%' }}>🐚</div>
-                    <div className="coral-deco small" style={{ left: '22%' }}>🪸</div>
-
-                    {/* Moved coral further left to avoid Net intersection */}
-                    <div className="coral-deco" style={{ left: '30%' }}>🪸</div>
-
-                    <div className="coral-deco small" style={{ right: '35%' }}>🪸</div>
-
-                    {/* Rocks: Diagonal overlap, Upper one bigger, Lower one smaller */}
-                    <div className="rock-deco" style={{ right: '15%', bottom: '18px', fontSize: '3.2rem', zIndex: 0 }}>🪨</div>
-                    <div className="rock-deco" style={{ right: '22%', bottom: '5px', fontSize: '2rem', zIndex: 2 }}>🪨</div>
-
-                    <div className="coral-deco large" style={{ right: '5%' }}>🪸</div>
-                    <div className="shell-deco" style={{ right: '2%' }}>🐚</div>
                 </div>
-            </div>
+            </>
         </Layout3>
     );
 };
