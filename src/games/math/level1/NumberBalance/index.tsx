@@ -205,7 +205,7 @@ export const NumberBalance: React.FC<NumberBalanceProps> = ({ onExit }) => {
                         <div className="options-area">
                             {availableOptions.map(item => (
                                 <div
-                                    key={item.id}
+                                    key={`${item.id}-${currentProblem ? currentProblem.targetValue : 'void'}`}
                                     className={`number-block ${draggingId === item.id ? 'opacity-0' : ''}`}
                                     onPointerDown={(e) => handlePointerDown(e, item)}
                                 >

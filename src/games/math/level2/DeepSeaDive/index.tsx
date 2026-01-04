@@ -136,7 +136,7 @@ export const DeepSeaDive: React.FC<DeepSeaDiveProps> = ({ onExit }) => {
 
                         {(isPlaying && currentProblem) ? (
                             currentProblem.options.map((opt, idx) => (
-                                <React.Fragment key={opt}>
+                                <React.Fragment key={`${opt}-${currentProblem.equation}`}>
                                     {idx > 0 && <div className="gauge-rope" />} {/* Rope between items (flex 2) */}
                                     <div
                                         className="depth-marker"

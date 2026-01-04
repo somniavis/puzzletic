@@ -188,7 +188,7 @@ export const FruitSlice: React.FC<FruitSliceProps> = ({ onExit }) => {
             }}
         >
             <BlobBackground />
-            <div className="fruit-slice-container" style={{ padding: 0, position: 'relative', zIndex: 10 }}>
+            <div className="fruit-slice-game" style={{ padding: 0, position: 'relative', zIndex: 10, height: '100%', display: 'flex', flexDirection: 'column' }}>
                 {currentProblem && (
                     <>
                         <div className="fruit-stage">

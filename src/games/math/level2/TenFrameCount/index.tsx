@@ -87,7 +87,7 @@ export const TenFrameCount: React.FC<TenFrameCountProps> = ({ onExit }) => {
                 <div className="options-grid">
                     {options.map((option) => (
                         <button
-                            key={option} // Unique key to reset state/focus on change
+                            key={`${option}-${round}`} // Unique key forces re-render on new round, clearing focus
                             className="option-btn"
                             onClick={() => handleAnswer(option)}
                         >

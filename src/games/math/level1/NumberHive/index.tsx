@@ -95,7 +95,7 @@ export const NumberHive: React.FC<NumberHiveProps> = ({ onExit }) => {
             powerUps={powerUpConfig}
             target={{
                 value: currentNumber,
-                icon: "🎯"
+                icon: "🐝"
             }}
         >
             {/* Game Content: Bees and Grid */}

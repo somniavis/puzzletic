@@ -137,7 +137,7 @@ export const MathPinwheel: React.FC<MathPinwheelProps> = ({ onExit }) => {
                 <div className="pinwheel-options">
                     {options.map((option, idx) => (
                         <button
-                            key={`${option}-${idx}`}
+                            key={`${option}-${idx}-${currentStage}`}
                             className="pw-option-btn"
                             onClick={() => {
                                 if (!finalSpin) {

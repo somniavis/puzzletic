@@ -137,7 +137,7 @@ export const RoundCounting: React.FC<RoundCountingProps> = ({ onExit }) => {
 
                                 return (
                                     <button
-                                        key={item.id}
+                                        key={`${item.id}-${currentProblem.targetCount}`}
                                         onClick={() => handleItemClick(index)}
                                         disabled={isFound || isShuffling || gameOver}
                                         className={`grid-item-btn
