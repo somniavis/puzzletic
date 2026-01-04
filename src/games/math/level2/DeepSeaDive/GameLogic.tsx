@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { DIFFICULTY_CONFIG, ANIMALS, ANIMATION_TIMING } from './constants';
-import { playEatingSound } from '../../../../utils/sound';
+import { playButtonSound, playEatingSound } from '../../../../utils/sound';
 
 export interface Problem {
     a: number;
@@ -176,7 +176,7 @@ export const useDeepSeaLogic = () => {
         // 1. Start Dive Animation to specific index
         setIsDiving(true);
         setDiveTargetIndex(index);
-        playEatingSound(); // Splash/Dive sound
+        playButtonSound(); // Button click sound
 
         // 2. Wait for dive to reach target
         setTimeout(() => {
@@ -241,6 +241,9 @@ export const useDeepSeaLogic = () => {
 
     const usePowerUp = (type: 'freeze' | 'extraLife' | 'doubleScore') => {
         if (gameState.gameOver || !gameState.isPlaying) return;
+
+        playEatingSound(); // Sound effect for using power-up
+
 
         if (type === 'freeze' && powerUps.timeFreeze > 0 && !timeFrozen) {
             setPowerUps(prev => ({ ...prev, timeFreeze: prev.timeFreeze - 1 }));
