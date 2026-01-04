@@ -1,0 +1,75 @@
+/* DeepSeaBackground.css */
+.deep-sea-area {
+    /* Gradient: Surface (Light Blue) -> Deep (Dark Navy) */
+    background: linear-gradient(to bottom, #60a5fa, #1e3a8a, #0f172a);
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+    /* Critical for isolation */
+    contain: strict;
+    transform: translate3d(0, 0, 0);
+    /* GPU */
+}
+
+/* Light Rays from top */
+.sea-rays {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 40%;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.2) 0%, transparent 100%);
+    clip-path: polygon(0 0, 20% 100%, 40% 0, 60% 100%, 80% 0, 100% 100%, 100% 0);
+    opacity: 0.3;
+}
+
+/* Bubbles */
+.sea-bubbles {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.sea-bubble {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    bottom: -20px;
+    animation: rise var(--rise-duration) ease-in infinite;
+    animation-delay: var(--rise-delay);
+    left: var(--rise-left);
+    width: var(--bubble-size);
+    height: var(--bubble-size);
+}
+
+@keyframes rise {
+    0% {
+        transform: translateY(0) translateX(0);
+        opacity: 0;
+    }
+
+    10% {
+        opacity: 0.5;
+    }
+
+    50% {
+        transform: translateY(-50vh) translateX(20px);
+    }
+
+    100% {
+        transform: translateY(-110vh) translateX(-20px);
+        opacity: 0;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .sea-bubble {
+        animation: none;
+    }
+}
