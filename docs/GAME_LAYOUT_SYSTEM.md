@@ -33,15 +33,17 @@ We use standardized layouts to decouple "Game Mechanics" from "Meta UI" (Start S
 *   Header: Back, Title, BGM Toggle.
 *   Stats Bar: Score, Lives (Hearts), Streak, Time.
 *   Content: Centered Game Area.
-*   **Props**: `title`, `subtitle`, `description`, `instructions`, `engine`, `background`.
-*   **Background**: Pass a React Node to `background` prop (rendered at z-index 0).
+*   **Props**: `title`, `subtitle`, `description`, `instructions`, `engine`, `background`, `cardBackground`.
+*   **Background System**:
+    *   `background`: Global page background (rendered behind the game card).
+    *   `cardBackground`: **Game Card Internal Background** (fills the game area, `z-index: 0`). Use for full-bleed scenes (e.g., FishingCount).
 
 ### Layout 2: Power-Up Focused
 **Best For**: Games where users use Power-Ups but the goal is internal or dynamic (no fixed target box).
 **Features**:
 *   Includes Layout 1 features.
 *   **Sub-Header**: Dedicated row for **Power-Up Buttons**.
-*   **Props**: `powerUps: PowerUpBtnProps[]`.
+*   **Props**: `powerUps`, `cardBackground`, `background`.
 
 ### Layout 3: Target + Power-Ups (Complete)
 **Best For**: Math games where the player must match a specific target (e.g., "Make 10").
@@ -49,7 +51,7 @@ We use standardized layouts to decouple "Game Mechanics" from "Meta UI" (Start S
 *   Includes Layout 2 features.
 *   **Sub-Header**: Power-Ups row + **Target Display Box**.
 *   **Target Box**: Prominently shows the goal value/icon.
-*   **Props**: `target: { value, icon, label }`.
+*   **Props**: `target: { value, icon, label }`, `cardBackground`, `background`.
 
 ### Layout 0: Custom Canvas
 **Best For**: Unique UI requirements that don't fit the grid (e.g., `FishingCount`).
@@ -209,8 +211,11 @@ engine.registerEvent({ type: 'wrong' }); // Triggers "Jello" Sound + Screen Shak
 
 ### 6.1. Background Color Strategy
 To maintain visual distinction between categories, use specific gradient themes:
-*   **Math (Current)**: Violet/Indigo Gradient
+*   **Math (Global)**: Violet/Indigo Gradient
     *   `linear-gradient(135deg, #e9d5ff 0%, #b1b2fb 50%, #fecdd3 100%)`
+*   **Game Area (cardBackground)**:
+    *   Default: White/Transparent (if simple).
+    *   Scenes: Use `cardBackground` prop for full-bleed illustrations (e.g., Ocean, Forest) that sit behind game elements but inside the card border.
 *   **Science (Future)**: Blue/Cyan Theme
 *   **Language (Future)**: Green/Teal Theme
 

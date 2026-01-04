@@ -24,6 +24,7 @@ interface Layout1Props {
     onExit: () => void;
     children: React.ReactNode;
     background?: React.ReactNode; // Optional Background Slot
+    cardBackground?: React.ReactNode; // New: Background for the specific Game Card area
     // No PowerUps
 }
 
@@ -36,7 +37,8 @@ export const Layout1: React.FC<Layout1Props> = ({
     engine,
     onExit,
     children,
-    background
+    background,
+    cardBackground
 }) => {
     const {
         gameState, score, lives, timeLeft,
@@ -328,6 +330,9 @@ export const Layout1: React.FC<Layout1Props> = ({
             </div>
 
             <main className="layout1-game-area">
+                {/* Card Background Layer */}
+                {cardBackground && <div className="layout-card-background">{cardBackground}</div>}
+
                 {/* Game Area Wrapper (Centered) */}
                 <div className="layout1-grid-wrapper">
                     {children}

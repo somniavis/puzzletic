@@ -28,6 +28,7 @@ interface Layout2Props {
     // Props for Layout2 - PowerUps only, no Target
     powerUps: PowerUpBtnProps[];
     background?: React.ReactNode; // Optional Background Slot
+    cardBackground?: React.ReactNode; // New: Background for the specific Game Card area
     className?: string; // Allow custom styling wrapper
 }
 
@@ -42,6 +43,7 @@ export const Layout2: React.FC<Layout2Props> = ({
     children,
     powerUps,
     background,
+    cardBackground,
     className
 }) => {
     const {
@@ -334,6 +336,9 @@ export const Layout2: React.FC<Layout2Props> = ({
             </div>
 
             <main className="layout2-game-area">
+                {/* Card Background Layer */}
+                {cardBackground && <div className="layout-card-background">{cardBackground}</div>}
+
                 {/* Layout2 Specific: PowerUps ONLY (No Target) */}
                 <div className="layout2-sub-header">
                     <div className="powerup-row">
