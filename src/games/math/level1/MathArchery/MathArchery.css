@@ -8,6 +8,7 @@
     /* Updated to use BlobBackground */
     touch-action: none;
     /* Prevent scroll on drag */
+    -webkit-tap-highlight-color: transparent;
 }
 
 /* Ensure Layout3 Spacing Consistency */

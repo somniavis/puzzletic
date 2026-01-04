@@ -38,6 +38,13 @@ export const FishingCount: React.FC<FishingCountProps> = ({ onExit }) => {
         // startGame handled by Layout start screen interaction
     }, []);
 
+    // Force blur on target change (Safari Focus Fix)
+    useEffect(() => {
+        if (document.activeElement instanceof HTMLElement) {
+            document.activeElement.blur();
+        }
+    }, [targetCount]);
+
     // Layout Engine Adaptor
     const derivedGameState = isGameOver ? 'gameover' : (isPlaying ? 'playing' : 'idle');
 

@@ -39,6 +39,13 @@ export const FruitSlice: React.FC<FruitSliceProps> = ({ onExit }) => {
         });
     }, [i18n]);
 
+    // Force blur on problem change (Safari Focus Fix)
+    useEffect(() => {
+        if (document.activeElement instanceof HTMLElement) {
+            document.activeElement.blur();
+        }
+    }, [currentProblem]);
+
     const [draggingKnifeId, setDraggingKnifeId] = useState<number | null>(null);
     const [draggingKnifeValue, setDraggingKnifeValue] = useState<number | null>(null);
     const [dragPosition, setDragPosition] = useState({ x: 0, y: 0 });

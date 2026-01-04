@@ -37,6 +37,13 @@ export const NumberHive: React.FC<NumberHiveProps> = ({ onExit }) => {
         });
     }, [i18n]);
 
+    // Force blur on problem change (Safari Focus Fix)
+    useEffect(() => {
+        if (document.activeElement instanceof HTMLElement) {
+            document.activeElement.blur();
+        }
+    }, [currentNumber]);
+
     const derivedGameState = gameOver ? 'gameover' : (isPlaying ? 'playing' : 'idle');
 
     const layoutEngine = {

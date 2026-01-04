@@ -166,14 +166,19 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    -webkit-tap-highlight-color: transparent;
+    /* Safari Fix */
+    touch-action: manipulation;
 }
 
-/* Hover State */
-.option-btn:hover {
-    transform: translateY(-2px);
-    border-color: #94a3b8;
-    color: #334155;
-    background: #f8fafc;
+/* Hover State - Desktop Only to prevent sticky hover on mobile */
+@media (hover: hover) {
+    .option-btn:hover {
+        transform: translateY(-2px);
+        border-color: #94a3b8;
+        color: #334155;
+        background: #f8fafc;
+    }
 }
 
 /* Active State */

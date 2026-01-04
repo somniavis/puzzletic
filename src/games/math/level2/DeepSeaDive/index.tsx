@@ -31,6 +31,13 @@ export const DeepSeaDive: React.FC<DeepSeaDiveProps> = ({ onExit }) => {
         return () => stopTimer();
     }, []);
 
+    // Force blur on problem change (Safari Focus Fix)
+    React.useEffect(() => {
+        if (document.activeElement instanceof HTMLElement) {
+            document.activeElement.blur();
+        }
+    }, [currentProblem]);
+
     // Memoize engine to prevent re-renders
     const engine = React.useMemo(() => ({
         ...gameLogic,

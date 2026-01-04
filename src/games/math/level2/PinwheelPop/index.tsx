@@ -65,6 +65,13 @@ export const MathPinwheel: React.FC<MathPinwheelProps> = ({ onExit }) => {
         });
     }, [i18n]);
 
+    // Force blur on stage change (Safari Focus Fix)
+    useEffect(() => {
+        if (document.activeElement instanceof HTMLElement) {
+            document.activeElement.blur();
+        }
+    }, [currentStage]);
+
     return (
         <Layout2
             title={t('games.pinwheel-pop.title')}

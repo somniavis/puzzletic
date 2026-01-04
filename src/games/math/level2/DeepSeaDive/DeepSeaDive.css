@@ -163,11 +163,15 @@
     position: relative;
     z-index: 1;
     /* float above line */
+    -webkit-tap-highlight-color: transparent;
+    /* Safari Fix */
 }
 
-.depth-marker:hover {
-    background: rgba(255, 255, 255, 0.4);
-    transform: scale(1.05);
+@media (hover: hover) {
+    .depth-marker:hover {
+        background: rgba(255, 255, 255, 0.4);
+        transform: scale(1.05);
+    }
 }
 
 .depth-marker:active {

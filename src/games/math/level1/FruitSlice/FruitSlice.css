@@ -136,6 +136,7 @@
     user-select: none;
     -webkit-user-select: none;
     touch-action: none;
+    -webkit-tap-highlight-color: transparent;
 }
 
 /* Fruit Area - Centered in available space */

@@ -139,15 +139,18 @@
     /* Clean fuzzy edges */
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
+    -webkit-tap-highlight-color: transparent;
 }
 
-.hex-cell:hover {
-    transform: scale(1.05);
-    background-color: #fbbf24;
-    background-image:
-        radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.6) 0%, transparent 20%),
-        radial-gradient(circle at 75% 65%, rgba(180, 83, 9, 0.3) 0%, transparent 40%);
-    z-index: 10;
+@media (hover: hover) {
+    .hex-cell:hover {
+        transform: scale(1.05);
+        background-color: #fbbf24;
+        background-image:
+            radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.6) 0%, transparent 20%),
+            radial-gradient(circle at 75% 65%, rgba(180, 83, 9, 0.3) 0%, transparent 40%);
+        z-index: 10;
+    }
 }
 
 .hex-cell:active {

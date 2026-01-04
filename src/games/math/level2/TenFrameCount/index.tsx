@@ -29,6 +29,13 @@ export const TenFrameCount: React.FC<TenFrameCountProps> = ({ onExit }) => {
         });
     }, [i18n]);
 
+    // Force blur on round change (Safari Focus Fix)
+    useEffect(() => {
+        if (document.activeElement instanceof HTMLElement) {
+            document.activeElement.blur();
+        }
+    }, [round]);
+
     const layoutEngine = {
         ...logic,
         onExit: onExit,

@@ -153,7 +153,9 @@
 
     /* Allow shrinking below content size */
     min-width: 0;
+    min-width: 0;
     min-height: 0;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .emoji-content {
@@ -162,11 +164,13 @@
     /* Safe visual scaling without affecting layout flow */
 }
 
-.grid-item-btn:hover:not(:disabled) {
-    background-color: #d8b4fe;
-    /* bg-purple-300 */
-    transform: scale(1.02);
-    /* scale up relative to 0.92 base */
+@media (hover: hover) {
+    .grid-item-btn:hover:not(:disabled) {
+        background-color: #d8b4fe;
+        /* bg-purple-300 */
+        transform: scale(1.02);
+        /* scale up relative to 0.92 base */
+    }
 }
 
 .grid-item-btn:active:not(:disabled) {

@@ -31,6 +31,13 @@ export const NumberBalance: React.FC<NumberBalanceProps> = ({ onExit }) => {
         });
     }, []);
 
+    // Force blur on problem change (Safari Focus Fix)
+    useEffect(() => {
+        if (document.activeElement instanceof HTMLElement) {
+            document.activeElement.blur();
+        }
+    }, [currentProblem]);
+
     const derivedGameState = gameOver ? 'gameover' : (engine.isPlaying ? 'playing' : 'idle');
 
     const layoutEngine = {

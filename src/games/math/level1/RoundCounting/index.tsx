@@ -46,6 +46,16 @@ export const RoundCounting: React.FC<RoundCountingProps> = ({ onExit }) => {
         Object.keys(newResources).forEach(lang => {
             i18n.addResourceBundle(lang, 'translation', newResources[lang as keyof typeof newResources].translation, true, true);
         });
+    }, [i18n]);
+
+    // Force blur on problem change (Safari Focus Fix)
+    useEffect(() => {
+        if (document.activeElement instanceof HTMLElement) {
+            document.activeElement.blur();
+        }
+    }, [currentProblem]);
+
+    useEffect(() => {
         return () => stopTimer();
     }, []);
 

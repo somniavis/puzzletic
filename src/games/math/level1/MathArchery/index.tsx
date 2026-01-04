@@ -40,6 +40,13 @@ export const MathArchery: React.FC<MathArcheryProps> = ({ onExit }) => {
         arrow, shootArrow
     } = useMathArcheryLogicReturns;
 
+    // Force blur on problem change (Safari Focus Fix)
+    React.useEffect(() => {
+        if (document.activeElement instanceof HTMLElement) {
+            document.activeElement.blur();
+        }
+    }, [currentProblem]);
+
     React.useEffect(() => {
         const newResources = { en: { translation: { games: { 'math-archery': manifest_en } } } };
         Object.keys(newResources).forEach(lang => {
