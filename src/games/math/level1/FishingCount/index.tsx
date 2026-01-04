@@ -145,7 +145,7 @@ export const FishingCount: React.FC<FishingCountProps> = ({ onExit }) => {
             subtitle={t('games.math-fishing-count.sub')}
             gameId="math-fishing-count"
             engine={layoutEngine as any} // Cast safely
-            background={<FishingBackground />}
+            background={undefined} // Remove from global prop
             powerUps={[]} // No powerups for this Level 1 game yet
             target={{
                 value: Math.max(0, targetCount - caughtCount),
@@ -167,6 +167,8 @@ export const FishingCount: React.FC<FishingCountProps> = ({ onExit }) => {
                 onTouchEnd={handleDragEnd}
                 onMouseLeave={handleDragEnd}
             >
+                <FishingBackground />
+
                 {/* Pond & Animals */}
                 <div className="pond-area">
                     {animals.map(animal => (
