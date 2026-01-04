@@ -236,11 +236,13 @@
 /* Simplified for this file, assuming most are utility or shared, but for safety I'll include key Layout1 structural classes but renamed to layout2 if needed, 
    but screens often share logic. I'll re-include the critical Overlay/Button styles. */
 
+/* New Start Screen Layout */
 .start-screen-layout {
     display: flex;
     flex-direction: column;
     height: 100%;
     background: transparent;
+    backdrop-filter: none;
 }
 
 .start-header-section {
@@ -254,6 +256,12 @@
     font-weight: 800;
     color: #1e293b;
     margin-bottom: 0.5rem;
+}
+
+.game-subtitle {
+    font-size: 1.25rem;
+    color: #475569;
+    font-weight: 600;
 }
 
 .start-content-scroll {
@@ -272,6 +280,60 @@
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
     margin-bottom: 1rem;
     text-align: left;
+}
+
+.section-title {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: #334155;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.section-title::before {
+    content: '📖';
+}
+
+.game-description-text {
+    color: #64748b;
+    margin-bottom: 1.5rem;
+    line-height: 1.5;
+}
+
+.instructions-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.instruction-item {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    padding: 0.75rem;
+    background: #f8fafc;
+    border-radius: 0.75rem;
+    border-left: 4px solid #a855f7;
+}
+
+.instruction-icon {
+    font-size: 1.5rem;
+    line-height: 1;
+}
+
+.instruction-text strong {
+    display: block;
+    color: #1e293b;
+    margin-bottom: 0.25rem;
+    font-size: 0.95rem;
+}
+
+.instruction-text p {
+    color: #64748b;
+    font-size: 0.875rem;
+    margin: 0;
 }
 
 .start-footer-section {

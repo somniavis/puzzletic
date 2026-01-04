@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Layout0 } from '../../../layouts/Layout0';
+import { Layout1 } from '../../../layouts/Layout1';
 import { useTenFrameCountLogic } from './GameLogic';
 import manifest_en from './locales/en';
 import './TenFrameCount.css';
@@ -44,7 +44,7 @@ export const TenFrameCount: React.FC<TenFrameCountProps> = ({ onExit }) => {
     };
 
     return (
-        <Layout0
+        <Layout1
             title={t('games.ten-frame-count.title')}
             subtitle={t('games.ten-frame-count.subtitle')}
             gameId="ten-frame-count"
@@ -103,7 +103,7 @@ export const TenFrameCount: React.FC<TenFrameCountProps> = ({ onExit }) => {
                     ))}
                 </div>
             </div>
-        </Layout0>
+        </Layout1>
     );
 };
 
