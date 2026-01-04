@@ -13,36 +13,8 @@
     /* Important for custom drag handling */
 }
 
-/* Header Area */
-.fishing-header {
-    width: 100%;
-    padding: 1rem;
-    display: flex;
-    justify-content: center;
-    gap: 2rem;
-    background: rgba(255, 255, 255, 0.4);
-    backdrop-filter: blur(4px);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.5);
-    z-index: 10;
-}
+/* Header Area Removed - Handled by Layout3 */
 
-.target-info {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    font-size: 2rem;
-    font-weight: bold;
-    color: #0369a1;
-    background: white;
-    padding: 0.5rem 1.5rem;
-    border-radius: 999px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-}
-
-.target-emoji-display {
-    font-size: 2.5rem;
-    animation: bounce 1s infinite;
-}
 
 /* Pond Area */
 .pond-area {

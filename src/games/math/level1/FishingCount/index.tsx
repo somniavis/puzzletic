@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Layout0 } from '../../../layouts/Layout0';
+import { Layout3 } from '../../../layouts/Layout3';
 import { useFishingCountLogic } from './GameLogic';
 import { FishingBackground } from './FishingBackground';
 import manifest_en from './locales/en';
@@ -140,11 +140,17 @@ export const FishingCount: React.FC<FishingCountProps> = ({ onExit }) => {
 
 
     return (
-        <Layout0
+        <Layout3
             title={t('games.math-fishing-count.title')}
             subtitle={t('games.math-fishing-count.sub')}
             gameId="math-fishing-count"
             engine={layoutEngine as any} // Cast safely
+            background={<FishingBackground />}
+            powerUps={[]} // No powerups for this Level 1 game yet
+            target={{
+                value: Math.max(0, targetCount - caughtCount),
+                icon: targetAnimal
+            }}
             instructions={[
                 { icon: '🐟', title: t('games.math-fishing-count.howToPlay.goal.title'), description: t('games.math-fishing-count.howToPlay.goal.desc') },
                 { icon: '👆', title: t('games.math-fishing-count.howToPlay.action.title'), description: t('games.math-fishing-count.howToPlay.action.desc') },
@@ -161,17 +167,6 @@ export const FishingCount: React.FC<FishingCountProps> = ({ onExit }) => {
                 onTouchEnd={handleDragEnd}
                 onMouseLeave={handleDragEnd}
             >
-                <FishingBackground />
-
-                {/* Header Info */}
-                <div className="fishing-header">
-                    <div className="target-info">
-                        <span>Target:</span>
-                        <span className="target-emoji-display">{targetAnimal}</span>
-                        <span>x {targetCount - caughtCount}</span>
-                    </div>
-                </div>
-
                 {/* Pond & Animals */}
                 <div className="pond-area">
                     {animals.map(animal => (
@@ -222,7 +217,7 @@ export const FishingCount: React.FC<FishingCountProps> = ({ onExit }) => {
                     <div className="shell-deco" style={{ right: '2%' }}>🐚</div>
                 </div>
             </div>
-        </Layout0>
+        </Layout3>
     );
 };
 
