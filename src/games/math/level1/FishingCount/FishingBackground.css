@@ -1,7 +1,8 @@
-/* DeepSeaBackground.css */
-.deep-sea-area {
-    /* Gradient: Surface (Light Blue) -> Deep (Dark Navy) */
-    background: linear-gradient(to bottom, #60a5fa, #1e3a8a, #0f172a);
+/* FishingBackground.css */
+.fishing-bg-area {
+    /* Gradient: Bright Surface (White/Cyan) -> Shallow Water (Light Blue) */
+    /* Matches previous feel but adds depth */
+    background: linear-gradient(180deg, #e0f2fe 0%, #7dd3fc 100%);
     width: 100%;
     height: 100%;
     position: absolute;
@@ -10,54 +11,55 @@
     z-index: 0;
     overflow: hidden;
     pointer-events: none;
-    /* Critical for isolation */
+    /* Isolate paint */
     contain: strict;
     transform: translate3d(0, 0, 0);
-    /* GPU */
 }
 
-/* Light Rays from top */
-.sea-rays {
+/* Light Rays from top - Make them brighter/white */
+.fishing-rays {
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
-    height: 40%;
-    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.2) 0%, transparent 100%);
+    height: 60%;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.4) 0%, transparent 100%);
     clip-path: polygon(0 0, 20% 100%, 40% 0, 60% 100%, 80% 0, 100% 100%, 100% 0);
-    opacity: 0.3;
+    opacity: 0.5;
 }
 
 /* Bubbles */
-.sea-bubbles {
+.fishing-bubbles {
     position: absolute;
     width: 100%;
     height: 100%;
 }
 
-.sea-bubble {
+.fishing-bubble {
     position: absolute;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    /* Visiblity adjusted per user request */
+    background: rgba(255, 255, 255, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.4);
     bottom: -20px;
-    animation: rise var(--rise-duration) ease-in infinite;
+    animation: fishing-rise var(--rise-duration) ease-in infinite;
     animation-delay: var(--rise-delay);
     left: var(--rise-left);
     width: var(--bubble-size);
     height: var(--bubble-size);
-    /* GPU Optimization */
+    /* GPU Optimization: promote to layer */
     will-change: transform;
 }
 
-@keyframes rise {
+@keyframes fishing-rise {
     0% {
         transform: translateY(0) translateX(0);
         opacity: 0;
     }
 
     10% {
-        opacity: 0.5;
+        opacity: 0.7;
+        /* User requested 0.7 */
     }
 
     50% {
@@ -71,7 +73,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .sea-bubble {
+    .fishing-bubble {
         animation: none;
     }
 }

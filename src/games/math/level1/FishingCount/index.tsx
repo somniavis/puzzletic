@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Layout0 } from '../../../layouts/Layout0';
 import { useFishingCountLogic } from './GameLogic';
+import { FishingBackground } from './FishingBackground';
 import manifest_en from './locales/en';
 import './FishingCount.css';
 import type { GameManifest } from '../../../types';
@@ -160,6 +161,8 @@ export const FishingCount: React.FC<FishingCountProps> = ({ onExit }) => {
                 onTouchEnd={handleDragEnd}
                 onMouseLeave={handleDragEnd}
             >
+                <FishingBackground />
+
                 {/* Header Info */}
                 <div className="fishing-header">
                     <div className="target-info">

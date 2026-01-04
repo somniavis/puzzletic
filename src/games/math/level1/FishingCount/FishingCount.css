@@ -6,8 +6,8 @@
     flex-direction: column;
     align-items: center;
     overflow: hidden;
-    background: linear-gradient(180deg, #e0f2fe 0%, #bae6fd 100%);
-    /* Light blue water feel */
+    background: transparent;
+    /* Background handled by FishingBackground component */
     border-radius: 12px;
     touch-action: none;
     /* Important for custom drag handling */
