@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { playButtonSound, playEatingSound, playCleaningSound } from '../../../../utils/sound';
+
 
 export interface FruitItem {
     id: number;
@@ -246,7 +246,7 @@ export const useFruitSliceLogic = () => {
         const isCorrect = knifeValue === currentProblem.fruit.value;
 
         if (isCorrect) {
-            playCleaningSound(); // Slice sound
+            // playCleaningSound(); // REMOVED
             setLastEvent({ type: 'correct', id: Date.now() });
 
             const responseTime = Date.now() - questionStartTime;
@@ -272,7 +272,7 @@ export const useFruitSliceLogic = () => {
                 const types: (keyof typeof powerUps)[] = ['timeFreeze', 'extraLife', 'doubleScore'];
                 const type = types[Math.floor(Math.random() * types.length)];
                 setPowerUps(prev => ({ ...prev, [type]: prev[type] + 1 }));
-                playEatingSound();
+                // playEatingSound(); // REMOVED
             }
 
             adjustDifficulty(true);
@@ -285,7 +285,7 @@ export const useFruitSliceLogic = () => {
             }, 1500); // 1.5s slice animation to ensure full visibility
 
         } else {
-            playButtonSound(); // Wrong sound
+            // playButtonSound(); // REMOVED
             setLastEvent({ type: 'wrong', id: Date.now() });
 
             setGameState(prev => {

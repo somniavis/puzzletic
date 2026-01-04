@@ -1,7 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 
-import { playButtonSound, playEatingSound } from '../../../../utils/sound';
-
 export interface GridItem {
     id: number;
     emoji: string;
@@ -250,7 +248,7 @@ export const useRoundCountingLogic = () => {
 
         if (clickedItem.isTarget) {
             // Correct
-            playButtonSound();
+            // playButtonSound(); // REMOVED
             const newFoundIds = [...foundIds, clickedItem.id];
             setFoundIds(newFoundIds);
 
@@ -293,7 +291,7 @@ export const useRoundCountingLogic = () => {
                     const types: (keyof typeof powerUps)[] = ['timeFreeze', 'extraLife', 'doubleScore'];
                     const type = types[Math.floor(Math.random() * types.length)];
                     setPowerUps(prev => ({ ...prev, [type]: prev[type] + 1 }));
-                    playEatingSound(); // Sound for powerup drop?
+                    // playEatingSound(); // REMOVED
                 }
 
                 adjustDifficulty(true);
@@ -320,7 +318,7 @@ export const useRoundCountingLogic = () => {
             // Debounce error clicks
             setTimeout(() => { isProcessing.current = false; }, 300);
 
-            playButtonSound(); // Simple click sound for error or maybe add a specific error sound later
+            // playButtonSound(); // REMOVED
             setIncorrectClickIndex(index);
 
             // Trigger feedback event

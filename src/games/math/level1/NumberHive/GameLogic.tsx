@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { playButtonSound, playEatingSound } from '../../../../utils/sound';
+
 
 export interface HiveCell {
     id: number;
@@ -219,7 +219,7 @@ export const useNumberHiveLogic = () => {
 
         if (cell.value === gameState.currentNumber) {
             // Correct
-            playButtonSound();
+            // playButtonSound(); // REMOVED
 
             // Mark revealed
             setCurrentLevel(prev => {
@@ -264,7 +264,7 @@ export const useNumberHiveLogic = () => {
                     const types: (keyof typeof powerUps)[] = ['timeFreeze', 'extraLife', 'doubleScore'];
                     const type = types[Math.floor(Math.random() * types.length)];
                     setPowerUps(prev => ({ ...prev, [type]: prev[type] + 1 }));
-                    playEatingSound();
+                    // playEatingSound(); // REMOVED
                 }
 
                 // Determine next level

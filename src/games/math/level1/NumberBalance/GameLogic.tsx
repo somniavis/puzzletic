@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { playButtonSound, playEatingSound } from '../../../../utils/sound';
+
 
 export interface GameState {
     score: number;
@@ -238,7 +238,7 @@ export const useNumberBalanceLogic = () => {
                     const types: (keyof typeof powerUps)[] = ['timeFreeze', 'extraLife', 'doubleScore'];
                     const type = types[Math.floor(Math.random() * types.length)];
                     setPowerUps(prev => ({ ...prev, [type]: prev[type] + 1 }));
-                    playEatingSound();
+                    // playEatingSound(); // REMOVED
                 }
 
                 setTimeout(() => {
@@ -330,7 +330,7 @@ export const useNumberBalanceLogic = () => {
         if (rightPanItems.length >= 2 || gameState.gameOver) return;
 
         // Add to pan
-        playButtonSound();
+        // playButtonSound(); // REMOVED
         setRightPanItems(prev => [...prev, item]);
 
         // Remove from current options visually? 
