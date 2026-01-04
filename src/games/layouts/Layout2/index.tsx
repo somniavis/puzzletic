@@ -27,6 +27,7 @@ interface Layout2Props {
     children: React.ReactNode;
     // Props for Layout2 - PowerUps only, no Target
     powerUps: PowerUpBtnProps[];
+    background?: React.ReactNode; // Optional Background Slot
     className?: string; // Allow custom styling wrapper
 }
 
@@ -40,6 +41,7 @@ export const Layout2: React.FC<Layout2Props> = ({
     onExit,
     children,
     powerUps,
+    background,
     className
 }) => {
     const {
@@ -188,7 +190,8 @@ export const Layout2: React.FC<Layout2Props> = ({
 
     if (gameState === 'idle') {
         return (
-            <div className="layout2-container">
+            <div className={`layout2-container ${className || ''}`}>
+                {background && <div className="layout-background-layer">{background}</div>}
                 <header className="layout2-header">
                     <button className="icon-btn" onClick={() => { playButtonSound(); onExit(); }} style={{ fontSize: '1.5rem' }}>🔙</button>
                     <button className="icon-btn" onClick={() => { playButtonSound(); toggleBgm(); }} style={{ fontSize: '1.5rem' }}>
@@ -231,7 +234,8 @@ export const Layout2: React.FC<Layout2Props> = ({
         const earnedXp = rewardResult?.xpEarned || 0;
         const earnedGro = rewardResult?.groEarned || 0;
         return (
-            <div className="layout2-container">
+            <div className={`layout2-container ${className || ''}`}>
+                {background && <div className="layout-background-layer">{background}</div>}
                 <header className="layout2-header">
                     <button className="icon-btn" onClick={() => { playButtonSound(); onExit(); }} style={{ fontSize: '1.5rem' }}>🔙</button>
                     <button className="icon-btn" onClick={() => { playButtonSound(); toggleBgm(); }} style={{ fontSize: '1.5rem' }}>
@@ -291,6 +295,9 @@ export const Layout2: React.FC<Layout2Props> = ({
 
     return (
         <div className={`layout2-container ${className || ''}`}>
+            {/* Background Layer */}
+            {background && <div className="layout-background-layer">{background}</div>}
+
             <header className="layout2-header">
                 <button className="icon-btn" onClick={() => { playButtonSound(); onExit(); }} style={{ fontSize: '1.5rem' }}>🔙</button>
                 <div className="header-title">{title}</div>

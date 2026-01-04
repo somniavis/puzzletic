@@ -22,6 +22,7 @@ import { StatsPage } from './pages/StatsPage'
 import { GalleryPage } from './pages/GalleryPage'
 import { EncyclopediaPage } from './pages/EncyclopediaPage'
 import { ProfilePage } from './pages/ProfilePage'
+import { DebugLayoutPreview } from './pages/DebugLayoutPreview'
 
 import { CHARACTER_SPECIES, type CharacterSpeciesId, getEvolutionName } from './data/species';
 
@@ -248,6 +249,12 @@ function AppContent() {
         <Route path="/profile" element={
           <ProtectedRoute>
             <ProfilePage />
+          </ProtectedRoute>
+        } />
+
+        <Route path="/debug/layouts" element={
+          <ProtectedRoute>
+            <DebugLayoutPreview />
           </ProtectedRoute>
         } />
 

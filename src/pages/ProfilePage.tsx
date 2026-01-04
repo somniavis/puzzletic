@@ -159,6 +159,21 @@ export const ProfilePage: React.FC = () => {
                         >
                             🌟 Max Stats
                         </button>
+                        <button
+                            style={{
+                                background: '#607D8B',
+                                color: 'white',
+                                padding: '12px 24px',
+                                borderRadius: '12px',
+                                border: 'none',
+                                fontWeight: 'bold',
+                                cursor: 'pointer',
+                                flex: 1
+                            }}
+                            onClick={() => navigate('/debug/layouts')}
+                        >
+                            🎨 Layout Preview
+                        </button>
                     </div>
                 </section>
             </div>

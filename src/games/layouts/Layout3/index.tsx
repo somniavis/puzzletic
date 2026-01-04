@@ -32,6 +32,7 @@ interface Layout3Props {
         icon?: string;
         label?: string;
     };
+    background?: React.ReactNode; // Optional Background Slot
     className?: string;
 }
 
@@ -46,6 +47,7 @@ export const Layout3: React.FC<Layout3Props> = ({
     children,
     powerUps,
     target,
+    background,
     className
 }) => {
     const {
@@ -193,10 +195,9 @@ export const Layout3: React.FC<Layout3Props> = ({
     };
 
     if (gameState === 'idle') {
-        // ... Start Screen logic identical to Layout0 ...
-        // For brevity in this task, I am copying it but replacing class names to layout2 if needed or keeping generic
         return (
-            <div className="layout3-container">
+            <div className={`layout3-container ${className || ''}`}>
+                {background && <div className="layout-background-layer">{background}</div>}
                 <header className="layout3-header">
                     <button className="icon-btn" onClick={() => { playButtonSound(); onExit(); }} style={{ fontSize: '1.5rem' }}>🔙</button>
                     <button className="icon-btn" onClick={() => { playButtonSound(); toggleBgm(); }} style={{ fontSize: '1.5rem' }}>
@@ -204,7 +205,6 @@ export const Layout3: React.FC<Layout3Props> = ({
                     </button>
                 </header>
                 <div className="overlay-screen start-screen-layout">
-                    {/* ... Start Content ... */}
                     <div className="start-header-section">
                         <h1 className="game-title">{title}</h1>
                         {subtitle && <h2 className="game-subtitle">{subtitle}</h2>}
@@ -237,11 +237,11 @@ export const Layout3: React.FC<Layout3Props> = ({
     }
 
     if (gameState === 'gameover') {
-        // ... Game Over Screen logic identical to Layout0 ...
         const earnedXp = rewardResult?.xpEarned || 0;
         const earnedGro = rewardResult?.groEarned || 0;
         return (
-            <div className="layout3-container">
+            <div className={`layout3-container ${className || ''}`}>
+                {background && <div className="layout-background-layer">{background}</div>}
                 <header className="layout3-header">
                     <button className="icon-btn" onClick={() => { playButtonSound(); onExit(); }} style={{ fontSize: '1.5rem' }}>🔙</button>
                     <button className="icon-btn" onClick={() => { playButtonSound(); toggleBgm(); }} style={{ fontSize: '1.5rem' }}>
@@ -254,7 +254,6 @@ export const Layout3: React.FC<Layout3Props> = ({
                         <h1 className="game-over-title">{gameOverReason === 'cleared' ? (t('common.stageClear') || 'Stage Clear!') : (t('common.gameOver') || 'Game Over!')}</h1>
                     </div>
                     <div ref={gameOverRef} className="start-content-scroll custom-scrollbar" style={{ marginTop: '0.5rem' }}>
-                        {/* Result Cards similar to Layout0 */}
                         <div className="result-cards-container">
                             <div className="result-card main-stats">
                                 <div className="score-display-wrapper">
@@ -302,6 +301,9 @@ export const Layout3: React.FC<Layout3Props> = ({
 
     return (
         <div className={`layout3-container ${className || ''}`}>
+            {/* Background Layer */}
+            {background && <div className="layout-background-layer">{background}</div>}
+
             <header className="layout3-header">
                 <button className="icon-btn" onClick={() => { playButtonSound(); onExit(); }} style={{ fontSize: '1.5rem' }}>🔙</button>
                 <div className="header-title">{title}</div>

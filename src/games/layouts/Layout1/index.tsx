@@ -23,6 +23,7 @@ interface Layout1Props {
     engine: ReturnType<typeof useGameEngine>;
     onExit: () => void;
     children: React.ReactNode;
+    background?: React.ReactNode; // Optional Background Slot
     // No PowerUps
 }
 
@@ -34,7 +35,8 @@ export const Layout1: React.FC<Layout1Props> = ({
     instructions,
     engine,
     onExit,
-    children
+    children,
+    background
 }) => {
     const {
         gameState, score, lives, timeLeft,
@@ -183,6 +185,7 @@ export const Layout1: React.FC<Layout1Props> = ({
     if (gameState === 'idle') {
         return (
             <div className="layout1-container">
+                {background && <div className="layout-background-layer">{background}</div>}
                 <header className="layout1-header">
                     <button className="icon-btn" onClick={() => { playButtonSound(); onExit(); }} style={{ fontSize: '1.5rem' }}>🔙</button>
                     <button className="icon-btn" onClick={() => { playButtonSound(); toggleBgm(); }} style={{ fontSize: '1.5rem' }}>
@@ -226,6 +229,7 @@ export const Layout1: React.FC<Layout1Props> = ({
         const earnedGro = rewardResult?.groEarned || 0;
         return (
             <div className="layout1-container">
+                {background && <div className="layout-background-layer">{background}</div>}
                 <header className="layout1-header">
                     <button className="icon-btn" onClick={() => { playButtonSound(); onExit(); }} style={{ fontSize: '1.5rem' }}>🔙</button>
                     <button className="icon-btn" onClick={() => { playButtonSound(); toggleBgm(); }} style={{ fontSize: '1.5rem' }}>
@@ -285,6 +289,9 @@ export const Layout1: React.FC<Layout1Props> = ({
 
     return (
         <div className="layout1-container">
+            {/* Background Layer - Z-Index 0 */}
+            {background && <div className="layout-background-layer">{background}</div>}
+
             <header className="layout1-header">
                 <button className="icon-btn" onClick={() => { playButtonSound(); onExit(); }} style={{ fontSize: '1.5rem' }}>🔙</button>
                 <div className="header-title">{title}</div>
