@@ -145,7 +145,6 @@ export const FishingCount: React.FC<FishingCountProps> = ({ onExit }) => {
             subtitle={t('games.math-fishing-count.sub')}
             gameId="math-fishing-count"
             engine={layoutEngine as any} // Cast safely
-            background={undefined} // Remove from global prop
             powerUps={[]} // No powerups for this Level 1 game yet
             target={{
                 value: Math.max(0, targetCount - caughtCount),
@@ -157,72 +156,71 @@ export const FishingCount: React.FC<FishingCountProps> = ({ onExit }) => {
                 { icon: '🔢', title: t('games.math-fishing-count.howToPlay.math.title'), description: t('games.math-fishing-count.howToPlay.math.desc') }
             ]}
             onExit={onExit}
+            cardBackground={<FishingBackground />}
         >
-            <>
-                <FishingBackground />
-                <div
-                    className="fishing-count-container"
-                    ref={containerRef}
-                    onMouseMove={handleDragMove}
-                    onTouchMove={handleDragMove}
-                    onMouseUp={handleDragEnd}
-                    onTouchEnd={handleDragEnd}
-                    onMouseLeave={handleDragEnd}
-                >
+            <div
+                className="fishing-count-container"
+                ref={containerRef}
+                onMouseMove={handleDragMove}
+                onTouchMove={handleDragMove}
+                onMouseUp={handleDragEnd}
+                onTouchEnd={handleDragEnd}
+                onMouseLeave={handleDragEnd}
+            >
 
 
-                    {/* Pond & Animals */}
-                    <div className="pond-area">
-                        {animals.map(animal => (
-                            <div
-                                key={animal.id}
-                                id={`animal-${animal.id}`}
-                                className={`pond-animal ${draggedAnimalId === animal.id ? 'dragging' : ''}`}
-                                style={{
-                                    left: `${animal.x}%`,
-                                    top: `${animal.y}%`,
-                                }}
-                                onMouseDown={(e) => handleDragStart(e, animal.id)}
-                                onTouchStart={(e) => handleDragStart(e, animal.id)}
-                            >
-                                {animal.type}
-                            </div>
-                        ))}
-
-
-                        {/* Sand Ground */}
-                        <div className="sand-ground"></div>
-
-                        {/* Net */}
+                {/* Pond & Animals */}
+                <div className="pond-area">
+                    {animals.map(animal => (
                         <div
-                            id="fishing-net"
-                            className={`fishing-net-zone ${netHighlight ? 'highlight' : ''}`}
+                            key={animal.id}
+                            id={`animal-${animal.id}`}
+                            className={`pond-animal ${draggedAnimalId === animal.id ? 'dragging' : ''}`}
+                            style={{
+                                left: `${animal.x}%`,
+                                top: `${animal.y}%`,
+                            }}
+                            onMouseDown={(e) => handleDragStart(e, animal.id)}
+                            onTouchStart={(e) => handleDragStart(e, animal.id)}
                         >
-                            <div className="net-emoji">🕸️</div>
-                            <div className="net-label">DROP HERE</div>
+                            {animal.type}
                         </div>
+                    ))}
 
-                        {/* Coral & Decor Mix */}
-                        <div className="rock-deco" style={{ left: '2%' }}>🪨</div>
-                        <div className="coral-deco large" style={{ left: '8%' }}>🪸</div>
-                        <div className="shell-deco" style={{ left: '18%' }}>🐚</div>
-                        <div className="coral-deco small" style={{ left: '22%' }}>🪸</div>
 
-                        {/* Moved coral further left to avoid Net intersection */}
-                        <div className="coral-deco" style={{ left: '30%' }}>🪸</div>
+                    {/* Sand Ground */}
+                    <div className="sand-ground"></div>
 
-                        <div className="coral-deco small" style={{ right: '35%' }}>🪸</div>
-
-                        {/* Rocks: Diagonal overlap, Upper one bigger, Lower one smaller */}
-                        <div className="rock-deco" style={{ right: '15%', bottom: '18px', fontSize: '3.2rem', zIndex: 0 }}>🪨</div>
-                        <div className="rock-deco" style={{ right: '22%', bottom: '5px', fontSize: '2rem', zIndex: 2 }}>🪨</div>
-
-                        <div className="coral-deco large" style={{ right: '5%' }}>🪸</div>
-                        <div className="shell-deco" style={{ right: '2%' }}>🐚</div>
+                    {/* Net */}
+                    <div
+                        id="fishing-net"
+                        className={`fishing-net-zone ${netHighlight ? 'highlight' : ''}`}
+                    >
+                        <div className="net-emoji">🕸️</div>
+                        <div className="net-label">DROP HERE</div>
                     </div>
+
+                    {/* Coral & Decor Mix */}
+                    <div className="rock-deco" style={{ left: '2%' }}>🪨</div>
+                    <div className="coral-deco large" style={{ left: '8%' }}>🪸</div>
+                    <div className="shell-deco" style={{ left: '18%' }}>🐚</div>
+                    <div className="coral-deco small" style={{ left: '22%' }}>🪸</div>
+
+                    {/* Moved coral further left to avoid Net intersection */}
+                    <div className="coral-deco" style={{ left: '30%' }}>🪸</div>
+
+                    <div className="coral-deco small" style={{ right: '35%' }}>🪸</div>
+
+                    {/* Rocks: Diagonal overlap, Upper one bigger, Lower one smaller */}
+                    <div className="rock-deco" style={{ right: '15%', bottom: '18px', fontSize: '3.2rem', zIndex: 0 }}>🪨</div>
+                    <div className="rock-deco" style={{ right: '22%', bottom: '5px', fontSize: '2rem', zIndex: 2 }}>🪨</div>
+
+                    <div className="coral-deco large" style={{ right: '5%' }}>🪸</div>
+                    <div className="shell-deco" style={{ right: '2%' }}>🐚</div>
                 </div>
-            </>
-        </Layout3>
+            </div>
+
+        </Layout3 >
     );
 };
 

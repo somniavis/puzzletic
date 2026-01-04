@@ -32,7 +32,8 @@ interface Layout3Props {
         icon?: string;
         label?: string;
     };
-    background?: React.ReactNode; // Optional Background Slot
+    background?: React.ReactNode; // Restored: Global background layer (optional)
+    cardBackground?: React.ReactNode; // New: Background for the specific Game Card area
     className?: string;
 }
 
@@ -48,6 +49,7 @@ export const Layout3: React.FC<Layout3Props> = ({
     powerUps,
     target,
     background,
+    cardBackground, // Destructure
     className
 }) => {
     const {
@@ -340,6 +342,9 @@ export const Layout3: React.FC<Layout3Props> = ({
             </div>
 
             <main className="layout3-game-area">
+                {/* Card Background Layer */}
+                {cardBackground && <div className="layout-card-background">{cardBackground}</div>}
+
                 {/* Layout3 Specific: Common Header (PowerUps + Target) */}
                 <div className="layout3-sub-header">
                     <div className="powerup-row">
