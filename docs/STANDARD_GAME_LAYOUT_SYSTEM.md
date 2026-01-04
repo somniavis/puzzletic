@@ -33,10 +33,12 @@ We use standardized layouts to decouple "Game Mechanics" from "Meta UI".
     *   `useGameEffects`: Manages Particles, Shake, and Sound logic.
     *   `useGameScoring`: Manages High Score (localStorage), XP/GRO calculation, and New Record tracking.
 *   **UI**:
-    *   `GameStartScreen`: Standardized overlay with Title, Subtitle, Instructions, and 'How to Play'.
-    *   `GameOverScreen`: Standardized result screen with Score, High Score (Prev Best), Rewards, and Download/Restart buttons.
+    *   `GameStartScreen`: Standardized overlay with Title, Subtitle, Instructions, and 'How to Play'. **Handles button sound internally**.
+    *   `GameOverScreen`: Standardized result screen with Score, High Score (Prev Best), Rewards, and Download/Restart buttons. **Handles button sound internally**.
     *   `GameLayoutHeader`: Top bar with Back button, Title, and BGM toggle.
     *   `GameLayoutDashboard`: Stats row showing Score, Lives, Streak, and Time.
+*   **Styles**:
+    *   `SharedStyles.css`: Common styles for Game Over screen components (header, result cards, rewards grid). Automatically imported by `GameOverScreen.tsx`.
 
 ### Layout 1: Basic View (Standard/Layout1)
 **Best For**: Simple puzzle/counting games without Power-Ups or specific Targets.
@@ -112,7 +114,23 @@ const powerUps = [
 }
 ```
 
-### 4.2. Sticky Hover Fix (Mobile)
+### 4.2. Mobile Viewport Height
+**Problem**: Layout extends beneath mobile browser UI (URL bar, navigation).
+**Solution**: Use `dvh` (dynamic viewport height) instead of `%`.
+```css
+.layout-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100dvh; /* NOT 100% - use dvh for mobile-safe viewport */
+    display: flex;
+    flex-direction: column;
+}
+```
+**Note**: All Standard Layouts (Layout1/2/3) use `100dvh` by default.
+
+### 4.3. Sticky Hover Fix (Mobile)
 **Problem**: Buttons stay "hovered" after tap on touch devices.
 **Solution**: Wrap hover effects.
 ```css
@@ -123,7 +141,7 @@ const powerUps = [
 }
 ```
 
-### 4.3. Focus Reset (Safari Focus Ring)
+### 4.4. Focus Reset (Safari Focus Ring)
 **Problem**: Focus remains on clicked button, causing issues with keyboard/gamepad or visual artifacts.
 **Solution**: Blur explicitly in `index.tsx`.
 ```tsx
@@ -135,7 +153,7 @@ useEffect(() => {
 }, [currentProblem.id, round]);
 ```
 
-### 4.4. Ghost Click Prevention (Input Lock)
+### 4.5. Ghost Click Prevention (Input Lock)
 **Problem**: Rapid tapping causes "Double Tap" where the next screen's button is clicked instantly.
 **Solution**: Synchronous `useRef` Lock in `GameLogic.tsx`.
 
@@ -178,6 +196,8 @@ const handleAnswer = (selected) => {
 
 ## Feedback System (Sound & Animation)
 The Layouts automatically handle sensory feedback (sounds, particles, screen shake) by listening to `engine.lastEvent`. **You must manually trigger these events** in your Game Logic.
+
+**IMPORTANT**: Button sounds (clicks on Start/Restart buttons) are handled automatically by `GameStartScreen` and `GameOverScreen` components. **Do NOT call `playButtonSound()` in Layout callback props** to avoid duplicate sounds.
 
 ### 1. Correct Answer (Final / Stage Clear)
 Use when the user completes a verified step or stage.
