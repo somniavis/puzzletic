@@ -1,0 +1,263 @@
+/* SharedStyles.css - Styles used by Shared Components (GameOverScreen, etc.) */
+
+/* Game Over Header */
+.game-over-header-compact {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 5rem 0 1rem;
+    gap: 1rem;
+}
+
+.game-over-icon {
+    font-size: 3.5rem;
+    line-height: 1;
+    animation: bounce 1s infinite;
+}
+
+.game-over-title {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #1e293b;
+    margin: 0;
+}
+
+/* Split Result Cards Layout */
+.result-cards-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    width: 100%;
+    padding: 0 0.5rem;
+}
+
+.result-card {
+    background: white;
+    border-radius: 1rem;
+    padding: 1rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    border: 2px solid #e2e8f0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.result-card.main-stats {
+    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+    border-color: #cbd5e1;
+}
+
+/* Split Rewards Grid */
+.rewards-grid-split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    width: 100%;
+}
+
+.reward-card-split {
+    border-radius: 1rem;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    box-shadow: 0 4px 0 rgba(0, 0, 0, 0.1);
+    border: 2px solid transparent;
+}
+
+.reward-card-split.xp {
+    background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%);
+    /* Purple */
+    border-color: #d8b4fe;
+    box-shadow: 0 4px 0 #c084fc;
+}
+
+.reward-card-split.gro {
+    background: linear-gradient(135deg, #fef9c3 0%, #fef08a 100%);
+    /* Yellow */
+    border-color: #fde047;
+    box-shadow: 0 4px 0 #eab308;
+}
+
+/* Reward Text Styles */
+.reward-icon {
+    font-size: 1.5rem;
+    margin-bottom: -0.1rem;
+}
+
+.reward-amount {
+    font-size: 1.2rem;
+    font-weight: 800;
+}
+
+.reward-label {
+    font-size: 0.8rem;
+    font-weight: 800;
+    opacity: 0.8;
+}
+
+.result-card.rewards {
+    background: linear-gradient(135deg, #fdf4ff 0%, #fae8ff 100%);
+    border-color: #e879f9;
+    /* Purple-ish pink */
+    box-shadow: 0 4px 0 #d946ef;
+}
+
+/* Main Score Display */
+.score-display-wrapper {
+    display: flex;
+    align-items: flex-end;
+    /* Align bottom to match baseline somewhat */
+    justify-content: center;
+    gap: 1.5rem;
+    width: 100%;
+}
+
+.score-display-sub {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    /* Right align the small stats */
+    justify-content: center;
+    opacity: 0.7;
+    margin-bottom: 0.5rem;
+    /* Tiny visual adjustments */
+}
+
+.sub-score-label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: #94a3b8;
+    text-transform: uppercase;
+}
+
+.sub-score-value {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #64748b;
+    line-height: 1.1;
+}
+
+
+.score-display-large {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.score-label {
+    font-size: 0.875rem;
+    color: #64748b;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.score-value-huge {
+    font-size: 3rem;
+    font-weight: 900;
+    line-height: 1;
+    color: #b45309;
+    /* Matches Coin color darkened */
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-shadow: 2px 2px 0 rgba(255, 255, 255, 1);
+}
+
+.score-value-huge.record-pulse {
+    animation: bounce 1s infinite;
+    color: #ea580c;
+    /* Orange-600 */
+}
+
+/* Sub Stats Row (Streak, Accuracy) */
+.sub-stats-row {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    gap: 1.5rem;
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 2px dashed #e2e8f0;
+}
+
+.sub-stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.sub-stat-label {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    font-weight: 600;
+}
+
+.sub-stat-value {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: #475569;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+/* Text Colors */
+.text-blue {
+    color: #3b82f6;
+}
+
+.text-orange {
+    color: #f97316;
+}
+
+.text-purple {
+    color: #a855f7;
+}
+
+.text-yellow {
+    color: #eab308;
+}
+
+/* Game Over Buttons */
+.game-over-buttons {
+    display: flex;
+    gap: 0.75rem;
+    width: 100%;
+}
+
+.download-btn {
+    background: linear-gradient(180deg, #fbbf24 0%, #d97706 100%);
+    /* Amber to Orange */
+    color: white;
+    border-radius: 1rem;
+    border: 3px solid #b45309;
+    box-shadow: 0 4px 0 #78350f, 0 6px 12px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.1s ease;
+    height: 4.5rem;
+    width: 4.5rem;
+    /* Square */
+    flex-shrink: 0;
+}
+
+.download-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 0 #78350f, 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.download-btn:active {
+    transform: translateY(4px);
+    box-shadow: 0 0 0 #78350f, 0 0 0 rgba(0, 0, 0, 0.2);
+}
+
+/* Reuse Restart Btn styles if needed, but they are usually in main layout. 
+   If they are missing there, we can add them here too, but Layout CSS seemed to have them. */

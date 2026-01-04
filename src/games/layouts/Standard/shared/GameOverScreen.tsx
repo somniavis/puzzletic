@@ -1,4 +1,5 @@
 import React, { useRef } from 'react';
+import './SharedStyles.css';
 import { Flame, Download, RotateCcw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { toPng } from 'html-to-image';
