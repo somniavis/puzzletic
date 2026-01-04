@@ -176,5 +176,5 @@ export const manifest: GameManifest = {
     category: 'math',
     level: 2,
     component: DeepSeaDive,
-    thumbnail: '🐋'
+    thumbnail: '🤿'
 };

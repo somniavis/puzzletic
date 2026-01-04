@@ -35,6 +35,7 @@ export const useDeepSeaLogic = () => {
     const [currentAnimal, setCurrentAnimal] = useState(ANIMALS[0]);
     const [isDiving, setIsDiving] = useState(false);
     const [diveTargetIndex, setDiveTargetIndex] = useState<number | null>(null);
+    const [questionStartTime, setQuestionStartTime] = useState(0);
 
     // Logic: Generate Subtraction Problem
     const generateProblem = useCallback((level: number) => {
@@ -66,45 +67,66 @@ export const useDeepSeaLogic = () => {
         const answer = a - b;
 
         // Options Generation
-        const options = new Set<number>();
-        options.add(answer);
+        // Decide target position for answer: 0 (Top/Small), 1 (Mid/Med), 2 (Bottom/Large)
+        // Uniform distribution 33% each (where possible)
+        let targetPos = Math.floor(Math.random() * 3);
 
-        while (options.size < 3) {
-            const type = Math.random();
-            let badOption = answer;
+        // Adjust targetPos if impossible (e.g. Answer=1 cannot be at pos 2 because we need 2 smaller +ve integers)
+        // We assume options must be > 0.
+        if (answer <= 2 && targetPos === 2) targetPos = 1;
+        if (answer <= 1 && targetPos === 1) targetPos = 0;
 
-            if (type < 0.3) {
-                badOption = answer + (Math.random() > 0.5 ? 10 : -10);
-            } else if (type < 0.6) {
-                badOption = answer + (Math.floor(Math.random() * 5) + 1) * (Math.random() > 0.5 ? 1 : -1);
-            } else {
-                // Reverse digits? e.g. 13 -> 31
-                const s = answer.toString();
-                if (s.length === 2) badOption = parseInt(s.split('').reverse().join(''));
-                else badOption = answer + 1;
+        const newOptions = new Set<number>();
+        newOptions.add(answer);
+
+        const generateDistractor = (forceLarger: boolean): number => {
+            let limit = 0;
+            while (limit++ < 20) {
+                let diff = (Math.floor(Math.random() * 5) + 1) + (Math.random() > 0.5 ? 5 : 0); // 1..10
+                if (Math.random() > 0.8) diff += 10; // Occasional larger jump
+
+                const val = forceLarger ? answer + diff : answer - diff;
+
+                if (val > 0 && val < 200 && val !== answer && !newOptions.has(val)) {
+                    return val;
+                }
             }
+            // Fallback
+            return forceLarger ? answer + limit + newOptions.size : (answer > newOptions.size + 1 ? answer - (newOptions.size + 1) : answer + 10);
+        };
 
-            if (badOption > 0 && badOption < 100 && badOption !== answer) {
-                options.add(badOption);
-            } else {
-                // Fallback
-                options.add(answer + options.size + 1);
-            }
+        if (targetPos === 0) {
+            // Need 2 Larger
+            newOptions.add(generateDistractor(true));
+            newOptions.add(generateDistractor(true));
+        } else if (targetPos === 2) {
+            // Need 2 Smaller
+            newOptions.add(generateDistractor(false));
+            newOptions.add(generateDistractor(false));
+        } else {
+            // Need 1 Smaller, 1 Larger (Middle)
+            newOptions.add(generateDistractor(false));
+            newOptions.add(generateDistractor(true));
+        }
+
+        // Fill if failed (fallback)
+        while (newOptions.size < 3) {
+            newOptions.add(generateDistractor(true));
         }
 
         setCurrentProblem({
             a,
             b,
             answer,
-            options: Array.from(options).sort((x, y) => x - y),
+            options: Array.from(newOptions).sort((x, y) => x - y),
             equation: `${a} - ${b} = ?`
         });
 
-        // New Animal
         setCurrentAnimal(ANIMALS[Math.floor(Math.random() * ANIMALS.length)]);
         setIsDiving(false);
         setDiveTargetIndex(null);
         setLastEvent(null);
+        setQuestionStartTime(Date.now());
 
     }, []);
 
@@ -123,7 +145,7 @@ export const useDeepSeaLogic = () => {
         return () => clearInterval(timer);
     }, [gameState.isPlaying, gameState.gameOver, timeFrozen]);
 
-    const startGame = () => {
+    const startGame = useCallback(() => {
         setGameState({
             score: 0,
             lives: 3,
@@ -144,9 +166,9 @@ export const useDeepSeaLogic = () => {
         setLastEvent(null);
 
         generateProblem(1);
-    };
+    }, [generateProblem]);
 
-    const stopTimer = () => setGameState(prev => ({ ...prev, isPlaying: false }));
+    const stopTimer = useCallback(() => setGameState(prev => ({ ...prev, isPlaying: false })), []);
 
     const handleAnswer = (selected: number, index: number) => {
         if (isDiving) return; // Prevent double click
@@ -164,8 +186,16 @@ export const useDeepSeaLogic = () => {
                 setGameState(prev => {
                     const newStreak = prev.streak + 1;
                     const newLevel = Math.min(3, Math.floor(newStreak / 5) + 1);
-                    const scoreBase = (prev.difficultyLevel * 100) + (newStreak * 10);
+
+                    // Score Calculation (Matched to MathArchery)
+                    const responseTime = Date.now() - questionStartTime;
+                    const baseScore = prev.difficultyLevel * 50;
+                    const timeBonus = Math.max(0, 10 - Math.floor(responseTime / 1000)) * 5; // Max 50 pts
+                    const streakBonus = prev.streak * 10;
+
+                    const scoreBase = baseScore + timeBonus + streakBonus;
                     const finalScore = doubleScoreActive ? scoreBase * 2 : scoreBase;
+
                     return {
                         ...prev,
                         score: prev.score + finalScore,

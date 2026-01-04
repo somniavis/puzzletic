@@ -9,7 +9,8 @@
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    padding: 0 5%;
+    padding: 0 0 0 5%;
+    /* Only left padding: ensures diver area spans from [5% left edge] to [button edge] */
     /* No background here, let the DeepSeaBackground show through */
 }
 
@@ -185,8 +186,9 @@
 .splash {
     position: absolute;
     top: 50%;
-    /* Approximate surface level if we had one */
     left: 50%;
+    transform: translate(-50%, -50%);
+    /* Center anchor like diver-animal */
     font-size: 3rem;
     animation: splash-anim 0.5s ease-out forwards;
     pointer-events: none;
@@ -194,12 +196,12 @@
 
 @keyframes splash-anim {
     0% {
-        transform: scale(0);
+        transform: translate(-50%, -50%) scale(0);
         opacity: 1;
     }
 
     100% {
-        transform: scale(2);
+        transform: translate(-50%, -50%) scale(2);
         opacity: 0;
     }
 }
