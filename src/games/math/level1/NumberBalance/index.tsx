@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Layout2 } from '../../../layouts/Layout2';
+import { Layout2 } from '../../../layouts/Standard/Layout2';
 import { useNumberBalanceLogic } from './GameLogic';
 import type { NumberItem } from './GameLogic';
 import { BlobBackground } from '../../components/BlobBackground';

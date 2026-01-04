@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Layout3 } from '../../../layouts/Layout3';
+import { Layout3 } from '../../../layouts/Standard/Layout3';
 import { useMathArcheryLogic } from './GameLogic';
 import manifest_en from './locales/en';
 import './MathArchery.css';

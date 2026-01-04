@@ -1,0 +1,58 @@
+import React from 'react';
+import { useTranslation } from 'react-i18next';
+import { playButtonSound } from '../../../../utils/sound';
+
+interface Instruction {
+    icon?: string;
+    title: string;
+    description: string;
+}
+
+interface StartScreenProps {
+    title: string;
+    subtitle?: string;
+    description?: string;
+    instructions?: Instruction[];
+    onStart: () => void;
+}
+
+export const GameStartScreen: React.FC<StartScreenProps> = ({
+    title,
+    subtitle,
+    description,
+    instructions,
+    onStart
+}) => {
+    const { t } = useTranslation();
+
+    return (
+        <div className="overlay-screen start-screen-layout">
+            <div className="start-header-section">
+                <h1 className="game-title">{title}</h1>
+                {subtitle && <h2 className="game-subtitle">{subtitle}</h2>}
+            </div>
+            <div className="start-content-scroll custom-scrollbar">
+                <div className="how-to-play-box">
+                    <h3 className="section-title">{t('common.howToPlay')}</h3>
+                    {description && <p className="game-description-text">{description}</p>}
+                    {instructions && instructions.length > 0 && (
+                        <div className="instructions-list">
+                            {instructions.map((inst, index) => (
+                                <div key={index} className="instruction-item">
+                                    {inst.icon && <span className="instruction-icon">{inst.icon}</span>}
+                                    <div className="instruction-text">
+                                        <strong>{inst.title}</strong>
+                                        <p>{inst.description}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            </div>
+            <div className="start-footer-section">
+                <button className="start-btn" onClick={() => { playButtonSound(); onStart(); }}>▶ Start Game</button>
+            </div>
+        </div>
+    );
+};

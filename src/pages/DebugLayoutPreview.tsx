@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Layout1 } from '../games/layouts/Layout1';
-import { Layout2 } from '../games/layouts/Layout2';
-import { Layout3 } from '../games/layouts/Layout3';
-import { useGameEngine } from '../games/layouts/Layout0/useGameEngine';
+import { Layout1 } from '../games/layouts/Standard/Layout1';
+import { Layout2 } from '../games/layouts/Standard/Layout2';
+import { Layout3 } from '../games/layouts/Standard/Layout3';
+import { useGameEngine } from '../games/layouts/Standard/Layout0/useGameEngine';
 import type { PowerUpBtnProps } from '../components/Game/PowerUpBtn';
 
 export const DebugLayoutPreview: React.FC = () => {

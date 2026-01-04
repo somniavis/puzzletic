@@ -1,4 +1,4 @@
-# Puzzletic Game Layout & Development System
+# Standard Game Layout System
 
 This document unifies the **Game Layout System**, **Common Functionality**, and **Development Patterns** used to rapidly build and expand the game library.
 
@@ -25,40 +25,42 @@ graph TD
 
 ## 2. Layout Catalog
 
-We use standardized layouts to decouple "Game Mechanics" from "Meta UI" (Start Screens, Scoreboards, Result Pages).
+We use standardized layouts to decouple "Game Mechanics" from "Meta UI".
+**New Architecture (2025)**: All layouts now share common UI components (`src/games/layouts/Standard/shared/`) to ensure consistency.
 
-### Layout 1: Basic View (Canvas)
+### 2.1 Shared Components (`src/games/layouts/Standard/shared/`)
+*   **Hooks**:
+    *   `useGameEffects`: Manages Particles, Shake, and Sound logic.
+    *   `useGameScoring`: Manages High Score (localStorage), XP/GRO calculation, and New Record tracking.
+*   **UI**:
+    *   `GameStartScreen`: Standardized overlay with Title, Subtitle, Instructions, and 'How to Play'.
+    *   `GameOverScreen`: Standardized result screen with Score, High Score (Prev Best), Rewards, and Download/Restart buttons.
+    *   `GameLayoutHeader`: Top bar with Back button, Title, and BGM toggle.
+    *   `GameLayoutDashboard`: Stats row showing Score, Lives, Streak, and Time.
+
+### Layout 1: Basic View (Standard/Layout1)
 **Best For**: Simple puzzle/counting games without Power-Ups or specific Targets.
-**Features**:
-*   Header: Back, Title, BGM Toggle.
-*   Stats Bar: Score, Lives (Hearts), Streak, Time.
-*   Content: Centered Game Area.
+**Structure**:
+*   Uses `GameLayoutHeader`, `GameLayoutDashboard`.
+*   **Content**: Centered Game Area (Grid Wrapper).
 *   **Props**: `title`, `subtitle`, `description`, `instructions`, `engine`, `background`, `cardBackground`.
-*   **Background System**:
-    *   `background`: Global page background (rendered behind the game card).
-    *   `cardBackground`: **Game Card Internal Background** (fills the game area, `z-index: 0`). Use for full-bleed scenes (e.g., FishingCount).
 
-### Layout 2: Power-Up Focused
-**Best For**: Games where users use Power-Ups but the goal is internal or dynamic (no fixed target box).
-**Features**:
+### Layout 2: Power-Up Focused (Standard/Layout2)
+**Best For**: Games using Power-Ups.
+**Structure**:
 *   Includes Layout 1 features.
 *   **Sub-Header**: Dedicated row for **Power-Up Buttons**.
 *   **Props**: `powerUps`, `cardBackground`, `background`.
 
-### Layout 3: Target + Power-Ups (Complete)
-**Best For**: Math games where the player must match a specific target (e.g., "Make 10").
-**Features**:
+### Layout 3: Target + Power-Ups (Standard/Layout3)
+**Best For**: Math games with specific numerical targets.
+**Structure**:
 *   Includes Layout 2 features.
 *   **Sub-Header**: Power-Ups row + **Target Display Box**.
-*   **Target Box**: Prominently shows the goal value/icon.
 *   **Props**: `target: { value, icon, label }`, `cardBackground`, `background`.
 
-### Layout 0: Custom Canvas
-**Best For**: Unique UI requirements that don't fit the grid (e.g., `FishingCount`).
-**Features**:
-*   Provides logic wrapper (Start/Game Over logic).
-*   **Stats Bar**: Rendered, but positioning is flexible (absolute/overlay).
-*   **Content**: Full control over DOM.
+### Layout 0: Custom Canvas (Standard/Layout0)
+**Best For**: Unique UI requirements (e.g., `FishingCount`). Deprecated but kept for complex custom cases.
 
 ---
 

@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Layout2 } from '../../../layouts/Layout2';
+import { Layout2 } from '../../../layouts/Standard/Layout2';
 import { usePinwheelLogic } from './GameLogic';
 import manifest_en from './locales/en.ts';
 import './PinwheelPop.css';

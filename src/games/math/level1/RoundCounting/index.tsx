@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Layout3 } from '../../../layouts/Layout3';
+import { Layout3 } from '../../../layouts/Standard/Layout3';
 import { useRoundCountingLogic } from './GameLogic';
 import manifest_en from './locales/en';
 
