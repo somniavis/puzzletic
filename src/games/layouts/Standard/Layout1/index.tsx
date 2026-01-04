@@ -1,6 +1,6 @@
 import React from 'react';
 import { useSound } from '../../../../contexts/SoundContext';
-import { useTranslation } from 'react-i18next';
+
 import { playButtonSound, startBackgroundMusic } from '../../../../utils/sound';
 import './Layout1.css';
 import { useGameEngine } from '../Layout0/useGameEngine';
