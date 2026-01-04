@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { DIFFICULTY_CONFIG, ANIMALS, ANIMATION_TIMING } from './constants';
 import { playButtonSound, playEatingSound } from '../../../../utils/sound';
 
@@ -170,8 +170,13 @@ export const useDeepSeaLogic = () => {
 
     const stopTimer = useCallback(() => setGameState(prev => ({ ...prev, isPlaying: false })), []);
 
+    const isProcessing = useRef(false);
+
     const handleAnswer = (selected: number, index: number) => {
-        if (isDiving) return; // Prevent double click
+        if (isDiving || isProcessing.current) return;
+
+        // Lock
+        isProcessing.current = true;
 
         // 1. Start Dive Animation to specific index
         setIsDiving(true);
@@ -216,6 +221,10 @@ export const useDeepSeaLogic = () => {
                 // Next problem
                 setTimeout(() => {
                     generateProblem(gameState.difficultyLevel);
+                    // Add safety cooldown to prevent ghost clicks on new elements
+                    setTimeout(() => {
+                        isProcessing.current = false;
+                    }, 300);
                 }, ANIMATION_TIMING.NEXT_PROBLEM_DELAY);
             } else {
                 setLastEvent({ id: Date.now(), type: 'wrong' });
@@ -232,8 +241,11 @@ export const useDeepSeaLogic = () => {
                     setTimeout(() => {
                         setIsDiving(false);
                         setDiveTargetIndex(null);
-                        setLastEvent(null); // Restore float animation
+                        setLastEvent(null);
+                        isProcessing.current = false; // Unlock after reset
                     }, ANIMATION_TIMING.RESET_DELAY);
+                } else {
+                    isProcessing.current = false; // Unlock if gameover (though inputs blocked by gameOver check usually)
                 }
             }
         }, ANIMATION_TIMING.DIVE_DURATION); // Wait for dive

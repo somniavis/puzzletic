@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { useGameEngine } from '../../../layouts/Layout0/useGameEngine'; // Generic engine
 import { PINWHEEL_POP_CONSTANTS as CONSTS } from './constants';
 
@@ -173,9 +173,15 @@ export const usePinwheelLogic = () => {
         }
     }, [engine.gameState, engine.score, engine.lives, generateRound]);
 
+    // Ref for synchronous debounce
+    const isProcessing = useRef(false);
+
     const handleAnswer = (selected: number) => {
         // Enforce Game Over or Time Up
         if (engine.gameState !== 'playing' || engine.timeLeft <= 0 || pinwheel.finalSpin) return;
+
+        // Prevent double processing
+        if (isProcessing.current) return;
 
         const { innerNumbers, currentStage } = pinwheel;
 
@@ -191,6 +197,9 @@ export const usePinwheelLogic = () => {
         const correct = innerNumbers[idx1] + innerNumbers[idx2];
 
         if (selected === correct) {
+            // Lock input for transition
+            isProcessing.current = true;
+
             // Correct
             // User Request: Streak increases ONLY explicitly on round completion (Stage 3).
             // Also logically, difficulty should progress per round, not per wing?
@@ -217,23 +226,35 @@ export const usePinwheelLogic = () => {
                 setPinwheel(prev => ({ ...prev, outerAnswers: newAnswers, finalSpin: true }));
                 setTimeout(() => {
                     generateRound(engine.difficultyLevel);
+                    // Add safety cooldown to prevent ghost clicks
+                    setTimeout(() => {
+                        isProcessing.current = false;
+                    }, 300);
                 }, 1200);
             } else {
-                // Next Stage
-                const nextStage = currentStage + 1;
-                const nIdx1 = nextStage;
-                const nIdx2 = (nextStage + 1) % 4;
-                const nextCorrect = innerNumbers[nIdx1] + innerNumbers[nIdx2];
+                // Next Stage - Add small delay for visual clarity? 
+                // Currently instant. We keep it instant but we unlock the Ref after a microtask/short delay to prevent ghost click.
+                setTimeout(() => {
+                    const nextStage = currentStage + 1;
+                    const nIdx1 = nextStage;
+                    const nIdx2 = (nextStage + 1) % 4;
+                    const nextCorrect = innerNumbers[nIdx1] + innerNumbers[nIdx2];
 
-                setPinwheel(prev => ({
-                    ...prev,
-                    outerAnswers: newAnswers,
-                    currentStage: nextStage,
-                    options: generateOptions(nextCorrect)
-                }));
+                    setPinwheel(prev => ({
+                        ...prev,
+                        outerAnswers: newAnswers,
+                        currentStage: nextStage,
+                        options: generateOptions(nextCorrect)
+                    }));
+                    // Unlock after state update + small buffer
+                    setTimeout(() => { isProcessing.current = false; }, 300);
+                }, 50); // Small processing delay
             }
         } else {
-            // Wrong
+            // Wrong - Debounce error clicks too?
+            isProcessing.current = true;
+            setTimeout(() => { isProcessing.current = false; }, 300);
+
             engine.registerEvent({ type: 'wrong' });
             engine.submitAnswer(false);
         }

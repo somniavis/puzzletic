@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 
 import { playButtonSound, playEatingSound } from '../../../../utils/sound';
 
@@ -136,6 +136,7 @@ export const useRoundCountingLogic = () => {
     const [doubleScoreActive, setDoubleScoreActive] = useState(false);
     const [questionStartTime, setQuestionStartTime] = useState(0);
     const [lastEvent, setLastEvent] = useState<{ type: 'correct' | 'wrong', isFinal?: boolean, id: number } | null>(null);
+    const isProcessing = useRef(false);
 
     // Initialize/Reset Game
     const setupNewGame = useCallback(() => {
@@ -242,7 +243,7 @@ export const useRoundCountingLogic = () => {
     }, []);
 
     const handleItemClick = useCallback((index: number) => {
-        if (gameState.gameOver || !currentProblem || isShuffling || incorrectClickIndex !== null) return;
+        if (gameState.gameOver || !currentProblem || isShuffling || incorrectClickIndex !== null || isProcessing.current) return;
 
         const clickedItem = currentProblem.gridItems[index];
         if (foundIds.includes(clickedItem.id)) return;
@@ -264,6 +265,9 @@ export const useRoundCountingLogic = () => {
             }));
 
             if (isRoundComplete) {
+                // Lock Input for Transition
+                isProcessing.current = true;
+
                 // Round Complete
                 const responseTime = Date.now() - questionStartTime;
                 const baseScore = currentProblem.difficulty * 50;
@@ -293,7 +297,11 @@ export const useRoundCountingLogic = () => {
                 }
 
                 adjustDifficulty(true);
-                setTimeout(() => generateNewProblem(), 500);
+                setTimeout(() => {
+                    generateNewProblem();
+                    // Unlock with Safety Cooldown
+                    setTimeout(() => { isProcessing.current = false; }, 300);
+                }, 500);
             } else {
                 // Shuffle
                 setIsShuffling(true);
@@ -307,6 +315,11 @@ export const useRoundCountingLogic = () => {
             }
         } else {
             // Wrong
+            if (isProcessing.current) return;
+            isProcessing.current = true;
+            // Debounce error clicks
+            setTimeout(() => { isProcessing.current = false; }, 300);
+
             playButtonSound(); // Simple click sound for error or maybe add a specific error sound later
             setIncorrectClickIndex(index);
 

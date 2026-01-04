@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { useGameEngine } from '../../../layouts/Layout0/useGameEngine';
 import { TEN_FRAME_COUNT_CONSTANTS, TEN_FRAME_COUNT_EMOJIS } from './constants';
 import type { TenFrameCountState } from './types';
@@ -106,15 +106,21 @@ export const useTenFrameCountLogic = () => {
     }, [engine.gameState, generateQuestion, gameState.targetNumber]);
 
 
+    // Ref for synchronous debounce
+    const isProcessing = useRef(false);
+
     const handleAnswer = (selected: number) => {
         // ALLOW 'wrong' state interaction to enable rapid retry
         // engine.gameState checks if playing. 
-        // We want to allow clicking even if we just clicked wrong (which might put us in a brief state if we used submitAnswer(false)).
-        // But here we will NOT use submitAnswer(false) which blocks, we will manually handle penalty.
-
         if (engine.gameState !== 'playing' && engine.gameState !== 'wrong') return;
 
+        // Block if processing transition
+        if (isProcessing.current) return;
+
         if (selected === gameState.targetNumber) {
+            // Lock inputs
+            isProcessing.current = true;
+
             // Correct: Use full submitAnswer to handle score/streak/stats/progression
             engine.submitAnswer(true);
             engine.registerEvent({ type: 'correct', isFinal: true });
@@ -122,10 +128,19 @@ export const useTenFrameCountLogic = () => {
             // Next Round
             setTimeout(() => {
                 generateQuestion(gameState.round + 1);
+                // Add safety cooldown to prevent ghost clicks on new elements
+                setTimeout(() => {
+                    isProcessing.current = false;
+                }, 300);
             }, 1000);
         } else {
             // Wrong: Manual handling to avoid '1.5s freeze' from engine.submitAnswer(false)
             // We want "Rapid Retry" style.
+
+            // Note: Since we allow rapid retry, we do NOT lock isProcessing here unless we want a tiny cooldown?
+            // Let's add a micro-debounce (300ms) to prevent accidental double-taps on WRONG answers too
+            isProcessing.current = true;
+            setTimeout(() => { isProcessing.current = false; }, 300);
 
             // 1. Play feedback
             engine.registerEvent({ type: 'wrong' });

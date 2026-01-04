@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { playButtonSound, playEatingSound } from '../../../../utils/sound';
 
 export interface HiveCell {
@@ -150,6 +150,7 @@ export const useNumberHiveLogic = () => {
     const [doubleScoreActive, setDoubleScoreActive] = useState(false);
 
     const [lastEvent, setLastEvent] = useState<{ type: 'correct' | 'wrong', isFinal?: boolean, id: number } | null>(null);
+    const isProcessing = useRef(false);
 
     const setupNewGame = useCallback(() => {
         const initialLevel = generateLevel(1);
@@ -214,7 +215,7 @@ export const useNumberHiveLogic = () => {
 
 
     const handleCellClick = useCallback((cell: HiveCell) => {
-        if (!gameState.isPlaying || gameState.gameOver || cell.isRevealed || shakeId !== null) return;
+        if (!gameState.isPlaying || gameState.gameOver || cell.isRevealed || shakeId !== null || isProcessing.current) return;
 
         if (cell.value === gameState.currentNumber) {
             // Correct
@@ -255,6 +256,9 @@ export const useNumberHiveLogic = () => {
             });
 
             if (isLevelComplete) {
+                // Lock for transition
+                isProcessing.current = true;
+
                 // Drop PowerUp Chance (Matched to RoundCounting: every 3rd level, 55% chance)
                 if ((gameState.levelsCleared + 1) % 3 === 0 && Math.random() > 0.45) {
                     const types: (keyof typeof powerUps)[] = ['timeFreeze', 'extraLife', 'doubleScore'];
@@ -281,11 +285,18 @@ export const useNumberHiveLogic = () => {
                             // timeLeft bonus removed as per user request to not auto-increase time
                         };
                     });
+                    // Unlock with safety cooldown
+                    setTimeout(() => { isProcessing.current = false; }, 300);
                 }, 1000);
             }
 
         } else {
             // Wrong
+            if (isProcessing.current) return;
+            // Debounce error clicks
+            isProcessing.current = true;
+            setTimeout(() => { isProcessing.current = false; }, 300);
+
             // playJelloClickSound(); // Removed to prevent double audio (handled by Layout1)
             setShakeId(cell.id);
             setTimeout(() => setShakeId(null), 500);
