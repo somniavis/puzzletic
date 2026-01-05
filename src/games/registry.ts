@@ -12,6 +12,7 @@ import { manifest as L1_MathArchery } from './math/level1/MathArchery';
 import { manifest as L2_TenFrameCount } from './math/level2/TenFrameCount';
 import { manifest as L2_Pinwheel } from './math/level2/PinwheelPop';
 import { manifest as DeepSeaManifest } from './math/level2/DeepSeaDive';
+import { manifest as L2_UFOInvasion } from './math/level2/UFOInvasion/index';
 
 export const GAMES: GameManifest[] = [
     // [Level 1] -----------------------------------------------------------
@@ -26,6 +27,7 @@ export const GAMES: GameManifest[] = [
     L2_TenFrameCount,
     L2_Pinwheel,
     DeepSeaManifest,
+    L2_UFOInvasion,
 ];
 
 export const getGames = (category?: GameCategory, level?: GameDifficulty): GameManifest[] => {

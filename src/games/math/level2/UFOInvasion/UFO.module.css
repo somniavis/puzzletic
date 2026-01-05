@@ -1,0 +1,284 @@
+.gameContainer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    overflow: hidden;
+    /* Background handled by Layout3 cardBackground */
+}
+
+/* Matching Pinwheel Pop Button Style */
+.optionsContainer {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    z-index: 100;
+
+    /* Panel styling similar to Pinwheel but adapted for overlay */
+    padding: 1rem;
+    /* Pinwheel uses: linear-gradient(180deg, #eff6ff 0%, #dbeafe 100%) */
+    background: linear-gradient(180deg, rgba(239, 246, 255, 0.9) 0%, rgba(219, 234, 254, 0.9) 100%);
+    border: 2px solid #bfdbfe;
+    backdrop-filter: blur(8px);
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    min-width: 300px;
+}
+
+.optionBtn {
+    /* Based on NumberBalance .number-block */
+    background: #ffffff;
+    border: 3px solid #3b82f6;
+    border-radius: 12px;
+    width: 80px;
+    height: 80px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 0 #2563eb;
+    position: relative;
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    transition: transform 0.1s;
+
+    /* Text Styling */
+    font-size: 2rem;
+    font-weight: 800;
+    color: #1e293b;
+    line-height: 1;
+
+    /* Override flex for options container */
+    flex: initial;
+}
+
+.optionBtn:active {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 #2563eb;
+}
+
+.ufo {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    user-select: none;
+    cursor: pointer;
+    transition: transform 0.2s;
+    z-index: 1;
+    /* Keep low so it's behind HUD/Options */
+}
+
+/* Replicate Deep Sea Dive 'happy-swim' */
+.correct {
+    animation: happy-swim 0.5s ease-in-out forwards;
+}
+
+@keyframes happy-swim {
+    0% {
+        transform: translate(-50%, -50%) rotate(0deg) scale(1);
+    }
+
+    25% {
+        transform: translate(-50%, -50%) rotate(-10deg) scale(1.2);
+    }
+
+    50% {
+        transform: translate(-50%, -50%) rotate(0deg) scale(1);
+    }
+
+    75% {
+        transform: translate(-50%, -50%) rotate(10deg) scale(1.2);
+    }
+
+    100% {
+        transform: translate(-50%, -50%) rotate(0deg) scale(0);
+        opacity: 0;
+    }
+
+    /* Fade out at end for death */
+}
+
+
+.ufo:active {
+    transform: translate(-50%, -50%) scale(0.9);
+}
+
+.reticle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 120%;
+    height: 120%;
+    border: 2px dashed rgba(239, 68, 68, 0.6);
+    border-radius: 50%;
+    animation: spin 4s linear infinite;
+    pointer-events: none;
+}
+
+.hpBar {
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 6px;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.hpFill {
+    height: 100%;
+    background: #ef4444;
+    transition: width 0.2s;
+}
+
+/* Rocket Animation */
+.rocket {
+    position: absolute;
+    left: 50%;
+    bottom: 50px;
+    font-size: 2.5rem;
+    /* Use CSS variables for target destination */
+    /* Animate from bottom-center to target */
+    animation: flight 2.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+    transform-origin: center;
+    z-index: 10;
+}
+
+.trail {
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%) rotate(90deg);
+    font-size: 1.5rem;
+    opacity: 0.8;
+}
+
+@keyframes flight {
+    0% {
+        transform: translate(-50%, 0) var(--rocket-transform, rotate(0deg));
+        left: 50%;
+        top: calc(100% - 35px);
+        opacity: 1;
+    }
+
+    55% {
+        opacity: 1;
+    }
+
+    75% {
+        opacity: 0;
+    }
+
+    100% {
+        /* CSS var tx/ty are typically % from top/left */
+        /* But transform translate is relative to element itself? No. */
+        /* We need to move the element to the target coordinates. */
+        /* Since .rocket is position: absolute, left/top anim is best. */
+        left: var(--tx);
+        top: var(--ty);
+        transform: translate(-50%, -50%) var(--rocket-transform, rotate(0deg));
+        opacity: 0;
+    }
+}
+
+/* ... (Explosion and Star styles remain same, skipping rest for brevity if matching exactly) ... */
+/* Actually I need to match TargetContent exactly so I will just update the flight keyframe block 
+   and append earthBase if I can't do multiple in one replace_file_content call easily across disparate locations.
+   Wait, replace_file_content takes a contiguous block. 
+   Flight is at lines 166.
+   Star/background is at end.
+   I should modify flight first. */
+
+
+/* Explosion */
+.explosion {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    font-size: 4rem;
+    animation: explode 0.5s ease-out forwards;
+    pointer-events: none;
+    z-index: 20;
+}
+
+@keyframes explode {
+    0% {
+        transform: translate(-50%, -50%) scale(0.5);
+        opacity: 1;
+    }
+
+    50% {
+        transform: translate(-50%, -50%) scale(1.5);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translate(-50%, -50%) scale(2);
+        opacity: 0;
+    }
+}
+
+@keyframes spin {
+    to {
+        transform: translate(-50%, -50%) rotate(360deg);
+    }
+}
+
+/* Outer Background (Behind the Game Card) */
+.outerBackground {
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+    overflow: hidden;
+    position: relative;
+}
+
+.star {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: white;
+    border-radius: 50%;
+    opacity: 0;
+    animation: twinkle var(--duration) ease-in-out infinite;
+    animation-delay: var(--delay);
+}
+
+@keyframes twinkle {
+    0% {
+        opacity: 0;
+        transform: scale(0.5);
+    }
+
+    50% {
+        opacity: 1;
+        transform: scale(1.2);
+    }
+
+    100% {
+        opacity: 0;
+        transform: scale(0.5);
+    }
+}
+
+/* Earth Base Visual */
+.earthBase {
+    position: absolute;
+    bottom: 1px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 2.5rem;
+    z-index: 5;
+    pointer-events: none;
+    line-height: 1;
+    filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.5));
+}

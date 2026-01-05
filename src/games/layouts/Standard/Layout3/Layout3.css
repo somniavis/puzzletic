@@ -208,11 +208,7 @@
     /* Vertical Center */
     justify-content: center;
     /* Horizontal Center */
-    padding: 1rem;
-    /* Padding around the grid */
-    container-type: size;
     /* Enable CQ units for children */
-    overflow: hidden;
 }
 
 /* Modals / Start Screen (Shared) */
