@@ -27,6 +27,7 @@ export interface UFO {
     baseX: number; // Reference X for oscillation
     isDying?: boolean; // For death animation
     isFlipped?: boolean; // Visual variation
+    diedAt?: number; // Time when death started
 }
 
 export interface Rocket {
@@ -37,6 +38,7 @@ export interface Rocket {
     targetX: number;
     targetY: number;
     createdAt: number;
+    arrivalTime: number; // For game loop impact check
     visualType: 'right' | 'left' | 'center';
 }
 
@@ -55,10 +57,11 @@ const SPAWN_Y = 25; // Start lower (25% down) to avoid waiting
 // Difficulty / Speed Config
 // Descent duration: Slower (multiplied speed by 0.9)
 const SPEEDS = {
-    slow: (115 / (35 * 60)) * 0.9,
-    normal: (115 / (25 * 60)) * 0.9,
-    fast: (115 / (18 * 60)) * 0.9,
-    boss: (115 / (60 * 60)) * 0.9
+    // Slower speeds: 60s / 50s / 40s crossing time
+    slow: (115 / (60 * 60)),
+    normal: (115 / (50 * 60)),
+    fast: (115 / (40 * 60)),
+    boss: (115 / (80 * 60))
 };
 
 const HP_CONFIG = {
@@ -74,10 +77,16 @@ export const useUFOInvasionLogic = (engine: GameEngine) => {
     const [effects, setEffects] = useState<Effect[]>([]);
     const [lockedUfoId, setLockedUfoId] = useState<string | null>(null);
 
+    // Game State Refs (Source of Truth for Loop)
+    const ufosRef = useRef<UFO[]>([]);
+    const rocketsRef = useRef<Rocket[]>([]);
+    const effectsRef = useRef<Effect[]>([]);
+
     // Power-Ups State
     const [powerUps, setPowerUps] = useState({ timeFreeze: 0, extraLife: 0, doubleScore: 0 });
     const [isTimeFrozen, setIsTimeFrozen] = useState(false);
     const [isDoubleScore, setIsDoubleScore] = useState(false);
+    const [answerOptions, setAnswerOptions] = useState<number[]>([]);
 
     // Refs for loop state
     const gameTimeRef = useRef(0);
@@ -98,21 +107,41 @@ export const useUFOInvasionLogic = (engine: GameEngine) => {
 
         if (wasStopped && isNowPlaying) {
             console.log("Game Restarted: Resetting UFO Logic");
+
+            // Reset Refs
+            ufosRef.current = [];
+            rocketsRef.current = [];
+            effectsRef.current = [];
+            gameTimeRef.current = 0;
+            lastSpawnTimeRef.current = -3000;
+
+            // Reset State
             setUfos([]);
             setRockets([]);
             setEffects([]);
             setLockedUfoId(null);
+            setAnswerOptions([]);
 
             // Reset PowerUps
             setPowerUps({ timeFreeze: 0, extraLife: 0, doubleScore: 0 });
             setIsTimeFrozen(false);
             setIsDoubleScore(false);
-
-            gameTimeRef.current = 0;
-            lastSpawnTimeRef.current = 0;
         }
         prevGameState.current = engine.gameState;
     }, [engine.gameState]);
+
+    // Cleanup locked target if it dies or disappears
+    useEffect(() => {
+        if (lockedUfoId) {
+            const target = ufos.find(u => u.id === lockedUfoId);
+            // specific check: if missing or dying, unlock
+            if (!target || target.isDying) {
+                setLockedUfoId(null);
+                setAnswerOptions([]);
+            }
+        }
+    }, [ufos, lockedUfoId]);
+
 
     // --- Math Generation ---
     const generateProblem = (type: UFOType): Problem => {
@@ -215,118 +244,195 @@ export const useUFOInvasionLogic = (engine: GameEngine) => {
 
         gameTimeRef.current += dt;
 
-        setUfos(prev => {
-            let nextUfos = [...prev];
-            let lifeLost = false;
+        // --- Logic Update (Operate on Refs) ---
 
-            // 1. Move
-            nextUfos = nextUfos.map(u => {
-                // Calculate position based on absolute GameTime
-                const { x: nextX, y: nextY } = calculateUFOPosition(u, gameTimeRef.current);
+        let currentUfos = [...ufosRef.current];
+        let currentRockets = [...rocketsRef.current];
+        let currentEffects = [...effectsRef.current];
 
-                // Check Ground Impact
-                if (nextY >= GROUND_Y) {
-                    lifeLost = true;
-                    return null; // Remove
-                }
-                return { ...u, x: nextX, y: nextY };
-            }).filter(Boolean) as UFO[];
+        // 1. Process Rockets
+        const arrivedRockets = currentRockets.filter(r => r.arrivalTime <= gameTimeRef.current);
+        const activeRockets = currentRockets.filter(r => r.arrivalTime > gameTimeRef.current);
 
-            if (lifeLost) {
-                engineRef.current.updateLives(false);
-                engineRef.current.registerEvent({ type: 'wrong' }); // Shake effect
-            }
+        // Update Rockets Ref immediately (removing arrived ones)
+        currentRockets = activeRockets;
 
-            // 2. Spawn Logic (OMITTED for brevity in replacement, assuming it matches existing logic flow or I need to preserve it carefully)
-            // ... explicit spawn logic matching previous ... 
-            // Wait, I am replacing the whole block. I must include Spawn Logic.
+        if (arrivedRockets.length > 0) {
+            let scoreUpdate = 0;
+            let correctEvent = false;
 
-            const elapsedSec = gameTimeRef.current / 1000;
-            let targetCount = 3;
-            if (elapsedSec >= 10) targetCount = 5;
-            if (elapsedSec >= 30) targetCount = 7;
-            if (elapsedSec >= 60) targetCount = 9;
+            arrivedRockets.forEach(rocket => {
+                const targetIndex = currentUfos.findIndex(u => u.id === rocket.targetId);
+                if (targetIndex === -1) return;
 
-            if (targetCount > 8) targetCount = 8;
+                const target = currentUfos[targetIndex];
+                const newHp = target.hp - 1;
 
-            const bossExists = nextUfos.some(u => u.type === 'boss');
-            if (elapsedSec >= 60 && !bossExists && Math.random() < 0.005) {
-                const initialX = 50;
-                nextUfos.push({
+                currentEffects.push({
                     id: crypto.randomUUID(),
-                    x: initialX,
+                    x: rocket.targetX,
+                    y: rocket.targetY,
+                    type: newHp <= 0 ? 'explosion' : 'hit',
+                    createdAt: gameTimeRef.current
+                });
+
+                if (newHp <= 0) {
+                    correctEvent = true;
+                    scoreUpdate += (target.type === 'boss' ? 1000 : 100) * (isDoubleScore ? 2 : 1);
+
+                    currentUfos[targetIndex] = {
+                        ...target,
+                        hp: 0,
+                        isDying: true,
+                        diedAt: gameTimeRef.current
+                    };
+                } else {
+                    correctEvent = true;
+                    currentUfos[targetIndex] = { ...target, hp: newHp };
+                }
+            });
+
+            if (correctEvent) engineRef.current.registerEvent({ type: 'correct' });
+            if (scoreUpdate > 0) engineRef.current.updateScore(scoreUpdate);
+        }
+
+        // 2. Move & Cleanup UFOs
+        let lifeLost = false;
+        currentUfos = currentUfos.map(u => {
+            if (u.isDying && u.diedAt && (gameTimeRef.current - u.diedAt > 500)) return null;
+            if (u.isDying) return u;
+
+            const { x: nextX, y: nextY } = calculateUFOPosition(u, gameTimeRef.current);
+            if (nextY >= GROUND_Y) {
+                lifeLost = true;
+                return null;
+            }
+            return { ...u, x: nextX, y: nextY };
+        }).filter(Boolean) as UFO[];
+
+        if (lifeLost) {
+            engineRef.current.updateLives(false);
+            engineRef.current.registerEvent({ type: 'wrong' });
+        }
+
+        // 3. Spawn Logic
+        const elapsedSec = gameTimeRef.current / 1000;
+
+        // Revised Progression: Cap at 6 (Elementary Level)
+        // 0-20s: 3
+        // 20-40s: 4
+        // 40-60s: 5
+        // 60s+: 6
+        let targetCount = 3;
+        if (elapsedSec >= 60) targetCount = 6;
+        else if (elapsedSec >= 40) targetCount = 5;
+        else if (elapsedSec >= 20) targetCount = 4;
+
+        // Initial burst: If game just started (< 2s) and empty, ensure we spawn 3 scattered
+        if (elapsedSec < 3 && currentUfos.length < 3) {
+            targetCount = 3;
+            // Allow instant spawn for the first 3
+            if (gameTimeRef.current - lastSpawnTimeRef.current > 500) {
+                lastSpawnTimeRef.current = -1000;
+            }
+        }
+
+        const bossExists = currentUfos.some(u => u.type === 'boss');
+        let didSpawn = false;
+
+        if (elapsedSec >= 60 && !bossExists && Math.random() < 0.002) {
+            const initialX = 50;
+            currentUfos.push({
+                id: crypto.randomUUID(),
+                x: initialX,
+                y: SPAWN_Y,
+                speed: SPEEDS.boss,
+                type: 'boss',
+                problem: generateProblem('boss'),
+                hp: HP_CONFIG.boss,
+                maxHp: HP_CONFIG.boss,
+                spawnTime: gameTimeRef.current,
+                movementPhase: Math.random() * 10,
+                movementType: 'straight',
+                baseX: initialX,
+                isFlipped: Math.random() < 0.5
+            });
+            didSpawn = true;
+        } else if (currentUfos.length < targetCount) {
+            // Adaptive Interval Logic
+            let requiredInterval = 2500; // Standard Slow (2.5s)
+
+            // If extremely low (0-1), speed up slightly (1.5s)
+            if (currentUfos.length <= 1) requiredInterval = 1500;
+
+            // If moderately low (missing 3+), medium speed (2s)
+            else if (targetCount - currentUfos.length >= 3) requiredInterval = 2000;
+
+            // First 5s startup: Fast (200ms)
+            if (elapsedSec < 5 && currentUfos.length < 3) requiredInterval = 200;
+
+            if (gameTimeRef.current - lastSpawnTimeRef.current > requiredInterval) {
+                // Spawn!
+                let type: UFOType = 'slow';
+                const rand = Math.random();
+                if (elapsedSec < 20) type = 'slow';
+                else if (elapsedSec < 60) type = rand > 0.6 ? 'normal' : 'slow';
+                else {
+                    if (rand > 0.8) type = 'fast';
+                    else if (rand > 0.4) type = 'normal';
+                    else type = 'slow';
+                }
+
+                const moveRand = Math.random();
+                let movement: MovementType = 'zigzag';
+                if (moveRand < 0.4) movement = 'zigzag';
+                else if (moveRand < 0.7) movement = Math.random() > 0.5 ? 'drift_left' : 'drift_right';
+                else movement = 'straight';
+
+                const lane = Math.floor(Math.random() * 3);
+                let startX = 50;
+                if (lane === 0) startX = 10 + Math.random() * 20;
+                else if (lane === 1) startX = 40 + Math.random() * 20;
+                else startX = 70 + Math.random() * 20;
+
+                currentUfos.push({
+                    id: crypto.randomUUID(),
+                    x: startX,
                     y: SPAWN_Y,
-                    speed: SPEEDS.boss,
-                    type: 'boss',
-                    problem: generateProblem('boss'),
-                    hp: HP_CONFIG.boss,
-                    maxHp: HP_CONFIG.boss,
+                    speed: SPEEDS[type],
+                    type: type,
+                    problem: generateProblem(type),
+                    hp: HP_CONFIG[type],
+                    maxHp: HP_CONFIG[type],
                     spawnTime: gameTimeRef.current,
                     movementPhase: Math.random() * 10,
-                    movementType: 'straight',
-                    baseX: initialX,
+                    movementType: movement,
+                    baseX: startX,
                     isFlipped: Math.random() < 0.5
                 });
-            } else if (nextUfos.length < targetCount) {
-                if (gameTimeRef.current - lastSpawnTimeRef.current > 3500) {
-                    let type: UFOType = 'slow';
-                    const rand = Math.random();
-                    if (elapsedSec < 20) type = 'slow';
-                    else if (elapsedSec < 60) type = rand > 0.6 ? 'normal' : 'slow';
-                    else {
-                        if (rand > 0.8) type = 'fast';
-                        else if (rand > 0.4) type = 'normal';
-                        else type = 'slow';
-                    }
-
-                    const moveRand = Math.random();
-                    let movement: MovementType = 'zigzag';
-                    if (moveRand < 0.4) movement = 'zigzag';
-                    else if (moveRand < 0.7) movement = Math.random() > 0.5 ? 'drift_left' : 'drift_right';
-                    else movement = 'straight';
-
-                    // Lane Logic: Pick a random lane index (0, 1, 2)
-                    // Lane 0: 10-30%
-                    // Lane 1: 40-60%
-                    // Lane 2: 70-90%
-                    // This ensures broad distribution but allows randomness within lanes
-                    const lane = Math.floor(Math.random() * 3);
-                    let startX = 50;
-                    if (lane === 0) startX = 10 + Math.random() * 20; // 10-30
-                    else if (lane === 1) startX = 40 + Math.random() * 20; // 40-60
-                    else startX = 70 + Math.random() * 20; // 70-90
-
-                    // Minor adjustment to prevent complete predictability if same lane picked twice
-                    // (Already handled by Math.random() * 20)
-
-                    nextUfos.push({
-                        id: crypto.randomUUID(),
-                        x: startX,
-                        y: SPAWN_Y,
-                        speed: SPEEDS[type],
-                        type: type,
-                        problem: generateProblem(type),
-                        hp: HP_CONFIG[type],
-                        maxHp: HP_CONFIG[type],
-                        spawnTime: gameTimeRef.current,
-                        movementPhase: Math.random() * 10,
-                        movementType: movement,
-                        baseX: startX
-                    });
-                    lastSpawnTimeRef.current = gameTimeRef.current;
-                }
+                didSpawn = true;
             }
+        }
 
-            return nextUfos;
-        });
+        if (didSpawn) {
+            lastSpawnTimeRef.current = gameTimeRef.current;
+        }
 
-        // Cleanup Effects only (Rockets handled by impact)
-        setEffects(prev => prev.filter(e => gameTimeRef.current - e.createdAt < 800));
-        // Safety cleanup for rockets just in case?
-        setRockets(prev => prev.filter(r => gameTimeRef.current - r.createdAt < 5000));
+        // 4. Cleanup Effects
+        currentEffects = currentEffects.filter(e => gameTimeRef.current - e.createdAt < 800);
+
+        // --- Commit to Refs & State ---
+        ufosRef.current = currentUfos;
+        rocketsRef.current = currentRockets;
+        effectsRef.current = currentEffects;
+
+        // Sync to React State for Render
+        setUfos(currentUfos);
+        setRockets(currentRockets);
+        setEffects(currentEffects);
 
         frameRef.current = requestAnimationFrame(updateGame);
-    }, []);
+    }, [isDoubleScore]);
 
     // Start Loop
     useEffect(() => {
@@ -334,25 +440,33 @@ export const useUFOInvasionLogic = (engine: GameEngine) => {
         return () => cancelAnimationFrame(frameRef.current);
     }, [updateGame]);
 
-    // Auto-unlock if target destroyed
-    useEffect(() => {
-        setLockedUfoId(prev => {
-            if (!prev) return null;
-            return prev;
-        });
-    }, [ufos]);
+    /* REMATCHING TARGET SECTION: Auto-unlock handled in main effect above now */
 
 
     // --- Interactions ---
 
     const handleSelectUFO = (id: string) => {
         setLockedUfoId(id);
+
+        // Generate Options ONCE on selection
+        const target = ufosRef.current.find(u => u.id === id); // Read from Ref for latest
+        if (target) {
+            const ans = target.problem.a;
+            const distractors = new Set<number>();
+            while (distractors.size < 2) {
+                const d = ans + Math.floor(Math.random() * 10) - 5;
+                if (d !== ans && d > 0 && d < 100) distractors.add(d);
+            }
+            const opts = [ans, ...Array.from(distractors)];
+            opts.sort(() => Math.random() - 0.5);
+            setAnswerOptions(opts);
+        }
     };
 
     const handleAnswer = (ans: number) => {
         if (!lockedUfoId) return;
 
-        const target = ufos.find(u => u.id === lockedUfoId);
+        const target = ufosRef.current.find(u => u.id === lockedUfoId); // Read from Ref
         if (!target) return;
 
         if (ans === target.problem.a) {
@@ -372,97 +486,49 @@ export const useUFOInvasionLogic = (engine: GameEngine) => {
 
             // Calculate Visual Orientation based on PREDICTED position vs Start(50)
             let visualType: 'right' | 'left' | 'center' = 'right';
-            // Start is 50. If target X < 45 -> Left.
-            // CAUTION: Visual logic was: 
-            // - Right: Standard
-            // - Left: Flip
-            // - Center: Tilt
             // Base choice on targetX relative to center screen
             if (predictedX > 55) visualType = 'right';
             else if (predictedX < 45) visualType = 'left';
             else visualType = 'center';
 
-            const rocketId = crypto.randomUUID();
-            setRockets(prev => [...prev, {
-                id: rocketId,
+            const arrivalTime = gameTimeRef.current + flightTime; // Define arrival time
+            const newRocket: Rocket = {
+                id: crypto.randomUUID(),
                 targetId: target.id,
                 startX: 50,
                 startY: 90,
                 targetX: predictedX, // Use Predicted X
                 targetY: predictedY,
                 createdAt: gameTimeRef.current,
+                arrivalTime, // New property
                 visualType
-            }]);
+            };
 
-            // Delay Impact Logic
-            setTimeout(() => {
-                // remove rocket explicitly
-                setRockets(prev => prev.filter(r => r.id !== rocketId));
-
-                setUfos(currentUfos => {
-                    const currentTarget = currentUfos.find(u => u.id === target.id);
-                    if (!currentTarget) return currentUfos;
-
-                    const newHp = currentTarget.hp - 1;
-
-                    // Register Effect at ACTUAL impact location (predicted vs current might differ slightly, best use current)
-                    // Or use the predicted location where the rocket is visually?
-                    // Let's use the rocket's target location for visual consistency
-                    setEffects(prev => [...prev, {
-                        id: crypto.randomUUID(),
-                        x: predictedX,
-                        y: predictedY,
-                        type: newHp <= 0 ? 'explosion' : 'hit',
-                        createdAt: gameTimeRef.current + flightTime // Time reference might be stale? No, effects cleanup uses delta.
-                    }]);
-
-                    // ... same logic ...
-                    if (newHp <= 0) {
-                        engine.registerEvent({ type: 'correct' });
-
-                        if (currentTarget.type === 'boss') {
-                            const points = 1000 * (isDoubleScore ? 2 : 1);
-                            engine.updateScore(points);
-                        } else {
-                            const points = 100 * (isDoubleScore ? 2 : 1);
-                            engine.updateScore(points);
-                        }
-
-                        const dyingUfos = currentUfos.map(u => u.id === target.id ? { ...u, hp: 0, isDying: true } : u);
-
-                        setTimeout(() => {
-                            setUfos(prev => prev.filter(u => u.id !== target.id));
-                        }, 500);
-
-                        return dyingUfos;
-
-                    } else {
-                        engine.registerEvent({ type: 'correct' });
-                        return currentUfos.map(u => u.id === target.id ? { ...u, hp: newHp } : u);
-                    }
-                });
-            }, flightTime);
+            // Update Rocket Ref & State
+            rocketsRef.current.push(newRocket);
+            setRockets([...rocketsRef.current]);
 
             setLockedUfoId(null);
+            setAnswerOptions([]);
 
         } else {
             // Wrong
             engine.submitAnswer(false);
             engine.registerEvent({ type: 'wrong' });
 
-            setEffects(prev => [...prev, {
+            const newEffect: Effect = {
                 id: crypto.randomUUID(),
                 x: 50,
                 y: 80,
                 type: 'miss',
                 createdAt: gameTimeRef.current
-            }]);
+            };
+            effectsRef.current.push(newEffect);
+            setEffects([...effectsRef.current]);
         }
     };
 
     // --- Power-Ups Implementation ---
-    // State moved to top
-
     // Acquisition Rule: Deep Sea Dive Style (Streak 3 -> 55% Chance)
     const prevStreak = useRef(0);
     useEffect(() => {
@@ -514,6 +580,7 @@ export const useUFOInvasionLogic = (engine: GameEngine) => {
         powerUps,
         activatePowerUp,
         isTimeFrozen,
-        isDoubleScore
+        isDoubleScore,
+        answerOptions // Expose to view
     };
 };

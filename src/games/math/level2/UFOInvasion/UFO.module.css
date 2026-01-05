@@ -191,13 +191,6 @@
     }
 }
 
-/* ... (Explosion and Star styles remain same, skipping rest for brevity if matching exactly) ... */
-/* Actually I need to match TargetContent exactly so I will just update the flight keyframe block 
-   and append earthBase if I can't do multiple in one replace_file_content call easily across disparate locations.
-   Wait, replace_file_content takes a contiguous block. 
-   Flight is at lines 166.
-   Star/background is at end.
-   I should modify flight first. */
 
 
 /* Explosion */
@@ -273,10 +266,10 @@
 /* Earth Base Visual */
 .earthBase {
     position: absolute;
-    bottom: 1px;
+    bottom: 2.5px;
     left: 50%;
     transform: translateX(-50%);
-    font-size: 2.5rem;
+    font-size: 3rem;
     z-index: 5;
     pointer-events: none;
     line-height: 1;

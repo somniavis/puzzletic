@@ -1,6 +1,6 @@
 
 import { useNavigate } from 'react-router-dom';
-import { useRef, useEffect } from 'react';
+import { useRef } from 'react';
 import { Layout3 } from '../../../layouts/Standard/Layout3/index';
 import { useGameEngine } from '../../../layouts/Standard/Layout0/useGameEngine';
 import type { PowerUpBtnProps } from '../../../../components/Game/PowerUpBtn';
@@ -59,7 +59,8 @@ export default function UFOInvasion({ onExit }: UFOInvasionProps) {
         powerUps: logicPowerUps,
         activatePowerUp,
         isTimeFrozen,
-        isDoubleScore
+        isDoubleScore,
+        answerOptions
     } = useUFOInvasionLogic(engine);
 
     // Standard PowerUps for Level 2 (as per STANDARD_GAME_LAYOUT_SYSTEM.md)
@@ -93,25 +94,6 @@ export default function UFOInvasion({ onExit }: UFOInvasionProps) {
         }
     ];
 
-    // Answer Options: Generate distractors if locked
-    const answerOptions = useRef<number[]>([]);
-    useEffect(() => {
-        if (currentLockedUfo) {
-            const ans = currentLockedUfo.problem.a;
-            // Generate distractors
-            const distractors = new Set<number>();
-            while (distractors.size < 2) {
-                const d = ans + Math.floor(Math.random() * 10) - 5;
-                if (d !== ans && d > 0 && d < 100) distractors.add(d);
-            }
-            const opts = [ans, ...Array.from(distractors)];
-            opts.sort(() => Math.random() - 0.5);
-            answerOptions.current = opts;
-        } else {
-            answerOptions.current = [];
-        }
-    }, [currentLockedUfo?.id]);
-
     const targetConfig = currentLockedUfo ? {
         value: currentLockedUfo.problem.q,
         label: 'LOCKED ON'
@@ -138,9 +120,9 @@ export default function UFOInvasion({ onExit }: UFOInvasionProps) {
         >
             <div className={styles.gameContainer}>
                 {/* Answer Options */}
-                {answerOptions.current.length > 0 && (
+                {answerOptions.length > 0 && (
                     <div className={styles.optionsContainer}>
-                        {answerOptions.current.map(opt => (
+                        {answerOptions.map(opt => (
                             <button
                                 key={opt}
                                 className={styles.optionBtn}
