@@ -235,6 +235,5 @@ export const manifest = {
     level: 2,
     component: UFOInvasion,
     description: 'Intercept invaders with math!',
-    icon: '🛸',
-    thumbnail: undefined
+    thumbnail: '🛸'
 } as const;
