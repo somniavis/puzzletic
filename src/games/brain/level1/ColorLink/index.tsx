@@ -62,9 +62,11 @@ export default function ColorLink({ onExit }: ColorLinkProps) {
         }
     ], [logic.powerUps, logic.isTimeFrozen, logic.isDoubleScore, logic.activatePowerUp, engine.lives]);
 
-    const handlePointerEnter = useCallback((r: number, c: number, e: React.PointerEvent) => {
-        // Only trigger move if primary button is held down (mouse) or active touch
-        if (e.buttons === 1) {
+    const handlePointerMove = useCallback((r: number, c: number, e: React.PointerEvent) => {
+        // For mouse: check if primary button is pressed (e.buttons === 1)
+        // For touch: check if pointer is down (e.pressure > 0 or just trust the event since we only attach during drag)
+        // onPointerMove only fires when pointer is down, so we can safely call handleMove
+        if (e.buttons === 1 || e.pointerType === 'touch') {
             logic.handleMove(r, c);
         }
     }, [logic.handleMove]);
@@ -105,7 +107,7 @@ export default function ColorLink({ onExit }: ColorLinkProps) {
                                     e.currentTarget.releasePointerCapture(e.pointerId); // Allow event to bubble/enter other cells
                                     logic.handleStart(cell.row, cell.col);
                                 }}
-                                onPointerEnter={(e) => handlePointerEnter(cell.row, cell.col, e)}
+                                onPointerMove={(e) => handlePointerMove(cell.row, cell.col, e)}
                             >
                                 {/* Center Hub (if path exists) */}
                                 {cell.path && <div className={`${styles.pipeSegment} ${styles.pipeCenter}`} />}
