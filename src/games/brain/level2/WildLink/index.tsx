@@ -63,12 +63,21 @@ export default function WildLink({ onExit }: WildLinkProps) {
         }
     ], [logic.powerUps, logic.isTimeFrozen, logic.isDoubleScore, logic.activatePowerUp, engine.lives]);
 
-    const handlePointerMove = useCallback((r: number, c: number, e: React.PointerEvent) => {
-        // For mouse: check if primary button is pressed (e.buttons === 1)
-        // For touch: check if pointer is down (e.pressure > 0 or just trust the event since we only attach during drag)
-        // onPointerMove only fires when pointer is down, so we can safely call handleMove
-        if (e.buttons === 1 || e.pointerType === 'touch') {
-            logic.handleMove(r, c);
+    const handlePointerMove = useCallback((e: React.PointerEvent) => {
+        // Get element under the pointer (works for both mouse and touch)
+        const element = document.elementFromPoint(e.clientX, e.clientY);
+        if (!element) return;
+
+        // Find the cell element (might be clicking on a child like pipe or dot)
+        const cellElement = element.closest('[data-cell]');
+        if (!cellElement) return;
+
+        // Extract row and col from data attributes
+        const row = parseInt(cellElement.getAttribute('data-row') || '-1');
+        const col = parseInt(cellElement.getAttribute('data-col') || '-1');
+
+        if (row >= 0 && col >= 0) {
+            logic.handleMove(row, col);
         }
     }, [logic.handleMove]);
 
@@ -91,6 +100,7 @@ export default function WildLink({ onExit }: WildLinkProps) {
                 <div
                     className={styles.grid}
                     style={{ gridTemplateColumns: `repeat(${logic.currentLevel.size}, 1fr)` }}
+                    onPointerMove={handlePointerMove}
                     onPointerLeave={() => logic.handleEnd()}
                     onPointerUp={() => logic.handleEnd()}
                 >
@@ -98,8 +108,10 @@ export default function WildLink({ onExit }: WildLinkProps) {
                         <div
                             key={`${cell.row}-${cell.col}`}
                             className={`${styles.cell} ${styles[cell.path || 'empty'] || ''}`}
+                            data-cell="true"
+                            data-row={cell.row}
+                            data-col={cell.col}
                             onPointerDown={() => logic.handleStart(cell.row, cell.col)}
-                            onPointerMove={(e) => handlePointerMove(cell.row, cell.col, e)}
                         >
                             {/* Render Pipes (Directional Arms) */}
                             {cell.path && (

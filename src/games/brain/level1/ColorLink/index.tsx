@@ -62,12 +62,21 @@ export default function ColorLink({ onExit }: ColorLinkProps) {
         }
     ], [logic.powerUps, logic.isTimeFrozen, logic.isDoubleScore, logic.activatePowerUp, engine.lives]);
 
-    const handlePointerMove = useCallback((r: number, c: number, e: React.PointerEvent) => {
-        // For mouse: check if primary button is pressed (e.buttons === 1)
-        // For touch: check if pointer is down (e.pressure > 0 or just trust the event since we only attach during drag)
-        // onPointerMove only fires when pointer is down, so we can safely call handleMove
-        if (e.buttons === 1 || e.pointerType === 'touch') {
-            logic.handleMove(r, c);
+    const handlePointerMove = useCallback((e: React.PointerEvent) => {
+        // Get element under the pointer (works for both mouse and touch)
+        const element = document.elementFromPoint(e.clientX, e.clientY);
+        if (!element) return;
+
+        // Find the cell element (might be clicking on a child like pipe or dot)
+        const cellElement = element.closest('[data-cell]');
+        if (!cellElement) return;
+
+        // Extract row and col from data attributes
+        const row = parseInt(cellElement.getAttribute('data-row') || '-1');
+        const col = parseInt(cellElement.getAttribute('data-col') || '-1');
+
+        if (row >= 0 && col >= 0) {
+            logic.handleMove(row, col);
         }
     }, [logic.handleMove]);
 
@@ -94,6 +103,7 @@ export default function ColorLink({ onExit }: ColorLinkProps) {
                 <div
                     className={styles.grid}
                     style={{ gridTemplateColumns: `repeat(${logic.currentLevel.size}, 1fr)` }}
+                    onPointerMove={handlePointerMove}
                 >
                     {logic.grid.flat().map((cell) => {
                         const colorClass = cell.path ? styles[cell.path] : '';
@@ -103,11 +113,13 @@ export default function ColorLink({ onExit }: ColorLinkProps) {
                             <div
                                 key={`${cell.row}-${cell.col}`}
                                 className={`${styles.cell} ${colorClass}`}
+                                data-cell="true"
+                                data-row={cell.row}
+                                data-col={cell.col}
                                 onPointerDown={(e) => {
-                                    e.currentTarget.releasePointerCapture(e.pointerId); // Allow event to bubble/enter other cells
+                                    e.currentTarget.releasePointerCapture(e.pointerId);
                                     logic.handleStart(cell.row, cell.col);
                                 }}
-                                onPointerMove={(e) => handlePointerMove(cell.row, cell.col, e)}
                             >
                                 {/* Center Hub (if path exists) */}
                                 {cell.path && <div className={`${styles.pipeSegment} ${styles.pipeCenter}`} />}
