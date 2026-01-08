@@ -1,10 +1,10 @@
 export const en = {
-    title: 'Color Link',
-    subtitle: 'Connect the Colors',
-    description: 'Connect matching colors with a pipe to create a flow. Pair all colors, and cover the entire board to solve each puzzle.',
+    title: 'Wild Link',
+    subtitle: 'Connect the Species',
+    description: 'Connect matching species from the same category. Pair all species to complete each puzzle.',
     howToPlay: {
-        step1: { title: 'Connect', desc: 'Connect same colored dots.' },
-        step2: { title: 'Fill', desc: 'Fill the entire grid.' },
-        step3: { title: 'No Cross', desc: 'Lines cannot cross.' }
+        step1: { title: 'Match', desc: 'Connect same category species.' },
+        step2: { title: 'Complete', desc: 'Connect all species pairs.' },
+        step3: { title: 'No Cross', desc: 'Paths cannot cross.' }
     }
 };
