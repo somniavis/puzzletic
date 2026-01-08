@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { useMemo, useCallback } from 'react';
 import { Layout2 } from '../../../layouts/Standard/Layout2';
 import { useGameEngine } from '../../../layouts/Standard/Layout0/useGameEngine';
 import styles from './WildLink.module.css';
@@ -31,8 +32,8 @@ export default function WildLink({ onExit }: WildLinkProps) {
 
     const logic = useColorLinkLogic(engine);
 
-    // Standard PowerUps
-    const powerUps: PowerUpBtnProps[] = [
+    // Standard PowerUps (memoized to prevent recreation on every render)
+    const powerUps: PowerUpBtnProps[] = useMemo(() => [
         {
             count: logic.powerUps.timeFreeze,
             icon: '❄️',
@@ -60,14 +61,14 @@ export default function WildLink({ onExit }: WildLinkProps) {
             title: 'Double Score',
             disabledConfig: logic.isDoubleScore || logic.powerUps.doubleScore <= 0
         }
-    ];
+    ], [logic.powerUps, logic.isTimeFrozen, logic.isDoubleScore, logic.activatePowerUp, engine.lives]);
 
-    const handlePointerEnter = (r: number, c: number, e: React.PointerEvent) => {
+    const handlePointerEnter = useCallback((r: number, c: number, e: React.PointerEvent) => {
         // Only trigger move if primary button is held down (mouse) or active touch
         if (e.buttons === 1) {
             logic.handleMove(r, c);
         }
-    };
+    }, [logic.handleMove]);
 
     return (
         <Layout2
