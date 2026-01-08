@@ -108,6 +108,7 @@ export const useGameEngine = (config: GameEngineConfig = {}) => {
         setQuestionStartTime(Date.now());
         setAchievements({ firstCorrect: false, lightningSpeed: false, streakMaster: false, master: false });
         setStats({ correct: 0, wrong: 0 });
+        setPowerUps({ timeFreeze: 0, extraLife: 0, doubleScore: 0 });
     }, [initialLives, initialTime]);
 
     const submitAnswer = useCallback((isCorrect: boolean, options: { skipStreak?: boolean; skipDifficulty?: boolean; skipFeedback?: boolean } = {}) => {

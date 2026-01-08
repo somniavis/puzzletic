@@ -1,0 +1,275 @@
+.gameContainer {
+    width: 100%;
+    height: 100%;
+    /* display: flex to center the grid within the wrapper space */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* Optional: Add overflow hidden if needed to prevent spillover */
+    overflow: hidden;
+}
+
+.grid {
+    display: grid;
+    gap: 2px;
+    background: transparent;
+    /* Removed gray background */
+    padding: 8px;
+    border-radius: 12px;
+    box-shadow: none;
+    /* Removed shadow for cleaner look */
+    /* Square aspect ratio, scaled to fit */
+    width: min(90vmin, 500px);
+    aspect-ratio: 1 / 1;
+    /* Make sure grid stays above background elements if necessary */
+    z-index: 10;
+    position: relative;
+}
+
+.cell {
+    position: relative;
+    background: white;
+    border-radius: 4px;
+    /* Slight rounding for cell look */
+    /* Touch Action None to prevent scrolling while dragging */
+    touch-action: none;
+    user-select: none;
+    cursor: pointer;
+}
+
+/* Dots */
+.dot {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 60%;
+    height: 60%;
+    border-radius: 50%;
+    z-index: 10;
+    box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.5), 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Pipes */
+/* We use pseudo-elements or child divs for pipes. Child divs are safer for multiple directions. */
+.pipeSegment {
+    position: absolute;
+    background: currentColor;
+    z-index: 5;
+}
+
+/* Center Hub (Always present if path exists to smooth corners) */
+.pipeCenter {
+    top: 50%;
+    left: 50%;
+    width: 40%;
+    height: 40%;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    /* Optional for round joints */
+}
+
+/* Directional Arms */
+.pipeN {
+    top: 0;
+    left: 50%;
+    width: 40%;
+    height: 50%;
+    transform: translateX(-50%);
+}
+
+.pipeS {
+    bottom: 0;
+    left: 50%;
+    width: 40%;
+    height: 50%;
+    transform: translateX(-50%);
+}
+
+.pipeW {
+    left: 0;
+    top: 50%;
+    width: 50%;
+    height: 40%;
+    transform: translateY(-50%);
+}
+
+.pipeE {
+    right: 0;
+    top: 50%;
+    width: 50%;
+    height: 40%;
+    transform: translateY(-50%);
+}
+
+/* Categories */
+.mammal {
+    color: #8D6E63;
+    background-color: #8D6E63;
+}
+
+.bird {
+    color: #29B6F6;
+    background-color: #29B6F6;
+}
+
+.reptile {
+    color: #66BB6A;
+    background-color: #66BB6A;
+}
+
+.marine {
+    color: #1E88E5;
+    background-color: #1E88E5;
+}
+
+.bug {
+    color: #FFA726;
+    background-color: #FFA726;
+}
+
+.flower {
+    color: #EC407A;
+    background-color: #EC407A;
+}
+
+
+/* Apply color to bg of dot */
+/* Apply color to bg of dot - REMOVED per user request */
+/* Dots are now just floating icons */
+.dot.mammal {
+    background-color: transparent;
+}
+
+.dot.bird {
+    background-color: transparent;
+}
+
+.dot.reptile {
+    background-color: transparent;
+}
+
+.dot.marine {
+    background-color: transparent;
+}
+
+.dot.bug {
+    background-color: transparent;
+}
+
+.dot.flower {
+    background-color: transparent;
+}
+
+/* Increase Icon Size - Scaled to 70% of previous max */
+.dot {
+    font-size: min(10.5vmin, 63px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: none;
+    /* Remove shadow too if it looks weird on text */
+}
+
+/* Apply color to text-color of pipe container for segments to inherit */
+.cell.mammal .pipeSegment {
+    background-color: #8D6E63;
+}
+
+.cell.bird .pipeSegment {
+    background-color: #29B6F6;
+}
+
+.cell.reptile .pipeSegment {
+    background-color: #66BB6A;
+}
+
+.cell.marine .pipeSegment {
+    background-color: #1E88E5;
+}
+
+.cell.bug .pipeSegment {
+    background-color: #FFA726;
+}
+
+.cell.flower .pipeSegment {
+    background-color: #EC407A;
+}
+
+
+
+/* --- Wave Gradient Background --- */
+.waveBgContainer {
+    width: 100%;
+    height: 100%;
+    /* Adapted from User Request */
+    background: linear-gradient(315deg, rgba(101, 0, 94, 1) 3%, rgba(60, 132, 206, 1) 38%, rgba(48, 238, 226, 1) 68%, rgba(255, 25, 25, 1) 98%);
+    animation: gradient 15s ease infinite;
+    background-size: 400% 400%;
+    position: relative;
+    overflow: hidden;
+}
+
+@keyframes gradient {
+    0% {
+        background-position: 0% 0%;
+    }
+
+    50% {
+        background-position: 100% 100%;
+    }
+
+    100% {
+        background-position: 0% 0%;
+    }
+}
+
+.wave {
+    background: rgb(255 255 255 / 25%);
+    border-radius: 1000% 1000% 0 0;
+    position: absolute;
+    /* Changed from fixed to flow within card */
+    width: 200%;
+    height: 12em;
+    animation: wave 10s -3s linear infinite;
+    transform: translate3d(0, 0, 0);
+    opacity: 0.8;
+    bottom: 0;
+    left: 0;
+    z-index: 1;
+    /* Ensure above gradient but below content if needed */
+}
+
+.wave:nth-of-type(2) {
+    bottom: -1.25em;
+    animation: wave 18s linear reverse infinite;
+    opacity: 0.8;
+}
+
+.wave:nth-of-type(3) {
+    bottom: -2.5em;
+    animation: wave 20s -1s reverse infinite;
+    opacity: 0.9;
+}
+
+@keyframes wave {
+    2% {
+        transform: translateX(1);
+    }
+
+    25% {
+        transform: translateX(-25%);
+    }
+
+    50% {
+        transform: translateX(-50%);
+    }
+
+    75% {
+        transform: translateX(-25%);
+    }
+
+    100% {
+        transform: translateX(1);
+    }
+}

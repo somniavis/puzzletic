@@ -15,7 +15,10 @@ import { manifest as DeepSeaManifest } from './math/level2/DeepSeaDive';
 import { manifest as L2_UFOInvasion } from './math/level2/UFOInvasion/index';
 
 // --- Brain Level 1 ---
+// --- Brain Level 1 ---
 import { manifest as L1_ColorLink } from './brain/level1/ColorLink/index';
+// --- Brain Level 2 ---
+import { manifest as L2_WildLink } from './brain/level2/WildLink/index';
 
 export const GAMES: GameManifest[] = [
     // [Level 1] -----------------------------------------------------------
@@ -33,7 +36,11 @@ export const GAMES: GameManifest[] = [
     L2_UFOInvasion,
 
     // [Brain Level 1] -----------------------------------------------------
+    // [Brain Level 1] -----------------------------------------------------
     L1_ColorLink,
+
+    // [Brain Level 2] -----------------------------------------------------
+    L2_WildLink,
 ];
 
 export const getGames = (category?: GameCategory, level?: GameDifficulty): GameManifest[] => {
