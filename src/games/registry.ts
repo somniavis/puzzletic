@@ -14,6 +14,9 @@ import { manifest as L2_Pinwheel } from './math/level2/PinwheelPop';
 import { manifest as DeepSeaManifest } from './math/level2/DeepSeaDive';
 import { manifest as L2_UFOInvasion } from './math/level2/UFOInvasion/index';
 
+// --- Brain Level 1 ---
+import { manifest as L1_ColorLink } from './brain/level1/ColorLink/index';
+
 export const GAMES: GameManifest[] = [
     // [Level 1] -----------------------------------------------------------
     L1_FishingCount,
@@ -28,6 +31,9 @@ export const GAMES: GameManifest[] = [
     L2_Pinwheel,
     DeepSeaManifest,
     L2_UFOInvasion,
+
+    // [Brain Level 1] -----------------------------------------------------
+    L1_ColorLink,
 ];
 
 export const getGames = (category?: GameCategory, level?: GameDifficulty): GameManifest[] => {

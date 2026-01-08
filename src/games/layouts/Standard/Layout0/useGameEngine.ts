@@ -149,7 +149,12 @@ export const useGameEngine = (config: GameEngineConfig = {}) => {
             // Streak Bonus - Use current streak (which might be unchanged if skipped)
             let streakBonus = streak * 10;
             let baseScore = difficultyLevel * 50;
-            setScore(prev => prev + baseScore + timeBonus + streakBonus);
+
+            // Apply Multiplier (Double Score)
+            let totalScore = baseScore + timeBonus + streakBonus;
+            if (isDoubleScore) totalScore *= 2;
+
+            setScore(prev => prev + totalScore);
 
             // Achievements
             if (!achievements.firstCorrect) setAchievements(prev => ({ ...prev, firstCorrect: true }));
@@ -194,13 +199,32 @@ export const useGameEngine = (config: GameEngineConfig = {}) => {
 
     }, [streak, difficultyLevel, consecutiveCorrect, consecutiveWrong, achievements, maxDifficulty, lives, questionStartTime]);
 
-    const activatePowerUp = (type: string) => {
+    const [powerUps, setPowerUps] = useState({
+        timeFreeze: 0,
+        extraLife: 0,
+        doubleScore: 0
+    });
+    const [isDoubleScore, setIsDoubleScore] = useState(false);
+
+    // ... (existing code) ...
+
+    const activatePowerUp = useCallback((type: 'timeFreeze' | 'extraLife' | 'doubleScore') => {
+        if (powerUps[type] <= 0) return; // Prevent usage if count is 0
+
+        setPowerUps(prev => ({ ...prev, [type]: prev[type] - 1 }));
+
         if (type === 'timeFreeze') {
             setIsTimeFrozen(true);
-            setTimeout(() => setIsTimeFrozen(false), 5000); // Freeze for 5s
+            setTimeout(() => setIsTimeFrozen(false), 5000);
+        } else if (type === 'extraLife') {
+            setLives(prev => Math.min(prev + 1, initialLives));
+        } else if (type === 'doubleScore') {
+            setIsDoubleScore(true);
+            setTimeout(() => setIsDoubleScore(false), 10000);
         }
-        // Add other powerups here
-    };
+    }, [powerUps, initialLives]);
+
+    // Note: submitAnswer updated to handle multiplier directly
 
     return {
         gameState,
@@ -220,6 +244,11 @@ export const useGameEngine = (config: GameEngineConfig = {}) => {
         registerEvent,
         updateScore,
         updateLives,
-        updateStreak
+        updateStreak,
+        // Exposed PowerUp State
+        powerUps,
+        isTimeFrozen,
+        isDoubleScore,
+        setPowerUps // Allow games to award powerups
     };
 };
