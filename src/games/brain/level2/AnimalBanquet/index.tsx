@@ -90,7 +90,12 @@ export default function AnimalBanquet({ onExit }: AnimalBanquetProps) {
             engine={engine}
             powerUps={powerUps}
             onExit={handleExit}
-            cardBackground={<BlobBackground />}
+            cardBackground={<BlobBackground colors={{
+                blob1: '#dcfce7', // Green-100
+                blob2: '#dbeafe', // Blue-100
+                blob3: '#ccfbf1', // Teal-100
+                blob4: '#ecfccb'  // Lime-100
+            }} />}
             instructions={[
                 { icon: '🦁', title: 'Feed Animals', description: 'Give correct food to each animal.' },
                 { icon: '🤔', title: 'Remember', description: 'Don\'t feed the same animal twice!' },
