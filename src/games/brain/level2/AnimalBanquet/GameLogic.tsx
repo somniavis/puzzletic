@@ -53,37 +53,66 @@ export const useAnimalBanquetLogic = (engine: GameEngineInterface) => {
     const animalsRef = useRef<AnimalEntity[]>([]);
     const reqIdRef = useRef<number>(0);
 
+    // --- Reset Logic ---
+    const prevGameState = useRef(engine.gameState);
+    useEffect(() => {
+        if (prevGameState.current === 'gameover' && engine.gameState === 'playing') {
+            // Restart detected
+            setLevelIndex(0);
+        } else if (engine.gameState === 'idle') {
+            // Idle reset
+            setLevelIndex(0);
+        }
+        prevGameState.current = engine.gameState;
+    }, [engine.gameState]);
+
     // --- Level Generation ---
     useEffect(() => {
         // Difficulty Logic (Adaptive)
-        // Level 1-2 (Index 0-1): 2-3 Animals, 2 Species
-        // Level 3-5 (Index 2-4): 4-6 Animals, 2-3 Species
-        // Level 6+  (Index 5+):  6-8 Animals, 3-4 Species
+        // Level 1-2 (Index 0-1): 2-3 Animals, 2 Sp, 2-3 Foods
+        // Level 3-5 (Index 2-4): 4-6 Animals, 2-3 Sp, 3-4 Foods
+        // Level 6+  (Index 5+):  6-8 Animals, 3-4 Sp, 4 Foods
 
-        let minAnimals = 2;
-        let maxAnimals = 3;
-        let minSpecies = 2;
-        let maxSpecies = 2;
+        let minAnimals = 2, maxAnimals = 3;
+        let minSpecies = 2, maxSpecies = 2;
+        let minFoods = 2, maxFoods = 3;
 
         if (levelIndex >= 2) { // Level 3+
             minAnimals = 4; maxAnimals = 6;
             minSpecies = 2; maxSpecies = 3;
+            minFoods = 3; maxFoods = 4;
         }
         if (levelIndex >= 5) { // Level 6+
             minAnimals = 6; maxAnimals = 8;
             minSpecies = 3; maxSpecies = 4;
+            minFoods = 4; maxFoods = 4;
         }
 
         // 1. Determine exact counts
         const animalCount = Math.floor(Math.random() * (maxAnimals - minAnimals + 1)) + minAnimals;
         const speciesCount = Math.floor(Math.random() * (maxSpecies - minSpecies + 1)) + minSpecies;
 
-        // 2. Select Active Species
+        // Ensure food count is at least species count
+        const rawFoodCount = Math.floor(Math.random() * (maxFoods - minFoods + 1)) + minFoods;
+        const foodOptionCount = Math.max(rawFoodCount, speciesCount);
+
+        // 2. Select Active Species (Targets)
         const allTypes = Object.keys(SPECIES_DATA) as SpeciesType[];
         const shuffledTypes = [...allTypes].sort(() => Math.random() - 0.5);
         const roundSpecies = shuffledTypes.slice(0, speciesCount);
 
-        // 3. Generate Animals
+        // 3. Select Food Options (Targets + Distractors)
+        const remainingTypes = shuffledTypes.slice(speciesCount);
+        const distractorCount = Math.max(0, foodOptionCount - speciesCount);
+        const distractorSpecies = remainingTypes.slice(0, distractorCount);
+
+        const foodSpecies = [...roundSpecies, ...distractorSpecies];
+        // Shuffle the buttons so answers aren't always first
+        const shuffledFoodSpecies = foodSpecies.sort(() => Math.random() - 0.5);
+        const visibleFoodList = shuffledFoodSpecies.map(s => SPECIES_DATA[s].food);
+
+
+        // 4. Generate Animals
         const newAnimals: AnimalEntity[] = [];
         for (let i = 0; i < animalCount; i++) {
             const species = roundSpecies[Math.floor(Math.random() * roundSpecies.length)];
