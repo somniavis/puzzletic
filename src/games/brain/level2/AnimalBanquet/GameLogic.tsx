@@ -52,6 +52,7 @@ export const useAnimalBanquetLogic = (engine: GameEngineInterface) => {
     // Refs for Physics Loop to avoid closure staleness
     const animalsRef = useRef<AnimalEntity[]>([]);
     const reqIdRef = useRef<number>(0);
+    const lastTimeRef = useRef<number>(0);
 
     // --- Reset Logic ---
     const prevGameState = useRef(engine.gameState);
@@ -135,23 +136,35 @@ export const useAnimalBanquetLogic = (engine: GameEngineInterface) => {
             });
         }
 
-        // 4. Set Visible Foods (Options correspond to Species present)
-        const foods = roundSpecies.map(s => SPECIES_DATA[s].food);
-
-        setVisibleFoods(foods);
+        // 5. Update State
+        setVisibleFoods(visibleFoodList);
+        setSelectedFood(visibleFoodList[0]);
         setAnimals(newAnimals);
         animalsRef.current = newAnimals;
 
     }, [levelIndex]);
 
     // --- Physics System ---
-    const updatePhysics = useCallback(() => {
+    const updatePhysics = useCallback((time: number) => {
+        // Initialize time on first run
+        if (!lastTimeRef.current) lastTimeRef.current = time;
+
+        // Calculate Delta Time
+        const dt = time - lastTimeRef.current;
+        lastTimeRef.current = time; // Update for next frame
+
         if (engine.gameState !== 'playing' && engine.gameState !== 'gameover') {
             if (engine.isTimeFrozen) {
                 reqIdRef.current = requestAnimationFrame(updatePhysics);
                 return; // Skip update
             }
         }
+
+        // Cap dt to prevent huge jumps (e.g., if tab was inactive, capping at 100ms prevents warping)
+        const safeDt = Math.min(dt, 100);
+        // Normalization factor: target 60FPS (16.67ms)
+        // If 144Hz (6.9ms), factor is 0.4. If 30Hz (33ms), factor is 2.0.
+        const speedFactor = safeDt / 16.67;
 
         if (engine.gameState !== 'playing') {
             // Stop loop if not playing
@@ -160,17 +173,17 @@ export const useAnimalBanquetLogic = (engine: GameEngineInterface) => {
             const nextAnimals = currentAnimals.map(anim => {
                 let { x, y, vx, vy } = anim;
 
-                // Move
-                x += vx;
-                y += vy;
+                // Move with Delta Time Scaling
+                x += vx * speedFactor;
+                y += vy * speedFactor;
 
                 // Bounce Logic (Simple Box)
                 const r = ANIMAL_SIZE_PCT / 2;
 
-                if (x < r) { x = r; vx = -vx; }
-                if (x > 100 - r) { x = 100 - r; vx = -vx; }
-                if (y < r) { y = r; vy = -vy; }
-                if (y > 100 - r) { y = 100 - r; vy = -vy; }
+                if (x < r) { x = r; vx = Math.abs(vx); }
+                if (x > 100 - r) { x = 100 - r; vx = -Math.abs(vx); }
+                if (y < r) { y = r; vy = Math.abs(vy); }
+                if (y > 100 - r) { y = 100 - r; vy = -Math.abs(vy); }
 
                 return { ...anim, x, y, vx, vy };
             });
