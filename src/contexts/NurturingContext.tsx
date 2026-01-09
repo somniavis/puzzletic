@@ -110,6 +110,9 @@ interface NurturingContextValue {
   isGraduating: boolean; // Stage 4 -> Graduation
   completeGraduationAnimation: (name: string) => void;
 
+  // Stats
+  recordGameScore: (gameId: string, score: number) => void;
+
   // Subscription
   subscription: SubscriptionState;
   purchasePlan: (planId: '3_months' | '12_months') => Promise<boolean>;
@@ -577,6 +580,39 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
       return newState;
     });
     return success;
+  }, []);
+
+  const recordGameScore = useCallback((gameId: string, score: number) => {
+    setState(currentState => {
+      const statsMap = currentState.minigameStats || {};
+      const currentStats = statsMap[gameId] || {
+        totalScore: 0,
+        playCount: 0,
+        highScore: 0,
+        lastPlayedAt: 0
+      };
+
+      const newStats = {
+        totalScore: currentStats.totalScore + score,
+        playCount: currentStats.playCount + 1,
+        highScore: Math.max(currentStats.highScore, score),
+        lastPlayedAt: Date.now()
+      };
+
+      const newState = {
+        ...currentState,
+        minigameStats: {
+          ...statsMap,
+          [gameId]: newStats
+        },
+        totalMinigameScore: (currentState.totalMinigameScore || 0) + score,
+        totalMinigamePlayCount: (currentState.totalMinigamePlayCount || 0) + 1
+      };
+
+      saveNurturingState(newState);
+      // No immediate cloud sync: Rely on auto-sync interval
+      return newState;
+    });
   }, []);
 
   const [condition, setCondition] = useState<CharacterCondition>(() =>
@@ -1247,6 +1283,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     completeEvolutionAnimation,
     isGraduating,
     completeGraduationAnimation,
+    recordGameScore,
 
     // Subscription
     subscription,

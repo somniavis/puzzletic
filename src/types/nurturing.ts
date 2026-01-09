@@ -147,6 +147,14 @@ export interface HallOfFameEntry {
   finalStats: NurturingStats;
 }
 
+// Minigame Statistics (Cumulative)
+export interface MinigameStats {
+  totalScore: number;
+  playCount: number;
+  highScore: number;
+  lastPlayedAt: number;
+}
+
 // 지속 상태 (Persistent State)
 export interface NurturingPersistentState {
   stats: NurturingStats;
@@ -171,6 +179,9 @@ export interface NurturingPersistentState {
   characterName?: string; // Character Nickname
   speciesId?: string; // Current Jello Species ID
   history?: import('./character').CharacterHistory; // Hidden Evolution Tracking
+  minigameStats?: Record<string, MinigameStats>; // Game ID -> Stats
+  totalMinigameScore?: number; // All Games Total Score
+  totalMinigamePlayCount?: number; // All Games Total Play Count
   unlockedJellos?: Record<string, number[]>; // Encyclopedia: { 'yellowJello': [1, 2], 'redJello': [1] }
   hallOfFame?: HallOfFameEntry[]; // 졸업한 젤로 목록
 }

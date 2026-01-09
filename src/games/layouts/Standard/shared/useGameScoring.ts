@@ -22,7 +22,7 @@ export const useGameScoring = ({
     stats
 }: ScoringProps) => {
     const { user } = useAuth();
-    const { evolutionStage, addRewards } = useNurturing();
+    const { evolutionStage, addRewards, recordGameScore } = useNurturing();
 
     const [rewardResult, setRewardResult] = useState<RewardCalculation | null>(null);
     const [highScore, setHighScore] = useState<number>(0);
@@ -62,6 +62,13 @@ export const useGameScoring = ({
             setRewardResult(calculated);
             addRewards(calculated.xpEarned, calculated.groEarned);
 
+            // Record Global Cumulative Score
+            if (gameId) {
+                recordGameScore(gameId, score);
+            }
+
+            // Update High Score (Local)
+
             // Update High Score
             if (gameId) {
                 const savedkey = getHighScoreKey(gameId);
@@ -84,7 +91,7 @@ export const useGameScoring = ({
             if (rewardResult) setRewardResult(null);
             setIsNewRecord(false);
         }
-    }, [gameState, rewardResult, score, lives, engineDifficulty, evolutionStage, addRewards, gameId, stats, user?.uid]);
+    }, [gameState, rewardResult, score, lives, engineDifficulty, evolutionStage, addRewards, gameId, stats, user?.uid, recordGameScore]);
 
     return {
         rewardResult,

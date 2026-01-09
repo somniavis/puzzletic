@@ -170,6 +170,40 @@ puzzleletic_checksum_{userId}
 
 ---
 
+---
+
+## 미니게임 점수 저장 (Minigame Scoring)
+
+모든 미니게임의 점수는 **NurturingPersistentState** 내부에 통합되어 관리되며, 하이브리드 저장 방식(로컬+D1)을 따릅니다.
+
+### 데이터 구조
+```typescript
+interface NurturingPersistentState {
+  // ...
+  // 1. 개별 게임 통계 (Game ID -> Stats)
+  minigameStats?: Record<string, {
+    totalScore: number;   // 누적 점수
+    playCount: number;    // 누적 플레이 횟수
+    highScore: number;    // 최고 점수 (Prev Best)
+    lastPlayedAt: number; // 마지막 플레이 시각
+  }>;
+
+  // 2. 전체 합산 통계 (Global Stats)
+  totalMinigameScore?: number;      // 모든 게임 점수 총합
+  totalMinigamePlayCount?: number;  // 모든 게임 판수 총합
+}
+```
+
+### 동작 원리
+1.  **게임 종료 (Game Over)**: `useGameScoring` 훅이 `recordGameScore` 호출.
+2.  **상태 갱신**:
+    *   해당 게임의 `minigameStats` 업데이트.
+    *   전역 `totalMinigameScore`, `totalMinigamePlayCount` 동시 업데이트.
+3.  **저장**: `localStorage`에 즉시 반영.
+4.  **동기화**: 자동 저장 주기(15분) 또는 종료 시점에 D1 `game_data` JSON으로 통합되어 업로드.
+
+---
+
 ## 트러블슈팅
 
 ### D1_TYPE_ERROR: undefined not supported

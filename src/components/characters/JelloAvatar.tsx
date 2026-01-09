@@ -48,7 +48,9 @@ export const JelloAvatar: React.FC<JelloAvatarProps> = ({
 
     return (
         <div
-            key={`${targetSpeciesId}-${action}`}
+            // Fix: Remove action from key to prevent unmounting/flicker on state change
+            // This allows CSS transitions/animations to switch smoothly on the same element
+            key={targetSpeciesId}
             className={`jello-avatar jello-avatar--${action} ${disableAnimation ? 'no-animation' : ''}`}
             onClick={onClick}
             style={{
