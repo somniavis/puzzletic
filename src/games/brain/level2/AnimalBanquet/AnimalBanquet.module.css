@@ -1,0 +1,202 @@
+.gameContainer {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+}
+
+.gameArea {
+    flex: 1;
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    /* Temporary visual aid for boundary */
+    border: 2px dashed rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    margin-bottom: 1rem;
+}
+
+/* Matching Pinwheel Pop's Option Area */
+.foodSelectionBar {
+    width: 100%;
+    padding: 1rem;
+    background: linear-gradient(180deg, #eff6ff 0%, #dbeafe 100%);
+    border-top: 2px solid #bfdbfe;
+    backdrop-filter: blur(8px);
+    /* border-radius: 0.75rem; In Pinwheel it has radius, but here it's full width bar? Pinwheel seems to be a box. */
+    border-radius: 1rem;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 120px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    z-index: 10;
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+/* Scrollbar Hide */
+.foodSelectionBar::-webkit-scrollbar {
+    display: none;
+}
+
+/* Matching Pinwheel Pop's .pw-option-btn Style exactly */
+.foodButton {
+    flex: 1;
+    max-width: 120px;
+    height: 80px;
+    background: white;
+    border: 3px solid #cbd5e1;
+    border-radius: 1rem;
+    padding: 0;
+    font-size: 2.5rem;
+    /* Copied logic but bumped for emoji visibility */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 6px 0 #94a3b8;
+    /* The 3D Shadow */
+    transition: all 0.1s;
+    -webkit-tap-highlight-color: transparent;
+    color: #334155;
+}
+
+/* Active/Press Effect */
+.foodButton:active {
+    transform: translateY(4px);
+    box-shadow: 0 0 0 #94a3b8;
+}
+
+/* Selected State (Toggle) - Custom addition to 3D style */
+/* We make it look "Pressed" permanently or colored */
+.foodButton.selected {
+    background: #fef08a;
+    /* Yellow-200 */
+    border-color: #eab308;
+    /* Yellow-500 */
+    box-shadow: 0 6px 0 #b45309;
+    /* Darker Yellow shadow */
+    transform: translateY(0);
+    /* Don't depress permanently, keep it pop */
+}
+
+/* When selected AND active (pressing a selected button) */
+.foodButton.selected:active {
+    transform: translateY(4px);
+    box-shadow: 0 0 0 #b45309;
+}
+
+/* --- Animal Styles --- */
+.animal {
+    position: absolute;
+    width: 15%;
+    aspect-ratio: 1/1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transform: translate(-50%, -50%);
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    transition: transform 0.1s;
+    z-index: 5;
+}
+
+.animalContent {
+    font-size: 3.5rem;
+    filter: drop-shadow(0 4px 4px rgba(0, 0, 0, 0.2));
+    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.animal:active .animalContent {
+    transform: scale(0.9);
+}
+
+/* Feedback Bubble */
+.feedbackBubble {
+    position: absolute;
+    top: -40px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: white;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: bold;
+    color: #333;
+    white-space: nowrap;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    animation: popUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 20;
+    pointer-events: none;
+}
+
+.feedbackBubble::after {
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 6px 6px 0;
+    border-style: solid;
+    border-color: white transparent transparent transparent;
+}
+
+/* States */
+.animal.eating .animalContent {
+    animation: happyBounce 0.5s infinite;
+}
+
+.animal.angry .animalContent {
+    animation: shake 0.4s infinite;
+}
+
+.animal.full .animalContent {
+    filter: grayscale(0.5) opacity(0.8);
+    transform: scale(0.95);
+}
+
+@keyframes popUp {
+    0% {
+        transform: translateX(-50%) scale(0);
+        opacity: 0;
+    }
+
+    100% {
+        transform: translateX(-50%) scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes happyBounce {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+@keyframes shake {
+
+    0%,
+    100% {
+        transform: rotate(0deg);
+    }
+
+    25% {
+        transform: rotate(-15deg);
+    }
+
+    75% {
+        transform: rotate(15deg);
+    }
+}
