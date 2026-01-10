@@ -602,9 +602,6 @@ export const PetRoom: React.FC<PetRoomProps> = ({
   };
 
   const handleConfirmSleepWake = () => {
-    // DEBUG: Show confirmModalType value on mobile
-    alert(`DEBUG: confirmModalType = "${confirmModalType}"`);
-
     console.log('🟢 handleConfirmSleepWake called, confirmModalType:', confirmModalType);
 
     // Lock interaction to prevent ghost clicks hitting the house again
