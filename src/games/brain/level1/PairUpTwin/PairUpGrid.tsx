@@ -9,7 +9,7 @@ interface PairUpGridProps {
     onCardClick: (id: string) => void;
 }
 
-export const PairUpGrid: React.FC<PairUpGridProps> = ({
+export const PairUpGrid: React.FC<PairUpGridProps> = React.memo(({
     cards,
     config,
     onCardClick
@@ -50,4 +50,4 @@ export const PairUpGrid: React.FC<PairUpGridProps> = ({
             </div>
         </div>
     );
-};
+});

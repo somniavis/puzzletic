@@ -64,7 +64,7 @@ const PairUpConnect: React.FC = () => {
     // --- Game Logic ---
     const logic = usePairUpLogic(engine, 'connect');
 
-    // Timer Bar Component (Injected to Left of PowerUps)
+    // Timer Bar Component (CSS Animation Optimized)
     const timerBar = (
         <div style={{
             width: '150px',
@@ -75,12 +75,23 @@ const PairUpConnect: React.FC = () => {
             opacity: logic.gameState === 'preview' ? 1 : 0,
             transition: 'opacity 0.3s'
         }}>
-            <div style={{
-                height: '100%',
-                width: `${logic.previewProgress}%`,
-                background: '#f59e0b',
-                transition: 'width 0.1s linear'
-            }} />
+            {logic.gameState === 'preview' && (
+                <div
+                    key={logic.round} // Force re-mount to restart animation on new round
+                    style={{
+                        height: '100%',
+                        background: '#f59e0b',
+                        width: '100%',
+                        animation: `timerShimmy ${logic.previewDuration}ms linear forwards`
+                    }}
+                />
+            )}
+            <style>{`
+                @keyframes timerShimmy {
+                    from { width: 100%; }
+                    to { width: 0%; }
+                }
+            `}</style>
         </div>
     );
 

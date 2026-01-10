@@ -30,10 +30,10 @@ export const usePairUpLogic = (engine: ReturnType<typeof useGameEngine>, mode: P
 
     // Level Progression
     const [round, setRound] = useState(1);
-    const [previewProgress, setPreviewProgress] = useState(100); // 100 to 0
 
     // Refs
-    const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+    // Use setTimeout for single transition instead of interval for progress
+    const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     // --- Helper: Generate Cards ---
     const generateCards = useCallback(() => {
@@ -69,31 +69,25 @@ export const usePairUpLogic = (engine: ReturnType<typeof useGameEngine>, mode: P
         setGameState('preview');
         setFlippedIds([]);
         setIsProcessing(false);
-        setPreviewProgress(100);
+        // previewProgress removed
 
-        // Start Preview Timer
-        const previewDuration = getPreviewTime(round);
-        let startTime = Date.now();
-        const interval = setInterval(() => {
-            const elapsed = Date.now() - startTime;
-            const remaining = Math.max(0, previewDuration - elapsed);
-            setPreviewProgress((remaining / previewDuration) * 100);
+        // Start Preview Timer (Optimized)
+        const duration = getPreviewTime(round);
 
-            if (remaining <= 0) {
-                clearInterval(interval);
-                setGameState('playing');
-                // Flip all back
-                setCards(prev => prev.map(c => ({ ...c, isFlipped: false })));
-            }
-        }, 50);
-        timerRef.current = interval;
+        if (timerRef.current) clearTimeout(timerRef.current);
+
+        timerRef.current = setTimeout(() => {
+            setGameState('playing');
+            // Flip all back
+            setCards(prev => prev.map(c => ({ ...c, isFlipped: false })));
+        }, duration);
 
     }, [mode, round]);
 
     // --- Cleanup Timer ---
     useEffect(() => {
         return () => {
-            if (timerRef.current) clearInterval(timerRef.current);
+            if (timerRef.current) clearTimeout(timerRef.current);
         };
     }, []);
 
@@ -214,7 +208,7 @@ export const usePairUpLogic = (engine: ReturnType<typeof useGameEngine>, mode: P
         cards,
         round,
         gameState,
-        previewProgress,
+        previewDuration: getPreviewTime(round),
         handleCardClick,
         gridConfig: getRoundConfig(round)
     };
