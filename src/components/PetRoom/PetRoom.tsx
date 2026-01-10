@@ -655,6 +655,17 @@ export const PetRoom: React.FC<PetRoomProps> = ({
             <div className="profile-stats-row">
               <div className="profile-level">{t('character.profile.level', { level: character.level })}</div>
               <div className="profile-gro">💰 {nurturing.gro}</div>
+              {/* DEBUG: Sleep state indicator */}
+              <div style={{
+                padding: '0.1rem 0.4rem',
+                background: nurturing.isSleeping ? '#28a745' : '#dc3545',
+                color: 'white',
+                borderRadius: '4px',
+                fontSize: '0.7rem',
+                fontWeight: 'bold'
+              }}>
+                {nurturing.isSleeping ? '😴SLEEP' : '👀AWAKE'}
+              </div>
             </div>
           </div>
         </div>
