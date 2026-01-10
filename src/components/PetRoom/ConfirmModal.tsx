@@ -40,14 +40,24 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
                                 boxShadow: '0 4px 0 #999',
                                 color: '#666'
                             }}
-                            onClick={() => { playButtonSound(); onCancel(); }}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                playButtonSound();
+                                onCancel();
+                            }}
                         >
                             <span className="action-label" style={{ fontSize: '1.1rem' }}>{cancelLabel}</span>
                         </button>
                         <button
                             className="action-btn action-btn--main"
                             style={{ width: 'auto', padding: '0.8rem 2rem', height: 'auto' }}
-                            onClick={() => { playButtonSound(); onConfirm(); }}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                playButtonSound();
+                                onConfirm();
+                            }}
                         >
                             <span className="action-label" style={{ fontSize: '1.1rem' }}>{confirmLabel}</span>
                         </button>

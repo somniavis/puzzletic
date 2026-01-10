@@ -606,7 +606,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({
     interactionLockRef.current = true;
     setTimeout(() => {
       interactionLockRef.current = false;
-    }, 500);
+    }, 800);
 
     if (confirmModalType === 'wake') {
       nurturing.toggleSleep();
