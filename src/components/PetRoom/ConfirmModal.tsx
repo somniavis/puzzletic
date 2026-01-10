@@ -20,42 +20,42 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
     onCancel
 }) => {
     const [debugMessage, setDebugMessage] = useState<string>('Ready');
-    const isProcessingRef = useRef(false);
+    const handledByTouchRef = useRef(false);
 
-    const executeConfirm = () => {
-        if (isProcessingRef.current) {
-            setDebugMessage('⚠️ Double tap blocked');
+    const executeConfirm = (source: string) => {
+        // Only execute once per interaction
+        if (handledByTouchRef.current && source === 'click') {
+            setDebugMessage('ℹ️ Click ignored (touch handled)');
             return;
         }
-        isProcessingRef.current = true;
 
-        setDebugMessage('✅ EXECUTING SLEEP!');
+        if (source === 'touch') {
+            handledByTouchRef.current = true;
+            // Reset after a delay
+            setTimeout(() => {
+                handledByTouchRef.current = false;
+            }, 500);
+        }
+
+        setDebugMessage(`🚀 Sleep via ${source}!`);
         playButtonSound();
-
-        // Call onConfirm after a tiny delay to show the message
-        setTimeout(() => {
-            onConfirm();
-        }, 150);
-
-        setTimeout(() => {
-            isProcessingRef.current = false;
-        }, 2000);
+        onConfirm(); // Call immediately, no delay
     };
 
-    const executeCancel = () => {
-        if (isProcessingRef.current) return;
-        isProcessingRef.current = true;
+    const executeCancel = (source: string) => {
+        if (handledByTouchRef.current && source === 'click') {
+            return;
+        }
 
-        setDebugMessage('❌ Cancelling...');
+        if (source === 'touch') {
+            handledByTouchRef.current = true;
+            setTimeout(() => {
+                handledByTouchRef.current = false;
+            }, 500);
+        }
+
         playButtonSound();
-
-        setTimeout(() => {
-            onCancel();
-        }, 150);
-
-        setTimeout(() => {
-            isProcessingRef.current = false;
-        }, 2000);
+        onCancel();
     };
 
     return (
@@ -63,7 +63,7 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
             className="food-menu-overlay"
             onClick={(e) => {
                 if (e.target === e.currentTarget) {
-                    executeCancel();
+                    executeCancel('overlay');
                 }
             }}
         >
@@ -71,6 +71,7 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
                 className="food-menu"
                 style={{ maxWidth: '400px', height: 'auto', maxHeight: 'none' }}
                 onClick={(e) => e.stopPropagation()}
+                onTouchStart={(e) => e.stopPropagation()}
             >
                 <div className="food-menu-header">
                     <h3>{title}</h3>
@@ -81,18 +82,18 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
                     {/* Debug display */}
                     <div style={{
                         padding: '0.75rem',
-                        background: '#d4edda',
+                        background: '#d1ecf1',
                         borderRadius: '12px',
-                        fontSize: '1rem',
+                        fontSize: '0.95rem',
                         fontWeight: 'bold',
-                        color: '#155724',
-                        border: '2px solid #28a745'
+                        color: '#0c5460',
+                        border: '2px solid #17a2b8'
                     }}>
                         {debugMessage}
                     </div>
 
                     <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
-                        {/* No Button - fires on touch START */}
+                        {/* No Button */}
                         <div
                             role="button"
                             style={{
@@ -111,17 +112,17 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
                             }}
                             onClick={(e) => {
                                 e.stopPropagation();
-                                executeCancel();
+                                executeCancel('click');
                             }}
                             onTouchStart={(e) => {
                                 e.stopPropagation();
-                                executeCancel();
+                                executeCancel('touch');
                             }}
                         >
                             {cancelLabel}
                         </div>
 
-                        {/* Yes Button - fires on touch START */}
+                        {/* Yes Button */}
                         <div
                             role="button"
                             style={{
@@ -140,11 +141,11 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
                             }}
                             onClick={(e) => {
                                 e.stopPropagation();
-                                executeConfirm();
+                                executeConfirm('click');
                             }}
                             onTouchStart={(e) => {
                                 e.stopPropagation();
-                                executeConfirm();
+                                executeConfirm('touch');
                             }}
                         >
                             {confirmLabel}
