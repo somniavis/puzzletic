@@ -1,4 +1,4 @@
-import type { ComponentType } from 'react';
+import type { ComponentType, ReactNode } from 'react';
 
 export type GameDifficulty = 1 | 2 | 3 | 4 | 5;
 export type GameCategory = 'brain' | 'math' | 'science' | 'sw';
@@ -14,8 +14,8 @@ export interface GameManifest {
     category: GameCategory;
     /** Difficulty level (1-5) */
     level: GameDifficulty;
-    /** URL to thumbnail image or emoji as placeholder */
-    thumbnail?: string;
+    /** URL to thumbnail image, emoji string, or React Node */
+    thumbnail?: string | ReactNode;
     /** Key for localized title */
     titleKey?: string;
     /** Subtitle for the game */

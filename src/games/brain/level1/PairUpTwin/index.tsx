@@ -17,7 +17,7 @@ export const manifest: GameManifest = {
     description: 'Find identical pairs of emojis.',
     category: 'brain',
     level: 1,
-    thumbnail: 'https://pub-1411335941ed4406b5f667f40e04a814.r2.dev/thumbnails/pair-up-twin.png',
+    thumbnail: '👯',
     component: React.lazy(() => Promise.resolve({ default: PairUpTwin })),
 };
 

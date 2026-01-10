@@ -17,7 +17,12 @@ export const manifest: GameManifest = {
     description: 'Find logically related pairs of emojis.',
     category: 'brain',
     level: 2,
-    thumbnail: 'https://pub-1411335941ed4406b5f667f40e04a814.r2.dev/thumbnails/pair-up-connect.png',
+    thumbnail: (
+        <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+            <span style={{ position: 'absolute', top: '10%', left: '10%', fontSize: '1.6rem', lineHeight: 1 }}>🐒</span>
+            <span style={{ position: 'absolute', bottom: '10%', right: '10%', fontSize: '1.6rem', lineHeight: 1 }}>🍌</span>
+        </div>
+    ),
     component: React.lazy(() => Promise.resolve({ default: PairUpConnect })),
 };
 

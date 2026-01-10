@@ -166,8 +166,21 @@ export const PlayPage: React.FC<PlayPageProps> = () => {
                             <div key={game.id} className="game-card" onClick={() => handlePlayClick(game)}>
                                 <div className="game-thumbnail">
                                     {/* Placeholder for thumbnail logic - prefer image, fallback to emoji */}
-                                    {game.thumbnail && !game.thumbnail.startsWith('http') ? (
-                                        <span style={{ fontSize: '2.5rem' }}>{game.thumbnail}</span>
+                                    {game.thumbnail ? (
+                                        typeof game.thumbnail === 'string' && game.thumbnail.startsWith('http') ? (
+                                            <img src={game.thumbnail} alt={game.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                        ) : (
+                                            <div style={{
+                                                fontSize: '2.5rem',
+                                                width: '100%',
+                                                height: '100%',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center'
+                                            }}>
+                                                {game.thumbnail}
+                                            </div>
+                                        )
                                     ) : (
                                         <span>{CATEGORY_ICONS[game.category]}</span>
                                     )}
