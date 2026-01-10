@@ -1274,9 +1274,14 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
 
   // Jello Sleep Toggle
   const toggleSleep = useCallback(() => {
+    alert('toggleSleep() called!'); // DEBUG
+
     setState((currentState) => {
+      alert(`Inside setState: gameDifficulty=${currentState.gameDifficulty}, isSleeping=${currentState.isSleeping}`); // DEBUG
+
       // Prevent sleep if doing other major actions (optional strictness)
       if (currentState.gameDifficulty) {
+        alert('BLOCKED: gameDifficulty is set!'); // DEBUG
         console.warn("Cannot sleep while playing game");
         return currentState;
       }
@@ -1289,6 +1294,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
         sleepStartTime: nextIsSleeping ? Date.now() : undefined,
       };
 
+      alert(`State changing: isSleeping ${currentState.isSleeping} → ${nextIsSleeping}`); // DEBUG
       console.log(nextIsSleeping ? '😴 젤로가 잠들었습니다.' : '🌅 젤로가 일어났습니다.');
       saveNurturingState(newState);
       return newState;
