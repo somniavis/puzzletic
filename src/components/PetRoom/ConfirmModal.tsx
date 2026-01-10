@@ -34,7 +34,6 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
     }, [onCancel]);
 
     const handleOverlayClick = useCallback((e: React.MouseEvent) => {
-        // Only trigger if the click is directly on the overlay, not on children
         if (e.target === e.currentTarget) {
             playButtonSound();
             onCancel();
@@ -59,6 +58,7 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
                     <p style={{ fontSize: '1.2rem', fontWeight: '700', color: '#4d3e2f', whiteSpace: 'pre-line', lineHeight: '1.5', margin: 0 }}>{message}</p>
                     <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
                         <button
+                            type="button"
                             className="action-btn"
                             style={{
                                 width: 'auto',
@@ -69,23 +69,30 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
                                 border: '3px solid #ccc',
                                 boxShadow: '0 4px 0 #999',
                                 color: '#666',
-                                touchAction: 'manipulation'
+                                touchAction: 'manipulation',
+                                cursor: 'pointer',
+                                WebkitAppearance: 'none',
+                                WebkitTapHighlightColor: 'transparent'
                             }}
                             onClick={handleCancel}
                         >
-                            <span className="action-label" style={{ fontSize: '1.1rem' }}>{cancelLabel}</span>
+                            <span className="action-label" style={{ fontSize: '1.1rem', pointerEvents: 'none' }}>{cancelLabel}</span>
                         </button>
                         <button
+                            type="button"
                             className="action-btn action-btn--main"
                             style={{
                                 width: 'auto',
                                 padding: '0.8rem 2rem',
                                 height: 'auto',
-                                touchAction: 'manipulation'
+                                touchAction: 'manipulation',
+                                cursor: 'pointer',
+                                WebkitAppearance: 'none',
+                                WebkitTapHighlightColor: 'transparent'
                             }}
                             onClick={handleConfirm}
                         >
-                            <span className="action-label" style={{ fontSize: '1.1rem' }}>{confirmLabel}</span>
+                            <span className="action-label" style={{ fontSize: '1.1rem', pointerEvents: 'none' }}>{confirmLabel}</span>
                         </button>
                     </div>
                 </div>
