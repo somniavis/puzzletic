@@ -13,7 +13,7 @@ const GAME_ID = 'pair-up-connect';
 export const manifest: GameManifest = {
     id: GAME_ID,
     title: 'Pair Up! Connect',
-    subtitle: 'Link Related Items',
+    subtitle: 'Find Related Pairs',
     description: 'Find logically related pairs of emojis.',
     category: 'brain',
     level: 2,
@@ -103,7 +103,7 @@ const PairUpConnect: React.FC = () => {
     return (
         <Layout2
             title="Pair Up! Connect"
-            subtitle="Link Related Items"
+            subtitle="Find Related Pairs"
             instructions={[
                 {
                     title: "Memorize",
