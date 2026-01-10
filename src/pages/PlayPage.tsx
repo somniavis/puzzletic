@@ -129,7 +129,7 @@ export const PlayPage: React.FC<PlayPageProps> = () => {
                         <div className="controls-body">
                             <div className="control-group">
                                 <div className="category-selector">
-                                    {(['math', 'brain', 'science', 'sw'] as GameCategory[]).map(cat => (
+                                    {(['math', 'brain'] as GameCategory[]).map(cat => (
                                         <button
                                             key={cat}
                                             className={`category-btn ${selectedCategory === cat ? 'active' : ''}`}
