@@ -193,7 +193,7 @@
 
 .start-header-section {
     flex-shrink: 0;
-    padding: 2.5rem 2rem 1rem;
+    padding: 5rem 2rem 0.7rem;
     text-align: center;
 }
 
@@ -208,6 +208,7 @@
     font-size: 1.25rem;
     color: #475569;
     font-weight: 600;
+    margin: 0;
 }
 
 .start-content-scroll {

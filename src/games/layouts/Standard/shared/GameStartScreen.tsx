@@ -17,7 +17,7 @@ interface StartScreenProps {
 }
 
 export const GameStartScreen: React.FC<StartScreenProps> = ({
-    title,
+    // title is intentionally omitted to avoid duplication
     subtitle,
     description,
     instructions,
@@ -28,7 +28,7 @@ export const GameStartScreen: React.FC<StartScreenProps> = ({
     return (
         <div className="overlay-screen start-screen-layout">
             <div className="start-header-section">
-                <h1 className="game-title">{title}</h1>
+
                 {subtitle && <h2 className="game-subtitle">{subtitle}</h2>}
             </div>
             <div className="start-content-scroll custom-scrollbar">
