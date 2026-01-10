@@ -32,7 +32,7 @@ export const SoundProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
     // Default settings
     return {
-      bgmEnabled: false,
+      bgmEnabled: true,
       sfxEnabled: true,
     };
   });
