@@ -157,9 +157,9 @@
     padding: 1rem 1rem 0 1rem;
     /* Top/Side padding, NO bottom padding for centering grid */
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
     z-index: 10;
 }
 
@@ -170,7 +170,7 @@
     margin-bottom: 0;
     justify-content: flex-start;
     /* Center PowerUps if they are the only thing? Or keep aligned left? Usually center looks better if alone */
-    width: 100%;
+    width: auto;
 }
 
 /* Content Wrapper for Game Board */

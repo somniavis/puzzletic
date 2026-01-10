@@ -25,6 +25,7 @@ interface Layout2Props {
     onExit: () => void;
     children: React.ReactNode;
     powerUps: PowerUpBtnProps[];
+    subHeaderRight?: React.ReactNode;
     background?: React.ReactNode;
     cardBackground?: React.ReactNode;
     className?: string;
@@ -40,6 +41,7 @@ export const Layout2: React.FC<Layout2Props> = ({
     onExit,
     children,
     powerUps,
+    subHeaderRight,
     background,
     cardBackground,
     className
@@ -117,6 +119,7 @@ export const Layout2: React.FC<Layout2Props> = ({
                             <PowerUpBtn key={idx} {...p} />
                         ))}
                     </div>
+                    {subHeaderRight && <div className="sub-header-right">{subHeaderRight}</div>}
                 </div>
 
                 <div className="layout2-grid-wrapper">

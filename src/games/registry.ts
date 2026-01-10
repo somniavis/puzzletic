@@ -17,9 +17,12 @@ import { manifest as L2_UFOInvasion } from './math/level2/UFOInvasion/index';
 // --- Brain Level 1 ---
 // --- Brain Level 1 ---
 import { manifest as L1_ColorLink } from './brain/level1/ColorLink/index';
+import { manifest as L1_PairUpTwin } from './brain/level1/PairUpTwin/index';
+
 // --- Brain Level 2 ---
 import { manifest as L2_WildLink } from './brain/level2/WildLink/index';
 import { manifest as L2_AnimalBanquet } from './brain/level2/AnimalBanquet/index';
+import { manifest as L2_PairUpConnect } from './brain/level2/PairUpConnect/index';
 
 export const GAMES: GameManifest[] = [
     // [Level 1] -----------------------------------------------------------
@@ -39,10 +42,12 @@ export const GAMES: GameManifest[] = [
     // [Brain Level 1] -----------------------------------------------------
     // [Brain Level 1] -----------------------------------------------------
     L1_ColorLink,
+    L1_PairUpTwin,
 
     // [Brain Level 2] -----------------------------------------------------
     L2_WildLink,
     L2_AnimalBanquet,
+    L2_PairUpConnect,
 ];
 
 export const getGames = (category?: GameCategory, level?: GameDifficulty): GameManifest[] => {
