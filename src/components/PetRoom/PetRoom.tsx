@@ -821,14 +821,18 @@ export const PetRoom: React.FC<PetRoomProps> = ({
               </div>
             )}
             {showGiftBox ? (
-              <GiftBox onOpen={handleGiftBoxClick} />
+              <div style={{ pointerEvents: 'auto' }}>
+                <GiftBox onOpen={handleGiftBoxClick} />
+              </div>
             ) : (
-              <CharacterComponent
-                character={character}
-                size="small"
-                mood={mood}
-                action={action}
-              />
+              <div style={{ pointerEvents: 'auto' }}>
+                <CharacterComponent
+                  character={character}
+                  size="small"
+                  mood={mood}
+                  action={action}
+                />
+              </div>
             )}
           </div>
         )}

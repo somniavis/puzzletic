@@ -52,7 +52,7 @@ export const JelloHouse: React.FC<JelloHouseProps> = ({
             onClick={onClick}
             style={{
                 ...style,
-                fontSize: `min(${config.size * 4}rem, ${config.size * 10}vw)`, // Responsive sizing
+                fontSize: `min(${config.size * 4}rem, ${config.size * 18}vw)`, // Responsive sizing (Increased for mobile)
             }}
         >
             <div className="house-icon">{config.icon}</div>
