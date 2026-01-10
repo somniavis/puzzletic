@@ -22,12 +22,11 @@ export const PairUpGrid: React.FC<PairUpGridProps> = React.memo(({
             <div
                 className={styles.grid}
                 style={{
-                    // Robust Scaling Logic (Updated for Mobile):
-                    // Use 100dvh to account for mobile browser bars.
-                    // Subtract roughly 180px for Header + SubHeader + Margins.
-                    // Use 95vw for width to maximize use of narrow screens.
-                    gridTemplateColumns: `repeat(${config.cols}, min(calc(95vw / ${config.cols} - 0.75rem), calc((100dvh - 180px) / ${config.rows} - 0.75rem)))`,
-                    gridTemplateRows: `repeat(${config.rows}, min(calc(95vw / ${config.cols} - 0.75rem), calc((100dvh - 180px) / ${config.rows} - 0.75rem)))`
+                    // Responsive Scaling using Container Queries (cqi/cqb or cqw/cqh):
+                    // The parent layout wrapper provides the content box size.
+                    // We fit the grid exactly into that box while maintaining square cells.
+                    gridTemplateColumns: `repeat(${config.cols}, min(calc(100cqw / ${config.cols} - 0.75rem), calc(100cqh / ${config.rows} - 0.75rem)))`,
+                    gridTemplateRows: `repeat(${config.rows}, min(calc(100cqw / ${config.cols} - 0.75rem), calc(100cqh / ${config.rows} - 0.75rem)))`
                 }}
             >
                 {cards.map(card => (
@@ -47,6 +46,6 @@ export const PairUpGrid: React.FC<PairUpGridProps> = React.memo(({
                     </div>
                 ))}
             </div>
-        </div>
+        </div >
     );
 });
