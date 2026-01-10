@@ -53,6 +53,7 @@ export const JelloHouse: React.FC<JelloHouseProps> = ({
             style={{
                 ...style,
                 fontSize: `min(${config.size * 4}rem, ${config.size * 18}vw)`, // Responsive sizing (Increased for mobile)
+                touchAction: 'manipulation', // Faster tap response on mobile
             }}
         >
             <div className="house-icon">{config.icon}</div>
