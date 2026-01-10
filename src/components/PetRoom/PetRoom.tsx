@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Character, CharacterMood, CharacterAction } from '../../types/character';
 import { JelloAvatar } from '../characters/JelloAvatar';
@@ -94,6 +94,8 @@ export const PetRoom: React.FC<PetRoomProps> = ({
   }, []);
 
 
+  /* ========== State Management ========== */
+  const interactionLockRef = useRef(false); // Mobile ghost click prevention
   const [position, setPosition] = useState({ x: 50, y: 50 }); // percentage position
   const [isMoving, setIsMoving] = useState(false);
   const [showFoodMenu, setShowFoodMenu] = useState(false);
@@ -581,6 +583,11 @@ export const PetRoom: React.FC<PetRoomProps> = ({
     isSequenceActive;
 
   const handleHouseClick = () => {
+    // Prevent ghost clicks
+    if (interactionLockRef.current) return;
+
+    playButtonSound();
+
     // 1. If currently sleeping -> Ask to wake up
     if (nurturing.isSleeping) {
       setConfirmModalType('wake');
@@ -595,6 +602,12 @@ export const PetRoom: React.FC<PetRoomProps> = ({
   };
 
   const handleConfirmSleepWake = () => {
+    // Lock interaction to prevent ghost clicks hitting the house again
+    interactionLockRef.current = true;
+    setTimeout(() => {
+      interactionLockRef.current = false;
+    }, 500);
+
     if (confirmModalType === 'wake') {
       nurturing.toggleSleep();
       showBubble('neutral', 1); // Waking up reaction
