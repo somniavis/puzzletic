@@ -201,13 +201,13 @@ export const usePinwheelLogic = () => {
             isProcessing.current = true;
 
             // Correct
-            // User Request: Streak increases ONLY explicitly on round completion (Stage 3).
+            // User Request: Combo increases ONLY explicitly on round completion (Stage 3).
             // Also logically, difficulty should progress per round, not per wing?
             // Let's skip difficulty update on partial stages too to treat "Pinwheel" as 1 Unit.
             const isRoundComplete = currentStage === 3;
 
             engine.submitAnswer(true, {
-                skipStreak: !isRoundComplete,
+                skipCombo: !isRoundComplete,
                 skipDifficulty: !isRoundComplete,
                 skipFeedback: !isRoundComplete // Skip 'correct' state delay for intermediate wings
             });

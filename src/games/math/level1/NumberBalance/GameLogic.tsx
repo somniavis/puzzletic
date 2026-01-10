@@ -5,8 +5,8 @@ export interface GameState {
     score: number;
     lives: number;
     timeLeft: number;
-    streak: number;
-    bestStreak: number;
+    combo: number;
+    bestCombo: number;
     difficultyLevel: number;
     gameOver: boolean;
     gameOverReason?: 'time' | 'lives' | 'cleared';
@@ -40,8 +40,8 @@ export const useNumberBalanceLogic = () => {
         score: 0,
         lives: 3,
         timeLeft: 60,
-        streak: 0,
-        bestStreak: 0,
+        combo: 0,
+        bestCombo: 0,
         difficultyLevel: 1,
         gameOver: false,
         isPlaying: false,
@@ -189,7 +189,7 @@ export const useNumberBalanceLogic = () => {
             score: 0,
             lives: 3,
             timeLeft: 60,
-            streak: 0,
+            combo: 0,
             stats: { correct: 0, wrong: 0 }
         }));
         setPowerUps({ timeFreeze: 0, extraLife: 0, doubleScore: 0 });
@@ -222,19 +222,19 @@ export const useNumberBalanceLogic = () => {
                 const responseTime = Date.now() - questionStartTime;
                 const baseScore = 100; // Fixed base for this game type
                 const timeBonus = Math.max(0, 10 - Math.floor(responseTime / 1000)) * 5;
-                const streakBonus = gameState.streak * 10;
-                const totalAdd = (baseScore + timeBonus + streakBonus) * (doubleScoreActive ? 2 : 1);
+                const comboBonus = gameState.combo * 10;
+                const totalAdd = (baseScore + timeBonus + comboBonus) * (doubleScoreActive ? 2 : 1);
 
                 setGameState(prev => ({
                     ...prev,
                     score: prev.score + totalAdd,
-                    streak: prev.streak + 1,
-                    bestStreak: Math.max(prev.bestStreak, prev.streak + 1),
+                    combo: prev.combo + 1,
+                    bestCombo: Math.max(prev.bestCombo, prev.combo + 1),
                     stats: { ...prev.stats, correct: prev.stats.correct + 1 }
                 }));
 
                 // Drop Powerup Chance
-                if ((gameState.streak + 1) % 3 === 0 && Math.random() > 0.45) {
+                if ((gameState.combo + 1) % 3 === 0 && Math.random() > 0.45) {
                     const types: (keyof typeof powerUps)[] = ['timeFreeze', 'extraLife', 'doubleScore'];
                     const type = types[Math.floor(Math.random() * types.length)];
                     setPowerUps(prev => ({ ...prev, [type]: prev[type] + 1 }));
@@ -256,7 +256,7 @@ export const useNumberBalanceLogic = () => {
                     return {
                         ...prev,
                         lives: newLives,
-                        streak: 0,
+                        combo: 0,
                         gameOver: newLives <= 0,
                         gameOverReason: newLives <= 0 ? 'lives' : undefined,
                         stats: { ...prev.stats, wrong: prev.stats.wrong + 1 }
@@ -275,7 +275,7 @@ export const useNumberBalanceLogic = () => {
             }
         }, 500); // 500ms delay to see the balance
 
-    }, [gameState.streak, doubleScoreActive, powerUps, generateProblem, questionStartTime, rightPanItems, isChecking, gameState.lives]);
+    }, [gameState.combo, doubleScoreActive, powerUps, generateProblem, questionStartTime, rightPanItems, isChecking, gameState.lives]);
 
     // Calculate Scale Angle whenever items change
     useEffect(() => {

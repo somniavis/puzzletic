@@ -37,7 +37,7 @@ export const Layout0: React.FC<Layout0Props> = ({
 }) => {
     const {
         gameState, score, lives, timeLeft,
-        streak, bestStreak,
+        combo, bestCombo,
         stats, // Destructure stats
         gameOverReason,
         startGame
@@ -330,9 +330,9 @@ export const Layout0: React.FC<Layout0Props> = ({
                                 </div>
                                 <div className="sub-stats-row">
                                     <div className="sub-stat-item">
-                                        <span className="sub-stat-label">{t('common.bestStreak') || 'BEST STREAK'}</span>
+                                        <span className="sub-stat-label">{t('common.bestCombo') || 'BEST STREAK'}</span>
                                         <span className="sub-stat-value text-orange">
-                                            <Flame size={18} className="text-orange-500" /> {bestStreak}
+                                            <Flame size={18} className="text-orange-500" /> {bestCombo}
                                         </span>
                                     </div>
                                     <div className="sub-stat-item">
@@ -409,9 +409,9 @@ export const Layout0: React.FC<Layout0Props> = ({
                             ))}
                         </div>
                     </div>
-                    <div className="stat-card streak-card">
-                        <div className="stat-label">{t('common.streak')}</div>
-                        <div className="stat-value"><Flame size={16} className="text-orange-500" /> {streak}</div>
+                    <div className="stat-card combo-card">
+                        <div className="stat-label">{t('common.combo')}</div>
+                        <div className="stat-value"><Flame size={16} className="text-orange-500" /> {combo}</div>
                     </div>
                     <div className="stat-card time-card">
                         <div className="stat-label">Time</div>

@@ -15,8 +15,8 @@ export interface GameState {
     score: number;
     timeLeft: number;
     lives: number;
-    streak: number;
-    bestStreak: number;
+    combo: number;
+    bestCombo: number;
     isGameOver: boolean;
     isPlaying: boolean;
     gameOverReason?: 'time' | 'lives';
@@ -33,8 +33,8 @@ export const useFishingCountLogic = () => {
         score: 0,
         timeLeft: 60,
         lives: 3,
-        streak: 0,
-        bestStreak: 0,
+        combo: 0,
+        bestCombo: 0,
         isGameOver: false,
         isPlaying: false,
         stats: { correct: 0, wrong: 0 }
@@ -102,8 +102,8 @@ export const useFishingCountLogic = () => {
             score: 0,
             timeLeft: 60,
             lives: 3,
-            streak: 0,
-            bestStreak: 0,
+            combo: 0,
+            bestCombo: 0,
             isGameOver: false,
             isPlaying: true,
             stats: { correct: 0, wrong: 0 }
@@ -214,23 +214,23 @@ export const useFishingCountLogic = () => {
             }));
 
             if (isRoundComplete) {
-                // Round Win - Update Score & Streak HERE
+                // Round Win - Update Score & Combo HERE
                 playButtonSound();
                 setGameState(prev => {
-                    const newStreak = prev.streak + 1;
+                    const newCombo = prev.combo + 1;
 
                     // Standardized Score Logic
                     // ... score calc ...
                     const baseScore = 50 * targetCount;
                     const responseTime = Date.now() - roundStartTime;
                     const timeBonus = Math.max(0, 10 - Math.floor(responseTime / 1000)) * 5;
-                    const streakBonus = newStreak * 10;
-                    const gainedScore = baseScore + timeBonus + streakBonus;
+                    const comboBonus = newCombo * 10;
+                    const gainedScore = baseScore + timeBonus + comboBonus;
 
                     return {
                         ...prev,
-                        streak: newStreak,
-                        bestStreak: Math.max(prev.bestStreak, newStreak),
+                        combo: newCombo,
+                        bestCombo: Math.max(prev.bestCombo, newCombo),
                         score: prev.score + gainedScore,
                         // stats updated separately above to ensure it counts per item
                     };
@@ -247,7 +247,7 @@ export const useFishingCountLogic = () => {
                 return {
                     ...prev,
                     lives: Math.max(0, newLives),
-                    streak: 0, // Reset streak
+                    combo: 0, // Reset combo
                     isGameOver: isOver,
                     isPlaying: !isOver,
                     gameOverReason: isOver ? 'lives' : undefined,
@@ -258,7 +258,7 @@ export const useFishingCountLogic = () => {
     }, [animals, targetAnimal, caughtCount, targetCount, generateRound, setLastEvent, gameState.isPlaying, roundStartTime]);
 
     return {
-        ...gameState, // Expose score, lives, timeLeft, streak, bestStreak, gameOverReason, stats
+        ...gameState, // Expose score, lives, timeLeft, combo, bestCombo, gameOverReason, stats
         targetAnimal,
         targetCount,
         caughtCount,

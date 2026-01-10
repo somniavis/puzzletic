@@ -25,8 +25,8 @@ export interface GameState {
     score: number;
     lives: number;
     timeLeft: number;
-    streak: number;
-    bestStreak: number;
+    combo: number;
+    bestCombo: number;
     difficultyLevel: number;
     gameOver: boolean;
     gameOverReason?: 'time' | 'lives' | 'cleared';
@@ -144,8 +144,8 @@ export const useFruitSliceLogic = () => {
         score: 0,
         lives: 3,
         timeLeft: 60,
-        streak: 0,
-        bestStreak: 0,
+        combo: 0,
+        bestCombo: 0,
         difficultyLevel: 1,
         gameOver: false,
         isPlaying: false,
@@ -174,7 +174,7 @@ export const useFruitSliceLogic = () => {
             score: 0,
             lives: 3,
             timeLeft: 60,
-            streak: 0,
+            combo: 0,
             difficultyLevel: initialDifficulty,
             gameOver: false,
             isPlaying: true,
@@ -206,27 +206,27 @@ export const useFruitSliceLogic = () => {
             let newLevel = prev.difficultyLevel;
             if (isCorrect) {
                 // Check if 8 correct in current difficulty? 
-                // Simplified: streak check as per RoundCounting reference, but user asked for specific logic:
+                // Simplified: combo check as per RoundCounting reference, but user asked for specific logic:
                 // "8문제를 맞히면 난이도 상승" - This needs a counter per level?
                 // Let's stick closer to the request:
-                // But simplified for now: Upgrade every 8 Correct or Streak based?
+                // But simplified for now: Upgrade every 8 Correct or Combo based?
                 // User requirement: "8문제를 맞히면 난이도 상승, 연속 2문제를 틀리면 난이도 하락"
                 // We need to track consecutive correct/wrong or total correct in level.
-                // Let's approximate with streak for upgrade (8 streak) and wrong counter for downgrade.
+                // Let's approximate with combo for upgrade (8 combo) and wrong counter for downgrade.
 
                 // Note: The prompt says "8 questions correct in current difficulty".
-                // I'll stick to streak for upgrading for smoother gameplay feel like previous game, 
+                // I'll stick to combo for upgrading for smoother gameplay feel like previous game, 
                 // but if I want to be strict I need 'stats.correctInLevel'.
-                // Let's use streak >= 8 for upgrade.
-                if (prev.streak > 0 && (prev.streak + 1) % 8 === 0 && prev.difficultyLevel < 3) {
+                // Let's use combo >= 8 for upgrade.
+                if (prev.combo > 0 && (prev.combo + 1) % 8 === 0 && prev.difficultyLevel < 3) {
                     newLevel++;
                 }
             } else {
                 // "2 Consecutive wrong" -> check if previous was wrong? 
                 // We don't track history of correctness easily here without extra state.
-                // Simplification: If streak becomes 0 (it is reset on wrong), maybe track 'consecutiveWrong'.
+                // Simplification: If combo becomes 0 (it is reset on wrong), maybe track 'consecutiveWrong'.
                 // Let's just use a simple heuristic: if lives drop quickly? 
-                // Actually, simpler: if wrong, streak resets. if lives < 2, maybe drop level?
+                // Actually, simpler: if wrong, combo resets. if lives < 2, maybe drop level?
                 // Let's downgrade if lives <= 1 as a mercy rule? 
                 // Or stick to user rule: "2 consecutive wrong".
                 // I will skip complex state for "consecutive wrong" and just downgrade on every wrong answer if level > 1 
@@ -252,23 +252,23 @@ export const useFruitSliceLogic = () => {
             const responseTime = Date.now() - questionStartTime;
             const baseScore = currentProblem.difficulty * 50;
             const timeBonus = Math.max(0, 10 - Math.floor(responseTime / 1000)) * 5;
-            const streakBonus = gameState.streak * 10;
+            const comboBonus = gameState.combo * 10;
 
-            const totalAdd = Math.floor((baseScore + timeBonus + streakBonus) * (doubleScoreActive ? 2 : 1));
+            const totalAdd = Math.floor((baseScore + timeBonus + comboBonus) * (doubleScoreActive ? 2 : 1));
 
             setGameState(prev => {
-                const newStreak = prev.streak + 1;
+                const newCombo = prev.combo + 1;
                 return {
                     ...prev,
                     score: prev.score + totalAdd,
-                    streak: newStreak,
-                    bestStreak: Math.max(prev.bestStreak, newStreak),
+                    combo: newCombo,
+                    bestCombo: Math.max(prev.bestCombo, newCombo),
                     stats: { ...prev.stats, correct: prev.stats.correct + 1 }
                 };
             });
 
             // Powerup drop logic
-            if ((gameState.streak + 1) % 3 === 0 && Math.random() > 0.45) {
+            if ((gameState.combo + 1) % 3 === 0 && Math.random() > 0.45) {
                 const types: (keyof typeof powerUps)[] = ['timeFreeze', 'extraLife', 'doubleScore'];
                 const type = types[Math.floor(Math.random() * types.length)];
                 setPowerUps(prev => ({ ...prev, [type]: prev[type] + 1 }));
@@ -293,7 +293,7 @@ export const useFruitSliceLogic = () => {
                 return {
                     ...prev,
                     lives: newLives,
-                    streak: 0, // Reset streak
+                    combo: 0, // Reset combo
                     gameOver: newLives <= 0,
                     gameOverReason: newLives <= 0 ? 'lives' : undefined,
                     stats: { ...prev.stats, wrong: prev.stats.wrong + 1 }

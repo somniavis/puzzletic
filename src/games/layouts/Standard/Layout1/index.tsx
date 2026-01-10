@@ -41,7 +41,7 @@ export const Layout1: React.FC<Layout1Props> = ({
 }) => {
     const {
         gameState, score, lives, timeLeft,
-        streak, bestStreak,
+        combo, bestCombo,
         stats,
         gameOverReason,
         startGame,
@@ -112,7 +112,7 @@ export const Layout1: React.FC<Layout1Props> = ({
                     highScore={highScore}
                     prevBest={prevBest}
                     isNewRecord={isNewRecord}
-                    bestStreak={bestStreak}
+                    bestCombo={bestCombo}
                     stats={stats}
                     rewardResult={rewardResult}
                     onRestart={() => { startGame(); }}
@@ -137,7 +137,7 @@ export const Layout1: React.FC<Layout1Props> = ({
             <GameLayoutDashboard
                 score={score}
                 lives={lives}
-                streak={streak}
+                combo={combo}
                 timeLeft={timeLeft}
                 className="layout1-dashboard"
             />

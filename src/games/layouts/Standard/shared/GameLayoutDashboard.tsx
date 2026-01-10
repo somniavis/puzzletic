@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 interface DashboardProps {
     score: number;
     lives: number;
-    streak: number;
+    combo: number;
     timeLeft: number;
     className?: string;
 }
@@ -13,7 +13,7 @@ interface DashboardProps {
 export const GameLayoutDashboard: React.FC<DashboardProps> = ({
     score,
     lives,
-    streak,
+    combo,
     timeLeft,
     className
 }) => {
@@ -35,9 +35,9 @@ export const GameLayoutDashboard: React.FC<DashboardProps> = ({
                         ))}
                     </div>
                 </div>
-                <div className="stat-card streak-card">
-                    <div className="stat-label">{t('common.streak')}</div>
-                    <div className="stat-value"><Flame size={16} className="text-orange-500" /> {streak}</div>
+                <div className="stat-card combo-card">
+                    <div className="stat-label">{t('common.combo')}</div>
+                    <div className="stat-value"><Flame size={16} className="text-orange-500" /> {combo}</div>
                 </div>
                 <div className="stat-card time-card">
                     <div className="stat-label">Time</div>

@@ -177,18 +177,18 @@ export const usePairUpLogic = (engine: ReturnType<typeof useGameEngine>, mode: P
     useEffect(() => {
         if (cards.length > 0 && cards.every(c => c.isMatched)) {
             // Round Clear!
-            // 1. Register Success (Updates Score/Streak in Engine)
+            // 1. Register Success (Updates Score/Combo in Engine)
             engine.submitAnswer(true);
 
             // 2. Trigger Success Animation
             engine.registerEvent({ type: 'correct' });
 
-            // 3. PowerUp Reward Logic (Service Rule: Chance every 3 streaks)
-            // Note: engine.streak is the *previous* streak before submitAnswer updates it asynchronously?
-            // Actually submitAnswer updates local state via functional update, but engine.streak prop here might be stale closure or updated next render.
-            // But we can calculate expected streak: current engine.streak + 1.
-            const nextStreak = engine.streak + 1;
-            if (nextStreak > 0 && nextStreak % 3 === 0) {
+            // 3. PowerUp Reward Logic (Service Rule: Chance every 3 combos)
+            // Note: engine.combo is the *previous* combo before submitAnswer updates it asynchronously?
+            // Actually submitAnswer updates local state via functional update, but engine.combo prop here might be stale closure or updated next render.
+            // But we can calculate expected combo: current engine.combo + 1.
+            const nextCombo = engine.combo + 1;
+            if (nextCombo > 0 && nextCombo % 3 === 0) {
                 // 55% Chance to get a random powerup
                 if (Math.random() < 0.55) {
                     const types = ['timeFreeze', 'extraLife', 'doubleScore'] as const;

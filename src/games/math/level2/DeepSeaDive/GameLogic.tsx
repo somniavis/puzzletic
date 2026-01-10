@@ -15,8 +15,8 @@ export const useDeepSeaLogic = () => {
         score: 0,
         lives: 3,
         timeLeft: 60,
-        streak: 0,
-        bestStreak: 0,
+        combo: 0,
+        bestCombo: 0,
         difficultyLevel: 1,
         isPlaying: false,
         gameOver: false,
@@ -149,8 +149,8 @@ export const useDeepSeaLogic = () => {
             score: 0,
             lives: 3,
             timeLeft: 60,
-            streak: 0,
-            bestStreak: 0,
+            combo: 0,
+            bestCombo: 0,
             difficultyLevel: 1,
             isPlaying: true,
             gameOver: false,
@@ -188,30 +188,30 @@ export const useDeepSeaLogic = () => {
             if (selected === currentProblem?.answer) {
                 setLastEvent({ id: Date.now(), type: 'correct' });
                 setGameState(prev => {
-                    const newStreak = prev.streak + 1;
-                    const newLevel = Math.min(3, Math.floor(newStreak / 5) + 1);
+                    const newCombo = prev.combo + 1;
+                    const newLevel = Math.min(3, Math.floor(newCombo / 5) + 1);
 
                     // Score Calculation (Matched to MathArchery)
                     const responseTime = Date.now() - questionStartTime;
                     const baseScore = prev.difficultyLevel * 50;
                     const timeBonus = Math.max(0, 10 - Math.floor(responseTime / 1000)) * 5; // Max 50 pts
-                    const streakBonus = prev.streak * 10;
+                    const comboBonus = prev.combo * 10;
 
-                    const scoreBase = baseScore + timeBonus + streakBonus;
+                    const scoreBase = baseScore + timeBonus + comboBonus;
                     const finalScore = doubleScoreActive ? scoreBase * 2 : scoreBase;
 
                     return {
                         ...prev,
                         score: prev.score + finalScore,
-                        streak: newStreak,
-                        bestStreak: Math.max(prev.bestStreak, newStreak),
+                        combo: newCombo,
+                        bestCombo: Math.max(prev.bestCombo, newCombo),
                         difficultyLevel: newLevel,
                         stats: { ...prev.stats, correct: prev.stats.correct + 1 }
                     };
                 });
 
                 // Power-Up Acquisition Logic
-                if ((gameState.streak + 1) % 3 === 0 && Math.random() > 0.45) {
+                if ((gameState.combo + 1) % 3 === 0 && Math.random() > 0.45) {
                     const types: (keyof typeof powerUps)[] = ['timeFreeze', 'extraLife', 'doubleScore'];
                     const type = types[Math.floor(Math.random() * types.length)];
                     setPowerUps(prev => ({ ...prev, [type]: prev[type] + 1 }));
@@ -230,7 +230,7 @@ export const useDeepSeaLogic = () => {
                 setGameState(prev => ({
                     ...prev,
                     lives: prev.lives - 1,
-                    streak: 0,
+                    combo: 0,
                     gameOver: prev.lives - 1 <= 0,
                     stats: { ...prev.stats, wrong: prev.stats.wrong + 1 }
                 }));

@@ -371,9 +371,9 @@ export const useColorLinkLogic = (engine: GameEngine) => {
             engine.submitAnswer(true);
             engine.registerEvent({ type: 'correct', isFinal: true });
 
-            // Streak Logic for PowerUps
-            const nextStreak = engine.streak + 1;
-            if (nextStreak > 0 && nextStreak % 3 === 0) {
+            // Combo Logic for PowerUps
+            const nextCombo = engine.combo + 1;
+            if (nextCombo > 0 && nextCombo % 3 === 0) {
                 // 55% Chance
                 if (Math.random() < 0.55) {
                     const types = ['timeFreeze', 'extraLife', 'doubleScore'] as const;

@@ -18,8 +18,8 @@ export interface GameState {
     score: number;
     lives: number;
     timeLeft: number;
-    streak: number;
-    bestStreak: number;
+    combo: number;
+    bestCombo: number;
     difficultyLevel: number;
     gameOver: boolean;
     gameOverReason?: 'time' | 'lives' | 'cleared';
@@ -35,8 +35,8 @@ export const useMathArcheryLogic = () => {
         score: 0,
         lives: 3,
         timeLeft: 60,
-        streak: 0,
-        bestStreak: 0,
+        combo: 0,
+        bestCombo: 0,
         difficultyLevel: 1,
         gameOver: false,
         isPlaying: false,
@@ -141,7 +141,7 @@ export const useMathArcheryLogic = () => {
             score: 0,
             lives: 3,
             timeLeft: 60,
-            streak: 0,
+            combo: 0,
             difficultyLevel: 1,
             stats: { correct: 0, wrong: 0 }
         }));
@@ -255,33 +255,33 @@ export const useMathArcheryLogic = () => {
             const responseTime = Date.now() - questionStartTime;
             const baseScore = gameState.difficultyLevel * 50;
             const timeBonus = Math.max(0, 10 - Math.floor(responseTime / 1000)) * 5;
-            const streakBonus = gameState.streak * 10;
-            const totalAdd = Math.floor((baseScore + timeBonus + streakBonus) * (doubleScoreActive ? 2 : 1));
+            const comboBonus = gameState.combo * 10;
+            const totalAdd = Math.floor((baseScore + timeBonus + comboBonus) * (doubleScoreActive ? 2 : 1));
 
             setGameState(prev => {
-                const newStreak = prev.streak + 1;
+                const newCombo = prev.combo + 1;
                 // Difficulty Upgrade Logic
-                // Use streak >= 8 to upgrade level (User Rule from other game applied here too?)
+                // Use combo >= 8 to upgrade level (User Rule from other game applied here too?)
                 // User requirement: "Difficulty gets harder: 1-7 -> 8-12 -> 13-20"
-                // Let's increment difficulty every 5 streak for faster progression or 8?
+                // Let's increment difficulty every 5 combo for faster progression or 8?
                 // Let's stick to 5 for now to show progression.
                 let newLevel = prev.difficultyLevel;
-                if (newStreak > 0 && newStreak % 5 === 0 && newLevel < 3) {
+                if (newCombo > 0 && newCombo % 5 === 0 && newLevel < 3) {
                     newLevel++;
                 }
 
                 return {
                     ...prev,
                     score: prev.score + totalAdd,
-                    streak: newStreak,
-                    bestStreak: Math.max(prev.bestStreak, newStreak),
+                    combo: newCombo,
+                    bestCombo: Math.max(prev.bestCombo, newCombo),
                     difficultyLevel: newLevel,
                     stats: { ...prev.stats, correct: prev.stats.correct + 1 }
                 };
             });
 
             // Powerup drop logic
-            if ((gameState.streak + 1) % 3 === 0 && Math.random() > 0.45) {
+            if ((gameState.combo + 1) % 3 === 0 && Math.random() > 0.45) {
                 const types: (keyof typeof powerUps)[] = ['timeFreeze', 'extraLife', 'doubleScore'];
                 const type = types[Math.floor(Math.random() * types.length)];
                 setPowerUps(prev => ({ ...prev, [type]: prev[type] + 1 }));
@@ -306,7 +306,7 @@ export const useMathArcheryLogic = () => {
                 // Or use useEffect to watch 'stats.correct' to trigger new problem? No, that causes loops.
                 // I will duplicate calc:
                 // let nextLevel = gameState.difficultyLevel;
-                // if ((gameState.streak + 1) % 5 === 0 && nextLevel < 3) nextLevel++;
+                // if ((gameState.combo + 1) % 5 === 0 && nextLevel < 3) nextLevel++;
 
                 // Be careful with closure stale state 'gameState'.
                 // Use functional update? No, setTimeout runs later. gameState MIGHT be stale if not in dep array.
@@ -322,7 +322,7 @@ export const useMathArcheryLogic = () => {
                 return {
                     ...prev,
                     lives: newLives,
-                    streak: 0,
+                    combo: 0,
                     difficultyLevel: newLevel,
                     gameOver: newLives <= 0,
                     gameOverReason: newLives <= 0 ? 'lives' : undefined,
@@ -347,9 +347,9 @@ export const useMathArcheryLogic = () => {
 
             // Calculate new state values
             const prev = gameStateRef.current;
-            const newStreak = prev.streak + 1;
+            const newCombo = prev.combo + 1;
             let newLevel = prev.difficultyLevel;
-            if (newStreak > 0 && newStreak % 5 === 0 && newLevel < 3) {
+            if (newCombo > 0 && newCombo % 5 === 0 && newLevel < 3) {
                 newLevel++;
             }
 
@@ -358,21 +358,21 @@ export const useMathArcheryLogic = () => {
                 const responseTime = Date.now() - questionStartTime;
                 const baseScore = prev.difficultyLevel * 50;
                 const timeBonus = Math.max(0, 10 - Math.floor(responseTime / 1000)) * 5;
-                const streakBonus = prev.streak * 10;
-                const totalAdd = Math.floor((baseScore + timeBonus + streakBonus) * (doubleScoreActive ? 2 : 1));
+                const comboBonus = prev.combo * 10;
+                const totalAdd = Math.floor((baseScore + timeBonus + comboBonus) * (doubleScoreActive ? 2 : 1));
 
                 return {
                     ...prev,
                     score: prev.score + totalAdd,
-                    streak: newStreak,
-                    bestStreak: Math.max(prev.bestStreak, newStreak),
+                    combo: newCombo,
+                    bestCombo: Math.max(prev.bestCombo, newCombo),
                     difficultyLevel: newLevel, // Commit new level
                     stats: { ...prev.stats, correct: prev.stats.correct + 1 }
                 };
             });
 
             // Powerup
-            if ((prev.streak + 1) % 3 === 0 && Math.random() > 0.45) {
+            if ((prev.combo + 1) % 3 === 0 && Math.random() > 0.45) {
                 const types: (keyof typeof powerUps)[] = ['timeFreeze', 'extraLife', 'doubleScore'];
                 const type = types[Math.floor(Math.random() * types.length)];
                 setPowerUps(p => ({ ...p, [type]: p[type] + 1 }));
@@ -396,7 +396,7 @@ export const useMathArcheryLogic = () => {
                 return {
                     ...prev,
                     lives: newLives,
-                    streak: 0,
+                    combo: 0,
                     gameOver: newLives <= 0,
                     gameOverReason: newLives <= 0 ? 'lives' : undefined,
                     stats: { ...prev.stats, wrong: prev.stats.wrong + 1 }

@@ -121,7 +121,7 @@ export const useTenFrameCountLogic = () => {
             // Lock inputs
             isProcessing.current = true;
 
-            // Correct: Use full submitAnswer to handle score/streak/stats/progression
+            // Correct: Use full submitAnswer to handle score/combo/stats/progression
             engine.submitAnswer(true);
             engine.registerEvent({ type: 'correct', isFinal: true });
 
@@ -149,8 +149,8 @@ export const useTenFrameCountLogic = () => {
             // engine.updateLives(false) -> decrements life, checks gameover. 
             // NOTE: It does NOT set gameState='wrong' unless lives<=0. So this is safe!
 
-            // 3. Reset Streak
-            engine.updateStreak(false);
+            // 3. Reset Combo
+            engine.updateCombo(false);
 
             // 4. Update Stats Manually (since we skipped submitAnswer)
             // We can't easily access 'stats' setter from here via 'engine' unless exposed?

@@ -529,23 +529,23 @@ export const useUFOInvasionLogic = (engine: GameEngine) => {
     };
 
     // --- Power-Ups Implementation ---
-    // Acquisition Rule: Deep Sea Dive Style (Streak 3 -> 55% Chance)
-    const prevStreak = useRef(0);
+    // Acquisition Rule: Deep Sea Dive Style (Combo 3 -> 55% Chance)
+    const prevCombo = useRef(0);
     useEffect(() => {
-        const streak = engine.streak;
-        // In Deep Sea Dive: (streak + 1) % 3 === 0. 
-        // Logic there runs BEFORE state update, so it checks "next streak".
-        // Here, we react to `engine.streak` changing. So `streak` IS the new streak.
-        // So we check: streak > 0 && streak % 3 === 0.
-        if (streak > prevStreak.current && streak % 3 === 0) {
+        const combo = engine.combo;
+        // In Deep Sea Dive: (combo + 1) % 3 === 0. 
+        // Logic there runs BEFORE state update, so it checks "next combo".
+        // Here, we react to `engine.combo` changing. So `combo` IS the new combo.
+        // So we check: combo > 0 && combo % 3 === 0.
+        if (combo > prevCombo.current && combo % 3 === 0) {
             if (Math.random() > 0.45) { // 55% Chance (Matches Deep Sea: Math.random() > 0.45)
                 const types: (keyof typeof powerUps)[] = ['timeFreeze', 'extraLife', 'doubleScore'];
                 const type = types[Math.floor(Math.random() * types.length)];
                 setPowerUps(prev => ({ ...prev, [type]: prev[type] + 1 }));
             }
         }
-        prevStreak.current = streak;
-    }, [engine.streak]);
+        prevCombo.current = combo;
+    }, [engine.combo]);
 
     const activatePowerUp = (type: keyof typeof powerUps) => {
         if (powerUps[type] <= 0) return;

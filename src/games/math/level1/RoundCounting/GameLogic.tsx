@@ -19,8 +19,8 @@ export interface GameState {
     score: number;
     lives: number;
     timeLeft: number;
-    streak: number;
-    bestStreak: number;
+    combo: number;
+    bestCombo: number;
     difficultyLevel: number;
     gameOver: boolean;
     gameOverReason?: 'time' | 'lives' | 'cleared';
@@ -116,8 +116,8 @@ export const useRoundCountingLogic = () => {
         score: 0,
         lives: 3,
         timeLeft: 60,
-        streak: 0,
-        bestStreak: 0,
+        combo: 0,
+        bestCombo: 0,
         difficultyLevel: 1,
         gameOver: false,
         isPlaying: false,
@@ -150,8 +150,8 @@ export const useRoundCountingLogic = () => {
             timeLeft: 60,
             gameOver: false,
             isPlaying: false,
-            streak: 0,
-            bestStreak: prev.bestStreak, // Preserve session best
+            combo: 0,
+            bestCombo: prev.bestCombo, // Preserve session best
             stats: { correct: 0, wrong: 0 }
         }));
         setLastEvent(null);
@@ -182,7 +182,7 @@ export const useRoundCountingLogic = () => {
             score: 0,
             lives: 3,
             timeLeft: 60,
-            streak: 0,
+            combo: 0,
             difficultyLevel: initialDifficulty,
             stats: { correct: 0, wrong: 0 }
         }));
@@ -211,7 +211,7 @@ export const useRoundCountingLogic = () => {
     const adjustDifficulty = useCallback((isCorrect: boolean) => {
         setGameState(prev => {
             let newLevel = prev.difficultyLevel;
-            if (isCorrect && prev.streak > 0 && prev.streak % 3 === 0 && prev.difficultyLevel < 3) {
+            if (isCorrect && prev.combo > 0 && prev.combo % 3 === 0 && prev.difficultyLevel < 3) {
                 newLevel++;
             }
             return { ...prev, difficultyLevel: newLevel };
@@ -270,24 +270,24 @@ export const useRoundCountingLogic = () => {
                 const responseTime = Date.now() - questionStartTime;
                 const baseScore = currentProblem.difficulty * 50;
                 const timeBonus = Math.max(0, 10 - Math.floor(responseTime / 1000)) * 5;
-                const streakBonus = gameState.streak * 10;
-                const totalAdd = (baseScore + timeBonus + streakBonus) * (doubleScoreActive ? 2 : 1);
+                const comboBonus = gameState.combo * 10;
+                const totalAdd = (baseScore + timeBonus + comboBonus) * (doubleScoreActive ? 2 : 1);
 
                 setGameState(prev => {
-                    const newStreak = prev.streak + 1;
-                    const newBestStreak = Math.max(prev.bestStreak, newStreak);
+                    const newCombo = prev.combo + 1;
+                    const newBestCombo = Math.max(prev.bestCombo, newCombo);
 
                     return {
                         ...prev,
                         score: prev.score + totalAdd,
-                        streak: newStreak,
-                        bestStreak: newBestStreak,
+                        combo: newCombo,
+                        bestCombo: newBestCombo,
                         // stats updated separately above
                     };
                 });
 
                 // Check for powerups
-                if ((gameState.streak + 1) % 3 === 0 && Math.random() > 0.45) {
+                if ((gameState.combo + 1) % 3 === 0 && Math.random() > 0.45) {
                     const types: (keyof typeof powerUps)[] = ['timeFreeze', 'extraLife', 'doubleScore'];
                     const type = types[Math.floor(Math.random() * types.length)];
                     setPowerUps(prev => ({ ...prev, [type]: prev[type] + 1 }));
@@ -330,7 +330,7 @@ export const useRoundCountingLogic = () => {
                 return {
                     ...prev,
                     lives: newLives,
-                    streak: 0,
+                    combo: 0,
                     gameOver: newLives <= 0,
                     gameOverReason: newLives <= 0 ? 'lives' : undefined,
                     stats: { ...prev.stats, wrong: prev.stats.wrong + 1 }
@@ -361,7 +361,7 @@ export const useRoundCountingLogic = () => {
     }, [setupNewGame, stopTimer]);
 
     return {
-        ...gameState, // Expose score, lives, timeLeft, Streak, bestStreak, difficultyLevel, gameOverReason, stats
+        ...gameState, // Expose score, lives, timeLeft, Combo, bestCombo, difficultyLevel, gameOverReason, stats
         currentProblem,
         foundIds,
         incorrectClickIndex,

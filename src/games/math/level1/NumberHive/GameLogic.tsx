@@ -20,8 +20,8 @@ export interface GameState {
     score: number;
     lives: number;
     timeLeft: number;
-    streak: number;
-    bestStreak: number;
+    combo: number;
+    bestCombo: number;
     difficultyLevel: number;
     gameOver: boolean;
     gameOverReason?: 'time' | 'lives' | 'cleared';
@@ -132,8 +132,8 @@ export const useNumberHiveLogic = () => {
         score: 0,
         lives: 3,
         timeLeft: 60,
-        streak: 0,
-        bestStreak: 0,
+        combo: 0,
+        bestCombo: 0,
         difficultyLevel: 1,
         gameOver: false,
         isPlaying: false,
@@ -163,8 +163,8 @@ export const useNumberHiveLogic = () => {
             score: 0,
             lives: 3,
             timeLeft: 60,
-            streak: 0,
-            bestStreak: 0,
+            combo: 0,
+            bestCombo: 0,
             difficultyLevel: 1,
             gameOver: false,
             isPlaying: false,
@@ -240,8 +240,8 @@ export const useNumberHiveLogic = () => {
                 let scoreAdd = 0;
                 if (isLevelComplete) {
                     const baseScore = 50 * prev.difficultyLevel;
-                    const streakBonus = prev.levelsCleared * 10; // Use levelsCleared for consistency
-                    scoreAdd = (baseScore + streakBonus) * (doubleScoreActive ? 2 : 1);
+                    const comboBonus = prev.levelsCleared * 10; // Use levelsCleared for consistency
+                    scoreAdd = (baseScore + comboBonus) * (doubleScoreActive ? 2 : 1);
                 }
 
                 return {
@@ -249,8 +249,8 @@ export const useNumberHiveLogic = () => {
                     score: prev.score + scoreAdd,
                     stats: { ...prev.stats, correct: prev.stats.correct + 1 },
                     currentNumber: prev.currentNumber + 1,
-                    streak: isLevelComplete ? prev.streak + 1 : prev.streak, // Only increment on full clear
-                    bestStreak: isLevelComplete ? Math.max(prev.bestStreak, prev.streak + 1) : prev.bestStreak,
+                    combo: isLevelComplete ? prev.combo + 1 : prev.combo, // Only increment on full clear
+                    bestCombo: isLevelComplete ? Math.max(prev.bestCombo, prev.combo + 1) : prev.bestCombo,
                     levelsCleared: newLevelsCleared
                 };
             });
@@ -308,7 +308,7 @@ export const useNumberHiveLogic = () => {
                 return {
                     ...prev,
                     lives: newLives,
-                    streak: 0,
+                    combo: 0,
                     gameOver: newLives <= 0,
                     gameOverReason: newLives <= 0 ? 'lives' : undefined,
                     isPlaying: newLives > 0,

@@ -18,8 +18,8 @@ export const useGameEngine = (config: GameEngineConfig = {}) => {
     const [lives, setLives] = useState(initialLives);
     const [timeLeft, setTimeLeft] = useState(initialTime);
     const [difficultyLevel, setDifficultyLevel] = useState(1);
-    const [streak, setStreak] = useState(0);
-    const [bestStreak, setBestStreak] = useState(0);
+    const [combo, setCombo] = useState(0);
+    const [bestCombo, setBestCombo] = useState(0);
     const [stats, setStats] = useState({ correct: 0, wrong: 0 });
 
     // Internal counters
@@ -29,7 +29,7 @@ export const useGameEngine = (config: GameEngineConfig = {}) => {
     const [achievements, setAchievements] = useState({
         firstCorrect: false,
         lightningSpeed: false,
-        streakMaster: false,
+        comboMaster: false,
         master: false
     });
 
@@ -58,15 +58,15 @@ export const useGameEngine = (config: GameEngineConfig = {}) => {
             setLives(param);
         }
     }, []);
-    const updateStreak = useCallback((hit: boolean) => {
+    const updateCombo = useCallback((hit: boolean) => {
         if (hit) {
-            setStreak(prev => {
+            setCombo(prev => {
                 const n = prev + 1;
-                setBestStreak(b => Math.max(b, n));
+                setBestCombo(b => Math.max(b, n));
                 return n;
             });
         } else {
-            setStreak(0);
+            setCombo(0);
         }
     }, []);
 
@@ -101,17 +101,17 @@ export const useGameEngine = (config: GameEngineConfig = {}) => {
         setLives(initialLives);
         setTimeLeft(initialTime);
         setDifficultyLevel(1);
-        setStreak(0);
-        setBestStreak(0);
+        setCombo(0);
+        setBestCombo(0);
         setGameOverReason(null);
         setDeadline(Date.now() + initialTime * 1000);
         setQuestionStartTime(Date.now());
-        setAchievements({ firstCorrect: false, lightningSpeed: false, streakMaster: false, master: false });
+        setAchievements({ firstCorrect: false, lightningSpeed: false, comboMaster: false, master: false });
         setStats({ correct: 0, wrong: 0 });
         setPowerUps({ timeFreeze: 0, extraLife: 0, doubleScore: 0 });
     }, [initialLives, initialTime]);
 
-    const submitAnswer = useCallback((isCorrect: boolean, options: { skipStreak?: boolean; skipDifficulty?: boolean; skipFeedback?: boolean } = {}) => {
+    const submitAnswer = useCallback((isCorrect: boolean, options: { skipCombo?: boolean; skipDifficulty?: boolean; skipFeedback?: boolean } = {}) => {
         const now = Date.now();
         const responseTime = now - questionStartTime;
 
@@ -123,11 +123,11 @@ export const useGameEngine = (config: GameEngineConfig = {}) => {
 
             setStats(prev => ({ ...prev, correct: prev.correct + 1 }));
 
-            let newStreak = streak;
-            if (!options.skipStreak) {
-                newStreak = streak + 1;
-                setStreak(newStreak);
-                setBestStreak(prev => Math.max(prev, newStreak));
+            let newCombo = combo;
+            if (!options.skipCombo) {
+                newCombo = combo + 1;
+                setCombo(newCombo);
+                setBestCombo(prev => Math.max(prev, newCombo));
             }
 
             // Difficulty Adjustment
@@ -147,12 +147,12 @@ export const useGameEngine = (config: GameEngineConfig = {}) => {
 
             // Score Calculation
             let timeBonus = Math.max(0, 10 - Math.floor(responseTime / 1000)) * 5;
-            // Streak Bonus - Use current streak (which might be unchanged if skipped)
-            let streakBonus = streak * 10;
+            // Combo Bonus - Use current combo (which might be unchanged if skipped)
+            let comboBonus = combo * 10;
             let baseScore = difficultyLevel * 50;
 
             // Apply Multiplier (Double Score)
-            let totalScore = baseScore + timeBonus + streakBonus;
+            let totalScore = baseScore + timeBonus + comboBonus;
             if (isDoubleScore) totalScore *= 2;
 
             setScore(prev => prev + totalScore);
@@ -160,12 +160,12 @@ export const useGameEngine = (config: GameEngineConfig = {}) => {
             // Achievements
             if (!achievements.firstCorrect) setAchievements(prev => ({ ...prev, firstCorrect: true }));
             if (responseTime < 3000) setAchievements(prev => ({ ...prev, lightningSpeed: true }));
-            if (!options.skipStreak && newStreak >= 5) setAchievements(prev => ({ ...prev, streakMaster: true }));
+            if (!options.skipCombo && newCombo >= 5) setAchievements(prev => ({ ...prev, comboMaster: true }));
 
         } else {
             setGameState('wrong');
             setStats(prev => ({ ...prev, wrong: prev.wrong + 1 }));
-            setStreak(0); // Wrong answer always resets streak? Yes.
+            setCombo(0); // Wrong answer always resets combo? Yes.
             setConsecutiveCorrect(0);
             setConsecutiveWrong(prev => prev + 1);
             setLives(prev => {
@@ -198,7 +198,7 @@ export const useGameEngine = (config: GameEngineConfig = {}) => {
             }
         }
 
-    }, [streak, difficultyLevel, consecutiveCorrect, consecutiveWrong, achievements, maxDifficulty, lives, questionStartTime]);
+    }, [combo, difficultyLevel, consecutiveCorrect, consecutiveWrong, achievements, maxDifficulty, lives, questionStartTime]);
 
     const [powerUps, setPowerUps] = useState({
         timeFreeze: 0,
@@ -233,8 +233,8 @@ export const useGameEngine = (config: GameEngineConfig = {}) => {
         lives,
         timeLeft,
         difficultyLevel,
-        streak,
-        bestStreak,
+        combo,
+        bestCombo,
         achievements,
         stats,
         gameOverReason,
@@ -245,7 +245,7 @@ export const useGameEngine = (config: GameEngineConfig = {}) => {
         registerEvent,
         updateScore,
         updateLives,
-        updateStreak,
+        updateCombo,
         // Exposed PowerUp State
         powerUps,
         isTimeFrozen,

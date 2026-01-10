@@ -13,7 +13,7 @@ interface GameOverProps {
     highScore: number;
     prevBest: number;
     isNewRecord: boolean;
-    bestStreak: number;
+    bestCombo: number;
     stats?: { correct: number; wrong: number };
     rewardResult: RewardCalculation | null;
     onRestart: () => void;
@@ -26,7 +26,7 @@ export const GameOverScreen: React.FC<GameOverProps> = ({
     highScore,
     prevBest,
     isNewRecord,
-    bestStreak,
+    bestCombo,
     stats,
     rewardResult,
     onRestart
@@ -71,8 +71,8 @@ export const GameOverScreen: React.FC<GameOverProps> = ({
                         </div>
                         <div className="sub-stats-row">
                             <div className="sub-stat-item">
-                                <span className="sub-stat-label">{t('common.bestStreak') || 'BEST STREAK'}</span>
-                                <span className="sub-stat-value text-orange"><Flame size={18} /> {bestStreak}</span>
+                                <span className="sub-stat-label">{t('common.bestCombo') || 'BEST STREAK'}</span>
+                                <span className="sub-stat-value text-orange"><Flame size={18} /> {bestCombo}</span>
                             </div>
                             <div className="sub-stat-item">
                                 <span className="sub-stat-label">ACCURACY</span>

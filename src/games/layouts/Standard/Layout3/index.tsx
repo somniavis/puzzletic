@@ -48,7 +48,7 @@ export const Layout3: React.FC<Layout3Props> = ({
 }) => {
     const {
         gameState, score, lives, timeLeft,
-        streak, bestStreak,
+        combo, bestCombo,
         stats,
         gameOverReason,
         startGame,
@@ -94,7 +94,7 @@ export const Layout3: React.FC<Layout3Props> = ({
             <div className={`layout3-container ${className || ''}`}>
                 {background && <div className="layout-background-layer">{background}</div>}
                 <GameLayoutHeader title={title} bgmEnabled={settings.bgmEnabled} onExit={onExit} onToggleBgm={toggleBgm} className="layout3-header" />
-                <GameOverScreen title={title} gameOverReason={gameOverReason || 'time_up'} score={score} highScore={highScore} prevBest={prevBest} isNewRecord={isNewRecord} bestStreak={bestStreak} stats={stats} rewardResult={rewardResult} onRestart={() => { startGame(); }} />
+                <GameOverScreen title={title} gameOverReason={gameOverReason || 'time_up'} score={score} highScore={highScore} prevBest={prevBest} isNewRecord={isNewRecord} bestCombo={bestCombo} stats={stats} rewardResult={rewardResult} onRestart={() => { startGame(); }} />
             </div>
         );
     }
@@ -107,7 +107,7 @@ export const Layout3: React.FC<Layout3Props> = ({
             <GameLayoutHeader title={title} bgmEnabled={settings.bgmEnabled} onExit={onExit} onToggleBgm={toggleBgm} className="layout3-header" />
 
             {/* Layout3 uses standard dashboard */}
-            <GameLayoutDashboard score={score} lives={lives} streak={streak} timeLeft={timeLeft} className="layout3-dashboard" />
+            <GameLayoutDashboard score={score} lives={lives} combo={combo} timeLeft={timeLeft} className="layout3-dashboard" />
 
             <main className="layout3-game-area">
                 {cardBackground && <div className="layout-card-background">{cardBackground}</div>}

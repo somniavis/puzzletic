@@ -204,10 +204,10 @@ export const useSignalHunterLogic = () => {
             engine.submitAnswer(true);
             setIsRotating(false);
 
-            // Streak-based PowerUp Reward (same as ColorLink)
-            const nextStreak = engine.streak + 1;
-            if (nextStreak > 0 && nextStreak % 3 === 0) {
-                // 55% Chance on every 3rd streak
+            // Combo-based PowerUp Reward (same as ColorLink)
+            const nextCombo = engine.combo + 1;
+            if (nextCombo > 0 && nextCombo % 3 === 0) {
+                // 55% Chance on every 3rd combo
                 if (Math.random() < 0.55) {
                     const rewards: ('timeFreeze' | 'extraLife' | 'doubleScore')[] = ['timeFreeze', 'extraLife', 'doubleScore'];
                     const reward = rewards[Math.floor(Math.random() * rewards.length)];

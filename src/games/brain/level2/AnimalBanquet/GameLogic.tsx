@@ -236,7 +236,7 @@ export const useAnimalBanquetLogic = (engine: GameEngineInterface) => {
             // TRAP: Already Fed?
             if (animal.isFed) {
                 // FAIL: Fed twice
-                engine.submitAnswer(false); // Streak Reset, Life Lost
+                engine.submitAnswer(false); // Combo Reset, Life Lost
                 engine.registerEvent({ type: 'wrong' }); // Shake/Sound
                 triggerFeedback(animalId, 'full', 'I\'m Full! 🤢');
             } else {
@@ -251,15 +251,15 @@ export const useAnimalBanquetLogic = (engine: GameEngineInterface) => {
 
                 if (isRoundClear) {
                     // ROUND CLEAR!
-                    // 1. Submit Answer with full feedback (Streak++ here due to round clear)
+                    // 1. Submit Answer with full feedback (Combo++ here due to round clear)
                     engine.submitAnswer(true);
 
                     // 2. Register Final Event (Big Celebration)
                     engine.registerEvent({ type: 'correct', isFinal: true });
 
-                    // 3. PowerUp Reward Logic (Streak % 3)
-                    const nextStreak = engine.streak + 1;
-                    if (nextStreak > 0 && nextStreak % 3 === 0) {
+                    // 3. PowerUp Reward Logic (Combo % 3)
+                    const nextCombo = engine.combo + 1;
+                    if (nextCombo > 0 && nextCombo % 3 === 0) {
                         // 55% Chance
                         if (Math.random() < 0.55) {
                             const types = ['timeFreeze', 'extraLife', 'doubleScore'] as const;
@@ -275,15 +275,15 @@ export const useAnimalBanquetLogic = (engine: GameEngineInterface) => {
 
                 } else {
                     // INTERMEDIATE FEED
-                    // Score only. No Streak, No Difficulty Step, No Interruption.
-                    engine.submitAnswer(true, { skipFeedback: true, skipStreak: true, skipDifficulty: true });
+                    // Score only. No Combo, No Difficulty Step, No Interruption.
+                    engine.submitAnswer(true, { skipFeedback: true, skipCombo: true, skipDifficulty: true });
                 }
             }
         }
         // 2. Wrong Food Logic
         else {
             // FAIL: Wrong Item
-            // Wrong answer always resets streak (handled by engine)
+            // Wrong answer always resets combo (handled by engine)
             engine.submitAnswer(false);
             engine.registerEvent({ type: 'wrong' });
             triggerFeedback(animalId, 'angry', 'No! 😡');

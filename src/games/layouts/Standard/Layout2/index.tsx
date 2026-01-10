@@ -48,7 +48,7 @@ export const Layout2: React.FC<Layout2Props> = ({
 }) => {
     const {
         gameState, score, lives, timeLeft,
-        streak, bestStreak,
+        combo, bestCombo,
         stats,
         gameOverReason,
         startGame,
@@ -94,7 +94,7 @@ export const Layout2: React.FC<Layout2Props> = ({
             <div className={`layout2-container ${className || ''}`}>
                 {background && <div className="layout-background-layer">{background}</div>}
                 <GameLayoutHeader title={title} bgmEnabled={settings.bgmEnabled} onExit={onExit} onToggleBgm={toggleBgm} className="layout2-header" />
-                <GameOverScreen title={title} gameOverReason={gameOverReason || 'time_up'} score={score} highScore={highScore} prevBest={prevBest} isNewRecord={isNewRecord} bestStreak={bestStreak} stats={stats} rewardResult={rewardResult} onRestart={() => { startGame(); }} />
+                <GameOverScreen title={title} gameOverReason={gameOverReason || 'time_up'} score={score} highScore={highScore} prevBest={prevBest} isNewRecord={isNewRecord} bestCombo={bestCombo} stats={stats} rewardResult={rewardResult} onRestart={() => { startGame(); }} />
             </div>
         );
     }
@@ -107,7 +107,7 @@ export const Layout2: React.FC<Layout2Props> = ({
             <GameLayoutHeader title={title} bgmEnabled={settings.bgmEnabled} onExit={onExit} onToggleBgm={toggleBgm} className="layout2-header" />
 
             {/* Layout2 uses standard dashboard */}
-            <GameLayoutDashboard score={score} lives={lives} streak={streak} timeLeft={timeLeft} className="layout2-dashboard" />
+            <GameLayoutDashboard score={score} lives={lives} combo={combo} timeLeft={timeLeft} className="layout2-dashboard" />
 
             <main className="layout2-game-area">
                 {cardBackground && <div className="layout-card-background">{cardBackground}</div>}
