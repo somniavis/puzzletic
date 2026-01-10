@@ -1,6 +1,6 @@
 
 
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Layout2 } from '../../../layouts/Standard/Layout2';
 import { useSignalHunterLogic } from './GameLogic';
@@ -35,7 +35,7 @@ export const SignalHunter: React.FC<SignalHunterProps> = ({ onExit }) => {
         });
     }, [i18n]);
 
-    // PowerUp State Mapping (Logic to Props)
+    // PowerUp State Mapping (using engine's powerUps)
     const powerUps = [
         {
             count: logic.powerUps?.timeFreeze || 0,
@@ -61,8 +61,8 @@ export const SignalHunter: React.FC<SignalHunterProps> = ({ onExit }) => {
             icon: '⚡',
             title: 'Double Score',
             onClick: () => logic.usePowerUp('doubleScore'),
-            disabledConfig: logic.doubleScoreActive,
-            status: (logic.doubleScoreActive ? 'active' : 'normal') as 'active' | 'normal' | 'maxed'
+            disabledConfig: logic.isDoubleScore,
+            status: (logic.isDoubleScore ? 'active' : 'normal') as 'active' | 'normal' | 'maxed'
         }
     ];
 
@@ -115,7 +115,7 @@ export const SignalHunter: React.FC<SignalHunterProps> = ({ onExit }) => {
                             style={{ transform: `rotate(${decoy.angle}deg)` }}
                         >
                             <div
-                                className="target-zone decoy"
+                                className="target-zone"
                                 style={{ transform: `rotate(-${decoy.angle}deg)` }}
                             >
                                 <div className="target-circle"></div>

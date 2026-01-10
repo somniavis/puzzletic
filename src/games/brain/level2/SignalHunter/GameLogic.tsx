@@ -2,9 +2,9 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useGameEngine } from '../../../layouts/Standard/Layout0/useGameEngine';
 
-// Constants
-const SPEED_BASE = 2.5; // Base Rotation Speed (deg/frame)
-const TARGET_TOLERANCE = 15; // Degrees (+/-)
+// Constants (Relaxed Difficulty)
+const SPEED_BASE = 2.0; // Base Rotation Speed (slower start)
+const TARGET_TOLERANCE = 20; // Degrees (+/-) - wider hit zone
 const MIN_DIST = 90; // Min distance for new target
 
 // Emoji Pool: Fruits + Animal Faces
@@ -31,14 +31,13 @@ export const useSignalHunterLogic = () => {
     const [direction, setDirection] = useState(1); // 1 or -1
     const [isRotating, setIsRotating] = useState(false);
 
-    // Local difficulty tracking (increments on round clear)
+    // Local difficulty tracking (increments every 2 rounds for slower progression)
     const [localDifficulty, setLocalDifficulty] = useState(1);
+    const [roundsCleared, setRoundsCleared] = useState(0); // Track rounds for difficulty progression
     const lastGameStateRef = useRef<string>('idle');
 
-    // Power-Up State
-    const [powerUps, setPowerUps] = useState({ timeFreeze: 0, extraLife: 0, doubleScore: 0 });
+    // Power-Up State (local freeze tracking only - engine handles actual powerups)
     const [isTimeFrozen, setIsTimeFrozen] = useState(false);
-    const [doubleScoreActive, setDoubleScoreActive] = useState(false);
 
     // Initial Setup & Restart Handler
     useEffect(() => {
@@ -48,6 +47,7 @@ export const useSignalHunterLogic = () => {
         // Only reset difficulty on FRESH game start (from idle or gameover)
         if (engine.gameState === 'playing' && (prevState === 'idle' || prevState === 'gameover')) {
             setLocalDifficulty(1);
+            setRoundsCleared(0);
             startRound(1);
         }
     }, [engine.gameState]);
@@ -130,18 +130,38 @@ export const useSignalHunterLogic = () => {
         setDecoys(newDecoys);
     };
 
-    // Game Loop
+    // Ref for frame timing (for cross-platform consistent speed)
+    const lastTimeRef = useRef<number>(0);
+
+    // Game Loop with deltaTime normalization (consistent across 60Hz/120Hz/144Hz)
     useEffect(() => {
         if (!isRotating || engine.gameState !== 'playing' || isTimeFrozen) return;
 
         let frameId: number;
-        // Speed increases slightly with local difficulty
-        const speed = SPEED_BASE + (localDifficulty * 0.2);
+        // Speed in degrees per second (not per frame)
+        const speedPerSecond = (SPEED_BASE + (localDifficulty * 0.15)) * 60; // Slower difficulty scaling
 
-        const loop = () => {
-            setNeedleAngle(prev => (prev + (speed * direction)) % 360);
+        const loop = (timestamp: number) => {
+            if (lastTimeRef.current === 0) {
+                lastTimeRef.current = timestamp;
+            }
+
+            const deltaTime = timestamp - lastTimeRef.current;
+            const timeScale = deltaTime / 16.67; // Normalize to 60FPS (16.67ms per frame)
+
+            // Cap max timescale to prevent huge jumps if tab was inactive
+            const cappedTimeScale = Math.min(timeScale, 3.0);
+
+            // Calculate actual speed for this frame
+            const frameSpeed = (speedPerSecond / 60) * cappedTimeScale;
+
+            setNeedleAngle(prev => (prev + (frameSpeed * direction) + 360) % 360);
+
+            lastTimeRef.current = timestamp;
             frameId = requestAnimationFrame(loop);
         };
+
+        lastTimeRef.current = 0; // Reset on start
         frameId = requestAnimationFrame(loop);
         return () => cancelAnimationFrame(frameId);
     }, [isRotating, direction, engine.gameState, localDifficulty, isTimeFrozen]);
@@ -166,17 +186,33 @@ export const useSignalHunterLogic = () => {
             // Fail
             handleFail();
         }
-    }, [needleAngle, targetAngle, isRotating, currentCodeIdx, codes, localDifficulty]);
+    }, [needleAngle, targetAngle, isRotating]);
 
     const handleSuccess = () => {
         engine.registerEvent({ type: 'correct', isFinal: currentCodeIdx >= codes.length - 1 });
 
         if (currentCodeIdx >= codes.length - 1) {
-            // Round Clear - Increase Difficulty!
-            const nextDifficulty = localDifficulty + 1;
-            setLocalDifficulty(nextDifficulty);
+            // Round Clear
+            const newRoundsCleared = roundsCleared + 1;
+            setRoundsCleared(newRoundsCleared);
+
+            // Increase difficulty every 3 rounds (slower progression)
+            let nextDifficulty = localDifficulty;
+            if (newRoundsCleared % 3 === 0) {
+                nextDifficulty = localDifficulty + 1;
+                setLocalDifficulty(nextDifficulty);
+            }
+
             engine.submitAnswer(true);
             setIsRotating(false);
+
+            // Award PowerUp on Round Clear (30% chance)
+            if (Math.random() < 0.3) {
+                const rewards: ('timeFreeze' | 'extraLife' | 'doubleScore')[] = ['timeFreeze', 'extraLife', 'doubleScore'];
+                const reward = rewards[Math.floor(Math.random() * rewards.length)];
+                engine.setPowerUps(prev => ({ ...prev, [reward]: prev[reward] + 1 }));
+            }
+
             setTimeout(() => startRound(nextDifficulty), 1000);
         } else {
             // Next Code
@@ -193,28 +229,17 @@ export const useSignalHunterLogic = () => {
     };
 
     const usePowerUp = (type: 'timeFreeze' | 'extraLife' | 'doubleScore') => {
-        if (powerUps[type] > 0) {
-            setPowerUps(prev => ({ ...prev, [type]: prev[type] - 1 }));
-
+        if (engine.powerUps[type] > 0) {
+            engine.activatePowerUp(type);
             if (type === 'timeFreeze') {
-                engine.activatePowerUp('timeFreeze');
                 setIsTimeFrozen(true);
                 setTimeout(() => setIsTimeFrozen(false), 5000);
-            } else if (type === 'extraLife') {
-                engine.activatePowerUp('extraLife');
-            } else if (type === 'doubleScore') {
-                setDoubleScoreActive(true);
-                setTimeout(() => setDoubleScoreActive(false), 10000);
             }
         }
     };
 
-    // Metadata for Layout
-    const targetMeta = {
-        value: codes[currentCodeIdx] || '?',
-        icon: '🔐',
-        label: `Lock ${currentCodeIdx + 1}/${codes.length}`
-    };
+    // Current target emoji
+    const targetValue = codes[currentCodeIdx] || '?';
 
     return {
         ...engine,
@@ -222,12 +247,10 @@ export const useSignalHunterLogic = () => {
         targetAngle,
         codes,
         currentCodeIdx,
-        target: targetMeta,
+        target: { value: targetValue },
         decoys,
         handleTap,
-        powerUps,
         usePowerUp,
-        isTimeFrozen,
-        doubleScoreActive
+        isTimeFrozen
     };
 };
