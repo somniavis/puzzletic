@@ -24,6 +24,8 @@ import { manifest as L2_WildLink } from './brain/level2/WildLink/index';
 import { manifest as L2_AnimalBanquet } from './brain/level2/AnimalBanquet/index';
 import { manifest as L2_PairUpConnect } from './brain/level2/PairUpConnect/index';
 
+import { manifest as signalHunter } from './brain/level2/SignalHunter';
+
 export const GAMES: GameManifest[] = [
     // [Level 1] -----------------------------------------------------------
     L1_FishingCount,
@@ -48,6 +50,7 @@ export const GAMES: GameManifest[] = [
     L2_WildLink,
     L2_AnimalBanquet,
     L2_PairUpConnect,
+    signalHunter,
 ];
 
 export const getGames = (category?: GameCategory, level?: GameDifficulty): GameManifest[] => {

@@ -1,6 +1,0 @@
-{
-  "name": "Number Balance",
-  "description": "A math puzzle game where you balance addition equations on a digital scale. Drag and drop numbers into slots to make the sums equal and balance the scale. Features adaptive difficulty and satisfying physics animations.",
-  "requestFramePermissions": [],
-  "prompt": ""
-}

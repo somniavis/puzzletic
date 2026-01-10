@@ -1,0 +1,365 @@
+/* SignalHunter.css */
+
+.signal-hunter-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* justify-content: space-evenly; */
+    /* Distribute vertical space */
+    justify-content: center;
+    gap: clamp(2px, 3vh, 30px);
+    /* Min 2px, Pref 3vh, Max 30px - Just so they don't touch */
+    position: relative;
+    /* overflow: hidden; */
+    /* Allow glow to spill */
+    cursor: pointer;
+    /* Clickable area */
+    touch-action: none;
+    padding-bottom: 2vh;
+}
+
+/* Hide Layout2 Default Target Box if needed (Layout2 doesn't have one, but good to clean) */
+.signal-hunter-game .target-display-card {
+    display: none !important;
+}
+
+/* Responsive Lock Body */
+.lock-body {
+    /* STRICT HEIGHT BASE: Scale relative to container height (which is 'below powerups') */
+    /* Aggressively maximize space: 72% for Radar + 18% for Bar = 90% Usage */
+    height: 72%;
+    width: auto;
+    /* Width follows height via aspect-ratio */
+    aspect-ratio: 1 / 1;
+
+    /* Limits */
+    max-height: 500px;
+    max-width: 500px;
+    /* Implicitly handled by aspect ratio since height is capped, but good for safety */
+
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #4b5563, #1f2937);
+    border: 8px solid #374151;
+    /* Keep border constant or use min(8px, 1.5vh) */
+    position: relative;
+    box-shadow:
+        0 20px 50px rgba(0, 0, 0, 0.5),
+        inset 0 5px 15px rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Inner Track - 220px / 280px ≈ 78% */
+.lock-track {
+    width: 78%;
+    height: 78%;
+    border-radius: 50%;
+    border: 2px dashed rgba(255, 255, 255, 0.2);
+    position: absolute;
+    top: 11%;
+    left: 11%;
+}
+
+/* Center Mechanisum - 60px / 280px ≈ 21% */
+.lock-center {
+    width: 21%;
+    height: 21%;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #fbbf24, #d97706);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: clamp(1.5rem, 6cqw, 3rem);
+    /* Larger center emoji */
+}
+
+/* The Needle Container (Rotates) */
+.needle-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.needle-arm {
+    width: 6px;
+    height: 39%;
+    /* 110px / 280px ≈ 39% */
+    background: #ef4444;
+    /* Red */
+    position: absolute;
+    bottom: 50%;
+    /* Pivot at center */
+    left: 50%;
+    transform: translateX(-50%);
+    /* Center horizontally */
+    transform-origin: bottom center;
+    /* Pivot at center of container */
+    border-radius: 4px 4px 0 0;
+    box-shadow: 0 0 10px rgba(239, 68, 68, 0.6);
+}
+
+.needle-head {
+    width: 6%;
+    /* Relative to lock body size approx */
+    height: 6%;
+    background: #ef4444;
+    border-radius: 50%;
+    position: absolute;
+    top: -3%;
+    /* Offset */
+    left: 50%;
+    transform: translateX(-50%);
+    box-shadow: 0 0 15px #ef4444;
+}
+
+/* Target Orbit Container for Relative Positioning */
+.target-orbit-container {
+    position: absolute;
+    width: 78%;
+    /* Matches track size */
+    height: 78%;
+    top: 11%;
+    left: 11%;
+    pointer-events: none;
+    /* transform: rotate(angle) - Applied in JS */
+}
+
+/* Target Zone inside Orbit */
+.target-zone {
+    position: absolute;
+    /* 50px on 220px orbit ≈ 22% */
+    width: 22%;
+    height: 22%;
+    top: 0;
+    /* Align to top edge of orbit (matches track radius) */
+    left: 50%;
+    margin-top: -11%;
+    /* Center on the line (half height) */
+    margin-left: -11%;
+    /* transform: rotate(-angle) - Applied in JS to keep emoji upright */
+}
+
+.target-circle {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    /* Softer, uniform glow for both target and decoys */
+    border: 2px solid rgba(251, 191, 36, 0.6);
+    background: rgba(251, 191, 36, 0.1);
+    box-shadow: 0 0 12px rgba(251, 191, 36, 0.2);
+    /* Radar detection blink effect */
+    animation: radar-blink 1.5s ease-in-out infinite;
+}
+
+@keyframes radar-blink {
+
+    0%,
+    100% {
+        opacity: 0.4;
+        box-shadow: 0 0 8px rgba(251, 191, 36, 0.2);
+    }
+
+    50% {
+        opacity: 1;
+        box-shadow: 0 0 20px rgba(251, 191, 36, 0.6);
+    }
+}
+
+.target-emoji-float {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: min(5vw, 3.5vh);
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Code Sequence Display (Top) */
+.code-sequence-bar {
+    display: flex;
+    gap: 1.5vh;
+    margin-bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+
+    /* Height based on container height available */
+    height: 18%;
+    min-height: 60px;
+    /* Safety min */
+    padding: 0 3vh;
+    /* Padding horizontal only, vertical handled by flex alignment and height */
+
+    border-radius: 4vh;
+    backdrop-filter: blur(4px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    align-items: center;
+    justify-content: center;
+}
+
+.code-slot {
+    /* Scale relative to the bar, which scales relative to container */
+    height: 70%;
+    width: auto;
+    aspect-ratio: 1 / 1;
+
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: min(3.6rem, 4.8vh);
+    /* 1.2x larger */
+
+    border: 3px solid transparent;
+    position: relative;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Pending: Dimmed and Blurred */
+.code-slot.pending {
+    opacity: 0.4;
+    filter: grayscale(0.8) blur(1px);
+    transform: scale(0.9);
+}
+
+/* Active: Current Target */
+.code-slot.active {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: #fbbf24;
+    opacity: 1;
+    filter: none;
+    transform: scale(1.15);
+    box-shadow: 0 0 15px rgba(251, 191, 36, 0.4);
+    z-index: 10;
+}
+
+/* Solved: Done */
+.code-slot.solved {
+    background: rgba(16, 185, 129, 0.2);
+    /* Green tint */
+    border-color: #10b981;
+    opacity: 1;
+    filter: none;
+    transform: scale(1);
+}
+
+.check-overlay {
+    position: absolute;
+    bottom: -5%;
+    right: -5%;
+    background: #10b981;
+    color: white;
+    font-size: 40%;
+    width: 35%;
+    height: 35%;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    border: 2px solid #1f2937;
+    /* Match bg slightly */
+}
+
+@keyframes active-pulse {
+    0% {
+        transform: scale(1);
+        border-color: #fbbf24;
+    }
+
+    50% {
+        transform: scale(1.1);
+        border-color: #fff;
+    }
+
+    100% {
+        transform: scale(1);
+        border-color: #fbbf24;
+    }
+}
+
+/* --- Wave Gradient Background (Ported from WildLink - Lightened for Radar Contrast) --- */
+.waveBgContainer {
+    width: 100%;
+    height: 100%;
+    /* Soft pastel gradient for better contrast with dark radar */
+    background: linear-gradient(315deg, rgba(167, 139, 250, 0.8) 3%, rgba(129, 230, 217, 0.8) 38%, rgba(253, 230, 138, 0.8) 68%, rgba(252, 165, 165, 0.8) 98%);
+    animation: gradient 15s ease infinite;
+    background-size: 400% 400%;
+    position: relative;
+    overflow: hidden;
+}
+
+@keyframes gradient {
+    0% {
+        background-position: 0% 0%;
+    }
+
+    50% {
+        background-position: 100% 100%;
+    }
+
+    100% {
+        background-position: 0% 0%;
+    }
+}
+
+.wave {
+    background: rgb(255 255 255 / 25%);
+    border-radius: 1000% 1000% 0 0;
+    position: absolute;
+    width: 200%;
+    height: 12em;
+    animation: wave 10s -3s linear infinite;
+    transform: translate3d(0, 0, 0);
+    opacity: 0.8;
+    bottom: 0;
+    left: 0;
+    z-index: 1;
+}
+
+.wave:nth-of-type(2) {
+    bottom: -1.25em;
+    animation: wave 18s linear reverse infinite;
+    opacity: 0.8;
+}
+
+.wave:nth-of-type(3) {
+    bottom: -2.5em;
+    animation: wave 20s -1s reverse infinite;
+    opacity: 0.9;
+}
+
+@keyframes wave {
+    2% {
+        transform: translateX(1);
+    }
+
+    25% {
+        transform: translateX(-25%);
+    }
+
+    50% {
+        transform: translateX(-50%);
+    }
+
+    75% {
+        transform: translateX(-25%);
+    }
+
+    100% {
+        transform: translateX(1);
+    }
+}
