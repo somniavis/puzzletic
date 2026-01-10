@@ -19,23 +19,22 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
     onConfirm,
     onCancel
 }) => {
-    // Use callback to prevent double invocation
-    const handleConfirm = useCallback((e: React.MouseEvent | React.TouchEvent) => {
+    const handleConfirm = useCallback((e: React.MouseEvent) => {
         e.stopPropagation();
         e.preventDefault();
         playButtonSound();
         onConfirm();
     }, [onConfirm]);
 
-    const handleCancel = useCallback((e: React.MouseEvent | React.TouchEvent) => {
+    const handleCancel = useCallback((e: React.MouseEvent) => {
         e.stopPropagation();
         e.preventDefault();
         playButtonSound();
         onCancel();
     }, [onCancel]);
 
-    const handleOverlayClick = useCallback((e: React.MouseEvent | React.TouchEvent) => {
-        // Only trigger if the click/touch is directly on the overlay, not on children
+    const handleOverlayClick = useCallback((e: React.MouseEvent) => {
+        // Only trigger if the click is directly on the overlay, not on children
         if (e.target === e.currentTarget) {
             playButtonSound();
             onCancel();
@@ -46,14 +45,12 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
         <div
             className="food-menu-overlay"
             onClick={handleOverlayClick}
-            onTouchEnd={handleOverlayClick}
-            style={{ touchAction: 'none' }}
+            style={{ touchAction: 'manipulation' }}
         >
             <div
                 className="food-menu"
                 style={{ maxWidth: '400px', height: 'auto', maxHeight: 'none', touchAction: 'manipulation' }}
                 onClick={(e) => e.stopPropagation()}
-                onTouchEnd={(e) => e.stopPropagation()}
             >
                 <div className="food-menu-header">
                     <h3>{title}</h3>
@@ -75,7 +72,6 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
                                 touchAction: 'manipulation'
                             }}
                             onClick={handleCancel}
-                            onTouchEnd={handleCancel}
                         >
                             <span className="action-label" style={{ fontSize: '1.1rem' }}>{cancelLabel}</span>
                         </button>
@@ -88,7 +84,6 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
                                 touchAction: 'manipulation'
                             }}
                             onClick={handleConfirm}
-                            onTouchEnd={handleConfirm}
                         >
                             <span className="action-label" style={{ fontSize: '1.1rem' }}>{confirmLabel}</span>
                         </button>
