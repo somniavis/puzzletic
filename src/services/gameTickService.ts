@@ -104,7 +104,8 @@ export const executeGameTick = (
   poops: Poop[] = [],
   bugs: Bug[] = [],
   gameDifficulty: number | null = null,
-  isSick: boolean = false
+  isSick: boolean = false,
+  isSleeping: boolean = false
 ): TickResult & { newIsSick: boolean } => {
   // 새 스탯 객체 (변경사항 누적)
   const newStats = { ...currentStats };
@@ -114,10 +115,15 @@ export const executeGameTick = (
   let newIsSick = isSick;
 
   // ==================== A. 기본 감소 (Natural Decay) ====================
+  // 수면 상태일 경우 감소율 50% 적용 (회복은 그대로? 아니면 회복도 절반? -> 일단 패널티 감소에 집중)
+  // 회복은 보통 없으므로 decay만 감소
+  const decayMultiplier = isSleeping ? 0.5 : 1.0;
+
   if (gameDifficulty !== null) {
     // 게임 플레이 중: 난이도에 따른 차등 적용
     // 행복도: 1.5 * 난이도 - 0.5 (1단계: 1.0 ~ 5단계: 7.0)
     // 포만감: -1.0 * 난이도 - 0.5 (1단계: -1.5 ~ 5단계: -5.5)
+    // 게임 중엔 수면 불가하므로 multiplier 미적용 (어차피 isSleeping=false여야 함)
     const happinessBonus = (1.5 * gameDifficulty) - 0.5;
     const fullnessDecay = (-1.0 * gameDifficulty) - 0.5;
 
@@ -126,9 +132,16 @@ export const executeGameTick = (
     newStats.health += NATURAL_DECAY.health;
   } else {
     // 평상시
-    newStats.fullness += NATURAL_DECAY.fullness;
-    newStats.happiness += NATURAL_DECAY.happiness;
-    newStats.health += NATURAL_DECAY.health;
+    // 포만감과 행복도 감소는 decayMultiplier 적용
+    // 건강 감소는 병이 없으면 미미하므로 그대로 두거나 같이 적용
+    const fullnessChange = NATURAL_DECAY.fullness * decayMultiplier;
+    const happinessChange = NATURAL_DECAY.happiness * decayMultiplier;
+    // 건강 자연 감소도 수면 중엔 덜 줄어들게? -> 스트레스 덜 받음
+    const healthChange = NATURAL_DECAY.health * decayMultiplier;
+
+    newStats.fullness += fullnessChange;
+    newStats.happiness += happinessChange;
+    newStats.health += healthChange;
   }
 
   // ==================== B. 질병 페널티 (Sick Penalty) ====================
@@ -276,7 +289,9 @@ export const calculateOfflineProgress = (
   currentTime: number,
   tickIntervalMs: number,
   poops: Poop[] = [],
-  bugs: Bug[] = []
+  bugs: Bug[] = [],
+  isSleeping: boolean = false,
+  sleepRemainingMs: number = 0
 ): {
   finalStats: NurturingStats;
   ticksElapsed: number;
@@ -296,9 +311,18 @@ export const calculateOfflineProgress = (
   // 각 틱마다 순차적으로 계산
   let stats = { ...currentStats };
   const events: string[] = [];
+  let currentSleepRemaining = sleepRemainingMs;
 
   for (let i = 0; i < ticksElapsed; i++) {
-    const tickResult = executeGameTick(stats, poops, bugs);
+    // 수면 상태 판정: 남은 수면 시간이 틱 간격보다 많으면 수면 중
+    const isCurrentlySleeping = isSleeping && currentSleepRemaining > 0;
+
+    // 수면 시간 차감
+    if (isCurrentlySleeping) {
+      currentSleepRemaining -= tickIntervalMs;
+    }
+
+    const tickResult = executeGameTick(stats, poops, bugs, null, false, isCurrentlySleeping);
 
     // 스탯 업데이트
     stats.fullness += tickResult.statChanges.fullness || 0;

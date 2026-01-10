@@ -347,6 +347,14 @@ export const applyOfflineProgress = (
     };
   }
 
+  // 수면 잔여 시간 계산
+  let sleepRemainingMs = 0;
+  if (state.isSleeping && state.sleepStartTime) {
+    const sleepDurationMs = 30 * 60 * 1000; // 30분
+    const timeSinceSleepStart = state.lastActiveTime - state.sleepStartTime;
+    sleepRemainingMs = Math.max(0, sleepDurationMs - timeSinceSleepStart);
+  }
+
   // 오프라인 진행 계산
   const { finalStats, ticksElapsed, events } = calculateOfflineProgress(
     state.stats,
@@ -354,7 +362,9 @@ export const applyOfflineProgress = (
     currentTime,
     state.tickConfig.intervalMs,
     state.poops,
-    state.bugs || []
+    state.bugs || [],
+    state.isSleeping,
+    sleepRemainingMs
   );
 
   // 가출 상태 체크

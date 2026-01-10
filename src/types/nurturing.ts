@@ -184,4 +184,7 @@ export interface NurturingPersistentState {
   totalMinigamePlayCount?: number; // All Games Total Play Count
   unlockedJellos?: Record<string, number[]>; // Encyclopedia: { 'yellowJello': [1, 2], 'redJello': [1] }
   hallOfFame?: HallOfFameEntry[]; // 졸업한 젤로 목록
+  isSleeping?: boolean; // 수면 상태 여부
+  sleepStartTime?: number; // 수면 시작 시간 (timestamp)
+  currentHouseId?: string; // 현재 장착된 하우스 ID (기본: 'tent')
 }

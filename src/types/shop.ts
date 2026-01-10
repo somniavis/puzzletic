@@ -8,10 +8,11 @@ export interface ShopItem {
     isOwned?: boolean; // For future use
 }
 
-export type ShopCategory = 'ground';
+export type ShopCategory = 'ground' | 'house';
 
 export const SHOP_CATEGORIES: Record<ShopCategory, { nameKey: string; icon: string }> = {
     ground: { nameKey: 'shop.categories.ground', icon: '🏞️' },
+    house: { nameKey: 'shop.categories.house', icon: '🏠' },
 };
 
 export const SHOP_ITEMS: ShopItem[] = [
@@ -102,5 +103,127 @@ export const SHOP_ITEMS: ShopItem[] = [
         category: 'ground',
         price: 0,
         isOwned: false,
+    },
+    // Houses
+    {
+        id: 'tent',
+        nameKey: 'shop.items.tent',
+        descriptionKey: 'shop.items.tent.desc',
+        icon: '⛺',
+        category: 'house',
+        price: 0,
+        isOwned: true,
+    },
+    {
+        id: 'old_house',
+        nameKey: 'shop.items.old_house',
+        icon: '🏚️',
+        category: 'house',
+        price: 100,
+    },
+    {
+        id: 'house',
+        nameKey: 'shop.items.house',
+        icon: '🏠',
+        category: 'house',
+        price: 200,
+    },
+    {
+        id: 'garden_house',
+        nameKey: 'shop.items.garden_house',
+        icon: '🏡',
+        category: 'house',
+        price: 300,
+    },
+    {
+        id: 'building',
+        nameKey: 'shop.items.building',
+        icon: '🏢',
+        category: 'house',
+        price: 500,
+    },
+    {
+        id: 'hotel',
+        nameKey: 'shop.items.hotel',
+        icon: '🏨',
+        category: 'house',
+        price: 600,
+    },
+    {
+        id: 'factory',
+        nameKey: 'shop.items.factory',
+        icon: '🏭',
+        category: 'house',
+        price: 700,
+    },
+    {
+        id: 'circus',
+        nameKey: 'shop.items.circus',
+        icon: '🎪',
+        category: 'house',
+        price: 800,
+    },
+    {
+        id: 'stadium',
+        nameKey: 'shop.items.stadium',
+        icon: '🏟️',
+        category: 'house',
+        price: 900,
+    },
+    {
+        id: 'church',
+        nameKey: 'shop.items.church',
+        icon: '⛪',
+        category: 'house',
+        price: 1100,
+    },
+    {
+        id: 'mosque',
+        nameKey: 'shop.items.mosque',
+        icon: '🕌',
+        category: 'house',
+        price: 1100,
+    },
+    {
+        id: 'hindu_temple',
+        nameKey: 'shop.items.hindu_temple',
+        icon: '🛕',
+        category: 'house',
+        price: 1100,
+    },
+    {
+        id: 'synagogue',
+        nameKey: 'shop.items.synagogue',
+        icon: '🕍',
+        category: 'house',
+        price: 1100,
+    },
+    {
+        id: 'greek_temple',
+        nameKey: 'shop.items.greek_temple',
+        icon: '🏛️',
+        category: 'house',
+        price: 1100,
+    },
+    {
+        id: 'kaaba',
+        nameKey: 'shop.items.kaaba',
+        icon: '🕋',
+        category: 'house',
+        price: 1100,
+    },
+    {
+        id: 'japanese_castle',
+        nameKey: 'shop.items.japanese_castle',
+        icon: '🏯',
+        category: 'house',
+        price: 1800,
+    },
+    {
+        id: 'european_castle',
+        nameKey: 'shop.items.european_castle',
+        icon: '🏰',
+        category: 'house',
+        price: 1800,
     },
 ];

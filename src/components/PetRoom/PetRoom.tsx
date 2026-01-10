@@ -21,6 +21,8 @@ import { playButtonSound, playJelloClickSound, playEatingSound, playCleaningSoun
 import { RoomBackground } from './RoomBackground';
 import { MenuModal } from './MenuModal';
 import { GiftBoxModal } from '../GiftBoxModal';
+import { JelloHouse } from './JelloHouse';
+import { ConfirmModal } from './ConfirmModal';
 import './PetRoom.css';
 
 import { useNavigate } from 'react-router-dom';
@@ -112,6 +114,9 @@ export const PetRoom: React.FC<PetRoomProps> = ({
   const [showNicknameModal, setShowNicknameModal] = useState(false);
   // Manual sequence lock to bridge gaps between animation states (e.g. food disappearing -> action starting)
   const [isSequenceActive, setIsSequenceActive] = useState(false);
+
+  // Confirmation Modal State for Sleep/Wake
+  const [confirmModalType, setConfirmModalType] = useState<'sleep' | 'wake' | null>(null);
 
   // Auto-show modal AFTER box is opened (character exists, but no name set yet)
   useEffect(() => {
@@ -285,6 +290,9 @@ export const PetRoom: React.FC<PetRoomProps> = ({
       if (item.category === 'ground') {
         nurturing.equipLand(item.id);
         showBubble('joy', 1);
+      } else if (item.category === 'house') {
+        nurturing.equipHouse(item.id);
+        showBubble('joy', 1);
       }
     } else {
       // Purchase if not owned
@@ -296,6 +304,8 @@ export const PetRoom: React.FC<PetRoomProps> = ({
           // Auto-equip after purchase
           if (item.category === 'ground') {
             nurturing.equipLand(item.id);
+          } else if (item.category === 'house') {
+            nurturing.equipHouse(item.id);
           }
         }
       } else {
@@ -570,6 +580,30 @@ export const PetRoom: React.FC<PetRoomProps> = ({
     isCleaning ||
     isSequenceActive;
 
+  const handleHouseClick = () => {
+    // 1. If currently sleeping -> Ask to wake up
+    if (nurturing.isSleeping) {
+      setConfirmModalType('wake');
+      return;
+    }
+
+    // 2. If awake -> Ask to sleep
+    // Prevent sleep if actions are active
+    if (isActionInProgress) return;
+
+    setConfirmModalType('sleep');
+  };
+
+  const handleConfirmSleepWake = () => {
+    if (confirmModalType === 'wake') {
+      nurturing.toggleSleep();
+      showBubble('neutral', 1); // Waking up reaction
+    } else if (confirmModalType === 'sleep') {
+      nurturing.toggleSleep();
+    }
+    setConfirmModalType(null);
+  };
+
   return (
     <div className="pet-room">
       {/* Loading Overlay */}
@@ -626,6 +660,18 @@ export const PetRoom: React.FC<PetRoomProps> = ({
 
       {/* Main Room Area */}
       <div className="room-container">
+        {/* Jello House (Bottom Left) */}
+        {!showGiftBox && (
+          <JelloHouse
+            type={nurturing.currentHouseId}
+            isSleeping={nurturing.isSleeping}
+            onClick={handleHouseClick}
+            style={{
+              left: '10%',
+              bottom: '25%'
+            }}
+          />
+        )}
         {/* Shop Button (Top Right) */}
         <button
           className="shop-btn-floating"
@@ -716,7 +762,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({
         )}
 
         {/* Character (죽음 상태가 아닐 때만 표시) */}
-        {nurturing.abandonmentStatus.level !== 'abandoned' && (
+        {nurturing.abandonmentStatus.level !== 'abandoned' && !nurturing.isSleeping && (
           <div
             className="character-container"
             style={{
@@ -916,9 +962,16 @@ export const PetRoom: React.FC<PetRoomProps> = ({
           {filteredShopItems.map((item) => (
             <button
               key={item.id}
-              className={`food-item ${nurturing.currentLand === item.id ? 'active-item' : ''}`}
+              className={`food-item ${(item.category === 'ground' && nurturing.currentLand === item.id) ||
+                  (item.category === 'house' && nurturing.currentHouseId === item.id)
+                  ? 'active-item' : ''
+                }`}
               onClick={() => handleShopItemClick(item)}
-              style={nurturing.currentLand === item.id ? { borderColor: '#FFD700', backgroundColor: '#FFF9E6' } : {}}
+              style={
+                (item.category === 'ground' && nurturing.currentLand === item.id) ||
+                  (item.category === 'house' && nurturing.currentHouseId === item.id)
+                  ? { borderColor: '#FFD700', backgroundColor: '#FFF9E6' } : {}
+              }
             >
               <span className="food-item-icon">
                 {item.id === 'shape_ground' ? (
@@ -929,8 +982,9 @@ export const PetRoom: React.FC<PetRoomProps> = ({
               </span>
               <span className="food-item-name">{t(item.nameKey)}</span>
               <div className="food-item-effects">
-                {nurturing.inventory.includes(item.id) ? (
-                  nurturing.currentLand === item.id ? (
+                {nurturing.inventory.includes(item.id) || (item.category === 'house' && item.id === 'tent') ? (
+                  (item.category === 'ground' && nurturing.currentLand === item.id) ||
+                    (item.category === 'house' && nurturing.currentHouseId === item.id) ? (
                     <span className="food-item-price">✅ Owned</span>
                   ) : (
                     <span className="food-item-price">Owned</span>
@@ -1002,6 +1056,22 @@ export const PetRoom: React.FC<PetRoomProps> = ({
       </div>
       {showNicknameModal && (
         <GiftBoxModal onComplete={handleNicknameComplete} />
+      )}
+
+      {/* Sleep/Wake Confirmation Modal */}
+      {confirmModalType && (
+        <ConfirmModal
+          title={confirmModalType === 'sleep' ? t('sleep.confirm.sleepTitle') : t('sleep.confirm.wakeTitle')}
+          message={
+            confirmModalType === 'sleep'
+              ? t('sleep.confirm.sleepMessage')
+              : t('sleep.confirm.wakeMessage')
+          }
+          confirmLabel={t('common.yes')}
+          cancelLabel={t('common.no')}
+          onConfirm={handleConfirmSleepWake}
+          onCancel={() => setConfirmModalType(null)}
+        />
       )}
     </div >
   );

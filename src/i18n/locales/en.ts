@@ -150,6 +150,8 @@ export const en = {
     results: 'Final Results',
     earnedXp: 'XP',
     earnedGro: 'Gro',
+    yes: 'Yes',
+    no: 'No',
   },
   evolution: {
     title: 'EVOLUTION!',
@@ -302,6 +304,7 @@ export const en = {
     },
     categories: {
       ground: 'Land',
+      house: 'House',
     },
     items: {
       default_ground: 'Basic Land',
@@ -324,6 +327,26 @@ export const en = {
       'shape_ground.desc': 'A soft, dreamy pastel world.',
       sweet_ground: 'Sweet Delight',
       'sweet_ground.desc': 'A delicious world of candy and treats.',
+
+      // Houses
+      tent: 'Tent',
+      'tent.desc': 'A cozy camping tent.',
+      old_house: 'Old House',
+      house: 'House',
+      garden_house: 'Garden House',
+      building: 'Building',
+      hotel: 'Hotel',
+      factory: 'Factory',
+      circus: 'Circus',
+      stadium: 'Stadium',
+      church: 'Church',
+      mosque: 'Mosque',
+      hindu_temple: 'Hindu Temple',
+      synagogue: 'Synagogue',
+      greek_temple: 'Greek Temple',
+      kaaba: 'Kaaba',
+      japanese_castle: 'Japanese Castle',
+      european_castle: 'European Castle',
     },
   },
   actions: {
@@ -332,6 +355,14 @@ export const en = {
     play: 'Play',
     clean: 'Clean',
     settings: 'Settings',
+  },
+  sleep: {
+    confirm: {
+      sleepTitle: 'Go to Sleep',
+      sleepMessage: 'Do you want to put Jello to sleep? 💤\n(Sleeps for 30 minutes)',
+      wakeTitle: 'Wake Up',
+      wakeMessage: 'Do you want to wake up Jello? 🌅',
+    },
   },
   cleanMenu: {
     title: 'Cleaning Tools',

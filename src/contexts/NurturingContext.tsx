@@ -94,6 +94,7 @@ interface NurturingContextValue {
   spendGro: (amount: number) => boolean;
   purchaseItem: (itemId: string, price: number) => boolean;
   equipLand: (landId: string) => boolean;
+  equipHouse: (houseId: string) => boolean;
   inventory: string[];
 
   // 유틸리티
@@ -116,6 +117,11 @@ interface NurturingContextValue {
   // Subscription
   subscription: SubscriptionState;
   purchasePlan: (planId: '3_months' | '12_months') => Promise<boolean>;
+
+  // Jello House & Sleep
+  isSleeping: boolean;
+  currentHouseId: string;
+  toggleSleep: () => void;
 }
 
 const NurturingContext = createContext<NurturingContextValue | undefined>(undefined);
@@ -582,6 +588,26 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     return success;
   }, []);
 
+  const equipHouse = useCallback((houseId: string): boolean => {
+    let success = false;
+    setState((currentState) => {
+      // Allow 'tent' by default or check inventory
+      if (houseId !== 'tent' && !currentState.inventory?.includes(houseId)) {
+        console.warn('Cannot equip house not in inventory:', houseId);
+        return currentState;
+      }
+
+      success = true;
+      const newState = {
+        ...currentState,
+        currentHouseId: houseId,
+      };
+      saveNurturingState(newState);
+      return newState;
+    });
+    return success;
+  }, []);
+
   const recordGameScore = useCallback((gameId: string, score: number) => {
     setState(currentState => {
       const statsMap = currentState.minigameStats || {};
@@ -624,13 +650,25 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
   // 게임 틱 실행
   const runGameTick = useCallback(() => {
     setState((currentState) => {
+      // Auto-Wake Check (30 mins = 1800000 ms)
+      let isStillSleeping = currentState.isSleeping || false;
+      if (isStillSleeping && currentState.sleepStartTime) {
+        const sleepDuration = Date.now() - currentState.sleepStartTime;
+        if (sleepDuration >= 30 * 60 * 1000) {
+          isStillSleeping = false;
+          console.log('⏰ 30분 경과: 젤로가 잠에서 깨어났습니다!');
+          // 여기에 알림 메시지를 추가할 수도 있음
+        }
+      }
+
       // 3. 게임 틱 실행
       const tickResult = executeGameTick(
         currentState.stats,
         currentState.poops,
         currentState.bugs || [],
         currentState.gameDifficulty ?? null,
-        currentState.isSick // 현재 질병 상태 전달
+        currentState.isSick, // 현재 질병 상태 전달
+        isStillSleeping // 수면 상태 전달
       );
 
       // 새 스탯 계산
@@ -674,7 +712,11 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
         sickProgress: tickResult.newIsSick && !currentState.isSick ? 0 : currentState.sickProgress, // 새로 아프면 진행도 초기화
         pendingPoops: remainingPendingPoops,
         abandonmentState: updatedAbandonmentState,
+
         lastActiveTime: Date.now(),
+        // 수면 상태 업데이트 (Auto-wake 반영)
+        isSleeping: isStillSleeping,
+        sleepStartTime: isStillSleeping ? currentState.sleepStartTime : undefined,
         tickConfig: {
           ...currentState.tickConfig,
           lastTickTime: Date.now(),
@@ -1230,6 +1272,29 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
 
 
 
+  // Jello Sleep Toggle
+  const toggleSleep = useCallback(() => {
+    setState((currentState) => {
+      // Prevent sleep if doing other major actions (optional strictness)
+      if (currentState.gameDifficulty) {
+        console.warn("Cannot sleep while playing game");
+        return currentState;
+      }
+
+      const nextIsSleeping = !currentState.isSleeping;
+
+      const newState = {
+        ...currentState,
+        isSleeping: nextIsSleeping,
+        sleepStartTime: nextIsSleeping ? Date.now() : undefined,
+      };
+
+      console.log(nextIsSleeping ? '😴 젤로가 잠들었습니다.' : '🌅 젤로가 일어났습니다.');
+      saveNurturingState(newState);
+      return newState;
+    });
+  }, []);
+
   // 가출 상태 UI 정보
   const abandonmentStatus = getAbandonmentStatusUI(state.abandonmentState, Date.now());
 
@@ -1271,6 +1336,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     spendGro,
     purchaseItem,
     equipLand,
+    equipHouse,
     inventory: state.inventory || ['default_ground'],
     resetGame,
     pauseTick,
@@ -1288,6 +1354,11 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     // Subscription
     subscription,
     purchasePlan,
+
+    // Sleep System
+    isSleeping: state.isSleeping || false,
+    currentHouseId: state.currentHouseId || 'tent',
+    toggleSleep,
   }), [
     state.stats,
     state.poops,
@@ -1302,6 +1373,9 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     state.xp,
     state.evolutionStage,
     state.unlockedJellos, // Added dependency
+    state.isSick, // Added dependency
+    state.isSleeping, // Added dependency
+    state.currentHouseId, // Added dependency
     condition,
     abandonmentStatus,
     feed,
