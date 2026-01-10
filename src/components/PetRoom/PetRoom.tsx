@@ -963,8 +963,8 @@ export const PetRoom: React.FC<PetRoomProps> = ({
             <button
               key={item.id}
               className={`food-item ${(item.category === 'ground' && nurturing.currentLand === item.id) ||
-                  (item.category === 'house' && nurturing.currentHouseId === item.id)
-                  ? 'active-item' : ''
+                (item.category === 'house' && nurturing.currentHouseId === item.id)
+                ? 'active-item' : ''
                 }`}
               onClick={() => handleShopItemClick(item)}
               style={
@@ -1009,7 +1009,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({
         <button
           className="action-btn action-btn--small"
           onClick={toggleFoodMenu}
-          disabled={isActionInProgress || showGiftBox}
+          disabled={isActionInProgress || showGiftBox || nurturing.isSleeping}
           title={t('actions.feed')}
         >
           <span className="action-icon">🍖</span>
@@ -1018,7 +1018,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({
         <button
           className="action-btn action-btn--small"
           onClick={toggleMedicineMenu}
-          disabled={isActionInProgress || showGiftBox}
+          disabled={isActionInProgress || showGiftBox || nurturing.isSleeping}
           title={t('actions.medicine')}
         >
           <span className="action-icon">💊</span>
@@ -1027,7 +1027,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({
         <button
           className="action-btn action-btn--main"
           onClick={handlePlay}
-          disabled={isActionInProgress || showGiftBox}
+          disabled={isActionInProgress || showGiftBox || nurturing.isSleeping}
         >
           <span className="action-icon-large">🎾</span>
           <span className="action-label">{t('actions.play')}</span>
@@ -1036,7 +1036,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({
         <button
           className="action-btn action-btn--small"
           onClick={toggleCleanMenu}
-          disabled={isActionInProgress || showGiftBox}
+          disabled={isActionInProgress || showGiftBox || nurturing.isSleeping}
           title={t('actions.clean')}
         >
           <span className="action-icon">✨</span>

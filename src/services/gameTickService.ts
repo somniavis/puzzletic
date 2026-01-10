@@ -115,8 +115,7 @@ export const executeGameTick = (
   let newIsSick = isSick;
 
   // ==================== A. 기본 감소 (Natural Decay) ====================
-  // 수면 상태일 경우 감소율 50% 적용 (회복은 그대로? 아니면 회복도 절반? -> 일단 패널티 감소에 집중)
-  // 회복은 보통 없으므로 decay만 감소
+  // 수면 상태일 경우 감소율 50% 적용 (tick 2배 느림)
   const decayMultiplier = isSleeping ? 0.5 : 1.0;
 
   if (gameDifficulty !== null) {
@@ -132,12 +131,17 @@ export const executeGameTick = (
     newStats.health += NATURAL_DECAY.health;
   } else {
     // 평상시
-    // 포만감과 행복도 감소는 decayMultiplier 적용
-    // 건강 감소는 병이 없으면 미미하므로 그대로 두거나 같이 적용
     const fullnessChange = NATURAL_DECAY.fullness * decayMultiplier;
-    const happinessChange = NATURAL_DECAY.happiness * decayMultiplier;
-    // 건강 자연 감소도 수면 중엔 덜 줄어들게? -> 스트레스 덜 받음
     const healthChange = NATURAL_DECAY.health * decayMultiplier;
+
+    // 수면 중 행복도 로직: 역으로 상승 (tick 속도에 맞춰 0.5배 적용)
+    let happinessChange;
+    if (isSleeping) {
+      // 감소량(-0.3)의 절댓값을 더함 -> +0.15
+      happinessChange = Math.abs(NATURAL_DECAY.happiness) * decayMultiplier;
+    } else {
+      happinessChange = NATURAL_DECAY.happiness * decayMultiplier;
+    }
 
     newStats.fullness += fullnessChange;
     newStats.happiness += happinessChange;
