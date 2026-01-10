@@ -19,66 +19,60 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
     onConfirm,
     onCancel
 }) => {
-    // Debug state - shows what's happening
-    const [debugMessage, setDebugMessage] = useState<string>('');
-
-    // Prevent double triggering
+    const [debugMessage, setDebugMessage] = useState<string>('Ready');
     const isProcessingRef = useRef(false);
 
     const handleConfirm = () => {
-        // Visual feedback for debugging
-        setDebugMessage('✨ Yes pressed!');
+        setDebugMessage('✨ YES TOUCHED!');
 
         if (isProcessingRef.current) {
-            setDebugMessage('⚠️ Already processing');
+            setDebugMessage('⚠️ Double tap blocked');
             return;
         }
         isProcessingRef.current = true;
 
-        console.log('🔵 ConfirmModal: handleConfirm triggered');
         playButtonSound();
 
-        // Small delay to show the message, then call onConfirm
         setTimeout(() => {
-            setDebugMessage('🚀 Calling onConfirm...');
+            setDebugMessage('🚀 Calling sleep...');
             onConfirm();
-        }, 100);
+        }, 200);
 
         setTimeout(() => {
             isProcessingRef.current = false;
-        }, 1000);
+        }, 1500);
     };
 
     const handleCancel = () => {
-        setDebugMessage('❌ No pressed!');
+        setDebugMessage('❌ NO TOUCHED!');
 
         if (isProcessingRef.current) return;
         isProcessingRef.current = true;
 
         playButtonSound();
-        onCancel();
+
+        setTimeout(() => {
+            onCancel();
+        }, 200);
 
         setTimeout(() => {
             isProcessingRef.current = false;
-        }, 1000);
-    };
-
-    const handleOverlayClick = (e: React.MouseEvent | React.PointerEvent) => {
-        if (e.target === e.currentTarget) {
-            handleCancel();
-        }
+        }, 1500);
     };
 
     return (
         <div
             className="food-menu-overlay"
-            onPointerDown={handleOverlayClick}
-            style={{ touchAction: 'none' }}
+            onClick={(e) => {
+                if (e.target === e.currentTarget) {
+                    handleCancel();
+                }
+            }}
         >
             <div
                 className="food-menu"
                 style={{ maxWidth: '400px', height: 'auto', maxHeight: 'none' }}
-                onPointerDown={(e) => e.stopPropagation()}
+                onClick={(e) => e.stopPropagation()}
             >
                 <div className="food-menu-header">
                     <h3>{title}</h3>
@@ -86,67 +80,81 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
                 <div style={{ padding: '2rem 1.5rem', textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                     <p style={{ fontSize: '1.2rem', fontWeight: '700', color: '#4d3e2f', whiteSpace: 'pre-line', lineHeight: '1.5', margin: 0 }}>{message}</p>
 
-                    {/* Debug message display */}
-                    {debugMessage && (
-                        <div style={{
-                            padding: '0.5rem',
-                            background: '#ffe4b5',
-                            borderRadius: '8px',
-                            fontSize: '0.9rem',
-                            fontWeight: 'bold',
-                            color: '#8b4513'
-                        }}>
-                            {debugMessage}
-                        </div>
-                    )}
+                    {/* Debug display */}
+                    <div style={{
+                        padding: '0.75rem',
+                        background: '#fff3cd',
+                        borderRadius: '12px',
+                        fontSize: '1rem',
+                        fontWeight: 'bold',
+                        color: '#856404',
+                        border: '2px solid #ffc107'
+                    }}>
+                        Debug: {debugMessage}
+                    </div>
 
                     <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
-                        <button
-                            type="button"
+                        {/* No Button */}
+                        <div
+                            role="button"
+                            tabIndex={0}
                             style={{
-                                width: 'auto',
-                                padding: '1rem 2.5rem',
-                                height: 'auto',
-                                background: '#e0e0e0',
+                                padding: '1.2rem 2.5rem',
+                                background: 'linear-gradient(180deg, #e0e0e0 0%, #c0c0c0 100%)',
                                 borderRadius: '24px',
-                                border: '3px solid #999',
-                                boxShadow: '0 4px 0 #666',
+                                border: '4px solid #888',
+                                boxShadow: '0 5px 0 #666',
                                 color: '#333',
                                 cursor: 'pointer',
-                                fontSize: '1.2rem',
+                                fontSize: '1.3rem',
                                 fontWeight: 700,
-                                WebkitTapHighlightColor: 'rgba(0,0,0,0.1)'
+                                userSelect: 'none',
+                                WebkitUserSelect: 'none'
                             }}
-                            onPointerDown={(e) => {
+                            onClick={handleCancel}
+                            onTouchStart={(e) => {
                                 e.stopPropagation();
+                                setDebugMessage('👆 No touched!');
+                            }}
+                            onTouchEnd={(e) => {
+                                e.stopPropagation();
+                                e.preventDefault();
                                 handleCancel();
                             }}
                         >
                             {cancelLabel}
-                        </button>
-                        <button
-                            type="button"
+                        </div>
+
+                        {/* Yes Button */}
+                        <div
+                            role="button"
+                            tabIndex={0}
                             style={{
-                                width: 'auto',
-                                padding: '1rem 2.5rem',
-                                height: 'auto',
+                                padding: '1.2rem 2.5rem',
                                 background: 'linear-gradient(180deg, #FFD700 0%, #FFA500 100%)',
                                 borderRadius: '24px',
                                 border: '5px solid #d4961f',
                                 boxShadow: '0 6px 0 #b4761f',
                                 cursor: 'pointer',
-                                fontSize: '1.2rem',
+                                fontSize: '1.3rem',
                                 fontWeight: 700,
                                 color: '#4d3e2f',
-                                WebkitTapHighlightColor: 'rgba(0,0,0,0.1)'
+                                userSelect: 'none',
+                                WebkitUserSelect: 'none'
                             }}
-                            onPointerDown={(e) => {
+                            onClick={handleConfirm}
+                            onTouchStart={(e) => {
                                 e.stopPropagation();
+                                setDebugMessage('👆 Yes touched!');
+                            }}
+                            onTouchEnd={(e) => {
+                                e.stopPropagation();
+                                e.preventDefault();
                                 handleConfirm();
                             }}
                         >
                             {confirmLabel}
-                        </button>
+                        </div>
                     </div>
                 </div>
             </div>
