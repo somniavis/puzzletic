@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useRef } from 'react';
 import { playButtonSound } from '../../utils/sound';
 import './PetRoom.css';
 
@@ -19,37 +19,52 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
     onConfirm,
     onCancel
 }) => {
-    const handleConfirm = useCallback((e: React.MouseEvent) => {
-        e.stopPropagation();
-        e.preventDefault();
+    // Prevent double triggering
+    const isProcessingRef = useRef(false);
+
+    const handleConfirm = () => {
+        if (isProcessingRef.current) return;
+        isProcessingRef.current = true;
+
+        console.log('🔵 ConfirmModal: handleConfirm triggered');
         playButtonSound();
         onConfirm();
-    }, [onConfirm]);
 
-    const handleCancel = useCallback((e: React.MouseEvent) => {
-        e.stopPropagation();
-        e.preventDefault();
+        // Reset after a delay
+        setTimeout(() => {
+            isProcessingRef.current = false;
+        }, 1000);
+    };
+
+    const handleCancel = () => {
+        if (isProcessingRef.current) return;
+        isProcessingRef.current = true;
+
+        console.log('🔴 ConfirmModal: handleCancel triggered');
         playButtonSound();
         onCancel();
-    }, [onCancel]);
 
-    const handleOverlayClick = useCallback((e: React.MouseEvent) => {
+        setTimeout(() => {
+            isProcessingRef.current = false;
+        }, 1000);
+    };
+
+    const handleOverlayClick = (e: React.MouseEvent | React.PointerEvent) => {
         if (e.target === e.currentTarget) {
-            playButtonSound();
-            onCancel();
+            handleCancel();
         }
-    }, [onCancel]);
+    };
 
     return (
         <div
             className="food-menu-overlay"
-            onClick={handleOverlayClick}
-            style={{ touchAction: 'manipulation' }}
+            onPointerDown={handleOverlayClick}
+            style={{ touchAction: 'none' }}
         >
             <div
                 className="food-menu"
-                style={{ maxWidth: '400px', height: 'auto', maxHeight: 'none', touchAction: 'manipulation' }}
-                onClick={(e) => e.stopPropagation()}
+                style={{ maxWidth: '400px', height: 'auto', maxHeight: 'none' }}
+                onPointerDown={(e) => e.stopPropagation()}
             >
                 <div className="food-menu-header">
                     <h3>{title}</h3>
@@ -69,14 +84,14 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
                                 border: '3px solid #ccc',
                                 boxShadow: '0 4px 0 #999',
                                 color: '#666',
-                                touchAction: 'manipulation',
-                                cursor: 'pointer',
-                                WebkitAppearance: 'none',
-                                WebkitTapHighlightColor: 'transparent'
+                                cursor: 'pointer'
                             }}
-                            onClick={handleCancel}
+                            onPointerDown={(e) => {
+                                e.stopPropagation();
+                                handleCancel();
+                            }}
                         >
-                            <span className="action-label" style={{ fontSize: '1.1rem', pointerEvents: 'none' }}>{cancelLabel}</span>
+                            <span style={{ fontSize: '1.1rem', fontWeight: 700, pointerEvents: 'none' }}>{cancelLabel}</span>
                         </button>
                         <button
                             type="button"
@@ -85,14 +100,14 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
                                 width: 'auto',
                                 padding: '0.8rem 2rem',
                                 height: 'auto',
-                                touchAction: 'manipulation',
-                                cursor: 'pointer',
-                                WebkitAppearance: 'none',
-                                WebkitTapHighlightColor: 'transparent'
+                                cursor: 'pointer'
                             }}
-                            onClick={handleConfirm}
+                            onPointerDown={(e) => {
+                                e.stopPropagation();
+                                handleConfirm();
+                            }}
                         >
-                            <span className="action-label" style={{ fontSize: '1.1rem', pointerEvents: 'none' }}>{confirmLabel}</span>
+                            <span style={{ fontSize: '1.1rem', fontWeight: 700, pointerEvents: 'none' }}>{confirmLabel}</span>
                         </button>
                     </div>
                 </div>
