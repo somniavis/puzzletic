@@ -137,8 +137,8 @@ export const executeGameTick = (
     // 수면 중 행복도 로직: 역으로 상승 (tick 속도에 맞춰 0.5배 적용)
     let happinessChange;
     if (isSleeping) {
-      // 감소량(-0.3)의 절댓값을 더함 -> +0.15
-      happinessChange = Math.abs(NATURAL_DECAY.happiness) * decayMultiplier;
+      // 수면 중에는 확실히 행복도가 오르도록 설정 (+0.5)
+      happinessChange = 0.5;
     } else {
       happinessChange = NATURAL_DECAY.happiness * decayMultiplier;
     }
@@ -151,7 +151,9 @@ export const executeGameTick = (
   // ==================== B. 질병 페널티 (Sick Penalty) ====================
   if (newIsSick) {
     newStats.health += SICK_CONFIG.PENALTY.health;
-    newStats.happiness += SICK_CONFIG.PENALTY.happiness;
+    if (!isSleeping) {
+      newStats.happiness += SICK_CONFIG.PENALTY.happiness;
+    }
     penalties.sick = Math.abs(SICK_CONFIG.PENALTY.health);
     alerts.push('질병으로 인해 건강이 빠르게 악화되고 있습니다!');
   }
@@ -160,13 +162,13 @@ export const executeGameTick = (
   // 1. 배고픔 페널티
   if (currentStats.fullness < THRESHOLDS.CRITICAL) {
     // 심각한 배고픔 (20 미만)
-    newStats.happiness += HUNGER_PENALTY.severe.happiness;
+    if (!isSleeping) newStats.happiness += HUNGER_PENALTY.severe.happiness;
     newStats.health += HUNGER_PENALTY.severe.health;
     penalties.hunger = Math.abs(HUNGER_PENALTY.severe.health);
     alerts.push('배가 너무 고파서 건강이 크게 나빠집니다.');
   } else if (currentStats.fullness < THRESHOLDS.HUNGER) {
     // 일반 배고픔 (30 미만)
-    newStats.happiness += HUNGER_PENALTY.mild.happiness;
+    if (!isSleeping) newStats.happiness += HUNGER_PENALTY.mild.happiness;
     newStats.health += HUNGER_PENALTY.mild.health;
     penalties.hunger = Math.abs(HUNGER_PENALTY.mild.health);
     alerts.push('배가 고파서 건강과 행복도가 감소합니다.');
@@ -174,7 +176,7 @@ export const executeGameTick = (
 
   // 2. 아픔 페널티 (기존 낮은 건강 페널티)
   if (currentStats.health < THRESHOLDS.SICK) {
-    newStats.happiness += SICK_PENALTY.happiness;
+    if (!isSleeping) newStats.happiness += SICK_PENALTY.happiness;
     penalties.sick = (penalties.sick || 0) + Math.abs(SICK_PENALTY.happiness);
     // alerts.push('몸이 아파서 행복도가 감소합니다.');
   }
@@ -200,7 +202,7 @@ export const executeGameTick = (
     const happinessPenalty = POOP_PENALTY.happiness * poops.length;
 
     newStats.health += healthPenalty;
-    newStats.happiness += happinessPenalty;
+    if (!isSleeping) newStats.happiness += happinessPenalty;
     penalties.poopDebuff = Math.abs(healthPenalty + happinessPenalty);
     alerts.push(`똥 방치 페널티 (${poops.length}개): 건강/행복도 감소`);
   }
@@ -211,7 +213,7 @@ export const executeGameTick = (
     const bugHappinessPenalty = BUG_CONFIG.HAPPINESS_DEBUFF_PER_BUG * newBugs.length;
 
     newStats.health += bugHealthPenalty;
-    newStats.happiness += bugHappinessPenalty;
+    if (!isSleeping) newStats.happiness += bugHappinessPenalty;
     alerts.push(`벌레 페널티 (${newBugs.length}마리): 건강/행복도 감소`);
   }
 
