@@ -22,42 +22,40 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
     const [debugMessage, setDebugMessage] = useState<string>('Ready');
     const isProcessingRef = useRef(false);
 
-    const handleConfirm = () => {
-        setDebugMessage('✨ YES TOUCHED!');
-
+    const executeConfirm = () => {
         if (isProcessingRef.current) {
             setDebugMessage('⚠️ Double tap blocked');
             return;
         }
         isProcessingRef.current = true;
 
+        setDebugMessage('✅ EXECUTING SLEEP!');
         playButtonSound();
 
+        // Call onConfirm after a tiny delay to show the message
         setTimeout(() => {
-            setDebugMessage('🚀 Calling sleep...');
             onConfirm();
-        }, 200);
+        }, 150);
 
         setTimeout(() => {
             isProcessingRef.current = false;
-        }, 1500);
+        }, 2000);
     };
 
-    const handleCancel = () => {
-        setDebugMessage('❌ NO TOUCHED!');
-
+    const executeCancel = () => {
         if (isProcessingRef.current) return;
         isProcessingRef.current = true;
 
+        setDebugMessage('❌ Cancelling...');
         playButtonSound();
 
         setTimeout(() => {
             onCancel();
-        }, 200);
+        }, 150);
 
         setTimeout(() => {
             isProcessingRef.current = false;
-        }, 1500);
+        }, 2000);
     };
 
     return (
@@ -65,7 +63,7 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
             className="food-menu-overlay"
             onClick={(e) => {
                 if (e.target === e.currentTarget) {
-                    handleCancel();
+                    executeCancel();
                 }
             }}
         >
@@ -83,21 +81,20 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
                     {/* Debug display */}
                     <div style={{
                         padding: '0.75rem',
-                        background: '#fff3cd',
+                        background: '#d4edda',
                         borderRadius: '12px',
                         fontSize: '1rem',
                         fontWeight: 'bold',
-                        color: '#856404',
-                        border: '2px solid #ffc107'
+                        color: '#155724',
+                        border: '2px solid #28a745'
                     }}>
-                        Debug: {debugMessage}
+                        {debugMessage}
                     </div>
 
                     <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
-                        {/* No Button */}
+                        {/* No Button - fires on touch START */}
                         <div
                             role="button"
-                            tabIndex={0}
                             style={{
                                 padding: '1.2rem 2.5rem',
                                 background: 'linear-gradient(180deg, #e0e0e0 0%, #c0c0c0 100%)',
@@ -109,26 +106,24 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
                                 fontSize: '1.3rem',
                                 fontWeight: 700,
                                 userSelect: 'none',
-                                WebkitUserSelect: 'none'
+                                WebkitUserSelect: 'none',
+                                WebkitTouchCallout: 'none'
                             }}
-                            onClick={handleCancel}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                executeCancel();
+                            }}
                             onTouchStart={(e) => {
                                 e.stopPropagation();
-                                setDebugMessage('👆 No touched!');
-                            }}
-                            onTouchEnd={(e) => {
-                                e.stopPropagation();
-                                e.preventDefault();
-                                handleCancel();
+                                executeCancel();
                             }}
                         >
                             {cancelLabel}
                         </div>
 
-                        {/* Yes Button */}
+                        {/* Yes Button - fires on touch START */}
                         <div
                             role="button"
-                            tabIndex={0}
                             style={{
                                 padding: '1.2rem 2.5rem',
                                 background: 'linear-gradient(180deg, #FFD700 0%, #FFA500 100%)',
@@ -140,17 +135,16 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
                                 fontWeight: 700,
                                 color: '#4d3e2f',
                                 userSelect: 'none',
-                                WebkitUserSelect: 'none'
+                                WebkitUserSelect: 'none',
+                                WebkitTouchCallout: 'none'
                             }}
-                            onClick={handleConfirm}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                executeConfirm();
+                            }}
                             onTouchStart={(e) => {
                                 e.stopPropagation();
-                                setDebugMessage('👆 Yes touched!');
-                            }}
-                            onTouchEnd={(e) => {
-                                e.stopPropagation();
-                                e.preventDefault();
-                                handleConfirm();
+                                executeConfirm();
                             }}
                         >
                             {confirmLabel}
