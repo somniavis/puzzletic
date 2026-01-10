@@ -282,7 +282,7 @@
     font-size: 1.125rem;
     font-weight: 700;
     color: #334155;
-    margin-bottom: 1rem;
+    margin: 0 0 1.5rem 0;
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -308,10 +308,17 @@
     display: flex;
     gap: 1rem;
     align-items: flex-start;
-    padding: 0.75rem;
+    padding: 1rem;
     background: #f8fafc;
-    border-radius: 0.75rem;
-    border-left: 4px solid #a855f7;
+    border-radius: 1rem;
+    border: 2px solid #e2e8f0;
+    border-bottom: 5px solid #cbd5e1;
+    transition: transform 0.1s;
+}
+
+.instruction-item:active {
+    transform: translateY(2px);
+    border-bottom-width: 3px;
 }
 
 .instruction-icon {
