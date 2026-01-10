@@ -206,11 +206,15 @@ export const useSignalHunterLogic = () => {
             engine.submitAnswer(true);
             setIsRotating(false);
 
-            // Award PowerUp on Round Clear (30% chance)
-            if (Math.random() < 0.3) {
-                const rewards: ('timeFreeze' | 'extraLife' | 'doubleScore')[] = ['timeFreeze', 'extraLife', 'doubleScore'];
-                const reward = rewards[Math.floor(Math.random() * rewards.length)];
-                engine.setPowerUps(prev => ({ ...prev, [reward]: prev[reward] + 1 }));
+            // Streak-based PowerUp Reward (same as ColorLink)
+            const nextStreak = engine.streak + 1;
+            if (nextStreak > 0 && nextStreak % 3 === 0) {
+                // 55% Chance on every 3rd streak
+                if (Math.random() < 0.55) {
+                    const rewards: ('timeFreeze' | 'extraLife' | 'doubleScore')[] = ['timeFreeze', 'extraLife', 'doubleScore'];
+                    const reward = rewards[Math.floor(Math.random() * rewards.length)];
+                    engine.setPowerUps(prev => ({ ...prev, [reward]: prev[reward] + 1 }));
+                }
             }
 
             setTimeout(() => startRound(nextDifficulty), 1000);
