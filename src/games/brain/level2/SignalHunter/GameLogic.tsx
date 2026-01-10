@@ -36,9 +36,6 @@ export const useSignalHunterLogic = () => {
     const [roundsCleared, setRoundsCleared] = useState(0); // Track rounds for difficulty progression
     const lastGameStateRef = useRef<string>('idle');
 
-    // Power-Up State (local freeze tracking only - engine handles actual powerups)
-    const [isTimeFrozen, setIsTimeFrozen] = useState(false);
-
     // Initial Setup & Restart Handler
     useEffect(() => {
         const prevState = lastGameStateRef.current;
@@ -134,8 +131,9 @@ export const useSignalHunterLogic = () => {
     const lastTimeRef = useRef<number>(0);
 
     // Game Loop with deltaTime normalization (consistent across 60Hz/120Hz/144Hz)
+    // Note: isTimeFrozen only affects timer in engine, NOT needle rotation
     useEffect(() => {
-        if (!isRotating || engine.gameState !== 'playing' || isTimeFrozen) return;
+        if (!isRotating || engine.gameState !== 'playing') return;
 
         let frameId: number;
         // Speed in degrees per second (not per frame)
@@ -164,7 +162,7 @@ export const useSignalHunterLogic = () => {
         lastTimeRef.current = 0; // Reset on start
         frameId = requestAnimationFrame(loop);
         return () => cancelAnimationFrame(frameId);
-    }, [isRotating, direction, engine.gameState, localDifficulty, isTimeFrozen]);
+    }, [isRotating, direction, engine.gameState, localDifficulty]);
 
 
     // Interaction
@@ -235,10 +233,6 @@ export const useSignalHunterLogic = () => {
     const usePowerUp = (type: 'timeFreeze' | 'extraLife' | 'doubleScore') => {
         if (engine.powerUps[type] > 0) {
             engine.activatePowerUp(type);
-            if (type === 'timeFreeze') {
-                setIsTimeFrozen(true);
-                setTimeout(() => setIsTimeFrozen(false), 5000);
-            }
         }
     };
 
@@ -254,7 +248,6 @@ export const useSignalHunterLogic = () => {
         target: { value: targetValue },
         decoys,
         handleTap,
-        usePowerUp,
-        isTimeFrozen
+        usePowerUp
     };
 };
