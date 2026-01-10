@@ -602,6 +602,8 @@ export const PetRoom: React.FC<PetRoomProps> = ({
   };
 
   const handleConfirmSleepWake = () => {
+    console.log('🟢 handleConfirmSleepWake called, confirmModalType:', confirmModalType);
+
     // Lock interaction to prevent ghost clicks hitting the house again
     interactionLockRef.current = true;
     setTimeout(() => {
@@ -609,10 +611,14 @@ export const PetRoom: React.FC<PetRoomProps> = ({
     }, 800);
 
     if (confirmModalType === 'wake') {
+      console.log('🟡 Calling toggleSleep for WAKE');
       nurturing.toggleSleep();
       showBubble('neutral', 1); // Waking up reaction
     } else if (confirmModalType === 'sleep') {
+      console.log('🟡 Calling toggleSleep for SLEEP');
       nurturing.toggleSleep();
+    } else {
+      console.log('🔴 confirmModalType is null or unexpected:', confirmModalType);
     }
     setConfirmModalType(null);
   };
