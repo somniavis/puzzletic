@@ -22,13 +22,12 @@ export const PairUpGrid: React.FC<PairUpGridProps> = React.memo(({
             <div
                 className={styles.grid}
                 style={{
-                    // Robust Scaling Logic:
-                    // Ensure the grid fits within 90vw (width) AND 60vh (height).
-                    // We calculate the maximum possible square cell size that satisfies both constraints.
-                    // Cell Size = min( 90vw / cols, 60vh / rows )
-                    // Then repeat that size for both columns and rows to maintain square cells.
-                    gridTemplateColumns: `repeat(${config.cols}, min(calc(90vw / ${config.cols} - 1rem), calc(60vh / ${config.rows} - 1rem)))`,
-                    gridTemplateRows: `repeat(${config.rows}, min(calc(90vw / ${config.cols} - 1rem), calc(60vh / ${config.rows} - 1rem)))`
+                    // Robust Scaling Logic (Updated for Mobile):
+                    // Use 100dvh to account for mobile browser bars.
+                    // Subtract roughly 180px for Header + SubHeader + Margins.
+                    // Use 95vw for width to maximize use of narrow screens.
+                    gridTemplateColumns: `repeat(${config.cols}, min(calc(95vw / ${config.cols} - 0.75rem), calc((100dvh - 180px) / ${config.rows} - 0.75rem)))`,
+                    gridTemplateRows: `repeat(${config.rows}, min(calc(95vw / ${config.cols} - 0.75rem), calc((100dvh - 180px) / ${config.rows} - 0.75rem)))`
                 }}
             >
                 {cards.map(card => (
