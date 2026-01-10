@@ -587,6 +587,7 @@
   z-index: 5;
   transition: left 1s ease-in-out, bottom 1s ease-in-out;
   filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* Action Bar */
