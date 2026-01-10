@@ -8,17 +8,17 @@ import { TWIN_EMOJIS, CONNECT_PAIRS } from './data';
 
 // --- Helpers (Pure Functions) ---
 const getRoundConfig = (r: number) => {
-    if (r <= 3) return { rows: 2, cols: 2 }; // Round 1-3: 4 cards (2 pairs)
-    if (r <= 7) return { rows: 3, cols: 2 }; // Round 4-7: 6 cards (3 pairs) - 2x3
-    if (r <= 11) return { rows: 4, cols: 2 }; // Round 8-11: 8 cards (4 pairs) - 2x4
-    return { rows: 4, cols: 3 };              // Round 12+: 12 cards (6 pairs) - 3x4
+    if (r <= 4) return { rows: 2, cols: 2 }; // Round 1-4: 4 cards (2 pairs)
+    if (r <= 9) return { rows: 3, cols: 2 }; // Round 5-9: 6 cards (3 pairs) - 2x3
+    if (r <= 15) return { rows: 4, cols: 2 }; // Round 10-15: 8 cards (4 pairs) - 2x4
+    return { rows: 4, cols: 3 };              // Round 16+: 12 cards (6 pairs) - 3x4
 };
 
 const getPreviewTime = (r: number) => {
-    if (r <= 3) return 3000; // 3s for 4 cards
-    if (r <= 7) return 4000; // 4s for 6 cards
-    if (r <= 11) return 5000; // 5s for 8 cards
-    return 6000;              // 6s for 12 cards
+    if (r <= 4) return 3000; // 3s
+    if (r <= 9) return 4000; // 4s
+    if (r <= 15) return 5000; // 5s
+    return 6000;              // 6s
 };
 
 export const usePairUpLogic = (engine: ReturnType<typeof useGameEngine>, mode: PairUpMode) => {
@@ -97,12 +97,29 @@ export const usePairUpLogic = (engine: ReturnType<typeof useGameEngine>, mode: P
         };
     }, []);
 
-    // --- Init / Reset ---
+    // --- Init / Reset Logic ---
+    const prevGameStateRef = useRef(engine.gameState);
+
+    useEffect(() => {
+        // Detect Game Start (Only from Idle or GameOver -> Playing)
+        // If coming from 'wrong' or 'correct' (mid-game feedback), do NOT reset.
+        const wasInactive = prevGameStateRef.current === 'idle' || prevGameStateRef.current === 'gameover';
+
+        if (wasInactive && engine.gameState === 'playing') {
+            console.log("Game Restart/Start detected inside usePairUpLogic");
+            setRound(1);
+            setCards([]);
+        }
+
+        prevGameStateRef.current = engine.gameState;
+    }, [engine.gameState]);
+
+    // Generate cards when empty and playing (handling both initial start and round progression)
     useEffect(() => {
         if (engine.gameState === 'playing' && cards.length === 0) {
-            generateCards();
+            generateCards(); // Uses current 'round' state
         }
-    }, [engine.gameState, generateCards, cards.length]);
+    }, [engine.gameState, cards.length, generateCards]);
 
     // --- Interactions ---
     const handleCardClick = (id: string) => {

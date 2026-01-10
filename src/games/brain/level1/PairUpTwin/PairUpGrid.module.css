@@ -50,7 +50,8 @@
     width: 100%;
     height: 100%;
     backface-visibility: hidden;
-    border-radius: 12px;
+    border-radius: 1.5rem;
+    /* More rounded */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -60,33 +61,49 @@
 
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
     user-select: none;
+    overflow: hidden;
+    /* For shine effect clipping */
 }
 
-/* Front Face (Hidden/Question Mark) */
+/* Front Face (Hidden/Cover) */
 .cardFront {
-    background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
-    color: white;
+    /* Glossy Mint/Teal to contrast with Peach Background */
+    background: linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%);
+    /* Mint to Blue */
+    border: 4px solid #ffffff;
+    /* White Border for clean look */
+    /* Subtle Star Color */
+    color: rgba(255, 255, 255, 0.65);
+    /* Slightly more visible Transparent White */
     font-weight: 800;
-    /* Question mark can be slightly smaller */
     font-size: 40cqmin;
+    text-shadow: 0 2px 0 rgba(0, 0, 0, 0.1);
+
+    /* Inner Shadow for depth */
+    box-shadow: inset 0 0 15px rgba(255, 255, 255, 0.6), 0 4px 6px rgba(0, 0, 0, 0.1);
+    /* Soft shadow */
 }
 
-/* Back Face (Content) - this is actually the "front" in default logical state, 
-   but in CSS flip terms, the 'back' is the revealed side if we rotate 180deg to reveal it. 
-   Let's define: 
-   0deg = Cover (Front)
-   180deg = Emoji (Back)
-*/
-.cardFront {
-    /* The cover */
-    transform: rotateY(0deg);
+/* Shine Effect for Front */
+.cardFront::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(to bottom right, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 40%, rgba(255, 255, 255, 0) 100%);
+    transform: rotate(30deg);
+    pointer-events: none;
 }
 
+/* Back Face (Content/Emoji) */
 .cardBack {
     /* The emoji */
     background: white;
     transform: rotateY(180deg);
-    border: 3px solid #e2e8f0;
+    border: 4px solid #e2e8f0;
+    box-shadow: 0 4px 0 #cbd5e1;
 }
 
 .cardBack.matched {
@@ -94,7 +111,7 @@
     /* Light green */
     border-color: #22c55e;
     /* Green border */
-    box-shadow: 0 0 15px rgba(34, 197, 94, 0.4);
+    box-shadow: 0 0 15px rgba(34, 197, 94, 0.4), inset 0 0 10px rgba(34, 197, 94, 0.2);
     animation: successPulse 0.5s ease-out;
 }
 

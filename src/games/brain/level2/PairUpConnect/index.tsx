@@ -114,8 +114,6 @@ const PairUpConnect: React.FC = () => {
             <PairUpGrid
                 cards={logic.cards}
                 config={logic.gridConfig}
-                previewProgress={logic.previewProgress}
-                gameState={logic.gameState}
                 onCardClick={logic.handleCardClick}
             />
         </Layout2>

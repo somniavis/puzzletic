@@ -1,21 +1,17 @@
 
 import React from 'react';
-import styles from './PairUpGrid.module.css'; // Will rename CSS file in write step
-import type { Card, LevelConfig } from "./types";
+import styles from './PairUpGrid.module.css';
+import type { Card } from "./types";
 
 interface PairUpGridProps {
     cards: Card[];
     config: { rows: number; cols: number };
-    previewProgress: number;
-    gameState: 'preview' | 'playing';
     onCardClick: (id: string) => void;
 }
 
 export const PairUpGrid: React.FC<PairUpGridProps> = ({
     cards,
     config,
-    previewProgress,
-    gameState,
     onCardClick
 }) => {
 
@@ -43,7 +39,7 @@ export const PairUpGrid: React.FC<PairUpGridProps> = ({
                     >
                         <div className={`${styles.card} ${card.isFlipped ? styles.isFlipped : ''}`}>
                             <div className={`${styles.cardFace} ${styles.cardFront}`}>
-                                ?
+                                ★
                             </div>
                             <div className={`${styles.cardFace} ${styles.cardBack} ${card.isMatched ? styles.matched : ''}`}>
                                 {card.emoji}
