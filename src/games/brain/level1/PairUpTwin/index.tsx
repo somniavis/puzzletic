@@ -1,5 +1,6 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Layout2 } from '../../../layouts/Standard/Layout2';
 import { useGameEngine } from '../../../layouts/Standard/Layout0/useGameEngine';
 import type { PowerUpBtnProps } from '../../../../components/Game/PowerUpBtn';
@@ -7,14 +8,18 @@ import { usePairUpLogic } from './usePairUpLogic';
 import { PairUpGrid } from './PairUpGrid';
 import { PairUpBackground } from './PairUpBackground';
 import type { GameManifest } from '../../../types';
+import manifest_en from './locales/en';
 
 const GAME_ID = 'pair-up-twin';
 
 export const manifest: GameManifest = {
     id: GAME_ID,
     title: 'Pair Up! Twin',
+    titleKey: 'games.pair-up-twin.title',
     subtitle: 'Find Matching Pairs',
+    subtitleKey: 'games.pair-up-twin.subtitle',
     description: 'Find identical pairs of emojis.',
+    descriptionKey: 'games.pair-up-twin.description',
     category: 'brain',
     level: 1,
     thumbnail: '👯',
@@ -24,6 +29,14 @@ export const manifest: GameManifest = {
 
 const PairUpTwin: React.FC = () => {
     const navigate = useNavigate();
+    const { t, i18n } = useTranslation();
+
+    useEffect(() => {
+        const newResources = { en: { translation: { games: { 'pair-up-twin': manifest_en } } } };
+        Object.keys(newResources).forEach(lang => {
+            i18n.addResourceBundle(lang, 'translation', newResources[lang as keyof typeof newResources].translation, true, true);
+        });
+    }, [i18n]);
 
     // Engine Config will be refined later
     const engine = useGameEngine({
@@ -97,22 +110,22 @@ const PairUpTwin: React.FC = () => {
 
     return (
         <Layout2
-            title="Pair Up! Twin"
-            subtitle="Find Matching Pairs"
+            title={t('games.pair-up-twin.title')}
+            subtitle={t('games.pair-up-twin.subtitle')}
             instructions={[
                 {
-                    title: "Memorize",
-                    description: "Remember the card locations in 3 seconds.",
+                    title: t('games.pair-up-twin.howToPlay.step1.title'),
+                    description: t('games.pair-up-twin.howToPlay.step1.desc'),
                     icon: "👀"
                 },
                 {
-                    title: "Find Pairs",
-                    description: "Flip cards to find identical twins.",
+                    title: t('games.pair-up-twin.howToPlay.step2.title'),
+                    description: t('games.pair-up-twin.howToPlay.step2.desc'),
                     icon: "👯"
                 },
                 {
-                    title: "Clear Grid",
-                    description: "Match all pairs to win!",
+                    title: t('games.pair-up-twin.howToPlay.step3.title'),
+                    description: t('games.pair-up-twin.howToPlay.step3.desc'),
                     icon: "✨"
                 }
             ]}

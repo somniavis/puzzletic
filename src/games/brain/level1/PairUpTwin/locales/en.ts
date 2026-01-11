@@ -1,4 +1,4 @@
-export const en = {
+export default {
     title: 'Pair Up! Twin',
     subtitle: 'LV.1 Brain | Memory',
     description: 'Find the matching emoji pairs!',

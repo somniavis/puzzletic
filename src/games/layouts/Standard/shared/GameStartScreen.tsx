@@ -51,7 +51,7 @@ export const GameStartScreen: React.FC<StartScreenProps> = ({
                 </div>
             </div>
             <div className="start-footer-section">
-                <button className="start-btn" onClick={() => { playButtonSound(); onStart(); }}>▶ Start Game</button>
+                <button className="start-btn" onClick={() => { playButtonSound(); onStart(); }}>▶ {t('common.startGame')}</button>
             </div>
         </div>
     );

@@ -1,10 +1,12 @@
 import { useNavigate } from 'react-router-dom';
-import { useMemo, useCallback } from 'react';
+import { useMemo, useCallback, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Layout2 } from '../../../layouts/Standard/Layout2';
 import { useGameEngine } from '../../../layouts/Standard/Layout0/useGameEngine';
 import styles from './WildLink.module.css';
 import { useColorLinkLogic } from './GameLogic';
 import type { PowerUpBtnProps } from '../../../../components/Game/PowerUpBtn';
+import manifest_en from './locales/en';
 
 const GAME_ID = 'brain-level2-wild-link';
 
@@ -24,7 +26,15 @@ const WaveBackground = () => {
 
 export default function WildLink({ onExit }: WildLinkProps) {
     const navigate = useNavigate();
+    const { t, i18n } = useTranslation();
     const handleExit = onExit || (() => navigate(-1));
+
+    useEffect(() => {
+        const newResources = { en: { translation: { games: { 'wild-link': manifest_en } } } };
+        Object.keys(newResources).forEach(lang => {
+            i18n.addResourceBundle(lang, 'translation', newResources[lang as keyof typeof newResources].translation, true, true);
+        });
+    }, [i18n]);
 
     const engine = useGameEngine({
         initialTime: 90,
@@ -83,17 +93,17 @@ export default function WildLink({ onExit }: WildLinkProps) {
 
     return (
         <Layout2
-            title="Wild Link"
-            subtitle="Connect matching species!"
+            title={t('games.wild-link.title')}
+            subtitle={t('games.wild-link.subtitle')}
             gameId={GAME_ID}
             engine={engine}
             powerUps={powerUps}
             onExit={handleExit}
             cardBackground={<WaveBackground />}
             instructions={[
-                { icon: '🦁', title: 'Connect', description: 'Link matching species.' },
-                { icon: '⚡', title: 'No Cross', description: 'Paths cannot cross.' },
-                { icon: '🧩', title: 'Fill Grid', description: 'Use all cells!' }
+                { icon: '🦁', title: t('games.wild-link.howToPlay.step1.title'), description: t('games.wild-link.howToPlay.step1.desc') },
+                { icon: '⚡', title: t('games.wild-link.howToPlay.step2.title'), description: t('games.wild-link.howToPlay.step2.desc') },
+                { icon: '🧩', title: t('games.wild-link.howToPlay.step3.title'), description: t('games.wild-link.howToPlay.step3.desc') }
             ]}
         >
             <div className={styles.gameContainer}>
@@ -142,10 +152,13 @@ export default function WildLink({ onExit }: WildLinkProps) {
 export const manifest = {
     id: 'brain-level2-wild-link',
     title: 'Wild Link',
+    titleKey: 'games.wild-link.title',
     subtitle: 'Connect matching species!',
+    subtitleKey: 'games.wild-link.subtitle',
     category: 'brain',
     level: 2,
     component: WildLink,
     description: 'Connect matching species without crossing paths.',
+    descriptionKey: 'games.wild-link.description',
     thumbnail: '🦁'
 } as const;

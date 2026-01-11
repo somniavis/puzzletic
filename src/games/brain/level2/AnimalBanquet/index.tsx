@@ -1,29 +1,20 @@
 import { useNavigate } from 'react-router-dom';
-import { useMemo } from 'react';
+import { useMemo, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Layout2 } from '../../../layouts/Standard/Layout2';
 import { useGameEngine } from '../../../layouts/Standard/Layout0/useGameEngine';
 import { useAnimalBanquetLogic, type FoodType } from './GameLogic';
 import styles from './AnimalBanquet.module.css';
 import { BlobBackground } from '../../../math/components/BlobBackground';
+import manifest_en from './locales/en';
 
-// Type Definitions
-interface FoodItem {
-    id: FoodType;
-    icon: string;
-    label: string;
-}
-
-const FOOD_ITEMS: FoodItem[] = [
-    { id: 'meat', icon: '🍖', label: 'Meat' },
-    { id: 'banana', icon: '🍌', label: 'Banana' },
-    { id: 'honey', icon: '🍯', label: 'Honey' },
-    { id: 'bamboo', icon: '🎋', label: 'Bamboo' },
-    { id: 'carrot', icon: '🥕', label: 'Carrot' },
-    { id: 'cheese', icon: '🧀', label: 'Cheese' },
-    { id: 'bone', icon: '🦴', label: 'Bone' },
-    { id: 'fish', icon: '🐟', label: 'Fish' },
-    { id: 'vegetable', icon: '🥬', label: 'Veg' },
-];
+// Food items moved inside component or memoized to use translation?
+// Ideally we keep the static definition for IDs/Icons, but Labels need translation.
+// We can translate on the fly.
+const FOOD_ICONS: Record<FoodType, string> = {
+    meat: '🍖', banana: '🍌', honey: '🍯', bamboo: '🎋', carrot: '🥕',
+    cheese: '🧀', bone: '🦴', fish: '🐟', vegetable: '🥬'
+};
 
 const GAME_ID = 'brain-level2-animal-banquet';
 
@@ -34,7 +25,15 @@ interface AnimalBanquetProps {
 
 export default function AnimalBanquet({ onExit }: AnimalBanquetProps) {
     const navigate = useNavigate();
+    const { t, i18n } = useTranslation();
     const handleExit = onExit || (() => navigate(-1));
+
+    useEffect(() => {
+        const newResources = { en: { translation: { games: { 'animal-banquet': manifest_en } } } };
+        Object.keys(newResources).forEach(lang => {
+            i18n.addResourceBundle(lang, 'translation', newResources[lang as keyof typeof newResources].translation, true, true);
+        });
+    }, [i18n]);
 
     // Standard Game Engine
     const engine = useGameEngine({
@@ -84,8 +83,8 @@ export default function AnimalBanquet({ onExit }: AnimalBanquetProps) {
 
     return (
         <Layout2
-            title="Animal Banquet"
-            subtitle="Feed the hungry animals!"
+            title={t('games.animal-banquet.title')}
+            subtitle={t('games.animal-banquet.subtitle')}
             gameId={GAME_ID}
             engine={engine}
             powerUps={powerUps}
@@ -97,9 +96,9 @@ export default function AnimalBanquet({ onExit }: AnimalBanquetProps) {
                 blob4: '#ecfccb'  // Lime-100
             }} />}
             instructions={[
-                { icon: '🦁', title: 'Feed Animals', description: 'Give correct food to each animal.' },
-                { icon: '🤔', title: 'Remember', description: 'Don\'t feed the same animal twice!' },
-                { icon: '⚡', title: 'Be Fast', description: 'They keep moving around.' }
+                { icon: '🦁', title: t('games.animal-banquet.howToPlay.step1.title'), description: t('games.animal-banquet.howToPlay.step1.desc') },
+                { icon: '🤔', title: t('games.animal-banquet.howToPlay.step2.title'), description: t('games.animal-banquet.howToPlay.step2.desc') },
+                { icon: '⚡', title: t('games.animal-banquet.howToPlay.step3.title'), description: t('games.animal-banquet.howToPlay.step3.desc') }
             ]}
         >
             <div className={styles.gameContainer}>
@@ -133,23 +132,16 @@ export default function AnimalBanquet({ onExit }: AnimalBanquetProps) {
 
                 {/* Bottom Control Bar: Food Selection */}
                 <div className={styles.foodSelectionBar}>
-                    {visibleFoods.map((foodId) => {
-                        // Find label/icon from static list or SPECIES_DATA?
-                        // We have FOOD_ITEMS list. Let's find it.
-                        const foodItem = FOOD_ITEMS.find(f => f.id === foodId);
-                        if (!foodItem) return null;
-
-                        return (
-                            <button
-                                key={foodItem.id}
-                                className={`${styles.foodButton} ${selectedFood === foodItem.id ? styles.selected : ''}`}
-                                onClick={() => setSelectedFood(foodItem.id)}
-                                aria-label={`Select ${foodItem.label}`}
-                            >
-                                {foodItem.icon}
-                            </button>
-                        );
-                    })}
+                    {visibleFoods.map((foodId) => (
+                        <button
+                            key={foodId}
+                            className={`${styles.foodButton} ${selectedFood === foodId ? styles.selected : ''}`}
+                            onClick={() => setSelectedFood(foodId)}
+                            aria-label={`Select ${t(`games.animal-banquet.foods.${foodId}`)}`}
+                        >
+                            {FOOD_ICONS[foodId]}
+                        </button>
+                    ))}
                 </div>
             </div>
         </Layout2>
@@ -159,10 +151,13 @@ export default function AnimalBanquet({ onExit }: AnimalBanquetProps) {
 export const manifest = {
     id: 'brain-level2-animal-banquet',
     title: 'Animal Banquet',
+    titleKey: 'games.animal-banquet.title',
     subtitle: 'Feed them once!',
+    subtitleKey: 'games.animal-banquet.subtitle',
     category: 'brain',
     level: 2,
     component: AnimalBanquet,
     description: 'Remember who you fed! Give the right food to moving animals.',
+    descriptionKey: 'games.animal-banquet.description',
     thumbnail: '🍖'
 } as const;

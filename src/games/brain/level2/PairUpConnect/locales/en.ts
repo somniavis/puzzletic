@@ -1,4 +1,4 @@
-export const en = {
+export default {
     title: 'Pair Up! Connect',
     subtitle: 'LV.2 Brain | Logic',
     description: 'Find logically related pairs (e.g. Rain & Umbrella)!',

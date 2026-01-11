@@ -108,6 +108,7 @@ export const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose }) =
   const handleLanguageSelect = (language: string) => {
     playButtonSound();
     i18n.changeLanguage(language);
+    localStorage.setItem('language', language);
     console.log('Language changed to:', language);
   };
 
@@ -174,11 +175,11 @@ export const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose }) =
                 {saveStatus === 'idle' && '☁️'}
               </span>
               <span className="food-item-name">
-                {saveStatus === 'saving' && 'Saving...'}
-                {saveStatus === 'success' && 'Saved!'}
-                {saveStatus === 'error' && 'Failed'}
-                {saveStatus === 'cooldown' && `Wait ${cooldownTime}s`}
-                {saveStatus === 'idle' && 'Cloud Save'}
+                {saveStatus === 'saving' && t('settings.saveStatus.saving')}
+                {saveStatus === 'success' && t('settings.saveStatus.success')}
+                {saveStatus === 'error' && t('settings.saveStatus.error')}
+                {saveStatus === 'cooldown' && t('settings.saveStatus.cooldown', { time: cooldownTime })}
+                {saveStatus === 'idle' && t('settings.cloudSave')}
               </span>
             </button>
 
@@ -199,7 +200,7 @@ export const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose }) =
 
             <button className="food-item" onClick={handleLogout}>
               <span className="food-item-icon">🚪</span>
-              <span className="food-item-name">Logout</span>
+              <span className="food-item-name">{t('settings.logout')}</span>
             </button>
           </div>
         )}
@@ -233,16 +234,33 @@ export const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose }) =
         {currentView === 'language' && (
           <div className="food-items-grid">
             <button
-              className={`food-item food-item--selected`}
-              onClick={() => handleLanguageSelect('en-US')}
+              className={`food-item ${i18n.language === 'en-US' || i18n.language === 'en' ? 'food-item--selected' : ''}`}
+              onClick={() => handleLanguageSelect('en')}
             >
               <span className="food-item-icon language-flag">🇺🇸</span>
               <div className="language-info">
                 <span className="food-item-name">English</span>
               </div>
-              <div className="food-item-effects">
-                <span className="effect effect--selected">✓ {t('settings.language.selected')}</span>
+              {(i18n.language === 'en-US' || i18n.language === 'en') && (
+                <div className="food-item-effects">
+                  <span className="effect effect--selected">✓ {t('settings.language.selected')}</span>
+                </div>
+              )}
+            </button>
+
+            <button
+              className={`food-item ${i18n.language === 'ko' ? 'food-item--selected' : ''}`}
+              onClick={() => handleLanguageSelect('ko')}
+            >
+              <span className="food-item-icon language-flag">🇰🇷</span>
+              <div className="language-info">
+                <span className="food-item-name">한국어</span>
               </div>
+              {i18n.language === 'ko' && (
+                <div className="food-item-effects">
+                  <span className="effect effect--selected">✓ {t('settings.language.selected')}</span>
+                </div>
+              )}
             </button>
           </div>
         )}

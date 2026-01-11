@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useGameEngine } from '../../../layouts/Standard/Layout0/useGameEngine';
 
 type GameEngineInterface = ReturnType<typeof useGameEngine>;
@@ -43,6 +44,9 @@ const ANIMAL_SIZE_PCT = 15; // Rough size in % for collision
 const BASE_SPEED = 0.2; // Speed multiplier
 
 export const useAnimalBanquetLogic = (engine: GameEngineInterface) => {
+    // Localization
+    const { t } = useTranslation();
+
     // Game State
     const [animals, setAnimals] = useState<AnimalEntity[]>([]);
     const [selectedFood, setSelectedFood] = useState<FoodType>('meat');
@@ -238,16 +242,15 @@ export const useAnimalBanquetLogic = (engine: GameEngineInterface) => {
                 // FAIL: Fed twice
                 engine.submitAnswer(false); // Combo Reset, Life Lost
                 engine.registerEvent({ type: 'wrong' }); // Shake/Sound
-                triggerFeedback(animalId, 'full', 'I\'m Full! 🤢');
+                triggerFeedback(animalId, 'full', t('games.animal-banquet.feedback.full'));
             } else {
                 // SUCCESS: Fed correctly
-
                 // Check if this is the LAST animal to be fed
                 const isRoundClear = animalsRef.current.every(a => a.id === animalId || a.isFed);
 
                 // Mark as Fed locally first for UI feedback
                 updateAnimal(animalId, { isFed: true });
-                triggerFeedback(animalId, 'eating', 'Yum! 😋');
+                triggerFeedback(animalId, 'eating', t('games.animal-banquet.feedback.yum'));
 
                 if (isRoundClear) {
                     // ROUND CLEAR!
@@ -286,7 +289,7 @@ export const useAnimalBanquetLogic = (engine: GameEngineInterface) => {
             // Wrong answer always resets combo (handled by engine)
             engine.submitAnswer(false);
             engine.registerEvent({ type: 'wrong' });
-            triggerFeedback(animalId, 'angry', 'No! 😡');
+            triggerFeedback(animalId, 'angry', t('games.animal-banquet.feedback.angry'));
         }
     };
 

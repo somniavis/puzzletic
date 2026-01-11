@@ -45,7 +45,7 @@ export const SharePage: React.FC = () => {
     }
 
     if (!sharedData) {
-        return <div className="loading-overlay">Loading...</div>;
+        return <div className="loading-overlay">{t('common.loading')}</div>;
     }
 
     // Create a temporary character object for display

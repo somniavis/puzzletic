@@ -750,7 +750,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({
           <div className="loading-overlay">
             <div className="loading-spinner-container">
               <div className="loading-spinner">🐾</div>
-              <div className="loading-text">Loading...</div>
+              <div className="loading-text">{t('common.loading')}</div>
             </div>
           </div>
         )}

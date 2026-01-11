@@ -1,10 +1,12 @@
 import { useNavigate } from 'react-router-dom';
-import { useMemo, useCallback } from 'react';
+import { useMemo, useCallback, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Layout2 } from '../../../layouts/Standard/Layout2/index';
 import { useGameEngine } from '../../../layouts/Standard/Layout0/useGameEngine';
 import styles from './ColorLink.module.css';
 import { useColorLinkLogic } from './GameLogic';
 import type { PowerUpBtnProps } from '../../../../components/Game/PowerUpBtn';
+import manifest_en from './locales/en';
 const GAME_ID = 'brain-level1-color-link';
 
 interface ColorLinkProps {
@@ -23,7 +25,15 @@ const WaveBackground = () => {
 
 export default function ColorLink({ onExit }: ColorLinkProps) {
     const navigate = useNavigate();
+    const { t, i18n } = useTranslation();
     const handleExit = onExit || (() => navigate(-1));
+
+    useEffect(() => {
+        const newResources = { en: { translation: { games: { 'color-link': manifest_en } } } };
+        Object.keys(newResources).forEach(lang => {
+            i18n.addResourceBundle(lang, 'translation', newResources[lang as keyof typeof newResources].translation, true, true);
+        });
+    }, [i18n]);
 
     const engine = useGameEngine({
         initialTime: 90,
@@ -82,17 +92,17 @@ export default function ColorLink({ onExit }: ColorLinkProps) {
 
     return (
         <Layout2
-            title="Color Link"
-            subtitle="Connect the Colors"
+            title={t('games.color-link.title')}
+            subtitle={t('games.color-link.subtitle')}
             gameId={GAME_ID}
             engine={engine}
             powerUps={powerUps}
             onExit={handleExit}
             cardBackground={<WaveBackground />}
             instructions={[
-                { icon: '🔴', title: 'Connect', description: 'Link matching colors.' },
-                { icon: '⚡', title: 'No Cross', description: 'Paths cannot cross.' },
-                { icon: '✨', title: 'Fill All', description: 'Use all squares.' }
+                { icon: '🔴', title: t('games.color-link.howToPlay.step1.title'), description: t('games.color-link.howToPlay.step1.desc') },
+                { icon: '⚡', title: t('games.color-link.howToPlay.step2.title'), description: t('games.color-link.howToPlay.step2.desc') },
+                { icon: '✨', title: t('games.color-link.howToPlay.step3.title'), description: t('games.color-link.howToPlay.step3.desc') }
             ]}
         >
             <div
@@ -144,10 +154,13 @@ export default function ColorLink({ onExit }: ColorLinkProps) {
 export const manifest = {
     id: GAME_ID,
     title: 'Color Link',
+    titleKey: 'games.color-link.title',
     subtitle: 'Connect dots!',
+    subtitleKey: 'games.color-link.subtitle',
     category: 'brain',
     level: 1,
     component: ColorLink,
     description: 'Connect matching colors without crossing lines.',
+    descriptionKey: 'games.color-link.description',
     thumbnail: '🔗'
 } as const;

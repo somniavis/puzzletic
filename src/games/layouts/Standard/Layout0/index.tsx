@@ -268,7 +268,7 @@ export const Layout0: React.FC<Layout0Props> = ({
 
                     <div className="start-footer-section">
                         <button className="start-btn" onClick={() => { playButtonSound(); startGame(); }}>
-                            ▶ Start Game
+                            ▶ {t('common.startGame')}
                         </button>
                     </div>
                 </div>
@@ -336,7 +336,7 @@ export const Layout0: React.FC<Layout0Props> = ({
                                         </span>
                                     </div>
                                     <div className="sub-stat-item">
-                                        <span className="sub-stat-label">ACCURACY</span>
+                                        <span className="sub-stat-label">{t('common.accuracy').toUpperCase()}</span>
                                         <span className="sub-stat-value text-blue">
                                             {/* Display calculated accuracy from render time (or use stats directly if loop risk) */}
                                             {(() => {
@@ -414,7 +414,7 @@ export const Layout0: React.FC<Layout0Props> = ({
                         <div className="stat-value"><Flame size={16} className="text-orange-500" /> {combo}</div>
                     </div>
                     <div className="stat-card time-card">
-                        <div className="stat-label">Time</div>
+                        <div className="stat-label">{t('common.time')}</div>
                         <div className="stat-value" style={{ color: timeLeft < 10 ? '#ef4444' : '#1e293b' }}>
                             <Clock size={16} /> {timeLeft}
                         </div>

@@ -40,7 +40,7 @@ export const GameLayoutDashboard: React.FC<DashboardProps> = ({
                     <div className="stat-value"><Flame size={16} className="text-orange-500" /> {combo}</div>
                 </div>
                 <div className="stat-card time-card">
-                    <div className="stat-label">Time</div>
+                    <div className="stat-label">{t('common.time')}</div>
                     <div className="stat-value" style={{ color: timeLeft < 10 ? '#ef4444' : '#1e293b' }}>
                         <Clock size={16} /> {timeLeft}
                     </div>

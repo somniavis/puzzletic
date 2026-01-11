@@ -85,7 +85,7 @@ export const FabMenu: React.FC<FabMenuProps> = ({
                             title={t('profile.upgradePrompt', 'Upgrade to Premium')}
                         >
                             <span className="action-icon">🎁</span>
-                            <span className="premium-label">Premium</span>
+                            <span className="premium-label">{t('common.premium')}</span>
                         </button>
                     )}
                 </>

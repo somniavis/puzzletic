@@ -1,5 +1,6 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Layout2 } from '../../../layouts/Standard/Layout2';
 import { useGameEngine } from '../../../layouts/Standard/Layout0/useGameEngine';
 import type { PowerUpBtnProps } from '../../../../components/Game/PowerUpBtn';
@@ -7,14 +8,18 @@ import { usePairUpLogic } from '../../level1/PairUpTwin/usePairUpLogic';
 import { PairUpGrid } from '../../level1/PairUpTwin/PairUpGrid';
 import { PairUpBackground } from '../../level1/PairUpTwin/PairUpBackground';
 import type { GameManifest } from '../../../types';
+import manifest_en from './locales/en';
 
 const GAME_ID = 'pair-up-connect';
 
 export const manifest: GameManifest = {
     id: GAME_ID,
     title: 'Pair Up! Connect',
+    titleKey: 'games.pair-up-connect.title',
     subtitle: 'Find Related Pairs',
+    subtitleKey: 'games.pair-up-connect.subtitle',
     description: 'Find logically related pairs of emojis.',
+    descriptionKey: 'games.pair-up-connect.description',
     category: 'brain',
     level: 2,
     thumbnail: (
@@ -29,6 +34,14 @@ export const manifest: GameManifest = {
 
 const PairUpConnect: React.FC = () => {
     const navigate = useNavigate();
+    const { t, i18n } = useTranslation();
+
+    useEffect(() => {
+        const newResources = { en: { translation: { games: { 'pair-up-connect': manifest_en } } } };
+        Object.keys(newResources).forEach(lang => {
+            i18n.addResourceBundle(lang, 'translation', newResources[lang as keyof typeof newResources].translation, true, true);
+        });
+    }, [i18n]);
 
     // Engine Config will be refined later
     const engine = useGameEngine({
@@ -102,22 +115,22 @@ const PairUpConnect: React.FC = () => {
 
     return (
         <Layout2
-            title="Pair Up! Connect"
-            subtitle="Find Related Pairs"
+            title={t('games.pair-up-connect.title')}
+            subtitle={t('games.pair-up-connect.subtitle')}
             instructions={[
                 {
-                    title: "Memorize",
-                    description: "Remember the card locations in 3 seconds.",
+                    title: t('games.pair-up-connect.howToPlay.step1.title'),
+                    description: t('games.pair-up-connect.howToPlay.step1.desc'),
                     icon: "👀"
                 },
                 {
-                    title: "Find Pairs",
-                    description: "Flip cards to find connected items.",
+                    title: t('games.pair-up-connect.howToPlay.step2.title'),
+                    description: t('games.pair-up-connect.howToPlay.step2.desc'),
                     icon: "🔗"
                 },
                 {
-                    title: "Clear Grid",
-                    description: "Match all pairs to win!",
+                    title: t('games.pair-up-connect.howToPlay.step3.title'),
+                    description: t('games.pair-up-connect.howToPlay.step3.desc'),
                     icon: "✨"
                 }
             ]}

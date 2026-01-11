@@ -1,4 +1,4 @@
-export const en = {
+export default {
     title: 'Color Link',
     subtitle: 'Connect the Colors',
     description: 'Connect matching colors with a pipe to create a flow. Pair all colors, and cover the entire board to solve each puzzle.',

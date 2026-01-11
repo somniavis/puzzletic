@@ -75,7 +75,7 @@ export const GameOverScreen: React.FC<GameOverProps> = ({
                                 <span className="sub-stat-value text-orange"><Flame size={18} /> {bestCombo}</span>
                             </div>
                             <div className="sub-stat-item">
-                                <span className="sub-stat-label">ACCURACY</span>
+                                <span className="sub-stat-label">{t('common.accuracy').toUpperCase()}</span>
                                 <span className="sub-stat-value text-blue">
                                     {(() => {
                                         const total = (stats?.correct || 0) + (stats?.wrong || 0);

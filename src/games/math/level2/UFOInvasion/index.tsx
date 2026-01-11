@@ -1,12 +1,14 @@
 
 import { useNavigate } from 'react-router-dom';
-import { useRef } from 'react';
+import { useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Layout3 } from '../../../layouts/Standard/Layout3/index';
 import { useGameEngine } from '../../../layouts/Standard/Layout0/useGameEngine';
 import type { PowerUpBtnProps } from '../../../../components/Game/PowerUpBtn';
 
 import styles from './UFO.module.css';
 import { useUFOInvasionLogic } from './GameLogic';
+import manifest_en from './locales/en';
 
 const GAME_ID = 'math-level2-ufo-invasion';
 
@@ -43,7 +45,15 @@ const SpaceBackground = () => {
 
 export default function UFOInvasion({ onExit }: UFOInvasionProps) {
     const navigate = useNavigate();
+    const { t, i18n } = useTranslation();
     const handleExit = onExit || (() => navigate(-1));
+
+    useEffect(() => {
+        const newResources = { en: { translation: { games: { [GAME_ID]: manifest_en } } } };
+        Object.keys(newResources).forEach(lang => {
+            i18n.addResourceBundle(lang, 'translation', newResources[lang as keyof typeof newResources].translation, true, true);
+        });
+    }, [i18n]);
 
     const engine = useGameEngine({
         initialTime: 60,
@@ -104,8 +114,8 @@ export default function UFOInvasion({ onExit }: UFOInvasionProps) {
 
     return (
         <Layout3
-            title="UFO Invasion"
-            subtitle="Defend with Math!"
+            title={t('games.math-level2-ufo-invasion.title')}
+            subtitle={t('games.math-level2-ufo-invasion.subtitle')}
             gameId={GAME_ID}
             engine={engine}
             target={targetConfig}
@@ -113,9 +123,9 @@ export default function UFOInvasion({ onExit }: UFOInvasionProps) {
             onExit={handleExit}
             cardBackground={<SpaceBackground />}
             instructions={[
-                { icon: '🛸', title: 'Lock On', description: 'Tap a UFO.' },
-                { icon: '🧮', title: 'Fire', description: 'Select the answer.' },
-                { icon: '🛡️', title: 'Defend', description: 'Stop them landing!' }
+                { icon: '🛸', title: t('games.math-level2-ufo-invasion.instructions.step1.title'), description: t('games.math-level2-ufo-invasion.instructions.step1.desc') },
+                { icon: '🧮', title: t('games.math-level2-ufo-invasion.instructions.step2.title'), description: t('games.math-level2-ufo-invasion.instructions.step2.desc') },
+                { icon: '🛡️', title: t('games.math-level2-ufo-invasion.instructions.step3.title'), description: t('games.math-level2-ufo-invasion.instructions.step3.desc') }
             ]}
         >
             <div className={styles.gameContainer}>
@@ -230,10 +240,13 @@ export default function UFOInvasion({ onExit }: UFOInvasionProps) {
 export const manifest = {
     id: GAME_ID,
     title: 'UFO Invasion',
+    titleKey: 'games.math-level2-ufo-invasion.title',
     subtitle: 'Defend with Math!',
+    subtitleKey: 'games.math-level2-ufo-invasion.subtitle',
     category: 'math',
     level: 2,
     component: UFOInvasion,
     description: 'Intercept invaders with math!',
+    descriptionKey: 'games.math-level2-ufo-invasion.description',
     thumbnail: '🛸'
 } as const;

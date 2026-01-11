@@ -1,4 +1,4 @@
-export const en = {
+export default {
     title: 'Wild Link',
     subtitle: 'Connect the Species',
     description: 'Connect matching species from the same category. Pair all species to complete each puzzle.',

@@ -10,6 +10,7 @@ import { NurturingProvider, useNurturing } from './contexts/NurturingContext'
 import { SoundProvider } from './contexts/SoundContext'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import { preloadSounds, playJelloClickSound } from './utils/sound'
+import { useTranslation } from 'react-i18next'
 
 // React Router
 import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom'
@@ -30,7 +31,8 @@ import { CHARACTER_SPECIES, type CharacterSpeciesId, getEvolutionName } from './
 // Protected Route Wrapper
 const ProtectedRoute = ({ children }: { children: React.ReactElement }) => {
   const { user, loading } = useAuth();
-  if (loading) return <div>Loading...</div>; // Or a splash screen
+  const { t } = useTranslation();
+  if (loading) return <div>{t('common.loading')}</div>; // Or a splash screen
   if (!user) return <Navigate to="/login" replace />;
   return children;
 };

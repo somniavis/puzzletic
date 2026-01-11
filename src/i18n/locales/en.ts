@@ -8,6 +8,12 @@ import tenFrameCountEn from '../../games/math/level2/TenFrameCount/locales/en';
 import mathPinwheelEn from '../../games/math/level2/PinwheelPop/locales/en';
 import deepSeaDiveEn from '../../games/math/level2/DeepSeaDive/locales/en';
 import signalHunterEn from '../../games/brain/level2/SignalHunter/locales/en';
+import colorLinkEn from '../../games/brain/level1/ColorLink/locales/en';
+import pairUpTwinEn from '../../games/brain/level1/PairUpTwin/locales/en';
+import wildLinkEn from '../../games/brain/level2/WildLink/locales/en';
+import pairUpConnectEn from '../../games/brain/level2/PairUpConnect/locales/en';
+import animalBanquetEn from '../../games/brain/level2/AnimalBanquet/locales/en';
+import ufoInvasionEn from '../../games/math/level2/UFOInvasion/locales/en';
 
 export const en = {
   profile: {
@@ -129,8 +135,11 @@ export const en = {
     },
   },
   common: {
+    startGame: 'Start Game',
     start: 'Start',
     cancel: 'Cancel',
+    premium: 'Premium',
+    loading: 'Loading...',
     confirm: 'Confirm',
     close: 'Close',
     menu: 'Menu',
@@ -140,6 +149,7 @@ export const en = {
     bestCombo: 'Best Combo',
     difficulty: 'Difficulty',
     time: 'Time',
+    accuracy: 'Accuracy',
     gameOver: 'Game Over!',
     finalScore: 'Final Score',
     bestScore: 'Best Score',
@@ -153,6 +163,7 @@ export const en = {
     earnedGro: 'Gro',
     yes: 'Yes',
     no: 'No',
+    goHome: 'Go Home',
   },
   evolution: {
     title: 'EVOLUTION!',
@@ -371,6 +382,11 @@ export const en = {
       title: 'This is the Jello I\'m raising! 🥰',
       desc: 'Want to raise one together?',
     },
+    cta: 'Play Now!',
+    error: {
+      invalid: 'Invalid share link',
+      missing: 'No data found',
+    },
   },
   sleep: {
     confirm: {
@@ -585,6 +601,15 @@ export const en = {
       gallery: 'Gallery',
       stats: 'Stats',
     },
+    cloudSave: 'Cloud Save',
+    logout: 'Logout',
+    saveStatus: {
+      idle: 'Cloud Save',
+      saving: 'Saving...',
+      success: 'Saved!',
+      error: 'Failed',
+      cooldown: 'Wait {{time}}s',
+    },
   },
   encyclopedia: {
     title: 'My Jello Box',
@@ -656,6 +681,12 @@ export const en = {
     'pinwheel-pop': mathPinwheelEn,
     'deep-sea-dive': deepSeaDiveEn,
     'signal-hunter': signalHunterEn,
+    'color-link': colorLinkEn,
+    'pair-up-twin': pairUpTwinEn,
+    'wild-link': wildLinkEn,
+    'pair-up-connect': pairUpConnectEn,
+    'animal-banquet': animalBanquetEn,
+    'math-level2-ufo-invasion': ufoInvasionEn,
   },
 } as const;
 
