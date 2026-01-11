@@ -23,6 +23,9 @@ import { MenuModal } from './MenuModal';
 import { GiftBoxModal } from '../GiftBoxModal';
 import { JelloHouse } from './JelloHouse';
 import { ConfirmModal } from './ConfirmModal';
+import { CameraModal } from './CameraModal';
+import { toPng } from 'html-to-image';
+import { generateShareUrl, type ShareData } from '../../utils/shareUtils';
 import './PetRoom.css';
 
 import { useNavigate } from 'react-router-dom';
@@ -122,6 +125,65 @@ export const PetRoom: React.FC<PetRoomProps> = ({
 
   // FAB (Floating Action Button) Menu State
   const [isFabOpen, setIsFabOpen] = useState(false);
+
+  // Camera & Share State
+  const petRoomRef = useRef<HTMLDivElement>(null);
+  const [showCameraModal, setShowCameraModal] = useState(false);
+  const [capturedImage, setCapturedImage] = useState<string>('');
+  const [currentShareUrl, setCurrentShareUrl] = useState<string>('');
+  const [isSnapshotLoading, setIsSnapshotLoading] = useState(false);
+
+  const handleCameraClick = async () => {
+    if (!petRoomRef.current) return;
+
+    try {
+      playButtonSound();
+      setIsFabOpen(false); // Close menu first
+
+      // 1. Show modal immediately with loading state
+      setIsSnapshotLoading(true);
+      setShowCameraModal(true);
+
+      // 2. Wait for menu animation to finish (300ms) + slight buffer before capturing
+      setTimeout(async () => {
+        if (!petRoomRef.current) return;
+
+        try {
+          const dataUrl = await toPng(petRoomRef.current, {
+            // Filter out the camera modal itself from the snapshot
+            filter: (node) => {
+              if (node.classList && node.classList.contains('camera-modal-overlay')) {
+                return false;
+              }
+              return true;
+            }
+          });
+
+          const shareData: ShareData = {
+            c: speciesId,
+            e: character.evolutionStage,
+            n: character.name,
+            h: nurturing.currentHouseId || 'default',
+            g: nurturing.currentLand,
+            l: character.level
+          };
+
+          const shareUrl = generateShareUrl(shareData);
+
+          setCapturedImage(dataUrl);
+          setCurrentShareUrl(shareUrl);
+        } catch (err) {
+          console.error('Failed to capture image:', err);
+          setShowCameraModal(false);
+        } finally {
+          setIsSnapshotLoading(false);
+        }
+      }, 500);
+    } catch (err) {
+      console.error('Error in camera click handler:', err);
+      setIsSnapshotLoading(false);
+    }
+  };
 
   // Auto-show modal AFTER box is opened (character exists, but no name set yet)
   useEffect(() => {
@@ -621,7 +683,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({
   };
 
   return (
-    <div className="pet-room">
+    <div className="pet-room" ref={petRoomRef}>
       {/* Loading Overlay */}
       {isLoading && (
         <div className="loading-overlay">
@@ -711,12 +773,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({
               {/* Camera Button - second below toggle */}
               <button
                 className="fab-menu-item"
-                onClick={() => {
-                  playButtonSound();
-                  setIsFabOpen(false);
-                  // TODO: Camera functionality will be added later
-                  console.log('Camera button clicked');
-                }}
+                onClick={handleCameraClick}
                 disabled={isActionInProgress || showGiftBox}
                 title={t('actions.camera', 'Camera')}
                 style={{ top: '126px' }}
@@ -1124,6 +1181,16 @@ export const PetRoom: React.FC<PetRoomProps> = ({
       </div>
       {showNicknameModal && (
         <GiftBoxModal onComplete={handleNicknameComplete} />
+      )}
+
+      {/* Camera Preview Modal */}
+      {showCameraModal && (
+        <CameraModal
+          imageDataUrl={capturedImage}
+          shareUrl={currentShareUrl}
+          onClose={() => setShowCameraModal(false)}
+          isLoading={isSnapshotLoading}
+        />
       )}
 
       {/* Sleep/Wake Confirmation Modal */}

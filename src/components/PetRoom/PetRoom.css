@@ -258,6 +258,8 @@
   display: flex;
   gap: 0.5rem;
   align-items: center;
+  flex-wrap: nowrap;
+  white-space: nowrap;
 }
 
 .profile-level {
@@ -1353,7 +1355,7 @@
   width: 58px;
   height: 58px;
   background: linear-gradient(180deg, #FFF9E6 0%, #FFE4B5 100%);
-  border: 3px solid #8B4513;
+  border: 3.5px solid #8B4513;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -1413,7 +1415,7 @@
   width: 58px;
   height: 58px;
   background: linear-gradient(180deg, #FFF9E6 0%, #FFE4B5 100%);
-  border: 3px solid #8B4513;
+  border: 3.5px solid #8B4513;
   border-radius: 50%;
   display: flex;
   align-items: center;
