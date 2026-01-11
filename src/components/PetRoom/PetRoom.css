@@ -1347,34 +1347,30 @@
   white-space: nowrap;
 }
 
-/* Shop Floating Button */
+/* Shop Floating Button (now inside FAB container - same size as menu items) */
 .shop-btn-floating {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  width: 60px;
-  height: 60px;
+  position: relative;
+  width: 58px;
+  height: 58px;
   background: linear-gradient(180deg, #FFF9E6 0%, #FFE4B5 100%);
-  border: 4px solid #8B4513;
+  border: 3px solid #8B4513;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  z-index: 20;
-  /* Above character and background */
-  box-shadow: 0 4px 0 #6B3513, 0 6px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 3px 0 #6B3513, 0 4px 6px rgba(0, 0, 0, 0.2);
   transition: all 0.2s ease;
 }
 
 .shop-btn-floating:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 6px 0 #6B3513, 0 8px 12px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 5px 0 #6B3513, 0 6px 10px rgba(0, 0, 0, 0.3);
 }
 
 .shop-btn-floating:active:not(:disabled) {
-  transform: translateY(2px);
-  box-shadow: 0 2px 0 #6B3513, 0 3px 5px rgba(0, 0, 0, 0.2);
+  transform: translateY(1px);
+  box-shadow: 0 2px 0 #6B3513, 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .shop-btn-floating:disabled {
@@ -1384,20 +1380,95 @@
 }
 
 .shop-btn-floating .action-icon {
-  font-size: 2rem;
+  font-size: 1.7rem;
   filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.2));
 }
 
 @media (max-width: 768px) {
   .shop-btn-floating {
-    width: 50px;
-    height: 50px;
+    width: 52px;
+    height: 52px;
+  }
+
+  .shop-btn-floating .action-icon {
+    font-size: 1.5rem;
+  }
+}
+
+/* FAB Menu Container */
+.fab-menu-container {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* FAB Menu Items (Shop, Camera, etc.) */
+.fab-menu-item {
+  position: absolute;
+  right: 0;
+  width: 58px;
+  height: 58px;
+  background: linear-gradient(180deg, #FFF9E6 0%, #FFE4B5 100%);
+  border: 3px solid #8B4513;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 3px 0 #6B3513, 0 4px 6px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
+  animation: fabItemAppear 0.2s ease-out;
+}
+
+.fab-menu-item:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 0 #6B3513, 0 6px 10px rgba(0, 0, 0, 0.3);
+}
+
+.fab-menu-item:active:not(:disabled) {
+  transform: translateY(1px);
+  box-shadow: 0 2px 0 #6B3513, 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.fab-menu-item:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.fab-menu-item .action-icon {
+  font-size: 1.7rem;
+  filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.2));
+}
+
+@keyframes fabItemAppear {
+  from {
+    opacity: 0;
+    transform: scale(0.5) translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .fab-menu-container {
     top: 15px;
     right: 15px;
   }
 
-  .shop-btn-floating .action-icon {
-    font-size: 1.6rem;
+  .fab-menu-item {
+    width: 52px;
+    height: 52px;
+  }
+
+  .fab-menu-item .action-icon {
+    font-size: 1.5rem;
   }
 }
 

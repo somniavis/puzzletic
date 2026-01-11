@@ -120,6 +120,9 @@ export const PetRoom: React.FC<PetRoomProps> = ({
   // Confirmation Modal State for Sleep/Wake
   const [confirmModalType, setConfirmModalType] = useState<'sleep' | 'wake' | null>(null);
 
+  // FAB (Floating Action Button) Menu State
+  const [isFabOpen, setIsFabOpen] = useState(false);
+
   // Auto-show modal AFTER box is opened (character exists, but no name set yet)
   useEffect(() => {
     // If box is NOT showing (means we have a character) AND nickname is not persisted/set
@@ -685,15 +688,63 @@ export const PetRoom: React.FC<PetRoomProps> = ({
             }}
           />
         )}
-        {/* Shop Button (Top Right) */}
-        <button
-          className="shop-btn-floating"
-          onClick={toggleShopMenu}
-          disabled={isActionInProgress || showGiftBox}
-          title={t('shop.menu.title', 'Shop')}
-        >
-          <span className="action-icon">🛖</span>
-        </button>
+        {/* FAB Menu (Floating Action Button) */}
+        <div className="fab-menu-container">
+          {/* Expanded Menu Items (visible when open) */}
+          {isFabOpen && (
+            <>
+              {/* Shop Button - first below toggle */}
+              <button
+                className="fab-menu-item"
+                onClick={() => {
+                  playButtonSound();
+                  setIsFabOpen(false);
+                  toggleShopMenu();
+                }}
+                disabled={isActionInProgress || showGiftBox}
+                title={t('shop.menu.title', 'Shop')}
+                style={{ top: '63px' }}
+              >
+                <span className="action-icon">🛖</span>
+              </button>
+
+              {/* Camera Button - second below toggle */}
+              <button
+                className="fab-menu-item"
+                onClick={() => {
+                  playButtonSound();
+                  setIsFabOpen(false);
+                  // TODO: Camera functionality will be added later
+                  console.log('Camera button clicked');
+                }}
+                disabled={isActionInProgress || showGiftBox}
+                title={t('actions.camera', 'Camera')}
+                style={{ top: '126px' }}
+              >
+                <span className="action-icon">📷</span>
+              </button>
+            </>
+          )}
+
+          {/* Main FAB Toggle Button */}
+          <button
+            className="shop-btn-floating"
+            onClick={() => {
+              playButtonSound();
+              setIsFabOpen(!isFabOpen);
+            }}
+            disabled={showGiftBox}
+            title={isFabOpen ? t('common.close', 'Close') : t('common.menu', 'Menu')}
+          >
+            <span className="action-icon" style={{
+              transition: 'transform 0.3s ease',
+              transform: isFabOpen ? 'rotate(45deg)' : 'rotate(0deg)',
+              color: '#8B4513'
+            }}>
+              ＋
+            </span>
+          </button>
+        </div>
 
         {/* Premium Purchase Button (Below Shop Button) */}
         {!nurturing.subscription.isPremium && !showGiftBox && (
