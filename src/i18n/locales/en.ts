@@ -355,6 +355,7 @@ export const en = {
     medicine: 'Medicine',
     play: 'Play',
     clean: 'Clean',
+    camera: 'Camera',
     settings: 'Settings',
   },
   sleep: {

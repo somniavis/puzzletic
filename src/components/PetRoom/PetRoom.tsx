@@ -157,9 +157,18 @@ export const PetRoom: React.FC<PetRoomProps> = ({
         if (!petRoomRef.current) return;
 
         try {
+          const width = petRoomRef.current.clientWidth;
+          const height = petRoomRef.current.clientHeight;
+
           const dataUrl = await toPng(petRoomRef.current, {
             cacheBust: true,
             pixelRatio: 2, // Better quality
+            width: width,
+            height: height,
+            style: {
+              width: `${width}px`,
+              height: `${height}px`,
+            },
             filter: (node) => {
               // Exclude UI elements from snapshot
               const excludeClasses = [
