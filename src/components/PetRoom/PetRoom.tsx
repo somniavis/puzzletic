@@ -602,8 +602,6 @@ export const PetRoom: React.FC<PetRoomProps> = ({
   };
 
   const handleConfirmSleepWake = () => {
-    console.log('🟢 handleConfirmSleepWake called, confirmModalType:', confirmModalType);
-
     // Lock interaction to prevent ghost clicks hitting the house again
     interactionLockRef.current = true;
     setTimeout(() => {
@@ -611,14 +609,10 @@ export const PetRoom: React.FC<PetRoomProps> = ({
     }, 800);
 
     if (confirmModalType === 'wake') {
-      console.log('🟡 Calling toggleSleep for WAKE');
       nurturing.toggleSleep();
       showBubble('neutral', 1); // Waking up reaction
     } else if (confirmModalType === 'sleep') {
-      console.log('🟡 Calling toggleSleep for SLEEP');
       nurturing.toggleSleep();
-    } else {
-      console.log('🔴 confirmModalType is null or unexpected:', confirmModalType);
     }
     setConfirmModalType(null);
   };
@@ -655,17 +649,6 @@ export const PetRoom: React.FC<PetRoomProps> = ({
             <div className="profile-stats-row">
               <div className="profile-level">{t('character.profile.level', { level: character.level })}</div>
               <div className="profile-gro">💰 {nurturing.gro}</div>
-              {/* DEBUG: Sleep state indicator */}
-              <div style={{
-                padding: '0.1rem 0.4rem',
-                background: nurturing.isSleeping ? '#28a745' : '#dc3545',
-                color: 'white',
-                borderRadius: '4px',
-                fontSize: '0.7rem',
-                fontWeight: 'bold'
-              }}>
-                {nurturing.isSleeping ? '😴SLEEP' : '👀AWAKE'}
-              </div>
             </div>
           </div>
         </div>
