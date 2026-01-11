@@ -2,6 +2,7 @@ import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import { en } from './locales/en';
 import { ko } from './locales/ko';
+import { ja } from './locales/ja';
 
 const resources = {
   en: {
@@ -10,10 +11,17 @@ const resources = {
   ko: {
     translation: ko,
   },
+  ja: {
+    translation: ja,
+  },
 };
 
 const savedLanguage = localStorage.getItem('language');
-const browserLanguage = navigator.language.startsWith('ko') ? 'ko' : 'en';
+const browserLanguage = navigator.language.startsWith('ko')
+  ? 'ko'
+  : navigator.language.startsWith('ja')
+    ? 'ja'
+    : 'en';
 
 i18n
   .use(initReactI18next)
