@@ -128,11 +128,9 @@
 
 /* Premium Floating Button - Emoji + Label */
 .premium-btn-floating {
-  position: absolute;
-  top: auto;
-  bottom: 20px;
-  right: 15px;
-  width: auto;
+  position: relative;
+  /* Changed from absolute to flow in flex container */
+  width: 58px;
   height: auto;
   background: transparent;
   border: none;
@@ -152,6 +150,8 @@
 .premium-btn-floating .action-icon {
   font-size: 3rem;
   line-height: 1;
+  position: relative;
+  z-index: 2;
   filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
 }
 
@@ -163,9 +163,15 @@
   font-weight: 800;
   padding: 2px 8px;
   /* Slightly reduced padding */
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: 90%;
+  /* Position below/over icon */
+  width: max-content;
   border-radius: 12px;
-  margin-top: -3px;
-  /* Adjusted margin for smaller icon */
+  z-index: 1;
+  /* margin-top: -3px; Removed */
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   border: 2px solid #fff;
   white-space: nowrap;
@@ -1403,6 +1409,8 @@
 
 .shop-btn-floating .action-icon {
   font-size: 1.7rem;
+  line-height: 1;
+  display: block;
   filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.2));
 }
 
@@ -1414,19 +1422,25 @@
 
   .shop-btn-floating .action-icon {
     font-size: 1.5rem;
+    line-height: 1;
+  }
+
+  .fab-menu-container {
+    right: 10px;
+    top: 15px;
   }
 }
 
-/* FAB Menu Container */
 .fab-menu-container {
   position: absolute;
   /* Anchored to bottom of header via parent relative div */
   top: 20px;
-  right: 11px;
+  right: 14px;
   z-index: 20;
   display: flex;
   flex-direction: column;
   align-items: center;
+  /* Align right to prevent + button shift */
   gap: 6px;
 }
 
@@ -1496,7 +1510,7 @@
   .fab-menu-container {
     /* Anchored to bottom of header */
     top: 15px;
-    right: 7px;
+    right: 9px;
   }
 
   .fab-menu-item {

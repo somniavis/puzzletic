@@ -851,14 +851,6 @@ export const PetRoom: React.FC<PetRoomProps> = ({
                       }}
                       disabled={isActionInProgress}
                       title={t('profile.upgradePrompt', 'Upgrade to Premium')}
-                      style={{
-                        position: 'relative',
-                        top: 'auto',
-                        bottom: 'auto',
-                        right: 'auto',
-                        pointerEvents: 'auto',
-                        transform: 'none'
-                      }}
                     >
                       <span className="action-icon">🎁</span>
                       <span className="premium-label">Premium</span>
