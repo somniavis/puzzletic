@@ -41,14 +41,14 @@ export const SignupPage: React.FC = () => {
             navigate('/home');
         } catch (error: any) {
             console.error('Signup failed:', error);
-            let errorMessage = "Registration failed! ❌";
+            let errorMessage = t('auth.errors.registrationFailed');
 
             if (error.code === 'auth/email-already-in-use') {
-                errorMessage = "This email is already registered.";
+                errorMessage = t('auth.errors.emailInUse');
             } else if (error.code === 'auth/weak-password') {
-                errorMessage = "Password should be at least 6 characters.";
+                errorMessage = t('auth.errors.weakPassword');
             } else if (error.code === 'auth/invalid-email') {
-                errorMessage = "Invalid email format.";
+                errorMessage = t('auth.errors.invalidEmail');
             }
 
             alert(errorMessage);

@@ -483,7 +483,7 @@ export const ko = {
             l2: {
                 hmm: '흐음?',
                 uhm: '음',
-                meh: '메',
+                meh: '별로...',
             },
             l3: {
                 ugh: '윽',
@@ -629,7 +629,8 @@ export const ko = {
             action: '로그인 🔑',
             or: '또는',
             signup: '이메일로 회원가입',
-            backToHome: '홈으로 돌아가기'
+            backToHome: '홈으로 돌아가기',
+            google: 'Google로 로그인',
         },
         signup: {
             title: 'Grogro Jello 가입하기!',
@@ -648,6 +649,16 @@ export const ko = {
             backToLogin: '로그인으로 돌아가기',
             passwordMismatch: '비밀번호가 일치하지 않습니다! ❌',
             success: '가입 성공! 환영합니다! 🎉'
+        },
+        errors: {
+            default: '로그인 실패! ❌',
+            invalidCredential: '이메일 또는 비밀번호가 올바르지 않습니다.',
+            tooManyRequests: '너무 많은 시도가 있었습니다. 잠시 후 다시 시도해주세요.',
+            googleFailed: 'Google 로그인 실패 ❌. 다시 시도해주세요.',
+            emailInUse: '이미 가입된 이메일입니다.',
+            weakPassword: '비밀번호는 6자리 이상이어야 합니다.',
+            invalidEmail: '올바르지 않은 이메일 형식입니다.',
+            registrationFailed: '가입 실패! ❌',
         }
     },
     play: {

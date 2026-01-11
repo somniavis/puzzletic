@@ -24,12 +24,12 @@ export const LoginPage: React.FC = () => {
             navigate('/home');
         } catch (error: any) {
             console.error('Login failed:', error);
-            let errorMessage = "Login failed! ❌";
+            let errorMessage = t('auth.errors.default');
 
             if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
-                errorMessage = "Invalid email or password. Please check again.";
+                errorMessage = t('auth.errors.invalidCredential');
             } else if (error.code === 'auth/too-many-requests') {
-                errorMessage = "Too many failed attempts. Please try again later.";
+                errorMessage = t('auth.errors.tooManyRequests');
             }
 
             alert(errorMessage);
@@ -44,7 +44,7 @@ export const LoginPage: React.FC = () => {
             navigate('/home');
         } catch (error: any) {
             console.error('Google Login failed:', error);
-            alert("Google Sign-In failed ❌. Please try again.");
+            alert(t('auth.errors.googleFailed'));
         }
     };
 
@@ -139,7 +139,7 @@ export const LoginPage: React.FC = () => {
                         }}
                     >
                         <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" style={{ width: '18px', height: '18px' }} />
-                        Sign in with Google
+                        {t('auth.login.google')}
                     </button>
 
                     {/* 

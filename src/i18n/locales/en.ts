@@ -629,7 +629,8 @@ export const en = {
       action: 'Log In 🔑',
       or: 'OR',
       signup: 'Sign Up with Email',
-      backToHome: 'Back to Home'
+      backToHome: 'Back to Home',
+      google: 'Sign in with Google',
     },
     signup: {
       title: 'Join Grogro Jello!',
@@ -648,6 +649,16 @@ export const en = {
       backToLogin: 'Back to Login',
       passwordMismatch: 'Passwords do not match! ❌',
       success: 'Registration Successful! Welcome to Grogro Jello! 🎉'
+    },
+    errors: {
+      default: 'Login failed! ❌',
+      invalidCredential: 'Invalid email or password. Please check again.',
+      tooManyRequests: 'Too many failed attempts. Please try again later.',
+      googleFailed: 'Google Sign-In failed ❌. Please try again.',
+      emailInUse: 'This email is already registered.',
+      weakPassword: 'Password should be at least 6 characters.',
+      invalidEmail: 'Invalid email format.',
+      registrationFailed: 'Registration failed! ❌',
     }
   },
   play: {
