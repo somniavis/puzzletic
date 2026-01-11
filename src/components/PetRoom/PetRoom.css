@@ -1400,19 +1400,20 @@
 /* FAB Menu Container */
 .fab-menu-container {
   position: absolute;
-  /* Adjusted to be below the header (Desktop Header ~97px + comfortable margin) */
-  top: 130px;
-  right: 20px;
+  /* Anchored to bottom of header via parent relative div */
+  top: 20px;
+  right: 11px;
   z-index: 20;
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 6px;
 }
 
 /* FAB Menu Items (Shop, Camera, etc.) */
 .fab-menu-item {
-  position: absolute;
-  right: 0;
+  position: relative;
+
   width: 58px;
   height: 58px;
   background: linear-gradient(180deg, #FFF9E6 0%, #FFE4B5 100%);
@@ -1447,10 +1448,22 @@
   filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.2));
 }
 
+/* FAB Item Positioning - Removed in favor of Flexbox Gap
+   .fab-pos-1, .fab-pos-2, etc. are no longer needed */
+
+.fab-premium-wrapper {
+  /* Wrapper acts as a flex item now */
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  z-index: 25;
+}
+
 @keyframes fabItemAppear {
   from {
     opacity: 0;
-    transform: scale(0.5) translateY(20px);
+    transform: scale(0.5) translateY(-20px);
+    /* Appear from top since menu is below toggle */
   }
 
   to {
@@ -1459,11 +1472,11 @@
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .fab-menu-container {
-    /* Adjusted for Mobile Header (~57px + comfortable margin) */
-    top: 90px;
-    right: 15px;
+    /* Anchored to bottom of header */
+    top: 15px;
+    right: 7px;
   }
 
   .fab-menu-item {
@@ -1474,6 +1487,10 @@
   .fab-menu-item .action-icon {
     font-size: 1.5rem;
   }
+
+  /* Mobile Specific Compact Spacing handled by global gap,
+     or we can adjust gap here if needed.
+     Button sizes are already responsive. */
 }
 
 /* Forest Background */

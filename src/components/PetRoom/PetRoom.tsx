@@ -795,6 +795,82 @@ export const PetRoom: React.FC<PetRoomProps> = ({
           </div>
         </div>
 
+        {/* FAB Menu Anchor - Positioned exactly below header */}
+        <div style={{ position: 'relative', width: '100%', height: 0, zIndex: 20 }}>
+          {/* FAB Menu (Floating Action Button) */}
+          <div className="fab-menu-container">
+            {/* Main FAB Toggle Button (Now First) */}
+            <button
+              className="shop-btn-floating"
+              onClick={() => {
+                playButtonSound();
+                setIsFabOpen(!isFabOpen);
+              }}
+              disabled={showGiftBox}
+              title={isFabOpen ? t('common.close', 'Close') : t('common.menu', 'Menu')}
+            >
+              <span className="action-icon" style={{
+                transition: 'transform 0.3s ease',
+                transform: isFabOpen ? 'rotate(45deg)' : 'rotate(0deg)',
+                color: '#8B4513'
+              }}>
+                ＋
+              </span>
+            </button>
+
+            {/* Expanded Menu Items (Flowing downwards) */}
+            {isFabOpen && (
+              <>
+                {/* Shop Button */}
+                <button
+                  className="fab-menu-item"
+                  onClick={toggleShopMenu}
+                  disabled={isActionInProgress || showGiftBox}
+                  title={t('shop.menu.title', 'Shop')}
+                >
+                  <span className="action-icon">🛖</span>
+                </button>
+
+                {/* Camera Button */}
+                <button
+                  className="fab-menu-item"
+                  onClick={handleCameraClick}
+                  disabled={isActionInProgress || showGiftBox}
+                  title={t('actions.camera', 'Camera')}
+                >
+                  <span className="action-icon">📷</span>
+                </button>
+
+                {/* Premium Purchase Button */}
+                {!nurturing.subscription.isPremium && !showGiftBox && (
+                  <div className="fab-premium-wrapper">
+                    <button
+                      className="premium-btn-floating"
+                      onClick={() => {
+                        playButtonSound();
+                        navigate('/profile');
+                      }}
+                      disabled={isActionInProgress}
+                      title={t('profile.upgradePrompt', 'Upgrade to Premium')}
+                      style={{
+                        position: 'relative',
+                        top: 'auto',
+                        bottom: 'auto',
+                        right: 'auto',
+                        pointerEvents: 'auto',
+                        transform: 'none'
+                      }}
+                    >
+                      <span className="action-icon">🎁</span>
+                      <span className="premium-label">Premium</span>
+                    </button>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        </div>
+
 
 
         {/* Main Room Area */}
@@ -956,87 +1032,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({
         </div>
       </div>
 
-      {/* FAB Menu (Floating Action Button) */}
-      <div className="fab-menu-container">
-        {/* Expanded Menu Items (visible when open) */}
-        {isFabOpen && (
-          <>
-            {/* Shop Button - first below toggle */}
-            <button
-              className="fab-menu-item"
-              onClick={toggleShopMenu}
-              disabled={isActionInProgress || showGiftBox}
-              title={t('shop.menu.title', 'Shop')}
-              style={{ top: '60px' }}
-            >
-              <span className="action-icon">🛖</span>
-            </button>
 
-            {/* Camera Button - second below toggle */}
-            <button
-              className="fab-menu-item"
-              onClick={handleCameraClick}
-              disabled={isActionInProgress || showGiftBox}
-              title={t('actions.camera', 'Camera')}
-              style={{ top: '120px' }}
-            >
-              <span className="action-icon">📷</span>
-            </button>
-            {/* Premium Purchase Button - third below toggle (only if not premium) */}
-            {!nurturing.subscription.isPremium && !showGiftBox && (
-              <div style={{
-                position: 'absolute',
-                top: '180px',
-                width: '100%',
-                display: 'flex',
-                justifyContent: 'center',
-                pointerEvents: 'none', // Allow passing through to things behind if transparent, but button captures
-                zIndex: 25 // Ensure on top
-              }}>
-                <button
-                  className="premium-btn-floating"
-                  onClick={() => {
-                    playButtonSound();
-                    navigate('/profile');
-                  }}
-                  disabled={isActionInProgress}
-                  title={t('profile.upgradePrompt', 'Upgrade to Premium')}
-                  style={{
-                    position: 'relative', // Override Absolute
-                    top: 'auto',
-                    bottom: 'auto',
-                    right: 'auto',
-                    pointerEvents: 'auto',
-                    transform: 'none' // Reset any default transform from class if needed, but class has transform transition
-                  }}
-                >
-                  <span className="action-icon">🎁</span>
-                  <span className="premium-label">Premium</span>
-                </button>
-              </div>
-            )}
-          </>
-        )}
-
-        {/* Main FAB Toggle Button */}
-        <button
-          className="shop-btn-floating"
-          onClick={() => {
-            playButtonSound();
-            setIsFabOpen(!isFabOpen);
-          }}
-          disabled={showGiftBox}
-          title={isFabOpen ? t('common.close', 'Close') : t('common.menu', 'Menu')}
-        >
-          <span className="action-icon" style={{
-            transition: 'transform 0.3s ease',
-            transform: isFabOpen ? 'rotate(45deg)' : 'rotate(0deg)',
-            color: '#8B4513'
-          }}>
-            ＋
-          </span>
-        </button>
-      </div>
 
 
 
