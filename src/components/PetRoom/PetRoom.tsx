@@ -124,7 +124,14 @@ export const PetRoom: React.FC<PetRoomProps> = ({
   const [confirmModalType, setConfirmModalType] = useState<'sleep' | 'wake' | null>(null);
 
   // FAB (Floating Action Button) Menu State
-  const [isFabOpen, setIsFabOpen] = useState(false);
+  const [isFabOpen, setIsFabOpen] = useState(() => {
+    const saved = localStorage.getItem('petRoom_fabOpen');
+    return saved !== null ? saved === 'true' : true;
+  });
+
+  useEffect(() => {
+    localStorage.setItem('petRoom_fabOpen', String(isFabOpen));
+  }, [isFabOpen]);
 
   // Camera & Share State
   const petRoomRef = useRef<HTMLDivElement>(null);
@@ -138,63 +145,61 @@ export const PetRoom: React.FC<PetRoomProps> = ({
 
     try {
       playButtonSound();
-      setIsFabOpen(false); // Close menu first
+      // setIsFabOpen(false); // Menu state persists
 
       // 1. Show modal immediately with loading state
       setIsSnapshotLoading(true);
       setShowCameraModal(true);
 
       // 2. Wait for UI update (Loading Spinner) to render before capturing
-      // Use double-RAF to ensure paint
-      requestAnimationFrame(() => {
-        requestAnimationFrame(async () => {
-          if (!petRoomRef.current) return;
+      // Reverted to setTimeout because RAF causes rendering artifacts on some mobile devices
+      setTimeout(async () => {
+        if (!petRoomRef.current) return;
 
-          try {
-            const dataUrl = await toPng(petRoomRef.current, {
-              cacheBust: true,
-              pixelRatio: 2, // Better quality
-              filter: (node) => {
-                // Exclude UI elements from snapshot
-                const excludeClasses = [
-                  'camera-modal-overlay',
-                  'action-bar',
-                  'fab-menu-container',
-                  'settings-menu-overlay',
-                  'premium-btn-floating',
-                  'abandonment-alert',
-                  'premium-btn'
-                ];
-                if (node.classList) {
-                  for (const cls of excludeClasses) {
-                    if (node.classList.contains(cls)) return false;
-                  }
+        try {
+          const dataUrl = await toPng(petRoomRef.current, {
+            cacheBust: true,
+            pixelRatio: 2, // Better quality
+            filter: (node) => {
+              // Exclude UI elements from snapshot
+              const excludeClasses = [
+                'camera-modal-overlay',
+                'action-bar',
+                'fab-menu-container',
+                'settings-menu-overlay',
+                'premium-btn-floating',
+                'abandonment-alert',
+                'premium-btn'
+              ];
+              if (node.classList) {
+                for (const cls of excludeClasses) {
+                  if (node.classList.contains(cls)) return false;
                 }
-                return true;
-              },
-            });
+              }
+              return true;
+            },
+          });
 
-            const shareData: ShareData = {
-              c: speciesId,
-              e: character.evolutionStage,
-              n: character.name,
-              h: nurturing.currentHouseId || 'default',
-              g: nurturing.currentLand,
-              l: character.level
-            };
+          const shareData: ShareData = {
+            c: speciesId,
+            e: character.evolutionStage,
+            n: character.name,
+            h: nurturing.currentHouseId || 'tent',
+            g: nurturing.currentLand,
+            l: character.level
+          };
 
-            const shareUrl = generateShareUrl(shareData);
+          const shareUrl = generateShareUrl(shareData);
 
-            setCapturedImage(dataUrl);
-            setCurrentShareUrl(shareUrl);
-          } catch (err) {
-            console.error('Failed to capture image:', err);
-            setShowCameraModal(false);
-          } finally {
-            setIsSnapshotLoading(false);
-          }
-        });
-      });
+          setCapturedImage(dataUrl);
+          setCurrentShareUrl(shareUrl);
+        } catch (err) {
+          console.error('Failed to capture image:', err);
+          setShowCameraModal(false);
+        } finally {
+          setIsSnapshotLoading(false);
+        }
+      }, 100);
     } catch (err) {
       console.error('Error in camera click handler:', err);
       setIsSnapshotLoading(false);
@@ -777,12 +782,11 @@ export const PetRoom: React.FC<PetRoomProps> = ({
                 className="fab-menu-item"
                 onClick={() => {
                   playButtonSound();
-                  setIsFabOpen(false);
                   toggleShopMenu();
                 }}
                 disabled={isActionInProgress || showGiftBox}
                 title={t('shop.menu.title', 'Shop')}
-                style={{ top: '63px' }}
+                style={{ top: '60px' }}
               >
                 <span className="action-icon">🛖</span>
               </button>
@@ -793,7 +797,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({
                 onClick={handleCameraClick}
                 disabled={isActionInProgress || showGiftBox}
                 title={t('actions.camera', 'Camera')}
-                style={{ top: '126px' }}
+                style={{ top: '120px' }}
               >
                 <span className="action-icon">📷</span>
               </button>
