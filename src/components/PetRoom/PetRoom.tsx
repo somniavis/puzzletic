@@ -165,7 +165,6 @@ export const PetRoom: React.FC<PetRoomProps> = ({
   const [showCameraModal, setShowCameraModal] = useState(false);
   const [capturedImage, setCapturedImage] = useState<string>('');
   const [currentShareUrl, setCurrentShareUrl] = useState<string>('');
-  const [isSnapshotLoading, setIsSnapshotLoading] = useState(false);
 
   const handleCameraClick = async () => {
     if (!petRoomRef.current) return;
@@ -173,26 +172,27 @@ export const PetRoom: React.FC<PetRoomProps> = ({
     try {
       playButtonSound();
 
-      // 1. Show modal immediately with loading state
-      setIsSnapshotLoading(true);
-      setShowCameraModal(true);
-
-      // 2. Wait for all images to fully load
+      // 1. Wait for all images to fully load BEFORE any modal state change
       await waitForImages(petRoomRef.current);
 
-      // 3. Small buffer for final rendering (shadows, styles)
-      await new Promise(resolve => setTimeout(resolve, 250));
+      // 2. Small buffer for final rendering (shadows, styles)
+      await new Promise(resolve => setTimeout(resolve, 100));
 
       if (!petRoomRef.current) return;
 
-      try {
-        const width = petRoomRef.current.clientWidth;
-        const height = petRoomRef.current.clientHeight;
+      // 3. Add snapshot-mode class to disable box-shadows
+      petRoomRef.current.classList.add('snapshot-mode');
 
-        const dataUrl = await toPng(petRoomRef.current, {
+      // 4. Capture the snapshot
+      const width = petRoomRef.current.clientWidth;
+      const height = petRoomRef.current.clientHeight;
+
+      let dataUrl: string;
+      try {
+        dataUrl = await toPng(petRoomRef.current, {
           cacheBust: true,
-          pixelRatio: 2, // Keep high quality
-          skipAutoScale: true, // Prevents mobile scaling artifacts
+          pixelRatio: 2,
+          skipAutoScale: true,
           width: width,
           height: height,
           style: {
@@ -200,7 +200,6 @@ export const PetRoom: React.FC<PetRoomProps> = ({
             height: `${height}px`,
           },
           filter: (node) => {
-            // Exclude UI elements from snapshot (fallback filtering)
             const excludeClasses = [
               'camera-modal-overlay',
               'action-bar',
@@ -218,29 +217,29 @@ export const PetRoom: React.FC<PetRoomProps> = ({
             return true;
           },
         });
-
-        const shareData: ShareData = {
-          c: speciesId,
-          e: character.evolutionStage,
-          n: character.name,
-          h: nurturing.currentHouseId || 'tent',
-          g: nurturing.currentLand,
-          l: character.level
-        };
-
-        const shareUrl = generateShareUrl(shareData);
-
-        setCapturedImage(dataUrl);
-        setCurrentShareUrl(shareUrl);
-      } catch (err) {
-        console.error('Failed to capture image:', err);
-        setShowCameraModal(false);
       } finally {
-        setIsSnapshotLoading(false);
+        // 5. Remove snapshot-mode class after capture
+        petRoomRef.current?.classList.remove('snapshot-mode');
       }
+
+      const shareData: ShareData = {
+        c: speciesId,
+        e: character.evolutionStage,
+        n: character.name,
+        h: nurturing.currentHouseId || 'tent',
+        g: nurturing.currentLand,
+        l: character.level
+      };
+
+      const shareUrl = generateShareUrl(shareData);
+
+      // 4. Set capturedresults, THEN show modal (after capture is complete)
+      setCapturedImage(dataUrl);
+      setCurrentShareUrl(shareUrl);
+      setShowCameraModal(true);
+
     } catch (err) {
-      console.error('Error in camera click handler:', err);
-      setIsSnapshotLoading(false);
+      console.error('Failed to capture image:', err);
     }
   };
 
@@ -1266,7 +1265,6 @@ export const PetRoom: React.FC<PetRoomProps> = ({
           imageDataUrl={capturedImage}
           shareUrl={currentShareUrl}
           onClose={() => setShowCameraModal(false)}
-          isLoading={isSnapshotLoading}
         />
       )}
 

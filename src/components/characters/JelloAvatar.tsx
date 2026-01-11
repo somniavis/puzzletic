@@ -64,6 +64,7 @@ export const JelloAvatar: React.FC<JelloAvatarProps> = ({
                 <img
                     src={imageUrl}
                     alt={species.name}
+                    crossOrigin="anonymous"
                     className="jello-avatar__image"
                     style={{
                         width: '100%',

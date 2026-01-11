@@ -217,6 +217,26 @@
   /* Prevent header from shrinking */
 }
 
+/* Snapshot Mode - Disable box-shadows that render incorrectly in canvas */
+.snapshot-mode .game-header,
+.snapshot-mode .character-profile,
+.snapshot-mode .profile-avatar,
+.snapshot-mode .stat-badge {
+  box-shadow: none !important;
+}
+
+/* Snapshot Mode - Tropical Ground Sun */
+.snapshot-mode .room-background.tropical_ground .room-wall::before {
+  box-shadow: none !important;
+  animation: none !important;
+}
+
+/* Snapshot Mode - Tropical Ground Clouds (made with box-shadow, so hide entirely) */
+.snapshot-mode .room-background.tropical_ground .cloud-1,
+.snapshot-mode .room-background.tropical_ground .cloud-2 {
+  display: none !important;
+}
+
 .character-profile {
   display: flex;
   align-items: center;

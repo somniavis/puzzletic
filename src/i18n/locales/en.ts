@@ -358,6 +358,9 @@ export const en = {
     camera: 'Camera',
     settings: 'Settings',
   },
+  camera: {
+    title: 'Snapshot!',
+  },
   sleep: {
     confirm: {
       sleepTitle: 'Go to Sleep',
