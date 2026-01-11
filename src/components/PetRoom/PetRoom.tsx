@@ -43,6 +43,33 @@ interface PetRoomProps {
   onActionChange?: (action: CharacterAction) => void;
 }
 
+// Utility to ensure all images in the container are loaded
+// Utility to ensure all images in the container are loaded and DECODED
+const waitForImages = async (element: HTMLElement) => {
+  const images = Array.from(element.getElementsByTagName('img'));
+  const promises = images.map(async (img) => {
+    if (img.complete && img.naturalHeight !== 0) {
+      // Already loaded, but ensure decoded for expensive assets
+      try {
+        await img.decode();
+      } catch (e) {
+        // decode can fail if image is broken, ignore
+      }
+      return;
+    }
+    return new Promise<void>((resolve) => {
+      img.onload = async () => {
+        try {
+          await img.decode();
+        } catch (e) { }
+        resolve();
+      };
+      img.onerror = () => resolve();
+    });
+  });
+  await Promise.all(promises);
+};
+
 export const PetRoom: React.FC<PetRoomProps> = ({
   character,
   speciesId,
@@ -145,70 +172,72 @@ export const PetRoom: React.FC<PetRoomProps> = ({
 
     try {
       playButtonSound();
-      // setIsFabOpen(false); // Menu state persists
 
       // 1. Show modal immediately with loading state
       setIsSnapshotLoading(true);
       setShowCameraModal(true);
 
-      // 2. Wait for UI update (Loading Spinner) to render before capturing
-      // Reverted to setTimeout because RAF causes rendering artifacts on some mobile devices
-      setTimeout(async () => {
-        if (!petRoomRef.current) return;
+      // 2. Wait for all images to fully load
+      await waitForImages(petRoomRef.current);
 
-        try {
-          const width = petRoomRef.current.clientWidth;
-          const height = petRoomRef.current.clientHeight;
+      // 3. Small buffer for final rendering (shadows, styles)
+      await new Promise(resolve => setTimeout(resolve, 250));
 
-          const dataUrl = await toPng(petRoomRef.current, {
-            cacheBust: true,
-            pixelRatio: 2, // Better quality
-            width: width,
-            height: height,
-            style: {
-              width: `${width}px`,
-              height: `${height}px`,
-            },
-            filter: (node) => {
-              // Exclude UI elements from snapshot
-              const excludeClasses = [
-                'camera-modal-overlay',
-                'action-bar',
-                'fab-menu-container',
-                'settings-menu-overlay',
-                'premium-btn-floating',
-                'abandonment-alert',
-                'premium-btn'
-              ];
-              if (node.classList) {
-                for (const cls of excludeClasses) {
-                  if (node.classList.contains(cls)) return false;
-                }
+      if (!petRoomRef.current) return;
+
+      try {
+        const width = petRoomRef.current.clientWidth;
+        const height = petRoomRef.current.clientHeight;
+
+        const dataUrl = await toPng(petRoomRef.current, {
+          cacheBust: true,
+          pixelRatio: 2, // Keep high quality
+          skipAutoScale: true, // Prevents mobile scaling artifacts
+          width: width,
+          height: height,
+          style: {
+            width: `${width}px`,
+            height: `${height}px`,
+          },
+          filter: (node) => {
+            // Exclude UI elements from snapshot (fallback filtering)
+            const excludeClasses = [
+              'camera-modal-overlay',
+              'action-bar',
+              'fab-menu-container',
+              'settings-menu-overlay',
+              'premium-btn-floating',
+              'abandonment-alert',
+              'premium-btn'
+            ];
+            if (node.classList) {
+              for (const cls of excludeClasses) {
+                if (node.classList.contains(cls)) return false;
               }
-              return true;
-            },
-          });
+            }
+            return true;
+          },
+        });
 
-          const shareData: ShareData = {
-            c: speciesId,
-            e: character.evolutionStage,
-            n: character.name,
-            h: nurturing.currentHouseId || 'tent',
-            g: nurturing.currentLand,
-            l: character.level
-          };
+        const shareData: ShareData = {
+          c: speciesId,
+          e: character.evolutionStage,
+          n: character.name,
+          h: nurturing.currentHouseId || 'tent',
+          g: nurturing.currentLand,
+          l: character.level
+        };
 
-          const shareUrl = generateShareUrl(shareData);
+        const shareUrl = generateShareUrl(shareData);
 
-          setCapturedImage(dataUrl);
-          setCurrentShareUrl(shareUrl);
-        } catch (err) {
-          console.error('Failed to capture image:', err);
-          setShowCameraModal(false);
-        } finally {
-          setIsSnapshotLoading(false);
-        }
-      }, 100);
+        setCapturedImage(dataUrl);
+        setCurrentShareUrl(shareUrl);
+      } catch (err) {
+        console.error('Failed to capture image:', err);
+        setShowCameraModal(false);
+      } finally {
+        setIsSnapshotLoading(false);
+      }
     } catch (err) {
       console.error('Error in camera click handler:', err);
       setIsSnapshotLoading(false);
@@ -714,280 +743,302 @@ export const PetRoom: React.FC<PetRoomProps> = ({
   };
 
   return (
-    <div className="pet-room" ref={petRoomRef}>
-      {/* Loading Overlay */}
-      {isLoading && (
-        <div className="loading-overlay">
-          <div className="loading-spinner-container">
-            <div className="loading-spinner">🐾</div>
-            <div className="loading-text">Loading...</div>
-          </div>
-        </div>
-      )}
-
-      {/* Top Header with Character Info */}
-      <div className="game-header">
-        <div className="character-profile" onClick={() => navigate('/profile')} style={{ cursor: 'pointer' }}>
-          <div className="profile-avatar">
-            {!showGiftBox ? (
-              <JelloAvatar
-                character={character}
-                size="small"
-                mood={mood}
-                action="idle"
-              />
-            ) : (
-              <div className="profile-avatar-placeholder" style={{ width: '100%', height: '100%', borderRadius: '50%', background: 'rgba(0,0,0,0.1)' }} />
-            )}
-          </div>
-          <div className="profile-info">
-            <div className="profile-name">{!showGiftBox ? getDisplayName() : '-'}</div>
-            <div className="profile-stats-row">
-              <div className="profile-level">{t('character.profile.level', { level: character.level })}</div>
-              <div className="profile-gro">💰 {nurturing.gro}</div>
+    <div className="pet-room">
+      <div className="pet-room-content" ref={petRoomRef} style={{ flex: 1, display: 'flex', flexDirection: 'column', position: 'relative', overflow: 'hidden' }}>
+        {/* Loading Overlay */}
+        {isLoading && (
+          <div className="loading-overlay">
+            <div className="loading-spinner-container">
+              <div className="loading-spinner">🐾</div>
+              <div className="loading-text">Loading...</div>
             </div>
           </div>
-        </div>
-
-        <div className="stats-row">
-          <div className="stat-badge stat-badge--hunger">
-            <span className="stat-icon">🍖</span>
-            <span className="stat-value">{Math.round(nurturing.stats.fullness)}</span>
-          </div>
-          <div className="stat-badge stat-badge--happiness">
-            <span className="stat-icon">{getHappinessIcon(nurturing.stats.happiness)}</span>
-            <span className="stat-value">{Math.round(nurturing.stats.happiness)}</span>
-          </div>
-          <div className="stat-badge stat-badge--health">
-            <span className="stat-icon">{getHealthIcon(nurturing.stats.health)}</span>
-            <span className="stat-value">{Math.round(nurturing.stats.health)}</span>
-          </div>
-        </div>
-      </div>
-
-
-
-      {/* Main Room Area */}
-      <div className="room-container">
-        {/* Jello House (Bottom Left) */}
-        {!showGiftBox && (
-          <JelloHouse
-            type={nurturing.currentHouseId}
-            isSleeping={nurturing.isSleeping}
-            onClick={handleHouseClick}
-            style={{
-              left: '10%',
-              bottom: '25%'
-            }}
-          />
-        )}
-        {/* FAB Menu (Floating Action Button) */}
-        <div className="fab-menu-container">
-          {/* Expanded Menu Items (visible when open) */}
-          {isFabOpen && (
-            <>
-              {/* Shop Button - first below toggle */}
-              <button
-                className="fab-menu-item"
-                onClick={() => {
-                  playButtonSound();
-                  toggleShopMenu();
-                }}
-                disabled={isActionInProgress || showGiftBox}
-                title={t('shop.menu.title', 'Shop')}
-                style={{ top: '60px' }}
-              >
-                <span className="action-icon">🛖</span>
-              </button>
-
-              {/* Camera Button - second below toggle */}
-              <button
-                className="fab-menu-item"
-                onClick={handleCameraClick}
-                disabled={isActionInProgress || showGiftBox}
-                title={t('actions.camera', 'Camera')}
-                style={{ top: '120px' }}
-              >
-                <span className="action-icon">📷</span>
-              </button>
-            </>
-          )}
-
-          {/* Main FAB Toggle Button */}
-          <button
-            className="shop-btn-floating"
-            onClick={() => {
-              playButtonSound();
-              setIsFabOpen(!isFabOpen);
-            }}
-            disabled={showGiftBox}
-            title={isFabOpen ? t('common.close', 'Close') : t('common.menu', 'Menu')}
-          >
-            <span className="action-icon" style={{
-              transition: 'transform 0.3s ease',
-              transform: isFabOpen ? 'rotate(45deg)' : 'rotate(0deg)',
-              color: '#8B4513'
-            }}>
-              ＋
-            </span>
-          </button>
-        </div>
-
-        {/* Premium Purchase Button (Below Shop Button) */}
-        {!nurturing.subscription.isPremium && !showGiftBox && (
-          <button
-            className="premium-btn-floating"
-            onClick={() => {
-              playButtonSound();
-              navigate('/profile');
-            }}
-            disabled={isActionInProgress}
-            title={t('profile.upgradePrompt', 'Upgrade to Premium')}
-          >
-            <span className="action-icon">🎁</span>
-            <span className="premium-label">Premium</span>
-          </button>
         )}
 
-        {/* 가출 경고 메시지 (죽음 상태가 아닐 때만 표시) */}
-        {nurturing.abandonmentStatus.level !== 'normal' && nurturing.abandonmentStatus.level !== 'abandoned' && (
-          <div className={`abandonment-alert abandonment-alert--${nurturing.abandonmentStatus.level}`}>
-            <span className="abandonment-alert__icon">
-              {nurturing.abandonmentStatus.level === 'leaving' && '⚠️'}
-              {nurturing.abandonmentStatus.level === 'critical' && '⚠️'}
-              {nurturing.abandonmentStatus.level === 'danger' && '⚠️'}
-            </span>
-            <span className="abandonment-alert__text">
-              {t(nurturing.abandonmentStatus.message as any, {
-                countdown: nurturing.abandonmentStatus.countdown || '',
-              })}
-            </span>
-          </div>
-        )}
-
-        {/* Death UI Overlay */}
-        {nurturing.abandonmentStatus.level === 'abandoned' && (
-          <div className="death-overlay">
-            <div className="death-container">
-              <div className="ghost">👻</div>
-              <div className="tombstone">🪦</div>
-            </div>
-            <div className="death-message">
-              {t('abandonment.abandoned')}
-            </div>
-            <button className="reset-btn" onClick={nurturing.resetGame}>
-              {t('game.reset', 'Reset Game')}
-            </button>
-          </div>
-        )}
-        <RoomBackground
-          background={nurturing.currentLand}
-          showGiftBox={showGiftBox}
-          lightningStyle={lightningStyle}
-        />
-
-        {/* 똥들 렌더링 */}
-        {!showGiftBox && nurturing.poops.map((poop) => (
-          <Poop key={poop.id} poop={poop} onClick={() => handlePoopClick(poop.id)} />
-        ))}
-
-        {/* 벌레들 렌더링 */}
-        {!showGiftBox && nurturing.bugs.map((bug) => (
-          <Bug key={bug.id} bug={bug} onClick={handleBugClick} />
-        ))}
-
-        {/* 샤워 이펙트 (Removed from here) */}
-
-        {/* 먹는 음식 애니메이션 */}
-        {flyingFood && (
-          <div
-            key={flyingFood.key}
-            className={flyingFood.type === 'syringe' ? 'injecting-medicine' : 'eating-food'}
-            style={{
-              left: `${position.x}%`,
-              bottom: `${position.y - (window.innerWidth <= 768 ? 9 : 7) + 0.8}%`,
-            }}
-          >
-            {flyingFood.icon}
-          </div>
-        )}
-
-        {/* Character (죽음 상태가 아닐 때만 표시) */}
-        {nurturing.abandonmentStatus.level !== 'abandoned' && !nurturing.isSleeping && (
-          <div
-            className="character-container"
-            style={{
-              left: showGiftBox ? '50%' : `${position.x}%`,
-              bottom: showGiftBox ? '50%' : `${position.y}%`,
-              transform: 'translate(-50%, 50%)',
-            }}
-            onClick={handleCharacterClick}
-          >
-            {bubble && (
-              <EmotionBubble
-                key={bubble.key}
-                category={bubble.category}
-                level={bubble.level}
-              />
-            )}
-            {/* 질병 상태 표시 (반창고 - 크로스 X 형태) */}
-            {nurturing.isSick && !showGiftBox && (
-              <div className="sick-bandaid">
-                <span className="bandaid-cross bandaid-left">🩹</span>
-                <span className="bandaid-cross bandaid-right">🩹</span>
-              </div>
-            )}
-            {/* 질병 상태 표시 (온도계 - 우측 상단) */}
-            {nurturing.isSick && !showGiftBox && (
-              <div className="sick-thermometer">🌡️</div>
-            )}
-            {/* 샤워 이펙트 */}
-            {isShowering && <div className="shower-effect">🚿</div>}
-
-            {/* 청소 이펙트 */}
-            {isCleaning && activeCleaningToolId === 'broom' && <div className="cleaning-effect">🧹</div>}
-            {isCleaning && activeCleaningToolId === 'newspaper' && <div className="cleaning-effect">🗞️</div>}
-            {isCleaning && activeCleaningToolId === 'robot_cleaner' && <div className="cleaning-effect">🖲️</div>}
-            {isCleaning && activeCleaningToolId === 'max_stats' && <div className="cleaning-effect">🌟</div>}
-
-            {/* 양치 이펙트 */}
-            {isBrushing && <div className="brushing-effect">🪥</div>}
-            {/* 버블 이펙트 */}
-            {isShowering && (
-              <div className="bubble-container">
-                {bubbles.map((b) => (
-                  <span
-                    key={b.id}
-                    className="bubble"
-                    style={{
-                      left: `${b.left}%`,
-                      animationDelay: `${b.delay}s`,
-                      animationDuration: `${b.duration}s`,
-                      fontSize: `${b.size}px`,
-                    }}
-                  >
-                    🫧
-                  </span>
-                ))}
-              </div>
-            )}
-            {showGiftBox ? (
-              <div style={{ pointerEvents: 'auto' }}>
-                <GiftBox onOpen={handleGiftBoxClick} />
-              </div>
-            ) : (
-              <div style={{ pointerEvents: 'auto' }}>
+        {/* Top Header with Character Info */}
+        <div className="game-header">
+          <div className="character-profile" onClick={() => navigate('/profile')} style={{ cursor: 'pointer' }}>
+            <div className="profile-avatar">
+              {!showGiftBox ? (
                 <JelloAvatar
                   character={character}
                   size="small"
                   mood={mood}
-                  action={action}
+                  action="idle"
                 />
+              ) : (
+                <div className="profile-avatar-placeholder" style={{ width: '100%', height: '100%', borderRadius: '50%', background: 'rgba(0,0,0,0.1)' }} />
+              )}
+            </div>
+            <div className="profile-info">
+              <div className="profile-name">{!showGiftBox ? getDisplayName() : '-'}</div>
+              <div className="profile-stats-row">
+                <div className="profile-level">{t('character.profile.level', { level: character.level })}</div>
+                <div className="profile-gro">💰 {nurturing.gro}</div>
+              </div>
+            </div>
+          </div>
+
+          <div className="stats-row">
+            <div className="stat-badge stat-badge--hunger">
+              <span className="stat-icon">🍖</span>
+              <span className="stat-value">{Math.round(nurturing.stats.fullness)}</span>
+            </div>
+            <div className="stat-badge stat-badge--happiness">
+              <span className="stat-icon">{getHappinessIcon(nurturing.stats.happiness)}</span>
+              <span className="stat-value">{Math.round(nurturing.stats.happiness)}</span>
+            </div>
+            <div className="stat-badge stat-badge--health">
+              <span className="stat-icon">{getHealthIcon(nurturing.stats.health)}</span>
+              <span className="stat-value">{Math.round(nurturing.stats.health)}</span>
+            </div>
+          </div>
+        </div>
+
+
+
+        {/* Main Room Area */}
+        <div className="room-container">
+          {/* Jello House (Bottom Left) */}
+          {!showGiftBox && (
+            <JelloHouse
+              type={nurturing.currentHouseId}
+              isSleeping={nurturing.isSleeping}
+              onClick={handleHouseClick}
+              style={{
+                left: '10%',
+                bottom: '25%'
+              }}
+            />
+          )}
+
+
+
+
+          {/* 가출 경고 메시지 (죽음 상태가 아닐 때만 표시) */}
+          {nurturing.abandonmentStatus.level !== 'normal' && nurturing.abandonmentStatus.level !== 'abandoned' && (
+            <div className={`abandonment-alert abandonment-alert--${nurturing.abandonmentStatus.level}`}>
+              <span className="abandonment-alert__icon">
+                {nurturing.abandonmentStatus.level === 'leaving' && '⚠️'}
+                {nurturing.abandonmentStatus.level === 'critical' && '⚠️'}
+                {nurturing.abandonmentStatus.level === 'danger' && '⚠️'}
+              </span>
+              <span className="abandonment-alert__text">
+                {t(nurturing.abandonmentStatus.message as any, {
+                  countdown: nurturing.abandonmentStatus.countdown || '',
+                })}
+              </span>
+            </div>
+          )}
+
+          {/* Death UI Overlay */}
+          {nurturing.abandonmentStatus.level === 'abandoned' && (
+            <div className="death-overlay">
+              <div className="death-container">
+                <div className="ghost">👻</div>
+                <div className="tombstone">🪦</div>
+              </div>
+              <div className="death-message">
+                {t('abandonment.abandoned')}
+              </div>
+              <button className="reset-btn" onClick={nurturing.resetGame}>
+                {t('game.reset', 'Reset Game')}
+              </button>
+            </div>
+          )}
+          <RoomBackground
+            background={nurturing.currentLand}
+            showGiftBox={showGiftBox}
+            lightningStyle={lightningStyle}
+          />
+
+          {/* 똥들 렌더링 */}
+          {!showGiftBox && nurturing.poops.map((poop) => (
+            <Poop key={poop.id} poop={poop} onClick={() => handlePoopClick(poop.id)} />
+          ))}
+
+          {/* 벌레들 렌더링 */}
+          {!showGiftBox && nurturing.bugs.map((bug) => (
+            <Bug key={bug.id} bug={bug} onClick={handleBugClick} />
+          ))}
+
+          {/* 샤워 이펙트 (Removed from here) */}
+
+          {/* 먹는 음식 애니메이션 */}
+          {flyingFood && (
+            <div
+              key={flyingFood.key}
+              className={flyingFood.type === 'syringe' ? 'injecting-medicine' : 'eating-food'}
+              style={{
+                left: `${position.x}%`,
+                bottom: `${position.y - (window.innerWidth <= 768 ? 9 : 7) + 0.8}%`,
+              }}
+            >
+              {flyingFood.icon}
+            </div>
+          )}
+
+          {/* Character (죽음 상태가 아닐 때만 표시) */}
+          {nurturing.abandonmentStatus.level !== 'abandoned' && !nurturing.isSleeping && (
+            <div
+              className="character-container"
+              style={{
+                left: showGiftBox ? '50%' : `${position.x}%`,
+                bottom: showGiftBox ? '50%' : `${position.y}%`,
+                transform: 'translate(-50%, 50%)',
+              }}
+              onClick={handleCharacterClick}
+            >
+              {bubble && (
+                <EmotionBubble
+                  key={bubble.key}
+                  category={bubble.category}
+                  level={bubble.level}
+                />
+              )}
+              {/* 질병 상태 표시 (반창고 - 크로스 X 형태) */}
+              {nurturing.isSick && !showGiftBox && (
+                <div className="sick-bandaid">
+                  <span className="bandaid-cross bandaid-left">🩹</span>
+                  <span className="bandaid-cross bandaid-right">🩹</span>
+                </div>
+              )}
+              {/* 질병 상태 표시 (온도계 - 우측 상단) */}
+              {nurturing.isSick && !showGiftBox && (
+                <div className="sick-thermometer">🌡️</div>
+              )}
+              {/* 샤워 이펙트 */}
+              {isShowering && <div className="shower-effect">🚿</div>}
+
+              {/* 청소 이펙트 */}
+              {isCleaning && activeCleaningToolId === 'broom' && <div className="cleaning-effect">🧹</div>}
+              {isCleaning && activeCleaningToolId === 'newspaper' && <div className="cleaning-effect">🗞️</div>}
+              {isCleaning && activeCleaningToolId === 'robot_cleaner' && <div className="cleaning-effect">🖲️</div>}
+              {isCleaning && activeCleaningToolId === 'max_stats' && <div className="cleaning-effect">🌟</div>}
+
+              {/* 양치 이펙트 */}
+              {isBrushing && <div className="brushing-effect">🪥</div>}
+              {/* 버블 이펙트 */}
+              {isShowering && (
+                <div className="bubble-container">
+                  {bubbles.map((b) => (
+                    <span
+                      key={b.id}
+                      className="bubble"
+                      style={{
+                        left: `${b.left}%`,
+                        animationDelay: `${b.delay}s`,
+                        animationDuration: `${b.duration}s`,
+                        fontSize: `${b.size}px`,
+                      }}
+                    >
+                      🫧
+                    </span>
+                  ))}
+                </div>
+              )}
+              {showGiftBox ? (
+                <div style={{ pointerEvents: 'auto' }}>
+                  <GiftBox onOpen={handleGiftBoxClick} />
+                </div>
+              ) : (
+                <div style={{ pointerEvents: 'auto' }}>
+                  <JelloAvatar
+                    character={character}
+                    size="small"
+                    mood={mood}
+                    action={action}
+                  />
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* FAB Menu (Floating Action Button) */}
+      <div className="fab-menu-container">
+        {/* Expanded Menu Items (visible when open) */}
+        {isFabOpen && (
+          <>
+            {/* Shop Button - first below toggle */}
+            <button
+              className="fab-menu-item"
+              onClick={toggleShopMenu}
+              disabled={isActionInProgress || showGiftBox}
+              title={t('shop.menu.title', 'Shop')}
+              style={{ top: '60px' }}
+            >
+              <span className="action-icon">🛖</span>
+            </button>
+
+            {/* Camera Button - second below toggle */}
+            <button
+              className="fab-menu-item"
+              onClick={handleCameraClick}
+              disabled={isActionInProgress || showGiftBox}
+              title={t('actions.camera', 'Camera')}
+              style={{ top: '120px' }}
+            >
+              <span className="action-icon">📷</span>
+            </button>
+            {/* Premium Purchase Button - third below toggle (only if not premium) */}
+            {!nurturing.subscription.isPremium && !showGiftBox && (
+              <div style={{
+                position: 'absolute',
+                top: '180px',
+                width: '100%',
+                display: 'flex',
+                justifyContent: 'center',
+                pointerEvents: 'none', // Allow passing through to things behind if transparent, but button captures
+                zIndex: 25 // Ensure on top
+              }}>
+                <button
+                  className="premium-btn-floating"
+                  onClick={() => {
+                    playButtonSound();
+                    navigate('/profile');
+                  }}
+                  disabled={isActionInProgress}
+                  title={t('profile.upgradePrompt', 'Upgrade to Premium')}
+                  style={{
+                    position: 'relative', // Override Absolute
+                    top: 'auto',
+                    bottom: 'auto',
+                    right: 'auto',
+                    pointerEvents: 'auto',
+                    transform: 'none' // Reset any default transform from class if needed, but class has transform transition
+                  }}
+                >
+                  <span className="action-icon">🎁</span>
+                  <span className="premium-label">Premium</span>
+                </button>
               </div>
             )}
-          </div>
+          </>
         )}
+
+        {/* Main FAB Toggle Button */}
+        <button
+          className="shop-btn-floating"
+          onClick={() => {
+            playButtonSound();
+            setIsFabOpen(!isFabOpen);
+          }}
+          disabled={showGiftBox}
+          title={isFabOpen ? t('common.close', 'Close') : t('common.menu', 'Menu')}
+        >
+          <span className="action-icon" style={{
+            transition: 'transform 0.3s ease',
+            transform: isFabOpen ? 'rotate(45deg)' : 'rotate(0deg)',
+            color: '#8B4513'
+          }}>
+            ＋
+          </span>
+        </button>
       </div>
+
+
 
 
 

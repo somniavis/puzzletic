@@ -1400,7 +1400,8 @@
 /* FAB Menu Container */
 .fab-menu-container {
   position: absolute;
-  top: 20px;
+  /* Adjusted to be below the header (Desktop Header ~97px + comfortable margin) */
+  top: 130px;
   right: 20px;
   z-index: 20;
   display: flex;
@@ -1460,7 +1461,8 @@
 
 @media (max-width: 768px) {
   .fab-menu-container {
-    top: 15px;
+    /* Adjusted for Mobile Header (~57px + comfortable margin) */
+    top: 90px;
     right: 15px;
   }
 
