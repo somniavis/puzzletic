@@ -144,41 +144,57 @@ export const PetRoom: React.FC<PetRoomProps> = ({
       setIsSnapshotLoading(true);
       setShowCameraModal(true);
 
-      // 2. Wait for menu animation to finish (300ms) + slight buffer before capturing
-      setTimeout(async () => {
-        if (!petRoomRef.current) return;
+      // 2. Wait for UI update (Loading Spinner) to render before capturing
+      // Use double-RAF to ensure paint
+      requestAnimationFrame(() => {
+        requestAnimationFrame(async () => {
+          if (!petRoomRef.current) return;
 
-        try {
-          const dataUrl = await toPng(petRoomRef.current, {
-            // Filter out the camera modal itself from the snapshot
-            filter: (node) => {
-              if (node.classList && node.classList.contains('camera-modal-overlay')) {
-                return false;
-              }
-              return true;
-            }
-          });
+          try {
+            const dataUrl = await toPng(petRoomRef.current, {
+              cacheBust: true,
+              pixelRatio: 2, // Better quality
+              filter: (node) => {
+                // Exclude UI elements from snapshot
+                const excludeClasses = [
+                  'camera-modal-overlay',
+                  'action-bar',
+                  'fab-menu-container',
+                  'settings-menu-overlay',
+                  'premium-btn-floating',
+                  'abandonment-alert',
+                  'premium-btn'
+                ];
+                if (node.classList) {
+                  for (const cls of excludeClasses) {
+                    if (node.classList.contains(cls)) return false;
+                  }
+                }
+                return true;
+              },
+            });
 
-          const shareData: ShareData = {
-            c: speciesId,
-            e: character.evolutionStage,
-            n: character.name,
-            h: nurturing.currentHouseId || 'default',
-            g: nurturing.currentLand,
-            l: character.level
-          };
+            const shareData: ShareData = {
+              c: speciesId,
+              e: character.evolutionStage,
+              n: character.name,
+              h: nurturing.currentHouseId || 'default',
+              g: nurturing.currentLand,
+              l: character.level
+            };
 
-          const shareUrl = generateShareUrl(shareData);
+            const shareUrl = generateShareUrl(shareData);
 
-          setCapturedImage(dataUrl);
-          setCurrentShareUrl(shareUrl);
-        } catch (err) {
-          console.error('Failed to capture image:', err);
-          setShowCameraModal(false);
-        } finally {
-          setIsSnapshotLoading(false);
-        }
-      }, 500);
+            setCapturedImage(dataUrl);
+            setCurrentShareUrl(shareUrl);
+          } catch (err) {
+            console.error('Failed to capture image:', err);
+            setShowCameraModal(false);
+          } finally {
+            setIsSnapshotLoading(false);
+          }
+        });
+      });
     } catch (err) {
       console.error('Error in camera click handler:', err);
       setIsSnapshotLoading(false);
@@ -608,7 +624,8 @@ export const PetRoom: React.FC<PetRoomProps> = ({
     Legacy component lookup removed.
     Using generic JelloAvatar component.
   */
-  const CharacterComponent = JelloAvatar;
+  // Removed obsolete alias
+  // const CharacterComponent = JelloAvatar;
 
   // Lightning Effect State
   const [lightningStyle, setLightningStyle] = useState<React.CSSProperties>({});
@@ -699,7 +716,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({
         <div className="character-profile" onClick={() => navigate('/profile')} style={{ cursor: 'pointer' }}>
           <div className="profile-avatar">
             {!showGiftBox ? (
-              <CharacterComponent
+              <JelloAvatar
                 character={character}
                 size="small"
                 mood={mood}
@@ -947,7 +964,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({
               </div>
             ) : (
               <div style={{ pointerEvents: 'auto' }}>
-                <CharacterComponent
+                <JelloAvatar
                   character={character}
                   size="small"
                   mood={mood}

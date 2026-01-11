@@ -199,8 +199,6 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
       const userState = loadNurturingState();
       const { updatedState } = applyOfflineProgress(userState);
 
-      // Update prevStageRef assignment removed (using lastSeenStage)
-
       // Sync independent key if state has higher value
       if (updatedState.lastSeenStage) {
         const currentStored = getFailSafeLastSeenStage() || 0;
@@ -210,9 +208,49 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
       }
 
       setState(updatedState);
-      saveNurturingState(updatedState);
+      // saveNurturingState removed
     }
   }, [user?.uid]);
+
+  // ==================== PERSISTENCE THROTTLING ====================
+  const lastSaveTimeRef = useRef<number>(Date.now());
+  const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    // 1. Update Reference for async access
+    stateRef.current = state;
+
+    const THROTTLE_MS = 5000;
+    const now = Date.now();
+    const timeSinceLast = now - lastSaveTimeRef.current;
+
+    const doSave = () => {
+      if (stateRef.current) {
+        saveNurturingState(stateRef.current); // Use global currentUserId
+        lastSaveTimeRef.current = Date.now();
+        saveTimeoutRef.current = null;
+        // console.log('💾 Throttled save executed');
+      }
+    };
+
+    // 2. Throttle Logic
+    if (timeSinceLast >= THROTTLE_MS) {
+      // Immediate Execution
+      if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
+      doSave();
+    } else {
+      // Schedule (if not already scheduled)
+      if (!saveTimeoutRef.current) {
+        saveTimeoutRef.current = setTimeout(doSave, THROTTLE_MS - timeSinceLast);
+      }
+    }
+
+    // Safety: Save on unload
+    const handleUnload = () => doSave();
+    window.addEventListener('beforeunload', handleUnload);
+    return () => window.removeEventListener('beforeunload', handleUnload);
+
+  }, [state]); // Run on every state change
 
   // Evolution Animation State (Transient)
   const [isEvolving, setIsEvolving] = useState(false);
@@ -227,7 +265,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
       // Emergency Persistence: Save to independent key
       saveFailSafeLastSeenStage(currentState.evolutionStage);
 
-      saveNurturingState(newState);
+      // saveNurturingState(newState); // Handled by throttle
       // Essential: immediate cloud save to lock in this milestone (Evolution)
       if (user) {
         console.log('☁️ Evolution milestone reached. Syncing to cloud...');
@@ -425,7 +463,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
       }
 
       setState(restoredState);
-      saveNurturingState(restoredState);
+      // saveNurturingState(restoredState); // Handled by throttle
     });
   }, [user]);
 
@@ -532,7 +570,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
         // Animation handled by useEffect monitoring state.evolutionStage
       }
 
-      saveNurturingState(newState);
+      // saveNurturingState(newState); // Handled by throttle
       // Removed immediate syncUserData(user, newState);
       return newState;
     });
@@ -561,7 +599,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
         gro: (currentState.gro || 0) - price,
         inventory: [...(currentState.inventory || []), itemId],
       };
-      saveNurturingState(newState);
+      // saveNurturingState(newState); // Handled by throttle
       // Removed immediate syncUserData(user, newState);
       return newState;
     });
@@ -582,7 +620,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
         ...currentState,
         currentLand: landId,
       };
-      saveNurturingState(newState);
+      // saveNurturingState(newState); // Handled by throttle
       return newState;
     });
     return success;
@@ -602,7 +640,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
         ...currentState,
         currentHouseId: houseId,
       };
-      saveNurturingState(newState);
+      // saveNurturingState(newState); // Handled by throttle
       return newState;
     });
     return success;
@@ -635,7 +673,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
         totalMinigamePlayCount: (currentState.totalMinigamePlayCount || 0) + 1
       };
 
-      saveNurturingState(newState);
+      // saveNurturingState(newState); // Handled by throttle
       // No immediate cloud sync: Rely on auto-sync interval
       return newState;
     });
@@ -724,7 +762,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
       };
 
       // 저장
-      saveNurturingState(newState);
+      // saveNurturingState(newState); // Handled by throttle
 
       // 조건 업데이트
       setCondition(tickResult.condition);
@@ -810,7 +848,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
       }
 
       // 5. 저장 및 조건 평가
-      saveNurturingState(newState);
+      // saveNurturingState(newState); // Handled by throttle
       // 질병 상태가 변경되었을 수 있으므로 newState.isSick 확인
       setCondition(evaluateCondition(newState.stats, newState.isSick));
 
@@ -952,7 +990,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
         ...currentState,
         gro: (currentState.gro || 0) - amount,
       };
-      saveNurturingState(newState);
+      // saveNurturingState(newState); // Handled by throttle
       return newState;
     });
     return success;
@@ -998,7 +1036,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
         lastActiveTime: Date.now(),
       };
 
-      saveNurturingState(newState);
+      // saveNurturingState(newState); // Handled by throttle
       setCondition(evaluateCondition(newStats));
 
       result = {
@@ -1028,7 +1066,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
         sickProgress: 0,
         lastActiveTime: Date.now(),
       };
-      saveNurturingState(newState);
+      // saveNurturingState(newState); // Handled by throttle
       setCondition(evaluateCondition(newStats));
       result = { success: true, statChanges: newStats, message: '모든 상태가 회복되었습니다!' };
       return newState;
@@ -1064,7 +1102,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
         poops: updatedPoops,
       };
 
-      saveNurturingState(newState);
+      // saveNurturingState(newState); // Handled by throttle
       setCondition(evaluateCondition(newStats));
 
       return newState;
@@ -1094,7 +1132,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
         bugs: updatedBugs,
       };
 
-      saveNurturingState(newState);
+      // saveNurturingState(newState); // Handled by throttle
       setCondition(evaluateCondition(newStats)); // Condition update needed
 
       return newState;
@@ -1128,7 +1166,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
         lastActiveTime: Date.now(),
       };
 
-      saveNurturingState(newState);
+      // saveNurturingState(newState); // Handled by throttle
       setCondition(evaluateCondition(newStats));
 
       result = { success: true, statChanges: { happiness: 3, health: 1 }, message: '벌레 1마리를 제거했습니다!' };
@@ -1153,7 +1191,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
         gameDifficulty: null, // Reset game difficulty
       };
 
-      saveNurturingState(preservedState);
+      // saveNurturingState(preservedState); // Handled by throttle
 
       // Force Sync to Cloud immediately to preventing "Zombie Data" restoration
       // (Otherwise, "Fresh State" logic would overwrite this reset with old cloud data)
@@ -1174,7 +1212,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
         ...currentState,
         hasCharacter: true,
       };
-      saveNurturingState(newState);
+      // saveNurturingState(newState); // Handled by throttle
       // Sync to cloud immediately to persist character creation
       if (user) {
         syncUserData(user, newState);
@@ -1193,7 +1231,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
           isActive: false,
         },
       };
-      saveNurturingState(newState);
+      // saveNurturingState(newState); // Handled by throttle
       return newState;
     });
   }, []);
@@ -1211,7 +1249,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
           isActive: true,
         },
       };
-      saveNurturingState(newState);
+      // saveNurturingState(newState); // Handled by throttle
       return newState;
     });
   }, []);
@@ -1223,7 +1261,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
         ...currentState,
         gameDifficulty: difficulty,
       };
-      saveNurturingState(newState); // Save the state change
+      // saveNurturingState(newState); // Handled by throttle
       return newState;
     });
   }, []);
@@ -1253,7 +1291,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
         [id]: Array.from(newUnlocks).sort((a, b) => a - b)
       };
 
-      saveNurturingState(newState);
+      // saveNurturingState(newState); // Handled by throttle
       return newState;
     });
   }, []);
@@ -1264,7 +1302,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
         ...currentState,
         characterName: name,
       };
-      saveNurturingState(newState);
+      // saveNurturingState(newState); // Handled by throttle
       return newState;
     });
   }, []);
@@ -1287,7 +1325,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
       };
 
       console.log(nextIsSleeping ? '😴 젤로가 잠들었습니다.' : '🌅 젤로가 일어났습니다.');
-      saveNurturingState(newState);
+      // saveNurturingState(newState); // Handled by throttle
       return newState;
     });
   }, []);

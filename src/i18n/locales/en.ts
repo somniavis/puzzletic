@@ -133,6 +133,7 @@ export const en = {
     cancel: 'Cancel',
     confirm: 'Confirm',
     close: 'Close',
+    menu: 'Menu',
     score: 'Score',
     lives: 'Lives',
     combo: 'Combo',
