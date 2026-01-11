@@ -49,5 +49,5 @@ export const decodeShareData = (encodedInfo: string): ShareData | null => {
 export const generateShareUrl = (data: ShareData): string => {
     const encoded = encodeShareData(data);
     const baseUrl = window.location.origin;
-    return `${baseUrl}/share?data=${encoded}`;
+    return `${baseUrl}/share?data=${encodeURIComponent(encoded)}`;
 };

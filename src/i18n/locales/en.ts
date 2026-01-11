@@ -360,6 +360,17 @@ export const en = {
   },
   camera: {
     title: 'Snapshot!',
+    save: 'Save',
+    copyLink: 'Copy Link',
+    capturing: 'Capturing...',
+  },
+  share: {
+    linkCopied: 'Link Copied!',
+    copyFailed: 'Failed to Copy',
+    invite: {
+      title: 'This is the Jello I\'m raising! 🥰',
+      desc: 'Want to raise one together?',
+    },
   },
   sleep: {
     confirm: {

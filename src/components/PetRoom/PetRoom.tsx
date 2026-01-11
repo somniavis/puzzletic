@@ -26,6 +26,7 @@ import { ConfirmModal } from './ConfirmModal';
 import { CameraModal } from './CameraModal';
 import { toPng } from 'html-to-image';
 import { generateShareUrl, type ShareData } from '../../utils/shareUtils';
+import { FabMenu } from './FabMenu';
 import './PetRoom.css';
 
 import { useNavigate } from 'react-router-dom';
@@ -797,69 +798,14 @@ export const PetRoom: React.FC<PetRoomProps> = ({
         {/* FAB Menu Anchor - Positioned exactly below header */}
         <div style={{ position: 'relative', width: '100%', height: 0, zIndex: 20 }}>
           {/* FAB Menu (Floating Action Button) */}
-          <div className="fab-menu-container">
-            {/* Main FAB Toggle Button (Now First) */}
-            <button
-              className="shop-btn-floating"
-              onClick={() => {
-                playButtonSound();
-                setIsFabOpen(!isFabOpen);
-              }}
-              disabled={showGiftBox}
-              title={isFabOpen ? t('common.close', 'Close') : t('common.menu', 'Menu')}
-            >
-              <span className="action-icon" style={{
-                transition: 'transform 0.3s ease',
-                transform: isFabOpen ? 'rotate(45deg)' : 'rotate(0deg)',
-                color: '#8B4513'
-              }}>
-                ＋
-              </span>
-            </button>
-
-            {/* Expanded Menu Items (Flowing downwards) */}
-            {isFabOpen && (
-              <>
-                {/* Shop Button */}
-                <button
-                  className="fab-menu-item"
-                  onClick={toggleShopMenu}
-                  disabled={isActionInProgress || showGiftBox}
-                  title={t('shop.menu.title', 'Shop')}
-                >
-                  <span className="action-icon">🛖</span>
-                </button>
-
-                {/* Camera Button */}
-                <button
-                  className="fab-menu-item"
-                  onClick={handleCameraClick}
-                  disabled={isActionInProgress || showGiftBox}
-                  title={t('actions.camera', 'Camera')}
-                >
-                  <span className="action-icon">📷</span>
-                </button>
-
-                {/* Premium Purchase Button */}
-                {!nurturing.subscription.isPremium && !showGiftBox && (
-                  <div className="fab-premium-wrapper">
-                    <button
-                      className="premium-btn-floating"
-                      onClick={() => {
-                        playButtonSound();
-                        navigate('/profile');
-                      }}
-                      disabled={isActionInProgress}
-                      title={t('profile.upgradePrompt', 'Upgrade to Premium')}
-                    >
-                      <span className="action-icon">🎁</span>
-                      <span className="premium-label">Premium</span>
-                    </button>
-                  </div>
-                )}
-              </>
-            )}
-          </div>
+          <FabMenu
+            isFabOpen={isFabOpen}
+            setIsFabOpen={setIsFabOpen}
+            toggleShopMenu={toggleShopMenu}
+            handleCameraClick={handleCameraClick}
+            showGiftBox={showGiftBox}
+            isActionInProgress={isActionInProgress}
+          />
         </div>
 
 

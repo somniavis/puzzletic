@@ -4,12 +4,15 @@ import { useTranslation } from 'react-i18next';
 import './PetRoom.css'; // Reusing PetRoom styles for modal overlay
 
 // Loading Spinner Component (Internal)
-const LoadingSpinner = () => (
-    <div className="loading-spinner-container" style={{ margin: '2rem 0' }}>
-        <div className="loading-spinner">🐾</div>
-        <div className="loading-text">Capturing...</div>
-    </div>
-);
+const LoadingSpinner = () => {
+    const { t } = useTranslation();
+    return (
+        <div className="loading-spinner-container" style={{ margin: '2rem 0' }}>
+            <div className="loading-spinner">🐾</div>
+            <div className="loading-text">{t('camera.capturing', 'Capturing...')}</div>
+        </div>
+    );
+};
 
 interface CameraModalProps {
     imageDataUrl: string | null;
@@ -41,13 +44,48 @@ export const CameraModal: React.FC<CameraModalProps> = ({
     const handleCopyLink = async () => {
         if (!shareUrl) return;
         playButtonSound();
-        try {
-            await navigator.clipboard.writeText(shareUrl);
-            setCopyFeedback(t('share.linkCopied', 'Link Copied!'));
+
+        const copyToClipboardFallback = (text: string) => {
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+
+            // Avoid scrolling to bottom
+            textArea.style.top = "0";
+            textArea.style.left = "0";
+            textArea.style.position = "fixed";
+            textArea.style.opacity = "0";
+
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    setCopyFeedback(t('share.linkCopied', 'Link Copied!'));
+                } else {
+                    throw new Error('Fallback copy failed');
+                }
+            } catch (err) {
+                console.error('Fallback: Oops, unable to copy', err);
+                setCopyFeedback(t('share.copyFailed', 'Failed to Copy'));
+            }
+
+            document.body.removeChild(textArea);
             setTimeout(() => setCopyFeedback(null), 2000);
-        } catch (err) {
-            console.error('Failed to copy link: ', err);
-            setCopyFeedback(t('share.copyFailed', 'Failed to Copy'));
+        };
+
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            try {
+                await navigator.clipboard.writeText(shareUrl);
+                setCopyFeedback(t('share.linkCopied', 'Link Copied!'));
+                setTimeout(() => setCopyFeedback(null), 2000);
+            } catch (err) {
+                console.warn('Clipboard API failed, trying fallback:', err);
+                copyToClipboardFallback(shareUrl);
+            }
+        } else {
+            copyToClipboardFallback(shareUrl);
         }
     };
 
@@ -150,7 +188,7 @@ export const CameraModal: React.FC<CameraModalProps> = ({
                             onClick={handleDownload}
                         >
                             <span className="action-icon" style={{ fontSize: '1.4rem', filter: 'none' }}>💾</span>
-                            <span className="action-label" style={{ color: '#fff', fontSize: '0.9rem', fontWeight: 'bold' }}>Download</span>
+                            <span className="action-label" style={{ color: '#fff', fontSize: '0.9rem', fontWeight: 'bold' }}>{t('camera.save', 'Save')}</span>
                         </button>
 
                         {/* Copy Link Button */}
@@ -175,7 +213,7 @@ export const CameraModal: React.FC<CameraModalProps> = ({
                         >
                             <span className="action-icon" style={{ fontSize: '1.4rem', filter: 'none' }}>🔗</span>
                             <span className="action-label" style={{ color: copyFeedback ? '#333' : '#fff', fontSize: '0.9rem', fontWeight: 'bold' }}>
-                                {copyFeedback || 'Share Link'}
+                                {copyFeedback || t('camera.copyLink', 'Copy Link')}
                             </span>
                         </button>
                     </div>
