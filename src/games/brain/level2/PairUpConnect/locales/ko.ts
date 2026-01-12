@@ -1,10 +1,10 @@
 export default {
-    title: '짝꿍 찾기: 커넥트',
-    subtitle: '두뇌 레벨 2 | 논리력',
-    description: '서로 관련 있는 짝(예: 비 & 우산)을 찾아보세요!',
+    title: '짝꿍 찾기',
+    subtitle: '무엇이랑 짝꿍일까?',
+    description: '서로 관계있는 그림끼리 찾아주세요 (예: 비 & 우산)!',
     howToPlay: {
-        step1: { title: '기억하기', desc: '3초 동안 카드의 위치를 외우세요.' },
-        step2: { title: '연결하기', desc: '논리적으로 연관된 카드를 뒤집으세요.' },
-        step3: { title: '성공', desc: '모든 짝을 맞추면 승리!' }
+        step1: { title: '목표', desc: '서로 어울리는 짝꿍을 찾아요.' },
+        step2: { title: '방법', desc: '비가 오면 우산이 필요하죠! 관계를 생각해요.' },
+        step3: { title: '팁', desc: '무엇이 서로 어울리는지 생각해보세요.' }
     }
 };

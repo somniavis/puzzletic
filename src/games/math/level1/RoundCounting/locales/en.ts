@@ -1,11 +1,11 @@
 export default {
-    title: 'Round & Round Counting',
-    sub: 'Find and Shuffle!',
+    title: 'Spin & Spot',
+    sub: 'Catch the Moving Target!',
     desc: 'Find the target items! The grid shuffles every time you find one.',
     howToPlay: {
-        goal: { title: 'Goal', desc: 'Find the target items shown at the top.' },
-        action: { title: 'Action', desc: 'Tap the matching items before time runs out.' },
-        math: { title: 'Challenge', desc: 'The grid keeps moving! Watch closely and count fast.' }
+        goal: { title: 'Goal', desc: 'Find the items shown at the top.' },
+        action: { title: 'Action', desc: 'Tap them quickly before they move!' },
+        math: { title: 'Tip', desc: 'Keep your eyes open, they shuffle fast!' }
     },
     target: 'Find {{count}} {{emoji}}',
     shuffleMessage: 'Shuffling!',

@@ -1,17 +1,17 @@
 export default {
-    title: 'ぐるぐるカウンティング',
-    sub: '見つけてシャッフル！',
-    desc: 'ターゲットのアイテムを見つけよう！見つけるたびにグリッドがシャッフルされるよ。',
+    title: 'くるくるさがし',
+    sub: 'うごくターゲット！',
+    desc: '絵がシャッフルするよ！　もくひょうの絵をはやく見つけてね。',
     howToPlay: {
-        goal: { title: '目標', desc: '上に表示されたターゲットアイテムを見つける。' },
-        action: { title: 'アクション', desc: '時間切れになる前に同じアイテムをタップ。' },
-        math: { title: 'チャレンジ', desc: 'グリッドが動き続けるよ！よく見て素早く数えてね。' }
+        goal: { title: 'もくひょう', desc: '上にでてくる絵をさがしてね。' },
+        action: { title: 'やりかた', desc: 'うごく前にはやくタッチ！' },
+        math: { title: 'ヒント', desc: 'まばたきしないでさがしてね！' }
     },
-    target: '{{emoji}}を{{count}}個 探せ',
+    target: '{{count}}この {{emoji}} をさがせ',
     shuffleMessage: 'シャッフル！',
     powerups: {
-        freeze: '時間停止！',
-        life: 'ライフ＋１！',
-        double: 'スコア２倍！'
+        freeze: 'じかんストップ！',
+        life: 'ライフかいふく！',
+        double: 'スコア2ばい！'
     }
 };

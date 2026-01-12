@@ -1,16 +1,20 @@
 export default {
-    title: "10칸 세기",
-    subtitle: "10개씩 묶어 세기",
-    desc: "10개짜리 줄을 이용해서 빠르게 세어보세요!",
-    question: "{{item}}이(가) 몇 개일까요?",
+    title: "10단위 블록",
+    subtitle: "10개씩 묶어 세기!",
+    desc: "10개씩 꽉 찬 블록을 먼저 세면 빨라요!",
+    question: "{{item}} 개수는 모두 몇 개일까요?",
     howToPlay: {
         step1: {
-            title: "줄 확인하기",
-            desc: "가득 찬 줄은 10개입니다."
+            title: "목표",
+            desc: "모든 블록을 빠르게 세어보아요."
         },
         step2: {
-            title: "낱개 세기",
-            desc: "나머지 낱개를 더해서 맞추세요."
+            title: "방법",
+            desc: "꽉 찬 줄은 10개예요. 나머지를 더해요."
+        },
+        step3: {
+            title: "팁",
+            desc: "10, 20... 그리고 1, 2, 3!"
         }
     }
 };

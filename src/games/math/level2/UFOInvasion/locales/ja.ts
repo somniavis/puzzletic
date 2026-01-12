@@ -1,19 +1,19 @@
 export default {
-    title: "UFOインベーション",
-    subtitle: "計算で守れ！",
-    description: "計算で侵略者を迎撃しよう！",
+    title: "スター・ディフェンダー",
+    subtitle: "UFOをやっつけろ！",
+    description: "うちゅうじんがおりてくるのをふせごう！",
     instructions: {
         step1: {
-            title: "ロックオン",
-            desc: "UFOをタップ。"
+            title: "もくひょう",
+            desc: "UFOが地面につくまえに止めてね。"
         },
         step2: {
-            title: "発射",
-            desc: "答えを選択。"
+            title: "やりかた",
+            desc: "こたえをえらんでレーザーはっしゃ！"
         },
         step3: {
-            title: "防衛",
-            desc: "着陸を阻止しよう！"
+            title: "ヒント",
+            desc: "いそいで！ どんどんやってくるよ！"
         }
     }
 };

@@ -1,23 +1,23 @@
 const manifest = {
     title: "과일 자르기",
-    sub: "맞는 숫자로 과일을 잘라라!",
-    desc: "빈칸에 들어갈 숫자를 계산해서 과일을 자르세요.",
+    sub: "정답을 싹둑!",
+    desc: "물음표에 들어갈 숫자는? 정답 과일을 싹둑 잘라주세요!",
     howToPlay: {
         goal: {
             title: "목표",
-            desc: "정답 숫자를 찾아 식을 완성하세요."
+            desc: "물음표에 들어갈 숫자는?"
         },
         action: {
-            title: "자르기",
-            desc: "숫자 칼을 과일로 끌어와서 자르세요."
+            title: "방법",
+            desc: "정답 과일을 싹둑 잘라주세요!"
         },
         math: {
-            title: "수학",
-            desc: "빈칸에 들어갈 숫자를 찾으세요."
+            title: "팁",
+            desc: "틀린 과일은 자르면 안 돼요!"
         }
     },
     powerups: {
-        freeze: "시간 정지",
+        freeze: "시간 멈춤",
         life: "생명 추가",
         double: "점수 2배"
     }

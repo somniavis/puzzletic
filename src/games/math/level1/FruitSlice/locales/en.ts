@@ -1,19 +1,19 @@
 const manifest = {
     title: "Fruit Slice",
-    sub: "Cut the fruit with the right number!",
+    sub: "Slice the Answer!",
     desc: "Calculate the missing number and slice the fruit to make a healthy snack.",
     howToPlay: {
         goal: {
             title: "Goal",
-            desc: "Solve the equation by finding the correct missing number."
+            desc: "Find the missing number."
         },
         action: {
-            title: "Slice",
-            desc: "Drag the number knife to the fruit to slice it."
+            title: "Action",
+            desc: "Slice the correct fruit!"
         },
         math: {
-            title: "Math",
-            desc: "Find the missing number to complete the equation."
+            title: "Tip",
+            desc: "Wrong fruit? Do not slice!"
         }
     },
     powerups: {

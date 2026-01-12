@@ -1,11 +1,11 @@
 export default {
-    title: "Deep Sea Dive",
-    sub: "Dive to the correct depth!",
+    title: "Deep Dive",
+    sub: "Dive Deeper!",
     desc: "Solve subtraction problems to help the sea animals dive.",
     howToPlay: {
-        goal: { title: "Goal", desc: "Solve the subtraction equations." },
-        action: { title: "Action", desc: "Tap the correct depth on the gauge." },
-        rule: { title: "Rule", desc: "Deeper answers mean deeper dives!" }
+        goal: { title: "Goal", desc: "Dive to the right depth." },
+        action: { title: "Action", desc: "Solve the subtraction to move down." },
+        rule: { title: "Tip", desc: "Go lower and lower!" }
     },
     powerups: {
         timeFreeze: "Freeze Time",

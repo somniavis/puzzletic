@@ -1,19 +1,19 @@
 export default {
-    title: 'Number Hive',
-    sub: 'Find the Sequence!',
+    title: 'Honey Path',
+    sub: '1, 2, 3... Connect!',
     desc: 'Click the numbers in order starting from the target.',
     howToPlay: {
         goal: {
             title: 'Goal',
-            desc: 'Find numbers in sequence',
+            desc: 'Help the bee find the honey.',
         },
         action: {
             title: 'Action',
-            desc: 'Tap numbers in 1-2-3 order',
+            desc: 'Tap numbers in order: 1 -> 2 -> 3!',
         },
         rule: {
-            title: 'Rule',
-            desc: 'Start from the target number shown at the top!',
+            title: 'Tip',
+            desc: 'Follow the path carefully.',
         },
     },
     level: 'Level',

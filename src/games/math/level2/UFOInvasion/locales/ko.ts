@@ -1,19 +1,19 @@
 export default {
-    title: "UFO 침공",
-    subtitle: "수학으로 막아라!",
-    description: "수학 문제로 침략자들을 막으세요!",
+    title: "우주 방위대",
+    subtitle: "UFO를 막아라!",
+    description: "외계인들이 착륙하지 못하게 막아주세요!",
     instructions: {
         step1: {
-            title: "조준",
-            desc: "UFO를 터치하세요."
+            title: "목표",
+            desc: "UFO가 땅에 닿기 전에 막아야 해요."
         },
         step2: {
-            title: "발사",
-            desc: "정답을 선택하세요."
+            title: "방법",
+            desc: "정답을 맞춰서 레이저 발사!"
         },
         step3: {
-            title: "방어",
-            desc: "착륙하지 못하게 막으세요!"
+            title: "팁",
+            desc: "서둘러요! 그들이 오고 있어요!"
         }
     }
 };

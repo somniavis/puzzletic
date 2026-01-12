@@ -1,20 +1,20 @@
 
 export default {
-    title: "Signal Hunter",
-    subtitle: "Catch the Signal!",
+    title: "Radar Catcher",
+    subtitle: "Radar Catcher",
     description: "Scan the radar and lock onto the target signals!",
     howToPlay: {
         step1: {
-            title: "Watch the Radar",
-            desc: "A red scanner arm will rotate around the radar."
+            title: "Goal",
+            desc: "Find the target shown at the top."
         },
         step2: {
-            title: "Wait for Signal",
-            desc: "Wait until the scanner hits the target signal."
+            title: "Action",
+            desc: "Tap when the needle hits the icon!"
         },
         step3: {
-            title: "Lock On!",
-            desc: "Tap anywhere to lock on! The scanner will reverse."
+            title: "Tip",
+            desc: "Timing is everything. Don't miss!"
         }
     }
 };

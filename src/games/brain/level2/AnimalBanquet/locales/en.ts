@@ -1,11 +1,11 @@
 export default {
-    title: 'Animal Banquet',
-    subtitle: 'Feed the hungry animals!',
+    title: 'Hungry Party',
+    subtitle: 'Who needs food?',
     description: 'Remember who you fed! Give the right food to moving animals.',
     howToPlay: {
-        step1: { title: 'Feed Animals', desc: 'Give correct food to each animal.' },
-        step2: { title: 'Remember', desc: "Don't feed the same animal twice!" },
-        step3: { title: 'Be Fast', desc: 'They keep moving around.' }
+        step1: { title: 'Goal', desc: 'Feed every animal exactly once.' },
+        step2: { title: 'Action', desc: 'Give food to hungry animals.' },
+        step3: { title: 'Tip', desc: "Don't feed full animals again!" }
     },
     feedback: {
         full: "I'm Full! 🤢",

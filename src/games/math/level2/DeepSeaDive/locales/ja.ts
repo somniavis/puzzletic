@@ -1,15 +1,15 @@
 export default {
-    title: "ディープシー・ダイブ",
-    sub: "正しい深さへ潜ろう！",
-    desc: "引き算の問題を解いて、海の生き物を潜らせてあげよう。",
+    title: "深海ダイビング",
+    sub: "もっとふかく！",
+    desc: "ひきざんをといて、海のなかまたちをもぐらせてあげよう。",
     howToPlay: {
-        goal: { title: "目標", desc: "引き算の式を解く。" },
-        action: { title: "アクション", desc: "ゲージの正しい深さをタップ。" },
-        rule: { title: "ルール", desc: "答えが大きいほど深く潜るよ！" }
+        goal: { title: "もくひょう", desc: "ただしい深さまでもぐってね。" },
+        action: { title: "やりかた", desc: "ひきざんをといて、したへすすもう。" },
+        rule: { title: "ヒント", desc: "どんどんふかくもぐっていくよ！" }
     },
     powerups: {
-        timeFreeze: "時間停止",
-        extraLife: "ライフ＋１",
-        doubleScore: "スコア２倍"
+        timeFreeze: "じかんストップ",
+        extraLife: "ライフかいふく",
+        doubleScore: "スコア2ばい"
     }
 };

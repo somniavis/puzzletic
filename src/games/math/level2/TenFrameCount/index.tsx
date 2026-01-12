@@ -52,6 +52,7 @@ export const TenFrameCount: React.FC<TenFrameCountProps> = ({ onExit }) => {
             instructions={[
                 { icon: '👀', title: t('games.ten-frame-count.howToPlay.step1.title'), description: t('games.ten-frame-count.howToPlay.step1.desc') },
                 { icon: '🔢', title: t('games.ten-frame-count.howToPlay.step2.title'), description: t('games.ten-frame-count.howToPlay.step2.desc') },
+                { icon: '✨', title: t('games.ten-frame-count.howToPlay.step3.title'), description: t('games.ten-frame-count.howToPlay.step3.desc') },
             ]}
             onExit={onExit}
         >

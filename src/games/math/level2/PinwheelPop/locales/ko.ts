@@ -1,15 +1,19 @@
 export default {
-    title: "핀휠 팝",
-    subtitle: "터뜨리고 돌려라!",
-    desc: "날개를 완성해서 바람개비를 돌리세요!",
+    title: "바람개비 수학",
+    subtitle: "날개를 고쳐줘!",
+    desc: "날개 4개를 모두 고치면 바람개비가 돌아가요!",
     howToPlay: {
         step1: {
-            title: "날개 확인하기",
-            desc: "큰 날개에 연결된 두 숫자를 더하세요!"
+            title: "목표",
+            desc: "모든 날개의 문제를 풀어주세요."
         },
         step2: {
-            title: "풀고 돌리기",
-            desc: "4개의 날개를 모두 맞추면 바람개비가 돌아갑니다!"
+            title: "방법",
+            desc: "날개에 있는 두 숫자를 더해요."
+        },
+        step3: {
+            title: "팁",
+            desc: "모든 날개를 채우면 슝슝 돌아가요!"
         }
     },
     question: "합계는?"

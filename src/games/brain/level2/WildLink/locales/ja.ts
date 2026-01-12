@@ -1,10 +1,10 @@
 export default {
-    title: 'ワイルドリンク',
-    subtitle: '動物をつなげよう',
-    description: '同じ種類の動物をつなげよう。すべてのペアをつなぐとクリア。',
+    title: 'ジャングル・パス',
+    subtitle: 'どうぶつをつなごう！',
+    description: 'おなじ種類のどうぶつを線でつないでね。線がぶつからないように気をつけて！',
     howToPlay: {
-        step1: { title: 'マッチ', desc: '同じ種類の動物をつなぐ。' },
-        step2: { title: '完成', desc: 'すべてのペアをつなぐ。' },
-        step3: { title: '交差しない', desc: '道は交差できない。' }
+        step1: { title: 'もくひょう', desc: 'おなじどうぶつの家族をつなごう。' },
+        step2: { title: 'やりかた', desc: '線がぶつからないように気をつけて。' },
+        step3: { title: 'ヒント', desc: '森のマスをぜんぶうめてね！' }
     }
 };

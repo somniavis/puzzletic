@@ -1,26 +1,26 @@
 export default {
-    title: 'アニマルバンケット',
-    subtitle: 'お腹を空かせた動物たちに餌をあげよう！',
-    description: '誰に餌をあげたか覚えておこう！動き回る動物たちに正しい食べ物をあげよう。',
+    title: 'はらぺこパーティ',
+    subtitle: 'ごはんがほしいのはだれ？',
+    description: 'だれにあげたかおぼえてて！ うごくどうぶつにごはんをあげよう。',
     howToPlay: {
-        step1: { title: '餌やり', desc: '動物に正しい食べ物をあげる。' },
-        step2: { title: '覚える', desc: '同じ動物に2回あげないで！' },
-        step3: { title: '急いで', desc: '動物たちは動き回るよ。' }
+        step1: { title: 'もくひょう', desc: 'ぜんぶのどうぶつに１回ずつごはんをあげてね。' },
+        step2: { title: 'やりかた', desc: 'おなかをすかせた子にごはんをあげよう。' },
+        step3: { title: 'ヒント', desc: 'おなかいっぱいの子にはあげないでね！' }
     },
     feedback: {
-        full: "お腹いっぱい！ 🤢",
+        full: "おなかいっぱい 🤢",
         yum: "おいしい！ 😋",
-        angry: "違うよ！ 😡"
+        angry: "ダメ！ 😡"
     },
     foods: {
-        meat: '肉',
+        meat: 'お肉',
         banana: 'バナナ',
         honey: 'ハチミツ',
-        bamboo: '竹',
-        carrot: '人参',
+        bamboo: 'ササ',
+        carrot: 'ニンジン',
         cheese: 'チーズ',
-        bone: '骨',
-        fish: '魚',
-        vegetable: '野菜'
+        bone: 'ホネ',
+        fish: 'おサカナ',
+        vegetable: 'やさい'
     }
 };

@@ -1,10 +1,10 @@
 export default {
-    title: '와일드 링크',
-    subtitle: '종족 이어주기',
-    description: '같은 종족의 동물들을 연결하세요. 모든 동물을 짝지어 퍼즐을 완성하세요.',
+    title: '정글 탐험',
+    subtitle: '동물 친구들을 이어줘!',
+    description: '같은 종류의 동물 친구들을 길로 연결해주세요. 길이 겹치지 않게 조심하세요!',
     howToPlay: {
-        step1: { title: '연결', desc: '같은 종족끼리 연결하세요.' },
-        step2: { title: '완성', desc: '모든 짝을 연결하세요.' },
-        step3: { title: '규칙', desc: '선이 서로 겹치면 안 돼요.' }
+        step1: { title: '목표', desc: '같은 동물 가족끼리 연결해요.' },
+        step2: { title: '방법', desc: '길이 겹치지 않게 조심조심!' },
+        step3: { title: '팁', desc: '숲속의 모든 빈칸을 채워야 해요!' }
     }
 };

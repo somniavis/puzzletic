@@ -1,16 +1,16 @@
 export default {
-    title: '동물 만찬',
-    subtitle: '배고픈 동물들에게 먹이를 주세요!',
-    description: '누구에게 먹이를 줬는지 기억하세요! 움직이는 동물들에게 알맞은 먹이를 줘야 합니다.',
+    title: '배고픈 파티',
+    subtitle: '누가 배가 고플까?',
+    description: '밥 먹은 친구를 기억해요! 배고픈 친구에게만 먹이를 주세요.',
     howToPlay: {
-        step1: { title: '먹이 주기', desc: '각 동물에게 알맞은 먹이를 주세요.' },
-        step2: { title: '기억하기', desc: '같은 동물에게 두 번 주면 안 돼요!' },
-        step3: { title: '빠르게', desc: '동물들이 계속 움직입니다.' }
+        step1: { title: '목표', desc: '모든 동물에게 딱 한 번씩 먹이를 주세요.' },
+        step2: { title: '방법', desc: '배고픈 친구에게 맛있는 먹이를 줘요.' },
+        step3: { title: '팁', desc: '배부른 친구에게 또 주면 안 돼요!' }
     },
     feedback: {
         full: "배불러요! 🤢",
         yum: "맛있다! 😋",
-        angry: "싫어요! 😡"
+        angry: "안돼! 😡"
     },
     foods: {
         meat: '고기',

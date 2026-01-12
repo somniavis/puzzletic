@@ -1,19 +1,19 @@
 export default {
-    title: "Fishing Count",
-    sub: "Catch the fishes!",
+    title: "Ocean Catch",
+    sub: "Catch & Count!",
     desc: "Drag the correct sea animals into the net to count them.",
     howToPlay: {
         goal: {
             title: "Goal",
-            desc: "Catch required number of specific animals."
+            desc: "Catch the requested number of sea friends!"
         },
         action: {
             title: "Action",
-            desc: "Drag and drop moving animals into the box."
+            desc: "Drag them into the net."
         },
         math: {
-            title: "Math",
-            desc: "Count carefully to reach the target number."
+            title: "Tip",
+            desc: "Only catch what you need!"
         }
     }
 };

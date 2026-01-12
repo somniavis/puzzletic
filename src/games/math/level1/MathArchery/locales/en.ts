@@ -1,11 +1,11 @@
 const manifest = {
-    title: "Math Archery",
-    sub: "Shoot the answer!",
+    title: "Archer Dash",
+    sub: "Aim & Solve!",
     desc: "Solve the equation and shoot the correct target.",
     howToPlay: {
-        goal: { title: "Goal", desc: "Solve the math problem." },
-        action: { title: "Shoot", desc: "Drag the bow back and release to shoot the arrow." },
-        rule: { title: "Rules", desc: "Hit the target with the correct answer." }
+        goal: { title: "Goal", desc: "Solve the problem at the top." },
+        action: { title: "Action", desc: "Shoot the target with the right answer." },
+        rule: { title: "Tip", desc: "Pull back the bow and release!" }
     },
     powerups: {
         freeze: "Time Freeze",

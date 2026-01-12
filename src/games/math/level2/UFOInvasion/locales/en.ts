@@ -1,19 +1,19 @@
 export default {
-    title: "UFO Invasion",
-    subtitle: "Defend with Math!",
+    title: "Star Defender",
+    subtitle: "Zap the UFO!",
     description: "Intercept invaders with math!",
     instructions: {
         step1: {
-            title: "Lock On",
-            desc: "Tap a UFO."
+            title: "Goal",
+            desc: "Don't let UFOs land!"
         },
         step2: {
-            title: "Fire",
-            desc: "Select the answer."
+            title: "Action",
+            desc: "Tap the right answer to fire lasers."
         },
         step3: {
-            title: "Defend",
-            desc: "Stop them landing!"
+            title: "Tip",
+            desc: "Be fast! They are coming!"
         }
     }
 };

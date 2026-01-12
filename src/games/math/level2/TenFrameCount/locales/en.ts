@@ -1,16 +1,20 @@
 export default {
-    title: "Ten-Frame Count",
-    subtitle: "Count by Tens & Ones",
+    title: "Ten-Blocks",
+    subtitle: "Count by Tens!",
     desc: "Use the rows of 10 to quickly count all the items!",
     question: "How many {{item}} are there?",
     howToPlay: {
         step1: {
-            title: "Look at Rows",
-            desc: "Each full row has 10 items."
+            title: "Goal",
+            desc: "Count everything fast!"
         },
         step2: {
-            title: "Count Ones",
-            desc: "Add the leftover items in the last row."
+            title: "Action",
+            desc: "Full block is 10. Add the leftovers."
+        },
+        step3: {
+            title: "Tip",
+            desc: "10, 20... then 1, 2, 3!"
         }
     }
 };
