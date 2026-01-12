@@ -18,6 +18,7 @@ import { manifest as L2_UFOInvasion } from './math/level2/UFOInvasion/index';
 // --- Brain Level 1 ---
 import { manifest as L1_ColorLink } from './brain/level1/ColorLink/index';
 import { manifest as L1_PairUpTwin } from './brain/level1/PairUpTwin/index';
+import { manifest as L1_MazeEscape } from './brain/level1/MazeEscape/index';
 
 // --- Brain Level 2 ---
 import { manifest as L2_WildLink } from './brain/level2/WildLink/index';
@@ -45,6 +46,7 @@ export const GAMES: GameManifest[] = [
     // [Brain Level 1] -----------------------------------------------------
     L1_ColorLink,
     L1_PairUpTwin,
+    L1_MazeEscape,
 
     // [Brain Level 2] -----------------------------------------------------
     L2_WildLink,

@@ -12,6 +12,7 @@ import ufoInvasionJa from '../../games/math/level2/UFOInvasion/locales/ja';
 
 import colorLinkJa from '../../games/brain/level1/ColorLink/locales/ja';
 import pairUpTwinJa from '../../games/brain/level1/PairUpTwin/locales/ja';
+import mazeEscapeJa from '../../games/brain/level1/MazeEscape/locales/ja';
 import wildLinkJa from '../../games/brain/level2/WildLink/locales/ja';
 import pairUpConnectJa from '../../games/brain/level2/PairUpConnect/locales/ja';
 import animalBanquetJa from '../../games/brain/level2/AnimalBanquet/locales/ja';
@@ -697,6 +698,7 @@ export const ja = {
 
         'color-link': colorLinkJa,
         'pair-up-twin': pairUpTwinJa,
+        'maze-escape': mazeEscapeJa,
         'wild-link': wildLinkJa,
         'pair-up-connect': pairUpConnectJa,
         'signal-hunter': signalHunterJa,

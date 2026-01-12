@@ -6,6 +6,7 @@ import './JelloAvatar.css';
 interface JelloAvatarProps extends CharacterComponentProps {
     speciesId?: string; // Optional override, otherwise use character.speciesId
     disableAnimation?: boolean; // New prop to stop float/bounce
+    responsive?: boolean; // New prop for fluid sizing
 }
 
 export const JelloAvatar: React.FC<JelloAvatarProps> = ({
@@ -16,6 +17,7 @@ export const JelloAvatar: React.FC<JelloAvatarProps> = ({
     mood: _mood = 'neutral',
     onClick,
     disableAnimation = false,
+    responsive = false,
 }) => {
     // Use passed speciesId or fall back to character's speciesId
     const targetSpeciesId = speciesId || character.speciesId;
@@ -44,7 +46,8 @@ export const JelloAvatar: React.FC<JelloAvatarProps> = ({
 
     // Visual balancing: Stage 1 & 2 images have less whitespace, so they appear larger.
     // We add padding to shrink them slightly relative to the container.
-    const containerPadding = (stage <= 2) ? (size === 'small' ? '8px' : '12px') : 0;
+    // However, if responsive, we assume parent handles sizing/padding, so we set to 0 to avoid over-shrinking.
+    const containerPadding = responsive ? 0 : ((stage <= 2) ? (size === 'small' ? '8px' : '12px') : 0);
 
     return (
         <div
@@ -54,10 +57,13 @@ export const JelloAvatar: React.FC<JelloAvatarProps> = ({
             className={`jello-avatar jello-avatar--${action} ${disableAnimation ? 'no-animation' : ''}`}
             onClick={onClick}
             style={{
-                width: sizeInPixels,
-                height: sizeInPixels,
+                width: responsive ? '100%' : sizeInPixels,
+                height: responsive ? '100%' : sizeInPixels,
                 padding: containerPadding,
                 boxSizing: 'border-box', // Ensure padding shrinks the content
+                display: responsive ? 'flex' : 'block', // Flex ensures centering if padding is 0
+                alignItems: 'center',
+                justifyContent: 'center',
             }}
         >
             {imageUrl ? (
@@ -70,6 +76,8 @@ export const JelloAvatar: React.FC<JelloAvatarProps> = ({
                         width: '100%',
                         height: '100%',
                         imageRendering: 'pixelated',
+                        display: 'block', // Prevent baseline gap
+                        objectFit: 'contain' // Ensure aspect ratio
                     }}
                 />
             ) : (

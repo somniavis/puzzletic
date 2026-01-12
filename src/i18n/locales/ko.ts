@@ -11,6 +11,7 @@ import ufoInvasionKo from '../../games/math/level2/UFOInvasion/locales/ko';
 
 import colorLinkKo from '../../games/brain/level1/ColorLink/locales/ko.ts';
 import pairUpTwinKo from '../../games/brain/level1/PairUpTwin/locales/ko.ts';
+import mazeEscapeKo from '../../games/brain/level1/MazeEscape/locales/ko.ts';
 import wildLinkKo from '../../games/brain/level2/WildLink/locales/ko.ts';
 import pairUpConnectKo from '../../games/brain/level2/PairUpConnect/locales/ko.ts';
 import animalBanquetKo from '../../games/brain/level2/AnimalBanquet/locales/ko';
@@ -696,6 +697,7 @@ export const ko = {
 
         'color-link': colorLinkKo,
         'pair-up-twin': pairUpTwinKo,
+        'maze-escape': mazeEscapeKo,
         'wild-link': wildLinkKo,
         'pair-up-connect': pairUpConnectKo,
         'signal-hunter': signalHunterKo,

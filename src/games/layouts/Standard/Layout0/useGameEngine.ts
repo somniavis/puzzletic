@@ -111,7 +111,7 @@ export const useGameEngine = (config: GameEngineConfig = {}) => {
         setPowerUps({ timeFreeze: 0, extraLife: 0, doubleScore: 0 });
     }, [initialLives, initialTime]);
 
-    const submitAnswer = useCallback((isCorrect: boolean, options: { skipCombo?: boolean; skipDifficulty?: boolean; skipFeedback?: boolean } = {}) => {
+    const submitAnswer = useCallback((isCorrect: boolean, options: { skipCombo?: boolean; skipDifficulty?: boolean; skipFeedback?: boolean; scoreMultiplier?: number } = {}) => {
         const now = Date.now();
         const responseTime = now - questionStartTime;
 
@@ -153,9 +153,15 @@ export const useGameEngine = (config: GameEngineConfig = {}) => {
 
             // Apply Multiplier (Double Score)
             let totalScore = baseScore + timeBonus + comboBonus;
+
+            // Apply Manual Multiplier (e.g. for easy games)
+            if (options.scoreMultiplier !== undefined) {
+                totalScore *= options.scoreMultiplier;
+            }
+
             if (isDoubleScore) totalScore *= 2;
 
-            setScore(prev => prev + totalScore);
+            setScore(prev => prev + Math.floor(totalScore));
 
             // Achievements
             if (!achievements.firstCorrect) setAchievements(prev => ({ ...prev, firstCorrect: true }));

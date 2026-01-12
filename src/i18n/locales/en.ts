@@ -14,6 +14,7 @@ import wildLinkEn from '../../games/brain/level2/WildLink/locales/en';
 import pairUpConnectEn from '../../games/brain/level2/PairUpConnect/locales/en';
 import animalBanquetEn from '../../games/brain/level2/AnimalBanquet/locales/en';
 import ufoInvasionEn from '../../games/math/level2/UFOInvasion/locales/en';
+import mazeEscapeEn from '../../games/brain/level1/MazeEscape/locales/en';
 
 export const en = {
   profile: {
@@ -698,6 +699,7 @@ export const en = {
     'pair-up-connect': pairUpConnectEn,
     'animal-banquet': animalBanquetEn,
     'math-level2-ufo-invasion': ufoInvasionEn,
+    'maze-escape': mazeEscapeEn,
   },
 } as const;
 
