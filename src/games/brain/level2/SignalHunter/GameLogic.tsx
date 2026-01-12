@@ -5,7 +5,6 @@ import { useGameEngine } from '../../../layouts/Standard/Layout0/useGameEngine';
 // Constants (Relaxed Difficulty)
 const SPEED_BASE = 2.0; // Base Rotation Speed (slower start)
 const TARGET_TOLERANCE = 20; // Degrees (+/-) - wider hit zone
-const MIN_DIST = 90; // Min distance for new target
 
 // Emoji Pool: Fruits + Animal Faces
 const EMOJI_POOL = [
