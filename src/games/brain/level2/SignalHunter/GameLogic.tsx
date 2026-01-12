@@ -70,59 +70,77 @@ export const useSignalHunterLogic = () => {
         setCurrentCodeIdx(0);
         setNeedleAngle(0);
         setDirection(1);
-        spawnTarget(0, newCodes[0], difficulty); // Spawn first target relative to 0
+        spawnTarget(newCodes[0], difficulty, null); // First spawn, no previous target
         setIsRotating(true);
     };
 
-    const spawnTarget = (currentAngle: number, targetEmoji: string, difficulty: number) => {
-        // 1. Target Position
-        let newTargetAngle = Math.random() * 360;
-        while (Math.abs(newTargetAngle - currentAngle) < MIN_DIST) {
-            newTargetAngle = Math.random() * 360;
-        }
-        setTargetAngle(newTargetAngle);
-
-        // 2. Decoys (1-3 based on difficulty)
+    const spawnTarget = (targetEmoji: string, difficulty: number, prevTargetAngle: number | null) => {
+        // 1. Determine Counts
         // Level 1-2: 1 decoy, Level 3-4: 2 decoys, Level 5+: 3 decoys
         const decoyCount = Math.min(1 + Math.floor(difficulty / 2), 3);
-        const newDecoys: { angle: number; emoji: string }[] = [];
+        const totalItems = 1 + decoyCount;
 
-        for (let i = 0; i < decoyCount; i++) {
-            let decoyAngle = Math.random() * 360;
-            let valid = false;
-            let attempts = 0;
+        // 2. Generate Random Angles
+        const validAngles: number[] = [];
+        const MIN_SEPARATION = 40; // Min dist between items
+        const PREV_TARGET_BUFFER = 40; // Min dist from PREVIOUS target (to prevent double-tap)
 
-            // Find valid angle (far from current needle, target, and other decoys)
-            while (!valid && attempts < 20) {
-                decoyAngle = Math.random() * 360;
-                valid = true;
+        // Try to find valid configuration
+        let attempts = 0;
+        // Reset if we get stuck (rare, but prevents infinite loop)
+        while (validAngles.length < totalItems && attempts < 100) {
+            const angle = Math.random() * 360;
+            let isValid = true;
 
-                // Check dist from needle
-                if (Math.abs(decoyAngle - currentAngle) < 60) valid = false; // Decoys can be closer than target but not immediate
-
-                // Check dist from Target
-                let distToTarget = Math.abs(decoyAngle - newTargetAngle);
-                if (distToTarget > 180) distToTarget = 360 - distToTarget;
-                if (distToTarget < 40) valid = false; // Min separation between items
-
-                // Check dist from other Decoys
-                for (const d of newDecoys) {
-                    let dist = Math.abs(decoyAngle - d.angle);
-                    if (dist > 180) dist = 360 - dist;
-                    if (dist < 40) valid = false;
-                }
-                attempts++;
+            // Check vs Previous Target (if exists)
+            if (prevTargetAngle !== null) {
+                let dist = Math.abs(angle - prevTargetAngle);
+                if (dist > 180) dist = 360 - dist;
+                if (dist < PREV_TARGET_BUFFER) isValid = false;
             }
 
+            // Check vs Other generated items in this batch
+            if (isValid) {
+                for (const existing of validAngles) {
+                    let dist = Math.abs(angle - existing);
+                    if (dist > 180) dist = 360 - dist;
+                    if (dist < MIN_SEPARATION) {
+                        isValid = false;
+                        break;
+                    }
+                }
+            }
+
+            if (isValid) {
+                validAngles.push(angle);
+            }
+
+            attempts++;
+            // detailed fail-safe: if we tried too many times for one item, maybe clear and retry or just accept fewer decoys?
+            // For simplicity, if we really struggle (density high), we just break and spawn what we have, 
+            // but 360 degrees usually fits 4 items easily.
+        }
+
+        // 3. Shuffle Angles to assign Target randomly
+        // Fisher-Yates Shuffle
+        for (let i = validAngles.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [validAngles[i], validAngles[j]] = [validAngles[j], validAngles[i]];
+        }
+
+        // Assign Target to the first angle in the shuffled list
+        const newTargetAngle = validAngles[0];
+        setTargetAngle(newTargetAngle);
+
+        // 4. Assign Decoys to the rest
+        const newDecoys: { angle: number; emoji: string }[] = [];
+        for (let i = 1; i < validAngles.length; i++) {
             // Pick distinct emoji
             let decoyEmoji = EMOJI_POOL[Math.floor(Math.random() * EMOJI_POOL.length)];
             while (decoyEmoji === targetEmoji) {
                 decoyEmoji = EMOJI_POOL[Math.floor(Math.random() * EMOJI_POOL.length)];
             }
-
-            if (valid) {
-                newDecoys.push({ angle: decoyAngle, emoji: decoyEmoji });
-            }
+            newDecoys.push({ angle: validAngles[i], emoji: decoyEmoji });
         }
         setDecoys(newDecoys);
     };
@@ -220,7 +238,9 @@ export const useSignalHunterLogic = () => {
             // Next Code
             setCurrentCodeIdx(prev => prev + 1);
             setDirection(prev => prev * -1); // Reverse Direction
-            spawnTarget(needleAngle, codes[currentCodeIdx + 1], localDifficulty);
+
+            // Pass the CURRENT target angle as the 'previous' one for the new spawn
+            spawnTarget(codes[currentCodeIdx + 1], localDifficulty, targetAngle);
         }
     };
 
