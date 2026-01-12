@@ -26,6 +26,7 @@ interface LevelDef {
 }
 
 const OBSTACLE_TYPES = ['rock', 'cactus'] as const;
+const MOVES = [[-1, 0], [1, 0], [0, -1], [0, 1]];
 
 // Helper to shuffle array logic
 // Helper to shuffle array logic
@@ -81,7 +82,7 @@ const generateLevel = (size: number, difficulty: number): LevelDef => {
 
         if (curr.r === end.r && curr.c === end.c) return true;
 
-        const moves = shuffle([[-1, 0], [1, 0], [0, -1], [0, 1]]);
+        const moves = shuffle(MOVES);
 
         for (const [dr, dc] of moves) {
             const nextR = curr.r + dr;
@@ -115,7 +116,7 @@ const generateLevel = (size: number, difficulty: number): LevelDef => {
         const idx = Math.floor(Math.random() * growthPoints.length);
         const { r, c } = growthPoints[idx];
 
-        const moves = shuffle([[-1, 0], [1, 0], [0, -1], [0, 1]]);
+        const moves = shuffle(MOVES);
         let grew = false;
 
         for (const [dr, dc] of moves) {
@@ -125,7 +126,7 @@ const generateLevel = (size: number, difficulty: number): LevelDef => {
             if (nextR >= 0 && nextR < size && nextC >= 0 && nextC < size) {
                 if (!isEmpty[nextR][nextC]) {
                     let emptyNeighbors = 0;
-                    [[0, 1], [0, -1], [1, 0], [-1, 0]].forEach(([nr, nc]) => {
+                    MOVES.forEach(([nr, nc]) => {
                         const nRR = nextR + nr;
                         const nCC = nextC + nc;
                         if (nRR >= 0 && nRR < size && nCC >= 0 && nCC < size && isEmpty[nRR][nCC]) {
@@ -229,11 +230,12 @@ export const useMazeEscapeLogic = (engine: GameEngine) => {
             setPathCells([{ r, c }]);
 
             setGrid(prev => {
-                const next = prev.map(row => row.map(cell => ({
-                    ...cell,
-                    isPath: false, n: false, s: false, e: false, w: false
-                })));
-                next[r][c].isPath = true;
+                const next = prev.map(row => [...row]);
+                // Copy cell before mutation
+                next[r][c] = {
+                    ...next[r][c],
+                    isPath: true
+                };
                 return next;
             });
         }
@@ -265,16 +267,22 @@ export const useMazeEscapeLogic = (engine: GameEngine) => {
                 setGrid(prevGrid => {
                     const next = prevGrid.map(row => [...row]);
                     if (removed) {
-                        const cell = next[removed.r][removed.c];
-                        cell.isPath = false;
-                        cell.n = cell.s = cell.e = cell.w = false;
+                        // Reset removed cell (Copy!)
+                        next[removed.r][removed.c] = {
+                            ...next[removed.r][removed.c],
+                            isPath: false,
+                            n: false, s: false, e: false, w: false
+                        };
 
-                        // Clear directional flag of the NEW last cell
-                        const currentTip = next[r][c];
+                        // Clear directional flag of the NEW last cell (Copy!)
+                        const currentTip = { ...next[r][c] };
+
                         if (removed.r < r) currentTip.n = false;
                         if (removed.r > r) currentTip.s = false;
                         if (removed.c < c) currentTip.w = false;
                         if (removed.c > c) currentTip.e = false;
+
+                        next[r][c] = currentTip;
                     }
                     return next;
                 });
@@ -290,8 +298,10 @@ export const useMazeEscapeLogic = (engine: GameEngine) => {
 
         setGrid(prev => {
             const next = prev.map(row => [...row]);
-            const prevCell = next[last.r][last.c];
-            const currCell = next[r][c];
+
+            // Copy cells before mutation
+            const prevCell = { ...next[last.r][last.c] };
+            const currCell = { ...next[r][c] };
 
             if (r < last.r) prevCell.n = true;
             if (r > last.r) prevCell.s = true;
@@ -304,6 +314,11 @@ export const useMazeEscapeLogic = (engine: GameEngine) => {
             if (c > last.c) currCell.w = true;
 
             currCell.isPath = true;
+
+            // Assign back
+            next[last.r][last.c] = prevCell;
+            next[r][c] = currCell;
+
             return next;
         });
 

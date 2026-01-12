@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { useMemo, useEffect, useCallback } from 'react';
+import React, { useMemo, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Layout2 } from '../../../layouts/Standard/Layout2';
 import { useGameEngine } from '../../../layouts/Standard/Layout0/useGameEngine';
@@ -12,6 +12,124 @@ import { useNurturing } from '../../../../contexts/NurturingContext';
 import { JelloAvatar } from '../../../../components/characters/JelloAvatar';
 
 const GAME_ID = 'brain-level1-maze-escape';
+
+// Memoized Cell Component to prevent grid re-renders on drag
+const MazeCell = React.memo(({
+    cell,
+    levelSize,
+    nurturing,
+    getObstacleEmoji,
+    onStart
+}: {
+    cell: any,
+    levelSize: number,
+    nurturing: any,
+    getObstacleEmoji: (t?: string) => string,
+    onStart: (r: number, c: number) => void
+}) => {
+    return (
+        <div
+            className={`${styles.cell} ${cell.isPath ? styles.path : ''}`}
+            data-cell="true"
+            data-row={cell.row}
+            data-col={cell.col}
+            onPointerDown={(e) => {
+                e.preventDefault();
+                e.currentTarget.releasePointerCapture(e.pointerId);
+                onStart(cell.row, cell.col);
+            }}
+        >
+            {/* Path Connections */}
+            {cell.n && <div className={`${styles.pipeSegment} ${styles.pipeN}`} />}
+            {cell.s && <div className={`${styles.pipeSegment} ${styles.pipeS}`} />}
+            {cell.e && <div className={`${styles.pipeSegment} ${styles.pipeE}`} />}
+            {cell.w && <div className={`${styles.pipeSegment} ${styles.pipeW}`} />}
+            {cell.isPath && <div className={`${styles.pipeSegment} ${styles.pipeCenter}`} />}
+
+            {/* Start Node - User's Jello */}
+            {cell.isStart && (
+                <div className={styles.startNode} style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <div style={{
+                        width: '85%',
+                        height: '85%',
+                        maxWidth: '100%',
+                        maxHeight: '100%',
+                        aspectRatio: '1/1',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center'
+                    }}>
+                        <JelloAvatar
+                            character={{
+                                speciesId: nurturing.speciesId || 'yellowJello',
+                                evolutionStage: (nurturing.evolutionStage || 1) as any,
+                                name: nurturing.characterName || 'Jello',
+                                stats: nurturing.stats
+                            } as any}
+                            size="small"
+                            action="idle"
+                            disableAnimation
+                            responsive
+                        />
+                    </div>
+                </div>
+            )}
+
+            {/* End Node */}
+            {cell.isEnd && (
+                <div
+                    className={styles.endNode}
+                    style={{
+                        // Dynamic Scaling: 3.5rem (size 4) -> 2.5rem (size 9)
+                        fontSize: `${Math.max(2.5, 3.5 - (levelSize - 4) * 0.2)}rem`
+                    }}
+                >
+                    ⛺
+                </div>
+            )}
+
+            {/* Obstacles */}
+            {cell.isObstacle && (
+                <div className={styles.obstacle}>
+                    {[0, 1, 2].map(i => {
+                        const isLarge = i === 2;
+
+                        // User Request: Maintain scaling relative to grid size.
+                        // Fixed "rem" units fail on small mobile screens because the grid shrinks (vmin) but rem stays constant.
+                        // Solution: Calculate font-size relative to the Grid Container's definition.
+                        // Grid Width = min(90vmin, 500px).
+                        // Cell Width ~= Grid Width / levelSize.
+                        // We want Large to be ~64% of Cell, Small to be ~41% of Cell (Reduced by ~8%)
+
+                        const proportion = isLarge ? 0.64 : 0.41;
+                        const fontSize = `calc((min(90vmin, 500px) / ${levelSize}) * ${proportion})`;
+
+                        return (
+                            <span
+                                key={i}
+                                className={styles.obstaclePart}
+                                style={{ fontSize }}
+                            >
+                                {getObstacleEmoji(cell.obstacleType)}
+                            </span>
+                        );
+                    })}
+                </div>
+            )}
+        </div>
+    );
+}, (prev, next) => {
+    // Custom comparison for performance
+    return (
+        prev.cell === next.cell && // Same cell object reference (if immutable)
+        prev.cell.isPath === next.cell.isPath && // Check critical changing props
+        prev.cell.n === next.cell.n &&
+        prev.cell.s === next.cell.s &&
+        prev.cell.e === next.cell.e &&
+        prev.cell.w === next.cell.w &&
+        prev.levelSize === next.levelSize
+    );
+});
 
 export default function MazeEscape() {
     const navigate = useNavigate();
@@ -76,14 +194,14 @@ export default function MazeEscape() {
     }, [logic.handleMove]);
 
     // Obstacle Emoji Map
-    const getObstacleEmoji = (type?: string) => {
+    const getObstacleEmoji = useCallback((type?: string) => {
         switch (type) {
             case 'rock': return '🪨';
             case 'log': return '🪵';
             case 'cactus': return '🌵';
             default: return '';
         }
-    };
+    }, []);
 
     return (
         <Layout2
@@ -113,101 +231,16 @@ export default function MazeEscape() {
                     }}
                     onPointerMove={handlePointerMove}
                 >
-                    {logic.grid.flat().map((cell) => {
-                        return (
-                            <div
-                                key={`${cell.row}-${cell.col}`}
-                                className={`${styles.cell} ${cell.isPath ? styles.path : ''}`}
-                                data-cell="true"
-                                data-row={cell.row}
-                                data-col={cell.col}
-                                onPointerDown={(e) => {
-                                    e.preventDefault(); // Prevent default touch behaviors
-                                    e.currentTarget.releasePointerCapture(e.pointerId);
-                                    logic.handleStart(cell.row, cell.col);
-                                }}
-                            >
-                                {/* Path Connections */}
-                                {cell.n && <div className={`${styles.pipeSegment} ${styles.pipeN}`} />}
-                                {cell.s && <div className={`${styles.pipeSegment} ${styles.pipeS}`} />}
-                                {cell.e && <div className={`${styles.pipeSegment} ${styles.pipeE}`} />}
-                                {cell.w && <div className={`${styles.pipeSegment} ${styles.pipeW}`} />}
-                                {cell.isPath && <div className={`${styles.pipeSegment} ${styles.pipeCenter}`} />}
-
-                                {/* Start Node - User's Jello */}
-                                {cell.isStart && (
-                                    <div className={styles.startNode} style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                        {/* User requested ~85% of grid size even at large grids */}
-                                        <div style={{
-                                            width: '85%',
-                                            height: '85%',
-                                            maxWidth: '100%',
-                                            maxHeight: '100%',
-                                            aspectRatio: '1/1',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center'
-                                        }}>
-                                            <JelloAvatar
-                                                character={{
-                                                    speciesId: nurturing.speciesId || 'yellowJello',
-                                                    evolutionStage: (nurturing.evolutionStage || 1) as any,
-                                                    name: nurturing.characterName || 'Jello',
-                                                    stats: nurturing.stats
-                                                } as any}
-                                                size="small"
-                                                action="idle"
-                                                disableAnimation
-                                                responsive
-                                            />
-                                        </div>
-                                    </div>
-                                )}
-
-                                {/* End Node */}
-                                {cell.isEnd && (
-                                    <div
-                                        className={styles.endNode}
-                                        style={{
-                                            // Dynamic Scaling: 3.5rem (size 4) -> 2.5rem (size 9)
-                                            // Formula: 3.5 - (size - 4) * 0.2
-                                            fontSize: `${Math.max(2.5, 3.5 - (logic.currentLevel.size - 4) * 0.2)}rem`
-                                        }}
-                                    >
-                                        ⛺
-                                    </div>
-                                )}
-
-                                {/* Obstacles */}
-                                <div className={styles.obstacle}>
-                                    {[0, 1, 2].map(i => {
-                                        // Base size logic from CSS:
-                                        // Parts 0, 1: 1.6rem
-                                        // Part 2: 2.5rem (and centered)
-                                        const isLarge = i === 2;
-                                        const baseSize = isLarge ? 2.5 : 1.6;
-
-                                        // User wants 6x6 to be the "perfect" baseline.
-                                        // If grid is smaller (e.g. 4), cells are bigger -> scale UP.
-                                        // If grid is larger (e.g. 9), cells are smaller -> scale DOWN.
-                                        // Formula: Current Scale = Base * (6 / CurrentSize)
-                                        const scaleFactor = 6 / Math.max(4, logic.currentLevel.size);
-                                        const fontSize = `${baseSize * scaleFactor}rem`;
-
-                                        return (
-                                            <span
-                                                key={i}
-                                                className={styles.obstaclePart}
-                                                style={{ fontSize }} // Override CSS font-size
-                                            >
-                                                {getObstacleEmoji(cell.obstacleType)}
-                                            </span>
-                                        );
-                                    })}
-                                </div>
-                            </div>
-                        );
-                    })}
+                    {logic.grid.flat().map((cell) => (
+                        <MazeCell
+                            key={`${cell.row}-${cell.col}`}
+                            cell={cell}
+                            levelSize={logic.currentLevel.size}
+                            nurturing={nurturing}
+                            getObstacleEmoji={getObstacleEmoji}
+                            onStart={logic.handleStart}
+                        />
+                    ))}
                 </div>
             </div>
         </Layout2>
