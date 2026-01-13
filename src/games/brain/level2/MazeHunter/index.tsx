@@ -6,12 +6,12 @@ import { useGameEngine } from '../../../layouts/Standard/Layout0/useGameEngine';
 import type { PowerUpBtnProps } from '../../../../components/Game/PowerUpBtn';
 import manifest_en from './locales/en';
 import { BlobBackground } from '../../../math/components/BlobBackground';
-import { useMazeEscapeLogic } from './GameLogic';
+import { useMazeHunterLogic } from './GameLogic';
 import styles from './MazeEscape.module.css';
 import { useNurturing } from '../../../../contexts/NurturingContext';
 import { JelloAvatar } from '../../../../components/characters/JelloAvatar';
 
-const GAME_ID = 'brain-level1-maze-escape';
+const GAME_ID = 'brain-level2-maze-hunter';
 
 // Memoized Cell Component to prevent grid re-renders on drag
 const MazeCell = React.memo(({
@@ -80,11 +80,30 @@ const MazeCell = React.memo(({
                 <div
                     className={styles.endNode}
                     style={{
-                        // Dynamic Scaling: 3.5rem (size 4) -> 2.5rem (size 9)
+                        // Dynamic Scaling
                         fontSize: `${Math.max(2.5, 3.5 - (levelSize - 4) * 0.2)}rem`
                     }}
                 >
+                    {/* Show Open Tent ONLY if path reached it AND (we can't check items here easily without passing prop... so maybe just always show Tent, and logic handles success?) */
+                        /* Actually, let's show Locked icon if not enough items? But MazeCell doesn't know total items. */
+                        /* Let's keep it simple: Show Tent. Maybe add a small lock overlay? */
+                    }
                     ⛺
+                </div>
+            )}
+
+            {/* Items (Keys) */}
+            {cell.isItem && (
+                <div style={{
+                    position: 'absolute',
+                    top: '50%', left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    fontSize: `calc((min(90vmin, 500px) / ${levelSize}) * 0.6)`,
+                    zIndex: 5,
+                    opacity: cell.isPath ? 0.3 : 1, // Dim if collected
+                    transition: 'opacity 0.2s'
+                }}>
+                    {cell.itemType}
                 </div>
             )}
 
@@ -131,13 +150,13 @@ const MazeCell = React.memo(({
     );
 });
 
-export default function MazeEscape() {
+export default function MazeHunter() {
     const navigate = useNavigate();
     const { t, i18n } = useTranslation();
     const nurturing = useNurturing();
 
     useEffect(() => {
-        const newResources = { en: { translation: { games: { 'maze-escape': manifest_en } } } };
+        const newResources = { en: { translation: { games: { 'maze-hunter': manifest_en } } } };
         Object.keys(newResources).forEach(lang => {
             i18n.addResourceBundle(lang, 'translation', newResources[lang as keyof typeof newResources].translation, true, true);
         });
@@ -148,7 +167,7 @@ export default function MazeEscape() {
         initialLives: 3
     });
 
-    const logic = useMazeEscapeLogic(engine);
+    const logic = useMazeHunterLogic(engine);
 
     // Standard PowerUps
     const powerUps: PowerUpBtnProps[] = useMemo(() => [
@@ -205,17 +224,17 @@ export default function MazeEscape() {
 
     return (
         <Layout2
-            title={t('games.maze-escape.title')}
-            subtitle={t('games.maze-escape.subtitle')}
+            title={t('games.maze-hunter.title')}
+            subtitle={t('games.maze-hunter.subtitle')}
             gameId={GAME_ID}
             engine={engine}
             powerUps={powerUps}
             onExit={() => navigate(-1)}
             cardBackground={<BlobBackground colors={{ blob1: '#e0f2fe', blob2: '#f0f9ff', blob3: '#bae6fd', blob4: '#7dd3fc' }} />}
             instructions={[
-                { icon: '🏠', title: t('games.maze-escape.howToPlay.step1.title'), description: t('games.maze-escape.howToPlay.step1.desc') },
-                { icon: '👆', title: t('games.maze-escape.howToPlay.step2.title'), description: t('games.maze-escape.howToPlay.step2.desc') },
-                { icon: '🪨', title: t('games.maze-escape.howToPlay.step3.title'), description: t('games.maze-escape.howToPlay.step3.desc') }
+                { icon: '🍎', title: t('games.maze-hunter.howToPlay.step1.title'), description: t('games.maze-hunter.howToPlay.step1.desc') },
+                { icon: '👆', title: t('games.maze-hunter.howToPlay.step2.title'), description: t('games.maze-hunter.howToPlay.step2.desc') },
+                { icon: '🔓', title: t('games.maze-hunter.howToPlay.step3.title'), description: t('games.maze-hunter.howToPlay.step3.desc') }
             ]}
         >
             <div
@@ -249,14 +268,14 @@ export default function MazeEscape() {
 
 export const manifest = {
     id: GAME_ID,
-    title: 'Maze Escape',
-    titleKey: 'games.maze-escape.title',
-    subtitle: 'Find the way!',
-    subtitleKey: 'games.maze-escape.subtitle',
+    title: 'Maze Hunter',
+    titleKey: 'games.maze-hunter.title',
+    subtitle: 'Collect fruits to escape!',
+    subtitleKey: 'games.maze-hunter.subtitle',
     category: 'brain',
-    level: 1,
-    component: MazeEscape,
-    description: 'Help Jello find the way home avoiding obstacles.',
-    descriptionKey: 'games.maze-escape.description',
-    thumbnail: '🏞️'
+    level: 2,
+    component: MazeHunter,
+    description: 'Collect all fruits in one stroke to unlock the exit.',
+    descriptionKey: 'games.maze-hunter.description',
+    thumbnail: '🍎'
 } as const;

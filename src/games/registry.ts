@@ -24,6 +24,7 @@ import { manifest as L1_MazeEscape } from './brain/level1/MazeEscape/index';
 import { manifest as L2_WildLink } from './brain/level2/WildLink/index';
 import { manifest as L2_AnimalBanquet } from './brain/level2/AnimalBanquet/index';
 import { manifest as L2_PairUpConnect } from './brain/level2/PairUpConnect/index';
+import { manifest as L2_MazeHunter } from './brain/level2/MazeHunter/index';
 
 import { manifest as signalHunter } from './brain/level2/SignalHunter';
 
@@ -52,6 +53,7 @@ export const GAMES: GameManifest[] = [
     L2_WildLink,
     L2_AnimalBanquet,
     L2_PairUpConnect,
+    L2_MazeHunter,
     signalHunter,
 ];
 

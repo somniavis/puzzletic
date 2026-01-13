@@ -17,6 +17,7 @@ import wildLinkJa from '../../games/brain/level2/WildLink/locales/ja';
 import pairUpConnectJa from '../../games/brain/level2/PairUpConnect/locales/ja';
 import animalBanquetJa from '../../games/brain/level2/AnimalBanquet/locales/ja';
 import signalHunterJa from '../../games/brain/level2/SignalHunter/locales/ja';
+import mazeHunterJa from '../../games/brain/level2/MazeHunter/locales/ja';
 
 export const ja = {
     profile: {
@@ -702,6 +703,7 @@ export const ja = {
         'wild-link': wildLinkJa,
         'pair-up-connect': pairUpConnectJa,
         'signal-hunter': signalHunterJa,
+        'maze-hunter': mazeHunterJa,
     },
 } as const;
 

@@ -1,0 +1,152 @@
+.gameContainer {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    position: relative;
+    touch-action: none;
+    /* Critical for drag */
+}
+
+.grid {
+    display: grid;
+    gap: 2px;
+
+    /* Responsive scaling matching ColorLink logic */
+    width: min(90vmin, 500px);
+    aspect-ratio: 1 / 1;
+    justify-self: center;
+    /* Desert Theme: Sand Color */
+    background: rgba(222, 184, 135, 0.6);
+    /* Burlywood/Sand - Slightly darker for contrast */
+    padding: 8px;
+    border-radius: 16px;
+    backdrop-filter: blur(4px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    z-index: 10;
+    position: relative;
+    touch-action: none;
+}
+
+.cell {
+    position: relative;
+    background: rgba(222, 184, 135, 0.35);
+    /* Slightly increased opacity */
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    user-select: none;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    touch-action: none;
+    overflow: hidden;
+    /* Prevent content from pushing bounds */
+}
+
+/* --- Nodes (Start/End) --- */
+.startNode,
+.endNode {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    font-size: 3.5rem;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+    animation: bounce 2s infinite;
+}
+
+.obstacle {
+    z-index: 10;
+    filter: grayscale(0.2);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    justify-items: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    padding: 2px;
+}
+
+.obstaclePart {
+    font-size: 1.6rem;
+    /* User requested 1.6rem */
+    line-height: 0.7;
+    /* Tighter line height for better stacking */
+}
+
+/* Center the 3rd item (bottom) */
+.obstaclePart:nth-child(3) {
+    grid-column: 1 / -1;
+    font-size: 2.5rem;
+    /* User requested 2.5rem */
+    transform: translateY(-12px);
+    /* Remove scale, adjust translate */
+    z-index: 2;
+    /* Pop over the back ones */
+}
+
+/* --- Path Drawing --- */
+.pipeSegment {
+    position: absolute;
+    background-color: #3b82f6;
+    /* Default Blue Path */
+    z-index: 1;
+}
+
+.path .pipeSegment {
+    background-color: #3b82f6;
+}
+
+/* Pipe Dimensions */
+.pipeCenter {
+    width: 30%;
+    height: 30%;
+    border-radius: 50%;
+}
+
+.pipeN {
+    width: 30%;
+    height: 50%;
+    top: 0;
+    left: 35%;
+}
+
+.pipeS {
+    width: 30%;
+    height: 50%;
+    bottom: 0;
+    left: 35%;
+}
+
+.pipeW {
+    width: 50%;
+    height: 30%;
+    left: 0;
+    top: 35%;
+}
+
+.pipeE {
+    width: 50%;
+    height: 30%;
+    right: 0;
+    top: 35%;
+}
+
+@keyframes bounce {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-5px);
+    }
+}

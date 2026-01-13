@@ -15,6 +15,7 @@ import pairUpConnectEn from '../../games/brain/level2/PairUpConnect/locales/en';
 import animalBanquetEn from '../../games/brain/level2/AnimalBanquet/locales/en';
 import ufoInvasionEn from '../../games/math/level2/UFOInvasion/locales/en';
 import mazeEscapeEn from '../../games/brain/level1/MazeEscape/locales/en';
+import mazeHunterEn from '../../games/brain/level2/MazeHunter/locales/en';
 
 export const en = {
   profile: {
@@ -700,6 +701,7 @@ export const en = {
     'animal-banquet': animalBanquetEn,
     'math-level2-ufo-invasion': ufoInvasionEn,
     'maze-escape': mazeEscapeEn,
+    'maze-hunter': mazeHunterEn,
   },
 } as const;
 

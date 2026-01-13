@@ -16,6 +16,7 @@ import wildLinkKo from '../../games/brain/level2/WildLink/locales/ko.ts';
 import pairUpConnectKo from '../../games/brain/level2/PairUpConnect/locales/ko.ts';
 import animalBanquetKo from '../../games/brain/level2/AnimalBanquet/locales/ko';
 import signalHunterKo from '../../games/brain/level2/SignalHunter/locales/ko';
+import mazeHunterKo from '../../games/brain/level2/MazeHunter/locales/ko';
 
 export const ko = {
     profile: {
@@ -701,6 +702,7 @@ export const ko = {
         'wild-link': wildLinkKo,
         'pair-up-connect': pairUpConnectKo,
         'signal-hunter': signalHunterKo,
+        'maze-hunter': mazeHunterKo,
     },
 } as const;
 
