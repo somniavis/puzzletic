@@ -1218,7 +1218,14 @@ export const PetRoom: React.FC<PetRoomProps> = ({
           confirmLabel={t('common.yes')}
           cancelLabel={t('common.no')}
           onConfirm={handleConfirmSleepWake}
-          onCancel={() => setConfirmModalType(null)}
+          onCancel={() => {
+            // Lock interaction to prevent ghost clicks hitting the house again (Fix for "No" button reopening popup)
+            interactionLockRef.current = true;
+            setTimeout(() => {
+              interactionLockRef.current = false;
+            }, 800);
+            setConfirmModalType(null);
+          }}
         />
       )}
     </div >
