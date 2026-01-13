@@ -19,13 +19,15 @@ const MazeCell = React.memo(({
     levelSize,
     nurturing,
     getObstacleEmoji,
-    onStart
+    onStart,
+    targetAnimal
 }: {
     cell: any,
     levelSize: number,
     nurturing: any,
     getObstacleEmoji: (t?: string) => string,
-    onStart: (r: number, c: number) => void
+    onStart: (r: number, c: number) => void,
+    targetAnimal: string
 }) => {
     return (
         <div
@@ -88,7 +90,7 @@ const MazeCell = React.memo(({
                         /* Actually, let's show Locked icon if not enough items? But MazeCell doesn't know total items. */
                         /* Let's keep it simple: Show Tent. Maybe add a small lock overlay? */
                     }
-                    ⛺
+                    {targetAnimal}
                 </div>
             )}
 
@@ -146,7 +148,9 @@ const MazeCell = React.memo(({
         prev.cell.s === next.cell.s &&
         prev.cell.e === next.cell.e &&
         prev.cell.w === next.cell.w &&
-        prev.levelSize === next.levelSize
+        prev.cell.w === next.cell.w &&
+        prev.levelSize === next.levelSize &&
+        prev.targetAnimal === next.targetAnimal
     );
 });
 
@@ -217,7 +221,7 @@ export default function MazeHunter() {
         switch (type) {
             case 'rock': return '🪨';
             case 'log': return '🪵';
-            case 'cactus': return '🌵';
+            case 'tree': return '🌲';
             default: return '';
         }
     }, []);
@@ -230,11 +234,11 @@ export default function MazeHunter() {
             engine={engine}
             powerUps={powerUps}
             onExit={() => navigate(-1)}
-            cardBackground={<BlobBackground colors={{ blob1: '#e0f2fe', blob2: '#f0f9ff', blob3: '#bae6fd', blob4: '#7dd3fc' }} />}
+            cardBackground={<BlobBackground colors={{ blob1: '#dcfce7', blob2: '#f0fdf4', blob3: '#bbf7d0', blob4: '#86efac' }} />}
             instructions={[
-                { icon: '🍎', title: t('games.maze-hunter.howToPlay.step1.title'), description: t('games.maze-hunter.howToPlay.step1.desc') },
+                { icon: '🐾', title: t('games.maze-hunter.howToPlay.step1.title'), description: t('games.maze-hunter.howToPlay.step1.desc') },
                 { icon: '👆', title: t('games.maze-hunter.howToPlay.step2.title'), description: t('games.maze-hunter.howToPlay.step2.desc') },
-                { icon: '🔓', title: t('games.maze-hunter.howToPlay.step3.title'), description: t('games.maze-hunter.howToPlay.step3.desc') }
+                { icon: '🐅', title: t('games.maze-hunter.howToPlay.step3.title'), description: t('games.maze-hunter.howToPlay.step3.desc') }
             ]}
         >
             <div
@@ -258,11 +262,12 @@ export default function MazeHunter() {
                             nurturing={nurturing}
                             getObstacleEmoji={getObstacleEmoji}
                             onStart={logic.handleStart}
+                            targetAnimal={logic.currentLevel.targetAnimal}
                         />
                     ))}
                 </div>
             </div>
-        </Layout2>
+        </Layout2 >
     );
 }
 
@@ -270,12 +275,12 @@ export const manifest = {
     id: GAME_ID,
     title: 'Maze Hunter',
     titleKey: 'games.maze-hunter.title',
-    subtitle: 'Collect fruits to escape!',
+    subtitle: 'Track the animal to hunt!',
     subtitleKey: 'games.maze-hunter.subtitle',
     category: 'brain',
     level: 2,
     component: MazeHunter,
-    description: 'Collect all fruits in one stroke to unlock the exit.',
+    description: 'Follow the tracks to find the animal at the end.',
     descriptionKey: 'games.maze-hunter.description',
-    thumbnail: '🍎'
+    thumbnail: '🐾'
 } as const;

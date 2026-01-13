@@ -1,11 +1,11 @@
 export default {
     title: 'Maze Hunter',
-    subtitle: 'Collect fruits to escape!',
-    description: 'Draw a path to collect all fruits and reach the exit.',
+    subtitle: 'Track the animal to hunt!',
+    description: 'Follow the tracks to find the animal at the end.',
     howToPlay: {
         step1: {
             title: 'Goal',
-            desc: 'Collect all fruits!',
+            desc: 'Follow the tracks!',
         },
         step2: {
             title: 'Action',
@@ -13,7 +13,7 @@ export default {
         },
         step3: {
             title: 'Tip',
-            desc: 'Reach the exit after collecting.',
+            desc: 'Find the animal at the end.',
         },
     },
 };

@@ -1,11 +1,11 @@
 export default {
     title: 'メイズハンター',
-    subtitle: 'フルーツを集めて脱出！',
-    description: '一筆書きですべてのフルーツを集め、出口を目指しましょう。',
+    subtitle: '足跡をたどって動物を探そう！',
+    description: '一筆書きで足跡をたどり、動物を見つけましょう。',
     howToPlay: {
         step1: {
             title: '目標',
-            desc: 'すべてのフルーツを集めよう！',
+            desc: '足跡をたどろう！',
         },
         step2: {
             title: '操作',
@@ -13,7 +13,7 @@ export default {
         },
         step3: {
             title: 'ヒント',
-            desc: 'フルーツを集めると出口が開きます。',
+            desc: '最後に動物が待っています。',
         },
     },
 };

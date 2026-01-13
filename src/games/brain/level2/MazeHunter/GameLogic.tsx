@@ -3,9 +3,10 @@ import { useGameEngine } from '../../../layouts/Standard/Layout0/useGameEngine';
 
 type GameEngine = ReturnType<typeof useGameEngine>;
 
-const ITEM_TYPES = [
-    '🍇', '🍈', '🍉', '🍊', '🍋', '🍋‍🟩', '🍌', '🍍', '🥭', '🍎',
-    '🍏', '🍐', '🍑', '🍒', '🍓', '🫐', '🥝', '🍅', '🫒', '🥥'
+const ITEM_TYPES = ['🐾'];
+
+const ANIMAL_TYPES = [
+    '🐅', '🐏', '🦬', '🐆', '🐃', '🦌', '🐇', '🦨', '🦡'
 ];
 
 export interface MazeCell {
@@ -14,7 +15,7 @@ export interface MazeCell {
     isStart?: boolean;
     isEnd?: boolean;
     isObstacle?: boolean;
-    obstacleType?: 'rock' | 'cactus';
+    obstacleType?: 'rock' | 'tree';
     isPath?: boolean; // Part of the player's drawn path
     // Directional flags for path rendering
     isItem?: boolean;
@@ -29,11 +30,12 @@ interface LevelDef {
     size: number;
     start: { r: number, c: number };
     end: { r: number, c: number };
-    items: { r: number, c: number, type: string }[]; // Target items
-    obstacles: { r: number, c: number, type: 'rock' | 'cactus' }[];
+    items: { r: number, c: number, type: string }[]; // Target items (Tracks)
+    obstacles: { r: number, c: number, type: 'rock' | 'tree' }[];
+    targetAnimal: string;
 }
 
-const OBSTACLE_TYPES = ['rock', 'cactus'] as const;
+const OBSTACLE_TYPES = ['rock', 'tree'] as const;
 const MOVES = [[-1, 0], [1, 0], [0, -1], [0, 1]];
 
 function shuffle<T>(array: T[]): T[] {
@@ -152,7 +154,7 @@ const generateLevel = (size: number, difficulty: number): LevelDef => {
     }
 
     // 4. Generate Obstacles List
-    const obstacles: { r: number, c: number, type: 'rock' | 'cactus' }[] = [];
+    const obstacles: { r: number, c: number, type: 'rock' | 'tree' }[] = [];
 
     for (let r = 0; r < size; r++) {
         for (let c = 0; c < size; c++) {
@@ -180,7 +182,9 @@ const generateLevel = (size: number, difficulty: number): LevelDef => {
         items.push({ ...shuffledSpots[i], type });
     }
 
-    return { size, start, end, obstacles, items };
+    const targetAnimal = ANIMAL_TYPES[Math.floor(Math.random() * ANIMAL_TYPES.length)];
+
+    return { size, start, end, obstacles, items, targetAnimal };
 };
 
 export const useMazeHunterLogic = (engine: GameEngine) => {
@@ -189,7 +193,7 @@ export const useMazeHunterLogic = (engine: GameEngine) => {
     // State
     const [levelIndex, setLevelIndex] = useState(0);
     const [grid, setGrid] = useState<MazeCell[][]>([]);
-    const [currentLevel, setCurrentLevel] = useState<LevelDef>({ size: 5, start: { r: 0, c: 0 }, end: { r: 4, c: 4 }, obstacles: [], items: [] });
+    const [currentLevel, setCurrentLevel] = useState<LevelDef>({ size: 5, start: { r: 0, c: 0 }, end: { r: 4, c: 4 }, obstacles: [], items: [], targetAnimal: '🐅' });
 
     // Drag State
     const [isDragging, setIsDragging] = useState(false);

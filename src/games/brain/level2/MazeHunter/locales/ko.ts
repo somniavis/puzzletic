@@ -1,11 +1,11 @@
 export default {
     title: '메이즈 헌터',
-    subtitle: '과일을 모아 탈출하세요!',
-    description: '한 번의 터치로 모든 과일을 모아 출구로 탈출하세요.',
+    subtitle: '발자국을 따라 동물을 찾으세요!',
+    description: '한 번의 터치로 발자국을 따라가 동물을 잡으세요.',
     howToPlay: {
         step1: {
             title: '목표',
-            desc: '모든 과일을 모으세요!',
+            desc: '발자국을 따라가세요!',
         },
         step2: {
             title: '방법',
@@ -13,7 +13,7 @@ export default {
         },
         step3: {
             title: '팁',
-            desc: '과일을 다 모으면 출구가 열립니다.',
+            desc: '끝에서 동물을 발견할 수 있습니다.',
         },
     },
 };

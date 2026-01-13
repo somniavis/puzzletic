@@ -18,13 +18,13 @@
     width: min(90vmin, 500px);
     aspect-ratio: 1 / 1;
     justify-self: center;
-    /* Desert Theme: Sand Color */
-    background: rgba(222, 184, 135, 0.6);
-    /* Burlywood/Sand - Slightly darker for contrast */
+    /* Forest Theme: Moss/Grass Color - Medium Green */
+    background: rgba(74, 222, 128, 0.75);
+    /* Green-400 */
     padding: 8px;
     border-radius: 16px;
     backdrop-filter: blur(4px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     z-index: 10;
     position: relative;
     touch-action: none;
@@ -32,8 +32,8 @@
 
 .cell {
     position: relative;
-    background: rgba(222, 184, 135, 0.35);
-    /* Slightly increased opacity */
+    background: rgba(220, 252, 231, 0.85);
+    /* LIGHTER CELLS (Green-100) */
     border-radius: 8px;
     display: flex;
     align-items: center;
