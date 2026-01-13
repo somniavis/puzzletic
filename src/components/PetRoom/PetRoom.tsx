@@ -27,6 +27,7 @@ import { CameraModal } from './CameraModal';
 import { toPng } from 'html-to-image';
 import { generateShareUrl, type ShareData } from '../../utils/shareUtils';
 import { FabMenu } from './FabMenu';
+import { SurpriseTrain } from '../SurpriseTrain';
 import './PetRoom.css';
 
 import { useNavigate } from 'react-router-dom';
@@ -166,6 +167,70 @@ export const PetRoom: React.FC<PetRoomProps> = ({
   const [showCameraModal, setShowCameraModal] = useState(false);
   const [capturedImage, setCapturedImage] = useState<string>('');
   const [currentShareUrl, setCurrentShareUrl] = useState<string>('');
+
+  /* ========== Surprise Train Logic ========== */
+  const [isTrainActive, setIsTrainActive] = useState(false);
+
+  useEffect(() => {
+    // 1. Check if we should trigger the train
+    const lastTrainTime = parseInt(localStorage.getItem('lastTrainTime') || '0', 10);
+    const now = Date.now();
+    const COOLDOWN = 30 * 60 * 1000; // 30 mins
+    const forceTrain = localStorage.getItem('FORCE_TRAIN') === 'true';
+
+    if (forceTrain || (now - lastTrainTime > COOLDOWN)) {
+      // If forced, 100% chance. Else 50% chance.
+      if (forceTrain || Math.random() < 0.5) {
+        // Trigger Train!
+        // But wait a moment so it doesn't appear instantly on load
+        setTimeout(() => {
+          setIsTrainActive(true);
+          localStorage.setItem('lastTrainTime', now.toString()); // Reset cooldown either way
+          if (forceTrain) {
+            localStorage.removeItem('FORCE_TRAIN'); // Consume flag
+          }
+        }, 2000);
+      }
+    }
+  }, []); // Run once on mount
+
+  const handleTrainComplete = () => {
+    setIsTrainActive(false);
+  };
+
+  const handleOpenTrainGift = (_: DOMRect) => {
+    // Probability Logic
+    const rand = Math.random();
+    let rewardType: 'small' | 'snack' | 'dud' | 'big' = 'small';
+
+    if (rand < 0.42) rewardType = 'small';
+    else if (rand < 0.72) rewardType = 'snack';
+    else if (rand < 0.97) rewardType = 'dud';
+    else rewardType = 'big';
+
+    // Execute Reward
+    if (rewardType === 'dud') {
+      playCleaningSound(); // Reusing "poof" sound or similar
+      showBubble('worried', 3);
+      onActionChange?.('jumping');
+      setTimeout(() => onActionChange?.('idle'), 2000);
+    } else if (rewardType === 'small') {
+      const amount = 10 + Math.floor(Math.random() * 40); // 10-50
+      nurturing.addRewards(0, amount);
+      playButtonSound();
+      showBubble('joy', 2);
+    } else if (rewardType === 'big') {
+      const amount = 100 + Math.floor(Math.random() * 200); // 100-300
+      nurturing.addRewards(0, amount);
+      playButtonSound(); // Replace with Win sound
+      showBubble('joy', 3);
+    } else if (rewardType === 'snack') {
+      const amount = 50;
+      nurturing.addRewards(0, amount);
+      playEatingSound();
+      showBubble('playful', 2);
+    }
+  };
 
   const handleCameraClick = async () => {
     if (!petRoomRef.current) return;
@@ -812,7 +877,14 @@ export const PetRoom: React.FC<PetRoomProps> = ({
 
         {/* Main Room Area */}
         <div className="room-container">
-          {/* Jello House (Bottom Left) */}
+          {/* Surprise Train Layer */}
+          <SurpriseTrain
+            isActive={isTrainActive}
+            onOpenGift={handleOpenTrainGift}
+            onComplete={handleTrainComplete}
+          />
+
+          {/* Action Bar (Bottom Menu) */}
           {!showGiftBox && (
             <JelloHouse
               type={nurturing.currentHouseId}

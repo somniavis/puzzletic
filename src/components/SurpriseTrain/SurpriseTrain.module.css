@@ -1,0 +1,174 @@
+.container {
+    position: absolute;
+    bottom: 10px;
+    /* 10px above menu (relative to room container) */
+    /* 10px above menu area (approx 85px) */
+    /* Just above the menu */
+    right: -200px;
+    /* Start off-screen */
+    width: 350px;
+    /* Fits 5 cars */
+    height: 80px;
+    z-index: 5;
+    /* Behind menus but in front of background elements */
+    pointer-events: auto;
+    will-change: transform;
+}
+
+.trainWrapper {
+    position: relative;
+    font-size: 3.5rem;
+    display: flex;
+    align-items: center;
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.2));
+    cursor: pointer;
+    user-select: none;
+    transition: transform 0.1s;
+}
+
+.trainWrapper:active {
+    transform: scale(0.95);
+}
+
+.engine {
+    z-index: 2;
+}
+
+.wagon {
+    margin-left: -5px;
+    z-index: 1;
+    position: relative;
+}
+
+/* The Gift on the Wagon */
+.giftBox {
+    position: absolute;
+    top: -20px;
+    left: 10px;
+    font-size: 2.5rem;
+    z-index: 3;
+    animation: bounce 1s infinite alternate ease-in-out;
+    cursor: pointer;
+}
+
+/* Smoke Effect */
+.smoke {
+    position: absolute;
+    top: 5px;
+    left: 10px;
+    font-size: 1.5rem;
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Drive Animation: Right to Left */
+@keyframes driveAcross {
+    0% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(-150vw);
+        /* Move fully across screen to left */
+    }
+}
+
+.driving {
+    animation: driveAcross 15s linear forwards;
+}
+
+@keyframes bounce {
+    0% {
+        transform: translateY(0);
+    }
+
+    100% {
+        transform: translateY(-5px);
+    }
+}
+
+/* Engine Container for Smoke Positioning */
+.engineContainer {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+}
+
+/* Smoke Stack positioned near the chimney of the emoji */
+.smokeStack {
+    position: absolute;
+    top: -15px;
+    /* Moved up */
+    left: 10px;
+    /* Adjusted left */
+    width: 30px;
+    height: 30px;
+    z-index: 20;
+    /* Ensure on top of engine */
+    pointer-events: none;
+}
+
+.smoke {
+    position: absolute;
+    width: 15px;
+    height: 15px;
+    /* Use light gray for visibility */
+    background: radial-gradient(circle, rgba(220, 220, 220, 0.9) 0%, rgba(255, 255, 255, 0) 70%);
+    border-radius: 50%;
+    opacity: 0;
+    transform: scale(0.5);
+    animation: smokePuff 1.5s infinite ease-out;
+}
+
+/* Stagger different smoke particles */
+.smoke:nth-child(1) {
+    animation-delay: 0.0s;
+}
+
+.smoke:nth-child(2) {
+    animation-delay: 0.5s;
+}
+
+.smoke:nth-child(3) {
+    animation-delay: 1.0s;
+}
+
+@keyframes smokePuff {
+    0% {
+        transform: translate(0, 0) scale(0.5);
+        opacity: 0.8;
+    }
+
+    50% {
+        opacity: 0.6;
+    }
+
+    100% {
+        /* Move Up (-Y) and Right (+X) relative to train */
+        transform: translate(40px, -40px) scale(2.5);
+        opacity: 0;
+    }
+}
+
+/* Prank/Dud Puff Animation */
+.puff {
+    position: absolute;
+    top: -30px;
+    left: 0;
+    font-size: 4rem;
+    animation: puffOut 0.5s ease-out forwards;
+}
+
+@keyframes puffOut {
+    0% {
+        opacity: 1;
+        transform: scale(0.5);
+    }
+
+    100% {
+        opacity: 0;
+        transform: scale(1.5);
+    }
+}

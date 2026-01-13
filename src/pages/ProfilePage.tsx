@@ -174,6 +174,24 @@ export const ProfilePage: React.FC = () => {
                         >
                             🎨 Layout Preview
                         </button>
+                        <button
+                            style={{
+                                background: '#FF9800',
+                                color: 'white',
+                                padding: '12px 24px',
+                                borderRadius: '12px',
+                                border: 'none',
+                                fontWeight: 'bold',
+                                cursor: 'pointer',
+                                flex: 1
+                            }}
+                            onClick={() => {
+                                localStorage.setItem('FORCE_TRAIN', 'true');
+                                alert("🚂 Train Queued! Go back to Pet Room.");
+                            }}
+                        >
+                            🚂 Call Train
+                        </button>
                     </div>
                 </section>
             </div>
