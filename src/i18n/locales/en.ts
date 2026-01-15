@@ -4,6 +4,7 @@ import numberHiveEn from '../../games/math/level1/NumberHive/locales/en';
 import fruitSliceEn from '../../games/math/level1/FruitSlice/locales/en';
 import numberBalanceEn from '../../games/math/level1/NumberBalance/locales/en';
 import mathArcheryEn from '../../games/math/level1/MathArchery/locales/en';
+import frontAdditionEn from '../../games/math/level2/FrontAddition/locales/en';
 import tenFrameCountEn from '../../games/math/level2/TenFrameCount/locales/en';
 import mathPinwheelEn from '../../games/math/level2/PinwheelPop/locales/en';
 import deepSeaDiveEn from '../../games/math/level2/DeepSeaDive/locales/en';
@@ -33,7 +34,7 @@ export const en = {
     subscription: {
       quarterly: {
         title: 'Billed quarterly',
-        desc: 'Now $3.45',
+        desc: 'Now $3.99',
       },
       yearly: {
         title: 'Billed annually',
@@ -690,6 +691,7 @@ export const en = {
     'math-fruit-slice': fruitSliceEn,
     'math-number-balance': numberBalanceEn,
     'math-archery': mathArcheryEn,
+    'math-front-addition': frontAdditionEn,
     'ten-frame-count': tenFrameCountEn,
     'pinwheel-pop': mathPinwheelEn,
     'deep-sea-dive': deepSeaDiveEn,

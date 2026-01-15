@@ -4,6 +4,7 @@ import numberHiveKo from '../../games/math/level1/NumberHive/locales/ko';
 import fruitSliceKo from '../../games/math/level1/FruitSlice/locales/ko';
 import numberBalanceKo from '../../games/math/level1/NumberBalance/locales/ko';
 import mathArcheryKo from '../../games/math/level1/MathArchery/locales/ko';
+import frontAdditionKo from '../../games/math/level2/FrontAddition/locales/ko';
 import tenFrameCountKo from '../../games/math/level2/TenFrameCount/locales/ko';
 import mathPinwheelKo from '../../games/math/level2/PinwheelPop/locales/ko';
 import deepSeaDiveKo from '../../games/math/level2/DeepSeaDive/locales/ko';
@@ -34,7 +35,7 @@ export const ko = {
         subscription: {
             quarterly: {
                 title: '3개월 결제',
-                desc: '지금 $3.45',
+                desc: '지금 $3.99',
             },
             yearly: {
                 title: '연간 결제',
@@ -690,6 +691,7 @@ export const ko = {
         'math-fruit-slice': fruitSliceKo,
         'math-number-balance': numberBalanceKo,
         'math-archery': mathArcheryKo,
+        'math-front-addition': frontAdditionKo,
         'ten-frame-count': tenFrameCountKo,
         'pinwheel-pop': mathPinwheelKo,
         'animal-banquet': animalBanquetKo,

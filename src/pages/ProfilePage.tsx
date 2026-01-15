@@ -71,7 +71,7 @@ export const ProfilePage: React.FC = () => {
                                         <span className="sub-desc">{t('profile.subscription.quarterly.desc')}</span>
                                     </div>
                                     <div className="sub-price-right">
-                                        <span className="sub-monthly-price">$1.15 <span className="sub-currency">{t('profile.subscription.currency')}</span></span>
+                                        <span className="sub-monthly-price">$1.33 <span className="sub-currency">{t('profile.subscription.currency')}</span></span>
                                         <span className="sub-unit">{t('profile.subscription.unit')}</span>
                                     </div>
                                 </button>

@@ -5,6 +5,7 @@ import numberHiveJa from '../../games/math/level1/NumberHive/locales/ja';
 import fruitSliceJa from '../../games/math/level1/FruitSlice/locales/ja';
 import numberBalanceJa from '../../games/math/level1/NumberBalance/locales/ja';
 import mathArcheryJa from '../../games/math/level1/MathArchery/locales/ja';
+import frontAdditionJa from '../../games/math/level2/FrontAddition/locales/ja';
 import tenFrameCountJa from '../../games/math/level2/TenFrameCount/locales/ja';
 import mathPinwheelJa from '../../games/math/level2/PinwheelPop/locales/ja';
 import deepSeaDiveJa from '../../games/math/level2/DeepSeaDive/locales/ja';
@@ -35,7 +36,7 @@ export const ja = {
         subscription: {
             quarterly: {
                 title: '3ヶ月払い',
-                desc: '現在 $3.45',
+                desc: '現在 $3.99',
             },
             yearly: {
                 title: '年払い',
@@ -691,6 +692,7 @@ export const ja = {
         'math-fruit-slice': fruitSliceJa,
         'math-number-balance': numberBalanceJa,
         'math-archery': mathArcheryJa,
+        'math-front-addition': frontAdditionJa,
         'ten-frame-count': tenFrameCountJa,
         'pinwheel-pop': mathPinwheelJa,
         'animal-banquet': animalBanquetJa,
