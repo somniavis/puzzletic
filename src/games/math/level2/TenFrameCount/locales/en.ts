@@ -5,16 +5,16 @@ export default {
     question: "How many {{item}} are there?",
     howToPlay: {
         step1: {
-            title: "Goal",
-            desc: "Count everything fast!"
+            title: "See Rows",
+            desc: "Find full rows"
         },
         step2: {
-            title: "Action",
-            desc: "Full block is 10. Add the leftovers."
+            title: "Count by 10",
+            desc: "Each row = 10!"
         },
         step3: {
-            title: "Tip",
-            desc: "10, 20... then 1, 2, 3!"
+            title: "Add Extra",
+            desc: "10, 20... + leftovers!"
         }
     }
 };

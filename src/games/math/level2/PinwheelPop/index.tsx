@@ -80,9 +80,9 @@ export const MathPinwheel: React.FC<MathPinwheelProps> = ({ onExit }) => {
             engine={logic as any}
             powerUps={powerUpConfig}
             instructions={[
-                { icon: '👀', title: t('games.pinwheel-pop.howToPlay.step1.title'), description: t('games.pinwheel-pop.howToPlay.step1.desc') },
-                { icon: '✨', title: t('games.pinwheel-pop.howToPlay.step2.title'), description: t('games.pinwheel-pop.howToPlay.step2.desc') },
-                { icon: '💡', title: t('games.pinwheel-pop.howToPlay.step3.title'), description: t('games.pinwheel-pop.howToPlay.step3.desc') },
+                { icon: '🔢', title: t('games.pinwheel-pop.howToPlay.step1.title'), description: t('games.pinwheel-pop.howToPlay.step1.desc') },
+                { icon: '➕', title: t('games.pinwheel-pop.howToPlay.step2.title'), description: t('games.pinwheel-pop.howToPlay.step2.desc') },
+                { icon: '🌬️', title: t('games.pinwheel-pop.howToPlay.step3.title'), description: t('games.pinwheel-pop.howToPlay.step3.desc') },
             ]}
             onExit={onExit}
             className="pinwheel-layout"

@@ -3,8 +3,8 @@ export default {
     subtitle: 'なにとなにがペア？',
     description: 'かんけいがあるペアをさがしてね（れい：雨とカサ）！',
     howToPlay: {
-        step1: { title: 'もくひょう', desc: 'かんけいのあるペアをみつけよう。' },
-        step2: { title: 'やりかた', desc: '雨にはカサ！ つながりをさがしてね。' },
-        step3: { title: 'ヒント', desc: 'なにが合うかよーくかんがえてみてね。' }
-    }
+        step1: { title: '関係を考えよう', desc: '何と合うかな？' },
+        step2: { title: 'ペア探し', desc: '消防士には消防車！' },
+        step3: { title: 'ペア完成！', desc: '全部のペアをつなごう！' }
+    },
 };

@@ -3,18 +3,9 @@ export default {
     subtitle: "날개를 고쳐줘!",
     desc: "날개 4개를 모두 고치면 바람개비가 돌아가요!",
     howToPlay: {
-        step1: {
-            title: "목표",
-            desc: "모든 날개의 문제를 풀어주세요."
-        },
-        step2: {
-            title: "방법",
-            desc: "날개에 있는 두 숫자를 더해요."
-        },
-        step3: {
-            title: "팁",
-            desc: "모든 날개를 채우면 슝슝 돌아가요!"
-        }
+        step1: { title: '날개 보기', desc: '두 숫자를 확인!' },
+        step2: { title: '더하기', desc: '합치면 몇일까?' },
+        step3: { title: '고치고 돌려요!', desc: '프로펠러 완성!' }
     },
     question: "합계는?"
 };

@@ -3,17 +3,17 @@ export default {
     sub: '1, 2, 3... Connect!',
     desc: 'Click the numbers in order starting from the target.',
     howToPlay: {
-        goal: {
-            title: 'Goal',
-            desc: 'Help the bee find the honey.',
+        step1: {
+            title: 'Find Start',
+            desc: 'Which number to start?'
         },
-        action: {
-            title: 'Action',
-            desc: 'Tap numbers in order: 1 -> 2 -> 3!',
+        step2: {
+            title: 'Tap in Order',
+            desc: '1, 2, 3... Keep going!'
         },
-        rule: {
-            title: 'Tip',
-            desc: 'Follow the path carefully.',
+        step3: {
+            title: 'Collect Honey!',
+            desc: 'Complete the path!'
         },
     },
     level: 'Level',

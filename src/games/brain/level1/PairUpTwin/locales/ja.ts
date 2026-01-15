@@ -3,8 +3,8 @@ export default {
     subtitle: 'そっくりさんはどこ？',
     description: 'おなじ絵のカードをみつけてね！',
     howToPlay: {
-        step1: { title: 'もくひょう', desc: 'おなじ絵を2まいつけよう。' },
-        step2: { title: 'やりかた', desc: 'カードをめくってペアをさがしてね。' },
-        step3: { title: 'ヒント', desc: 'どこにあったかおぼえててね！' }
-    }
+        step1: { title: '覚えよう', desc: 'カードをよく見て！' },
+        step2: { title: '2枚めくろう', desc: '同じ絵かな？' },
+        step3: { title: 'ペア発見！', desc: '全部のペアを見つけよう！' }
+    },
 };

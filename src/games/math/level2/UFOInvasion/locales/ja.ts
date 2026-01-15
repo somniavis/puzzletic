@@ -3,17 +3,8 @@ export default {
     subtitle: "UFOをやっつけろ！",
     description: "うちゅうじんがおりてくるのをふせごう！",
     instructions: {
-        step1: {
-            title: "もくひょう",
-            desc: "UFOが地面につくまえに止めてね。"
-        },
-        step2: {
-            title: "やりかた",
-            desc: "こたえをえらんでレーザーはっしゃ！"
-        },
-        step3: {
-            title: "ヒント",
-            desc: "いそいで！ どんどんやってくるよ！"
-        }
+        step1: { title: 'UFO来襲！', desc: 'エイリアンが出た！' },
+        step2: { title: '早く解こう', desc: '答えを計算して！' },
+        step3: { title: '攻撃だ！', desc: '正解を狙って撃て！' }
     }
 };

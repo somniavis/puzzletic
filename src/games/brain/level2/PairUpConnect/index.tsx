@@ -121,7 +121,7 @@ const PairUpConnect: React.FC = () => {
                 {
                     title: t('games.pair-up-connect.howToPlay.step1.title'),
                     description: t('games.pair-up-connect.howToPlay.step1.desc'),
-                    icon: "👀"
+                    icon: "🤔"
                 },
                 {
                     title: t('games.pair-up-connect.howToPlay.step2.title'),
@@ -131,7 +131,7 @@ const PairUpConnect: React.FC = () => {
                 {
                     title: t('games.pair-up-connect.howToPlay.step3.title'),
                     description: t('games.pair-up-connect.howToPlay.step3.desc'),
-                    icon: "✨"
+                    icon: "✅"
                 }
             ]}
             engine={engine}

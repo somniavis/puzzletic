@@ -4,16 +4,16 @@ export default {
     desc: "Complete the wings to spin the wheel!",
     howToPlay: {
         step1: {
-            title: "Goal",
-            desc: "Answer all 4 wings to spin the wheel."
+            title: "See Wing",
+            desc: "Check two numbers"
         },
         step2: {
-            title: "Action",
-            desc: "Add the two numbers on the wing."
+            title: "Add Them",
+            desc: "What's the sum?"
         },
         step3: {
-            title: "Tip",
-            desc: "Fill every wing to make it fly!"
+            title: "Fix & Spin!",
+            desc: "Complete all 4 wings!"
         }
     },
     question: "Sum?"

@@ -4,17 +4,8 @@ export default {
     desc: "10個ずつの列をつかって、はやくかぞえてね！",
     question: "{{item}} はぜんぶでいくつ？",
     howToPlay: {
-        step1: {
-            title: "もくひょう",
-            desc: "ブロックをぜんぶかぞえてね。"
-        },
-        step2: {
-            title: "やりかた",
-            desc: "いっぱいの列は10個だよ。のこりをたしてね。"
-        },
-        step3: {
-            title: "ヒント",
-            desc: "10、20... そして 1, 2, 3！"
-        }
+        step1: { title: '列を見よう', desc: '埋まった列を確認！' },
+        step2: { title: '10ずつ数えて', desc: '1列は10個！' },
+        step3: { title: '残りを足そう', desc: '10、20…＋のこり！' }
     }
 };

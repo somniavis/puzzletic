@@ -120,9 +120,9 @@ export const RoundCounting: React.FC<RoundCountingProps> = ({ onExit }) => {
             gameId="math-round-counting"
             engine={layoutEngine as any}
             instructions={[
-                { icon: '⚪', title: t('games.math-round-counting.howToPlay.goal.title'), description: t('games.math-round-counting.howToPlay.goal.desc') },
-                { icon: '👆', title: t('games.math-round-counting.howToPlay.action.title'), description: t('games.math-round-counting.howToPlay.action.desc') },
-                { icon: '🔢', title: t('games.math-round-counting.howToPlay.math.title'), description: t('games.math-round-counting.howToPlay.math.desc') }
+                { icon: '🎯', title: t('games.math-round-counting.howToPlay.step1.title'), description: t('games.math-round-counting.howToPlay.step1.desc') },
+                { icon: '👀', title: t('games.math-round-counting.howToPlay.step2.title'), description: t('games.math-round-counting.howToPlay.step2.desc') },
+                { icon: '🔄', title: t('games.math-round-counting.howToPlay.step3.title'), description: t('games.math-round-counting.howToPlay.step3.desc') }
             ]}
             onExit={onExit}
             powerUps={powerUpConfig}

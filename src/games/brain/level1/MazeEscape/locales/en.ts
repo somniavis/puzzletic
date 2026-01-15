@@ -4,16 +4,16 @@ export default {
     description: 'Help Jello find the way home avoiding obstacles.',
     howToPlay: {
         step1: {
-            title: 'Goal',
-            desc: 'Help Jello get home!',
+            title: 'Find Camp',
+            desc: 'Help Jello get home!'
         },
         step2: {
-            title: 'Action',
-            desc: 'Draw a line to connect.',
+            title: 'Draw Route',
+            desc: 'Plan your path!'
         },
         step3: {
-            title: 'Tip',
-            desc: 'Avoid the rocks!',
+            title: 'Watch Out!',
+            desc: "Don't hit obstacles!"
         },
     },
 };

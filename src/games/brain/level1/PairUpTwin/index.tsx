@@ -121,12 +121,12 @@ const PairUpTwin: React.FC = () => {
                 {
                     title: t('games.pair-up-twin.howToPlay.step2.title'),
                     description: t('games.pair-up-twin.howToPlay.step2.desc'),
-                    icon: "👯"
+                    icon: "🃏"
                 },
                 {
                     title: t('games.pair-up-twin.howToPlay.step3.title'),
                     description: t('games.pair-up-twin.howToPlay.step3.desc'),
-                    icon: "✨"
+                    icon: "👯‍♀️"
                 }
             ]}
             engine={engine}

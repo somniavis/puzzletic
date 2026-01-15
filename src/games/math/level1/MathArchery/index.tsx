@@ -151,9 +151,9 @@ export const MathArchery: React.FC<MathArcheryProps> = ({ onExit }) => {
                 icon: "🎯"
             }}
             instructions={[
-                { icon: '🎯', title: t('games.math-archery.howToPlay.goal.title'), description: t('games.math-archery.howToPlay.goal.desc') },
-                { icon: '🏹', title: t('games.math-archery.howToPlay.action.title'), description: t('games.math-archery.howToPlay.action.desc') },
-                { icon: '🔢', title: t('games.math-archery.howToPlay.rule.title'), description: t('games.math-archery.howToPlay.rule.desc') }
+                { icon: '🎯', title: t('games.math-archery.howToPlay.step1.title'), description: t('games.math-archery.howToPlay.step1.desc') },
+                { icon: '➕', title: t('games.math-archery.howToPlay.step2.title'), description: t('games.math-archery.howToPlay.step2.desc') },
+                { icon: '🏹', title: t('games.math-archery.howToPlay.step3.title'), description: t('games.math-archery.howToPlay.step3.desc') }
             ]}
         >
             <>

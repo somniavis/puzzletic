@@ -4,16 +4,16 @@ export default {
     description: "Intercept invaders with math!",
     instructions: {
         step1: {
-            title: "Goal",
-            desc: "Don't let UFOs land!"
+            title: "UFO Alert!",
+            desc: "They're coming down!"
         },
         step2: {
-            title: "Action",
-            desc: "Tap the right answer to fire lasers."
+            title: "Solve Fast",
+            desc: "Calculate the answer"
         },
         step3: {
-            title: "Tip",
-            desc: "Be fast! They are coming!"
+            title: "Zap It!",
+            desc: "Fire at the answer!"
         }
     }
 };

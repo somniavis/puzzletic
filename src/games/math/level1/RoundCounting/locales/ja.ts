@@ -3,9 +3,9 @@ export default {
     sub: 'うごくターゲット！',
     desc: '絵がシャッフルするよ！　もくひょうの絵をはやく見つけてね。',
     howToPlay: {
-        goal: { title: 'もくひょう', desc: '上にでてくる絵をさがしてね。' },
-        action: { title: 'やりかた', desc: 'うごく前にはやくタッチ！' },
-        math: { title: 'ヒント', desc: 'まばたきしないでさがしてね！' }
+        step1: { title: 'ミッション確認', desc: '探す動物は？' },
+        step2: { title: '早く見つけて！', desc: '目を大きく開けて！' },
+        step3: { title: 'シャッフル！', desc: '場所が変わるよ！' }
     },
     target: '{{count}}この {{emoji}} をさがせ',
     shuffleMessage: 'シャッフル！',

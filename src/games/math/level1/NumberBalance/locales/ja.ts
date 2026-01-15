@@ -3,9 +3,9 @@ export default {
     sub: "つりあわせよう！",
     desc: "ひだりとおなじ重さになるように、みぎのお皿に数字をのせてね。",
     howToPlay: {
-        goal: { title: "もくひょう", desc: "ひだりとおなじ重さにしてね。" },
-        action: { title: "やりかた", desc: "2つの数字をたして、同じ数にしよう。" },
-        math: { title: "ヒント", desc: "?? + ?? = もくひょうの数！" }
+        step1: { title: 'はかり確認', desc: '重さはいくつ？' },
+        step2: { title: '２つ足そう', desc: '数字を足して' },
+        step3: { title: 'バランス！', desc: 'つりあわせよう！' }
     },
     powerups: {
         freeze: "じかんストップ - すこし止まってかんがえよう！",

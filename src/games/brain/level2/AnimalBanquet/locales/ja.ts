@@ -3,9 +3,9 @@ export default {
     subtitle: 'ごはんがほしいのはだれ？',
     description: 'だれにあげたかおぼえてて！ うごくどうぶつにごはんをあげよう。',
     howToPlay: {
-        step1: { title: 'もくひょう', desc: 'ぜんぶのどうぶつに１回ずつごはんをあげてね。' },
-        step2: { title: 'やりかた', desc: 'おなかをすかせた子にごはんをあげよう。' },
-        step3: { title: 'ヒント', desc: 'おなかいっぱいの子にはあげないでね！' }
+        step1: { title: '食べ物マッチ', desc: '誰が何を好きかな？' },
+        step2: { title: '正しくあげよう', desc: '下から選んでね！' },
+        step3: { title: '一度だけ！', desc: '二回あげちゃダメだよ！' }
     },
     feedback: {
         full: "おなかいっぱい 🤢",

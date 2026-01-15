@@ -147,9 +147,9 @@ export const NumberBalance: React.FC<NumberBalanceProps> = ({ onExit }) => {
             gameId="math-number-balance"
             engine={layoutEngine as any}
             instructions={[
-                { icon: '⚖️', title: t('games.math-number-balance.howToPlay.goal.title'), description: t('games.math-number-balance.howToPlay.goal.desc') },
-                { icon: '👆', title: t('games.math-number-balance.howToPlay.action.title'), description: t('games.math-number-balance.howToPlay.action.desc') },
-                { icon: '🔢', title: t('games.math-number-balance.howToPlay.math.title'), description: t('games.math-number-balance.howToPlay.math.desc') }
+                { icon: '⚖️', title: t('games.math-number-balance.howToPlay.step1.title'), description: t('games.math-number-balance.howToPlay.step1.desc') },
+                { icon: '🔢', title: t('games.math-number-balance.howToPlay.step2.title'), description: t('games.math-number-balance.howToPlay.step2.desc') },
+                { icon: '🎯', title: t('games.math-number-balance.howToPlay.step3.title'), description: t('games.math-number-balance.howToPlay.step3.desc') }
             ]}
             onExit={onExit}
             powerUps={powerUpConfig}

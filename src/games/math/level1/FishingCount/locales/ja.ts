@@ -3,17 +3,8 @@ export default {
     sub: "いっぱいつれるかな？",
     desc: "もくひょうの数だけ、おサカナをアミでつかまえてね。",
     howToPlay: {
-        goal: {
-            title: "もくひょう",
-            desc: "りょうしさんの頼まれた数だけつろう！"
-        },
-        action: {
-            title: "やりかた",
-            desc: "アミまでひっぱってね。"
-        },
-        math: {
-            title: "ヒント",
-            desc: "かずをかぞえながら つかまえよう！"
-        }
+        step1: { title: 'ターゲット確認', desc: '何をつかまえる？' },
+        step2: { title: '数えよう', desc: '何匹いるかな？' },
+        step3: { title: '正しくキャッチ！', desc: '数に合わせて！' }
     }
 };

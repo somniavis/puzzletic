@@ -180,9 +180,9 @@ export const FruitSlice: React.FC<FruitSliceProps> = ({ onExit }) => {
             gameId="math-fruit-slice"
             engine={layoutEngine as any}
             instructions={[
-                { icon: '🍉', title: t('games.math-fruit-slice.howToPlay.goal.title'), description: t('games.math-fruit-slice.howToPlay.goal.desc') },
-                { icon: '🔪', title: t('games.math-fruit-slice.howToPlay.action.title'), description: t('games.math-fruit-slice.howToPlay.action.desc') },
-                { icon: '🔢', title: t('games.math-fruit-slice.howToPlay.math.title'), description: t('games.math-fruit-slice.howToPlay.math.desc') }
+                { icon: '🧮', title: t('games.math-fruit-slice.howToPlay.step1.title'), description: t('games.math-fruit-slice.howToPlay.step1.desc') },
+                { icon: '🔪', title: t('games.math-fruit-slice.howToPlay.step2.title'), description: t('games.math-fruit-slice.howToPlay.step2.desc') },
+                { icon: '🍎', title: t('games.math-fruit-slice.howToPlay.step3.title'), description: t('games.math-fruit-slice.howToPlay.step3.desc') }
             ]}
             onExit={onExit}
             powerUps={powerUpConfig}

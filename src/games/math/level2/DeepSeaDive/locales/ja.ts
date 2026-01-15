@@ -3,9 +3,9 @@ export default {
     sub: "もっとふかく！",
     desc: "ひきざんをといて、海のなかまたちをもぐらせてあげよう。",
     howToPlay: {
-        goal: { title: "もくひょう", desc: "ただしい深さまでもぐってね。" },
-        action: { title: "やりかた", desc: "ひきざんをといて、したへすすもう。" },
-        rule: { title: "ヒント", desc: "どんどんふかくもぐっていくよ！" }
+        step1: { title: '潜水ミッション', desc: '今日の深さは？' },
+        step2: { title: '深さを探そう', desc: '問題を解いて！' },
+        step3: { title: '潜ろう！', desc: '正解の深さまで！' }
     },
     powerups: {
         timeFreeze: "じかんストップ",

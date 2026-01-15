@@ -151,9 +151,9 @@ export const FishingCount: React.FC<FishingCountProps> = ({ onExit }) => {
                 icon: targetAnimal
             }}
             instructions={[
-                { icon: '🐟', title: t('games.math-fishing-count.howToPlay.goal.title'), description: t('games.math-fishing-count.howToPlay.goal.desc') },
-                { icon: '👆', title: t('games.math-fishing-count.howToPlay.action.title'), description: t('games.math-fishing-count.howToPlay.action.desc') },
-                { icon: '🔢', title: t('games.math-fishing-count.howToPlay.math.title'), description: t('games.math-fishing-count.howToPlay.math.desc') }
+                { icon: '🎯', title: t('games.math-fishing-count.howToPlay.step1.title'), description: t('games.math-fishing-count.howToPlay.step1.desc') },
+                { icon: '🔢', title: t('games.math-fishing-count.howToPlay.step2.title'), description: t('games.math-fishing-count.howToPlay.step2.desc') },
+                { icon: '🎣', title: t('games.math-fishing-count.howToPlay.step3.title'), description: t('games.math-fishing-count.howToPlay.step3.desc') },
             ]}
             onExit={onExit}
             cardBackground={<FishingBackground />}

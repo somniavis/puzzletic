@@ -94,9 +94,9 @@ export const NumberHive: React.FC<NumberHiveProps> = ({ onExit }) => {
             gameId="math-number-hive"
             engine={layoutEngine as any}
             instructions={[
-                { icon: '🔢', title: t('games.math-number-hive.howToPlay.goal.title'), description: t('games.math-number-hive.howToPlay.goal.desc') },
-                { icon: '👆', title: t('games.math-number-hive.howToPlay.action.title'), description: t('games.math-number-hive.howToPlay.action.desc') },
-                { icon: '📜', title: t('games.math-number-hive.howToPlay.rule.title'), description: t('games.math-number-hive.howToPlay.rule.desc') }
+                { icon: '🎯', title: t('games.math-number-hive.howToPlay.step1.title'), description: t('games.math-number-hive.howToPlay.step1.desc') },
+                { icon: '1️⃣2️⃣3️⃣', title: t('games.math-number-hive.howToPlay.step2.title'), description: t('games.math-number-hive.howToPlay.step2.desc') },
+                { icon: '🍯', title: t('games.math-number-hive.howToPlay.step3.title'), description: t('games.math-number-hive.howToPlay.step3.desc') }
             ]}
             onExit={onExit}
             powerUps={powerUpConfig}

@@ -3,17 +3,17 @@ export default {
     sub: "Catch & Count!",
     desc: "Drag the correct sea animals into the net to count them.",
     howToPlay: {
-        goal: {
-            title: "Goal",
-            desc: "Catch the requested number of sea friends!"
+        step1: {
+            title: "Check Target",
+            desc: "Which sea animal to catch?"
         },
-        action: {
-            title: "Action",
-            desc: "Drag them into the net."
+        step2: {
+            title: "Count Them",
+            desc: "How many do you need?"
         },
-        math: {
-            title: "Tip",
-            desc: "Only catch what you need!"
+        step3: {
+            title: "Catch Correctly!",
+            desc: "Only the right ones!"
         }
     }
 };

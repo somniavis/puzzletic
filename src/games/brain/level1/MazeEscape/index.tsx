@@ -213,9 +213,9 @@ export default function MazeEscape() {
             onExit={() => navigate(-1)}
             cardBackground={<BlobBackground colors={{ blob1: '#e0f2fe', blob2: '#f0f9ff', blob3: '#bae6fd', blob4: '#7dd3fc' }} />}
             instructions={[
-                { icon: '🏠', title: t('games.maze-escape.howToPlay.step1.title'), description: t('games.maze-escape.howToPlay.step1.desc') },
-                { icon: '👆', title: t('games.maze-escape.howToPlay.step2.title'), description: t('games.maze-escape.howToPlay.step2.desc') },
-                { icon: '🪨', title: t('games.maze-escape.howToPlay.step3.title'), description: t('games.maze-escape.howToPlay.step3.desc') }
+                { icon: '🏕️', title: t('games.maze-escape.howToPlay.step1.title'), description: t('games.maze-escape.howToPlay.step1.desc') },
+                { icon: '✏️', title: t('games.maze-escape.howToPlay.step2.title'), description: t('games.maze-escape.howToPlay.step2.desc') },
+                { icon: '⚠️', title: t('games.maze-escape.howToPlay.step3.title'), description: t('games.maze-escape.howToPlay.step3.desc') }
             ]}
         >
             <div

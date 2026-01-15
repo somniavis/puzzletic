@@ -3,9 +3,9 @@ export default {
     subtitle: 'Who needs food?',
     description: 'Remember who you fed! Give the right food to moving animals.',
     howToPlay: {
-        step1: { title: 'Goal', desc: 'Feed every animal exactly once.' },
-        step2: { title: 'Action', desc: 'Give food to hungry animals.' },
-        step3: { title: 'Tip', desc: "Don't feed full animals again!" }
+        step1: { title: 'Match Food', desc: 'What does each love?' },
+        step2: { title: 'Feed Right', desc: 'Pick from below!' },
+        step3: { title: 'Once Only!', desc: "Don't feed twice!" }
     },
     feedback: {
         full: "I'm Full! 🤢",

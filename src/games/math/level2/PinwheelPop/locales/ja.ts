@@ -3,18 +3,9 @@ export default {
     subtitle: "羽をなおして！",
     desc: "4つの羽をなおして、風車をまわそう！",
     howToPlay: {
-        step1: {
-            title: "もくひょう",
-            desc: "すべての羽をもとどおりにしてね。"
-        },
-        step2: {
-            title: "やりかた",
-            desc: "羽にある2つの数字をたしてね。"
-        },
-        step3: {
-            title: "ヒント",
-            desc: "ぜんぶの羽ができたら、くるくるまわるよ！"
-        }
+        step1: { title: 'ハネを見よう', desc: '2つの数字を見て！' },
+        step2: { title: 'たし算', desc: '合わせるといくつ？' },
+        step3: { title: '直して回そう！', desc: 'プロペラ完成！' }
     },
     question: "たしたら？"
 };

@@ -3,17 +3,17 @@ const manifest = {
     sub: "Slice the Answer!",
     desc: "Calculate the missing number and slice the fruit to make a healthy snack.",
     howToPlay: {
-        goal: {
-            title: "Goal",
-            desc: "Find the missing number."
+        step1: {
+            title: "Check Recipe",
+            desc: "What's the math problem?"
         },
-        action: {
-            title: "Action",
-            desc: "Slice the correct fruit!"
+        step2: {
+            title: "Pick Right Knife",
+            desc: "Find the answer knife!"
         },
-        math: {
-            title: "Tip",
-            desc: "Wrong fruit? Do not slice!"
+        step3: {
+            title: "Chop Chop!",
+            desc: "Slice the fruit!"
         }
     },
     powerups: {

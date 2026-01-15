@@ -3,9 +3,9 @@ const manifest = {
     sub: "Aim & Solve!",
     desc: "Solve the equation and shoot the correct target.",
     howToPlay: {
-        goal: { title: "Goal", desc: "Solve the problem at the top." },
-        action: { title: "Action", desc: "Shoot the target with the right answer." },
-        rule: { title: "Tip", desc: "Pull back the bow and release!" }
+        step1: { title: "Aim Target", desc: "Check the target numbers." },
+        step2: { title: "Calculate", desc: "Which target solves the equation?" },
+        step3: { title: "Shoot!", desc: "Hit the correct target!" }
     },
     powerups: {
         freeze: "Time Freeze",

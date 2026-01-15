@@ -100,9 +100,9 @@ export default function ColorLink({ onExit }: ColorLinkProps) {
             onExit={handleExit}
             cardBackground={<WaveBackground />}
             instructions={[
-                { icon: '🔴', title: t('games.color-link.howToPlay.step1.title'), description: t('games.color-link.howToPlay.step1.desc') },
-                { icon: '⚡', title: t('games.color-link.howToPlay.step2.title'), description: t('games.color-link.howToPlay.step2.desc') },
-                { icon: '✨', title: t('games.color-link.howToPlay.step3.title'), description: t('games.color-link.howToPlay.step3.desc') }
+                { icon: '🔴🔵', title: t('games.color-link.howToPlay.step1.title'), description: t('games.color-link.howToPlay.step1.desc') },
+                { icon: '✏️', title: t('games.color-link.howToPlay.step2.title'), description: t('games.color-link.howToPlay.step2.desc') },
+                { icon: '✅', title: t('games.color-link.howToPlay.step3.title'), description: t('games.color-link.howToPlay.step3.desc') }
             ]}
         >
             <div

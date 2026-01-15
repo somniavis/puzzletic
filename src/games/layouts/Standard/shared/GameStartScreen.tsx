@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { playButtonSound } from '../../../../utils/sound';
+import './SharedStyles.css';
 
 interface Instruction {
     icon?: string;
@@ -36,14 +37,12 @@ export const GameStartScreen: React.FC<StartScreenProps> = ({
                     <h3 className="section-title">{t('common.howToPlay')}</h3>
                     {description && <p className="game-description-text">{description}</p>}
                     {instructions && instructions.length > 0 && (
-                        <div className="instructions-list">
+                        <div className="visual-steps-container">
                             {instructions.map((inst, index) => (
-                                <div key={index} className="instruction-item">
-                                    {inst.icon && <span className="instruction-icon">{inst.icon}</span>}
-                                    <div className="instruction-text">
-                                        <strong>{inst.title}</strong>
-                                        <p>{inst.description}</p>
-                                    </div>
+                                <div key={index} className="visual-step-card">
+                                    <div className="step-number">{index + 1}</div>
+                                    {inst.icon && <span className="visual-step-icon">{inst.icon}</span>}
+                                    <span className="visual-step-title">{inst.title}</span>
                                 </div>
                             ))}
                         </div>

@@ -3,18 +3,9 @@ const manifest = {
     sub: "せいかいをきろう！",
     desc: "すぎの数字はなにかな？ せいかいのフルーツをきってね！",
     howToPlay: {
-        goal: {
-            title: "もくひょう",
-            desc: "すぎの数字はなにかな？"
-        },
-        action: {
-            title: "やりかた",
-            desc: "せいかいのフルーツをきってね！"
-        },
-        math: {
-            title: "ヒント",
-            desc: "まちがったフルーツはきっちゃダメだよ！"
-        }
+        step1: { title: 'レシピ確認', desc: '必要なフルーツは？' },
+        step2: { title: 'ナイフ選択', desc: '合うナイフを選ぼう' },
+        step3: { title: 'チョキチョキ！', desc: '美味しく切ろう！' }
     },
     powerups: {
         freeze: "じかんストップ",

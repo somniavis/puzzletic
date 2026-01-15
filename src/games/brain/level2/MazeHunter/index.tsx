@@ -237,7 +237,7 @@ export default function MazeHunter() {
             cardBackground={<BlobBackground colors={{ blob1: '#dcfce7', blob2: '#f0fdf4', blob3: '#bbf7d0', blob4: '#86efac' }} />}
             instructions={[
                 { icon: '🐾', title: t('games.maze-hunter.howToPlay.step1.title'), description: t('games.maze-hunter.howToPlay.step1.desc') },
-                { icon: '👆', title: t('games.maze-hunter.howToPlay.step2.title'), description: t('games.maze-hunter.howToPlay.step2.desc') },
+                { icon: '✅', title: t('games.maze-hunter.howToPlay.step2.title'), description: t('games.maze-hunter.howToPlay.step2.desc') },
                 { icon: '🐅', title: t('games.maze-hunter.howToPlay.step3.title'), description: t('games.maze-hunter.howToPlay.step3.desc') }
             ]}
         >

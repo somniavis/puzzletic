@@ -1,10 +1,10 @@
 export default {
-    title: '정글 탐험',
+    title: '정글 링크',
     subtitle: '동물 친구들을 이어줘!',
     description: '같은 종류의 동물 친구들을 길로 연결해주세요. 길이 겹치지 않게 조심하세요!',
     howToPlay: {
-        step1: { title: '목표', desc: '같은 동물 가족끼리 연결해요.' },
-        step2: { title: '방법', desc: '길이 겹치지 않게 조심조심!' },
-        step3: { title: '팁', desc: '숲속의 모든 빈칸을 채워야 해요!' }
-    }
+        step1: { title: '종류 찾기', desc: '같은 종류 동물 찾기' },
+        step2: { title: '선 긋기', desc: '각 짝을 이어요' },
+        step3: { title: '정글 채우기', desc: '모든 길 완성!' }
+    },
 };

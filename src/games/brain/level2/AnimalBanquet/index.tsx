@@ -96,9 +96,9 @@ export default function AnimalBanquet({ onExit }: AnimalBanquetProps) {
                 blob4: '#ecfccb'  // Lime-100
             }} />}
             instructions={[
-                { icon: '🦁', title: t('games.animal-banquet.howToPlay.step1.title'), description: t('games.animal-banquet.howToPlay.step1.desc') },
-                { icon: '🤔', title: t('games.animal-banquet.howToPlay.step2.title'), description: t('games.animal-banquet.howToPlay.step2.desc') },
-                { icon: '⚡', title: t('games.animal-banquet.howToPlay.step3.title'), description: t('games.animal-banquet.howToPlay.step3.desc') }
+                { icon: '🐯', title: t('games.animal-banquet.howToPlay.step1.title'), description: t('games.animal-banquet.howToPlay.step1.desc') },
+                { icon: '🍱', title: t('games.animal-banquet.howToPlay.step2.title'), description: t('games.animal-banquet.howToPlay.step2.desc') },
+                { icon: '1️⃣', title: t('games.animal-banquet.howToPlay.step3.title'), description: t('games.animal-banquet.howToPlay.step3.desc') }
             ]}
         >
             <div className={styles.gameContainer}>

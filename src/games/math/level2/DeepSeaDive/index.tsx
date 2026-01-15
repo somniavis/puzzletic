@@ -101,9 +101,9 @@ export const DeepSeaDive: React.FC<DeepSeaDiveProps> = ({ onExit }) => {
                 icon: "🤿"
             }}
             instructions={[
-                { icon: '🔢', title: t('games.deep-sea-dive.howToPlay.goal.title'), description: t('games.deep-sea-dive.howToPlay.goal.desc') },
-                { icon: '👇', title: t('games.deep-sea-dive.howToPlay.action.title'), description: t('games.deep-sea-dive.howToPlay.action.desc') },
-                { icon: '🌊', title: t('games.deep-sea-dive.howToPlay.rule.title'), description: t('games.deep-sea-dive.howToPlay.rule.desc') }
+                { icon: '🤿', title: t('games.deep-sea-dive.howToPlay.step1.title'), description: t('games.deep-sea-dive.howToPlay.step1.desc') },
+                { icon: '🧮', title: t('games.deep-sea-dive.howToPlay.step2.title'), description: t('games.deep-sea-dive.howToPlay.step2.desc') },
+                { icon: '⬇️', title: t('games.deep-sea-dive.howToPlay.step3.title'), description: t('games.deep-sea-dive.howToPlay.step3.desc') }
             ]}
         >
             <>

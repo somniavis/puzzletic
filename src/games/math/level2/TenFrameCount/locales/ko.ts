@@ -4,17 +4,8 @@ export default {
     desc: "10개씩 꽉 찬 블록을 먼저 세면 빨라요!",
     question: "{{item}} 개수는 모두 몇 개일까요?",
     howToPlay: {
-        step1: {
-            title: "목표",
-            desc: "모든 블록을 빠르게 세어보아요."
-        },
-        step2: {
-            title: "방법",
-            desc: "꽉 찬 줄은 10개예요. 나머지를 더해요."
-        },
-        step3: {
-            title: "팁",
-            desc: "10, 20... 그리고 1, 2, 3!"
-        }
+        step1: { title: '줄 보기', desc: '꽉 찬 줄 확인!' },
+        step2: { title: '10씩 세기', desc: '한 줄은 10개!' },
+        step3: { title: '나머지 더하기', desc: '10, 20... + 나머지!' }
     }
 };

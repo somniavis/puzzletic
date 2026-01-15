@@ -3,17 +3,8 @@ export default {
     subtitle: '발자국을 따라 동물을 찾으세요!',
     description: '한 번의 터치로 발자국을 따라가 동물을 잡으세요.',
     howToPlay: {
-        step1: {
-            title: '목표',
-            desc: '발자국을 따라가세요!',
-        },
-        step2: {
-            title: '방법',
-            desc: '한 번에 이어그리세요.',
-        },
-        step3: {
-            title: '팁',
-            desc: '끝에서 동물을 발견할 수 있습니다.',
-        },
+        step1: { title: '발자국 추적', desc: '모든 발자국 찾기!' },
+        step2: { title: '전부 모으기', desc: '하나도 빠뜨리지 마요!' },
+        step3: { title: '사냥 완료!', desc: '이제 동물에게!' }
     },
 };

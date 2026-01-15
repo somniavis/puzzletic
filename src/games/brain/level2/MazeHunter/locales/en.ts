@@ -4,16 +4,16 @@ export default {
     description: 'Follow the tracks to find the animal at the end.',
     howToPlay: {
         step1: {
-            title: 'Goal',
-            desc: 'Follow the tracks!',
+            title: 'Track Prints',
+            desc: 'Find all pawprints!',
         },
         step2: {
-            title: 'Action',
-            desc: 'Draw one continuous path.',
+            title: 'Collect All',
+            desc: 'Must get every one!',
         },
         step3: {
-            title: 'Tip',
-            desc: 'Find the animal at the end.',
+            title: 'Hunt Down!',
+            desc: 'Now reach the animal!',
         },
     },
 };
