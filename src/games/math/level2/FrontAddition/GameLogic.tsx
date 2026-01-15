@@ -42,6 +42,9 @@ export const useGameLogic = (engine: ReturnType<typeof useGameEngine>) => {
 
     const [feedback, setFeedback] = useState<'correct' | 'wrong' | null>(null);
 
+    // Track previous game state to detect restart
+    const [prevGameState, setPrevGameState] = useState(gameState);
+
     const generateProblem = useCallback(() => {
         let a, b;
 
@@ -92,11 +95,19 @@ export const useGameLogic = (engine: ReturnType<typeof useGameEngine>) => {
         }
     }, [gameState]);
 
+    // Handle Game Start / Restart
     useEffect(() => {
-        if (gameState === 'playing' && !currentProblem) {
-            generateProblem();
+        if (gameState === 'playing') {
+            // Only generate new problem if:
+            // 1. No problem exists (Fresh Start)
+            // 2. Transitioned from 'gameover' (Play Again)
+            // Do NOT generate if transitioning from 'wrong' (Retry same problem)
+            if (!currentProblem || prevGameState === 'gameover') {
+                generateProblem();
+            }
         }
-    }, [gameState, currentProblem, generateProblem]);
+        setPrevGameState(gameState);
+    }, [gameState, currentProblem, generateProblem, prevGameState]);
 
     const handleInput = useCallback((key: string) => {
         if (gameState !== 'playing' || feedback === 'correct' || !currentProblem) return;

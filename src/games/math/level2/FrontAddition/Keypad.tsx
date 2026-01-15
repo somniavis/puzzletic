@@ -39,9 +39,9 @@ export const Keypad: React.FC<KeypadProps> = ({ onInput, disabled }) => {
                     textColor = '#ffffff';
                     borderColor = '#2563eb';
                 } else if (key === 'AC') {
-                    bgColor = '#94a3b8'; // slate-400 (Secondary Action)
+                    bgColor = '#fb7185'; // rose-400 (Soft Red)
                     textColor = '#ffffff';
-                    borderColor = '#64748b';
+                    borderColor = '#f43f5e';
                 }
 
                 return (

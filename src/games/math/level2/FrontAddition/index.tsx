@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Layout2 } from '../../../layouts/Standard/Layout2';
 import { useGameEngine } from '../../../layouts/Standard/Layout0/useGameEngine';
 import { useGameLogic } from './GameLogic';
+import { BlobBackground } from '../../components/BlobBackground';
 import { Keypad } from './Keypad';
 import type { GameManifest } from '../../../types';
 
@@ -133,6 +134,7 @@ const FrontAdditionGame: React.FC<{ onExit: () => void }> = ({ onExit }) => {
             gameId="math-level2-front-addition"
             engine={engine}
             onExit={onExit}
+            cardBackground={<BlobBackground speed="slow" colors={{ blob1: '#eff6ff', blob2: '#f0f9ff', blob3: '#e0f2fe', blob4: '#dbeafe' }} />}
             instructions={[
                 { title: 'Step 1', description: 'Add the tens.' },
                 { title: 'Step 2', description: 'Add the ones.' },
