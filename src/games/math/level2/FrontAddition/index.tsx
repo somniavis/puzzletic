@@ -114,53 +114,36 @@ const FrontAdditionGame: React.FC<{ onExit: () => void, gameId?: string }> = ({ 
     // If is3Digit: Step 1=Hundreds, 2=Tens, 3=Units, 4=Total
     // If !is3Digit: Step 1=Tens, 2=Units, 3=Total
 
+    // Determine config keys based on gameId (Memoized)
+    const { titleKey, subtitleKey } = React.useMemo(() => {
+        if (gameId === 'math-level2-front-addition-lv2') {
+            return { titleKey: 'games.frontAddition.lv2.title', subtitleKey: 'games.frontAddition.lv2.subtitle' };
+        } else if (gameId === 'math-level2-front-addition-lv3') {
+            return { titleKey: 'games.frontAddition.lv3.title', subtitleKey: 'games.frontAddition.lv3.subtitle' };
+        } else if (gameId === 'math-level2-front-addition-lv4') {
+            return { titleKey: 'games.frontAddition.lv4.title', subtitleKey: 'games.frontAddition.lv4.subtitle' };
+        }
+        return { titleKey: 'games.frontAddition.lv1.title', subtitleKey: 'games.frontAddition.lv1.subtitle' };
+    }, [gameId]);
+
+    // Derived values for Steps
     // Helper to fetch display value based on active step status
     const getDisp = (targetStep: number) => {
         return currentStep === targetStep ? userInput : (completedSteps[`step${targetStep}` as keyof typeof completedSteps] || '');
     };
 
-    // Calculate Grid Values
-    // We use unconditional hook calls, but 'currentProblem' ensures valid data
-    const stepsData = {
+    // Calculate Grid Values (Memoized to prevent render thrashing)
+    const stepsData = React.useMemo(() => ({
         hundreds: is3Digit ? getStepValues(getDisp(1), currentProblem?.step1_val || 0, 'hundreds') : [null, null, null, null],
         tens: getStepValues(getDisp(is3Digit ? 2 : 1), currentProblem?.step2_val || (currentProblem?.step1_val || 0), 'tens'),
         units: getStepValues(getDisp(is3Digit ? 3 : 2), currentProblem?.step3_val || (currentProblem?.step2_val || 0), 'units'),
         total: getStepValues(getDisp(is3Digit ? 4 : 3), is3Digit ? (currentProblem?.step4_val || 0) : (currentProblem?.step3_val || 0), 'total')
-    };
+    }), [is3Digit, currentStep, userInput, completedSteps, currentProblem]);
 
-    // Note: for !is3Digit (2-digit), the 'step2_val' in logic corresponds to Units Step (which is Step 2).
-    // Logic:
-    // !is3Digit:
-    //   Hundreds Row -> Hidden
-    //   Tens Row -> Step 1 (val=step1_val)
-    //   Units Row -> Step 2 (val=step2_val)
-    //   Total Row -> Step 3 (val=step3_val)
-
-    // Determine config keys based on gameId
-    let titleKey = 'games.frontAddition.lv1.title';
-    let subtitleKey = 'games.frontAddition.lv1.subtitle';
-
-    if (gameId === 'math-level2-front-addition-lv2') {
-        titleKey = 'games.frontAddition.lv2.title';
-        subtitleKey = 'games.frontAddition.lv2.subtitle';
-    } else if (gameId === 'math-level2-front-addition-lv3') {
-        titleKey = 'games.frontAddition.lv3.title';
-        subtitleKey = 'games.frontAddition.lv3.subtitle';
-    } else if (gameId === 'math-level2-front-addition-lv4') {
-        titleKey = 'games.frontAddition.lv4.title';
-        subtitleKey = 'games.frontAddition.lv4.subtitle';
-    }
-
-    // Dynamic grid rows definition
-    // 4 Columns: [Sign/Th, H, T, U]
-    // 3-digit: Rows: Prob1, Prob2, Sep, Hundreds(Step1), Tens(Step2), Units(Step3), Sep, Total(Step4)
-    // 2-digit: Rows: Prob1, Prob2, Sep, Tens(Step1), Units(Step2), Sep, Total(Step3) (Hundreds hidden)
-    // Actually using 'minmax(0, 1fr)' for rows is tricky if we skip one.
-    // We can just render 'null' or empty div with 0 height for hidden rows? Or use conditional rendering in JSX.
-
-    const gridRowsTemplate = is3Digit
-        ? 'repeat(2, minmax(0, 1fr)) auto repeat(3, minmax(0, 1fr)) auto minmax(0, 1fr)' // 2Prob + Sep + 3Steps + Sep + 1Total
-        : 'repeat(2, minmax(0, 1fr)) auto repeat(2, minmax(0, 1fr)) auto minmax(0, 1fr)'; // 2Prob + Sep + 2Steps + Sep + 1Total
+    // Dynamic grid rows definition (Memoized)
+    const gridRowsTemplate = React.useMemo(() => is3Digit
+        ? 'repeat(2, minmax(0, 1fr)) auto repeat(3, minmax(0, 1fr)) auto minmax(0, 1fr)'
+        : 'repeat(2, minmax(0, 1fr)) auto repeat(2, minmax(0, 1fr)) auto minmax(0, 1fr)', [is3Digit]);
 
     const activeStep = currentStep;
 
