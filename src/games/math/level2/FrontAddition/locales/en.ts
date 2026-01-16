@@ -7,6 +7,14 @@ export default {
         title: 'Front Addition 2',
         subtitle: '2-digit + 2-digit',
     },
+    lv3: {
+        title: 'Front Addition 3',
+        subtitle: '3-digit + 2-digit',
+    },
+    lv4: {
+        title: 'Front Addition 4',
+        subtitle: '3-digit + 3-digit',
+    },
     description: 'Add numbers from left to right! It\'s a faster way to calculate.',
     howToPlay: {
         title: 'How to Play',

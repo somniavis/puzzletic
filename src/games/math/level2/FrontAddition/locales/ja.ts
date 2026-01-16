@@ -7,6 +7,14 @@ export default {
         title: '前から足し算 2',
         subtitle: '2桁 + 2桁',
     },
+    lv3: {
+        title: '前から足し算 3',
+        subtitle: '3桁 + 2桁',
+    },
+    lv4: {
+        title: '前から足し算 4',
+        subtitle: '3桁 + 3桁',
+    },
     description: '左から数字を足してみましょう！より速く計算できます。',
     howToPlay: {
         title: '遊び方',

@@ -8,54 +8,47 @@ import { Keypad } from './Keypad';
 import type { GameManifest } from '../../../types';
 
 // Helper to distribute digits Left-to-Right into active slots (Hiding leading zeros based on targetVal)
-const getStepValues = (step: number, strVal: string | null, targetVal: number) => {
+const getStepValues = (strVal: string | null, targetVal: number, stepType: 'hundreds' | 'tens' | 'units' | 'total') => {
     const val = strVal || '';
     const chars = val.split('');
     const digitCount = targetVal.toString().length;
 
-    // Active slots should be '' (empty string) to show grid, inactive null to hide
-    const result = [null, null, null] as (string | null)[];
+    // 4 Slots: [Thousands/Sign, Hundreds, Tens, Units]
+    const result = [null, null, null, null] as (string | null)[];
 
-    if (step === 1) {
-        // Step 1 (Tens): Col 1 & 2 (Indices 0, 1)
-        // If target is 1 digit (e.g. 5), only Col 2 is active. Col 1 is null.
-        // If target is 2 digits (e.g. 15), Col 1 & 2 active.
-
+    if (stepType === 'hundreds') {
+        // Hundreds (Col 2): Usually 1 digit (max 9+9=18 -> 2 digits)
+        // If 2 digits (e.g. 18), occupies Col 1 & 2.
+        // If 1 digit (e.g. 5), occupies Col 2.
         const needed = digitCount >= 2 ? [0, 1] : [1];
-
-        // Fill active slots LTR
-        needed.forEach((slotIndex, i) => {
-            result[slotIndex] = chars[i] || '';
-        });
-
-    } else if (step === 2) {
-        // Step 2 (Units): Col 2 & 3 (Indices 1, 2)
-        // If target is 1 digit, only Col 3 active.
-        // If target is 2 digits, Col 2 & 3 active.
-
+        needed.forEach((slotIndex, i) => { result[slotIndex] = chars[i] || ''; });
+    } else if (stepType === 'tens') {
+        // Tens (Col 3): Digits align to Col 3.
+        // 2 digits -> Col 2 & 3. 1 digit -> Col 3.
         const needed = digitCount >= 2 ? [1, 2] : [2];
-
-        needed.forEach((slotIndex, i) => {
-            result[slotIndex] = chars[i] || '';
-        });
-
-    } else if (step === 3) {
-        // Step 3 (Total): Col 1, 2, 3 (Indices 0, 1, 2)
-        // Adjust active cols based on digit count
-
+        needed.forEach((slotIndex, i) => { result[slotIndex] = chars[i] || ''; });
+    } else if (stepType === 'units') {
+        // Units (Col 4): Digits align to Col 4.
+        const needed = digitCount >= 2 ? [2, 3] : [3];
+        needed.forEach((slotIndex, i) => { result[slotIndex] = chars[i] || ''; });
+    } else if (stepType === 'total') {
+        // Total (Col 1-4)
+        // 1 digit -> Col 4
+        // 2 digits -> Col 3,4
+        // 3 digits -> Col 2,3,4
+        // 4 digits -> Col 1,2,3,4
         let needed: number[] = [];
-        if (digitCount === 1) needed = [2];
-        else if (digitCount === 2) needed = [1, 2];
-        else needed = [0, 1, 2];
+        if (digitCount === 1) needed = [3];
+        else if (digitCount === 2) needed = [2, 3];
+        else if (digitCount === 3) needed = [1, 2, 3];
+        else needed = [0, 1, 2, 3];
 
-        needed.forEach((slotIndex, i) => {
-            result[slotIndex] = chars[i] || '';
-        });
+        needed.forEach((slotIndex, i) => { result[slotIndex] = chars[i] || ''; });
     }
     return result;
 };
 
-// Updated Tile to be rectangular and flexible with clear styles
+// ... Tile component remains same ...
 const Tile = ({ val, type = 'static', active = false, isFeedback = false, feedbackStatus, highlight = false }: { val: string | number | null, type?: 'static' | 'input', active?: boolean, isFeedback?: boolean, feedbackStatus?: 'correct' | 'wrong' | null, highlight?: boolean }) => {
     const baseBorderColor = '#e2e8f0';
     const baseShadowColor = '#cbd5e1';
@@ -112,23 +105,64 @@ const FrontAdditionGame: React.FC<{ onExit: () => void, gameId?: string }> = ({ 
         completedSteps,
         feedback,
         handleInput
-    } = useGameLogic(engine, gameId); // Pass gameId to logic
+    } = useGameLogic(engine, gameId);
+
+    const is3Digit = currentProblem?.totalSteps === 4;
 
     // Derived values for Steps
-    const step1Display = currentStep === 1 ? userInput : (completedSteps.step1 || '');
-    const step2Display = currentStep === 2 ? userInput : (completedSteps.step2 || '');
-    const step3Display = currentStep === 3 ? userInput : (completedSteps.step3 || '');
+    // Note: Rendering relies on 'currentStep' logic matching the problem type
+    // If is3Digit: Step 1=Hundreds, 2=Tens, 3=Units, 4=Total
+    // If !is3Digit: Step 1=Tens, 2=Units, 3=Total
 
-    const step1Vals = getStepValues(1, step1Display, currentProblem ? currentProblem.step1_val : 0);
-    const step2Vals = getStepValues(2, step2Display, currentProblem ? currentProblem.step2_val : 0);
-    const step3Vals = getStepValues(3, step3Display, currentProblem ? currentProblem.step3_val : 0);
+    // Helper to fetch display value based on active step status
+    const getDisp = (targetStep: number) => {
+        return currentStep === targetStep ? userInput : (completedSteps[`step${targetStep}` as keyof typeof completedSteps] || '');
+    };
+
+    // Calculate Grid Values
+    // We use unconditional hook calls, but 'currentProblem' ensures valid data
+    const stepsData = {
+        hundreds: is3Digit ? getStepValues(getDisp(1), currentProblem?.step1_val || 0, 'hundreds') : [null, null, null, null],
+        tens: getStepValues(getDisp(is3Digit ? 2 : 1), currentProblem?.step2_val || (currentProblem?.step1_val || 0), 'tens'),
+        units: getStepValues(getDisp(is3Digit ? 3 : 2), currentProblem?.step3_val || (currentProblem?.step2_val || 0), 'units'),
+        total: getStepValues(getDisp(is3Digit ? 4 : 3), is3Digit ? (currentProblem?.step4_val || 0) : (currentProblem?.step3_val || 0), 'total')
+    };
+
+    // Note: for !is3Digit (2-digit), the 'step2_val' in logic corresponds to Units Step (which is Step 2).
+    // Logic:
+    // !is3Digit:
+    //   Hundreds Row -> Hidden
+    //   Tens Row -> Step 1 (val=step1_val)
+    //   Units Row -> Step 2 (val=step2_val)
+    //   Total Row -> Step 3 (val=step3_val)
 
     // Determine config keys based on gameId
-    const isLv2 = gameId === 'math-level2-front-addition-lv2';
-    const titleKey = isLv2 ? 'games.frontAddition.lv2.title' : 'games.frontAddition.lv1.title';
-    const subtitleKey = isLv2 ? 'games.frontAddition.lv2.subtitle' : 'games.frontAddition.lv1.subtitle';
+    let titleKey = 'games.frontAddition.lv1.title';
+    let subtitleKey = 'games.frontAddition.lv1.subtitle';
 
-    // ... (Use these keys in Layout2)
+    if (gameId === 'math-level2-front-addition-lv2') {
+        titleKey = 'games.frontAddition.lv2.title';
+        subtitleKey = 'games.frontAddition.lv2.subtitle';
+    } else if (gameId === 'math-level2-front-addition-lv3') {
+        titleKey = 'games.frontAddition.lv3.title';
+        subtitleKey = 'games.frontAddition.lv3.subtitle';
+    } else if (gameId === 'math-level2-front-addition-lv4') {
+        titleKey = 'games.frontAddition.lv4.title';
+        subtitleKey = 'games.frontAddition.lv4.subtitle';
+    }
+
+    // Dynamic grid rows definition
+    // 4 Columns: [Sign/Th, H, T, U]
+    // 3-digit: Rows: Prob1, Prob2, Sep, Hundreds(Step1), Tens(Step2), Units(Step3), Sep, Total(Step4)
+    // 2-digit: Rows: Prob1, Prob2, Sep, Tens(Step1), Units(Step2), Sep, Total(Step3) (Hundreds hidden)
+    // Actually using 'minmax(0, 1fr)' for rows is tricky if we skip one.
+    // We can just render 'null' or empty div with 0 height for hidden rows? Or use conditional rendering in JSX.
+
+    const gridRowsTemplate = is3Digit
+        ? 'repeat(2, minmax(0, 1fr)) auto repeat(3, minmax(0, 1fr)) auto minmax(0, 1fr)' // 2Prob + Sep + 3Steps + Sep + 1Total
+        : 'repeat(2, minmax(0, 1fr)) auto repeat(2, minmax(0, 1fr)) auto minmax(0, 1fr)'; // 2Prob + Sep + 2Steps + Sep + 1Total
+
+    const activeStep = currentStep;
 
     return (
         <Layout2
@@ -160,7 +194,6 @@ const FrontAdditionGame: React.FC<{ onExit: () => void, gameId?: string }> = ({ 
             }}>
                 {currentProblem ? (
                     <>
-                        {/* MAIN GAME AREA (Flexible) */}
                         <div style={{
                             flex: '1 1 auto',
                             display: 'flex',
@@ -169,76 +202,79 @@ const FrontAdditionGame: React.FC<{ onExit: () => void, gameId?: string }> = ({ 
                             padding: '10px',
                             minHeight: 0,
                             width: '100%',
-                            containerType: 'size' // Parent container for aspect ratio constraint
+                            containerType: 'size'
                         }}>
                             <div style={{
                                 width: '100%',
-                                maxWidth: '400px',
+                                maxWidth: '500px', // Slightly wider for 4 columns
                                 height: '100%',
-                                maxHeight: '100cqi', // Limit height to container width (square max)
+                                maxHeight: '100cqi',
                                 display: 'grid',
-                                gridTemplateColumns: 'repeat(3, 1fr)',
-                                // Use minmax(0, 1fr) to ensure flexible rows share space equally
-                                // auto tracks for separators
-                                gridTemplateRows: 'minmax(0, 1fr) minmax(0, 1fr) auto minmax(0, 1fr) minmax(0, 1fr) auto minmax(0, 1fr)',
+                                gridTemplateColumns: 'repeat(4, 1fr)', // 4 Columns
+                                gridTemplateRows: gridRowsTemplate,
                                 gap: '8px',
                                 alignContent: 'stretch',
                                 justifyItems: 'stretch',
-                                containerType: 'inline-size' // Keep for font scaling
+                                containerType: 'inline-size'
                             }}>
                                 {/* Row 1: Problem Top */}
                                 <Tile val={null} />
-                                <Tile val={currentProblem.row1_tens} highlight={currentStep === 1} />
-                                <Tile val={currentProblem.row1_units} highlight={currentStep === 2} />
+                                <Tile val={currentProblem.row1_hundreds} highlight={is3Digit && activeStep === 1} />
+                                <Tile val={currentProblem.row1_tens} highlight={(is3Digit && activeStep === 2) || (!is3Digit && activeStep === 1)} />
+                                <Tile val={currentProblem.row1_units} highlight={(is3Digit && activeStep === 3) || (!is3Digit && activeStep === 2)} />
 
                                 {/* Row 2: Problem Bottom */}
                                 <div style={{
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
-                                    fontSize: '10cqi', // Responsive to grid width
+                                    fontSize: '10cqi',
                                     fontWeight: 'bold',
                                     color: '#334155'
                                 }}>+</div>
-                                <Tile val={currentProblem.row2_tens} highlight={currentStep === 1} />
-                                <Tile val={currentProblem.row2_units} highlight={currentStep === 2} />
+                                <Tile val={currentProblem.row2_hundreds} highlight={is3Digit && activeStep === 1} />
+                                <Tile val={currentProblem.row2_tens} highlight={(is3Digit && activeStep === 2) || (!is3Digit && activeStep === 1)} />
+                                <Tile val={currentProblem.row2_units} highlight={(is3Digit && activeStep === 3) || (!is3Digit && activeStep === 2)} />
 
                                 {/* Separator 1 */}
                                 <div style={{ gridColumn: '1 / -1', height: '4px', background: '#cbd5e1', borderRadius: '2px', alignSelf: 'center', width: '100%' }}></div>
 
-                                {/* Row 3: Step 1 (Tens Part) */}
-                                <Tile val={step1Vals[0]} type={currentStep === 1 ? 'input' : 'static'} active={currentStep === 1} isFeedback={!!feedback} feedbackStatus={feedback} />
-                                <Tile val={step1Vals[1]} type={currentStep === 1 ? 'input' : 'static'} active={currentStep === 1} isFeedback={!!feedback} feedbackStatus={feedback} />
-                                <Tile val={step1Vals[2]} />
+                                {is3Digit && (
+                                    <>
+                                        {/* Step 1: Hundreds */}
+                                        <Tile val={stepsData.hundreds[0]} type={activeStep === 1 ? 'input' : 'static'} active={activeStep === 1} isFeedback={!!feedback} feedbackStatus={feedback} />
+                                        <Tile val={stepsData.hundreds[1]} type={activeStep === 1 ? 'input' : 'static'} active={activeStep === 1} isFeedback={!!feedback} feedbackStatus={feedback} />
+                                        <Tile val={stepsData.hundreds[2]} />
+                                        <Tile val={stepsData.hundreds[3]} />
+                                    </>
+                                )}
 
-                                {/* Row 4: Step 2 (Units Part) */}
-                                <Tile val={step2Vals[0]} />
-                                <Tile val={step2Vals[1]} type={currentStep === 2 ? 'input' : 'static'} active={currentStep === 2} isFeedback={!!feedback} feedbackStatus={feedback} />
-                                <Tile val={step2Vals[2]} type={currentStep === 2 ? 'input' : 'static'} active={currentStep === 2} isFeedback={!!feedback} feedbackStatus={feedback} />
+                                {/* Step: Tens */}
+                                <Tile val={stepsData.tens[0]} />
+                                <Tile val={stepsData.tens[1]} type={activeStep === (is3Digit ? 2 : 1) ? 'input' : 'static'} active={activeStep === (is3Digit ? 2 : 1)} isFeedback={!!feedback} feedbackStatus={feedback} />
+                                <Tile val={stepsData.tens[2]} type={activeStep === (is3Digit ? 2 : 1) ? 'input' : 'static'} active={activeStep === (is3Digit ? 2 : 1)} isFeedback={!!feedback} feedbackStatus={feedback} />
+                                <Tile val={stepsData.tens[3]} />
+
+                                {/* Step: Units */}
+                                <Tile val={stepsData.units[0]} />
+                                <Tile val={stepsData.units[1]} />
+                                <Tile val={stepsData.units[2]} type={activeStep === (is3Digit ? 3 : 2) ? 'input' : 'static'} active={activeStep === (is3Digit ? 3 : 2)} isFeedback={!!feedback} feedbackStatus={feedback} />
+                                <Tile val={stepsData.units[3]} type={activeStep === (is3Digit ? 3 : 2) ? 'input' : 'static'} active={activeStep === (is3Digit ? 3 : 2)} isFeedback={!!feedback} feedbackStatus={feedback} />
 
                                 {/* Separator 2 */}
                                 <div style={{ gridColumn: '1 / -1', height: '4px', background: '#cbd5e1', borderRadius: '2px', alignSelf: 'center', width: '100%' }}></div>
 
-                                {/* Row 5: Step 3 (Final) */}
-                                <Tile val={step3Vals[0]} type={currentStep === 3 ? 'input' : 'static'} active={currentStep === 3} isFeedback={!!feedback} feedbackStatus={feedback} />
-                                <Tile val={step3Vals[1]} type={currentStep === 3 ? 'input' : 'static'} active={currentStep === 3} isFeedback={!!feedback} feedbackStatus={feedback} />
-                                <Tile val={step3Vals[2]} type={currentStep === 3 ? 'input' : 'static'} active={currentStep === 3} isFeedback={!!feedback} feedbackStatus={feedback} />
+                                {/* Step: Final Total */}
+                                <Tile val={stepsData.total[0]} type={activeStep === (is3Digit ? 4 : 3) ? 'input' : 'static'} active={activeStep === (is3Digit ? 4 : 3)} isFeedback={!!feedback} feedbackStatus={feedback} />
+                                <Tile val={stepsData.total[1]} type={activeStep === (is3Digit ? 4 : 3) ? 'input' : 'static'} active={activeStep === (is3Digit ? 4 : 3)} isFeedback={!!feedback} feedbackStatus={feedback} />
+                                <Tile val={stepsData.total[2]} type={activeStep === (is3Digit ? 4 : 3) ? 'input' : 'static'} active={activeStep === (is3Digit ? 4 : 3)} isFeedback={!!feedback} feedbackStatus={feedback} />
+                                <Tile val={stepsData.total[3]} type={activeStep === (is3Digit ? 4 : 3) ? 'input' : 'static'} active={activeStep === (is3Digit ? 4 : 3)} isFeedback={!!feedback} feedbackStatus={feedback} />
                             </div>
                         </div>
 
-                        {/* KEYPAD AREA (Fixed Bottom) */}
-                        <div style={{
-                            flex: '0 0 auto',
-                            width: '100%',
-                            background: 'transparent',
-                            zIndex: 10,
-                            padding: '10px 10px 0 10px',
-                            marginBottom: '-12px' // Counteract Layout2 padding to reduce gap
-                        }}>
-                            <Keypad
-                                onInput={handleInput}
-                                disabled={!!feedback && feedback !== 'correct'}
-                            />
+                        {/* KEYPAD AREA */}
+                        <div style={{ flex: '0 0 auto', width: '100%', background: 'transparent', zIndex: 10, padding: '10px 10px 0 10px', marginBottom: '-12px' }}>
+                            <Keypad onInput={handleInput} disabled={!!feedback && feedback !== 'correct'} />
                         </div>
                     </>
                 ) : (
@@ -273,6 +309,32 @@ export const manifestLv2: GameManifest = {
     thumbnail: '➕',
     titleKey: 'games.frontAddition.lv2.title',
     subtitleKey: 'games.frontAddition.lv2.subtitle',
+    descriptionKey: 'games.frontAddition.description',
+    component: FrontAdditionGame
+};
+
+export const manifestLv3: GameManifest = {
+    id: 'math-level2-front-addition-lv3',
+    title: 'Front Addition 3',
+    description: '3-digit + 2-digit Addition',
+    category: 'math',
+    level: 2,
+    thumbnail: '➕',
+    titleKey: 'games.frontAddition.lv3.title',
+    subtitleKey: 'games.frontAddition.lv3.subtitle',
+    descriptionKey: 'games.frontAddition.description',
+    component: FrontAdditionGame
+};
+
+export const manifestLv4: GameManifest = {
+    id: 'math-level2-front-addition-lv4',
+    title: 'Front Addition 4',
+    description: '3-digit + 3-digit Addition',
+    category: 'math',
+    level: 2,
+    thumbnail: '➕',
+    titleKey: 'games.frontAddition.lv4.title',
+    subtitleKey: 'games.frontAddition.lv4.subtitle',
     descriptionKey: 'games.frontAddition.description',
     component: FrontAdditionGame
 };

@@ -7,6 +7,14 @@ export default {
         title: '앞에서 더하기 2',
         subtitle: '두 자리 + 두 자리',
     },
+    lv3: {
+        title: '앞에서 더하기 3',
+        subtitle: '세 자리 + 두 자리',
+    },
+    lv4: {
+        title: '앞에서 더하기 4',
+        subtitle: '세 자리 + 세 자리',
+    },
     description: '왼쪽부터 숫자를 더해보세요! 더 빠르게 계산할 수 있어요.',
     howToPlay: {
         title: '게임 방법',
