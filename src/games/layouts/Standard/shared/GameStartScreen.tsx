@@ -20,7 +20,7 @@ interface StartScreenProps {
 export const GameStartScreen: React.FC<StartScreenProps> = ({
     // title is intentionally omitted to avoid duplication
     subtitle,
-    description,
+    // description removed to fix unused var error
     instructions,
     onStart
 }) => {
