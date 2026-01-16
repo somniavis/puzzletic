@@ -136,9 +136,9 @@ const FrontAdditionGame: React.FC<{ onExit: () => void }> = ({ onExit }) => {
             onExit={onExit}
             cardBackground={<BlobBackground speed="slow" colors={{ blob1: '#eff6ff', blob2: '#f0f9ff', blob3: '#e0f2fe', blob4: '#dbeafe' }} />}
             instructions={[
-                { title: 'Step 1', description: 'Add the tens.' },
-                { title: 'Step 2', description: 'Add the ones.' },
-                { title: 'Step 3', description: 'Add them together.' }
+                { icon: '🔟', title: t('games.math-front-addition.howToPlay.step1.title'), description: t('games.math-front-addition.howToPlay.step1.desc') },
+                { icon: '1️⃣', title: t('games.math-front-addition.howToPlay.step2.title'), description: t('games.math-front-addition.howToPlay.step2.desc') },
+                { icon: '✅', title: t('games.math-front-addition.howToPlay.step3.title'), description: t('games.math-front-addition.howToPlay.step3.desc') }
             ]}
             powerUps={[
                 { count: engine.powerUps.timeFreeze, color: 'blue', icon: '❄️', title: 'Freeze', onClick: () => engine.activatePowerUp('timeFreeze'), disabledConfig: engine.isTimeFrozen, status: engine.isTimeFrozen ? 'active' : 'normal' },

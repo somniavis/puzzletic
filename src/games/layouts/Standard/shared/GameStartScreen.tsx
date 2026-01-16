@@ -35,7 +35,7 @@ export const GameStartScreen: React.FC<StartScreenProps> = ({
             <div className="start-content-scroll custom-scrollbar">
                 <div className="how-to-play-box">
                     <h3 className="section-title">{t('common.howToPlay')}</h3>
-                    {description && <p className="game-description-text">{description}</p>}
+                    {/* Description removed per user request */}
                     {instructions && instructions.length > 0 && (
                         <div className="visual-steps-container">
                             {instructions.map((inst, index) => (
