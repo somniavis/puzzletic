@@ -1,6 +1,12 @@
 export default {
-    title: '앞에서 더하기',
-    subtitle: '천재들의 연산법',
+    lv1: {
+        title: '앞에서 더하기 1',
+        subtitle: '두 자리 + 한 자리',
+    },
+    lv2: {
+        title: '앞에서 더하기 2',
+        subtitle: '두 자리 + 두 자리',
+    },
     description: '왼쪽부터 숫자를 더해보세요! 더 빠르게 계산할 수 있어요.',
     howToPlay: {
         title: '게임 방법',

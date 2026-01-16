@@ -25,5 +25,5 @@ export interface GameManifest {
     /** Key for localized description */
     descriptionKey?: string;
     /** The main component to render when the game is played */
-    component: ComponentType<{ onExit: () => void }>;
+    component: ComponentType<{ onExit: () => void; gameId?: string }>;
 }

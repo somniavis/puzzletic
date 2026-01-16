@@ -18,7 +18,7 @@ interface FrontAdditionProblem {
     step3_val: number; // 43 (Total)
 }
 
-export const useGameLogic = (engine: ReturnType<typeof useGameEngine>) => {
+export const useGameLogic = (engine: ReturnType<typeof useGameEngine>, gameId?: string) => {
     const {
         difficultyLevel,
         lives,
@@ -47,13 +47,14 @@ export const useGameLogic = (engine: ReturnType<typeof useGameEngine>) => {
 
     const generateProblem = useCallback(() => {
         let a, b;
+        const isLv2 = gameId === 'math-level2-front-addition-lv2';
 
-        if (difficultyLevel === 1) {
-            // 2-digit + 1-digit
+        if (!isLv2) {
+            // Level 1: 2-digit + 1-digit
             a = Math.floor(Math.random() * 90) + 10;
             b = Math.floor(Math.random() * 9) + 1;
         } else {
-            // 2-digit + 2-digit
+            // Level 2: 2-digit + 2-digit
             a = Math.floor(Math.random() * 90) + 10;
             b = Math.floor(Math.random() * 90) + 10;
         }

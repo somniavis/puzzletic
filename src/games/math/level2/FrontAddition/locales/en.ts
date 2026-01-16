@@ -1,6 +1,12 @@
 export default {
-    title: 'Front Addition',
-    subtitle: 'Genius Calculation',
+    lv1: {
+        title: 'Front Addition 1',
+        subtitle: '2-digit + 1-digit',
+    },
+    lv2: {
+        title: 'Front Addition 2',
+        subtitle: '2-digit + 2-digit',
+    },
     description: 'Add numbers from left to right! It\'s a faster way to calculate.',
     howToPlay: {
         title: 'How to Play',

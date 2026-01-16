@@ -13,7 +13,7 @@ import { manifest as L2_TenFrameCount } from './math/level2/TenFrameCount';
 import { manifest as L2_Pinwheel } from './math/level2/PinwheelPop';
 import { manifest as DeepSeaManifest } from './math/level2/DeepSeaDive';
 import { manifest as L2_UFOInvasion } from './math/level2/UFOInvasion/index';
-import { manifest as L2_FrontAddition } from './math/level2/FrontAddition/index';
+import { manifestLv1 as L2_FrontAddition_Lv1, manifestLv2 as L2_FrontAddition_Lv2 } from './math/level2/FrontAddition/index';
 
 // --- Brain Level 1 ---
 // --- Brain Level 1 ---
@@ -43,7 +43,8 @@ export const GAMES: GameManifest[] = [
     L2_Pinwheel,
     DeepSeaManifest,
     L2_UFOInvasion,
-    L2_FrontAddition,
+    L2_FrontAddition_Lv1,
+    L2_FrontAddition_Lv2,
 
     // [Brain Level 1] -----------------------------------------------------
     // [Brain Level 1] -----------------------------------------------------

@@ -95,7 +95,7 @@ export const PlayPage: React.FC<PlayPageProps> = () => {
         const GameComponent = activeGame.component;
         return (
             <div className="game-wrapper">
-                <GameComponent onExit={handleExitGame} />
+                <GameComponent onExit={handleExitGame} gameId={activeGame.id} />
             </div>
         );
     }

@@ -1,4 +1,4 @@
-// Game Locales
+// Game Locales - Updated
 import fishingCountJa from '../../games/math/level1/FishingCount/locales/ja';
 import roundCountingJa from '../../games/math/level1/RoundCounting/locales/ja';
 import numberHiveJa from '../../games/math/level1/NumberHive/locales/ja';
@@ -692,7 +692,7 @@ export const ja = {
         'math-fruit-slice': fruitSliceJa,
         'math-number-balance': numberBalanceJa,
         'math-archery': mathArcheryJa,
-        'math-front-addition': frontAdditionJa,
+        frontAddition: frontAdditionJa,
         'ten-frame-count': tenFrameCountJa,
         'pinwheel-pop': mathPinwheelJa,
         'animal-banquet': animalBanquetJa,

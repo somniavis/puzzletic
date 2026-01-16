@@ -96,7 +96,8 @@ const Tile = ({ val, type = 'static', active = false, isFeedback = false, feedba
     );
 };
 
-const FrontAdditionGame: React.FC<{ onExit: () => void }> = ({ onExit }) => {
+// Update component to accept gameId
+const FrontAdditionGame: React.FC<{ onExit: () => void, gameId?: string }> = ({ onExit, gameId }) => {
     const { t } = useTranslation();
     const engine = useGameEngine({
         initialLives: 3,
@@ -111,11 +112,7 @@ const FrontAdditionGame: React.FC<{ onExit: () => void }> = ({ onExit }) => {
         completedSteps,
         feedback,
         handleInput
-    } = useGameLogic(engine);
-
-
-
-
+    } = useGameLogic(engine, gameId); // Pass gameId to logic
 
     // Derived values for Steps
     const step1Display = currentStep === 1 ? userInput : (completedSteps.step1 || '');
@@ -126,19 +123,26 @@ const FrontAdditionGame: React.FC<{ onExit: () => void }> = ({ onExit }) => {
     const step2Vals = getStepValues(2, step2Display, currentProblem ? currentProblem.step2_val : 0);
     const step3Vals = getStepValues(3, step3Display, currentProblem ? currentProblem.step3_val : 0);
 
+    // Determine config keys based on gameId
+    const isLv2 = gameId === 'math-level2-front-addition-lv2';
+    const titleKey = isLv2 ? 'games.frontAddition.lv2.title' : 'games.frontAddition.lv1.title';
+    const subtitleKey = isLv2 ? 'games.frontAddition.lv2.subtitle' : 'games.frontAddition.lv1.subtitle';
+
+    // ... (Use these keys in Layout2)
+
     return (
         <Layout2
-            title={t('games.math-front-addition.title')}
-            subtitle={t('games.math-front-addition.subtitle')}
-            description={t('games.math-front-addition.description')}
-            gameId="math-level2-front-addition"
+            title={t(titleKey)}
+            subtitle={t(subtitleKey)}
+            description={t('games.frontAddition.description')}
+            gameId={gameId || 'math-level2-front-addition-lv1'}
             engine={engine}
             onExit={onExit}
             cardBackground={<BlobBackground speed="slow" colors={{ blob1: '#eff6ff', blob2: '#f0f9ff', blob3: '#e0f2fe', blob4: '#dbeafe' }} />}
             instructions={[
-                { icon: '🔟', title: t('games.math-front-addition.howToPlay.step1.title'), description: t('games.math-front-addition.howToPlay.step1.desc') },
-                { icon: '1️⃣', title: t('games.math-front-addition.howToPlay.step2.title'), description: t('games.math-front-addition.howToPlay.step2.desc') },
-                { icon: '✅', title: t('games.math-front-addition.howToPlay.step3.title'), description: t('games.math-front-addition.howToPlay.step3.desc') }
+                { icon: '🔟', title: t('games.frontAddition.howToPlay.step1.title'), description: t('games.frontAddition.howToPlay.step1.desc') },
+                { icon: '1️⃣', title: t('games.frontAddition.howToPlay.step2.title'), description: t('games.frontAddition.howToPlay.step2.desc') },
+                { icon: '✅', title: t('games.frontAddition.howToPlay.step3.title'), description: t('games.frontAddition.howToPlay.step3.desc') }
             ]}
             powerUps={[
                 { count: engine.powerUps.timeFreeze, color: 'blue', icon: '❄️', title: 'Freeze', onClick: () => engine.activatePowerUp('timeFreeze'), disabledConfig: engine.isTimeFrozen, status: engine.isTimeFrozen ? 'active' : 'normal' },
@@ -247,15 +251,28 @@ const FrontAdditionGame: React.FC<{ onExit: () => void }> = ({ onExit }) => {
     );
 };
 
-export const manifest: GameManifest = {
-    id: 'math-level2-front-addition',
-    title: 'Front Addition',
-    description: 'Learn to add from the front!',
+export const manifestLv1: GameManifest = {
+    id: 'math-level2-front-addition-lv1',
+    title: 'Front Addition 1',
+    description: '2-digit + 1-digit Addition',
     category: 'math',
     level: 2,
     thumbnail: '➕',
-    titleKey: 'games.math-front-addition.title',
-    subtitleKey: 'games.math-front-addition.subtitle',
-    descriptionKey: 'games.math-front-addition.description',
+    titleKey: 'games.frontAddition.lv1.title',
+    subtitleKey: 'games.frontAddition.lv1.subtitle',
+    descriptionKey: 'games.frontAddition.description',
+    component: FrontAdditionGame
+};
+
+export const manifestLv2: GameManifest = {
+    id: 'math-level2-front-addition-lv2',
+    title: 'Front Addition 2',
+    description: '2-digit + 2-digit Addition',
+    category: 'math',
+    level: 2,
+    thumbnail: '➕',
+    titleKey: 'games.frontAddition.lv2.title',
+    subtitleKey: 'games.frontAddition.lv2.subtitle',
+    descriptionKey: 'games.frontAddition.description',
     component: FrontAdditionGame
 };

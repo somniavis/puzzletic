@@ -1,3 +1,4 @@
+// Global English Locales
 import fishingCountEn from '../../games/math/level1/FishingCount/locales/en';
 import roundCountingEn from '../../games/math/level1/RoundCounting/locales/en';
 import numberHiveEn from '../../games/math/level1/NumberHive/locales/en';
@@ -691,7 +692,7 @@ export const en = {
     'math-fruit-slice': fruitSliceEn,
     'math-number-balance': numberBalanceEn,
     'math-archery': mathArcheryEn,
-    'math-front-addition': frontAdditionEn,
+    frontAddition: frontAdditionEn,
     'ten-frame-count': tenFrameCountEn,
     'pinwheel-pop': mathPinwheelEn,
     'deep-sea-dive': deepSeaDiveEn,

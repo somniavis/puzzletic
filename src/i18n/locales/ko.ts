@@ -1,3 +1,4 @@
+// Global Korean Locales
 import fishingCountKo from '../../games/math/level1/FishingCount/locales/ko';
 import roundCountingKo from '../../games/math/level1/RoundCounting/locales/ko';
 import numberHiveKo from '../../games/math/level1/NumberHive/locales/ko';
@@ -691,7 +692,7 @@ export const ko = {
         'math-fruit-slice': fruitSliceKo,
         'math-number-balance': numberBalanceKo,
         'math-archery': mathArcheryKo,
-        'math-front-addition': frontAdditionKo,
+        frontAddition: frontAdditionKo,
         'ten-frame-count': tenFrameCountKo,
         'pinwheel-pop': mathPinwheelKo,
         'animal-banquet': animalBanquetKo,
