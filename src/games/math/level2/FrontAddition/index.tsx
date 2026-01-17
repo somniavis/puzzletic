@@ -17,26 +17,33 @@ const getStepValues = (strVal: string | null, targetVal: number, stepType: 'hund
     const result = [null, null, null, null] as (string | null)[];
 
     if (stepType === 'hundreds') {
-        // Hundreds (Col 2): Usually 1 digit (max 9+9=18 -> 2 digits)
-        // If 2 digits (e.g. 18), occupies Col 1 & 2.
-        // If 1 digit (e.g. 5), occupies Col 2.
+        // Hundreds Step: Always result of Hundreds column addition.
+        // It's the leftmost operation in 3+3 or 3+2
+        // If sum is <10 (1 digit), it goes to Hundreds col (index 1).
+        // If sum is >=10 (2 digits), it goes to Thousands col (index 0) and Hundreds col (index 1).
         const needed = digitCount >= 2 ? [0, 1] : [1];
         needed.forEach((slotIndex, i) => { result[slotIndex] = chars[i] || ''; });
     } else if (stepType === 'tens') {
-        // Tens (Col 3): Digits align to Col 3.
-        // 2 digits -> Col 2 & 3. 1 digit -> Col 3.
+        // Tens Step: Result of Tens column addition.
+        // If sum is <10 (1 digit), it goes to Tens col (index 2).
+        // If sum is >=10 (2 digits), it goes to Hundreds col (index 1) and Tens col (index 2).
+        // BUT wait, Front Addition writes the full result below?
+        // Yes. e.g. 5+8=13. We write 13 below. The 1 aligns to Hundreds, 3 to Tens.
         const needed = digitCount >= 2 ? [1, 2] : [2];
         needed.forEach((slotIndex, i) => { result[slotIndex] = chars[i] || ''; });
     } else if (stepType === 'units') {
-        // Units (Col 4): Digits align to Col 4.
+        // Units Step: Result of Units column addition.
+        // If sum is <10 (1 digit), it goes to Units col (index 3).
+        // If sum is >=10 (2 digits), it goes to Tens col (index 2) and Units col (index 3).
         const needed = digitCount >= 2 ? [2, 3] : [3];
         needed.forEach((slotIndex, i) => { result[slotIndex] = chars[i] || ''; });
     } else if (stepType === 'total') {
-        // Total (Col 1-4)
-        // 1 digit -> Col 4
-        // 2 digits -> Col 3,4
-        // 3 digits -> Col 2,3,4
-        // 4 digits -> Col 1,2,3,4
+        // Total Step: Final Answer.
+        // Aligned to rightmost column (Units = index 3).
+        // 1 digit -> [3]
+        // 2 digits -> [2, 3]
+        // 3 digits -> [1, 2, 3]
+        // 4 digits -> [0, 1, 2, 3]
         let needed: number[] = [];
         if (digitCount === 1) needed = [3];
         else if (digitCount === 2) needed = [2, 3];
@@ -135,8 +142,8 @@ const FrontAdditionGame: React.FC<{ onExit: () => void, gameId?: string }> = ({ 
     // Calculate Grid Values (Memoized to prevent render thrashing)
     const stepsData = React.useMemo(() => ({
         hundreds: is3Digit ? getStepValues(getDisp(1), currentProblem?.step1_val || 0, 'hundreds') : [null, null, null, null],
-        tens: getStepValues(getDisp(is3Digit ? 2 : 1), currentProblem?.step2_val || (currentProblem?.step1_val || 0), 'tens'),
-        units: getStepValues(getDisp(is3Digit ? 3 : 2), currentProblem?.step3_val || (currentProblem?.step2_val || 0), 'units'),
+        tens: getStepValues(getDisp(is3Digit ? 2 : 1), is3Digit ? (currentProblem?.step2_val || 0) : (currentProblem?.step1_val || 0), 'tens'),
+        units: getStepValues(getDisp(is3Digit ? 3 : 2), is3Digit ? (currentProblem?.step3_val || 0) : (currentProblem?.step2_val || 0), 'units'),
         total: getStepValues(getDisp(is3Digit ? 4 : 3), is3Digit ? (currentProblem?.step4_val || 0) : (currentProblem?.step3_val || 0), 'total')
     }), [is3Digit, currentStep, userInput, completedSteps, currentProblem]);
 
@@ -224,7 +231,7 @@ const FrontAdditionGame: React.FC<{ onExit: () => void, gameId?: string }> = ({ 
 
                                 {is3Digit && (
                                     <>
-                                        {/* Step 1: Hundreds */}
+                                        {/* Step 1: Hundreds Sum */}
                                         <Tile val={stepsData.hundreds[0]} type={activeStep === 1 ? 'input' : 'static'} active={activeStep === 1} isFeedback={!!feedback} feedbackStatus={feedback} />
                                         <Tile val={stepsData.hundreds[1]} type={activeStep === 1 ? 'input' : 'static'} active={activeStep === 1} isFeedback={!!feedback} feedbackStatus={feedback} />
                                         <Tile val={stepsData.hundreds[2]} />
@@ -232,13 +239,15 @@ const FrontAdditionGame: React.FC<{ onExit: () => void, gameId?: string }> = ({ 
                                     </>
                                 )}
 
-                                {/* Step: Tens */}
+                                {/* Step: Tens Sum */}
+                                {/* Alignment correction: If 2 digits (>=10), occupies Hundreds(1) and Tens(2). If 1 digit, occupies Tens(2). */}
                                 <Tile val={stepsData.tens[0]} />
                                 <Tile val={stepsData.tens[1]} type={activeStep === (is3Digit ? 2 : 1) ? 'input' : 'static'} active={activeStep === (is3Digit ? 2 : 1)} isFeedback={!!feedback} feedbackStatus={feedback} />
                                 <Tile val={stepsData.tens[2]} type={activeStep === (is3Digit ? 2 : 1) ? 'input' : 'static'} active={activeStep === (is3Digit ? 2 : 1)} isFeedback={!!feedback} feedbackStatus={feedback} />
                                 <Tile val={stepsData.tens[3]} />
 
-                                {/* Step: Units */}
+                                {/* Step: Units Sum */}
+                                {/* Alignment correction: If 2 digits (>=10), occupies Tens(2) and Units(3). If 1 digit, occupies Units(3). */}
                                 <Tile val={stepsData.units[0]} />
                                 <Tile val={stepsData.units[1]} />
                                 <Tile val={stepsData.units[2]} type={activeStep === (is3Digit ? 3 : 2) ? 'input' : 'static'} active={activeStep === (is3Digit ? 3 : 2)} isFeedback={!!feedback} feedbackStatus={feedback} />

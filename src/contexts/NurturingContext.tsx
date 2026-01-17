@@ -60,6 +60,7 @@ interface NurturingContextValue {
   stats: NurturingStats;
   poops: Poop[];
   bugs: Bug[];
+  minigameStats?: Record<string, import('../types/nurturing').MinigameStats>;
   condition: CharacterCondition;
   gro: number;
   currentLand: string;
@@ -1338,6 +1339,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     stats: state.stats,
     poops: state.poops,
     bugs: state.bugs || [],
+    minigameStats: state.minigameStats,
     condition,
     currentLand: state.currentLand,
     gro: state.gro,

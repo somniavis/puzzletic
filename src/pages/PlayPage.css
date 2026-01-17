@@ -10,6 +10,17 @@
     font-family: inherit;
 }
 
+/* Fix for Game Wrapper - Full Screen Overlay */
+.game-wrapper {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    background: white;
+    width: 100vw;
+    height: 100dvh;
+    overflow: hidden;
+}
+
 /* Header - Matching PetRoom Game Header */
 .play-header {
     display: flex;
@@ -275,6 +286,62 @@
 .game-card:active {
     transform: translateY(4px);
     box-shadow: 0 0 0 #6B3513;
+}
+
+/* Locked State */
+.game-card.locked {
+    filter: grayscale(1);
+    opacity: 0.9;
+    background: #f0f0f0;
+    border-color: #999;
+    cursor: not-allowed;
+    box-shadow: 0 4px 0 #666;
+}
+
+.game-card.locked:active {
+    transform: none;
+    box-shadow: 0 4px 0 #666;
+}
+
+.game-card.locked .play-btn {
+    background: #ccc;
+    border-color: #999;
+    box-shadow: 0 4px 0 #666;
+    cursor: not-allowed;
+}
+
+.locked-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.lock-icon {
+    font-size: 3rem;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+.lock-reason {
+    margin-top: 0.5rem;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 6px 10px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    max-width: 80%;
+    text-align: center;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.game-card.locked:hover .lock-reason {
+    opacity: 1;
 }
 
 .game-thumbnail {

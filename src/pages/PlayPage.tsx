@@ -8,6 +8,8 @@ import { GAMES, getGameById } from '../games/registry';
 import type { GameCategory, GameDifficulty, GameManifest } from '../games/types';
 import fishingCountEn from '../games/math/level1/FishingCount/locales/en';
 import roundCountingEn from '../games/math/level1/RoundCounting/locales/en';
+import { MasteryBar } from '../components/MasteryBar';
+import { isGameUnlocked } from '../utils/progression';
 
 const CATEGORY_ICONS: Record<GameCategory, string> = {
     brain: '🧠',
@@ -22,7 +24,7 @@ export const PlayPage: React.FC<PlayPageProps> = () => {
     const navigate = useNavigate();
     const { gameId } = useParams();
     const { t, i18n } = useTranslation();
-    const { setGameDifficulty, pauseTick, resumeTick } = useNurturing();
+    const { setGameDifficulty, pauseTick, resumeTick, minigameStats } = useNurturing();
 
     const [selectedCategory, setSelectedCategory] = useState<GameCategory>(() => {
         return (sessionStorage.getItem('play_category') as GameCategory) || 'math';
@@ -81,7 +83,12 @@ export const PlayPage: React.FC<PlayPageProps> = () => {
         sessionStorage.setItem('play_difficulty', level.toString());
     };
 
-    const handlePlayClick = (game: GameManifest) => {
+    const handlePlayClick = (game: GameManifest, isLocked: boolean, reason?: string) => {
+        if (isLocked) {
+            // Optional: Show toast or shake animation
+            console.log('Game Locked:', reason);
+            return;
+        }
         playButtonSound();
         navigate(`/play/${game.id}`);
     };
@@ -162,40 +169,75 @@ export const PlayPage: React.FC<PlayPageProps> = () => {
 
                 <div className="game-grid">
                     {filteredGames.length > 0 ? (
-                        filteredGames.map(game => (
-                            <div key={game.id} className="game-card" onClick={() => handlePlayClick(game)}>
-                                <div className="game-thumbnail">
-                                    {/* Placeholder for thumbnail logic - prefer image, fallback to emoji */}
-                                    {game.thumbnail ? (
-                                        typeof game.thumbnail === 'string' && game.thumbnail.startsWith('http') ? (
-                                            <img src={game.thumbnail} alt={game.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                                        ) : (
-                                            <div style={{
-                                                fontSize: '2.5rem',
-                                                width: '100%',
-                                                height: '100%',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'center'
-                                            }}>
-                                                {game.thumbnail}
-                                            </div>
-                                        )
-                                    ) : (
-                                        <span>{CATEGORY_ICONS[game.category]}</span>
-                                    )}
-                                </div>
-                                <div className="game-title-group">
-                                    <h3>{game.titleKey ? t(game.titleKey) : game.title}</h3>
-                                    {(game.subtitleKey || game.subtitle) && (
-                                        <div className="game-subtitle">
-                                            {game.subtitleKey ? t(game.subtitleKey) : game.subtitle}
+                        filteredGames.map(game => {
+                            const stats = minigameStats?.[game.id];
+                            const { unlocked, reason } = isGameUnlocked(game.id, GAMES, { minigameStats });
+
+                            return (
+                                <div key={game.id} className={`game-card ${!unlocked ? 'locked' : ''}`} onClick={() => handlePlayClick(game, !unlocked, reason)}>
+
+                                    {!unlocked && (
+                                        <div className="locked-overlay">
+                                            <div className="lock-icon">🔒</div>
+                                            {reason && <div className="lock-reason">{reason}</div>}
                                         </div>
                                     )}
+
+                                    <div className="game-thumbnail">
+                                        {/* Placeholder for thumbnail logic - prefer image, fallback to emoji */}
+                                        {game.thumbnail ? (
+                                            typeof game.thumbnail === 'string' && game.thumbnail.startsWith('http') ? (
+                                                <img src={game.thumbnail} alt={game.title} style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: unlocked ? 1 : 0.5 }} />
+                                            ) : (
+                                                <div style={{
+                                                    fontSize: '2.5rem',
+                                                    width: '100%',
+                                                    height: '100%',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    opacity: unlocked ? 1 : 0.5
+                                                }}>
+                                                    {game.thumbnail}
+                                                </div>
+                                            )
+                                        ) : (
+                                            <span>{CATEGORY_ICONS[game.category]}</span>
+                                        )}
+                                    </div>
+                                    <div className="game-title-group">
+                                        <h3>{game.titleKey ? t(game.titleKey) : game.title}</h3>
+                                        {(game.subtitleKey || game.subtitle) && (
+                                            <div className="game-subtitle">
+                                                {game.subtitleKey ? t(game.subtitleKey) : game.subtitle}
+                                            </div>
+                                        )}
+
+                                        {unlocked ? (
+                                            <div style={{ marginTop: '0.5rem', width: '100%', padding: '0 0.5rem' }}>
+                                                <MasteryBar
+                                                    playCount={stats?.playCount || 0}
+                                                    totalScore={stats?.totalScore || 0}
+                                                    compact
+                                                />
+                                            </div>
+                                        ) : (
+                                            <div style={{
+                                                marginTop: '0.5rem',
+                                                fontSize: '0.75rem',
+                                                color: '#9ca3af',
+                                                textAlign: 'center'
+                                            }}>
+                                                Locked
+                                            </div>
+                                        )}
+                                    </div>
+
+
+                                    <button className="play-btn" disabled={!unlocked}>▶</button>
                                 </div>
-                                <button className="play-btn">▶</button>
-                            </div>
-                        ))
+                            )
+                        })
                     ) : (
                         <div className="no-games">
                             <p>🚧 {t('play.game.noGames')} 🚧</p>
