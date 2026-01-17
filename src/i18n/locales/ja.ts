@@ -683,6 +683,9 @@ export const ja = {
         game: {
             playNow: '今すぐプレイ',
             noGames: '新しいゲームを準備中！',
+            unlock: {
+                reason: '{{game}}のマスターランク達成で解禁',
+            },
         },
     },
     games: {

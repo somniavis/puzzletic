@@ -171,15 +171,22 @@ export const PlayPage: React.FC<PlayPageProps> = () => {
                     {filteredGames.length > 0 ? (
                         filteredGames.map(game => {
                             const stats = minigameStats?.[game.id];
-                            const { unlocked, reason } = isGameUnlocked(game.id, GAMES, { minigameStats });
+                            const { unlocked, reason, requiredGame } = isGameUnlocked(game.id, GAMES, { minigameStats });
+
+                            // Generate localized reason
+                            let displayReason = reason;
+                            if (requiredGame) {
+                                const requiredGameTitle = requiredGame.titleKey ? t(requiredGame.titleKey) : requiredGame.title;
+                                displayReason = t('play.game.unlock.reason', { game: requiredGameTitle });
+                            }
 
                             return (
-                                <div key={game.id} className={`game-card ${!unlocked ? 'locked' : ''}`} onClick={() => handlePlayClick(game, !unlocked, reason)}>
+                                <div key={game.id} className={`game-card ${!unlocked ? 'locked' : ''}`} onClick={() => handlePlayClick(game, !unlocked, displayReason)}>
 
                                     {!unlocked && (
                                         <div className="locked-overlay">
                                             <div className="lock-icon">🔒</div>
-                                            {reason && <div className="lock-reason">{reason}</div>}
+                                            {displayReason && <div className="lock-reason">{displayReason}</div>}
                                         </div>
                                     )}
 

@@ -683,6 +683,9 @@ export const ko = {
         game: {
             playNow: '지금 플레이',
             noGames: '새로운 게임이 준비 중입니다!',
+            unlock: {
+                reason: '{{game}} 마스터 등급 달성 시 해금',
+            },
         },
     },
     games: {

@@ -683,6 +683,9 @@ export const en = {
     game: {
       playNow: 'Play Now',
       noGames: 'More games coming soon!',
+      unlock: {
+        reason: 'Complete mastery of {{game}} to unlock',
+      },
     },
   },
   games: {

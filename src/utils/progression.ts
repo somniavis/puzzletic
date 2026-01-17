@@ -14,7 +14,7 @@ export const isGameUnlocked = (
     targetGameId: string,
     allGames: GameManifest[],
     userState: Pick<NurturingPersistentState, 'minigameStats'>
-): { unlocked: boolean; reason?: string } => {
+): { unlocked: boolean; reason?: string; requiredGame?: GameManifest } => {
     // Find target game definition
     const targetGame = allGames.find(g => g.id === targetGameId);
     if (!targetGame) return { unlocked: false, reason: 'Game not found' };
@@ -54,7 +54,8 @@ export const isGameUnlocked = (
 
     return {
         unlocked: false,
-        reason: `Complete mastery of ${prevGame.title} to unlock`
+        requiredGame: prevGame,
+        // reason: `Complete mastery of ${prevGame.title} to unlock` // Legacy string, prefer using requiredGame in UI
     };
 };
 
