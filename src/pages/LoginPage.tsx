@@ -3,7 +3,7 @@ import './Auth.css';
 import { playButtonSound } from '../utils/sound';
 import { useTranslation } from 'react-i18next';
 import { auth, googleProvider } from '../firebase';
-import { signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
+import { signInWithEmailAndPassword, signInWithPopup, signInWithRedirect, getRedirectResult } from 'firebase/auth';
 
 import { useNavigate } from 'react-router-dom';
 
@@ -13,6 +13,25 @@ export const LoginPage: React.FC = () => {
     const { t } = useTranslation();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [isRedirecting, setIsRedirecting] = useState(false);
+
+    // Handle Redirect Result (for Mobile/Tablet flow)
+    React.useEffect(() => {
+        const checkRedirect = async () => {
+            try {
+                const result = await getRedirectResult(auth);
+                if (result) {
+                    console.log('Google Login (Redirect) successful', result);
+                    playButtonSound();
+                    navigate('/home');
+                }
+            } catch (error: any) {
+                console.error('Google Login (Redirect) failed:', error);
+                alert(t('auth.errors.googleFailed'));
+            }
+        };
+        checkRedirect();
+    }, [navigate, t]);
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -38,13 +57,28 @@ export const LoginPage: React.FC = () => {
 
     const handleGoogleLogin = async () => {
         playButtonSound();
+
+        // Detect Mobile/Tablet
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
         try {
-            await signInWithPopup(auth, googleProvider);
-            console.log('Google Login successful');
-            navigate('/home');
+            if (isMobile) {
+                // Use Redirect for Mobile/Tablet to avoid popup blockers and context loss
+                setIsRedirecting(true); // Optional: show loading state
+                await signInWithRedirect(auth, googleProvider);
+                // Page will redirect, so no navigation needed here
+            } else {
+                // Use Popup for Desktop
+                await signInWithPopup(auth, googleProvider);
+                console.log('Google Login (Popup) successful');
+                navigate('/home');
+            }
         } catch (error: any) {
             console.error('Google Login failed:', error);
-            alert(t('auth.errors.googleFailed'));
+            setIsRedirecting(false);
+            if (error.code !== 'auth/popup-closed-by-user') {
+                alert(t('auth.errors.googleFailed'));
+            }
         }
     };
 
@@ -124,9 +158,10 @@ export const LoginPage: React.FC = () => {
                         type="button"
                         className="auth-btn"
                         onClick={handleGoogleLogin}
+                        disabled={isRedirecting}
                         style={{
-                            backgroundColor: '#ffffff',
-                            color: '#757575',
+                            backgroundColor: isRedirecting ? '#f5f5f5' : '#ffffff',
+                            color: isRedirecting ? '#9e9e9e' : '#757575',
                             border: '1px solid #ddd',
                             display: 'flex',
                             alignItems: 'center',
@@ -135,11 +170,18 @@ export const LoginPage: React.FC = () => {
                             fontSize: '15px',
                             width: '100%',
                             height: '56px',
-                            boxSizing: 'border-box'
+                            boxSizing: 'border-box',
+                            cursor: isRedirecting ? 'not-allowed' : 'pointer'
                         }}
                     >
-                        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" style={{ width: '18px', height: '18px' }} />
-                        {t('auth.login.google')}
+                        {isRedirecting ? (
+                            <span>Loading...</span>
+                        ) : (
+                            <>
+                                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" style={{ width: '18px', height: '18px' }} />
+                                {t('auth.login.google')}
+                            </>
+                        )}
                     </button>
 
                     {/* 
