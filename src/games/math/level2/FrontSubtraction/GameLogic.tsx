@@ -26,6 +26,9 @@ export interface FrontSubtractionProblem {
     step2_is_negative?: boolean;
     step3_is_negative?: boolean;
 
+    // Direct Answer Mode (skip intermediate steps)
+    isDirectAnswer?: boolean;
+
     totalSteps: 3 | 4 | 5;
 }
 
@@ -170,12 +173,14 @@ export const useGameLogic = (engine: ReturnType<typeof useGameEngine>, gameId?: 
                 step1_val: val1,
                 step2_val: val2,
                 step3_val: val3,
-                step4_val: val4, // Intermediate (H*10 + T)
-                step5_val: total, // Final (Step4*10 + U)
+                // When T is NOT negative, skip Intermediate step. Step 4 becomes Total.
+                step4_val: step2_is_negative ? val4 : total,
+                step5_val: total,
                 step1_is_negative: step1_is_negative,
                 step2_is_negative: step2_is_negative,
                 step3_is_negative: step3_is_negative,
-                totalSteps: 5
+                isDirectAnswer: !step2_is_negative,
+                totalSteps: step2_is_negative ? 5 : 4 // 4 steps when T is not negative (skip Intermediate)
             };
         } else {
             // 2-digit Logic (Focused on User Request)
