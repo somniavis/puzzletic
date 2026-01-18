@@ -335,11 +335,29 @@
 }
 
 .visual-step-title {
-    font-size: 1.1rem;
+    font-size: 1.25rem;
     /* Larger text for readability */
     font-weight: 800;
     color: #4d3e2f;
     line-height: 1.2;
     flex: 1;
     /* Take remaining space */
+}
+
+.visual-step-text-col {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+    /* Allow text wrap */
+}
+
+.visual-step-desc {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #9ca3af;
+    /* Gray-400: Lighter for less prominence */
+    opacity: 1;
+    line-height: 1.3;
+    margin-top: 2px;
 }

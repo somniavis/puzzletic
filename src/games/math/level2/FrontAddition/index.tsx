@@ -56,7 +56,8 @@ const getStepValues = (strVal: string | null, targetVal: number, stepType: 'hund
 };
 
 // ... Tile component remains same ...
-const Tile = ({ val, type = 'static', active = false, isFeedback = false, feedbackStatus, highlight = false }: { val: string | number | null, type?: 'static' | 'input', active?: boolean, isFeedback?: boolean, feedbackStatus?: 'correct' | 'wrong' | null, highlight?: boolean }) => {
+// ... Tile component updated to accept showArrow
+const Tile = ({ val, type = 'static', active = false, isFeedback = false, feedbackStatus, highlight = false, showArrow = false }: { val: string | number | null, type?: 'static' | 'input', active?: boolean, isFeedback?: boolean, feedbackStatus?: 'correct' | 'wrong' | null, highlight?: boolean, showArrow?: boolean }) => {
     const baseBorderColor = '#e2e8f0';
     const baseShadowColor = '#cbd5e1';
 
@@ -89,9 +90,56 @@ const Tile = ({ val, type = 'static', active = false, isFeedback = false, feedba
             borderRadius: '12px',
             opacity: val === null ? 0 : 1,
             transform: type === 'input' && active ? 'translateY(2px)' : 'none',
-            transition: 'border-color 0.2s, box-shadow 0.2s'
+            transition: 'border-color 0.2s, box-shadow 0.2s',
+            position: 'relative' // For absolute arrow child
         }}>
             {val}
+            {showArrow && (
+                <div style={{
+                    position: 'absolute',
+                    top: '-4px', // Exactly middle of the 8px grid gap
+                    left: '-85%', // Horizontal position
+                    width: '180%',
+                    transform: 'translateY(-50%)', // Center wrapper vertically on the gap
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    zIndex: 20,
+                    pointerEvents: 'none',
+                }}>
+                    <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '2px', // Space between Plus and Arrow
+                        animation: 'floatGuide 1.5s ease-in-out infinite',
+                        lineHeight: 1
+                    }}>
+                        <div style={{
+                            width: '7cqi',
+                            height: '7cqi',
+                            borderRadius: '50%',
+                            background: 'white',
+                            border: '2px solid #ef4444',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            fontSize: '4cqi',
+                            boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                        }}>
+                            ➕
+                        </div>
+                        <div style={{
+                            fontSize: '8cqi',
+                            color: '#ef4444',
+                            fontWeight: 'bold',
+                            textShadow: '0 2px 4px rgba(255,255,255,0.8)'
+                        }}>
+                            ↓
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
@@ -140,12 +188,24 @@ const FrontAdditionGame: React.FC<{ onExit: () => void, gameId?: string }> = ({ 
     };
 
     // Calculate Grid Values (Memoized to prevent render thrashing)
-    const stepsData = React.useMemo(() => ({
-        hundreds: is3Digit ? getStepValues(getDisp(1), currentProblem?.step1_val || 0, 'hundreds') : [null, null, null, null],
-        tens: getStepValues(getDisp(is3Digit ? 2 : 1), is3Digit ? (currentProblem?.step2_val || 0) : (currentProblem?.step1_val || 0), 'tens'),
-        units: getStepValues(getDisp(is3Digit ? 3 : 2), is3Digit ? (currentProblem?.step3_val || 0) : (currentProblem?.step2_val || 0), 'units'),
-        total: getStepValues(getDisp(is3Digit ? 4 : 3), is3Digit ? (currentProblem?.step4_val || 0) : (currentProblem?.step3_val || 0), 'total')
-    }), [is3Digit, currentStep, userInput, completedSteps, currentProblem]);
+    const stepsData = React.useMemo(() => {
+        const nulls = [null, null, null, null];
+
+        // Visibility Checks
+        // 3-Digit: Hundreds(1) -> Tens(2) -> Units(3) -> Total(4)
+        // 2-Digit: Tens(1) -> Units(2) -> Total(3)
+        const showHundreds = is3Digit && currentStep >= 1;
+        const showTens = is3Digit ? currentStep >= 2 : currentStep >= 1;
+        const showUnits = is3Digit ? currentStep >= 3 : currentStep >= 2;
+        const showTotal = is3Digit ? currentStep >= 4 : currentStep >= 3;
+
+        return {
+            hundreds: showHundreds ? getStepValues(getDisp(1), currentProblem?.step1_val || 0, 'hundreds') : nulls,
+            tens: showTens ? getStepValues(getDisp(is3Digit ? 2 : 1), is3Digit ? (currentProblem?.step2_val || 0) : (currentProblem?.step1_val || 0), 'tens') : nulls,
+            units: showUnits ? getStepValues(getDisp(is3Digit ? 3 : 2), is3Digit ? (currentProblem?.step3_val || 0) : (currentProblem?.step2_val || 0), 'units') : nulls,
+            total: showTotal ? getStepValues(getDisp(is3Digit ? 4 : 3), is3Digit ? (currentProblem?.step4_val || 0) : (currentProblem?.step3_val || 0), 'total') : nulls
+        };
+    }, [is3Digit, currentStep, userInput, completedSteps, currentProblem]);
 
     // Dynamic grid rows definition (Memoized)
     const gridRowsTemplate = React.useMemo(() => is3Digit
@@ -153,6 +213,24 @@ const FrontAdditionGame: React.FC<{ onExit: () => void, gameId?: string }> = ({ 
         : 'repeat(2, minmax(0, 1fr)) auto repeat(2, minmax(0, 1fr)) auto minmax(0, 1fr)', [is3Digit]);
 
     const activeStep = currentStep;
+
+    // Helper to check if arrow should be shown for a column based on activeStep
+    const shouldShowArrow = (colType: 'hundreds' | 'tens' | 'units') => {
+        if (!currentProblem) return false;
+        if (is3Digit) {
+            if (activeStep === 1 && colType === 'hundreds') return true;
+            if (activeStep === 2 && colType === 'tens') return true;
+            if (activeStep === 3 && colType === 'units') return true;
+        } else {
+            // 2-digit
+            if (activeStep === 1 && colType === 'tens') return true;
+            if (activeStep === 2 && colType === 'units') return true;
+        }
+        return false;
+    };
+
+    // Check if Total Separator should be visible
+    const showTotalSeparator = is3Digit ? currentStep >= 4 : currentStep >= 3;
 
     return (
         <Layout2
@@ -222,9 +300,9 @@ const FrontAdditionGame: React.FC<{ onExit: () => void, gameId?: string }> = ({ 
                                     fontWeight: 'bold',
                                     color: '#334155'
                                 }}>+</div>
-                                <Tile val={currentProblem.row2_hundreds} highlight={is3Digit && activeStep === 1} />
-                                <Tile val={currentProblem.row2_tens} highlight={(is3Digit && activeStep === 2) || (!is3Digit && activeStep === 1)} />
-                                <Tile val={currentProblem.row2_units} highlight={(is3Digit && activeStep === 3) || (!is3Digit && activeStep === 2)} />
+                                <Tile val={currentProblem.row2_hundreds} highlight={is3Digit && activeStep === 1} showArrow={shouldShowArrow('hundreds')} />
+                                <Tile val={currentProblem.row2_tens} highlight={(is3Digit && activeStep === 2) || (!is3Digit && activeStep === 1)} showArrow={shouldShowArrow('tens')} />
+                                <Tile val={currentProblem.row2_units} highlight={(is3Digit && activeStep === 3) || (!is3Digit && activeStep === 2)} showArrow={shouldShowArrow('units')} />
 
                                 {/* Separator 1 */}
                                 <div style={{ gridColumn: '1 / -1', height: '4px', background: '#cbd5e1', borderRadius: '2px', alignSelf: 'center', width: '100%' }}></div>
@@ -254,7 +332,16 @@ const FrontAdditionGame: React.FC<{ onExit: () => void, gameId?: string }> = ({ 
                                 <Tile val={stepsData.units[3]} type={activeStep === (is3Digit ? 3 : 2) ? 'input' : 'static'} active={activeStep === (is3Digit ? 3 : 2)} isFeedback={!!feedback} feedbackStatus={feedback} />
 
                                 {/* Separator 2 */}
-                                <div style={{ gridColumn: '1 / -1', height: '4px', background: '#cbd5e1', borderRadius: '2px', alignSelf: 'center', width: '100%' }}></div>
+                                <div style={{
+                                    gridColumn: '1 / -1',
+                                    height: '4px',
+                                    background: '#cbd5e1',
+                                    borderRadius: '2px',
+                                    alignSelf: 'center',
+                                    width: '100%',
+                                    opacity: showTotalSeparator ? 1 : 0, // Hide until Total step
+                                    transition: 'opacity 0.3s ease'
+                                }}></div>
 
                                 {/* Step: Final Total */}
                                 <Tile val={stepsData.total[0]} type={activeStep === (is3Digit ? 4 : 3) ? 'input' : 'static'} active={activeStep === (is3Digit ? 4 : 3)} isFeedback={!!feedback} feedbackStatus={feedback} />

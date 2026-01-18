@@ -42,7 +42,10 @@ export const GameStartScreen: React.FC<StartScreenProps> = ({
                                 <div key={index} className="visual-step-card">
                                     <div className="step-number">{index + 1}</div>
                                     {inst.icon && <span className="visual-step-icon">{inst.icon}</span>}
-                                    <span className="visual-step-title">{inst.title}</span>
+                                    <div className="visual-step-text-col">
+                                        <span className="visual-step-title">{inst.title}</span>
+                                        <span className="visual-step-desc">{inst.description}</span>
+                                    </div>
                                 </div>
                             ))}
                         </div>
