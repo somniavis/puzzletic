@@ -236,6 +236,20 @@ Indicates which column is currently active for input.
 - Controls visibility of Intermediate row and tooltip positions
 
 ---
+
+## Code Optimization Notes
+
+### Removed Variables
+- `difficultyLevel`: Removed from GameLogic (unused)
+- `activeStep`: Removed alias, use `currentStep` directly
+- `isDirectAnswer`: Removed property (replaced by `totalSteps` 4/5 logic)
+
+### Performance Improvements
+- Consolidated `is4Step` calculation (was duplicate)
+- Fixed dead code in tooltip left position calculation
+- Updated dependency arrays for proper memoization
+
+---
 ---
 
 # Front Addition Game
@@ -471,3 +485,15 @@ Indicates which column is currently active for input.
 | `FrontAddition/GameLogic.tsx` | Problem generation, step validation |
 | `FrontAddition/index.tsx` | UI rendering, grid layout, Tile components |
 | `FrontAddition/Keypad.tsx` | Numeric input handling |
+
+---
+
+## Code Optimization Notes
+
+### Removed Variables
+- `difficultyLevel`: Removed from GameLogic (unused)
+- `activeStep`: Removed alias, use `currentStep` directly
+
+### Performance Improvements
+- Updated dependency arrays for proper memoization
+- Consistent with FrontSubtraction optimization patterns
