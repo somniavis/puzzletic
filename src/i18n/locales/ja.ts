@@ -6,6 +6,7 @@ import fruitSliceJa from '../../games/math/level1/FruitSlice/locales/ja';
 import numberBalanceJa from '../../games/math/level1/NumberBalance/locales/ja';
 import mathArcheryJa from '../../games/math/level1/MathArchery/locales/ja';
 import frontAdditionJa from '../../games/math/level2/FrontAddition/locales/ja';
+import frontSubtractionJa from '../../games/math/level2/FrontSubtraction/locales/ja';
 import tenFrameCountJa from '../../games/math/level2/TenFrameCount/locales/ja';
 import mathPinwheelJa from '../../games/math/level2/PinwheelPop/locales/ja';
 import deepSeaDiveJa from '../../games/math/level2/DeepSeaDive/locales/ja';
@@ -696,6 +697,7 @@ export const ja = {
         'math-number-balance': numberBalanceJa,
         'math-archery': mathArcheryJa,
         frontAddition: frontAdditionJa,
+        frontSubtraction: frontSubtractionJa,
         'ten-frame-count': tenFrameCountJa,
         'pinwheel-pop': mathPinwheelJa,
         'animal-banquet': animalBanquetJa,

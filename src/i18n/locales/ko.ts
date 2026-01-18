@@ -6,6 +6,7 @@ import fruitSliceKo from '../../games/math/level1/FruitSlice/locales/ko';
 import numberBalanceKo from '../../games/math/level1/NumberBalance/locales/ko';
 import mathArcheryKo from '../../games/math/level1/MathArchery/locales/ko';
 import frontAdditionKo from '../../games/math/level2/FrontAddition/locales/ko';
+import frontSubtractionKo from '../../games/math/level2/FrontSubtraction/locales/ko';
 import tenFrameCountKo from '../../games/math/level2/TenFrameCount/locales/ko';
 import mathPinwheelKo from '../../games/math/level2/PinwheelPop/locales/ko';
 import deepSeaDiveKo from '../../games/math/level2/DeepSeaDive/locales/ko';
@@ -696,6 +697,7 @@ export const ko = {
         'math-number-balance': numberBalanceKo,
         'math-archery': mathArcheryKo,
         frontAddition: frontAdditionKo,
+        frontSubtraction: frontSubtractionKo,
         'ten-frame-count': tenFrameCountKo,
         'pinwheel-pop': mathPinwheelKo,
         'animal-banquet': animalBanquetKo,
