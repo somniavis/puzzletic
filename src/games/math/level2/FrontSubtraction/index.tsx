@@ -250,9 +250,11 @@ const FrontSubtractionGame: React.FC<{ onExit: () => void, gameId?: string }> = 
         return currentStep === targetStep ? userInput : (completedSteps[`step${targetStep}` as keyof typeof completedSteps] || '');
     };
 
+    // Determine if 4-step mode (T not negative, skip Intermediate)
+    const is4Step = is3Digit && currentProblem?.totalSteps === 4;
+
     const stepsData = React.useMemo(() => {
         const nulls = [null, null, null, null];
-        const is4Step = is3Digit && currentProblem?.totalSteps === 4; // T is NOT negative, skip Intermediate
 
         // Visibility logic
         const showHundreds = is3Digit && currentStep >= 1;
@@ -301,39 +303,34 @@ const FrontSubtractionGame: React.FC<{ onExit: () => void, gameId?: string }> = 
             // Flags
             isTensNegative: is3Digit ? currentProblem?.step2_is_negative : false,
             isUnitsNegative: is3Digit ? currentProblem?.step3_is_negative : currentProblem?.step2_is_negative,
-            is4Step: is4Step
+            
         };
-    }, [is3Digit, currentStep, userInput, completedSteps, currentProblem, getDisp]);
+    }, [is3Digit, is4Step, currentStep, userInput, completedSteps, currentProblem, getDisp]);
 
     // Grid Template
     const gridRowsTemplate = React.useMemo(() => is3Digit
         ? 'repeat(2, minmax(0, 1fr)) auto repeat(2, minmax(0, 1fr)) auto minmax(0, 1fr) auto minmax(0, 1fr)'
-        // Updated: added 'auto' (Sep 1.5) between repeat(2) [H/T] and minmax [Merged U/Int]
         : 'repeat(2, minmax(0, 1fr)) auto repeat(2, minmax(0, 1fr)) auto minmax(0, 1fr)', [is3Digit]);
-
-    const activeStep = currentStep;
 
     const shouldShowArrow = (colType: 'hundreds' | 'tens' | 'units') => {
         if (!currentProblem) return false;
         if (is3Digit) {
-            if (activeStep === 1 && colType === 'hundreds') return true;
-            if (activeStep === 2 && colType === 'tens') return true;
-            if (activeStep === 3 && colType === 'units') return true;
+            if (currentStep === 1 && colType === 'hundreds') return true;
+            if (currentStep === 2 && colType === 'tens') return true;
+            if (currentStep === 3 && colType === 'units') return true;
         } else {
-            // 2-digit
-            if (activeStep === 1 && colType === 'tens') return true;
-            if (activeStep === 2 && colType === 'units') return true;
+            if (currentStep === 1 && colType === 'tens') return true;
+            if (currentStep === 2 && colType === 'units') return true;
         }
         return false;
     };
 
-    // Check Direction for Arrow (Up for Negative/Borrow steps)
     const getArrowType = (colType: 'hundreds' | 'tens' | 'units'): 'down' | 'up' => {
         if (is3Digit) {
-            if (activeStep === 2 && colType === 'tens' && currentProblem?.step2_is_negative) return 'up';
-            if (activeStep === 3 && colType === 'units' && currentProblem?.step3_is_negative) return 'up';
+            if (currentStep === 2 && colType === 'tens' && currentProblem?.step2_is_negative) return 'up';
+            if (currentStep === 3 && colType === 'units' && currentProblem?.step3_is_negative) return 'up';
         } else {
-            if (activeStep === 2 && colType === 'units' && currentProblem?.step2_is_negative) return 'up';
+            if (currentStep === 2 && colType === 'units' && currentProblem?.step2_is_negative) return 'up';
         }
         return 'down';
     };
@@ -341,13 +338,12 @@ const FrontSubtractionGame: React.FC<{ onExit: () => void, gameId?: string }> = 
     // Tooltip Logic
     const getTooltip = () => {
         if (!currentProblem) return null;
-        const is4Step = currentProblem.totalSteps === 4;
 
         if (is3Digit) {
             // 5-step mode: Step 4 is Intermediate, Step 5 is Total
             // 4-step mode: Step 4 is Total (skip Intermediate)
 
-            if (!is4Step && activeStep === 4) {
+            if (!is4Step && currentStep === 4) {
                 // Step 4 Helper (Intermediate): [H*10 - T] - only in 5-step mode
                 const hVal = (currentProblem.step1_val || 0);
                 const tVal = (currentProblem.step2_val || 0);
@@ -360,7 +356,7 @@ const FrontSubtractionGame: React.FC<{ onExit: () => void, gameId?: string }> = 
             }
 
             // Step 5 Helper (Final) in 5-step mode, or Step 4 in 4-step mode: [Tens - U]
-            if ((!is4Step && activeStep === 5) || (is4Step && activeStep === 4)) {
+            if ((!is4Step && currentStep === 5) || (is4Step && currentStep === 4)) {
                 const uVal = currentProblem.step3_val || 0;
                 const uIsNeg = currentProblem.step3_is_negative;
                 const hVal = currentProblem.step1_val || 0;
@@ -376,7 +372,7 @@ const FrontSubtractionGame: React.FC<{ onExit: () => void, gameId?: string }> = 
             }
         } else {
             // 2D logic
-            if (activeStep === 3) {
+            if (currentStep === 3) {
                 if (currentProblem?.step2_is_negative) {
                     const tensVal = (currentProblem.step1_val || 0) * 10;
                     const unitsVal = currentProblem.step2_val || 0;
@@ -388,12 +384,11 @@ const FrontSubtractionGame: React.FC<{ onExit: () => void, gameId?: string }> = 
     };
     const tooltipText = getTooltip();
 
-    // Split tooltip text if needed by step, but currently getTooltip depends on activeStep so it's fine.
+    // Split tooltip text if needed by step, but currently getTooltip depends on currentStep so it's fine.
     // However, since we now have TWO separators that could hold tooltips, we must ensure the correct one renders it.
     // Step 4 Tooltip -> Sep 1.5 (Above Merged Row)
     // Step 5 Tooltip -> Sep 2 (Above Total Row)
 
-    const is4Step = is3Digit && currentProblem?.totalSteps === 4;
     const showTotalSeparator = is3Digit
         ? (is4Step ? currentStep >= 4 : currentStep >= 5)
         : currentStep >= 3;
@@ -454,9 +449,9 @@ const FrontSubtractionGame: React.FC<{ onExit: () => void, gameId?: string }> = 
                             }}>
                                 {/* Row 1: Problem Top */}
                                 <Tile val={null} />
-                                <Tile val={currentProblem.row1_hundreds} highlight={is3Digit && activeStep === 1} />
-                                <Tile val={currentProblem.row1_tens} highlight={(is3Digit && activeStep === 2) || (!is3Digit && activeStep === 1)} />
-                                <Tile val={currentProblem.row1_units} highlight={(is3Digit && activeStep === 3) || (!is3Digit && activeStep === 2)} />
+                                <Tile val={currentProblem.row1_hundreds} highlight={is3Digit && currentStep === 1} />
+                                <Tile val={currentProblem.row1_tens} highlight={(is3Digit && currentStep === 2) || (!is3Digit && currentStep === 1)} />
+                                <Tile val={currentProblem.row1_units} highlight={(is3Digit && currentStep === 3) || (!is3Digit && currentStep === 2)} />
 
                                 {/* Row 2: Problem Bottom */}
                                 <div style={{
@@ -467,9 +462,9 @@ const FrontSubtractionGame: React.FC<{ onExit: () => void, gameId?: string }> = 
                                     fontWeight: 'bold',
                                     color: '#64748b'
                                 }}>-</div>
-                                <Tile val={currentProblem.row2_hundreds} highlight={is3Digit && activeStep === 1} showArrow={shouldShowArrow('hundreds')} arrowType={getArrowType('hundreds')} />
-                                <Tile val={currentProblem.row2_tens} highlight={(is3Digit && activeStep === 2) || (!is3Digit && activeStep === 1)} showArrow={shouldShowArrow('tens')} arrowType={getArrowType('tens')} />
-                                <Tile val={currentProblem.row2_units} highlight={(is3Digit && activeStep === 3) || (!is3Digit && activeStep === 2)} showArrow={shouldShowArrow('units')} arrowType={getArrowType('units')} />
+                                <Tile val={currentProblem.row2_hundreds} highlight={is3Digit && currentStep === 1} showArrow={shouldShowArrow('hundreds')} arrowType={getArrowType('hundreds')} />
+                                <Tile val={currentProblem.row2_tens} highlight={(is3Digit && currentStep === 2) || (!is3Digit && currentStep === 1)} showArrow={shouldShowArrow('tens')} arrowType={getArrowType('tens')} />
+                                <Tile val={currentProblem.row2_units} highlight={(is3Digit && currentStep === 3) || (!is3Digit && currentStep === 2)} showArrow={shouldShowArrow('units')} arrowType={getArrowType('units')} />
 
                                 {/* Separator 1 */}
                                 <div style={{ gridColumn: '1 / -1', height: '4px', background: '#cbd5e1', borderRadius: '2px', alignSelf: 'center', width: '100%' }}></div>
@@ -477,8 +472,8 @@ const FrontSubtractionGame: React.FC<{ onExit: () => void, gameId?: string }> = 
                                 {is3Digit && (
                                     <>
                                         {/* Step 1: Hundreds Sum */}
-                                        <Tile val={stepsData.hundreds[0]} type={activeStep === 1 ? 'input' : 'static'} active={activeStep === 1} isFeedback={!!feedback} feedbackStatus={feedback} />
-                                        <Tile val={stepsData.hundreds[1]} type={activeStep === 1 ? 'input' : 'static'} active={activeStep === 1} isFeedback={!!feedback} feedbackStatus={feedback} />
+                                        <Tile val={stepsData.hundreds[0]} type={currentStep === 1 ? 'input' : 'static'} active={currentStep === 1} isFeedback={!!feedback} feedbackStatus={feedback} />
+                                        <Tile val={stepsData.hundreds[1]} type={currentStep === 1 ? 'input' : 'static'} active={currentStep === 1} isFeedback={!!feedback} feedbackStatus={feedback} />
                                         <Tile val={stepsData.hasHundredsGhostZero ? '0' : stepsData.hundreds[2]} type={stepsData.hasHundredsGhostZero ? 'ghost' : 'static'} />
                                         <Tile val={stepsData.hundreds[3]} />
                                     </>
@@ -486,8 +481,8 @@ const FrontSubtractionGame: React.FC<{ onExit: () => void, gameId?: string }> = 
 
                                 {/* Step: Tens Sum */}
                                 <Tile val={stepsData.tens[0]} />
-                                <Tile val={stepsData.tens[1]} type={activeStep === (is3Digit ? 2 : 1) ? 'input' : 'static'} active={activeStep === (is3Digit ? 2 : 1)} isFeedback={!!feedback} feedbackStatus={feedback} />
-                                <Tile val={stepsData.tens[2]} type={activeStep === (is3Digit ? 2 : 1) ? 'input' : 'static'} active={activeStep === (is3Digit ? 2 : 1)} isFeedback={!!feedback} feedbackStatus={feedback} isNegative={stepsData.isTensNegative} />
+                                <Tile val={stepsData.tens[1]} type={currentStep === (is3Digit ? 2 : 1) ? 'input' : 'static'} active={currentStep === (is3Digit ? 2 : 1)} isFeedback={!!feedback} feedbackStatus={feedback} />
+                                <Tile val={stepsData.tens[2]} type={currentStep === (is3Digit ? 2 : 1) ? 'input' : 'static'} active={currentStep === (is3Digit ? 2 : 1)} isFeedback={!!feedback} feedbackStatus={feedback} isNegative={stepsData.isTensNegative} />
                                 <Tile val={stepsData.hasTensGhostZero ? '0' : stepsData.tens[3]} type={stepsData.hasTensGhostZero ? 'ghost' : 'static'} />
 
                                 {/* Separator 1.5 (For Step 4 Tooltip - 3-Digit only) */}
@@ -502,15 +497,11 @@ const FrontSubtractionGame: React.FC<{ onExit: () => void, gameId?: string }> = 
                                         zIndex: 200, // Top z-Index
                                         marginBottom: '4px' // Little gap 
                                     }}>
-                                        {!stepsData.is4Step && activeStep === 4 && tooltipText && (
+                                        {!is4Step && currentStep === 4 && tooltipText && (
                                             <div style={{
                                                 position: 'absolute',
                                                 bottom: '-15px', // Move down closer to inputs (User req: "little bit lower")
-                                                left: (() => {
-                                                    const tIsNeg = currentProblem?.step2_is_negative;
-                                                    if (tIsNeg) return '50%';
-                                                    return '50%';
-                                                })(),
+                                                left: '50%',
                                                 transform: 'translate(-50%, 0)', // Remove Y translate to rely on bottom px
                                                 color: '#ef4444',
                                                 background: '#fef2f2',
@@ -539,8 +530,8 @@ const FrontSubtractionGame: React.FC<{ onExit: () => void, gameId?: string }> = 
                                 <Tile val={stepsData.intermediate?.[0]} />
 
                                 {/* Intermediate Hundreds: Show if Step >= 4 (5-step mode only) */}
-                                {is3Digit && !stepsData.is4Step ? (
-                                    <Tile val={stepsData.intermediate?.[1]} type={activeStep === 4 ? 'input' : (currentStep > 4 ? 'static' : 'ghost')} active={activeStep === 4} isFeedback={!!feedback} feedbackStatus={feedback} />
+                                {is3Digit && !is4Step ? (
+                                    <Tile val={stepsData.intermediate?.[1]} type={currentStep === 4 ? 'input' : (currentStep > 4 ? 'static' : 'ghost')} active={currentStep === 4} isFeedback={!!feedback} feedbackStatus={feedback} />
                                 ) : is3Digit ? (
                                     <Tile val={null} />
                                 ) : (
@@ -548,19 +539,19 @@ const FrontSubtractionGame: React.FC<{ onExit: () => void, gameId?: string }> = 
                                 )}
 
                                 {/* Intermediate Tens (Col 3): Show if Step >= 4 (5-step mode only) */}
-                                {is3Digit && !stepsData.is4Step ? (
-                                    <Tile val={stepsData.intermediate?.[2]} type={activeStep === 4 ? 'input' : (currentStep > 4 ? 'static' : 'ghost')} active={activeStep === 4} isFeedback={!!feedback} feedbackStatus={feedback} />
+                                {is3Digit && !is4Step ? (
+                                    <Tile val={stepsData.intermediate?.[2]} type={currentStep === 4 ? 'input' : (currentStep > 4 ? 'static' : 'ghost')} active={currentStep === 4} isFeedback={!!feedback} feedbackStatus={feedback} />
                                 ) : is3Digit ? (
                                     <Tile val={null} />
                                 ) : (
-                                    <Tile val={stepsData.units[2]} type={activeStep === 2 ? 'input' : 'static'} active={activeStep === 2} isFeedback={!!feedback} feedbackStatus={feedback} />
+                                    <Tile val={stepsData.units[2]} type={currentStep === 2 ? 'input' : 'static'} active={currentStep === 2} isFeedback={!!feedback} feedbackStatus={feedback} />
                                 )}
 
                                 {/* Units Result (Col 4): Show if Step >= 3 */}
                                 <Tile
                                     val={stepsData.units[3]}
-                                    type={activeStep === (is3Digit ? 3 : 2) ? 'input' : 'static'}
-                                    active={activeStep === (is3Digit ? 3 : 2)}
+                                    type={currentStep === (is3Digit ? 3 : 2) ? 'input' : 'static'}
+                                    active={currentStep === (is3Digit ? 3 : 2)}
                                     isFeedback={!!feedback}
                                     feedbackStatus={feedback}
                                     isNegative={stepsData.isUnitsNegative}
@@ -579,7 +570,7 @@ const FrontSubtractionGame: React.FC<{ onExit: () => void, gameId?: string }> = 
                                     position: 'relative'
                                 }}>
                                     {/* Tooltip for Total step (Step 5 for 5-step, Step 4 for 4-step, Step 3 for 2D) */}
-                                    {((is3Digit && is4Step && activeStep === 4) || (is3Digit && !is4Step && activeStep === 5) || (!is3Digit && activeStep === 3)) && tooltipText && (
+                                    {((is3Digit && is4Step && currentStep === 4) || (is3Digit && !is4Step && currentStep === 5) || (!is3Digit && currentStep === 3)) && tooltipText && (
                                         <div style={{
                                             position: 'absolute',
                                             top: '50%',
@@ -606,10 +597,10 @@ const FrontSubtractionGame: React.FC<{ onExit: () => void, gameId?: string }> = 
                                 </div>
 
                                 {/* Step: Final Total - Step 4 for 4-step, Step 5 for 5-step */}
-                                <Tile val={stepsData.total[0]} type={activeStep === (is3Digit ? (is4Step ? 4 : 5) : 3) ? 'input' : 'static'} active={activeStep === (is3Digit ? (is4Step ? 4 : 5) : 3)} isFeedback={!!feedback} feedbackStatus={feedback} />
-                                <Tile val={stepsData.total[1]} type={activeStep === (is3Digit ? (is4Step ? 4 : 5) : 3) ? 'input' : 'static'} active={activeStep === (is3Digit ? (is4Step ? 4 : 5) : 3)} isFeedback={!!feedback} feedbackStatus={feedback} />
-                                <Tile val={stepsData.total[2]} type={activeStep === (is3Digit ? (is4Step ? 4 : 5) : 3) ? 'input' : 'static'} active={activeStep === (is3Digit ? (is4Step ? 4 : 5) : 3)} isFeedback={!!feedback} feedbackStatus={feedback} />
-                                <Tile val={stepsData.total[3]} type={activeStep === (is3Digit ? (is4Step ? 4 : 5) : 3) ? 'input' : 'static'} active={activeStep === (is3Digit ? (is4Step ? 4 : 5) : 3)} isFeedback={!!feedback} feedbackStatus={feedback} />
+                                <Tile val={stepsData.total[0]} type={currentStep === (is3Digit ? (is4Step ? 4 : 5) : 3) ? 'input' : 'static'} active={currentStep === (is3Digit ? (is4Step ? 4 : 5) : 3)} isFeedback={!!feedback} feedbackStatus={feedback} />
+                                <Tile val={stepsData.total[1]} type={currentStep === (is3Digit ? (is4Step ? 4 : 5) : 3) ? 'input' : 'static'} active={currentStep === (is3Digit ? (is4Step ? 4 : 5) : 3)} isFeedback={!!feedback} feedbackStatus={feedback} />
+                                <Tile val={stepsData.total[2]} type={currentStep === (is3Digit ? (is4Step ? 4 : 5) : 3) ? 'input' : 'static'} active={currentStep === (is3Digit ? (is4Step ? 4 : 5) : 3)} isFeedback={!!feedback} feedbackStatus={feedback} />
+                                <Tile val={stepsData.total[3]} type={currentStep === (is3Digit ? (is4Step ? 4 : 5) : 3) ? 'input' : 'static'} active={currentStep === (is3Digit ? (is4Step ? 4 : 5) : 3)} isFeedback={!!feedback} feedbackStatus={feedback} />
                             </div>
                         </div>
 

@@ -25,7 +25,6 @@ export interface FrontAdditionProblem {
 
 export const useGameLogic = (engine: ReturnType<typeof useGameEngine>, gameId?: string) => {
     const {
-        difficultyLevel,
         lives,
         submitAnswer,
         gameState,
@@ -128,7 +127,7 @@ export const useGameLogic = (engine: ReturnType<typeof useGameEngine>, gameId?: 
         setCompletedSteps({ step1: null, step2: null, step3: null, step4: null });
         setCurrentStep(1);
         setFeedback(null);
-    }, [difficultyLevel, gameId]);
+    }, [gameId]);
 
     // Reset state
     useEffect(() => {

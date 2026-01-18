@@ -26,15 +26,11 @@ export interface FrontSubtractionProblem {
     step2_is_negative?: boolean;
     step3_is_negative?: boolean;
 
-    // Direct Answer Mode (skip intermediate steps)
-    isDirectAnswer?: boolean;
-
     totalSteps: 3 | 4 | 5;
 }
 
 export const useGameLogic = (engine: ReturnType<typeof useGameEngine>, gameId?: string) => {
     const {
-        difficultyLevel,
         lives,
         submitAnswer,
         gameState,
@@ -179,7 +175,6 @@ export const useGameLogic = (engine: ReturnType<typeof useGameEngine>, gameId?: 
                 step1_is_negative: step1_is_negative,
                 step2_is_negative: step2_is_negative,
                 step3_is_negative: step3_is_negative,
-                isDirectAnswer: !step2_is_negative,
                 totalSteps: step2_is_negative ? 5 : 4 // 4 steps when T is not negative (skip Intermediate)
             };
         } else {
@@ -236,7 +231,7 @@ export const useGameLogic = (engine: ReturnType<typeof useGameEngine>, gameId?: 
         setCompletedSteps({ step1: null, step2: null, step3: null, step4: null, step5: null });
         setCurrentStep(1);
         setFeedback(null);
-    }, [difficultyLevel, gameId]);
+    }, [gameId]);
 
     // Reset state
     useEffect(() => {

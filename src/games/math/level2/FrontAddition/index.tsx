@@ -212,19 +212,16 @@ const FrontAdditionGame: React.FC<{ onExit: () => void, gameId?: string }> = ({ 
         ? 'repeat(2, minmax(0, 1fr)) auto repeat(3, minmax(0, 1fr)) auto minmax(0, 1fr)'
         : 'repeat(2, minmax(0, 1fr)) auto repeat(2, minmax(0, 1fr)) auto minmax(0, 1fr)', [is3Digit]);
 
-    const activeStep = currentStep;
-
-    // Helper to check if arrow should be shown for a column based on activeStep
+    // Helper to check if arrow should be shown for a column based on currentStep
     const shouldShowArrow = (colType: 'hundreds' | 'tens' | 'units') => {
         if (!currentProblem) return false;
         if (is3Digit) {
-            if (activeStep === 1 && colType === 'hundreds') return true;
-            if (activeStep === 2 && colType === 'tens') return true;
-            if (activeStep === 3 && colType === 'units') return true;
+            if (currentStep === 1 && colType === 'hundreds') return true;
+            if (currentStep === 2 && colType === 'tens') return true;
+            if (currentStep === 3 && colType === 'units') return true;
         } else {
-            // 2-digit
-            if (activeStep === 1 && colType === 'tens') return true;
-            if (activeStep === 2 && colType === 'units') return true;
+            if (currentStep === 1 && colType === 'tens') return true;
+            if (currentStep === 2 && colType === 'units') return true;
         }
         return false;
     };
@@ -287,9 +284,9 @@ const FrontAdditionGame: React.FC<{ onExit: () => void, gameId?: string }> = ({ 
                             }}>
                                 {/* Row 1: Problem Top */}
                                 <Tile val={null} />
-                                <Tile val={currentProblem.row1_hundreds} highlight={is3Digit && activeStep === 1} />
-                                <Tile val={currentProblem.row1_tens} highlight={(is3Digit && activeStep === 2) || (!is3Digit && activeStep === 1)} />
-                                <Tile val={currentProblem.row1_units} highlight={(is3Digit && activeStep === 3) || (!is3Digit && activeStep === 2)} />
+                                <Tile val={currentProblem.row1_hundreds} highlight={is3Digit && currentStep === 1} />
+                                <Tile val={currentProblem.row1_tens} highlight={(is3Digit && currentStep === 2) || (!is3Digit && currentStep === 1)} />
+                                <Tile val={currentProblem.row1_units} highlight={(is3Digit && currentStep === 3) || (!is3Digit && currentStep === 2)} />
 
                                 {/* Row 2: Problem Bottom */}
                                 <div style={{
@@ -300,9 +297,9 @@ const FrontAdditionGame: React.FC<{ onExit: () => void, gameId?: string }> = ({ 
                                     fontWeight: 'bold',
                                     color: '#334155'
                                 }}>+</div>
-                                <Tile val={currentProblem.row2_hundreds} highlight={is3Digit && activeStep === 1} showArrow={shouldShowArrow('hundreds')} />
-                                <Tile val={currentProblem.row2_tens} highlight={(is3Digit && activeStep === 2) || (!is3Digit && activeStep === 1)} showArrow={shouldShowArrow('tens')} />
-                                <Tile val={currentProblem.row2_units} highlight={(is3Digit && activeStep === 3) || (!is3Digit && activeStep === 2)} showArrow={shouldShowArrow('units')} />
+                                <Tile val={currentProblem.row2_hundreds} highlight={is3Digit && currentStep === 1} showArrow={shouldShowArrow('hundreds')} />
+                                <Tile val={currentProblem.row2_tens} highlight={(is3Digit && currentStep === 2) || (!is3Digit && currentStep === 1)} showArrow={shouldShowArrow('tens')} />
+                                <Tile val={currentProblem.row2_units} highlight={(is3Digit && currentStep === 3) || (!is3Digit && currentStep === 2)} showArrow={shouldShowArrow('units')} />
 
                                 {/* Separator 1 */}
                                 <div style={{ gridColumn: '1 / -1', height: '4px', background: '#cbd5e1', borderRadius: '2px', alignSelf: 'center', width: '100%' }}></div>
@@ -310,8 +307,8 @@ const FrontAdditionGame: React.FC<{ onExit: () => void, gameId?: string }> = ({ 
                                 {is3Digit && (
                                     <>
                                         {/* Step 1: Hundreds Sum */}
-                                        <Tile val={stepsData.hundreds[0]} type={activeStep === 1 ? 'input' : 'static'} active={activeStep === 1} isFeedback={!!feedback} feedbackStatus={feedback} />
-                                        <Tile val={stepsData.hundreds[1]} type={activeStep === 1 ? 'input' : 'static'} active={activeStep === 1} isFeedback={!!feedback} feedbackStatus={feedback} />
+                                        <Tile val={stepsData.hundreds[0]} type={currentStep === 1 ? 'input' : 'static'} active={currentStep === 1} isFeedback={!!feedback} feedbackStatus={feedback} />
+                                        <Tile val={stepsData.hundreds[1]} type={currentStep === 1 ? 'input' : 'static'} active={currentStep === 1} isFeedback={!!feedback} feedbackStatus={feedback} />
                                         <Tile val={stepsData.hundreds[2]} />
                                         <Tile val={stepsData.hundreds[3]} />
                                     </>
@@ -320,16 +317,16 @@ const FrontAdditionGame: React.FC<{ onExit: () => void, gameId?: string }> = ({ 
                                 {/* Step: Tens Sum */}
                                 {/* Alignment correction: If 2 digits (>=10), occupies Hundreds(1) and Tens(2). If 1 digit, occupies Tens(2). */}
                                 <Tile val={stepsData.tens[0]} />
-                                <Tile val={stepsData.tens[1]} type={activeStep === (is3Digit ? 2 : 1) ? 'input' : 'static'} active={activeStep === (is3Digit ? 2 : 1)} isFeedback={!!feedback} feedbackStatus={feedback} />
-                                <Tile val={stepsData.tens[2]} type={activeStep === (is3Digit ? 2 : 1) ? 'input' : 'static'} active={activeStep === (is3Digit ? 2 : 1)} isFeedback={!!feedback} feedbackStatus={feedback} />
+                                <Tile val={stepsData.tens[1]} type={currentStep === (is3Digit ? 2 : 1) ? 'input' : 'static'} active={currentStep === (is3Digit ? 2 : 1)} isFeedback={!!feedback} feedbackStatus={feedback} />
+                                <Tile val={stepsData.tens[2]} type={currentStep === (is3Digit ? 2 : 1) ? 'input' : 'static'} active={currentStep === (is3Digit ? 2 : 1)} isFeedback={!!feedback} feedbackStatus={feedback} />
                                 <Tile val={stepsData.tens[3]} />
 
                                 {/* Step: Units Sum */}
                                 {/* Alignment correction: If 2 digits (>=10), occupies Tens(2) and Units(3). If 1 digit, occupies Units(3). */}
                                 <Tile val={stepsData.units[0]} />
                                 <Tile val={stepsData.units[1]} />
-                                <Tile val={stepsData.units[2]} type={activeStep === (is3Digit ? 3 : 2) ? 'input' : 'static'} active={activeStep === (is3Digit ? 3 : 2)} isFeedback={!!feedback} feedbackStatus={feedback} />
-                                <Tile val={stepsData.units[3]} type={activeStep === (is3Digit ? 3 : 2) ? 'input' : 'static'} active={activeStep === (is3Digit ? 3 : 2)} isFeedback={!!feedback} feedbackStatus={feedback} />
+                                <Tile val={stepsData.units[2]} type={currentStep === (is3Digit ? 3 : 2) ? 'input' : 'static'} active={currentStep === (is3Digit ? 3 : 2)} isFeedback={!!feedback} feedbackStatus={feedback} />
+                                <Tile val={stepsData.units[3]} type={currentStep === (is3Digit ? 3 : 2) ? 'input' : 'static'} active={currentStep === (is3Digit ? 3 : 2)} isFeedback={!!feedback} feedbackStatus={feedback} />
 
                                 {/* Separator 2 */}
                                 <div style={{
@@ -344,10 +341,10 @@ const FrontAdditionGame: React.FC<{ onExit: () => void, gameId?: string }> = ({ 
                                 }}></div>
 
                                 {/* Step: Final Total */}
-                                <Tile val={stepsData.total[0]} type={activeStep === (is3Digit ? 4 : 3) ? 'input' : 'static'} active={activeStep === (is3Digit ? 4 : 3)} isFeedback={!!feedback} feedbackStatus={feedback} />
-                                <Tile val={stepsData.total[1]} type={activeStep === (is3Digit ? 4 : 3) ? 'input' : 'static'} active={activeStep === (is3Digit ? 4 : 3)} isFeedback={!!feedback} feedbackStatus={feedback} />
-                                <Tile val={stepsData.total[2]} type={activeStep === (is3Digit ? 4 : 3) ? 'input' : 'static'} active={activeStep === (is3Digit ? 4 : 3)} isFeedback={!!feedback} feedbackStatus={feedback} />
-                                <Tile val={stepsData.total[3]} type={activeStep === (is3Digit ? 4 : 3) ? 'input' : 'static'} active={activeStep === (is3Digit ? 4 : 3)} isFeedback={!!feedback} feedbackStatus={feedback} />
+                                <Tile val={stepsData.total[0]} type={currentStep === (is3Digit ? 4 : 3) ? 'input' : 'static'} active={currentStep === (is3Digit ? 4 : 3)} isFeedback={!!feedback} feedbackStatus={feedback} />
+                                <Tile val={stepsData.total[1]} type={currentStep === (is3Digit ? 4 : 3) ? 'input' : 'static'} active={currentStep === (is3Digit ? 4 : 3)} isFeedback={!!feedback} feedbackStatus={feedback} />
+                                <Tile val={stepsData.total[2]} type={currentStep === (is3Digit ? 4 : 3) ? 'input' : 'static'} active={currentStep === (is3Digit ? 4 : 3)} isFeedback={!!feedback} feedbackStatus={feedback} />
+                                <Tile val={stepsData.total[3]} type={currentStep === (is3Digit ? 4 : 3) ? 'input' : 'static'} active={currentStep === (is3Digit ? 4 : 3)} isFeedback={!!feedback} feedbackStatus={feedback} />
                             </div>
                         </div>
 
