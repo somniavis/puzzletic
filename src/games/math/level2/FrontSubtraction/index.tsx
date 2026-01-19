@@ -303,7 +303,7 @@ const FrontSubtractionGame: React.FC<{ onExit: () => void, gameId?: string }> = 
             // Flags
             isTensNegative: is3Digit ? currentProblem?.step2_is_negative : false,
             isUnitsNegative: is3Digit ? currentProblem?.step3_is_negative : currentProblem?.step2_is_negative,
-            
+
         };
     }, [is3Digit, is4Step, currentStep, userInput, completedSteps, currentProblem, getDisp]);
 
@@ -629,6 +629,7 @@ export const manifestLv1: GameManifest = {
     titleKey: 'games.frontSubtraction.lv1.title',
     subtitleKey: 'games.frontSubtraction.lv1.subtitle',
     descriptionKey: 'games.frontSubtraction.description',
+    mode: 'genius',
     component: FrontSubtractionGame
 };
 
@@ -642,6 +643,7 @@ export const manifestLv2: GameManifest = {
     titleKey: 'games.frontSubtraction.lv2.title',
     subtitleKey: 'games.frontSubtraction.lv2.subtitle',
     descriptionKey: 'games.frontSubtraction.description',
+    mode: 'genius',
     component: FrontSubtractionGame
 };
 
@@ -655,6 +657,7 @@ export const manifestLv3: GameManifest = {
     titleKey: 'games.frontSubtraction.lv3.title',
     subtitleKey: 'games.frontSubtraction.lv3.subtitle',
     descriptionKey: 'games.frontSubtraction.description',
+    mode: 'genius',
     component: FrontSubtractionGame
 };
 
@@ -668,5 +671,6 @@ export const manifestLv4: GameManifest = {
     titleKey: 'games.frontSubtraction.lv4.title',
     subtitleKey: 'games.frontSubtraction.lv4.subtitle',
     descriptionKey: 'games.frontSubtraction.description',
+    mode: 'genius',
     component: FrontSubtractionGame
 };

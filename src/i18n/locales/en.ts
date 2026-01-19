@@ -675,6 +675,20 @@ export const en = {
       collapse: 'Collapse',
       level: 'Level',
     },
+    modes: {
+      adventure: 'ADVENTURE',
+      genius: 'GENIUS',
+    },
+    sections: {
+      funMath: {
+        title: 'Fun math',
+        desc: 'Gamified math missions',
+      },
+      genius: {
+        title: 'Genius Calc',
+        desc: 'Challenge your speed',
+      },
+    },
     categories: {
       brain: 'BRAIN',
       math: 'MATH',

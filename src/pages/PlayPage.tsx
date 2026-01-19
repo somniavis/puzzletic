@@ -1,103 +1,393 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import './PlayPage.css';
 import { playButtonSound } from '../utils/sound';
 import { useNurturing } from '../contexts/NurturingContext';
 import { GAMES, getGameById } from '../games/registry';
-import type { GameCategory, GameDifficulty, GameManifest } from '../games/types';
-import fishingCountEn from '../games/math/level1/FishingCount/locales/en';
-import roundCountingEn from '../games/math/level1/RoundCounting/locales/en';
-import { MasteryBar } from '../components/MasteryBar';
+import type { GameCategory, GameManifest } from '../games/types';
 import { isGameUnlocked } from '../utils/progression';
 
+// --- Types & Constants ---
+type MathMode = 'adventure' | 'genius';
+type Operator = 'ADD' | 'SUB' | 'MUL' | 'DIV';
+
 const CATEGORY_ICONS: Record<GameCategory, string> = {
-    brain: '🧠',
-    math: '🔢',
-    science: '🧪',
-    sw: '💻'
+    math: 'fa-calculator',
+    brain: 'fa-brain',
+    science: 'fa-flask',
+    sw: 'fa-code'
 };
 
-interface PlayPageProps { }
-
-export const PlayPage: React.FC<PlayPageProps> = () => {
+const PlayPage: React.FC = () => {
     const navigate = useNavigate();
     const { gameId } = useParams();
-    const { t, i18n } = useTranslation();
+    const { t } = useTranslation();
     const { setGameDifficulty, pauseTick, resumeTick, minigameStats } = useNurturing();
 
-    const [selectedCategory, setSelectedCategory] = useState<GameCategory>(() => {
-        return (sessionStorage.getItem('play_category') as GameCategory) || 'math';
+    // -- State --
+    const [activeTab, setActiveTab] = useState<GameCategory>(() => {
+        return (sessionStorage.getItem('play_tab') as GameCategory) || 'math';
     });
-    const [selectedDifficulty, setSelectedDifficulty] = useState<GameDifficulty>(() => {
-        const stored = sessionStorage.getItem('play_difficulty');
-        return stored ? parseInt(stored, 10) as GameDifficulty : 1;
-    });
-    const [isControlsOpen, setIsControlsOpen] = useState(true);
 
-    // Derive active game from URL
+    const [mathMode, setMathMode] = useState<MathMode>(() => {
+        return (sessionStorage.getItem('play_math_mode') as MathMode) || 'adventure';
+    });
+
+    const [selectedOp, setSelectedOp] = useState<Operator>('ADD');
+
     const activeGame = gameId ? getGameById(gameId) : null;
 
-    // Set Game Difficulty when entering Play Page or changing difficulty, unset when leaving
+    // -- Effects --
     useEffect(() => {
-        setGameDifficulty(selectedDifficulty);
-        pauseTick(); // Pause the game loop
+        pauseTick();
+        return () => resumeTick();
+    }, [pauseTick, resumeTick]);
 
-        return () => {
-            setGameDifficulty(null);
-            resumeTick(); // Resume the game loop
-        };
-    }, [setGameDifficulty, selectedDifficulty, pauseTick, resumeTick]);
+    // -- Handlers --
+    const handleTabSelect = (category: GameCategory) => {
+        playButtonSound();
+        setActiveTab(category);
+        sessionStorage.setItem('play_tab', category);
+    };
 
-    // Preload Game Translations ensure titles look correct immediately
-    useEffect(() => {
-        // fishingCountEn and roundCountingEn are imported but better to rely on central en.ts if possible.
-        // However, if we keep this logic, we must use correct keys.
-        i18n.addResourceBundle('en', 'translation', { games: { 'math-fishing-count': fishingCountEn } }, true, true);
-        i18n.addResourceBundle('en', 'translation', { games: { 'math-round-counting': roundCountingEn } }, true, true);
-    }, [i18n]);
-
-    const filteredGames = GAMES.filter(
-        game => game.category === selectedCategory && game.level === selectedDifficulty
-    );
+    const handleMathModeSelect = (mode: MathMode) => {
+        playButtonSound();
+        setMathMode(mode);
+        sessionStorage.setItem('play_math_mode', mode);
+    };
 
     const handleHomeClick = () => {
         playButtonSound();
         navigate('/home');
     };
 
-    const handleToggleControls = () => {
-        playButtonSound();
-        setIsControlsOpen(!isControlsOpen);
-    };
-
-    const handleCategorySelect = (cat: GameCategory) => {
-        playButtonSound();
-        setSelectedCategory(cat);
-        sessionStorage.setItem('play_category', cat);
-    };
-
-    const handleDifficultySelect = (level: GameDifficulty) => {
-        playButtonSound();
-        setSelectedDifficulty(level);
-        sessionStorage.setItem('play_difficulty', level.toString());
-    };
-
     const handlePlayClick = (game: GameManifest, isLocked: boolean, reason?: string) => {
         if (isLocked) {
-            // Optional: Show toast or shake animation
             console.log('Game Locked:', reason);
             return;
         }
         playButtonSound();
+        setGameDifficulty(game.level);
         navigate(`/play/${game.id}`);
     };
 
     const handleExitGame = () => {
+        setGameDifficulty(null);
         navigate('/play');
     };
 
-    // If a game is active, render it full screen
+    // -- Data Filtering --
+    const adventureGames = useMemo(() => {
+        return GAMES.filter(g => g.category === activeTab && g.mode !== 'genius')
+            .sort((a, b) => a.level - b.level);
+    }, [activeTab]);
+
+    const drillGames = useMemo(() => {
+        if (activeTab !== 'math') return [];
+        return GAMES.filter(g => g.category === 'math' && g.mode === 'genius');
+    }, [activeTab]);
+
+    const filteredDrills = useMemo(() => {
+        if (selectedOp === 'ADD') return drillGames.filter(g => g.id.includes('front-addition'));
+        if (selectedOp === 'SUB') return drillGames.filter(g => g.id.includes('front-subtraction'));
+        return [];
+    }, [drillGames, selectedOp]);
+
+    // Drill Stats
+    const drillStats = useMemo(() => {
+        const total = filteredDrills.length;
+        const completed = filteredDrills.filter(g => {
+            const stats = minigameStats?.[g.id];
+            // Simple logic: considered "completed" if played at least once for now, or use mastery logic
+            return stats && stats.playCount > 0;
+        }).length;
+        return { total, completed, percentage: total > 0 ? (completed / total) * 100 : 0 };
+    }, [filteredDrills, minigameStats]);
+
+
+    // -- Render Components --
+
+    const renderDifficultyStars = (level: number) => {
+        return (
+            <div className="difficulty-stars">
+                {[1, 2, 3, 4, 5].map(s => (
+                    <span key={s} className={`star ${s <= level ? 'filled' : 'empty'}`}>
+                        <i className="fas fa-star"></i>
+                    </span>
+                ))}
+            </div>
+        );
+    };
+
+    const renderHeader = () => (
+        <header className="play-header-hub">
+            <div className="header-brand">
+                <div className="brand-icon"><i className="fas fa-gamepad"></i></div>
+                <h1 className="brand-title">Play & Learn</h1>
+            </div>
+            <button className="header-close-btn" onClick={handleHomeClick}><i className="fas fa-xmark"></i></button>
+        </header>
+    );
+
+    const renderBottomNav = () => (
+        <nav className="bottom-nav-hub">
+            {(['math', 'brain', 'science', 'sw'] as GameCategory[]).map(cat => (
+                <button
+                    key={cat}
+                    className={`nav-item-hub ${activeTab === cat ? `active ${cat}` : ''}`}
+                    onClick={() => handleTabSelect(cat)}
+                >
+                    <div className="nav-icon-box">
+                        <i className={`fas ${CATEGORY_ICONS[cat]}`}></i>
+                    </div>
+                    <span className="nav-label-hub">{t(`play.categories.${cat}`)}</span>
+                </button>
+            ))}
+        </nav>
+    );
+
+    // -- Main Content Renderers --
+
+    const renderMathModeSwitcher = () => (
+        <div className="mode-switcher-container">
+            <div className="mode-switcher-pill">
+                <button
+                    className={`mode-btn ${mathMode === 'adventure' ? 'active' : ''}`}
+                    onClick={() => handleMathModeSelect('adventure')}
+                >
+                    <i className={`fas fa-map-marked-alt ${mathMode === 'adventure' ? '' : 'text-slate-300'}`}></i> {t('play.modes.adventure')}
+                </button>
+                <button
+                    className={`mode-btn ${mathMode === 'genius' ? 'active' : ''}`}
+                    onClick={() => handleMathModeSelect('genius')}
+                >
+                    <i className={`fas fa-bolt ${mathMode === 'genius' ? '' : 'text-slate-300'}`}></i> {t('play.modes.genius')}
+                </button>
+            </div>
+        </div>
+    );
+
+    const renderAdventureMode = () => (
+        <div className="section-container">
+            <div className="section-header">
+                <h2 className="section-title">{t('play.sections.funMath.title')}</h2>
+                <p className="section-desc">{t('play.sections.funMath.desc')}</p>
+            </div>
+
+            <div className="game-list">
+                {adventureGames.length > 0 ? (
+                    adventureGames.map(game => {
+                        const stats = minigameStats?.[game.id];
+                        const { unlocked, reason, requiredGame } = isGameUnlocked(game.id, GAMES, { minigameStats });
+                        let displayReason = reason;
+                        if (requiredGame) {
+                            const requiredGameTitle = requiredGame.titleKey ? t(requiredGame.titleKey) : requiredGame.title;
+                            displayReason = t('play.game.unlock.reason', { game: requiredGameTitle });
+                        }
+
+                        // Calculate pseudo-progress (0-100%)
+                        const progress = stats?.playCount ? Math.min(stats.playCount * 10, 100) : 0;
+
+                        return (
+                            <div
+                                key={game.id}
+                                className={`adventure-card ${!unlocked ? 'locked' : ''}`}
+                                onClick={() => handlePlayClick(game, !unlocked, displayReason)}
+                            >
+                                <div className="card-top">
+                                    <div className="card-icon-box" style={{ background: unlocked ? '#eef2ff' : '#f1f5f9' }}>
+                                        {/* Use emoji or thumbnail */}
+                                        {game.thumbnail && typeof game.thumbnail === 'string' && game.thumbnail.startsWith('http') ? (
+                                            <img src={game.thumbnail} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 'inherit' }} />
+                                        ) : (
+                                            game.thumbnail ? <span>{game.thumbnail}</span> : <i className={`fas ${CATEGORY_ICONS[game.category]}`}></i>
+                                        )}
+                                    </div>
+                                    <div className="card-info">
+                                        <div className="card-meta">
+                                            <span className="category-badge">{game.category}</span>
+                                            {renderDifficultyStars(game.level)}
+                                        </div>
+                                        <h3 className="card-title">{game.titleKey ? t(game.titleKey) : game.title}</h3>
+                                        <div className="progress-row">
+                                            <div className="progress-track">
+                                                <div className="progress-fill" style={{ width: `${progress}%` }}></div>
+                                            </div>
+                                            <span className="progress-text">{progress}%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button className="play-quest-btn">
+                                    <i className={`fas ${unlocked ? 'fa-play' : 'fa-lock'}`}></i>
+                                </button>
+                                {/* Locked Overlay for visual feedback if needed, but styling handles opacity */}
+                            </div>
+                        );
+                    })
+                ) : (
+                    <div style={{ textAlign: 'center', padding: '2rem', color: '#9ca3af' }}>🚧 No games found 🚧</div>
+                )}
+            </div>
+        </div>
+    );
+
+    const renderGeniusMode = () => (
+        <div className="section-container">
+            <div className="section-header">
+                <h2 className="section-title">{t('play.sections.genius.title')}</h2>
+                <p className="section-desc">{t('play.sections.genius.desc')}</p>
+            </div>
+
+            {/* Tabs */}
+            <div className="operator-tabs">
+                {(['ADD', 'SUB', 'MUL', 'DIV'] as Operator[]).map(op => (
+                    <button
+                        key={op}
+                        className={`op-tab ${selectedOp === op ? 'active' : ''}`}
+                        onClick={() => setSelectedOp(op)}
+                    >
+                        {op === 'ADD' ? '+' : op === 'SUB' ? '−' : op === 'MUL' ? '×' : '÷'}
+                    </button>
+                ))}
+            </div>
+
+            {/* Dashboard */}
+            <div className="stats-dashboard">
+                <div className="stats-glow"></div>
+                <div className="stats-content">
+                    <div className="stats-label">Drill Progress</div>
+                    <div className="stats-value-box">
+                        <h3 className="stats-big-num">{drillStats.completed}</h3>
+                        <span className="stats-total">/ {drillStats.total} levels</span>
+                    </div>
+                </div>
+                {/* Circular Progress (Simple CSS/SVG) */}
+                <div style={{ position: 'relative', width: '4rem', height: '4rem' }}>
+                    <svg width="64" height="64" viewBox="0 0 64 64" style={{ transform: 'rotate(-90deg)' }}>
+                        <circle cx="32" cy="32" r="28" stroke="#1e293b" strokeWidth="5" fill="none" />
+                        <circle
+                            cx="32" cy="32" r="28"
+                            stroke="#818cf8" strokeWidth="5" fill="none"
+                            strokeDasharray={176}
+                            strokeDashoffset={176 - (176 * drillStats.percentage) / 100}
+                            strokeLinecap="round"
+                        />
+                    </svg>
+                    <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem', fontWeight: '900' }}>
+                        {Math.round(drillStats.percentage)}%
+                    </div>
+                </div>
+            </div>
+
+            {/* List */}
+            <div className="drill-list-path">
+                <div className="path-line"></div>
+                {filteredDrills.length > 0 ? (
+                    filteredDrills.map((game) => {
+                        const stats = minigameStats?.[game.id];
+                        const { unlocked, reason } = isGameUnlocked(game.id, GAMES, { minigameStats });
+                        // In Drill mode, we might want custom unlock logic (sequential), but global usage works too.
+
+                        return (
+                            <div
+                                key={game.id}
+                                className={`drill-item ${unlocked ? 'unlocked' : ''}`}
+                                onClick={() => handlePlayClick(game, !unlocked, reason)}
+                            >
+                                <div className="drill-icon">{game.level}</div>
+                                <div className="drill-info">
+                                    <h4 className="drill-title">
+                                        Level {game.level}
+                                        {/* Optional check icon if mastered */}
+                                    </h4>
+                                    <div className="drill-meta">
+                                        <span className={`meta-tag ${stats?.highScore ? 'best' : 'none'}`}>
+                                            {stats?.highScore ? <><i className="fas fa-stopwatch"></i> {stats.highScore}s</> : 'No Record'}
+                                        </span>
+                                        {/* <span className="meta-tag">Play Count: {stats?.playCount || 0}</span> */}
+                                    </div>
+                                </div>
+                                <div className="drill-action">
+                                    {unlocked ? (
+                                        <div className="action-btn-mini"><i className="fas fa-play"></i></div>
+                                    ) : (
+                                        <span style={{ color: '#cbd5e1' }}><i className="fas fa-lock"></i></span>
+                                    )}
+                                </div>
+                            </div>
+                        );
+                    })
+                ) : (
+                    <div style={{ padding: '2rem', textAlign: 'center', color: '#94a3b8' }}>
+                        Coming Soon...<br /><span style={{ fontSize: '0.8rem' }}>No drills available for this operator yet.</span>
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+
+    const renderSimpleCategoryList = () => (
+        <div className="section-container">
+            <div className="section-header">
+                <h2 className="section-title">{t(`play.categories.${activeTab}`)}</h2>
+                <p className="section-desc">Training modules</p>
+            </div>
+            <div className="game-list">
+                {adventureGames.length > 0 ? (
+                    adventureGames.map(game => {
+                        const stats = minigameStats?.[game.id];
+                        const { unlocked, reason, requiredGame } = isGameUnlocked(game.id, GAMES, { minigameStats });
+                        let displayReason = reason;
+                        if (requiredGame) {
+                            const requiredGameTitle = requiredGame.titleKey ? t(requiredGame.titleKey) : requiredGame.title;
+                            displayReason = t('play.game.unlock.reason', { game: requiredGameTitle });
+                        }
+                        const progress = stats?.playCount ? Math.min(stats.playCount * 10, 100) : 0;
+
+                        return (
+                            <div
+                                key={game.id}
+                                className={`adventure-card ${!unlocked ? 'locked' : ''}`}
+                                onClick={() => handlePlayClick(game, !unlocked, displayReason)}
+                            >
+                                <div className="card-top">
+                                    <div className="card-icon-box" style={{ background: unlocked ? '#eef2ff' : '#f1f5f9' }}>
+                                        {game.thumbnail && typeof game.thumbnail === 'string' && game.thumbnail.startsWith('http') ? (
+                                            <img src={game.thumbnail} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 'inherit' }} />
+                                        ) : (
+                                            game.thumbnail ? <span>{game.thumbnail}</span> : <i className={`fas ${CATEGORY_ICONS[game.category]}`}></i>
+                                        )}
+                                    </div>
+                                    <div className="card-info">
+                                        <div className="card-meta">
+                                            <span className="category-badge">{game.category}</span>
+                                            {renderDifficultyStars(game.level)}
+                                        </div>
+                                        <h3 className="card-title">{game.titleKey ? t(game.titleKey) : game.title}</h3>
+                                        <div className="progress-row">
+                                            <div className="progress-track">
+                                                <div className="progress-fill" style={{ width: `${progress}%` }}></div>
+                                            </div>
+                                            <span className="progress-text">{progress}%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button className="play-quest-btn">
+                                    <i className={`fas ${unlocked ? 'fa-play' : 'fa-lock'}`}></i>
+                                </button>
+                            </div>
+                        );
+                    })
+                ) : (
+                    <div style={{ textAlign: 'center', padding: '2rem', color: '#9ca3af' }}>🚧 Coming Soon 🚧</div>
+                )}
+            </div>
+        </div>
+    );
+
+
+    // -- Main Render --
     if (activeGame) {
         const GameComponent = activeGame.component;
         return (
@@ -107,152 +397,23 @@ export const PlayPage: React.FC<PlayPageProps> = () => {
         );
     }
 
-    // ... (rest of the render function remains the same)
     return (
-        <div className="play-page">
-            <header className="play-header">
-                <h1>🎮 {t('play.title')}</h1>
-                <div className="header-actions" style={{ display: 'flex', gap: '0.5rem' }}>
+        <div className="play-page-container">
+            {renderHeader()}
 
-                    <button className="close-button" onClick={handleHomeClick} aria-label="Close">
-                        ✕
-                    </button>
-                </div>
-            </header>
+            {activeTab === 'math' && renderMathModeSwitcher()}
 
-            <div className="play-content">
-                <div className={`play-controls ${isControlsOpen ? 'open' : 'closed'}`}>
-                    <div className="controls-header" onClick={handleToggleControls}>
-                        <h3>{t('play.controls.title')}</h3>
-                        <button
-                            className="toggle-controls-btn"
-                            title={isControlsOpen ? t('play.controls.collapse') : t('play.controls.expand')}
-                        >
-                            {isControlsOpen ? '🔼' : '🔽'}
-                        </button>
-                    </div>
-
-                    {isControlsOpen && (
-                        <div className="controls-body">
-                            <div className="control-group">
-                                <div className="category-selector">
-                                    {(['math', 'brain'] as GameCategory[]).map(cat => (
-                                        <button
-                                            key={cat}
-                                            className={`category-btn ${selectedCategory === cat ? 'active' : ''}`}
-                                            onClick={() => handleCategorySelect(cat)}
-                                        >
-                                            <span>{CATEGORY_ICONS[cat]}</span>
-                                            {t(`play.categories.${cat}`)}
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-
-                            <div className="control-group">
-                                <h4>{t('play.controls.level')}</h4>
-                                <div className="difficulty-selector">
-                                    {[1, 2, 3, 4, 5].map(level => (
-                                        <button
-                                            key={level}
-                                            className={`difficulty-btn ${selectedDifficulty === (level as GameDifficulty) ? 'active' : ''}`}
-                                            onClick={() => handleDifficultySelect(level as GameDifficulty)}
-                                        >
-                                            ⭐ {level}
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-                        </div>
-                    )}
-                </div>
-
-                <div className="game-grid">
-                    {filteredGames.length > 0 ? (
-                        filteredGames.map(game => {
-                            const stats = minigameStats?.[game.id];
-                            const { unlocked, reason, requiredGame } = isGameUnlocked(game.id, GAMES, { minigameStats });
-
-                            // Generate localized reason
-                            let displayReason = reason;
-                            if (requiredGame) {
-                                const requiredGameTitle = requiredGame.titleKey ? t(requiredGame.titleKey) : requiredGame.title;
-                                displayReason = t('play.game.unlock.reason', { game: requiredGameTitle });
-                            }
-
-                            return (
-                                <div key={game.id} className={`game-card ${!unlocked ? 'locked' : ''}`} onClick={() => handlePlayClick(game, !unlocked, displayReason)}>
-
-                                    {!unlocked && (
-                                        <div className="locked-overlay">
-                                            <div className="lock-icon">🔒</div>
-                                            {displayReason && <div className="lock-reason">{displayReason}</div>}
-                                        </div>
-                                    )}
-
-                                    <div className="game-thumbnail">
-                                        {/* Placeholder for thumbnail logic - prefer image, fallback to emoji */}
-                                        {game.thumbnail ? (
-                                            typeof game.thumbnail === 'string' && game.thumbnail.startsWith('http') ? (
-                                                <img src={game.thumbnail} alt={game.title} style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: unlocked ? 1 : 0.5 }} />
-                                            ) : (
-                                                <div style={{
-                                                    fontSize: '2.5rem',
-                                                    width: '100%',
-                                                    height: '100%',
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    justifyContent: 'center',
-                                                    opacity: unlocked ? 1 : 0.5
-                                                }}>
-                                                    {game.thumbnail}
-                                                </div>
-                                            )
-                                        ) : (
-                                            <span>{CATEGORY_ICONS[game.category]}</span>
-                                        )}
-                                    </div>
-                                    <div className="game-title-group">
-                                        <h3>{game.titleKey ? t(game.titleKey) : game.title}</h3>
-                                        {(game.subtitleKey || game.subtitle) && (
-                                            <div className="game-subtitle">
-                                                {game.subtitleKey ? t(game.subtitleKey) : game.subtitle}
-                                            </div>
-                                        )}
-
-                                        {unlocked ? (
-                                            <div style={{ marginTop: '0.5rem', width: '100%', padding: '0 0.5rem' }}>
-                                                <MasteryBar
-                                                    playCount={stats?.playCount || 0}
-                                                    totalScore={stats?.totalScore || 0}
-                                                    compact
-                                                />
-                                            </div>
-                                        ) : (
-                                            <div style={{
-                                                marginTop: '0.5rem',
-                                                fontSize: '0.75rem',
-                                                color: '#9ca3af',
-                                                textAlign: 'center'
-                                            }}>
-                                                Locked
-                                            </div>
-                                        )}
-                                    </div>
-
-
-                                    <button className="play-btn" disabled={!unlocked}>▶</button>
-                                </div>
-                            )
-                        })
-                    ) : (
-                        <div className="no-games">
-                            <p>🚧 {t('play.game.noGames')} 🚧</p>
-                        </div>
-                    )}
-                </div>
+            <div className="hub-content">
+                {activeTab === 'math' ? (
+                    mathMode === 'adventure' ? renderAdventureMode() : renderGeniusMode()
+                ) : (
+                    renderSimpleCategoryList()
+                )}
             </div>
+
+            {renderBottomNav()}
         </div>
     );
 };
 
+export { PlayPage };

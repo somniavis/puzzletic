@@ -675,6 +675,20 @@ export const ko = {
             collapse: '접기',
             level: '레벨',
         },
+        modes: {
+            adventure: '어드벤처',
+            genius: '지니어스',
+        },
+        sections: {
+            funMath: {
+                title: '펀매쓰',
+                desc: '재미있는 수학 모험',
+            },
+            genius: {
+                title: '지니어스 연산',
+                desc: '스피드 연산 도전',
+            },
+        },
         categories: {
             brain: '두뇌',
             math: '수학',

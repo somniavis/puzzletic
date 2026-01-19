@@ -675,6 +675,20 @@ export const ja = {
             collapse: 'たたむ',
             level: 'レベル',
         },
+        modes: {
+            adventure: 'アドベンチャー',
+            genius: 'ジーニアス',
+        },
+        sections: {
+            funMath: {
+                title: 'ファンマス',
+                desc: '楽しい算数アドベンチャー',
+            },
+            genius: {
+                title: 'ジーニアス計算',
+                desc: 'スピード計算チャレンジ',
+            },
+        },
         categories: {
             brain: '脳トレ',
             math: '算数',

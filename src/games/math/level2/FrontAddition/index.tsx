@@ -373,6 +373,7 @@ export const manifestLv1: GameManifest = {
     titleKey: 'games.frontAddition.lv1.title',
     subtitleKey: 'games.frontAddition.lv1.subtitle',
     descriptionKey: 'games.frontAddition.description',
+    mode: 'genius',
     component: FrontAdditionGame
 };
 
@@ -386,6 +387,7 @@ export const manifestLv2: GameManifest = {
     titleKey: 'games.frontAddition.lv2.title',
     subtitleKey: 'games.frontAddition.lv2.subtitle',
     descriptionKey: 'games.frontAddition.description',
+    mode: 'genius',
     component: FrontAdditionGame
 };
 
@@ -399,6 +401,7 @@ export const manifestLv3: GameManifest = {
     titleKey: 'games.frontAddition.lv3.title',
     subtitleKey: 'games.frontAddition.lv3.subtitle',
     descriptionKey: 'games.frontAddition.description',
+    mode: 'genius',
     component: FrontAdditionGame
 };
 
@@ -412,5 +415,6 @@ export const manifestLv4: GameManifest = {
     titleKey: 'games.frontAddition.lv4.title',
     subtitleKey: 'games.frontAddition.lv4.subtitle',
     descriptionKey: 'games.frontAddition.description',
+    mode: 'genius',
     component: FrontAdditionGame
 };

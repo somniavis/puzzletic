@@ -14,6 +14,8 @@ export interface GameManifest {
     category: GameCategory;
     /** Difficulty level (1-5) */
     level: GameDifficulty;
+    /** Game mode: 'adventure' (default) or 'genius' */
+    mode?: 'adventure' | 'genius';
     /** URL to thumbnail image, emoji string, or React Node */
     thumbnail?: string | ReactNode;
     /** Key for localized title */
