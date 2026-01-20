@@ -746,6 +746,7 @@ export const ko = {
         },
         mission: {
             challenge: '성공 도전! ({{current}}/{{total}})',
+            challenge10: '도전! ({{current}}/{{total}})',
         },
     },
 } as const;

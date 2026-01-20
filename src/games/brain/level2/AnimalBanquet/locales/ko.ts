@@ -3,9 +3,9 @@ export default {
     subtitle: '누가 배가 고플까?',
     description: '밥 먹은 친구를 기억해요! 배고픈 친구에게만 먹이를 주세요.',
     howToPlay: {
-        step1: { title: '음식 매칭', desc: '누가 뭘 좋아할까?' },
-        step2: { title: '올바르게 먹이기', desc: '아래에서 골라요!' },
-        step3: { title: '딱 한 번!', desc: '두 번 주면 안 돼요!' }
+        step1: { title: '음식 매칭', description: '누가 뭘 좋아할까?' },
+        step2: { title: '올바르게 먹이기', description: '아래에서 골라요!' },
+        step3: { title: '딱 한 번!', description: '두 번 주면 안 돼요!' }
     },
     feedback: {
         full: "배불러요! 🤢",

@@ -1,11 +1,11 @@
 export default {
     title: "バランス・スケール",
-    sub: "つりあわせよう！",
-    desc: "ひだりとおなじ重さになるように、みぎのお皿に数字をのせてね。",
+    subtitle: "つりあわせよう！",
+    description: "ひだりとおなじ重さになるように、みぎのお皿に数字をのせてね。",
     howToPlay: {
-        step1: { title: 'はかり確認', desc: '重さはいくつ？' },
-        step2: { title: '２つ足そう', desc: '数字を足して' },
-        step3: { title: 'バランス！', desc: 'つりあわせよう！' }
+        step1: { title: 'はかり確認', description: '重さはいくつ？' },
+        step2: { title: '２つ足そう', description: '数字を足して' },
+        step3: { title: 'バランス！', description: 'つりあわせよう！' }
     },
     powerups: {
         freeze: "じかんストップ - すこし止まってかんがえよう！",

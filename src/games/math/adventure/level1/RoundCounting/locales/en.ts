@@ -1,11 +1,11 @@
 export default {
     title: 'Spin & Spot',
-    sub: 'Catch the Moving Target!',
-    desc: 'Find the target items! The grid shuffles every time you find one.',
+    subtitle: 'Catch the Moving Target!',
+    description: 'Find the target items! The grid shuffles every time you find one.',
     howToPlay: {
-        step1: { title: 'Check Mission', desc: 'How many animals to find?' },
-        step2: { title: 'Spot Them Fast!', desc: 'Click all targets quickly!' },
-        step3: { title: 'Grid Shuffles!', desc: 'Keep finding as it spins!' }
+        step1: { title: 'Check Mission', description: 'How many animals to find?' },
+        step2: { title: 'Spot Them Fast!', description: 'Click all targets quickly!' },
+        step3: { title: 'Grid Shuffles!', description: 'Keep finding as it spins!' }
     },
     target: 'Find {{count}} {{emoji}}',
     shuffleMessage: 'Shuffling!',

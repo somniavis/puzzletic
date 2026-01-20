@@ -1,19 +1,19 @@
 export default {
     title: "Ocean Catch",
-    sub: "Catch & Count!",
-    desc: "Drag the correct sea animals into the net to count them.",
+    subtitle: "Catch & Count!",
+    description: "Drag the correct sea animals into the net to count them.",
     howToPlay: {
         step1: {
             title: "Check Target",
-            desc: "Which sea animal to catch?"
+            description: "Which sea animal to catch?"
         },
         step2: {
             title: "Count Them",
-            desc: "How many do you need?"
+            description: "How many do you need?"
         },
         step3: {
             title: "Catch Correctly!",
-            desc: "Only the right ones!"
+            description: "Only the right ones!"
         }
     }
 };

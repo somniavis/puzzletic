@@ -1,11 +1,11 @@
 export default {
     title: "Deep Dive",
-    sub: "Dive Deeper!",
-    desc: "Solve subtraction problems to help the sea animals dive.",
+    subtitle: "Dive Deeper!",
+    description: "Solve subtraction problems to help the sea animals dive.",
     howToPlay: {
-        step1: { title: "Dive Mission", desc: "How deep today?" },
-        step2: { title: "Find Depth", desc: "Solve the math!" },
-        step3: { title: "Go Down!", desc: "Reach that depth!" }
+        step1: { title: "Dive Mission", description: "How deep today?" },
+        step2: { title: "Find Depth", description: "Solve the math!" },
+        step3: { title: "Go Down!", description: "Reach that depth!" }
     },
     powerups: {
         timeFreeze: "Freeze Time",

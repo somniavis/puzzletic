@@ -5,15 +5,15 @@ export default {
     instructions: {
         step1: {
             title: "UFO Alert!",
-            desc: "They're coming down!"
+            description: "They're coming down!"
         },
         step2: {
             title: "Solve Fast",
-            desc: "Calculate the answer"
+            description: "Calculate the answer"
         },
         step3: {
             title: "Zap It!",
-            desc: "Fire at the answer!"
+            description: "Fire at the answer!"
         }
     }
 };

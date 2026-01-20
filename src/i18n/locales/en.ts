@@ -745,6 +745,7 @@ export const en = {
     },
     mission: {
       challenge: 'Challenge! ({{current}}/{{total}})',
+      challenge10: 'Challenge! ({{current}}/{{total}})',
     },
   },
 } as const;

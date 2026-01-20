@@ -20,15 +20,15 @@ export default {
         title: '遊び方',
         step1: {
             title: '十の位を引く',
-            desc: '十の位を上から下に引きます。'
+            description: '十の位を上から下に引きます。'
         },
         step2: {
             title: '一の位を引く',
-            desc: '次に一の位を上から下に引きます。'
+            description: '次に一の位を上から下に引きます。'
         },
         step3: {
             title: '答えを完成',
-            desc: '求めた値を計算します。'
+            description: '求めた値を計算します。'
         }
     }
 };

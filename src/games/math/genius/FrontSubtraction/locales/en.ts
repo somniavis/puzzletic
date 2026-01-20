@@ -20,15 +20,15 @@ export default {
         title: 'How to Play',
         step1: {
             title: 'Subtract Tens',
-            desc: 'Subtract the tens column from top to bottom.'
+            description: 'Subtract the tens column from top to bottom.'
         },
         step2: {
             title: 'Subtract Units',
-            desc: 'Then subtract the units column from top to bottom.'
+            description: 'Then subtract the units column from top to bottom.'
         },
         step3: {
             title: 'Total',
-            desc: 'Combine the results from top to bottom to finish.'
+            description: 'Combine the results from top to bottom to finish.'
         }
     }
 };

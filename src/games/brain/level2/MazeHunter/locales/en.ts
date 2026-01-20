@@ -5,15 +5,15 @@ export default {
     howToPlay: {
         step1: {
             title: 'Track Prints',
-            desc: 'Find all pawprints!',
+            description: 'Find all pawprints!',
         },
         step2: {
             title: 'Collect All',
-            desc: 'Must get every one!',
+            description: 'Must get every one!',
         },
         step3: {
             title: 'Hunt Down!',
-            desc: 'Now reach the animal!',
+            description: 'Now reach the animal!',
         },
     },
 };

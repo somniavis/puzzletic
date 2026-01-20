@@ -1,11 +1,11 @@
 export default {
     title: "Perfect Balance",
-    sub: "Make it Even!",
-    desc: "Drag two numbers to the right scale to match the target weight on the left.",
+    subtitle: "Make it Even!",
+    description: "Drag two numbers to the right scale to match the target weight on the left.",
     howToPlay: {
-        step1: { title: "Check Scale", desc: "What's the target weight?" },
-        step2: { title: "Add Two", desc: "Drag two numbers" },
-        step3: { title: "Balance!", desc: "Make both sides equal!" }
+        step1: { title: "Check Scale", description: "What's the target weight?" },
+        step2: { title: "Add Two", description: "Drag two numbers" },
+        step3: { title: "Balance!", description: "Make both sides equal!" }
     },
     powerups: {
         freeze: "Time Freeze - Stop the timer temporarily!",

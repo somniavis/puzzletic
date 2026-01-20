@@ -5,15 +5,15 @@ export default {
     howToPlay: {
         step1: {
             title: 'Find Camp',
-            desc: 'Help Jello get home!'
+            description: 'Help Jello get home!'
         },
         step2: {
             title: 'Draw Route',
-            desc: 'Plan your path!'
+            description: 'Plan your path!'
         },
         step3: {
             title: 'Watch Out!',
-            desc: "Don't hit obstacles!"
+            description: "Don't hit obstacles!"
         },
     },
 };

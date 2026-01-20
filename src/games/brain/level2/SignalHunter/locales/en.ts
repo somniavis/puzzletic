@@ -6,15 +6,15 @@ export default {
     howToPlay: {
         step1: {
             title: "See Target",
-            desc: "What to catch?"
+            description: "What to catch?"
         },
         step2: {
             title: "Watch Radar",
-            desc: "Needle is spinning!"
+            description: "Needle is spinning!"
         },
         step3: {
             title: "Tap Now!",
-            desc: "Hit at the right time!"
+            description: "Hit at the right time!"
         }
     }
 };

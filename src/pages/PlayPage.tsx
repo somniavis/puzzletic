@@ -364,6 +364,8 @@ const PlayPage: React.FC = () => {
                     filteredDrills.map((game) => {
                         const stats = minigameStats?.[game.id];
                         const { unlocked, reason } = isGameUnlocked(game.id, GAMES, { minigameStats });
+                        const playCount = stats?.playCount || 0;
+                        const isMastered = playCount >= 10;
                         // In Drill mode, we might want custom unlock logic (sequential), but global usage works too.
 
                         return (
@@ -372,19 +374,41 @@ const PlayPage: React.FC = () => {
                                 className={`drill-item ${unlocked ? 'unlocked' : ''}`}
                                 onClick={() => handlePlayClick(game, !unlocked, reason)}
                             >
-                                <div className="drill-icon">{game.level}</div>
+                                <div className="drill-icon">
+                                    {isMastered ? (
+                                        <span style={{ fontSize: '1.5rem' }}>🏅</span>
+                                    ) : (
+                                        game.thumbnail && typeof game.thumbnail === 'string' && game.thumbnail.startsWith('http') ? (
+                                            <img src={game.thumbnail} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                        ) : (
+                                            game.thumbnail || game.level
+                                        )
+                                    )}
+                                </div>
                                 <div className="drill-info">
                                     <h4 className="drill-title">
-                                        Level {game.level}
-                                        {/* Optional check icon if mastered */}
+                                        {game.titleKey ? t(game.titleKey) : game.title}
                                     </h4>
                                     <div className="drill-meta">
-                                        <span className={`meta-tag ${stats?.highScore ? 'best' : 'none'}`}>
-                                            {stats?.highScore ? <><i className="fas fa-stopwatch"></i> {stats.highScore}s</> : 'No Record'}
+                                        <span
+                                            style={{
+                                                fontSize: '0.85rem',
+                                                display: 'block',
+                                                marginBottom: '0.25rem',
+                                                color: playCount > 0 && !isMastered ? '#94a3b8' : '#64748b', // Slate-400 (Challenge) or Slate-500 (Default)
+                                                fontStyle: playCount > 0 && !isMastered ? 'italic' : 'normal',
+                                                fontWeight: playCount > 0 && !isMastered ? 'bold' : 'normal'
+                                            }}
+                                        >
+                                            {(() => {
+                                                if (playCount === 0) return game.subtitleKey ? t(game.subtitleKey, game.subtitle || '') : (game.subtitle || '');
+                                                if (!isMastered) return t('games.mission.challenge10', { current: playCount, total: 10 });
+                                                return game.subtitleKey ? t(game.subtitleKey, game.subtitle || '') : (game.subtitle || '');
+                                            })()}
                                         </span>
-                                        {/* <span className="meta-tag">Play Count: {stats?.playCount || 0}</span> */}
                                     </div>
                                 </div>
+
                                 <div className="drill-action">
                                     {unlocked ? (
                                         <div className="action-btn-mini"><i className="fas fa-play"></i></div>
@@ -393,6 +417,7 @@ const PlayPage: React.FC = () => {
                                     )}
                                 </div>
                             </div>
+
                         );
                     })
                 ) : (
@@ -400,8 +425,8 @@ const PlayPage: React.FC = () => {
                         Coming Soon...<br /><span style={{ fontSize: '0.8rem' }}>No drills available for this operator yet.</span>
                     </div>
                 )}
-            </div>
-        </div>
+            </div >
+        </div >
     );
 
     const renderSimpleCategoryList = () => (

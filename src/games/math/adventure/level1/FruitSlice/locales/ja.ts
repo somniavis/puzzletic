@@ -1,11 +1,11 @@
 const manifest = {
     title: "フルーツ・カット",
-    sub: "せいかいをきろう！",
-    desc: "すぎの数字はなにかな？ せいかいのフルーツをきってね！",
+    subtitle: "せいかいをきろう！",
+    description: "すぎの数字はなにかな？ せいかいのフルーツをきってね！",
     howToPlay: {
-        step1: { title: 'レシピ確認', desc: '必要なフルーツは？' },
-        step2: { title: 'ナイフ選択', desc: '合うナイフを選ぼう' },
-        step3: { title: 'チョキチョキ！', desc: '美味しく切ろう！' }
+        step1: { title: 'レシピ確認', description: '必要なフルーツは？' },
+        step2: { title: 'ナイフ選択', description: '合うナイフを選ぼう' },
+        step3: { title: 'チョキチョキ！', description: '美味しく切ろう！' }
     },
     powerups: {
         freeze: "じかんストップ",
