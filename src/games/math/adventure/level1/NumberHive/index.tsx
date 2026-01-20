@@ -1,11 +1,11 @@
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Layout3 } from '../../../layouts/Standard/Layout3';
+import { Layout3 } from '../../../../layouts/Standard/Layout3';
 import { useNumberHiveLogic } from './GameLogic';
 import manifest_en from './locales/en';
 import './NumberHive.css';
-import type { GameManifest } from '../../../types';
-import type { PowerUpBtnProps } from '../../../../components/Game/PowerUpBtn';
+import type { GameManifest } from '../../../../types';
+import type { PowerUpBtnProps } from '../../../../../components/Game/PowerUpBtn';
 
 interface NumberHiveProps {
     onExit: () => void;

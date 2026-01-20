@@ -1,11 +1,11 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Layout3 } from '../../../layouts/Standard/Layout3';
+import { Layout3 } from '../../../../layouts/Standard/Layout3';
 import { useFishingCountLogic } from './GameLogic';
 import { FishingBackground } from './FishingBackground';
 import manifest_en from './locales/en';
 import './FishingCount.css';
-import type { GameManifest } from '../../../types';
+import type { GameManifest } from '../../../../types';
 
 interface FishingCountProps {
     onExit: () => void;

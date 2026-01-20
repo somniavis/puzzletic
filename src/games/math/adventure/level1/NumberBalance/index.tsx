@@ -1,15 +1,15 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Layout2 } from '../../../layouts/Standard/Layout2';
+import { Layout2 } from '../../../../layouts/Standard/Layout2';
 import { useNumberBalanceLogic } from './GameLogic';
 import type { NumberItem } from './GameLogic';
-import { BlobBackground } from '../../components/BlobBackground';
+import { BlobBackground } from '../../../components/BlobBackground';
 
 import manifest_en from './locales/en';
 import './NumberBalance.css';
 
-import type { GameManifest } from '../../../types';
-import type { PowerUpBtnProps } from '../../../../components/Game/PowerUpBtn';
+import type { GameManifest } from '../../../../types';
+import type { PowerUpBtnProps } from '../../../../../components/Game/PowerUpBtn';
 
 interface NumberBalanceProps {
     onExit: () => void;

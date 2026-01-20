@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { useGameEngine } from '../../../layouts/Standard/Layout0/useGameEngine';
+import { useGameEngine } from '../../../../layouts/Standard/Layout0/useGameEngine';
 import { TEN_FRAME_COUNT_CONSTANTS, TEN_FRAME_COUNT_EMOJIS } from './constants';
 import type { TenFrameCountState } from './types';
 

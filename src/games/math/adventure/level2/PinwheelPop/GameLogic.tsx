@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { useGameEngine } from '../../../layouts/Standard/Layout0/useGameEngine'; // Generic engine
+import { useGameEngine } from '../../../../layouts/Standard/Layout0/useGameEngine'; // Generic engine
 import { PINWHEEL_POP_CONSTANTS as CONSTS } from './constants';
 
 export type PinwheelProblemType = 'tens_ones_add' | 'tens_tens_add';

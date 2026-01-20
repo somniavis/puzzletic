@@ -1,13 +1,13 @@
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Layout3 } from '../../../layouts/Standard/Layout3';
+import { Layout3 } from '../../../../layouts/Standard/Layout3';
 import { useRoundCountingLogic } from './GameLogic';
 import manifest_en from './locales/en';
 
 import './RoundCounting.css';
-import { BlobBackground } from '../../components/BlobBackground';
-import type { GameManifest } from '../../../types';
-import type { PowerUpBtnProps } from '../../../../components/Game/PowerUpBtn';
+import { BlobBackground } from '../../../components/BlobBackground';
+import type { GameManifest } from '../../../../types';
+import type { PowerUpBtnProps } from '../../../../../components/Game/PowerUpBtn';
 
 interface RoundCountingProps {
     onExit: () => void;

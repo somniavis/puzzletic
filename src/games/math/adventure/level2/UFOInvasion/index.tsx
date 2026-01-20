@@ -2,9 +2,9 @@
 import { useNavigate } from 'react-router-dom';
 import { useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Layout3 } from '../../../layouts/Standard/Layout3/index';
-import { useGameEngine } from '../../../layouts/Standard/Layout0/useGameEngine';
-import type { PowerUpBtnProps } from '../../../../components/Game/PowerUpBtn';
+import { Layout3 } from '../../../../layouts/Standard/Layout3/index';
+import { useGameEngine } from '../../../../layouts/Standard/Layout0/useGameEngine';
+import type { PowerUpBtnProps } from '../../../../../components/Game/PowerUpBtn';
 
 import styles from './UFO.module.css';
 import { useUFOInvasionLogic } from './GameLogic';

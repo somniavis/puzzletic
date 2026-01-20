@@ -1,10 +1,10 @@
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Layout1 } from '../../../layouts/Standard/Layout1';
+import { Layout1 } from '../../../../layouts/Standard/Layout1';
 import { useTenFrameCountLogic } from './GameLogic';
 import manifest_en from './locales/en';
 import './TenFrameCount.css';
-import type { GameManifest } from '../../../types';
+import type { GameManifest } from '../../../../types';
 
 interface TenFrameCountProps {
     onExit: () => void;

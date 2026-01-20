@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { playButtonSound } from '../../../../utils/sound';
+import { playButtonSound } from '../../../../../utils/sound';
 
 export interface Animal {
     id: number;

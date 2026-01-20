@@ -1,12 +1,12 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Layout3 } from '../../../layouts/Standard/Layout3';
+import { Layout3 } from '../../../../layouts/Standard/Layout3';
 import { useDeepSeaLogic } from './GameLogic';
-import { DeepSeaBackground } from '../../components/DeepSeaBackground';
+import { DeepSeaBackground } from '../../../components/DeepSeaBackground';
 import manifest_en from './locales/en';
 import './DeepSeaDive.css';
-import type { GameManifest } from '../../../types';
-import type { PowerUpBtnProps } from '../../../../components/Game/PowerUpBtn';
+import type { GameManifest } from '../../../../types';
+import type { PowerUpBtnProps } from '../../../../../components/Game/PowerUpBtn';
 
 interface DeepSeaDiveProps {
     onExit: () => void;
