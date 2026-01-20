@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import './PlayPage.css';
@@ -431,7 +431,14 @@ const PlayPage: React.FC = () => {
         const GameComponent = activeGame.component;
         return (
             <div className="game-wrapper">
-                <GameComponent onExit={handleExitGame} gameId={activeGame.id} />
+                <Suspense fallback={
+                    <div className="game-loading">
+                        <div className="loading-spinner">⏳</div>
+                        <p>Loading game...</p>
+                    </div>
+                }>
+                    <GameComponent onExit={handleExitGame} gameId={activeGame.id} />
+                </Suspense>
             </div>
         );
     }

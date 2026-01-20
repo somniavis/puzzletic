@@ -213,7 +213,7 @@ const Tile = ({ val, type = 'static', active = false, isFeedback = false, feedba
 };
 
 // Update component to accept gameId
-const FrontSubtractionGame: React.FC<{ onExit: () => void, gameId?: string }> = ({ onExit, gameId }) => {
+export const FrontSubtractionGame: React.FC<{ onExit: () => void, gameId?: string }> = ({ onExit, gameId }) => {
     const { t } = useTranslation();
     const engine = useGameEngine({
         initialLives: 3,

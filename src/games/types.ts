@@ -1,7 +1,13 @@
-import type { ComponentType, ReactNode } from 'react';
+import type { ComponentType, ReactNode, LazyExoticComponent } from 'react';
 
 export type GameDifficulty = 1 | 2 | 3 | 4 | 5;
 export type GameCategory = 'brain' | 'math' | 'science' | 'sw';
+
+// Game component props
+export interface GameComponentProps {
+    onExit: () => void;
+    gameId?: string;
+}
 
 export interface GameManifest {
     /** Unique identifier for the game (e.g., 'math-level1-simple') */
@@ -26,6 +32,6 @@ export interface GameManifest {
     subtitleKey?: string;
     /** Key for localized description */
     descriptionKey?: string;
-    /** The main component to render when the game is played */
-    component: ComponentType<{ onExit: () => void; gameId?: string }>;
+    /** The main component to render when the game is played (supports lazy loading) */
+    component: ComponentType<GameComponentProps> | LazyExoticComponent<ComponentType<GameComponentProps>>;
 }
