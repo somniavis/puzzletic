@@ -260,6 +260,16 @@ interface NurturingPersistentState {
     ```
 - **효과**: 동기화 시 데이터 유실 방지와 유효한 초기화(Reset)를 동시에 지원
 
+### 3-2. 변경 기반 동기화 최소화 (Dirty Check - 2026.01.21)
+- **문제**: 유저가 아무 활동도 하지 않고 방치(Idle)해도 15분마다 클라우드 데이터 저장을 시도하여 서버 비용 낭비
+- **해결**: `lastSyncedStateRef`를 도입하여 마지막 성공 저장 시점의 상태 스냅샷 보유
+    - **Auto-Save**: `JSON.stringify(currentState) === lastSyncedStateRef` 이면 동기화 전송 Skip
+    - **Manual Save**: 수동 저장 성공 시에도 `lastSyncedStateRef`를 갱신하여, 직후 자동 저장이 중복 발생하지 않도록 처리
+- **효과**:
+    - **트래픽 절감**: 방치형 플레이어나 단순 조회 유저의 불필요한 네트워크 요청 100% 제거
+    - **서버 부하 감소**: 실질적인 데이터 변경 시에만 쓰기 작업 수행
+
+
 ### 4. 카테고리 기반 진행도 저장 (Category-Based Progression)
 - **문제**: 모든 게임의 개별 통계(`minigameStats`)를 저장하면 게임 수 증가에 따라 데이터가 비대해짐
 - **해결**: `categoryProgress` 필드 도입 - 카테고리별로 "도달한 게임 ID"만 저장

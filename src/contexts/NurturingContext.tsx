@@ -246,16 +246,12 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     console.log('☁️ Fetching cloud data for user:', user.uid);
     fetchUserData(user).then((result) => {
       // DEBUG LOGS
-      console.log('☁️ [DEBUG] Cloud Fetch Success:', result.success);
       if (result.success && result.data) {
-        const rawData = result.data.gameData || result.data.game_data;
-        try {
-          const parsed = typeof rawData === 'string' ? JSON.parse(rawData) : rawData;
-          console.log('☁️ [DEBUG] Cloud categoryProgress:', JSON.stringify(parsed?.categoryProgress));
-        } catch (e) { console.log('☁️ [DEBUG] Parse Error during log check'); }
+        // Proceed with parsing...
       } else {
-        console.log('☁️ [DEBUG] No Cloud State received (New User or Error).');
+        // No valid data
       }
+
 
       if (!result.success) {
         if (result.notFound) {
@@ -385,6 +381,11 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
       }
 
       setState(restoredState);
+
+      // Initialize lastSyncedStateRef with the data we just loaded/restored
+      /// to prevent immediate auto-save if nothing changes
+      lastSyncedStateRef.current = JSON.stringify(restoredState);
+
       // saveNurturingState(restoredState); // Handled by throttle
     }).finally(() => {
       // ALWAYS finish loading state regardless of outcome
@@ -393,6 +394,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
   }, [user]);
 
   // Keep state ref for event handlers (if needed for timer)
+  const lastSyncedStateRef = useRef<string | null>(null);
   const stateRef = useRef(state);
   useEffect(() => {
     stateRef.current = state;
@@ -408,7 +410,20 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     const timer = setInterval(() => {
       // Use ref to avoid resetting timer on state change
       if (stateRef.current) {
-        syncUserData(user, stateRef.current);
+        const currentStateStr = JSON.stringify(stateRef.current);
+
+        // Dirty Check: Skip sync if state hasn't changed since last sync
+        if (lastSyncedStateRef.current === currentStateStr) {
+          console.log('☁️ Auto-save skipped: No changes detected.');
+          return;
+        }
+
+        console.log('☁️ Auto-save triggered: Changes detected.');
+        syncUserData(user, stateRef.current).then(success => {
+          if (success) {
+            lastSyncedStateRef.current = currentStateStr;
+          }
+        });
       }
     }, AUTO_SAVE_INTERVAL);
 
@@ -422,9 +437,13 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     // DEBUG LOGS
     const safeState = stateRef.current; // Use Ref to ensure freshness
     console.log('☁️ [DEBUG] Manual Save Triggered.');
-    console.log('☁️ [DEBUG] Sending categoryProgress:', JSON.stringify(safeState.categoryProgress));
 
-    return await syncUserData(user, safeState);
+    // Optimistic: Update ref immediately? No, wait for success.
+    const success = await syncUserData(user, safeState);
+    if (success) {
+      lastSyncedStateRef.current = JSON.stringify(safeState);
+    }
+    return success;
   }, [user]); // Removed state dependency since we use valid ref
 
   // ... existing code ...
@@ -610,8 +629,10 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
         totalMinigamePlayCount: (currentState.totalMinigamePlayCount || 0) + 1
       };
 
-      // saveNurturingState(newState); // Handled by throttle
-      // No immediate cloud sync: Rely on auto-sync interval
+      // Force Immediate Save to Local Storage (Critical for progression)
+      // This prevents data loss if user refreshes immediately after game end
+      saveNurturingState(newState, user?.uid);
+
       return newState;
     });
   }, []);
