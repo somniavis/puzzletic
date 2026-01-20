@@ -53,7 +53,7 @@ import {
 } from '../services/actionService';
 import { addXPAndCheckEvolution } from '../services/evolutionService';
 import { POOP_CONFIG } from '../constants/nurturing';
-import { updateCategoryProgress } from '../utils/progression';
+import { updateCategoryProgress, recalculateCategoryProgress } from '../utils/progression';
 import type { Poop } from '../types/nurturing';
 
 interface NurturingContextValue {
@@ -125,6 +125,9 @@ interface NurturingContextValue {
   isSleeping: boolean;
   currentHouseId: string;
   toggleSleep: () => void;
+
+  // Global Loading State (for initial sync)
+  isGlobalLoading: boolean;
 }
 
 const NurturingContext = createContext<NurturingContextValue | undefined>(undefined);
@@ -152,6 +155,9 @@ interface SubscriptionState {
 
 export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }) => {
   const { user } = useAuth(); // Import user from AuthContext
+
+  // Global Loading State
+  const [isGlobalLoading, setIsGlobalLoading] = useState(true);
 
   // 상태
   const [state, setState] = useState<NurturingPersistentState>(() => {
@@ -196,6 +202,14 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
   useEffect(() => {
     setCurrentUserId(user?.uid || null);
 
+    // reset global loading when user changes (will trigger new fetch)
+    if (user?.uid) {
+      setIsGlobalLoading(true);
+    } else {
+      // If no user (logout), we are "done" loading (guest mode active)
+      setIsGlobalLoading(false);
+    }
+
     // When user changes, reload their data
     if (user?.uid) {
       console.log('🔄 User changed, loading user-specific data for:', user.uid);
@@ -214,158 +228,35 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
       // saveNurturingState removed
     }
   }, [user?.uid]);
-
-  // ==================== PERSISTENCE THROTTLING ====================
-  const lastSaveTimeRef = useRef<number>(Date.now());
-  const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  useEffect(() => {
-    // 1. Update Reference for async access
-    stateRef.current = state;
-
-    const THROTTLE_MS = 5000;
-    const now = Date.now();
-    const timeSinceLast = now - lastSaveTimeRef.current;
-
-    const doSave = () => {
-      if (stateRef.current) {
-        saveNurturingState(stateRef.current); // Use global currentUserId
-        lastSaveTimeRef.current = Date.now();
-        saveTimeoutRef.current = null;
-        // console.log('💾 Throttled save executed');
-      }
-    };
-
-    // 2. Throttle Logic
-    if (timeSinceLast >= THROTTLE_MS) {
-      // Immediate Execution
-      if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
-      doSave();
-    } else {
-      // Schedule (if not already scheduled)
-      if (!saveTimeoutRef.current) {
-        saveTimeoutRef.current = setTimeout(doSave, THROTTLE_MS - timeSinceLast);
-      }
-    }
-
-    // Safety: Save on unload
-    const handleUnload = () => doSave();
-    window.addEventListener('beforeunload', handleUnload);
-    return () => window.removeEventListener('beforeunload', handleUnload);
-
-  }, [state]); // Run on every state change
-
-  // Evolution Animation State (Transient)
-  const [isEvolving, setIsEvolving] = useState(false);
-
-  const completeEvolutionAnimation = useCallback(() => {
-    setState(currentState => {
-      const newState = {
-        ...currentState,
-        lastSeenStage: currentState.evolutionStage
-      };
-
-      // Emergency Persistence: Save to independent key
-      saveFailSafeLastSeenStage(currentState.evolutionStage);
-
-      // saveNurturingState(newState); // Handled by throttle
-      // Essential: immediate cloud save to lock in this milestone (Evolution)
-      if (user) {
-        console.log('☁️ Evolution milestone reached. Syncing to cloud...');
-        syncUserData(user, newState);
-      }
-      return newState;
-    });
-    setIsEvolving(false);
-  }, [user]);
-
-  // Graduation Animation State
-  const [isGraduating, setIsGraduating] = useState(false);
-
-  // Import persistence functions needed
-  // Note: They are already imported at top? No, check imports.
-  // We need saveToHallOfFame and startNewGeneration from ../services/persistenceService
-
-  const completeGraduationAnimation = useCallback((name: string) => {
-    // 1. Create Hall Of Fame Entry
-    const entry: import('../types/nurturing').HallOfFameEntry = {
-      id: Date.now().toString(),
-      name: name || 'Jello',
-      speciesId: state.speciesId || 'yellowJello',
-      finalStage: state.evolutionStage || 4,
-      graduatedAt: Date.now(),
-      finalStats: state.stats
-    };
-
-    // 2. Save Entry to Persistent Storage
-    // We use functional update pattern or direct calls if state is current
-
-    // We need to import these functions if not available
-
-    let nextState = saveToHallOfFame(state, entry);
-
-    // 3. Reset Game (Soft Reset)
-    nextState = startNewGeneration(nextState);
-
-    // 4. Update State
-    setState(nextState);
-    setIsGraduating(false);
-    setIsEvolving(false); // Force clear any pending evolution animation (e.g. from debug trigger)
-  }, [state]);
-
-  // Effect to separate Evolution triggering from State logic
-  // This ensures animation triggers whenever stage increases, regardless of source (game, debug, sync?)
-  // Note: Sync might cause issues if syncing a higher level account. 
-  // We might want to skip animation on initial load/sync. 
-  // Initial load is handled by `prevStageRef` initializing with current state.
-
-  // Effect to separate Evolution triggering from State logic
-  // This ensures animation triggers whenever stage increases beyond what was last seen
-  // Effect to separate Evolution triggering from State logic
-  // This ensures animation triggers whenever stage increases beyond what was last seen
-  useEffect(() => {
-    const current = state.evolutionStage || 1;
-
-    // Robust Persistence Check:
-    // 1. Check State (Primary)
-    // 2. Check Independent Storage (Fail-safe for "Loop on Refresh" bug)
-    let lastSeen = state.lastSeenStage;
-
-    const failSafeStored = getFailSafeLastSeenStage();
-
-    if (lastSeen === undefined) {
-      if (failSafeStored !== null) {
-        lastSeen = failSafeStored;
-      } else {
-        // Fallback: assume current stage is seen if nothing overrides it (migration)
-        lastSeen = current;
-      }
-    } else {
-      // Even if state has it, check if local storage has a HIGHER value (more recent)
-      if (failSafeStored !== null && failSafeStored > lastSeen) {
-        lastSeen = failSafeStored;
-      }
-    }
-
-    // Force update state if we found a better value in local storage
-    if (lastSeen !== state.lastSeenStage && lastSeen !== undefined) {
-      // We can't setState here easily without causing loop, but we can prevent animation
-    }
-
-    if (current > lastSeen) {
-      console.log(`✨ Evolution detected! Stage ${lastSeen} -> ${current}`);
-      setIsEvolving(true);
-    }
-  }, [state.evolutionStage, state.lastSeenStage]);
+  // ... (previous useEffects) ...
 
   // ==================== HYBRID STORAGE: Cloud Sync on Login ====================
   // On login: D1 data is trusted and overwrites localStorage
   // This ensures cross-device consistency
   useEffect(() => {
-    if (!user) return;
+    if (!user) {
+      // Ensure loading is false if no user
+      setIsGlobalLoading(false);
+      return;
+    }
+
+    // Force loading true at start of sync attempt
+    setIsGlobalLoading(true);
 
     console.log('☁️ Fetching cloud data for user:', user.uid);
     fetchUserData(user).then((result) => {
+      // DEBUG LOGS
+      console.log('☁️ [DEBUG] Cloud Fetch Success:', result.success);
+      if (result.success && result.data) {
+        const rawData = result.data.gameData || result.data.game_data;
+        try {
+          const parsed = typeof rawData === 'string' ? JSON.parse(rawData) : rawData;
+          console.log('☁️ [DEBUG] Cloud categoryProgress:', JSON.stringify(parsed?.categoryProgress));
+        } catch (e) { console.log('☁️ [DEBUG] Parse Error during log check'); }
+      } else {
+        console.log('☁️ [DEBUG] No Cloud State received (New User or Error).');
+      }
+
       if (!result.success) {
         if (result.notFound) {
           // New user: no cloud data exists
@@ -404,19 +295,19 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
         });
       }
 
-      let fullState = cloudData.gameData || cloudData.game_data;
+      let parsedGameData = cloudData.gameData || cloudData.game_data;
 
       // Handle JSON string (D1 returns string)
-      if (typeof fullState === 'string') {
+      if (typeof parsedGameData === 'string') {
         try {
-          fullState = JSON.parse(fullState);
+          parsedGameData = JSON.parse(parsedGameData);
         } catch (e) {
           console.error('Failed to parse game_data:', e);
           return;
         }
       }
 
-      if (!fullState || typeof fullState !== 'object') {
+      if (!parsedGameData || typeof parsedGameData !== 'object') {
         console.warn('☁️ Invalid game_data, keeping local state');
         return;
       }
@@ -426,7 +317,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
       // Smart Sync: Compare local vs cloud timestamps
       // If local data is significantly newer (e.g. > 1 minute), keep local and push to cloud
       // This prevents "Return to Previous" issues on refresh/cross-device
-      const cloudTime = fullState.lastActiveTime || 0;
+      const cloudTime = parsedGameData.lastActiveTime || 0;
       const localTime = stateRef.current.lastActiveTime || 0;
 
       // Use a tolerance of 5 seconds to avoid clock skew issues, but prefer stricter check if needed
@@ -448,25 +339,56 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
 
       console.log('☁️ Cloud data is newer or consistent. Restoring from cloud.');
 
-      // Trust cloud data: overwrite localStorage
-      // Use createDefaultState() as a base to ensure new fields (like unlockedJellos) are present even if missing in cloud data
+      // Use createDefaultState() as a base to ensure new fields are present
+      const defaultState = createDefaultState();
+
       const restoredState: NurturingPersistentState = {
-        ...createDefaultState(),
-        ...fullState,
+        ...defaultState,
+        ...parsedGameData,
         // Ensure lastActiveTime is updated to now if we just pulled it
         lastActiveTime: Date.now(),
       };
 
+      // Critical: Merge categoryProgress to prevent data loss on sync
+      // FIX (Smart Merge): Only patch if Cloud is TRULY missing the key (Legacy Data)
+      // If Cloud has {}, it means "User Reset" or "New User" -> Respect it (Don't resurrect Zombie Data)
+      // If Cloud has undefined, it means "Old Schema" -> Keep Local Data
+
+      // Critical: Merge categoryProgress to prevent data loss on sync
+      // FIX 2 (Reconciliation): Recalculate based on minigameStats to ensure Source of Truth
+      // This protects against "Reset after Refresh" if categoryProgress was lost but stats exist.
+      if (parsedGameData.minigameStats) {
+        const reconciledProgress = recalculateCategoryProgress(parsedGameData.minigameStats);
+        console.log('☁️ [DEBUG] Reconciled Progress from Stats:', JSON.stringify(reconciledProgress));
+
+        restoredState.categoryProgress = {
+          ...(parsedGameData.categoryProgress || {}),
+          ...reconciledProgress,
+        };
+      } else {
+        restoredState.categoryProgress = parsedGameData.categoryProgress || {};
+      }
+
+      // Legacy Safety: If result is still empty/null, fall back to Local
+      // (Only relevant if minigameStats was also missing)
+      if (!restoredState.categoryProgress || Object.keys(restoredState.categoryProgress).length === 0) {
+        if (stateRef.current.categoryProgress && Object.keys(stateRef.current.categoryProgress).length > 0) {
+          console.log('☁️ Legacy Cloud Data detected (Missing categoryProgress). Merging Local Progress.');
+          restoredState.categoryProgress = { ...stateRef.current.categoryProgress };
+        }
+      }
+
+
       // Ensure lastSeenStage logic is consistent with evolutionStage
-      // Ensure lastSeenStage logic is consistent with evolutionStage
-      // If cloud is missing lastSeenStage (legacy), assume it's same as stats (already seen)
-      // explicit check on fullState because createDefaultState() injects '1' which might be wrong for high level legacy users
-      if (fullState.lastSeenStage === undefined) {
+      if (parsedGameData.lastSeenStage === undefined) {
         restoredState.lastSeenStage = restoredState.evolutionStage;
       }
 
       setState(restoredState);
       // saveNurturingState(restoredState); // Handled by throttle
+    }).finally(() => {
+      // ALWAYS finish loading state regardless of outcome
+      setIsGlobalLoading(false);
     });
   }, [user]);
 
@@ -496,9 +418,14 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
   // Manual Save Function (Exposed)
   const saveToCloud = useCallback(async () => {
     if (!user) return false;
-    console.log('☁️ Manual save requested...');
-    return await syncUserData(user, state);
-  }, [user, state]);
+
+    // DEBUG LOGS
+    const safeState = stateRef.current; // Use Ref to ensure freshness
+    console.log('☁️ [DEBUG] Manual Save Triggered.');
+    console.log('☁️ [DEBUG] Sending categoryProgress:', JSON.stringify(safeState.categoryProgress));
+
+    return await syncUserData(user, safeState);
+  }, [user]); // Removed state dependency since we use valid ref
 
   // ... existing code ...
 
@@ -1276,6 +1203,56 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     });
   }, []);
 
+  // Evolution Animation State (Transient)
+  const [isEvolving, setIsEvolving] = useState(false);
+
+  const completeEvolutionAnimation = useCallback(() => {
+    setState(currentState => {
+      const newState = {
+        ...currentState,
+        lastSeenStage: currentState.evolutionStage
+      };
+
+      // Emergency Persistence: Save to independent key
+      saveFailSafeLastSeenStage(currentState.evolutionStage);
+
+      // saveNurturingState(newState); // Handled by throttle
+      // Essential: immediate cloud save to lock in this milestone (Evolution)
+      if (user) {
+        console.log('☁️ Evolution milestone reached. Syncing to cloud...');
+        syncUserData(user, newState);
+      }
+      return newState;
+    });
+    setIsEvolving(false);
+  }, [user]);
+
+  // Graduation Animation State
+  const [isGraduating, setIsGraduating] = useState(false);
+
+  const completeGraduationAnimation = useCallback((name: string) => {
+    // 1. Create Hall Of Fame Entry
+    const entry: import('../types/nurturing').HallOfFameEntry = {
+      id: Date.now().toString(),
+      name: name || 'Jello',
+      speciesId: state.speciesId || 'yellowJello',
+      finalStage: state.evolutionStage || 4,
+      graduatedAt: Date.now(),
+      finalStats: state.stats
+    };
+
+    // 2. Save Entry to Persistent Storage
+    let nextState = saveToHallOfFame(state, entry);
+
+    // 3. Reset Game (Soft Reset)
+    nextState = startNewGeneration(nextState);
+
+    // 4. Update State
+    setState(nextState);
+    setIsGraduating(false);
+    setIsEvolving(false); // Force clear any pending evolution animation (e.g. from debug trigger)
+  }, [state]);
+
   // Updated to handle both species and stage (from Gallery/Admin)
   const setCharacterState = useCallback((id: string, stage: number) => {
     setState(currentState => {
@@ -1391,7 +1368,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     setGameDifficulty,
     hasCharacter: state.hasCharacter ?? false,
     completeCharacterCreation,
-    saveToCloud, // Expose new function
+    saveToCloud,
     isEvolving,
     completeEvolutionAnimation,
     isGraduating,
@@ -1406,6 +1383,9 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     isSleeping: state.isSleeping || false,
     currentHouseId: state.currentHouseId || 'tent',
     toggleSleep,
+
+    // Global Loading State
+    isGlobalLoading,
   }), [
     state.stats,
     state.poops,
@@ -1452,6 +1432,9 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     completeGraduationAnimation,
     subscription,
     purchasePlan,
+
+    // Global Loading Dependency
+    isGlobalLoading,
   ]);
 
   return <NurturingContext.Provider value={value}>{children}</NurturingContext.Provider>;

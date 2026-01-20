@@ -15,6 +15,8 @@ import {
 } from '../constants/nurturing';
 import { calculateOfflineProgress, checkAbandonmentState } from './gameTickService';
 import { protectData, restoreData } from './simpleEncryption';
+// FIX: Re-calculate progression from stats
+import { recalculateCategoryProgress } from '../utils/progression';
 
 const STORAGE_KEY_PREFIX = 'puzzleletic_nurturing_state_v4';
 const CHECKSUM_KEY_PREFIX = 'puzzleletic_checksum';
@@ -98,6 +100,7 @@ export const createDefaultState = (): NurturingPersistentState => {
     },
     unlockedJellos: {},
     hallOfFame: [],
+    categoryProgress: {}, // Initialize empty progression map
   };
 };
 
@@ -300,6 +303,21 @@ export const loadNurturingState = (userId?: string): NurturingPersistentState =>
     // Init Hall of Fame
     if (!loaded.hallOfFame) {
       loaded.hallOfFame = [];
+    }
+
+    // Init Category Progress (Optimization Migration)
+    if (!loaded.categoryProgress) {
+      loaded.categoryProgress = {};
+    }
+
+    // FIX (Reconciliation): Ensure consistency with minigameStats
+    // Use statistics as the Source of Truth to rebuild progression capability
+    if (loaded.minigameStats) {
+      const reconciled = recalculateCategoryProgress(loaded.minigameStats);
+      loaded.categoryProgress = {
+        ...(loaded.categoryProgress || {}),
+        ...reconciled
+      };
     }
 
     return loaded as NurturingPersistentState;

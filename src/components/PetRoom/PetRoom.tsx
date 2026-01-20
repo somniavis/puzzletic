@@ -100,12 +100,17 @@ export const PetRoom: React.FC<PetRoomProps> = ({
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Simulate loading delay for better UX (preloading assets masking)
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
-    return () => clearTimeout(timer);
-  }, []);
+    // Determine strict loading state
+    // Wait for BOTH global loading (sync) AND artificial timer
+    if (!nurturing.isGlobalLoading) {
+      const timer = setTimeout(() => {
+        setIsLoading(false);
+      }, 1000); // Keep original aesthetic delay
+      return () => clearTimeout(timer);
+    } else {
+      setIsLoading(true);
+    }
+  }, [nurturing.isGlobalLoading]);
 
   // Global Interaction Listener for Lazy BGM Start
   useEffect(() => {

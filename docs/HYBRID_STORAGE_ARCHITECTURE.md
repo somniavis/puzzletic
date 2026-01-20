@@ -245,6 +245,21 @@ interface NurturingPersistentState {
   ```
 - **효과**: 스키마 변경 시 별도의 복잡한 마이그레이션 함수 없이도 구조적 안정성 확보
 
+### 3-1. 스마트 병합 전략 (Smart Merge - 2026.01.21)
+- **문제**: 클라우드 데이터가 구버전이라 신규 필드(예: `categoryProgress`)가 없을 때, 로컬의 진행 상황을 덮어써버리는 문제 (Reset after Refresh)
+- **해결**: `NurturingContext`에 스키마 기반 병합 로직 추가
+    - **Legacy Data**: 클라우드에 키가 아예 없음 (`undefined`) -> **로컬 데이터 유지**
+    - **Valid Reset**: 클라우드에 키가 있음 (빈 객체 `{}`) -> **클라우드 데이터 신뢰** (초기화 반영)
+    ```typescript
+    if (fullState.categoryProgress === undefined) {
+      // Legacy Cloud Data detected -> Keep Local Progress
+      if (localState.categoryProgress) {
+         restoredState.categoryProgress = localState.categoryProgress;
+      }
+    }
+    ```
+- **효과**: 동기화 시 데이터 유실 방지와 유효한 초기화(Reset)를 동시에 지원
+
 ### 4. 카테고리 기반 진행도 저장 (Category-Based Progression)
 - **문제**: 모든 게임의 개별 통계(`minigameStats`)를 저장하면 게임 수 증가에 따라 데이터가 비대해짐
 - **해결**: `categoryProgress` 필드 도입 - 카테고리별로 "도달한 게임 ID"만 저장
