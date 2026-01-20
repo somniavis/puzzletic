@@ -83,9 +83,8 @@ export const PetRoom: React.FC<PetRoomProps> = ({
   onActionChange
 }) => {
   const navigate = useNavigate();
-  const { t } = useTranslation();
-
   // 양육 시스템 사용
+  const { t } = useTranslation();
   const nurturing = useNurturing();
   const { user } = useAuth();
 

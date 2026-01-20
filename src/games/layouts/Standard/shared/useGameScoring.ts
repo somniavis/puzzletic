@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { useAuth } from '../../../../contexts/AuthContext';
 import { useNurturing } from '../../../../contexts/NurturingContext';
 import { calculateMinigameReward } from '../../../../services/rewardService';
 import type { RewardCalculation, MinigameDifficulty } from '../../../../types/gameMechanics';
@@ -21,29 +20,25 @@ export const useGameScoring = ({
     engineDifficulty,
     stats
 }: ScoringProps) => {
-    const { user } = useAuth();
-    const { evolutionStage, addRewards, recordGameScore } = useNurturing();
+    // Context is the Single Source of Truth for High Scores
+    const { evolutionStage, addRewards, recordGameScore, minigameStats } = useNurturing();
 
     const [rewardResult, setRewardResult] = useState<RewardCalculation | null>(null);
     const [highScore, setHighScore] = useState<number>(0);
     const [prevBest, setPrevBest] = useState<number>(0);
     const [isNewRecord, setIsNewRecord] = useState(false);
 
-    // Helper to get consistent storage key
-    const getHighScoreKey = (gId: string) => user?.uid ? `minigame_highscore_${user.uid}_${gId}` : `minigame_highscore_${gId}`;
-
-    // 1. Initial Load of High Score
+    // 1. Initial Load of High Score from Context
     useEffect(() => {
-        if (gameId) {
-            const savedkey = getHighScoreKey(gameId);
-            const savedScore = localStorage.getItem(savedkey);
-            if (savedScore) {
-                setHighScore(parseInt(savedScore, 10));
+        if (gameId && minigameStats) {
+            const gameStats = minigameStats[gameId];
+            if (gameStats) {
+                setHighScore(gameStats.highScore || 0);
             } else {
                 setHighScore(0);
             }
         }
-    }, [gameId, user?.uid]);
+    }, [gameId, minigameStats]);
 
     // Helper to process results (Memoized to be callable from outside)
     const processResult = () => {
@@ -61,28 +56,25 @@ export const useGameScoring = ({
         setRewardResult(calculated);
         addRewards(calculated.xpEarned, calculated.groEarned);
 
-        // Record Global Cumulative Score
+        // Record Global Cumulative Score & Handle High Score Persistence
+        // logic moved entirely to NurturingContext.recordGameScore
         if (gameId) {
-            recordGameScore(gameId, score);
-        }
+            const currentStats = minigameStats?.[gameId];
+            const currentBest = currentStats?.highScore || 0;
 
-        // Update High Score (Local)
-        if (gameId) {
-            const savedkey = getHighScoreKey(gameId);
-            const currentScore = score;
-            const storedScore = localStorage.getItem(savedkey);
-            const currentBest = storedScore ? parseInt(storedScore, 10) : 0;
-
-            if (currentScore > currentBest) {
-                localStorage.setItem(savedkey, currentScore.toString());
-                setPrevBest(currentBest);
-                setHighScore(currentScore);
+            // Determine if it's a new record
+            if (score > currentBest) {
                 setIsNewRecord(true);
+                setPrevBest(currentBest); // Previous best is what it was BEFORE this game
+                setHighScore(score);      // New high score is the current score
             } else {
-                setHighScore(currentBest);
                 setIsNewRecord(false);
-                setPrevBest(currentBest);
+                setPrevBest(currentBest); // Previous best remains the same
+                setHighScore(currentBest); // High score remains the same
             }
+
+            // Persist (Context updates state and saves to localStorage/Cloud)
+            recordGameScore(gameId, score);
         }
     };
 

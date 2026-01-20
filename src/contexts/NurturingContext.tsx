@@ -310,27 +310,38 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
 
       console.log('☁️ Cloud data found. Checking versions...');
 
+
+
       // Smart Sync: Compare local vs cloud timestamps
       // If local data is significantly newer (e.g. > 1 minute), keep local and push to cloud
       // This prevents "Return to Previous" issues on refresh/cross-device
       const cloudTime = parsedGameData.lastActiveTime || 0;
       const localTime = stateRef.current.lastActiveTime || 0;
 
-      // Use a tolerance of 5 seconds to avoid clock skew issues, but prefer stricter check if needed
-      // If Local is newer by more than 5s, we usually trust Local... UNLESS Local is just a generic fresh state.
+      // Use a tolerance of 5 seconds to avoid clock skew issues
+
+      // FIX (Zero Stats Bug): Check if local data is "broken" or invalid (e.g. all zeros)
+      // If local stats are suspicious, we should TRUST CLOUD regardless of timestamps.
+      const isLocalInvalid =
+        stateRef.current.stats.health === 0 &&
+        stateRef.current.stats.fullness === 0 &&
+        stateRef.current.stats.happiness === 0;
 
       const isLocalFresh =
         stateRef.current.xp === 0 &&
         stateRef.current.totalCurrencyEarned === 0 &&
         !stateRef.current.hasCharacter;
 
-      if (localTime > cloudTime + 5000 && !isLocalFresh) {
+      // Only keep local if it's NEWER AND (Valid AND Not Fresh)
+      if (localTime > cloudTime + 5000 && !isLocalFresh && !isLocalInvalid) {
         console.log(`☁️ Cloud data is stale! (Local: ${new Date(localTime).toLocaleTimeString()} vs Cloud: ${new Date(cloudTime).toLocaleTimeString()})`);
         console.log('☁️ Keeping local data (Lazy Sync: will sync on next auto-save/logout)');
         // FIX: Do NOT write to cloud immediately to save costs.
-        // Just skip the restore process and let the local data persist.
-        // The existing auto-save timer (15 min) or manual save will handle it later.
         return;
+      }
+
+      if (isLocalInvalid) {
+        console.warn('⚠️ Local state appears broken (0/0/0). Forcing Cloud Restore.');
       }
 
       console.log('☁️ Cloud data is newer or consistent. Restoring from cloud.');
@@ -355,7 +366,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
       // This protects against "Reset after Refresh" if categoryProgress was lost but stats exist.
       if (parsedGameData.minigameStats) {
         const reconciledProgress = recalculateCategoryProgress(parsedGameData.minigameStats);
-        console.log('☁️ [DEBUG] Reconciled Progress from Stats:', JSON.stringify(reconciledProgress));
+
 
         restoredState.categoryProgress = {
           ...(parsedGameData.categoryProgress || {}),
@@ -379,6 +390,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
       if (parsedGameData.lastSeenStage === undefined) {
         restoredState.lastSeenStage = restoredState.evolutionStage;
       }
+
 
       setState(restoredState);
 
