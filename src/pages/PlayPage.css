@@ -351,6 +351,15 @@
     transition: transform 0.3s;
 }
 
+.adventure-card.locked .card-icon-box {
+    filter: grayscale(0.2);
+    opacity: 0.8;
+}
+
+.adventure-card.locked:hover .card-icon-box {
+    transform: none;
+}
+
 .adventure-card:hover .card-icon-box {
     transform: scale(1.1);
 }

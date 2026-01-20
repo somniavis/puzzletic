@@ -314,7 +314,7 @@ export const GAMES: GameManifest[] = [
         category: 'brain',
         level: 1,
         component: L1_ColorLink,
-        thumbnail: '🔗',
+        thumbnail: 'quad:🔴,,,🔴',
         tagsKey: 'games.tags.spatial'
     },
     {
@@ -342,7 +342,7 @@ export const GAMES: GameManifest[] = [
         category: 'brain',
         level: 1,
         component: L1_MazeEscape,
-        thumbnail: '🧩',
+        thumbnail: '🏕️',
         tagsKey: 'games.tags.spatial'
     },
 
@@ -358,7 +358,7 @@ export const GAMES: GameManifest[] = [
         category: 'brain',
         level: 2,
         component: L2_WildLink,
-        thumbnail: '🐾',
+        thumbnail: 'quad:🦉,,,🦢',
         tagsKey: 'games.tags.categorization'
     },
     {
@@ -386,7 +386,7 @@ export const GAMES: GameManifest[] = [
         category: 'brain',
         level: 2,
         component: L2_PairUpConnect,
-        thumbnail: '🐒',
+        thumbnail: 'quad:🐒,,,🍌',
         tagsKey: 'games.tags.association'
     },
     {
@@ -400,7 +400,7 @@ export const GAMES: GameManifest[] = [
         category: 'brain',
         level: 2,
         component: L2_MazeHunter,
-        thumbnail: '🔍',
+        thumbnail: '🐾',
         tagsKey: 'games.tags.spatial'
     },
     {
