@@ -62,7 +62,7 @@ const PlayPage: React.FC = () => {
     const navigate = useNavigate();
     const { gameId } = useParams();
     const { t } = useTranslation();
-    const { setGameDifficulty, pauseTick, resumeTick, minigameStats } = useNurturing();
+    const { setGameDifficulty, pauseTick, resumeTick, minigameStats, categoryProgress } = useNurturing();
 
     // -- State --
     const [activeTab, setActiveTab] = useState<GameCategory>(() => {
@@ -218,7 +218,7 @@ const PlayPage: React.FC = () => {
                 {adventureGames.length > 0 ? (
                     adventureGames.map(game => {
                         const stats = minigameStats?.[game.id];
-                        const { unlocked, reason, requiredGame } = isGameUnlocked(game.id, GAMES, { minigameStats });
+                        const { unlocked, reason, requiredGame } = isGameUnlocked(game.id, GAMES, { minigameStats, categoryProgress });
                         let displayReason = reason;
                         if (requiredGame) {
                             const requiredGameTitle = requiredGame.titleKey ? t(requiredGame.titleKey) : requiredGame.title;
@@ -363,7 +363,7 @@ const PlayPage: React.FC = () => {
                 {filteredDrills.length > 0 ? (
                     filteredDrills.map((game) => {
                         const stats = minigameStats?.[game.id];
-                        const { unlocked, reason } = isGameUnlocked(game.id, GAMES, { minigameStats });
+                        const { unlocked, reason } = isGameUnlocked(game.id, GAMES, { minigameStats, categoryProgress });
                         const playCount = stats?.playCount || 0;
                         const isMastered = playCount >= 10;
                         // In Drill mode, we might want custom unlock logic (sequential), but global usage works too.
@@ -439,7 +439,7 @@ const PlayPage: React.FC = () => {
                 {adventureGames.length > 0 ? (
                     adventureGames.map(game => {
                         const stats = minigameStats?.[game.id];
-                        const { unlocked, reason, requiredGame } = isGameUnlocked(game.id, GAMES, { minigameStats });
+                        const { unlocked, reason, requiredGame } = isGameUnlocked(game.id, GAMES, { minigameStats, categoryProgress });
                         let displayReason = reason;
                         if (requiredGame) {
                             const requiredGameTitle = requiredGame.titleKey ? t(requiredGame.titleKey) : requiredGame.title;

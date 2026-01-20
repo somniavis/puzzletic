@@ -1,7 +1,19 @@
 # 변경 이력 (Changelog)
 
 
-## 2025-12-21 (Latest Updates)
+## 2026-01-20 (Latest Updates)
+
+### 🚀 진행도 저장 최적화 (Progression Storage Optimization)
+- **문제**: 게임 수 증가 시 데이터 크기가 선형적으로 증가 (200게임 → ~40KB/유저)
+- **해결**: 카테고리별 "최고 도달점 ID"만 저장하는 방식으로 변경
+- **새 파일**: `src/constants/gameOrder.ts` - 카테고리별 게임 순서 정의
+- **효과**: 데이터 크기 ~40배 감소 (40KB → 1KB), 해금 계산 O(n) → O(1)
+
+### 🔧 번역 키 수정 (Translation Key Fixes)
+- **18개 게임의 HowToPlay 번역 키** `.desc` → `.description`으로 일괄 수정
+- Math Level 1/2, Brain Level 1/2, Genius 게임 모두 포함
+
+## 2025-12-21 (Previous Updates)
 
 ### 🧩 게임 로직 & UI (Game Logic & UI)
 - **Number Balance 게임 개선**:

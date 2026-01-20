@@ -245,3 +245,21 @@ interface NurturingPersistentState {
   ```
 - **효과**: 스키마 변경 시 별도의 복잡한 마이그레이션 함수 없이도 구조적 안정성 확보
 
+### 4. 카테고리 기반 진행도 저장 (Category-Based Progression)
+- **문제**: 모든 게임의 개별 통계(`minigameStats`)를 저장하면 게임 수 증가에 따라 데이터가 비대해짐
+- **해결**: `categoryProgress` 필드 도입 - 카테고리별로 "도달한 게임 ID"만 저장
+  ```typescript
+  categoryProgress: {
+    'math-adventure': 'math-archery',      // 1KB 미만
+    'math-genius': 'front-addition-lv3',
+    'brain-adventure': 'signal-hunter',
+  }
+  // vs 기존: minigameStats에 200개 게임 각각 저장 (~40KB)
+  ```
+- **순서 정의**: `src/constants/gameOrder.ts`에서 카테고리별 게임 순서 관리
+- **해금 로직**: `isGameUnlocked()`가 순서 인덱스 비교만으로 O(1) 판정
+- **효과**: 
+    - 데이터 크기 ~40배 감소 (200게임 기준: 40KB → 1KB)
+    - 동기화 페이로드 대폭 절감
+    - 신규 게임 삽입 시 기존 데이터 자동 호환
+

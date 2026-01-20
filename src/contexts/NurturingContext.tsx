@@ -53,6 +53,7 @@ import {
 } from '../services/actionService';
 import { addXPAndCheckEvolution } from '../services/evolutionService';
 import { POOP_CONFIG } from '../constants/nurturing';
+import { updateCategoryProgress } from '../utils/progression';
 import type { Poop } from '../types/nurturing';
 
 interface NurturingContextValue {
@@ -61,6 +62,7 @@ interface NurturingContextValue {
   poops: Poop[];
   bugs: Bug[];
   minigameStats?: Record<string, import('../types/nurturing').MinigameStats>;
+  categoryProgress?: Record<string, string>; // 카테고리별 도달한 게임 ID (해금용)
   condition: CharacterCondition;
   gro: number;
   currentLand: string;
@@ -664,12 +666,19 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
         lastPlayedAt: Date.now()
       };
 
+      // categoryProgress 업데이트 (해금 최적화용)
+      const updatedCategoryProgress = updateCategoryProgress(
+        gameId,
+        currentState.categoryProgress
+      );
+
       const newState = {
         ...currentState,
         minigameStats: {
           ...statsMap,
           [gameId]: newStats
         },
+        categoryProgress: updatedCategoryProgress,
         totalMinigameScore: (currentState.totalMinigameScore || 0) + score,
         totalMinigamePlayCount: (currentState.totalMinigamePlayCount || 0) + 1
       };
@@ -1340,6 +1349,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     poops: state.poops,
     bugs: state.bugs || [],
     minigameStats: state.minigameStats,
+    categoryProgress: state.categoryProgress,
     condition,
     currentLand: state.currentLand,
     gro: state.gro,
@@ -1410,6 +1420,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     state.xp,
     state.evolutionStage,
     state.unlockedJellos, // Added dependency
+    state.categoryProgress, // Added dependency
     state.isSick, // Added dependency
     state.isSleeping, // Added dependency
     state.currentHouseId, // Added dependency

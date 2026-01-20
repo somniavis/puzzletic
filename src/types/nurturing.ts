@@ -187,4 +187,5 @@ export interface NurturingPersistentState {
   isSleeping?: boolean; // 수면 상태 여부
   sleepStartTime?: number; // 수면 시작 시간 (timestamp)
   currentHouseId?: string; // 현재 장착된 하우스 ID (기본: 'tent')
+  categoryProgress?: Record<string, string>; // 카테고리별 도달한 게임 ID (해금용)
 }
