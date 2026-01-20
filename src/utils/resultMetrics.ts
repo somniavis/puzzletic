@@ -16,8 +16,8 @@ export interface MasteryLevel {
 // Simple model: 1 play = Lv1, 5 plays = Lv2, 10 plays = Lv3 (Unlock Next)
 const MASTERY_THRESHOLDS = {
     BRONZE: 1,
-    SILVER: 3,
-    GOLD: 5, // Unlock Threshold
+    SILVER: 2,
+    GOLD: 4, // Unlock Threshold (1 initial + 3 challenge)
 };
 
 export const calculateMastery = (stats?: MinigameStats): MasteryLevel => {

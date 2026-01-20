@@ -725,6 +725,28 @@ export const ko = {
         'pair-up-connect': pairUpConnectKo,
         'signal-hunter': signalHunterKo,
         'maze-hunter': mazeHunterKo,
+        tags: {
+            counting1to5: '1-5 수세기',
+            sequence1to10: '수 순서',
+            additionBasic: '덧셈 기초',
+            partWhole: '가르기/모으기',
+            operations1to10: '연산',
+            grouping10s: '묶어 세기',
+            additionApplied: '덧셈 응용',
+            subtraction: '뺄셈',
+            speedMath: '빠른 연산',
+            frontAddition: '앞에서 더하기',
+            frontSubtraction: '앞에서 빼기',
+            spatial: '공간 지각',
+            observation: '관찰력',
+            categorization: '범주화',
+            workingMemory: '작업 기억',
+            association: '연상 논리',
+            focusTiming: '집중력/타이밍',
+        },
+        mission: {
+            challenge: '성공 도전! ({{current}}/{{total}})',
+        },
     },
 } as const;
 

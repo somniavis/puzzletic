@@ -29,7 +29,7 @@ const getIconBackground = (thumbnail: string | React.ReactNode | undefined, isLo
     const emojiColorMap: Record<string, string> = {
         // Math games
         '🐟': '#e0f2fe', // sky-100
-        '🎯': '#fee2e2', // red-100
+        '🌀': '#e0f2fe', // sky-100 (Round Counting)
         '🐝': '#fef3c7', // amber-100
         '⚖️': '#dbeafe', // blue-100
         '🍎': '#ffe4e6', // rose-100
@@ -225,8 +225,37 @@ const PlayPage: React.FC = () => {
                             displayReason = t('play.game.unlock.reason', { game: requiredGameTitle });
                         }
 
-                        // Calculate pseudo-progress (0-100%)
-                        const progress = stats?.playCount ? Math.min(stats.playCount * 10, 100) : 0;
+                        // Mastery Logic (1 play + 3 challenges = 4 total)
+                        const playCount = stats?.playCount || 0;
+                        const isMastered = playCount >= 4;
+
+                        let subtitleContent;
+                        if (playCount === 0) {
+                            // First time: Show original subtitle
+                            subtitleContent = (
+                                <span className="card-subtitle-text">
+                                    {game.subtitleKey ? t(game.subtitleKey) : (game.tags?.[0] || '')}
+                                </span>
+                            );
+                        } else if (!isMastered) {
+                            // Challenge Phase: 1-3 plays
+                            const current = Math.max(0, playCount - 1);
+                            subtitleContent = (
+                                <span className="card-mission-text">
+                                    {t('games.mission.challenge', { current, total: 3 })}
+                                </span>
+                            );
+                        } else {
+                            // Mastered Phase
+                            subtitleContent = (
+                                <span className="card-subtitle-text">
+                                    {game.subtitleKey ? t(game.subtitleKey) : ''}
+                                </span>
+                            );
+                        }
+
+                        // Remove generic progress bar, replacing with Dynamic Subtitle
+                        // Add Badge Button next to Play Button
 
                         return (
                             <div
@@ -245,21 +274,30 @@ const PlayPage: React.FC = () => {
                                     </div>
                                     <div className="card-info">
                                         <div className="card-meta">
-                                            <span className="category-badge">{game.category}</span>
+                                            <span className="category-badge">
+                                                {game.tagsKey ? t(game.tagsKey) : (game.tags?.[0] || game.category.toUpperCase())}
+                                            </span>
                                             {renderDifficultyStars(game.level)}
                                         </div>
                                         <h3 className="card-title">{game.titleKey ? t(game.titleKey) : game.title}</h3>
-                                        <div className="progress-row">
-                                            <div className="progress-track">
-                                                <div className="progress-fill" style={{ width: `${progress}%` }}></div>
-                                            </div>
-                                            <span className="progress-text">{progress}%</span>
+
+                                        {/* Dynamic Subtitle Area */}
+                                        <div style={{ marginTop: '0.25rem', fontSize: '0.8rem', minHeight: '1.2em' }}>
+                                            {subtitleContent}
                                         </div>
                                     </div>
                                 </div>
-                                <button className="play-quest-btn">
-                                    <i className={`fas ${unlocked ? 'fa-play' : 'fa-lock'}`}></i>
-                                </button>
+
+                                <div className="card-actions">
+                                    <button className="play-quest-btn" style={{ flex: 1 }}>
+                                        <i className={`fas ${unlocked ? 'fa-play' : 'fa-lock'}`}></i>
+                                    </button>
+
+                                    {/* Mastery Badge Button */}
+                                    <div className={`badge-box ${isMastered ? 'gold' : 'gray'}`}>
+                                        <i className={`fas ${isMastered ? 'fa-medal' : 'fa-medal'}`}></i>
+                                    </div>
+                                </div>
                                 {/* Locked Overlay for visual feedback if needed, but styling handles opacity */}
                             </div>
                         );
@@ -382,7 +420,31 @@ const PlayPage: React.FC = () => {
                             const requiredGameTitle = requiredGame.titleKey ? t(requiredGame.titleKey) : requiredGame.title;
                             displayReason = t('play.game.unlock.reason', { game: requiredGameTitle });
                         }
-                        const progress = stats?.playCount ? Math.min(stats.playCount * 10, 100) : 0;
+                        // Mastery Logic (same as adventure)
+                        const playCount = stats?.playCount || 0;
+                        const isMastered = playCount >= 4;
+
+                        let subtitleContent;
+                        if (playCount === 0) {
+                            subtitleContent = (
+                                <span className="card-subtitle-text">
+                                    {game.subtitleKey ? t(game.subtitleKey) : (game.tags?.[0] || '')}
+                                </span>
+                            );
+                        } else if (!isMastered) {
+                            const current = Math.max(0, playCount - 1);
+                            subtitleContent = (
+                                <span className="card-mission-text">
+                                    {t('games.mission.challenge', { current, total: 3 })}
+                                </span>
+                            );
+                        } else {
+                            subtitleContent = (
+                                <span className="card-subtitle-text">
+                                    {game.subtitleKey ? t(game.subtitleKey) : ''}
+                                </span>
+                            );
+                        }
 
                         return (
                             <div
@@ -400,21 +462,28 @@ const PlayPage: React.FC = () => {
                                     </div>
                                     <div className="card-info">
                                         <div className="card-meta">
-                                            <span className="category-badge">{game.category}</span>
+                                            <span className="category-badge">
+                                                {game.tagsKey ? t(game.tagsKey) : (game.tags?.[0] || game.category.toUpperCase())}
+                                            </span>
                                             {renderDifficultyStars(game.level)}
                                         </div>
                                         <h3 className="card-title">{game.titleKey ? t(game.titleKey) : game.title}</h3>
-                                        <div className="progress-row">
-                                            <div className="progress-track">
-                                                <div className="progress-fill" style={{ width: `${progress}%` }}></div>
-                                            </div>
-                                            <span className="progress-text">{progress}%</span>
+
+                                        <div style={{ marginTop: '0.25rem', fontSize: '0.8rem', minHeight: '1.2em' }}>
+                                            {subtitleContent}
                                         </div>
                                     </div>
                                 </div>
-                                <button className="play-quest-btn">
-                                    <i className={`fas ${unlocked ? 'fa-play' : 'fa-lock'}`}></i>
-                                </button>
+
+                                <div className="card-actions">
+                                    <button className="play-quest-btn" style={{ flex: 1 }}>
+                                        <i className={`fas ${unlocked ? 'fa-play' : 'fa-lock'}`}></i>
+                                    </button>
+
+                                    <div className={`badge-box ${isMastered ? 'gold' : 'gray'}`}>
+                                        <i className={`fas ${isMastered ? 'fa-medal' : 'fa-medal'}`}></i>
+                                    </div>
+                                </div>
                             </div>
                         );
                     })

@@ -32,6 +32,10 @@ export interface GameManifest {
     subtitleKey?: string;
     /** Key for localized description */
     descriptionKey?: string;
+    /** Learning concept tags displayed on game card (e.g., ['수세기', 'Counting']) */
+    tags?: string[];
+    /** Key for localized tags (e.g., 'games.tags.counting') */
+    tagsKey?: string;
     /** The main component to render when the game is played (supports lazy loading) */
     component: ComponentType<GameComponentProps> | LazyExoticComponent<ComponentType<GameComponentProps>>;
 }

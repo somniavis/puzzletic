@@ -724,6 +724,28 @@ export const en = {
     'math-level2-ufo-invasion': ufoInvasionEn,
     'maze-escape': mazeEscapeEn,
     'maze-hunter': mazeHunterEn,
+    tags: {
+      counting1to5: 'Counting 1-5',
+      sequence1to10: 'Number Sequence',
+      additionBasic: 'Addition Basics',
+      partWhole: 'Number Composition',
+      operations1to10: 'Basic Operations',
+      grouping10s: 'Grouping by 10s',
+      additionApplied: 'Applied Addition',
+      subtraction: 'Subtraction',
+      speedMath: 'Speed Math',
+      frontAddition: 'Front Addition',
+      frontSubtraction: 'Front Subtraction',
+      spatial: 'Spatial Reasoning',
+      observation: 'Observation',
+      categorization: 'Categorization',
+      workingMemory: 'Working Memory',
+      association: 'Logical Association',
+      focusTiming: 'Focus & Timing',
+    },
+    mission: {
+      challenge: 'Challenge! ({{current}}/{{total}})',
+    },
   },
 } as const;
 

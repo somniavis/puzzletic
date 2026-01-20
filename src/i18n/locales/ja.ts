@@ -725,6 +725,28 @@ export const ja = {
         'pair-up-connect': pairUpConnectJa,
         'signal-hunter': signalHunterJa,
         'maze-hunter': mazeHunterJa,
+        tags: {
+            counting1to5: '数え方 1-5',
+            sequence1to10: '数の順序',
+            additionBasic: '足し算の基本',
+            partWhole: '数の構成',
+            operations1to10: '計算',
+            grouping10s: '10のまとまり',
+            additionApplied: '応用足し算',
+            subtraction: '引き算',
+            speedMath: 'スピード計算',
+            frontAddition: '前から足し算',
+            frontSubtraction: '前から引き算',
+            spatial: '空間認識',
+            observation: '観察力',
+            categorization: '分類',
+            workingMemory: 'ワーキングメモリ',
+            association: '連想論理',
+            focusTiming: '集中力・タイミング',
+        },
+        mission: {
+            challenge: '挑戦！ ({{current}}/{{total}})',
+        },
     },
 } as const;
 
