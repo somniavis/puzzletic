@@ -123,9 +123,9 @@ export default function UFOInvasion({ onExit }: UFOInvasionProps) {
             onExit={handleExit}
             cardBackground={<SpaceBackground />}
             instructions={[
-                { icon: '🛸', title: t('games.math-level2-ufo-invasion.instructions.step1.title'), description: t('games.math-level2-ufo-invasion.instructions.step1.desc') },
-                { icon: '➕', title: t('games.math-level2-ufo-invasion.instructions.step2.title'), description: t('games.math-level2-ufo-invasion.instructions.step2.desc') },
-                { icon: '💥', title: t('games.math-level2-ufo-invasion.instructions.step3.title'), description: t('games.math-level2-ufo-invasion.instructions.step3.desc') }
+                { icon: '🛸', title: t('games.math-level2-ufo-invasion.instructions.step1.title'), description: t('games.math-level2-ufo-invasion.instructions.step1.description') },
+                { icon: '➕', title: t('games.math-level2-ufo-invasion.instructions.step2.title'), description: t('games.math-level2-ufo-invasion.instructions.step2.description') },
+                { icon: '💥', title: t('games.math-level2-ufo-invasion.instructions.step3.title'), description: t('games.math-level2-ufo-invasion.instructions.step3.description') }
             ]}
         >
             <div className={styles.gameContainer}>

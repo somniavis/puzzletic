@@ -143,13 +143,13 @@ export const NumberBalance: React.FC<NumberBalanceProps> = ({ onExit }) => {
     return (
         <Layout2
             title={t('games.math-number-balance.title')}
-            subtitle={t('games.math-number-balance.sub')}
+            subtitle={t('games.math-number-balance.subtitle')}
             gameId="math-number-balance"
             engine={layoutEngine as any}
             instructions={[
-                { icon: '⚖️', title: t('games.math-number-balance.howToPlay.step1.title'), description: t('games.math-number-balance.howToPlay.step1.desc') },
-                { icon: '🔢', title: t('games.math-number-balance.howToPlay.step2.title'), description: t('games.math-number-balance.howToPlay.step2.desc') },
-                { icon: '🎯', title: t('games.math-number-balance.howToPlay.step3.title'), description: t('games.math-number-balance.howToPlay.step3.desc') }
+                { icon: '⚖️', title: t('games.math-number-balance.howToPlay.step1.title'), description: t('games.math-number-balance.howToPlay.step1.description') },
+                { icon: '🔢', title: t('games.math-number-balance.howToPlay.step2.title'), description: t('games.math-number-balance.howToPlay.step2.description') },
+                { icon: '🎯', title: t('games.math-number-balance.howToPlay.step3.title'), description: t('games.math-number-balance.howToPlay.step3.description') }
             ]}
             onExit={onExit}
             powerUps={powerUpConfig}
@@ -237,9 +237,9 @@ export const manifest: GameManifest = {
     title: 'Number Balance',
     titleKey: 'games.math-number-balance.title',
     subtitle: 'Balance the scale!',
-    subtitleKey: 'games.math-number-balance.sub',
+    subtitleKey: 'games.math-number-balance.subtitle',
     description: 'Find two numbers that add up to the target weight.',
-    descriptionKey: 'games.math-number-balance.desc',
+    descriptionKey: 'games.math-number-balance.description',
     category: 'math',
     level: 1,
     component: NumberBalance,

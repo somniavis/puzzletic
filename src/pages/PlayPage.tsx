@@ -395,15 +395,15 @@ const PlayPage: React.FC = () => {
                                                 fontSize: '0.85rem',
                                                 display: 'block',
                                                 marginBottom: '0.25rem',
-                                                color: playCount > 0 && !isMastered ? '#94a3b8' : '#64748b', // Slate-400 (Challenge) or Slate-500 (Default)
+                                                color: '#64748b', // Slate-500
                                                 fontStyle: playCount > 0 && !isMastered ? 'italic' : 'normal',
                                                 fontWeight: playCount > 0 && !isMastered ? 'bold' : 'normal'
                                             }}
                                         >
                                             {(() => {
-                                                if (playCount === 0) return game.subtitleKey ? t(game.subtitleKey, game.subtitle || '') : (game.subtitle || '');
-                                                if (!isMastered) return t('games.mission.challenge10', { current: playCount, total: 10 });
-                                                return game.subtitleKey ? t(game.subtitleKey, game.subtitle || '') : (game.subtitle || '');
+                                                if (playCount === 0) return game.subtitleKey ? t(game.subtitleKey, game.subtitle || 'Start Drill') : (game.subtitle || 'Start Drill');
+                                                if (!isMastered) return t('games.mission.challenge10', { current: playCount, total: 10, defaultValue: `Challenge! (${playCount}/10)` });
+                                                return game.subtitleKey ? t(game.subtitleKey, game.subtitle || 'Mastered') : (game.subtitle || 'Mastered');
                                             })()}
                                         </span>
                                     </div>
@@ -526,9 +526,11 @@ const PlayPage: React.FC = () => {
         return (
             <div className="game-wrapper">
                 <Suspense fallback={
-                    <div className="game-loading">
-                        <div className="loading-spinner">⏳</div>
-                        <p>Loading game...</p>
+                    <div className="loading-overlay">
+                        <div className="loading-spinner-container">
+                            <div className="loading-spinner">🐾</div>
+                            <div className="loading-text">{t('common.loading')}</div>
+                        </div>
                     </div>
                 }>
                     <GameComponent onExit={handleExitGame} gameId={activeGame.id} />

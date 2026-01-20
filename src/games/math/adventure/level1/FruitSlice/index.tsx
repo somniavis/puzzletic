@@ -176,13 +176,13 @@ export const FruitSlice: React.FC<FruitSliceProps> = ({ onExit }) => {
     return (
         <Layout3
             title={t('games.math-fruit-slice.title')}
-            subtitle={t('games.math-fruit-slice.sub')}
+            subtitle={t('games.math-fruit-slice.subtitle')}
             gameId="math-fruit-slice"
             engine={layoutEngine as any}
             instructions={[
-                { icon: '🧮', title: t('games.math-fruit-slice.howToPlay.step1.title'), description: t('games.math-fruit-slice.howToPlay.step1.desc') },
-                { icon: '🔪', title: t('games.math-fruit-slice.howToPlay.step2.title'), description: t('games.math-fruit-slice.howToPlay.step2.desc') },
-                { icon: '🍎', title: t('games.math-fruit-slice.howToPlay.step3.title'), description: t('games.math-fruit-slice.howToPlay.step3.desc') }
+                { icon: '🧮', title: t('games.math-fruit-slice.howToPlay.step1.title'), description: t('games.math-fruit-slice.howToPlay.step1.description') },
+                { icon: '🔪', title: t('games.math-fruit-slice.howToPlay.step2.title'), description: t('games.math-fruit-slice.howToPlay.step2.description') },
+                { icon: '🍎', title: t('games.math-fruit-slice.howToPlay.step3.title'), description: t('games.math-fruit-slice.howToPlay.step3.description') }
             ]}
             onExit={onExit}
             powerUps={powerUpConfig}
@@ -274,9 +274,9 @@ export const manifest: GameManifest = {
     title: 'Fruit Slice',
     titleKey: 'games.math-fruit-slice.title',
     subtitle: 'Slice the fruits!',
-    subtitleKey: 'games.math-fruit-slice.sub',
+    subtitleKey: 'games.math-fruit-slice.subtitle',
     description: 'Slice matching fruits to count correctly.',
-    descriptionKey: 'games.math-fruit-slice.desc',
+    descriptionKey: 'games.math-fruit-slice.description',
     category: 'math',
     level: 1,
     component: FruitSlice,

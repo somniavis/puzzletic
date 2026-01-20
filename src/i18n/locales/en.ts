@@ -686,7 +686,7 @@ export const en = {
       },
       genius: {
         title: 'Genius Calc',
-        desc: 'Challenge your speed',
+        desc: "The 'Secret' Calculation of Geniuses",
       },
     },
     categories: {

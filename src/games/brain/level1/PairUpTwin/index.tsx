@@ -115,17 +115,17 @@ const PairUpTwin: React.FC = () => {
             instructions={[
                 {
                     title: t('games.pair-up-twin.howToPlay.step1.title'),
-                    description: t('games.pair-up-twin.howToPlay.step1.desc'),
+                    description: t('games.pair-up-twin.howToPlay.step1.description'),
                     icon: "👀"
                 },
                 {
                     title: t('games.pair-up-twin.howToPlay.step2.title'),
-                    description: t('games.pair-up-twin.howToPlay.step2.desc'),
+                    description: t('games.pair-up-twin.howToPlay.step2.description'),
                     icon: "🃏"
                 },
                 {
                     title: t('games.pair-up-twin.howToPlay.step3.title'),
-                    description: t('games.pair-up-twin.howToPlay.step3.desc'),
+                    description: t('games.pair-up-twin.howToPlay.step3.description'),
                     icon: "👯‍♀️"
                 }
             ]}

@@ -141,7 +141,7 @@ export const MathArchery: React.FC<MathArcheryProps> = ({ onExit }) => {
     return (
         <Layout3
             title={t('games.math-archery.title')}
-            subtitle={t('games.math-archery.sub')}
+            subtitle={t('games.math-archery.subtitle')}
             gameId="math-archery"
             engine={layoutEngine as any}
             powerUps={powerUpConfig}
@@ -151,9 +151,9 @@ export const MathArchery: React.FC<MathArcheryProps> = ({ onExit }) => {
                 icon: "🎯"
             }}
             instructions={[
-                { icon: '🎯', title: t('games.math-archery.howToPlay.step1.title'), description: t('games.math-archery.howToPlay.step1.desc') },
-                { icon: '➕', title: t('games.math-archery.howToPlay.step2.title'), description: t('games.math-archery.howToPlay.step2.desc') },
-                { icon: '🏹', title: t('games.math-archery.howToPlay.step3.title'), description: t('games.math-archery.howToPlay.step3.desc') }
+                { icon: '🎯', title: t('games.math-archery.howToPlay.step1.title'), description: t('games.math-archery.howToPlay.step1.description') },
+                { icon: '➕', title: t('games.math-archery.howToPlay.step2.title'), description: t('games.math-archery.howToPlay.step2.description') },
+                { icon: '🏹', title: t('games.math-archery.howToPlay.step3.title'), description: t('games.math-archery.howToPlay.step3.description') }
             ]}
         >
             <>
@@ -239,9 +239,9 @@ export const manifest: GameManifest = {
     title: 'Math Archery',
     titleKey: 'games.math-archery.title',
     subtitle: 'Shoot the answer!',
-    subtitleKey: 'games.math-archery.sub',
+    subtitleKey: 'games.math-archery.subtitle',
     description: 'Solve the equation and shoot the correct target.',
-    descriptionKey: 'games.math-archery.desc',
+    descriptionKey: 'games.math-archery.description',
     category: 'math',
     level: 1,
     component: MathArchery,

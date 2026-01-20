@@ -80,9 +80,9 @@ export const MathPinwheel: React.FC<MathPinwheelProps> = ({ onExit }) => {
             engine={logic as any}
             powerUps={powerUpConfig}
             instructions={[
-                { icon: '🔢', title: t('games.pinwheel-pop.howToPlay.step1.title'), description: t('games.pinwheel-pop.howToPlay.step1.desc') },
-                { icon: '➕', title: t('games.pinwheel-pop.howToPlay.step2.title'), description: t('games.pinwheel-pop.howToPlay.step2.desc') },
-                { icon: '🌬️', title: t('games.pinwheel-pop.howToPlay.step3.title'), description: t('games.pinwheel-pop.howToPlay.step3.desc') },
+                { icon: '🔢', title: t('games.pinwheel-pop.howToPlay.step1.title'), description: t('games.pinwheel-pop.howToPlay.step1.description') },
+                { icon: '➕', title: t('games.pinwheel-pop.howToPlay.step2.title'), description: t('games.pinwheel-pop.howToPlay.step2.description') },
+                { icon: '🌬️', title: t('games.pinwheel-pop.howToPlay.step3.title'), description: t('games.pinwheel-pop.howToPlay.step3.description') },
             ]}
             onExit={onExit}
             className="pinwheel-layout"
@@ -170,7 +170,7 @@ export const manifest: GameManifest = {
     subtitle: 'Pop & Solve!',
     subtitleKey: 'games.pinwheel-pop.subtitle',
     description: 'Solve the sums to spin the pinwheel!',
-    descriptionKey: 'games.pinwheel-pop.desc',
+    descriptionKey: 'games.pinwheel-pop.description',
     category: 'math',
     level: 2,
     component: MathPinwheel,

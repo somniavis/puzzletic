@@ -74,9 +74,9 @@ export const SignalHunter: React.FC<SignalHunterProps> = ({ onExit }) => {
             engine={logic}
             powerUps={powerUps}
             instructions={[
-                { icon: '🎯', title: t('games.signal-hunter.howToPlay.step1.title'), description: t('games.signal-hunter.howToPlay.step1.desc') },
-                { icon: '👁️', title: t('games.signal-hunter.howToPlay.step2.title'), description: t('games.signal-hunter.howToPlay.step2.desc') },
-                { icon: '⚡', title: t('games.signal-hunter.howToPlay.step3.title'), description: t('games.signal-hunter.howToPlay.step3.desc') },
+                { icon: '🎯', title: t('games.signal-hunter.howToPlay.step1.title'), description: t('games.signal-hunter.howToPlay.step1.description') },
+                { icon: '👁️', title: t('games.signal-hunter.howToPlay.step2.title'), description: t('games.signal-hunter.howToPlay.step2.description') },
+                { icon: '⚡', title: t('games.signal-hunter.howToPlay.step3.title'), description: t('games.signal-hunter.howToPlay.step3.description') },
             ]}
             onExit={onExit}
             background={<div style={{ background: 'linear-gradient(135deg, #e9d5ff 0%, #b1b2fb 50%, #fecdd3 100%)', width: '100%', height: '100%' }} />}

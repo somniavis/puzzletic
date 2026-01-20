@@ -686,7 +686,7 @@ export const ja = {
             },
             genius: {
                 title: 'ジーニアス計算',
-                desc: 'スピード計算チャレンジ',
+                desc: "天才たちの「秘密」の計算",
             },
         },
         categories: {

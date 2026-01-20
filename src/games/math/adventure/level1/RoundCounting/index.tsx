@@ -116,13 +116,13 @@ export const RoundCounting: React.FC<RoundCountingProps> = ({ onExit }) => {
     return (
         <Layout3
             title={t('games.math-round-counting.title')}
-            subtitle={t('games.math-round-counting.sub')}
+            subtitle={t('games.math-round-counting.subtitle')}
             gameId="math-round-counting"
             engine={layoutEngine as any}
             instructions={[
-                { icon: '🎯', title: t('games.math-round-counting.howToPlay.step1.title'), description: t('games.math-round-counting.howToPlay.step1.desc') },
-                { icon: '👀', title: t('games.math-round-counting.howToPlay.step2.title'), description: t('games.math-round-counting.howToPlay.step2.desc') },
-                { icon: '🔄', title: t('games.math-round-counting.howToPlay.step3.title'), description: t('games.math-round-counting.howToPlay.step3.desc') }
+                { icon: '🎯', title: t('games.math-round-counting.howToPlay.step1.title'), description: t('games.math-round-counting.howToPlay.step1.description') },
+                { icon: '👀', title: t('games.math-round-counting.howToPlay.step2.title'), description: t('games.math-round-counting.howToPlay.step2.description') },
+                { icon: '🔄', title: t('games.math-round-counting.howToPlay.step3.title'), description: t('games.math-round-counting.howToPlay.step3.description') }
             ]}
             onExit={onExit}
             powerUps={powerUpConfig}
@@ -173,9 +173,9 @@ export const manifest: GameManifest = {
     title: 'Round Counting',
     titleKey: 'games.math-round-counting.title',
     subtitle: 'Count the circles!',
-    subtitleKey: 'games.math-round-counting.sub',
+    subtitleKey: 'games.math-round-counting.subtitle',
     description: 'Count items within the circle.',
-    descriptionKey: 'games.math-round-counting.desc',
+    descriptionKey: 'games.math-round-counting.description',
     category: 'math',
     level: 1,
     component: RoundCounting,

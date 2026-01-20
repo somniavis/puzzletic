@@ -686,7 +686,7 @@ export const ko = {
             },
             genius: {
                 title: '지니어스 연산',
-                desc: '스피드 연산 도전',
+                desc: "천재들의 '비밀' 계산법",
             },
         },
         categories: {

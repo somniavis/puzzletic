@@ -91,7 +91,7 @@ export const DeepSeaDive: React.FC<DeepSeaDiveProps> = ({ onExit }) => {
     return (
         <Layout3
             title={t('games.deep-sea-dive.title')}
-            subtitle={t('games.deep-sea-dive.sub')}
+            subtitle={t('games.deep-sea-dive.subtitle')}
             gameId="deep-sea-dive"
             engine={engine as any} // Layout3 types might drag
             powerUps={powerUps}
@@ -101,9 +101,9 @@ export const DeepSeaDive: React.FC<DeepSeaDiveProps> = ({ onExit }) => {
                 icon: "🤿"
             }}
             instructions={[
-                { icon: '🤿', title: t('games.deep-sea-dive.howToPlay.step1.title'), description: t('games.deep-sea-dive.howToPlay.step1.desc') },
-                { icon: '🧮', title: t('games.deep-sea-dive.howToPlay.step2.title'), description: t('games.deep-sea-dive.howToPlay.step2.desc') },
-                { icon: '⬇️', title: t('games.deep-sea-dive.howToPlay.step3.title'), description: t('games.deep-sea-dive.howToPlay.step3.desc') }
+                { icon: '🤿', title: t('games.deep-sea-dive.howToPlay.step1.title'), description: t('games.deep-sea-dive.howToPlay.step1.description') },
+                { icon: '🧮', title: t('games.deep-sea-dive.howToPlay.step2.title'), description: t('games.deep-sea-dive.howToPlay.step2.description') },
+                { icon: '⬇️', title: t('games.deep-sea-dive.howToPlay.step3.title'), description: t('games.deep-sea-dive.howToPlay.step3.description') }
             ]}
         >
             <>
@@ -177,9 +177,9 @@ export const manifest: GameManifest = {
     title: 'Deep Sea Dive',
     titleKey: 'games.deep-sea-dive.title',
     subtitle: 'Dive deep with correct answers!',
-    subtitleKey: 'games.deep-sea-dive.sub',
+    subtitleKey: 'games.deep-sea-dive.subtitle',
     description: 'Solve the subtraction problem and choose the correct depth to dive.',
-    descriptionKey: 'games.deep-sea-dive.desc',
+    descriptionKey: 'games.deep-sea-dive.description',
     category: 'math',
     level: 2,
     component: DeepSeaDive,

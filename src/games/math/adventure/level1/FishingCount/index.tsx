@@ -142,7 +142,7 @@ export const FishingCount: React.FC<FishingCountProps> = ({ onExit }) => {
     return (
         <Layout3
             title={t('games.math-fishing-count.title')}
-            subtitle={t('games.math-fishing-count.sub')}
+            subtitle={t('games.math-fishing-count.subtitle')}
             gameId="math-fishing-count"
             engine={layoutEngine as any} // Cast safely
             powerUps={[]} // No powerups for this Level 1 game yet
@@ -151,9 +151,9 @@ export const FishingCount: React.FC<FishingCountProps> = ({ onExit }) => {
                 icon: targetAnimal
             }}
             instructions={[
-                { icon: '🎯', title: t('games.math-fishing-count.howToPlay.step1.title'), description: t('games.math-fishing-count.howToPlay.step1.desc') },
-                { icon: '🔢', title: t('games.math-fishing-count.howToPlay.step2.title'), description: t('games.math-fishing-count.howToPlay.step2.desc') },
-                { icon: '🎣', title: t('games.math-fishing-count.howToPlay.step3.title'), description: t('games.math-fishing-count.howToPlay.step3.desc') },
+                { icon: '🎯', title: t('games.math-fishing-count.howToPlay.step1.title'), description: t('games.math-fishing-count.howToPlay.step1.description') },
+                { icon: '🔢', title: t('games.math-fishing-count.howToPlay.step2.title'), description: t('games.math-fishing-count.howToPlay.step2.description') },
+                { icon: '🎣', title: t('games.math-fishing-count.howToPlay.step3.title'), description: t('games.math-fishing-count.howToPlay.step3.description') },
             ]}
             onExit={onExit}
             cardBackground={<FishingBackground />}
@@ -213,9 +213,9 @@ export const manifest: GameManifest = {
     title: 'Fishing Count',
     titleKey: 'games.math-fishing-count.title',
     subtitle: 'Count the fish!',
-    subtitleKey: 'games.math-fishing-count.sub',
+    subtitleKey: 'games.math-fishing-count.subtitle',
     description: 'Catch the requested number of fish.',
-    descriptionKey: 'games.math-fishing-count.desc',
+    descriptionKey: 'games.math-fishing-count.description',
     category: 'math',
     level: 1,
     component: FishingCount,

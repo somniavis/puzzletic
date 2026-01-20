@@ -90,13 +90,13 @@ export const NumberHive: React.FC<NumberHiveProps> = ({ onExit }) => {
     return (
         <Layout3
             title={t('games.math-number-hive.title')}
-            subtitle={t('games.math-number-hive.sub')}
+            subtitle={t('games.math-number-hive.subtitle')}
             gameId="math-number-hive"
             engine={layoutEngine as any}
             instructions={[
-                { icon: '🎯', title: t('games.math-number-hive.howToPlay.step1.title'), description: t('games.math-number-hive.howToPlay.step1.desc') },
-                { icon: '1️⃣2️⃣3️⃣', title: t('games.math-number-hive.howToPlay.step2.title'), description: t('games.math-number-hive.howToPlay.step2.desc') },
-                { icon: '🍯', title: t('games.math-number-hive.howToPlay.step3.title'), description: t('games.math-number-hive.howToPlay.step3.desc') }
+                { icon: '🎯', title: t('games.math-number-hive.howToPlay.step1.title'), description: t('games.math-number-hive.howToPlay.step1.description') },
+                { icon: '1️⃣2️⃣3️⃣', title: t('games.math-number-hive.howToPlay.step2.title'), description: t('games.math-number-hive.howToPlay.step2.description') },
+                { icon: '🍯', title: t('games.math-number-hive.howToPlay.step3.title'), description: t('games.math-number-hive.howToPlay.step3.description') }
             ]}
             onExit={onExit}
             powerUps={powerUpConfig}
@@ -156,9 +156,9 @@ export const manifest: GameManifest = {
     title: 'Number Hive',
     titleKey: 'games.math-number-hive.title',
     subtitle: 'Find sequences!',
-    subtitleKey: 'games.math-number-hive.sub',
+    subtitleKey: 'games.math-number-hive.subtitle',
     description: 'Find the numbers in order on the honeycomb grid.',
-    descriptionKey: 'games.math-number-hive.desc',
+    descriptionKey: 'games.math-number-hive.description',
     category: 'math',
     level: 1, // Start level
     component: NumberHive,

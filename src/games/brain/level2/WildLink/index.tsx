@@ -101,9 +101,9 @@ export default function WildLink({ onExit }: WildLinkProps) {
             onExit={handleExit}
             cardBackground={<WaveBackground />}
             instructions={[
-                { icon: '🦜🦅', title: t('games.wild-link.howToPlay.step1.title'), description: t('games.wild-link.howToPlay.step1.desc') },
-                { icon: '✏️', title: t('games.wild-link.howToPlay.step2.title'), description: t('games.wild-link.howToPlay.step2.desc') },
-                { icon: '✅', title: t('games.wild-link.howToPlay.step3.title'), description: t('games.wild-link.howToPlay.step3.desc') }
+                { icon: '🦜🦅', title: t('games.wild-link.howToPlay.step1.title'), description: t('games.wild-link.howToPlay.step1.description') },
+                { icon: '✏️', title: t('games.wild-link.howToPlay.step2.title'), description: t('games.wild-link.howToPlay.step2.description') },
+                { icon: '✅', title: t('games.wild-link.howToPlay.step3.title'), description: t('games.wild-link.howToPlay.step3.description') }
             ]}
         >
             <div className={styles.gameContainer}>
