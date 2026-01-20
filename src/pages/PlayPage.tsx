@@ -19,6 +19,45 @@ const CATEGORY_ICONS: Record<GameCategory, string> = {
     sw: 'fa-code'
 };
 
+// Emoji-based icon background colors
+const getIconBackground = (thumbnail: string | React.ReactNode | undefined, isLocked: boolean): string => {
+    if (isLocked) return '#f1f5f9'; // slate-100 for locked
+
+    if (typeof thumbnail !== 'string') return '#eef2ff';
+
+    // Map emoji to pastel background colors
+    const emojiColorMap: Record<string, string> = {
+        // Math games
+        '🐟': '#e0f2fe', // sky-100
+        '🎯': '#fee2e2', // red-100
+        '🐝': '#fef3c7', // amber-100
+        '⚖️': '#dbeafe', // blue-100
+        '🍎': '#ffe4e6', // rose-100
+        '🏹': '#d1fae5', // emerald-100
+        '🧱': '#fed7aa', // orange-200
+        '🍭': '#ddd6fe', // violet-200
+        '🤿': '#cffafe', // cyan-100
+        '🍕': '#fecaca', // red-200
+        '🛸': '#e9d5ff', // purple-200
+        '🚀': '#bfdbfe', // blue-200
+        // Brain games
+        '🔗': '#fce7f3', // pink-100
+        '👯': '#f3e8ff', // purple-100
+        '🧩': '#d1fae5', // emerald-100
+        '🐒': '#fef9c3', // yellow-100
+        '🍽️': '#fef3c7', // amber-100
+        '🔍': '#dbeafe', // blue-100
+        '📡': '#ccfbf1', // teal-100
+    };
+
+    // Find matching emoji
+    for (const [emoji, color] of Object.entries(emojiColorMap)) {
+        if (thumbnail.includes(emoji)) return color;
+    }
+
+    return '#eef2ff'; // default indigo-50
+};
+
 const PlayPage: React.FC = () => {
     const navigate = useNavigate();
     const { gameId } = useParams();
@@ -196,7 +235,7 @@ const PlayPage: React.FC = () => {
                                 onClick={() => handlePlayClick(game, !unlocked, displayReason)}
                             >
                                 <div className="card-top">
-                                    <div className="card-icon-box" style={{ background: unlocked ? '#eef2ff' : '#f1f5f9' }}>
+                                    <div className="card-icon-box" style={{ background: getIconBackground(game.thumbnail, !unlocked) }}>
                                         {/* Use emoji or thumbnail */}
                                         {game.thumbnail && typeof game.thumbnail === 'string' && game.thumbnail.startsWith('http') ? (
                                             <img src={game.thumbnail} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 'inherit' }} />
@@ -352,7 +391,7 @@ const PlayPage: React.FC = () => {
                                 onClick={() => handlePlayClick(game, !unlocked, displayReason)}
                             >
                                 <div className="card-top">
-                                    <div className="card-icon-box" style={{ background: unlocked ? '#eef2ff' : '#f1f5f9' }}>
+                                    <div className="card-icon-box" style={{ background: getIconBackground(game.thumbnail, !unlocked) }}>
                                         {game.thumbnail && typeof game.thumbnail === 'string' && game.thumbnail.startsWith('http') ? (
                                             <img src={game.thumbnail} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 'inherit' }} />
                                         ) : (

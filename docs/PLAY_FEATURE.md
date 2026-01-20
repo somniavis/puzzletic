@@ -41,3 +41,51 @@ The game list uses a **Vertical Card List** layout to optimize readability and t
 
 ## Scalability
 The structure is designed to support 1000+ games. New games should be added to the `src/games` directory following the category/level structure and registered in `src/games/registry.ts`.
+
+---
+
+## Game Icon Color Mapping
+
+> **중요**: 신규 게임 추가 시 아래 내용을 참고하여 적절한 아이콘 배경색을 지정해야 합니다.
+
+### 구현 위치
+`src/pages/PlayPage.tsx` 내 `getIconBackground` 함수
+
+### 색상 매핑 테이블
+
+| 이모지 | 배경색 | Hex Code | 대표 게임 |
+|---|---|---|---|
+| 🐟 | Sky-100 | `#e0f2fe` | Fishing Count |
+| 🎯 | Red-100 | `#fee2e2` | Round Counting |
+| 🐝 | Amber-100 | `#fef3c7` | Number Hive |
+| ⚖️ | Blue-100 | `#dbeafe` | Number Balance |
+| 🍎 | Rose-100 | `#ffe4e6` | Fruit Slice |
+| 🏹 | Emerald-100 | `#d1fae5` | Math Archery |
+| 🧱 | Orange-200 | `#fed7aa` | Ten Frame Count |
+| 🍭 | Violet-200 | `#ddd6fe` | Pinwheel Pop |
+| 🤿 | Cyan-100 | `#cffafe` | Deep Sea Dive |
+| 🛸 | Purple-200 | `#e9d5ff` | UFO Invasion |
+| 🔗 | Pink-100 | `#fce7f3` | Color Link |
+| 👯 | Purple-100 | `#f3e8ff` | Pair Up Twin |
+| 🧩 | Emerald-100 | `#d1fae5` | Maze Escape |
+| 🐒 | Yellow-100 | `#fef9c3` | Pair Up Connect |
+| 🍽️ | Amber-100 | `#fef3c7` | Animal Banquet |
+| 📡 | Teal-100 | `#ccfbf1` | Signal Hunter |
+
+### 신규 게임 추가 시
+1. 게임의 `thumbnail` 이모지를 선정
+2. 이모지에 어울리는 Tailwind 100/200 레벨 파스텔 색상 선택
+3. `getIconBackground` 함수의 `emojiColorMap`에 추가
+
+```typescript
+// PlayPage.tsx
+const emojiColorMap: Record<string, string> = {
+    // 기존 매핑...
+    '🆕': '#새색상', // 신규 게임
+};
+```
+
+### 기본값
+- **매핑되지 않은 이모지**: `#eef2ff` (Indigo-50)
+- **잠금 상태**: `#f1f5f9` (Slate-100)
+
