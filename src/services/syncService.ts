@@ -25,6 +25,9 @@ export interface CloudUserData {
     is_premium?: number; // 0 or 1
     subscription_end?: number; // timestamp
     subscription_plan?: string;
+
+    // Redundancy fields (V2.1)
+    current_house_id?: string;
 }
 
 /**
@@ -103,6 +106,8 @@ const compactStateForSync = (state: NurturingPersistentState): any => {
         poopCount: state.poops?.length || 0,
         bugCounts: Object.keys(bugCounts).length > 0 ? bugCounts : null,
         pendingPoopCount: state.pendingPoops?.length || 0,
+        // Explicitly preserve critical non-column fields
+        currentHouseId: state.currentHouseId || 'tent',
     };
 
     // Remove the original arrays (they'll be regenerated on load)
@@ -173,6 +178,11 @@ export const syncUserData = async (
             xp: state.xp || 0,
             gro: state.gro || 0,
             current_land: state.currentLand || 'default_ground',
+            /* 
+             * Redundancy: explicitly send house_id even if column doesn't exist yet, 
+             * to ensure it's debuggable in network tab.
+             */
+            current_house_id: state.currentHouseId || 'tent',
             inventory: state.inventory || [],
 
             // Full game state (source of truth for restoration)

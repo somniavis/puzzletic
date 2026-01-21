@@ -316,6 +316,11 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
       }
 
       console.log('☁️ Cloud data found. Checking versions...');
+      console.log('🔍 Debug Restore - Blob Contents:', {
+        hasCurrentLand: parsedGameData.currentLand,
+        hasCurrentHouseId: parsedGameData.currentHouseId, // This is the key we suspect is missing
+        stats: parsedGameData.stats
+      });
 
 
 
@@ -382,7 +387,8 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
         },
 
         // Explicit Defaults for Optional Fields (handle nulls from D1)
-        currentHouseId: parsedGameData.currentHouseId || defaultState.currentHouseId || 'tent',
+        // CHECK REDUNDANCY: Try blob -> Try redundant column -> Try default -> Fallback 'tent'
+        currentHouseId: parsedGameData.currentHouseId || cloudData.current_house_id || defaultState.currentHouseId || 'tent',
         isSick: parsedGameData.isSick ?? defaultState.isSick ?? false,
         isSleeping: parsedGameData.isSleeping ?? defaultState.isSleeping ?? false,
 
@@ -488,6 +494,14 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
         restoredState.lastSeenStage = restoredState.evolutionStage;
       }
 
+
+      // Log final resolution for debugging
+      console.log('🏡 House Resolution:', {
+        fromBlob: parsedGameData.currentHouseId,
+        fromCloudCol: cloudData.current_house_id,
+        fromDefault: defaultState.currentHouseId,
+        FINAL: restoredState.currentHouseId
+      });
 
       setState(restoredState);
 
@@ -1380,6 +1394,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     // 2. Save Entry to Persistent Storage
     let nextState = saveToHallOfFame(state, entry);
 
+    // 3. Reset Game (Soft Reset)
     // 3. Reset Game (Soft Reset)
     nextState = startNewGeneration(nextState);
 
