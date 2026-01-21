@@ -362,9 +362,33 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
       const defaultState = createDefaultState();
 
       const restoredState: NurturingPersistentState = {
+        // 1. Base on Default State to ensure structure
         ...defaultState,
-        ...parsedGameData,
-        // Safe Merge: Override nested objects with deep merge to prevent data loss or partial updates
+
+        // 2. Safe Merge: Explicitly handle each field to prevent NULL overwrite from D1
+        // Core Stats (Number) - Use Nullish Coalescing (??) because 0 is valid
+        gro: parsedGameData.gro ?? defaultState.gro,
+        xp: parsedGameData.xp ?? defaultState.xp,
+        totalCurrencyEarned: parsedGameData.totalCurrencyEarned ?? defaultState.totalCurrencyEarned,
+        studyCount: parsedGameData.studyCount ?? defaultState.studyCount,
+        gameDifficulty: parsedGameData.gameDifficulty ?? defaultState.gameDifficulty,
+
+        // Character Info
+        hasCharacter: parsedGameData.hasCharacter ?? defaultState.hasCharacter,
+        evolutionStage: parsedGameData.evolutionStage || defaultState.evolutionStage, // 0 is not valid stage
+        speciesId: parsedGameData.speciesId || defaultState.speciesId, // undefined valid
+        characterName: parsedGameData.characterName || defaultState.characterName, // undefined valid
+        lastSeenStage: parsedGameData.lastSeenStage || defaultState.lastSeenStage,
+
+        // Arrays & Objects (Critical: Prevent Null)
+        inventory: parsedGameData.inventory || defaultState.inventory,
+        unlockedJellos: parsedGameData.unlockedJellos || defaultState.unlockedJellos,
+        hallOfFame: parsedGameData.hallOfFame || defaultState.hallOfFame,
+
+        // Appearance
+        currentLand: parsedGameData.currentLand || defaultState.currentLand,
+
+        // Nested Objects (Deep Merge - Preserved from v1)
         stats: {
           ...defaultState.stats,
           ...(parsedGameData.stats || {})
@@ -397,7 +421,6 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
       };
 
       // ===== MIGRATION: Legacy minigameStats -> gameScores =====
-      // If cloud has old format (minigameStats), convert to new format (gameScores)
       if (parsedGameData.minigameStats && !parsedGameData.gameScores) {
         console.log('☁️ [MIGRATION] Converting legacy minigameStats to gameScores...');
         const migratedScores: Record<string, GameScoreValue> = {};
