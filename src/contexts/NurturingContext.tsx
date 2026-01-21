@@ -386,7 +386,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
         hallOfFame: parsedGameData.hallOfFame || defaultState.hallOfFame,
 
         // Appearance
-        currentLand: parsedGameData.currentLand || defaultState.currentLand,
+        currentLand: parsedGameData.currentLand || cloudData.current_land || defaultState.currentLand,
 
         // Nested Objects (Deep Merge - Preserved from v1)
         stats: {
