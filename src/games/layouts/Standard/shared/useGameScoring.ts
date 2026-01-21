@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNurturing } from '../../../../contexts/NurturingContext';
 import { calculateMinigameReward } from '../../../../services/rewardService';
 import { parseGameScore } from '../../../../utils/progression';
@@ -76,10 +76,17 @@ export const useGameScoring = ({
     };
 
     // 2. Handle Game Over & Rewards
+    // Track processing status to prevent double-execution (Critical for "New Record" check)
+    const processedRef = useRef(false);
+
+    // 2. Handle Game Over & Rewards
     useEffect(() => {
-        if (gameState === 'gameover' && !rewardResult) {
+        if (gameState === 'gameover' && !processedRef.current) {
+            processedRef.current = true; // Mark as processed immediately
             processResult();
         } else if (gameState === 'playing' || gameState === 'idle') {
+            // Reset for next game
+            if (processedRef.current) processedRef.current = false;
             if (rewardResult) setRewardResult(null);
             setIsNewRecord(false);
         }

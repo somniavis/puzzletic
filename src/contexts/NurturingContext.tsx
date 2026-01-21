@@ -130,6 +130,9 @@ interface NurturingContextValue {
 
   // Global Loading State (for initial sync)
   isGlobalLoading: boolean;
+
+  // Debug
+  debugUnlockAllGames: () => void;
 }
 
 const NurturingContext = createContext<NurturingContextValue | undefined>(undefined);
@@ -1479,6 +1482,28 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     });
   }, []);
 
+  // Debug: Unlock All Games
+  const debugUnlockAllGames = useCallback(() => {
+    setState((currentState) => {
+      const newCategoryProgress = { ...currentState.categoryProgress };
+
+      // Iterate all categories and set progress to the LAST game in that category
+      Object.entries(GAME_ORDER).forEach(([category, games]) => {
+        if (games.length > 0) {
+          newCategoryProgress[category] = games[games.length - 1];
+        }
+      });
+
+      console.log('🔓 [DEBUG] All Games Unlocked:', newCategoryProgress);
+      alert('✅ All Games Unlocked! (Debug Mode)');
+
+      return {
+        ...currentState,
+        categoryProgress: newCategoryProgress
+      };
+    });
+  }, []);
+
   // 가출 상태 UI 정보
   const abandonmentStatus = getAbandonmentStatusUI(state.abandonmentState, Date.now());
 
@@ -1536,6 +1561,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     isGraduating,
     completeGraduationAnimation,
     recordGameScore,
+    debugUnlockAllGames,
 
     // Subscription
     subscription,

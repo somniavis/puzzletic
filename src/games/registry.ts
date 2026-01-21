@@ -34,6 +34,9 @@ const L2_PairUpConnect = lazy(() => import('./brain/level2/PairUpConnect')); // 
 const L2_MazeHunter = lazy(() => import('./brain/level2/MazeHunter')); // default export
 const L2_SignalHunter = lazy(() => import('./brain/level2/SignalHunter').then(m => ({ default: m.SignalHunter }))); // named export
 
+// Brain Level 3
+const L3_TicTacToe = lazy(() => import('./brain/level3/TicTacToe')); // default export
+
 // --- Game Manifests (metadata with lazy component references) ---
 export const GAMES: GameManifest[] = [
     // [Math Level 1]
@@ -416,6 +419,22 @@ export const GAMES: GameManifest[] = [
         component: L2_SignalHunter,
         thumbnail: '📡',
         tagsKey: 'games.tags.focusTiming'
+    },
+
+    // [Brain Level 3]
+    {
+        id: 'tic-tac-toe',
+        title: 'Tic Tac Toe',
+        titleKey: 'games.tic-tac-toe.title',
+        subtitle: 'Win 3 in a row!',
+        subtitleKey: 'games.tic-tac-toe.subtitle',
+        description: 'Win 3 in a row!',
+        descriptionKey: 'games.tic-tac-toe.description',
+        category: 'brain',
+        level: 3,
+        component: L3_TicTacToe,
+        thumbnail: '❌',
+        tagsKey: 'games.tags.spatial'
     },
 ];
 

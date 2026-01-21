@@ -20,6 +20,9 @@ import pairUpConnectJa from '../../games/brain/level2/PairUpConnect/locales/ja';
 import animalBanquetJa from '../../games/brain/level2/AnimalBanquet/locales/ja';
 import signalHunterJa from '../../games/brain/level2/SignalHunter/locales/ja';
 import mazeHunterJa from '../../games/brain/level2/MazeHunter/locales/ja';
+import ticTacToeJa from '../../games/brain/level3/TicTacToe/locales/ja';
+
+
 
 export const ja = {
     profile: {
@@ -725,6 +728,7 @@ export const ja = {
         'pair-up-connect': pairUpConnectJa,
         'signal-hunter': signalHunterJa,
         'maze-hunter': mazeHunterJa,
+        'tic-tac-toe': ticTacToeJa,
         tags: {
             counting1to5: '数え方 1-5',
             sequence1to10: '数の順序',

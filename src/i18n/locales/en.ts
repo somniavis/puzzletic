@@ -1,4 +1,5 @@
 // Global English Locales
+
 import fishingCountEn from '../../games/math/adventure/level1/FishingCount/locales/en';
 import roundCountingEn from '../../games/math/adventure/level1/RoundCounting/locales/en';
 import numberHiveEn from '../../games/math/adventure/level1/NumberHive/locales/en';
@@ -19,6 +20,7 @@ import animalBanquetEn from '../../games/brain/level2/AnimalBanquet/locales/en';
 import ufoInvasionEn from '../../games/math/adventure/level2/UFOInvasion/locales/en';
 import mazeEscapeEn from '../../games/brain/level1/MazeEscape/locales/en';
 import mazeHunterEn from '../../games/brain/level2/MazeHunter/locales/en';
+import ticTacToeEn from '../../games/brain/level3/TicTacToe/locales/en';
 
 export const en = {
   profile: {
@@ -724,6 +726,7 @@ export const en = {
     'math-level2-ufo-invasion': ufoInvasionEn,
     'maze-escape': mazeEscapeEn,
     'maze-hunter': mazeHunterEn,
+    'tic-tac-toe': ticTacToeEn,
     tags: {
       counting1to5: 'Counting 1-5',
       sequence1to10: 'Number Sequence',

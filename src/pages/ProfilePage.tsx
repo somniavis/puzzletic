@@ -9,7 +9,7 @@ export const ProfilePage: React.FC = () => {
     const navigate = useNavigate();
     const { t } = useTranslation();
     const { user } = useAuth();
-    const { pauseTick, resumeTick, gro, xp, addRewards, maxStats, subscription, purchasePlan } = useNurturing();
+    const { pauseTick, resumeTick, gro, xp, addRewards, maxStats, subscription, purchasePlan, debugUnlockAllGames } = useNurturing();
     const isPremium = subscription.isPremium;
 
     // Pause ticks when entering Profile page, resume when leaving
@@ -191,6 +191,25 @@ export const ProfilePage: React.FC = () => {
                             }}
                         >
                             🚂 Call Train
+                        </button>
+                        <button
+                            style={{
+                                background: '#FF5722',
+                                color: 'white',
+                                padding: '12px 24px',
+                                borderRadius: '12px',
+                                border: 'none',
+                                fontWeight: 'bold',
+                                cursor: 'pointer',
+                                flex: 1
+                            }}
+                            onClick={() => {
+                                if (confirm("Unlock ALL games for testing?")) {
+                                    debugUnlockAllGames();
+                                }
+                            }}
+                        >
+                            🔓 Unlock All
                         </button>
                     </div>
                 </section>

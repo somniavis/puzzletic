@@ -20,6 +20,9 @@ import pairUpConnectKo from '../../games/brain/level2/PairUpConnect/locales/ko.t
 import animalBanquetKo from '../../games/brain/level2/AnimalBanquet/locales/ko';
 import signalHunterKo from '../../games/brain/level2/SignalHunter/locales/ko';
 import mazeHunterKo from '../../games/brain/level2/MazeHunter/locales/ko';
+import ticTacToeKo from '../../games/brain/level3/TicTacToe/locales/ko';
+
+
 
 export const ko = {
     profile: {
@@ -725,6 +728,7 @@ export const ko = {
         'pair-up-connect': pairUpConnectKo,
         'signal-hunter': signalHunterKo,
         'maze-hunter': mazeHunterKo,
+        'tic-tac-toe': ticTacToeKo,
         tags: {
             counting1to5: '1-5 수세기',
             sequence1to10: '수 순서',
