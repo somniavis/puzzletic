@@ -171,11 +171,11 @@ export const FrontAdditionGame: React.FC<{ onExit: () => void, gameId?: string }
 
     // Determine config keys based on gameId (Memoized)
     const { titleKey, subtitleKey } = React.useMemo(() => {
-        if (gameId === 'math-level2-front-addition-lv2') {
+        if (gameId === 'front-addition-lv2') {
             return { titleKey: 'games.frontAddition.lv2.title', subtitleKey: 'games.frontAddition.lv2.subtitle' };
-        } else if (gameId === 'math-level2-front-addition-lv3') {
+        } else if (gameId === 'front-addition-lv3') {
             return { titleKey: 'games.frontAddition.lv3.title', subtitleKey: 'games.frontAddition.lv3.subtitle' };
-        } else if (gameId === 'math-level2-front-addition-lv4') {
+        } else if (gameId === 'front-addition-lv4') {
             return { titleKey: 'games.frontAddition.lv4.title', subtitleKey: 'games.frontAddition.lv4.subtitle' };
         }
         return { titleKey: 'games.frontAddition.lv1.title', subtitleKey: 'games.frontAddition.lv1.subtitle' };
@@ -234,7 +234,7 @@ export const FrontAdditionGame: React.FC<{ onExit: () => void, gameId?: string }
             title={t(titleKey)}
             subtitle={t(subtitleKey)}
             description={t('games.frontAddition.description')}
-            gameId={gameId || 'math-level2-front-addition-lv1'}
+            gameId={gameId || 'front-addition-lv1'}
             engine={engine}
             onExit={onExit}
             cardBackground={<BlobBackground speed="slow" colors={{ blob1: '#eff6ff', blob2: '#f0f9ff', blob3: '#e0f2fe', blob4: '#dbeafe' }} />}
@@ -364,7 +364,7 @@ export const FrontAdditionGame: React.FC<{ onExit: () => void, gameId?: string }
 };
 
 export const manifestLv1: GameManifest = {
-    id: 'math-level2-front-addition-lv1',
+    id: 'front-addition-lv1',
     title: 'Front Addition 1',
     description: '2-digit + 1-digit Addition',
     category: 'math',
@@ -378,7 +378,7 @@ export const manifestLv1: GameManifest = {
 };
 
 export const manifestLv2: GameManifest = {
-    id: 'math-level2-front-addition-lv2',
+    id: 'front-addition-lv2',
     title: 'Front Addition 2',
     description: '2-digit + 2-digit Addition',
     category: 'math',
@@ -392,7 +392,7 @@ export const manifestLv2: GameManifest = {
 };
 
 export const manifestLv3: GameManifest = {
-    id: 'math-level2-front-addition-lv3',
+    id: 'front-addition-lv3',
     title: 'Front Addition 3',
     description: '3-digit + 2-digit Addition',
     category: 'math',
@@ -406,7 +406,7 @@ export const manifestLv3: GameManifest = {
 };
 
 export const manifestLv4: GameManifest = {
-    id: 'math-level2-front-addition-lv4',
+    id: 'front-addition-lv4',
     title: 'Front Addition 4',
     description: '3-digit + 3-digit Addition',
     category: 'math',

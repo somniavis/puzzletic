@@ -49,17 +49,17 @@ export const useGameLogic = (engine: ReturnType<typeof useGameEngine>, gameId?: 
         let a, b;
         let is3Digit = false;
 
-        if (gameId === 'math-level2-front-addition-lv4') {
+        if (gameId === 'front-addition-lv4') {
             // Level 4: 3-digit + 3-digit
             a = Math.floor(Math.random() * 900) + 100;
             b = Math.floor(Math.random() * 900) + 100;
             is3Digit = true;
-        } else if (gameId === 'math-level2-front-addition-lv3') {
+        } else if (gameId === 'front-addition-lv3') {
             // Level 3: 3-digit + 2-digit
             a = Math.floor(Math.random() * 900) + 100;
             b = Math.floor(Math.random() * 90) + 10;
             is3Digit = true;
-        } else if (gameId === 'math-level2-front-addition-lv2') {
+        } else if (gameId === 'front-addition-lv2') {
             // Level 2: 2-digit + 2-digit
             a = Math.floor(Math.random() * 90) + 10;
             b = Math.floor(Math.random() * 90) + 10;

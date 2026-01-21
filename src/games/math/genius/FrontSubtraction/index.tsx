@@ -234,11 +234,11 @@ export const FrontSubtractionGame: React.FC<{ onExit: () => void, gameId?: strin
 
     // ... (Memoized config keys section remains same)
     const { titleKey, subtitleKey } = React.useMemo(() => {
-        if (gameId === 'math-level2-front-subtraction-lv2') {
+        if (gameId === 'front-subtraction-lv2') {
             return { titleKey: 'games.frontSubtraction.lv2.title', subtitleKey: 'games.frontSubtraction.lv2.subtitle' };
-        } else if (gameId === 'math-level2-front-subtraction-lv3') {
+        } else if (gameId === 'front-subtraction-lv3') {
             return { titleKey: 'games.frontSubtraction.lv3.title', subtitleKey: 'games.frontSubtraction.lv3.subtitle' };
-        } else if (gameId === 'math-level2-front-subtraction-lv4') {
+        } else if (gameId === 'front-subtraction-lv4') {
             return { titleKey: 'games.frontSubtraction.lv4.title', subtitleKey: 'games.frontSubtraction.lv4.subtitle' };
         }
         return { titleKey: 'games.frontSubtraction.lv1.title', subtitleKey: 'games.frontSubtraction.lv1.subtitle' };
@@ -398,7 +398,7 @@ export const FrontSubtractionGame: React.FC<{ onExit: () => void, gameId?: strin
             title={t(titleKey)}
             subtitle={t(subtitleKey)}
             description={t('games.frontSubtraction.description')}
-            gameId={gameId || 'math-level2-front-subtraction-lv1'}
+            gameId={gameId || 'front-subtraction-lv1'}
             engine={engine}
             onExit={onExit}
             cardBackground={<BlobBackground speed="slow" colors={{ blob1: '#eff6ff', blob2: '#f0f9ff', blob3: '#e0f2fe', blob4: '#dbeafe' }} />}
@@ -620,7 +620,7 @@ export const FrontSubtractionGame: React.FC<{ onExit: () => void, gameId?: strin
 };
 
 export const manifestLv1: GameManifest = {
-    id: 'math-level2-front-subtraction-lv1',
+    id: 'front-subtraction-lv1',
     title: 'Front Subtraction 1',
     description: '2-digit - 1-digit Subtraction',
     category: 'math',
@@ -634,7 +634,7 @@ export const manifestLv1: GameManifest = {
 };
 
 export const manifestLv2: GameManifest = {
-    id: 'math-level2-front-subtraction-lv2',
+    id: 'front-subtraction-lv2',
     title: 'Front Subtraction 2',
     description: '2-digit - 2-digit Subtraction',
     category: 'math',
@@ -648,7 +648,7 @@ export const manifestLv2: GameManifest = {
 };
 
 export const manifestLv3: GameManifest = {
-    id: 'math-level2-front-subtraction-lv3',
+    id: 'front-subtraction-lv3',
     title: 'Front Subtraction 3',
     description: '3-digit - 2-digit Subtraction',
     category: 'math',
@@ -662,7 +662,7 @@ export const manifestLv3: GameManifest = {
 };
 
 export const manifestLv4: GameManifest = {
-    id: 'math-level2-front-subtraction-lv4',
+    id: 'front-subtraction-lv4',
     title: 'Front Subtraction 4',
     description: '3-digit - 3-digit Subtraction',
     category: 'math',

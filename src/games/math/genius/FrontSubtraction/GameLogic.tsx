@@ -72,7 +72,7 @@ export const useGameLogic = (engine: ReturnType<typeof useGameEngine>, gameId?: 
             return { uA, uB, wantBorrow };
         };
 
-        if (gameId === 'math-level2-front-subtraction-lv4') {
+        if (gameId === 'front-subtraction-lv4') {
             // Level 4: 3-digit - 3-digit
             const { uA, uB } = getWeightedUnits();
             const prefixA = Math.floor(Math.random() * 90) + 10;
@@ -81,7 +81,7 @@ export const useGameLogic = (engine: ReturnType<typeof useGameEngine>, gameId?: 
             b = prefixB * 10 + uB;
             is3Digit = true;
 
-        } else if (gameId === 'math-level2-front-subtraction-lv3') {
+        } else if (gameId === 'front-subtraction-lv3') {
             // Level 3: 3-digit - 2-digit
             const { uA, uB } = getWeightedUnits();
             const hA = Math.floor(Math.random() * 9) + 1;
@@ -91,7 +91,7 @@ export const useGameLogic = (engine: ReturnType<typeof useGameEngine>, gameId?: 
             b = tB * 10 + uB;
             is3Digit = true;
 
-        } else if (gameId === 'math-level2-front-subtraction-lv2') {
+        } else if (gameId === 'front-subtraction-lv2') {
             // Level 2: 2-digit - 2-digit
             const { uA, uB, wantBorrow } = getWeightedUnits();
             let tA, tB;
