@@ -7,7 +7,7 @@ interface AdventureCardProps {
     game: GameManifest;
     unlocked: boolean;
     displayReason?: string;
-    playCount: number;
+    clearCount: number;
     isMastered: boolean;
     onPlay: (game: GameManifest, isLocked: boolean, reason?: string) => void;
 }
@@ -16,7 +16,7 @@ export const AdventureCard: React.FC<AdventureCardProps> = ({
     game,
     unlocked,
     displayReason,
-    playCount,
+    clearCount,
     isMastered,
     onPlay
 }) => {
@@ -39,7 +39,7 @@ export const AdventureCard: React.FC<AdventureCardProps> = ({
     };
 
     let subtitleContent;
-    if (playCount === 0) {
+    if (clearCount === 0) {
         // First time: Show original subtitle
         subtitleContent = (
             <span className="card-subtitle-text">
@@ -48,7 +48,7 @@ export const AdventureCard: React.FC<AdventureCardProps> = ({
         );
     } else if (!isMastered) {
         // Challenge Phase: 1-3 plays
-        const current = Math.max(0, playCount - 1);
+        const current = Math.max(0, clearCount - 1);
         subtitleContent = (
             <span className="card-mission-text">
                 {t('games.mission.challenge', { current, total: 3 })}

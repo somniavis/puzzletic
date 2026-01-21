@@ -5,7 +5,7 @@ import type { GameManifest } from '../../games/types';
 interface DrillItemProps {
     game: GameManifest;
     unlocked: boolean;
-    playCount: number;
+    clearCount: number;
     isMastered: boolean;
     reason?: string;
     onPlay: (game: GameManifest, isLocked: boolean, reason?: string) => void;
@@ -14,7 +14,7 @@ interface DrillItemProps {
 export const DrillItem: React.FC<DrillItemProps> = ({
     game,
     unlocked,
-    playCount,
+    clearCount,
     isMastered,
     reason,
     onPlay
@@ -52,13 +52,13 @@ export const DrillItem: React.FC<DrillItemProps> = ({
                             display: 'block',
                             marginBottom: '0.25rem',
                             color: '#64748b', // Slate-500
-                            fontStyle: playCount > 0 && !isMastered ? 'italic' : 'normal',
-                            fontWeight: playCount > 0 && !isMastered ? 'bold' : 'normal'
+                            fontStyle: clearCount > 0 && !isMastered ? 'italic' : 'normal',
+                            fontWeight: clearCount > 0 && !isMastered ? 'bold' : 'normal'
                         }}
                     >
                         {(() => {
-                            if (playCount === 0) return game.subtitleKey ? t(game.subtitleKey, game.subtitle || 'Start Drill') : (game.subtitle || 'Start Drill');
-                            if (!isMastered) return t('games.mission.challenge10', { current: playCount, total: 10, defaultValue: `Challenge! (${playCount}/10)` });
+                            if (clearCount === 0) return game.subtitleKey ? t(game.subtitleKey, game.subtitle || 'Start Drill') : (game.subtitle || 'Start Drill');
+                            if (!isMastered) return t('games.mission.challenge10', { current: clearCount, total: 10, defaultValue: `Challenge! (${clearCount}/10)` });
                             return game.subtitleKey ? t(game.subtitleKey, game.subtitle || 'Mastered') : (game.subtitle || 'Mastered');
                         })()}
                     </span>

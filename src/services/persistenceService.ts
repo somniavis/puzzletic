@@ -15,8 +15,8 @@ import {
 } from '../constants/nurturing';
 import { calculateOfflineProgress, checkAbandonmentState } from './gameTickService';
 import { protectData, restoreData } from './simpleEncryption';
-// FIX: Re-calculate progression from stats
-import { recalculateCategoryProgress } from '../utils/progression';
+import { createGameScore, getUnlockThreshold, getProgressionCategory } from '../utils/progression';
+import type { GameScoreValue } from '../types/nurturing';
 
 const STORAGE_KEY_PREFIX = 'puzzleletic_nurturing_state_v4';
 const CHECKSUM_KEY_PREFIX = 'puzzleletic_checksum';
@@ -101,6 +101,7 @@ export const createDefaultState = (): NurturingPersistentState => {
     unlockedJellos: {},
     hallOfFame: [],
     categoryProgress: {}, // Initialize empty progression map
+    gameScores: {}, // Initialize empty scores map (Hybrid Storage v2)
   };
 };
 
@@ -259,6 +260,35 @@ export const loadNurturingState = (userId?: string): NurturingPersistentState =>
       };
     }
 
+    // ===== MIGRATION: minigameStats -> gameScores (Hybrid Storage v2) =====
+    if (loaded.minigameStats && !loaded.gameScores) {
+      console.log('🔄 [MIGRATION] Converting minigameStats to gameScores...');
+      const migratedScores: Record<string, GameScoreValue> = {};
+
+      for (const [gameId, stats] of Object.entries(loaded.minigameStats as Record<string, any>)) {
+        const category = getProgressionCategory(gameId);
+        const threshold = category ? getUnlockThreshold(category) : 4;
+        const isUnlocked = stats.playCount >= threshold;
+
+        migratedScores[gameId] = createGameScore(
+          stats.highScore || 0,
+          stats.playCount || 0,
+          isUnlocked
+        );
+      }
+
+      loaded.gameScores = migratedScores;
+      // Clear legacy fields
+      delete loaded.minigameStats;
+      delete loaded.totalMinigameScore;
+      delete loaded.totalMinigamePlayCount;
+    }
+
+    // Ensure gameScores exists
+    if (!loaded.gameScores) {
+      loaded.gameScores = {};
+    }
+
     // Game ID Migration (math-01-X -> math-X)
     if (loaded.history && loaded.history.gamesPlayed) {
       const GAME_ID_MIGRATIONS: Record<string, string> = {
@@ -310,15 +340,7 @@ export const loadNurturingState = (userId?: string): NurturingPersistentState =>
       loaded.categoryProgress = {};
     }
 
-    // FIX (Reconciliation): Ensure consistency with minigameStats
-    // Use statistics as the Source of Truth to rebuild progression capability
-    if (loaded.minigameStats) {
-      const reconciled = recalculateCategoryProgress(loaded.minigameStats);
-      loaded.categoryProgress = {
-        ...(loaded.categoryProgress || {}),
-        ...reconciled
-      };
-    }
+    // NOTE: Legacy reconciliation removed - migration logic above handles minigameStats -> gameScores conversion
 
     return loaded as NurturingPersistentState;
   } catch (error) {

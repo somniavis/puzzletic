@@ -1,6 +1,6 @@
 # 하이브리드 데이터 저장 아키텍처
 
-> 마지막 업데이트: 2026-01-01
+> 마지막 업데이트: 2026-01-21 (Hybrid Storage v2)
 
 ## 개요
 
@@ -172,35 +172,83 @@ puzzleletic_checksum_{userId}
 
 ---
 
-## 미니게임 점수 저장 (Minigame Scoring)
+## 게임 점수 저장 (Hybrid Storage v2)
 
-모든 미니게임의 점수는 **NurturingPersistentState** 내부에 통합되어 관리되며, 하이브리드 저장 방식(로컬+D1)을 따릅니다.
+> **v2 (2026-01-21)**: `minigameStats` → `gameScores` 압축 포맷으로 전환
 
-### 데이터 구조
+모든 게임의 점수는 **NurturingPersistentState** 내부에 통합되어 관리되며, 하이브리드 저장 방식(로컬+D1)을 따릅니다.
+
+### 데이터 구조 (v2 - Compact Format)
 ```typescript
 interface NurturingPersistentState {
   // ...
-  // 1. 개별 게임 통계 (Game ID -> Stats)
-  minigameStats?: Record<string, {
-    totalScore: number;   // 누적 점수
-    playCount: number;    // 누적 플레이 횟수
-    highScore: number;    // 최고 점수 (Prev Best)
-    lastPlayedAt: number; // 마지막 플레이 시각
-  }>;
+  
+  // 1. 게임 점수 (Game ID -> Compact Value)
+  gameScores?: Record<string, GameScoreValue>;
+  
+  // 2. 카테고리 진행도 (Category -> Last Unlocked Game ID)
+  categoryProgress?: Record<string, string>;
+}
 
-  // 2. 전체 합산 통계 (Global Stats)
-  totalMinigameScore?: number;      // 모든 게임 점수 총합
-  totalMinigamePlayCount?: number;  // 모든 게임 판수 총합
+// GameScoreValue 형식:
+// - 숫자: 마스터 완료된 게임 (예: 2500 = 최고점수)
+// - 문자열: 진행 중인 게임 (예: "1200:3" = 최고점수:클리어횟수)
+type GameScoreValue = number | string;
+```
+
+### v1 → v2 비교
+| 항목 | v1 (minigameStats) | v2 (gameScores) |
+|------|-------------------|------------------|
+| 필드당 크기 | ~100 bytes | ~8 bytes |
+| 200게임 총량 | ~20KB | ~1.6KB |
+| **절감률** | - | **92%** |
+| 필드 구조 | 객체 (4개 필드) | 숫자 또는 문자열 |
+
+### 예시
+```typescript
+// v1 (deprecated)
+minigameStats: {
+  'math-archery': { totalScore: 5000, playCount: 5, highScore: 1200, lastPlayedAt: 1705123456 },
+  'fishing-count': { totalScore: 3000, playCount: 3, highScore: 1100, lastPlayedAt: 1705123456 },
+}
+
+// v2 (current)
+gameScores: {
+  'math-archery': 1200,      // 마스터됨 (숫자 = 최고점수만)
+  'fishing-count': '1100:3', // 진행중 (점수:횟수)
+}
+categoryProgress: {
+  'math-adventure': 'number-hive',  // 다음 해금 대기 게임
 }
 ```
 
 ### 동작 원리
-1.  **게임 종료 (Game Over)**: `useGameScoring` 훅이 `recordGameScore` 호출.
+1.  **게임 종료 (Game Over)**: `useGameScoring` 훅이 `recordGameScore()` 호출
 2.  **상태 갱신**:
-    *   해당 게임의 `minigameStats` 업데이트.
-    *   전역 `totalMinigameScore`, `totalMinigamePlayCount` 동시 업데이트.
-3.  **저장**: `localStorage`에 즉시 반영.
-4.  **동기화**: 자동 저장 주기(15분) 또는 종료 시점에 D1 `game_data` JSON으로 통합되어 업로드.
+    *   `parseGameScore()`로 현재 값 파싱
+    *   새 점수/횟수 계산
+    *   `createGameScore()`로 압축 형식 생성
+    *   해금 조건 충족 시 `categoryProgress` 업데이트
+3.  **저장**: `localStorage`에 즉시 반영
+4.  **동기화**: 자동 저장 주기(15분) 또는 종료 시점에 D1 `game_data` JSON으로 통합되어 업로드
+
+### 마이그레이션
+기존 유저의 `minigameStats`는 다음 시점에 자동 변환됩니다:
+- **로그인 시**: `NurturingContext.tsx`에서 클라우드 데이터 로드 시
+- **앱 시작 시**: `persistenceService.ts`에서 로컬 데이터 로드 시
+
+```typescript
+// 마이그레이션 로직 (자동 실행)
+if (loaded.minigameStats && !loaded.gameScores) {
+  const migratedScores = {};
+  for (const [gameId, stats] of Object.entries(loaded.minigameStats)) {
+    const isUnlocked = stats.playCount >= threshold;
+    migratedScores[gameId] = createGameScore(stats.highScore, stats.playCount, isUnlocked);
+  }
+  loaded.gameScores = migratedScores;
+  delete loaded.minigameStats;
+}
+```
 
 ---
 
@@ -271,20 +319,39 @@ interface NurturingPersistentState {
 
 
 ### 4. 카테고리 기반 진행도 저장 (Category-Based Progression)
-- **문제**: 모든 게임의 개별 통계(`minigameStats`)를 저장하면 게임 수 증가에 따라 데이터가 비대해짐
-- **해결**: `categoryProgress` 필드 도입 - 카테고리별로 "도달한 게임 ID"만 저장
+- **문제**: 모든 게임의 개별 통계를 저장하면 게임 수 증가에 따라 데이터가 비대해짐
+- **해결**: `categoryProgress` + `gameScores` 조합
   ```typescript
+  // 카테고리별 진행 상태 (다음 해금 대기 게임 ID)
   categoryProgress: {
-    'math-adventure': 'math-archery',      // 1KB 미만
+    'math-adventure': 'number-hive',
     'math-genius': 'front-addition-lv3',
-    'brain-adventure': 'signal-hunter',
   }
-  // vs 기존: minigameStats에 200개 게임 각각 저장 (~40KB)
+  
+  // 개별 게임 점수 (압축 포맷)
+  gameScores: {
+    'math-archery': 1200,      // 마스터됨
+    'fishing-count': '1100:3', // 진행중
+  }
   ```
 - **순서 정의**: `src/constants/gameOrder.ts`에서 카테고리별 게임 순서 관리
-- **해금 로직**: `isGameUnlocked()`가 순서 인덱스 비교만으로 O(1) 판정
+- **해금 로직**: `isGameUnlocked()`가 순서 인덱스 비교와 클리어 횟수로 O(1) 판정
 - **효과**: 
-    - 데이터 크기 ~40배 감소 (200게임 기준: 40KB → 1KB)
+    - 데이터 크기 ~92% 감소 (200게임 기준: 20KB → 1.6KB)
     - 동기화 페이로드 대폭 절감
     - 신규 게임 삽입 시 기존 데이터 자동 호환
 
+---
+
+## 관련 파일 (Hybrid Storage v2)
+
+| 파일 | 역할 |
+|------|------|
+| `src/types/nurturing.ts` | `GameScoreValue` 타입 정의 |
+| `src/utils/progression.ts` | `parseGameScore()`, `createGameScore()`, `isGameUnlocked()` |
+| `src/utils/resultMetrics.ts` | `calculateMastery()` |
+| `src/contexts/NurturingContext.tsx` | `recordGameScore()`, 마이그레이션 |
+| `src/services/persistenceService.ts` | 로컬 저장, 마이그레이션 |
+| `src/constants/gameOrder.ts` | 카테고리별 게임 순서 |
+| `src/hooks/usePlayPageLogic.ts` | PlayPage 로직 |
+| `src/games/layouts/Standard/shared/useGameScoring.ts` | 게임 점수 처리 |

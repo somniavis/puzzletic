@@ -6,7 +6,7 @@ import { playButtonSound } from '../utils/sound';
 import { useNurturing } from '../contexts/NurturingContext';
 import { GAMES, getGameById } from '../games/registry';
 import type { GameCategory, GameManifest } from '../games/types';
-import { isGameUnlocked } from '../utils/progression';
+import { isGameUnlocked, parseGameScore } from '../utils/progression';
 
 // Hooks & Utils
 import { usePlayPageLogic, type Operator } from '../hooks/usePlayPageLogic';
@@ -21,7 +21,7 @@ const PlayPage: React.FC = () => {
     const navigate = useNavigate();
     const { gameId } = useParams();
     const { t } = useTranslation();
-    const { setGameDifficulty, pauseTick, resumeTick, minigameStats, categoryProgress } = useNurturing();
+    const { setGameDifficulty, pauseTick, resumeTick, gameScores, categoryProgress } = useNurturing();
 
     // -- Custom Hook for State & Logic --
     const {
@@ -34,7 +34,7 @@ const PlayPage: React.FC = () => {
         drillStats,
         handleTabSelect,
         handleMathModeSelect
-    } = usePlayPageLogic({ minigameStats });
+    } = usePlayPageLogic({ gameScores });
 
     const activeGame = gameId ? getGameById(gameId) : null;
 
@@ -139,8 +139,9 @@ const PlayPage: React.FC = () => {
             <div className="game-list">
                 {adventureGames.length > 0 ? (
                     adventureGames.map(game => {
-                        const stats = minigameStats?.[game.id];
-                        const { unlocked, reason, requiredGame } = isGameUnlocked(game.id, GAMES, { minigameStats, categoryProgress });
+                        const scoreValue = gameScores?.[game.id];
+                        const { clearCount } = parseGameScore(scoreValue);
+                        const { unlocked, reason, requiredGame } = isGameUnlocked(game.id, GAMES, { gameScores, categoryProgress });
 
                         let displayReason = reason;
                         if (requiredGame) {
@@ -148,8 +149,7 @@ const PlayPage: React.FC = () => {
                             displayReason = t('play.game.unlock.reason', { game: requiredGameTitle });
                         }
 
-                        const playCount = stats?.playCount || 0;
-                        const isMastered = playCount >= 4; // Adventure mastery threshold
+                        const isMastered = clearCount >= 4; // Adventure mastery threshold
 
                         return (
                             <AdventureCard
@@ -157,7 +157,7 @@ const PlayPage: React.FC = () => {
                                 game={game}
                                 unlocked={unlocked}
                                 displayReason={displayReason}
-                                playCount={playCount}
+                                clearCount={clearCount}
                                 isMastered={isMastered}
                                 onPlay={handlePlayClick}
                             />
@@ -202,17 +202,17 @@ const PlayPage: React.FC = () => {
                 <div className="path-line"></div>
                 {filteredDrills.length > 0 ? (
                     filteredDrills.map((game) => {
-                        const stats = minigameStats?.[game.id];
-                        const { unlocked, reason } = isGameUnlocked(game.id, GAMES, { minigameStats, categoryProgress });
-                        const playCount = stats?.playCount || 0;
-                        const isMastered = playCount >= 10; // Drill mastery threshold
+                        const scoreValue = gameScores?.[game.id];
+                        const { clearCount } = parseGameScore(scoreValue);
+                        const { unlocked, reason } = isGameUnlocked(game.id, GAMES, { gameScores, categoryProgress });
+                        const isMastered = clearCount >= 10; // Drill mastery threshold
 
                         return (
                             <DrillItem
                                 key={game.id}
                                 game={game}
                                 unlocked={unlocked}
-                                playCount={playCount}
+                                clearCount={clearCount}
                                 isMastered={isMastered}
                                 reason={reason}
                                 onPlay={handlePlayClick}

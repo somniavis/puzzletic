@@ -147,7 +147,20 @@ export interface HallOfFameEntry {
   finalStats: NurturingStats;
 }
 
-// Minigame Statistics (Cumulative)
+/**
+ * Game Score Value (Compact Format)
+ * - number: High score only (for mastered/unlocked games)
+ * - string: "highScore:clearCount" format (for games in progress)
+ * 
+ * Examples:
+ * - 2500: Mastered game with high score of 2500
+ * - "1200:3": Game in progress with high score 1200 and 3 clears toward unlock
+ */
+export type GameScoreValue = number | string;
+
+/**
+ * @deprecated Use gameScores instead. Kept for migration purposes only.
+ */
 export interface MinigameStats {
   totalScore: number;
   playCount: number;
@@ -179,13 +192,34 @@ export interface NurturingPersistentState {
   characterName?: string; // Character Nickname
   speciesId?: string; // Current Jello Species ID
   history?: import('./character').CharacterHistory; // Hidden Evolution Tracking
-  minigameStats?: Record<string, MinigameStats>; // Game ID -> Stats
-  totalMinigameScore?: number; // All Games Total Score
-  totalMinigamePlayCount?: number; // All Games Total Play Count
+
+  // ===== Game Data (Hybrid Storage v2 - Compact Format) =====
+  /**
+   * Category-based unlock progress.
+   * Key: Category ID (e.g., "math-adventure", "math-genius")
+   * Value: Last unlocked game ID in that category
+   */
+  categoryProgress?: Record<string, string>;
+
+  /**
+   * Game scores in compact format.
+   * Key: Game ID (e.g., "math-fishing-count")
+   * Value: number (high score) OR "highScore:clearCount" (in progress)
+   */
+  gameScores?: Record<string, GameScoreValue>;
+
+  // ===== Legacy Fields (Migration Only - To Be Removed) =====
+  /** @deprecated Use gameScores instead */
+  minigameStats?: Record<string, MinigameStats>;
+  /** @deprecated No longer tracked */
+  totalMinigameScore?: number;
+  /** @deprecated No longer tracked */
+  totalMinigamePlayCount?: number;
+
+  // ===== Other Persistent Data =====
   unlockedJellos?: Record<string, number[]>; // Encyclopedia: { 'yellowJello': [1, 2], 'redJello': [1] }
   hallOfFame?: HallOfFameEntry[]; // 졸업한 젤로 목록
   isSleeping?: boolean; // 수면 상태 여부
   sleepStartTime?: number; // 수면 시작 시간 (timestamp)
   currentHouseId?: string; // 현재 장착된 하우스 ID (기본: 'tent')
-  categoryProgress?: Record<string, string>; // 카테고리별 도달한 게임 ID (해금용)
 }

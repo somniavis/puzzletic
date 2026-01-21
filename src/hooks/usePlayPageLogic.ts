@@ -1,16 +1,17 @@
 import { useState, useMemo } from 'react';
 import type { GameCategory } from '../games/types';
 import { GAMES } from '../games/registry';
-import type { MinigameStats } from '../types/nurturing';
+import type { GameScoreValue } from '../types/nurturing';
+import { parseGameScore } from '../utils/progression';
 
 export type MathMode = 'adventure' | 'genius';
 export type Operator = 'ADD' | 'SUB' | 'MUL' | 'DIV';
 
-interface UsePlayPageLogicProps {
-    minigameStats?: Record<string, MinigameStats>;
+export interface UsePlayPageLogicProps {
+    gameScores?: Record<string, GameScoreValue>;
 }
 
-export const usePlayPageLogic = ({ minigameStats }: UsePlayPageLogicProps) => {
+export const usePlayPageLogic = ({ gameScores }: UsePlayPageLogicProps) => {
     // -- State --
     const [activeTab, setActiveTab] = useState<GameCategory>(() => {
         return (sessionStorage.getItem('play_tab') as GameCategory) || 'math';
@@ -50,16 +51,16 @@ export const usePlayPageLogic = ({ minigameStats }: UsePlayPageLogicProps) => {
         return [];
     }, [drillGames, selectedOp]);
 
-    // Drill Stats
+    // Drill Stats (using compact gameScores format)
     const drillStats = useMemo(() => {
         const total = filteredDrills.length;
         const completed = filteredDrills.filter(g => {
-            const stats = minigameStats?.[g.id];
-            // Simple logic: considered "completed" if played at least once for now, or use mastery logic
-            return stats && stats.playCount > 0;
+            const { clearCount } = parseGameScore(gameScores?.[g.id]);
+            // Considered "completed" if played at least once
+            return clearCount > 0;
         }).length;
         return { total, completed, percentage: total > 0 ? (completed / total) * 100 : 0 };
-    }, [filteredDrills, minigameStats]);
+    }, [filteredDrills, gameScores]);
 
     return {
         activeTab,

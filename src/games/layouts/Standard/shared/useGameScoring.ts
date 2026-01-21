@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNurturing } from '../../../../contexts/NurturingContext';
 import { calculateMinigameReward } from '../../../../services/rewardService';
+import { parseGameScore } from '../../../../utils/progression';
 import type { RewardCalculation, MinigameDifficulty } from '../../../../types/gameMechanics';
 
 interface ScoringProps {
@@ -21,24 +22,22 @@ export const useGameScoring = ({
     stats
 }: ScoringProps) => {
     // Context is the Single Source of Truth for High Scores
-    const { evolutionStage, addRewards, recordGameScore, minigameStats } = useNurturing();
+    const { evolutionStage, addRewards, recordGameScore, gameScores } = useNurturing();
 
     const [rewardResult, setRewardResult] = useState<RewardCalculation | null>(null);
     const [highScore, setHighScore] = useState<number>(0);
     const [prevBest, setPrevBest] = useState<number>(0);
     const [isNewRecord, setIsNewRecord] = useState(false);
 
-    // 1. Initial Load of High Score from Context
+    // 1. Initial Load of High Score from Context (Compact Format)
     useEffect(() => {
-        if (gameId && minigameStats) {
-            const gameStats = minigameStats[gameId];
-            if (gameStats) {
-                setHighScore(gameStats.highScore || 0);
-            } else {
-                setHighScore(0);
-            }
+        if (gameId && gameScores) {
+            const { highScore: storedHigh } = parseGameScore(gameScores[gameId]);
+            setHighScore(storedHigh);
+        } else {
+            setHighScore(0);
         }
-    }, [gameId, minigameStats]);
+    }, [gameId, gameScores]);
 
     // Helper to process results (Memoized to be callable from outside)
     const processResult = () => {
@@ -57,10 +56,8 @@ export const useGameScoring = ({
         addRewards(calculated.xpEarned, calculated.groEarned);
 
         // Record Global Cumulative Score & Handle High Score Persistence
-        // logic moved entirely to NurturingContext.recordGameScore
         if (gameId) {
-            const currentStats = minigameStats?.[gameId];
-            const currentBest = currentStats?.highScore || 0;
+            const { highScore: currentBest } = parseGameScore(gameScores?.[gameId]);
 
             // Determine if it's a new record
             if (score > currentBest) {

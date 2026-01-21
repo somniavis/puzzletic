@@ -53,15 +53,16 @@ import {
 } from '../services/actionService';
 import { addXPAndCheckEvolution } from '../services/evolutionService';
 import { POOP_CONFIG } from '../constants/nurturing';
-import { updateCategoryProgress, recalculateCategoryProgress } from '../utils/progression';
-import type { Poop } from '../types/nurturing';
+import { updateCategoryProgress, parseGameScore, createGameScore, getUnlockThreshold, getProgressionCategory } from '../utils/progression';
+import { GAME_ORDER } from '../constants/gameOrder';
+import type { Poop, GameScoreValue } from '../types/nurturing';
 
 interface NurturingContextValue {
   // 상태
   stats: NurturingStats;
   poops: Poop[];
   bugs: Bug[];
-  minigameStats?: Record<string, import('../types/nurturing').MinigameStats>;
+  gameScores?: Record<string, GameScoreValue>;
   categoryProgress?: Record<string, string>; // 카테고리별 도달한 게임 ID (해금용)
   condition: CharacterCondition;
   gro: number;
@@ -356,29 +357,39 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
         lastActiveTime: Date.now(),
       };
 
-      // Critical: Merge categoryProgress to prevent data loss on sync
-      // FIX (Smart Merge): Only patch if Cloud is TRULY missing the key (Legacy Data)
-      // If Cloud has {}, it means "User Reset" or "New User" -> Respect it (Don't resurrect Zombie Data)
-      // If Cloud has undefined, it means "Old Schema" -> Keep Local Data
+      // ===== MIGRATION: Legacy minigameStats -> gameScores =====
+      // If cloud has old format (minigameStats), convert to new format (gameScores)
+      if (parsedGameData.minigameStats && !parsedGameData.gameScores) {
+        console.log('☁️ [MIGRATION] Converting legacy minigameStats to gameScores...');
+        const migratedScores: Record<string, GameScoreValue> = {};
 
-      // Critical: Merge categoryProgress to prevent data loss on sync
-      // FIX 2 (Reconciliation): Recalculate based on minigameStats to ensure Source of Truth
-      // This protects against "Reset after Refresh" if categoryProgress was lost but stats exist.
-      if (parsedGameData.minigameStats) {
-        const reconciledProgress = recalculateCategoryProgress(parsedGameData.minigameStats);
+        for (const [gameId, stats] of Object.entries(parsedGameData.minigameStats)) {
+          const category = getProgressionCategory(gameId);
+          const threshold = category ? getUnlockThreshold(category) : 4;
+          const isUnlocked = stats.playCount >= threshold;
 
+          migratedScores[gameId] = createGameScore(
+            stats.highScore,
+            stats.playCount,
+            isUnlocked
+          );
+        }
 
-        restoredState.categoryProgress = {
-          ...(parsedGameData.categoryProgress || {}),
-          ...reconciledProgress,
-        };
+        restoredState.gameScores = migratedScores;
+        // Clear legacy fields
+        delete restoredState.minigameStats;
+        delete restoredState.totalMinigameScore;
+        delete restoredState.totalMinigamePlayCount;
       } else {
-        restoredState.categoryProgress = parsedGameData.categoryProgress || {};
+        // Use new format directly
+        restoredState.gameScores = parsedGameData.gameScores || {};
       }
 
-      // Legacy Safety: If result is still empty/null, fall back to Local
-      // (Only relevant if minigameStats was also missing)
-      if (!restoredState.categoryProgress || Object.keys(restoredState.categoryProgress).length === 0) {
+      // Restore categoryProgress (direct from cloud, no reconciliation needed)
+      restoredState.categoryProgress = parsedGameData.categoryProgress || {};
+
+      // Legacy Safety: If categoryProgress is empty but local has data, keep local
+      if (Object.keys(restoredState.categoryProgress).length === 0) {
         if (stateRef.current.categoryProgress && Object.keys(stateRef.current.categoryProgress).length > 0) {
           console.log('☁️ Legacy Cloud Data detected (Missing categoryProgress). Merging Local Progress.');
           restoredState.categoryProgress = { ...stateRef.current.categoryProgress };
@@ -609,45 +620,51 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
 
   const recordGameScore = useCallback((gameId: string, score: number) => {
     setState(currentState => {
-      const statsMap = currentState.minigameStats || {};
-      const currentStats = statsMap[gameId] || {
-        totalScore: 0,
-        playCount: 0,
-        highScore: 0,
-        lastPlayedAt: 0
-      };
+      const scoresMap = currentState.gameScores || {};
+      const currentValue = scoresMap[gameId];
+      const { highScore: oldHigh, clearCount: oldCount } = parseGameScore(currentValue);
 
-      const newStats = {
-        totalScore: currentStats.totalScore + score,
-        playCount: currentStats.playCount + 1,
-        highScore: Math.max(currentStats.highScore, score),
-        lastPlayedAt: Date.now()
-      };
+      // Calculate new values
+      const newHighScore = Math.max(oldHigh, score);
+      const newClearCount = oldCount + 1;
 
-      // categoryProgress 업데이트 (해금 최적화용)
-      const updatedCategoryProgress = updateCategoryProgress(
-        gameId,
-        currentState.categoryProgress
-      );
+      // Check unlock threshold for this game's category
+      const category = getProgressionCategory(gameId);
+      const threshold = category ? getUnlockThreshold(category) : 4;
+      const isUnlocked = newClearCount >= threshold;
+
+      // Create compact score value
+      const newScoreValue = createGameScore(newHighScore, newClearCount, isUnlocked);
+
+      // Update categoryProgress if unlock threshold is met
+      let updatedCategoryProgress = currentState.categoryProgress;
+      if (isUnlocked && category) {
+        const order = GAME_ORDER[category];
+        const currentIndex = order.indexOf(gameId);
+        const nextGameId = order[currentIndex + 1];
+        if (nextGameId) {
+          updatedCategoryProgress = updateCategoryProgress(
+            nextGameId,
+            currentState.categoryProgress
+          );
+        }
+      }
 
       const newState = {
         ...currentState,
-        minigameStats: {
-          ...statsMap,
-          [gameId]: newStats
+        gameScores: {
+          ...scoresMap,
+          [gameId]: newScoreValue
         },
         categoryProgress: updatedCategoryProgress,
-        totalMinigameScore: (currentState.totalMinigameScore || 0) + score,
-        totalMinigamePlayCount: (currentState.totalMinigamePlayCount || 0) + 1
       };
 
       // Force Immediate Save to Local Storage (Critical for progression)
-      // This prevents data loss if user refreshes immediately after game end
       saveNurturingState(newState, user?.uid);
 
       return newState;
     });
-  }, []);
+  }, [user?.uid]);
 
   const [condition, setCondition] = useState<CharacterCondition>(() =>
     evaluateCondition(state.stats)
@@ -1358,7 +1375,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     stats: state.stats,
     poops: state.poops,
     bugs: state.bugs || [],
-    minigameStats: state.minigameStats,
+    gameScores: state.gameScores,
     categoryProgress: state.categoryProgress,
     condition,
     currentLand: state.currentLand,
@@ -1434,6 +1451,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     state.evolutionStage,
     state.unlockedJellos, // Added dependency
     state.categoryProgress, // Added dependency
+    state.gameScores, // CRITICAL: Added for Hybrid Storage v2
     state.isSick, // Added dependency
     state.isSleeping, // Added dependency
     state.currentHouseId, // Added dependency
