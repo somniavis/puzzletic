@@ -674,71 +674,71 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
   // ... (existing actions) ...
 
   const purchaseItem = useCallback((itemId: string, price: number): boolean => {
-    let success = false;
+    // 1. Sync Check against Ref (for immediate UI feedback)
+    const current = stateRef.current;
+
+    // Already owned?
+    if (current.inventory?.includes(itemId)) {
+      return true;
+    }
+
+    // Money check
+    if ((current.gro || 0) < price) {
+      return false;
+    }
+
+    // 2. Async Update
     setState((currentState) => {
-      // 이미 보유 중이면 성공 처리 (돈 차감 안 함)
-      if (currentState.inventory?.includes(itemId)) {
-        success = true;
-        return currentState;
-      }
+      // Re-check inside updater for safety
+      if (currentState.inventory?.includes(itemId)) return currentState;
+      if ((currentState.gro || 0) < price) return currentState;
 
-      // 돈 부족
-      if ((currentState.gro || 0) < price) {
-        success = false;
-        return currentState;
-      }
-
-      success = true;
       const newState = {
         ...currentState,
         gro: (currentState.gro || 0) - price,
         inventory: [...(currentState.inventory || []), itemId],
       };
-      // saveNurturingState(newState); // Handled by throttle
-      // Removed immediate syncUserData(user, newState);
       return newState;
     });
-    return success;
+
+    return true; // Return success immediately so UI can proceed
   }, [user]);
 
   const equipLand = useCallback((landId: string): boolean => {
-    let success = false;
-    setState((currentState) => {
-      // Must own the item or it be default
-      if (landId !== 'default_ground' && !currentState.inventory?.includes(landId)) {
-        console.warn('Cannot equip land not in inventory:', landId);
-        return currentState;
-      }
+    // Sync validation
+    const current = stateRef.current;
+    if (landId !== 'default_ground' && !current.inventory?.includes(landId)) {
+      console.warn('Cannot equip land not in inventory:', landId);
+      return false;
+    }
 
-      success = true;
+    setState((currentState) => {
       const newState = {
         ...currentState,
         currentLand: landId,
       };
-      // saveNurturingState(newState); // Handled by throttle
       return newState;
     });
-    return success;
+    return true;
   }, []);
 
   const equipHouse = useCallback((houseId: string): boolean => {
-    let success = false;
-    setState((currentState) => {
-      // Allow 'tent' by default or check inventory
-      if (houseId !== 'tent' && !currentState.inventory?.includes(houseId)) {
-        console.warn('Cannot equip house not in inventory:', houseId);
-        return currentState;
-      }
+    // Sync validation
+    const current = stateRef.current;
+    // Allow 'tent' by default or check inventory
+    if (houseId !== 'tent' && !current.inventory?.includes(houseId)) {
+      console.warn('Cannot equip house not in inventory:', houseId);
+      return false;
+    }
 
-      success = true;
+    setState((currentState) => {
       const newState = {
         ...currentState,
         currentHouseId: houseId,
       };
-      // saveNurturingState(newState); // Handled by throttle
       return newState;
     });
-    return success;
+    return true;
   }, []);
 
   const recordGameScore = useCallback((gameId: string, score: number) => {
