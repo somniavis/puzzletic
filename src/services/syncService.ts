@@ -80,6 +80,41 @@ const sanitizeForD1 = (obj: any): any => {
 };
 
 /**
+ * Compact state for cloud sync (Hybrid Storage v2.1)
+ * Converts heavy arrays (poops, bugs) to lightweight counts
+ * 
+ * ~98% data reduction for poop/bug storage:
+ * - Before: [{id, x, y, createdAt, healthDebuff}, ...] (~150 bytes each)
+ * - After: poopCount: 5, bugCounts: { fly: 2, mosquito: 3 } (~30 bytes total)
+ */
+const compactStateForSync = (state: NurturingPersistentState): any => {
+    // Count bugs by type
+    const bugCounts: Record<string, number> = {};
+    if (state.bugs && state.bugs.length > 0) {
+        for (const bug of state.bugs) {
+            bugCounts[bug.type] = (bugCounts[bug.type] || 0) + 1;
+        }
+    }
+
+    // Create compact state
+    const compactState: any = {
+        ...state,
+        // Replace arrays with counts
+        poopCount: state.poops?.length || 0,
+        bugCounts: Object.keys(bugCounts).length > 0 ? bugCounts : null,
+        pendingPoopCount: state.pendingPoops?.length || 0,
+    };
+
+    // Remove the original arrays (they'll be regenerated on load)
+    delete compactState.poops;
+    delete compactState.bugs;
+    delete compactState.pendingPoops;
+
+    return compactState;
+};
+
+
+/**
  * Purchase Subscription
  * Calls the dedicated purchase endpoint to process subscription
  */
@@ -141,8 +176,9 @@ export const syncUserData = async (
             inventory: state.inventory || [],
 
             // Full game state (source of truth for restoration)
+            // Compact format: poop/bug arrays -> counts (Hybrid Storage v2.1)
             // Must sanitize to convert undefined → null (D1 requirement)
-            game_data: JSON.stringify(sanitizeForD1(state)),
+            game_data: JSON.stringify(sanitizeForD1(compactStateForSync(state))),
 
             // Timestamps
             created_at: user.metadata.creationTime

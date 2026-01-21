@@ -317,6 +317,23 @@ if (loaded.minigameStats && !loaded.gameScores) {
     - **트래픽 절감**: 방치형 플레이어나 단순 조회 유저의 불필요한 네트워크 요청 100% 제거
     - **서버 부하 감소**: 실질적인 데이터 변경 시에만 쓰기 작업 수행
 
+### 3-3. 똥/벌레 배열 압축 (Compact Poop/Bug Storage - Hybrid Storage v2.1)
+- **문제**: 똥과 벌레 객체의 좌표값이 소수점 14자리까지 저장되어 불필요하게 데이터 비대
+  ```typescript
+  // Before: 개별 객체 저장 (~150 bytes/poop, ~200 bytes/bug)
+  poops: [{ id, x: 71.33729627515501, y: 35.30070954327439, createdAt, healthDebuff }, ...]
+  bugs: [{ id, type, x: 77.85805644568335, y: 76.95863972914596, ... }, ...]
+  ```
+- **해결**: 클라우드 동기화 시 배열 → 개수로 압축 (`syncService.ts:compactStateForSync`)
+  ```typescript
+  // After: 개수만 저장 (~30 bytes total)
+  poopCount: 5,
+  bugCounts: { fly: 2, mosquito: 3 }
+  ```
+- **복원**: 로그인 시 개수만큼 랜덤 위치에 재생성 (`NurturingContext.tsx`)
+- **효과**:
+    - **~98% 데이터 절감** (똥 5개 + 벌레 5개: ~1.7KB → ~32 bytes)
+    - 정확한 위치는 게임플레이에 영향 없음 (시각적 요소만)
 
 ### 4. 카테고리 기반 진행도 저장 (Category-Based Progression)
 - **문제**: 모든 게임의 개별 통계를 저장하면 게임 수 증가에 따라 데이터가 비대해짐

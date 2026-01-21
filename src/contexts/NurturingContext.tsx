@@ -11,6 +11,7 @@ import type {
   CharacterCondition,
   PendingPoop,
   Bug,
+  BugType,
   AbandonmentStatusUI,
 } from '../types/nurturing';
 import type { FoodItem } from '../types/food';
@@ -396,6 +397,59 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
         }
       }
 
+      // ===== Hybrid Storage v2.1: Regenerate poop/bug arrays from counts =====
+      // Cloud data stores counts only, regenerate full arrays with random positions
+      const compactData = parsedGameData as any;
+
+      // Regenerate poops from count
+      if (compactData.poopCount !== undefined && !compactData.poops) {
+        console.log('☁️ [v2.1] Regenerating poops from count:', compactData.poopCount);
+        const regeneratedPoops: Poop[] = [];
+        for (let i = 0; i < compactData.poopCount; i++) {
+          regeneratedPoops.push({
+            id: `poop-regen-${Date.now()}-${i}`,
+            x: 20 + Math.random() * 60,
+            y: 20 + Math.random() * 60,
+            createdAt: Date.now(),
+            healthDebuff: -5,
+          });
+        }
+        restoredState.poops = regeneratedPoops;
+      }
+
+      // Regenerate bugs from counts
+      if (compactData.bugCounts && !compactData.bugs) {
+        console.log('☁️ [v2.1] Regenerating bugs from counts:', compactData.bugCounts);
+        const regeneratedBugs: Bug[] = [];
+        for (const [bType, count] of Object.entries(compactData.bugCounts as Record<string, number>)) {
+          for (let j = 0; j < count; j++) {
+            regeneratedBugs.push({
+              id: `bug-regen-${Date.now()}-${bType}-${j}`,
+              type: bType as BugType,
+              x: 20 + Math.random() * 60,
+              y: 20 + Math.random() * 60,
+              createdAt: Date.now(),
+              healthDebuff: -0.5,
+              happinessDebuff: -0.5,
+            });
+          }
+        }
+        restoredState.bugs = regeneratedBugs;
+      }
+
+      // Regenerate pending poops from count
+      if (compactData.pendingPoopCount !== undefined && !compactData.pendingPoops) {
+        console.log('☁️ [v2.1] Regenerating pending poops from count:', compactData.pendingPoopCount);
+        const regeneratedPending: PendingPoop[] = [];
+        for (let k = 0; k < compactData.pendingPoopCount; k++) {
+          regeneratedPending.push({
+            id: `pending-regen-${Date.now()}-${k}`,
+            scheduledAt: Date.now() + (k + 1) * 60000,
+            healthDebuff: -5,
+          });
+        }
+        restoredState.pendingPoops = regeneratedPending;
+      }
 
       // Ensure lastSeenStage logic is consistent with evolutionStage
       if (parsedGameData.lastSeenStage === undefined) {
