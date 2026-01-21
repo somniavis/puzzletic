@@ -14,7 +14,7 @@ export { getProgressionCategory };
  * 
  * Unlock Rules:
  * - Adventure Mode: 1 initial play + 3 challenge clears = 4 total clears to unlock next
- * - Genius Mode: 10 clears to unlock next
+ * - Genius Mode: 5 clears to unlock next
  */
 
 // ==================== Constants ====================
@@ -23,7 +23,7 @@ export { getProgressionCategory };
 export const ADVENTURE_UNLOCK_THRESHOLD = 4;
 
 /** Clears required to unlock next game (Genius Mode) */
-export const GENIUS_UNLOCK_THRESHOLD = 10;
+export const GENIUS_UNLOCK_THRESHOLD = 5;
 
 // ==================== Helper Functions ====================
 

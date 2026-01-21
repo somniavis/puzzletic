@@ -6,7 +6,7 @@ import { playButtonSound } from '../utils/sound';
 import { useNurturing } from '../contexts/NurturingContext';
 import { GAMES, getGameById } from '../games/registry';
 import type { GameCategory, GameManifest } from '../games/types';
-import { isGameUnlocked, parseGameScore } from '../utils/progression';
+import { isGameUnlocked, parseGameScore, ADVENTURE_UNLOCK_THRESHOLD, GENIUS_UNLOCK_THRESHOLD } from '../utils/progression';
 
 // Hooks & Utils
 import { usePlayPageLogic, type Operator } from '../hooks/usePlayPageLogic';
@@ -149,7 +149,7 @@ const PlayPage: React.FC = () => {
                             displayReason = t('play.game.unlock.reason', { game: requiredGameTitle });
                         }
 
-                        const isMastered = clearCount >= 4; // Adventure mastery threshold
+                        const isMastered = clearCount >= ADVENTURE_UNLOCK_THRESHOLD; // Adventure mastery threshold
 
                         return (
                             <AdventureCard
@@ -205,7 +205,7 @@ const PlayPage: React.FC = () => {
                         const scoreValue = gameScores?.[game.id];
                         const { clearCount } = parseGameScore(scoreValue);
                         const { unlocked, reason } = isGameUnlocked(game.id, GAMES, { gameScores, categoryProgress });
-                        const isMastered = clearCount >= 10; // Drill mastery threshold
+                        const isMastered = clearCount >= GENIUS_UNLOCK_THRESHOLD; // Drill mastery threshold
 
                         return (
                             <DrillItem
