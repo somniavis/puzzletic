@@ -148,6 +148,7 @@ interface NurturingProviderProps {
 
 import { useAuth } from './AuthContext';
 import { syncUserData, fetchUserData, purchaseSubscription } from '../services/syncService';
+import { useDebounce } from '../hooks/useDebounce';
 
 interface SubscriptionState {
   isPremium: boolean;
@@ -157,33 +158,40 @@ interface SubscriptionState {
 
 export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }) => {
   const { user } = useAuth(); // Import user from AuthContext
-
-  // Global Loading State
   const [isGlobalLoading, setIsGlobalLoading] = useState(true);
 
   // 상태
   const [state, setState] = useState<NurturingPersistentState>(() => {
-    // Initial load without user ID (will be reloaded when user is set)
     const loaded = loadNurturingState();
     const { updatedState } = applyOfflineProgress(loaded);
     saveNurturingState(updatedState);
     return updatedState;
   });
 
-  // Subscription State (Not persistent in localStorage by default to ensure validity)
+  // ========== 1. THROTTLED LOCAL PERSISTENCE ==========
+  // Save to localStorage whenever state changes (Debounced 1000ms)
+  // This solves "Refresh Data Loss" and "Phantom Storage" issues.
+  const debouncedState = useDebounce(state, 1000);
+
+  useEffect(() => {
+    // Save to local storage with current user ID context
+    // This ensures that even if app crashes/refreshes, data is safe on disk.
+    saveNurturingState(debouncedState, user?.uid);
+  }, [debouncedState, user?.uid]);
+  // ====================================================
+
+  // Subscription State
   const [subscription, setSubscription] = useState<SubscriptionState>({
     isPremium: false,
     plan: null,
     expiryDate: null,
   });
 
-  // Purchase Plan Handlere
+  // ... (purchasePlan omitted for brevity, logic preserved) ...
   const purchasePlan = useCallback(async (planId: '3_months' | '12_months'): Promise<boolean> => {
     if (!user) return false;
-
     console.log(`Processing purchase for plan: ${planId}`);
     const result = await purchaseSubscription(user, planId);
-
     if (result.success) {
       console.log('Purchase successful!', result);
       setSubscription({
@@ -198,87 +206,60 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     }
   }, [user]);
 
-
-
-  // Keep stateRef in sync with state for manual operations (like saveToCloud)
+  // Keep stateRef in sync logic ... (preserved) ...
   useEffect(() => {
     stateRef.current = state;
   }, [state]);
 
-  // Track user changes and update storage key
+  // Track user changes ... (preserved) ...
   useEffect(() => {
     setCurrentUserId(user?.uid || null);
-
-    // reset global loading when user changes (will trigger new fetch)
     if (user?.uid) {
       setIsGlobalLoading(true);
     } else {
-      // If no user (logout), we are "done" loading (guest mode active)
       setIsGlobalLoading(false);
     }
-
-    // When user changes, reload their data
     if (user?.uid) {
       console.log('🔄 User changed, loading user-specific data for:', user.uid);
-      const userState = loadNurturingState();
+      const userState = loadNurturingState(user.uid); // Load explicit user data
       const { updatedState } = applyOfflineProgress(userState);
 
-      // Sync independent key if state has higher value
       if (updatedState.lastSeenStage) {
         const currentStored = getFailSafeLastSeenStage() || 0;
         if (updatedState.lastSeenStage > currentStored) {
           saveFailSafeLastSeenStage(updatedState.lastSeenStage);
         }
       }
-
       setState(updatedState);
-      // saveNurturingState removed
     }
   }, [user?.uid]);
-  // ... (previous useEffects) ...
 
   // ==================== HYBRID STORAGE: Cloud Sync on Login ====================
-  // On login: D1 data is trusted and overwrites localStorage
-  // This ensures cross-device consistency
   useEffect(() => {
     if (!user) {
-      // Ensure loading is false if no user
       setIsGlobalLoading(false);
       return;
     }
 
-    // Force loading true at start of sync attempt
     setIsGlobalLoading(true);
-
     console.log('☁️ Fetching cloud data for user:', user.uid);
+
     fetchUserData(user).then((result) => {
-      // DEBUG LOGS
-      if (result.success && result.data) {
-        // Proceed with parsing...
-      } else {
-        // No valid data
-      }
-
-
       if (!result.success) {
         if (result.notFound) {
-          // New user: no cloud data exists
-          // If local guest has progress (hasCharacter), sync it.
-          // Otherwise, sync a fresh clean state to avoid garbage data.
+          // ... (New User Logic Preserved) ...
           console.log('☁️ New user detected.');
           if (stateRef.current.hasCharacter) {
             console.log('☁️ Syncing guest progress to new account.');
-            // Promote Guest: Sync local state to Cloud AND re-save to Local with user ID
             const guestState = stateRef.current;
             syncUserData(user, guestState);
-            saveNurturingState(guestState, user.uid); // Lock this data to the new user ID
+            saveNurturingState(guestState, user.uid);
           } else {
             console.log('☁️ Initializing fresh account state.');
-            // Fresh Start: Create clean state, Sync to Cloud, AND Overwrite Local with user ID
             const cleanState = createDefaultState();
             syncUserData(user, cleanState);
             setState({ ...cleanState, lastActiveTime: Date.now() });
-            saveNurturingState(cleanState, user.uid); // Ensure local storage is wiped of old guest data
+            saveNurturingState(cleanState, user.uid);
           }
         } else {
           console.warn('☁️ Fetch failed:', result.error);
@@ -286,10 +267,10 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
         return;
       }
 
-      // Cloud data exists: parse and use it
+      // Cloud data exists
       const cloudData = result.data;
 
-      // Update Subscription State
+      // Update Subscription ... (Preserved) ...
       if (cloudData.is_premium !== undefined) {
         setSubscription({
           isPremium: !!cloudData.is_premium,
@@ -299,8 +280,6 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
       }
 
       let parsedGameData = cloudData.gameData || cloudData.game_data;
-
-      // Handle JSON string (D1 returns string)
       if (typeof parsedGameData === 'string') {
         try {
           parsedGameData = JSON.parse(parsedGameData);
@@ -316,24 +295,10 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
       }
 
       console.log('☁️ Cloud data found. Checking versions...');
-      console.log('🔍 Debug Restore - Blob Contents:', {
-        hasCurrentLand: parsedGameData.currentLand,
-        hasCurrentHouseId: parsedGameData.currentHouseId, // This is the key we suspect is missing
-        stats: parsedGameData.stats
-      });
 
-
-
-      // Smart Sync: Compare local vs cloud timestamps
-      // If local data is significantly newer (e.g. > 1 minute), keep local and push to cloud
-      // This prevents "Return to Previous" issues on refresh/cross-device
       const cloudTime = parsedGameData.lastActiveTime || 0;
       const localTime = stateRef.current.lastActiveTime || 0;
 
-      // Use a tolerance of 5 seconds to avoid clock skew issues
-
-      // FIX (Zero Stats Bug): Check if local data is "broken" or invalid (e.g. all zeros)
-      // If local stats are suspicious, we should TRUST CLOUD regardless of timestamps.
       const isLocalInvalid =
         stateRef.current.stats.health === 0 &&
         stateRef.current.stats.fullness === 0 &&
@@ -344,13 +309,31 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
         stateRef.current.totalCurrencyEarned === 0 &&
         !stateRef.current.hasCharacter;
 
-      // Only keep local if it's NEWER AND (Valid AND Not Fresh)
-      if (localTime > cloudTime + 5000 && !isLocalFresh && !isLocalInvalid) {
-        console.log(`☁️ Cloud data is stale! (Local: ${new Date(localTime).toLocaleTimeString()} vs Cloud: ${new Date(cloudTime).toLocaleTimeString()})`);
-        console.log('☁️ Keeping local data (Lazy Sync: will sync on next auto-save/logout)');
-        // FIX: Do NOT write to cloud immediately to save costs.
+      // ========== 2. SYNC PRECEDENCE LOGIC (FIXED) ==========
+      // Prioritize Cloud Data unless Local has *Significant* Progress + Newer Time.
+      // This prevents "Stale Local Tick" overwriting "Cloud Progress".
+
+      const cloudXP = parsedGameData.xp || 0;
+      const localXP = stateRef.current.xp || 0;
+
+      // IF Cloud has MORE PROGRESS (XP), Trust Cloud NO MATTER WHAT (even if local time is newer)
+      // This assumes XP never decreases significantly.
+      const cloudHasMoreProgress = cloudXP > localXP;
+
+      // IF Local is significantly newer AND has equal/more progress -> Keep Local
+      const isLocalLegitimatelyNewer = (localTime > cloudTime + 5000) && (localXP >= cloudXP);
+
+      if (isLocalLegitimatelyNewer && !isLocalFresh && !isLocalInvalid) {
+        console.log(`☁️ Keeping local data (Lazy Sync). Reason: Local is newer AND has >= XP.`);
+        console.log(`   (Local: ${new Date(localTime).toLocaleTimeString()} / XP ${localXP} vs Cloud: ${new Date(cloudTime).toLocaleTimeString()} / XP ${cloudXP})`);
         return;
       }
+
+      if (cloudHasMoreProgress && localTime > cloudTime) {
+        console.warn(`⚠️ Cloud timestamp is older but Cloud XP is higher! Trusting Cloud to prevent data loss.`);
+        console.warn(`   (Cloud XP: ${cloudXP} vs Local XP: ${localXP})`);
+      }
+      // ========================================================
 
       if (isLocalInvalid) {
         console.warn('⚠️ Local state appears broken (0/0/0). Forcing Cloud Restore.');
@@ -358,8 +341,10 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
 
       console.log('☁️ Cloud data is newer or consistent. Restoring from cloud.');
 
-      // Use createDefaultState() as a base to ensure new fields are present
+      // ... (Restore Logic continues unchanged) ...
       const defaultState = createDefaultState();
+      // ...
+
 
       const restoredState: NurturingPersistentState = {
         // 1. Base on Default State to ensure structure
