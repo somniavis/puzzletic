@@ -316,12 +316,15 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
       const cloudXP = parsedGameData.xp || 0;
       const localXP = stateRef.current.xp || 0;
 
-      // IF Cloud has MORE PROGRESS (XP), Trust Cloud NO MATTER WHAT (even if local time is newer)
-      // This assumes XP never decreases significantly.
-      const cloudHasMoreProgress = cloudXP > localXP;
+      const cloudTotalGro = parsedGameData.totalCurrencyEarned || 0;
+      const localTotalGro = stateRef.current.totalCurrencyEarned || 0;
+
+      // IF Cloud has MORE PROGRESS (XP OR Total Money), Trust Cloud NO MATTER WHAT
+      // This protects both leveling progress AND wallet balance from stale overwrites.
+      const cloudHasMoreProgress = (cloudXP > localXP) || (cloudTotalGro > localTotalGro);
 
       // IF Local is significantly newer AND has equal/more progress -> Keep Local
-      const isLocalLegitimatelyNewer = (localTime > cloudTime + 5000) && (localXP >= cloudXP);
+      const isLocalLegitimatelyNewer = (localTime > cloudTime + 5000) && (localXP >= cloudXP) && (localTotalGro >= cloudTotalGro);
 
       if (isLocalLegitimatelyNewer && !isLocalFresh && !isLocalInvalid) {
         console.log(`☁️ Keeping local data (Lazy Sync). Reason: Local is newer AND has >= XP.`);
