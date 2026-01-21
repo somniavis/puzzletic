@@ -749,6 +749,13 @@ export const ja = {
             challenge10: '挑戦！ ({{current}}/{{total}})',
         },
     },
+    train: {
+        reward: {
+            glo: 'GLO',
+            dud: 'ハズレ!',
+            confirm: 'OK',
+        },
+    },
 } as const;
 
 export default ja;

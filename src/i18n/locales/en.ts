@@ -748,6 +748,13 @@ export const en = {
       challenge10: 'Challenge! ({{current}}/{{total}})',
     },
   },
+  train: {
+    reward: {
+      glo: 'GLO',
+      dud: 'Nothing!',
+      confirm: 'OK',
+    },
+  },
 } as const;
 
 export type TranslationKeys = typeof en;

@@ -92,6 +92,7 @@ function AppContent() {
         const newChar = createCharacter(contextSpeciesId);
         // FORCE update stage and name
         newChar.evolutionStage = contextStage || 1;
+        newChar.level = newChar.evolutionStage; // Sync level with stage (Fixes profile display mismatch)
 
         // Sync Name: Use persisted name if available, otherwise default to evolution name
         if (nurturing.characterName) {
@@ -116,6 +117,7 @@ function AppContent() {
 
     const newCharacter = createCharacter(id);
     newCharacter.evolutionStage = stage; // Set the specific stage
+    newCharacter.level = stage; // Sync level for profile display
     setCharacter(newCharacter);
 
     // Reset mood and action when changing character

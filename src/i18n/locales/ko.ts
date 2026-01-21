@@ -749,6 +749,13 @@ export const ko = {
             challenge10: '도전! ({{current}}/{{total}})',
         },
     },
+    train: {
+        reward: {
+            glo: 'GLO',
+            dud: '꽭!',
+            confirm: '확인',
+        },
+    },
 } as const;
 
 export default ko;

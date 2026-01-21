@@ -200,6 +200,11 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
 
 
 
+  // Keep stateRef in sync with state for manual operations (like saveToCloud)
+  useEffect(() => {
+    stateRef.current = state;
+  }, [state]);
+
   // Track user changes and update storage key
   useEffect(() => {
     setCurrentUserId(user?.uid || null);
@@ -354,6 +359,33 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
       const restoredState: NurturingPersistentState = {
         ...defaultState,
         ...parsedGameData,
+        // Safe Merge: Override nested objects with deep merge to prevent data loss or partial updates
+        stats: {
+          ...defaultState.stats,
+          ...(parsedGameData.stats || {})
+        },
+        tickConfig: {
+          ...defaultState.tickConfig,
+          ...(parsedGameData.tickConfig || {})
+        },
+        abandonmentState: {
+          ...defaultState.abandonmentState,
+          ...(parsedGameData.abandonmentState || {})
+        },
+        history: {
+          ...defaultState.history,
+          ...(parsedGameData.history || {}),
+          foodsEaten: { ...(defaultState.history?.foodsEaten || {}), ...(parsedGameData.history?.foodsEaten || {}) },
+          gamesPlayed: { ...(defaultState.history?.gamesPlayed || {}), ...(parsedGameData.history?.gamesPlayed || {}) },
+          actionsPerformed: { ...(defaultState.history?.actionsPerformed || {}), ...(parsedGameData.history?.actionsPerformed || {}) },
+          totalLifetimeGroEarned: (parsedGameData.history?.totalLifetimeGroEarned ?? defaultState.history?.totalLifetimeGroEarned ?? 0),
+        },
+
+        // Explicit Defaults for Optional Fields (handle nulls from D1)
+        currentHouseId: parsedGameData.currentHouseId || defaultState.currentHouseId || 'tent',
+        isSick: parsedGameData.isSick ?? defaultState.isSick ?? false,
+        isSleeping: parsedGameData.isSleeping ?? defaultState.isSleeping ?? false,
+
         // Ensure lastActiveTime is updated to now if we just pulled it
         lastActiveTime: Date.now(),
       };
@@ -1509,6 +1541,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     state.isSick, // Added dependency
     state.isSleeping, // Added dependency
     state.currentHouseId, // Added dependency
+    state.currentLand, // Added dependency
     condition,
     abandonmentStatus,
     feed,

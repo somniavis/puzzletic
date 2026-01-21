@@ -28,6 +28,7 @@ import { toPng } from 'html-to-image';
 import { generateShareUrl, type ShareData } from '../../utils/shareUtils';
 import { FabMenu } from './FabMenu';
 import { SurpriseTrain } from '../SurpriseTrain';
+import { TrainRewardModal } from '../TrainRewardModal';
 import './PetRoom.css';
 
 import { useNavigate } from 'react-router-dom';
@@ -174,6 +175,10 @@ export const PetRoom: React.FC<PetRoomProps> = ({
 
   /* ========== Surprise Train Logic ========== */
   const [isTrainActive, setIsTrainActive] = useState(false);
+  const [pendingTrainReward, setPendingTrainReward] = useState<{
+    type: 'small' | 'snack' | 'big' | 'dud';
+    amount: number;
+  } | null>(null);
 
   useEffect(() => {
     // 1. Check if we should trigger the train
@@ -206,34 +211,49 @@ export const PetRoom: React.FC<PetRoomProps> = ({
     // Probability Logic
     const rand = Math.random();
     let rewardType: 'small' | 'snack' | 'dud' | 'big' = 'small';
+    let amount = 0;
 
-    if (rand < 0.42) rewardType = 'small';
-    else if (rand < 0.72) rewardType = 'snack';
-    else if (rand < 0.97) rewardType = 'dud';
-    else rewardType = 'big';
+    if (rand < 0.42) {
+      rewardType = 'small';
+      amount = 10 + Math.floor(Math.random() * 40); // 10-50
+    } else if (rand < 0.72) {
+      rewardType = 'snack';
+      amount = 50;
+    } else if (rand < 0.97) {
+      rewardType = 'dud';
+      amount = 0;
+    } else {
+      rewardType = 'big';
+      amount = 100 + Math.floor(Math.random() * 200); // 100-300
+    }
 
-    // Execute Reward
-    if (rewardType === 'dud') {
-      playCleaningSound(); // Reusing "poof" sound or similar
+    // Store pending reward and show modal (don't apply yet)
+    setPendingTrainReward({ type: rewardType, amount });
+  };
+
+  const handleConfirmTrainReward = () => {
+    if (!pendingTrainReward) return;
+
+    const { type, amount } = pendingTrainReward;
+
+    if (type === 'dud') {
+      playCleaningSound();
       showBubble('worried', 3);
       onActionChange?.('jumping');
       setTimeout(() => onActionChange?.('idle'), 2000);
-    } else if (rewardType === 'small') {
-      const amount = 10 + Math.floor(Math.random() * 40); // 10-50
+    } else {
       nurturing.addRewards(0, amount);
-      playButtonSound();
-      showBubble('joy', 2);
-    } else if (rewardType === 'big') {
-      const amount = 100 + Math.floor(Math.random() * 200); // 100-300
-      nurturing.addRewards(0, amount);
-      playButtonSound(); // Replace with Win sound
-      showBubble('joy', 3);
-    } else if (rewardType === 'snack') {
-      const amount = 50;
-      nurturing.addRewards(0, amount);
-      playEatingSound();
-      showBubble('playful', 2);
+      if (type === 'big') {
+        showBubble('joy', 3);
+      } else if (type === 'snack') {
+        playEatingSound();
+        showBubble('playful', 2);
+      } else {
+        showBubble('joy', 2);
+      }
     }
+
+    setPendingTrainReward(null); // Close modal
   };
 
   const handleCameraClick = async () => {
@@ -1302,6 +1322,15 @@ export const PetRoom: React.FC<PetRoomProps> = ({
             }, 800);
             setConfirmModalType(null);
           }}
+        />
+      )}
+
+      {/* Train Reward Modal */}
+      {pendingTrainReward && (
+        <TrainRewardModal
+          rewardType={pendingTrainReward.type}
+          amount={pendingTrainReward.amount}
+          onConfirm={handleConfirmTrainReward}
         />
       )}
     </div >

@@ -102,6 +102,7 @@ export const createDefaultState = (): NurturingPersistentState => {
     hallOfFame: [],
     categoryProgress: {}, // Initialize empty progression map
     gameScores: {}, // Initialize empty scores map (Hybrid Storage v2)
+    currentHouseId: 'tent',
   };
 };
 
@@ -342,7 +343,40 @@ export const loadNurturingState = (userId?: string): NurturingPersistentState =>
 
     // NOTE: Legacy reconciliation removed - migration logic above handles minigameStats -> gameScores conversion
 
-    return loaded as NurturingPersistentState;
+    // Final Safe Merge: Ensure all fields from default state are present (Schema Enforcement)
+    const defaultState = createDefaultState();
+    const finalState: NurturingPersistentState = {
+      ...defaultState,
+      ...loaded,
+      // Deep merge nested objects
+      stats: {
+        ...defaultState.stats,
+        ...(loaded.stats || {})
+      },
+      tickConfig: {
+        ...defaultState.tickConfig,
+        ...(loaded.tickConfig || {})
+      },
+      abandonmentState: {
+        ...defaultState.abandonmentState,
+        ...(loaded.abandonmentState || {})
+      },
+      history: {
+        ...defaultState.history,
+        ...(loaded.history || {}),
+        // Ensure sub-objects exist
+        foodsEaten: { ...(defaultState.history?.foodsEaten || {}), ...(loaded.history?.foodsEaten || {}) },
+        gamesPlayed: { ...(defaultState.history?.gamesPlayed || {}), ...(loaded.history?.gamesPlayed || {}) },
+        actionsPerformed: { ...(defaultState.history?.actionsPerformed || {}), ...(loaded.history?.actionsPerformed || {}) },
+        totalLifetimeGroEarned: (loaded.history?.totalLifetimeGroEarned ?? defaultState.history?.totalLifetimeGroEarned ?? 0),
+      },
+      // Explicit defaults for crucial optional fields
+      currentHouseId: loaded.currentHouseId || defaultState.currentHouseId || 'tent',
+      isSick: loaded.isSick ?? defaultState.isSick ?? false,
+      isSleeping: loaded.isSleeping ?? defaultState.isSleeping ?? false,
+    };
+
+    return finalState;
   } catch (error) {
     console.error('Failed to load nurturing state:', error);
     return createDefaultState();
