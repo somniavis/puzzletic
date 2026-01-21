@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import type { GameManifest } from '../../games/types';
+import { GENIUS_UNLOCK_THRESHOLD } from '../../utils/progression';
 
 interface DrillItemProps {
     game: GameManifest;
@@ -58,7 +59,7 @@ export const DrillItem: React.FC<DrillItemProps> = ({
                     >
                         {(() => {
                             if (clearCount === 0) return game.subtitleKey ? t(game.subtitleKey, game.subtitle || 'Start Drill') : (game.subtitle || 'Start Drill');
-                            if (!isMastered) return t('games.mission.challenge10', { current: clearCount, total: 10, defaultValue: `Challenge! (${clearCount}/10)` });
+                            if (!isMastered) return t('games.mission.challenge10', { current: clearCount, total: GENIUS_UNLOCK_THRESHOLD, defaultValue: `Challenge! (${clearCount}/${GENIUS_UNLOCK_THRESHOLD})` });
                             return game.subtitleKey ? t(game.subtitleKey, game.subtitle || 'Mastered') : (game.subtitle || 'Mastered');
                         })()}
                     </span>
