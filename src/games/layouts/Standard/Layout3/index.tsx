@@ -67,7 +67,8 @@ export const Layout3: React.FC<Layout3Props> = ({
         lives,
         gameId,
         engineDifficulty: engine.difficultyLevel as MinigameDifficulty,
-        stats: stats || { correct: 0, wrong: 0 }
+        stats: stats || { correct: 0, wrong: 0 },
+        gameOverReason
     });
 
     // 3. BGM Management

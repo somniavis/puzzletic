@@ -117,7 +117,7 @@ interface NurturingContextValue {
   completeGraduationAnimation: (name: string) => void;
 
   // Stats
-  recordGameScore: (gameId: string, score: number) => void;
+  recordGameScore: (gameId: string, score: number, incrementPlayCount?: boolean) => void;
 
   // Subscription
   subscription: SubscriptionState;
@@ -732,7 +732,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     return true;
   }, []);
 
-  const recordGameScore = useCallback((gameId: string, score: number) => {
+  const recordGameScore = useCallback((gameId: string, score: number, incrementPlayCount: boolean = true) => {
     setState(currentState => {
       const scoresMap = currentState.gameScores || {};
       const currentValue = scoresMap[gameId];
@@ -740,7 +740,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
 
       // Calculate new values
       const newHighScore = Math.max(oldHigh, score);
-      const newClearCount = oldCount + 1;
+      const newClearCount = incrementPlayCount ? oldCount + 1 : oldCount;
 
       // Check unlock threshold for this game's category
       const category = getProgressionCategory(gameId);

@@ -11,6 +11,7 @@ interface ScoringProps {
     gameId?: string;
     engineDifficulty: string | MinigameDifficulty;
     stats?: { correct: number; wrong: number };
+    gameOverReason?: 'time' | 'lives' | 'cleared' | null;
 }
 
 export const useGameScoring = ({
@@ -19,7 +20,8 @@ export const useGameScoring = ({
     lives,
     gameId,
     engineDifficulty,
-    stats
+    stats,
+    gameOverReason
 }: ScoringProps) => {
     // Context is the Single Source of Truth for High Scores
     const { evolutionStage, addRewards, recordGameScore, gameScores } = useNurturing();
@@ -70,8 +72,13 @@ export const useGameScoring = ({
                 setHighScore(currentBest); // High score remains the same
             }
 
+            // ONLY increment play count if:
+            // 1. Time Up AND Score > 0 (Success duration with participation)
+            // 2. Cleared (Objective Met)
+            const shouldIncrementPlayCount = (gameOverReason === 'time' && score > 0) || gameOverReason === 'cleared';
+
             // Persist (Context updates state and saves to localStorage/Cloud)
-            recordGameScore(gameId, score);
+            recordGameScore(gameId, score, shouldIncrementPlayCount);
         }
     };
 
