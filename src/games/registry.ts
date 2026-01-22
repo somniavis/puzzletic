@@ -440,7 +440,11 @@ export const GAMES: GameManifest[] = [
     {
         id: 'brain-omok',
         title: 'Omok',
-        subtitle: 'Five in a Row',
+        titleKey: 'games.omok.title',
+        subtitle: 'Make 5 in a row',
+        subtitleKey: 'games.omok.subtitle',
+        description: 'Connect 5 stones in a row to win.',
+        descriptionKey: 'games.omok.description',
         category: 'brain',
         mode: 'adventure',
         level: 3,
