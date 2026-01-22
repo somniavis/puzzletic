@@ -107,8 +107,8 @@
     width: 100%;
     height: 1px;
 
-    background-color: #5D4037;
-    /* Warm Dark Brown */
+    background-color: #795548;
+    /* Soft Warm Brown */
     transform: translateY(-50%);
     z-index: 1;
     /* Low z-index */
@@ -123,8 +123,8 @@
     width: 1px;
     height: 100%;
 
-    background-color: #5D4037;
-    /* Warm Dark Brown */
+    background-color: #795548;
+    /* Soft Warm Brown */
     transform: translateX(-50%);
     z-index: 1;
 }
@@ -136,10 +136,9 @@
     top: 50%;
     left: 50%;
     width: 18%;
-    /* Slightly smaller for elegance */
     height: 18%;
-    background-color: #5D4037;
-    /* Warm Dark Brown */
+    background-color: #795548;
+    /* Soft Warm Brown */
     border-radius: 50%;
     transform: translate(-50%, -50%);
     z-index: 2;
