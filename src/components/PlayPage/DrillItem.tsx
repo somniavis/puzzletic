@@ -21,27 +21,59 @@ export const DrillItem: React.FC<DrillItemProps> = ({
     onPlay
 }) => {
     const { t } = useTranslation();
+    const [showTooltip, setShowTooltip] = React.useState(false);
 
     const handleClick = () => {
         onPlay(game, !unlocked, reason);
     };
+
+    const handleMedalClick = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        if (!showTooltip) {
+            setShowTooltip(true);
+            setTimeout(() => setShowTooltip(false), 3000);
+        }
+    };
+
+    const getTooltipMessage = () => {
+        // Bronze: 3-9 plays (Target 10)
+        // Silver: 10-19 plays (Target 20)
+        // Gold: 20+ plays
+        if (clearCount >= 20) return t('games.medal.gold');
+        if (clearCount >= 10) return t('games.medal.silver', { count: 20 - clearCount });
+        return t('games.medal.bronze', { count: 10 - clearCount });
+    };
+
+    const medalClass = clearCount >= 20 ? 'gold' : clearCount >= 10 ? 'silver' : 'bronze';
 
     return (
         <div
             className={`drill-item ${unlocked ? 'unlocked' : ''}`}
             onClick={handleClick}
         >
-            <div className="drill-icon">
-                {isMastered ? (
-                    <span style={{ fontSize: '1.5rem' }}>🏅</span>
-                ) : (
-                    game.thumbnail && typeof game.thumbnail === 'string' && game.thumbnail.startsWith('http') ? (
+            {isMastered ? (
+                <div
+                    className={`badge-box ${medalClass}`}
+                    onClick={handleMedalClick}
+                    style={{ width: '3rem', height: '3rem', fontSize: '1.25rem', zIndex: 2 }}
+                >
+                    <i className="fas fa-medal"></i>
+                    {showTooltip && (
+                        <div className="medal-tooltip right-side">
+                            {getTooltipMessage()}
+                        </div>
+                    )}
+                </div>
+            ) : (
+                <div className="drill-icon">
+                    {game.thumbnail && typeof game.thumbnail === 'string' && game.thumbnail.startsWith('http') ? (
                         <img src={game.thumbnail} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     ) : (
                         game.thumbnail || game.level
-                    )
-                )}
-            </div>
+                    )}
+                </div>
+            )}
+
             <div className="drill-info">
                 <h4 className="drill-title">
                     {game.titleKey ? t(game.titleKey) : game.title}
@@ -52,7 +84,7 @@ export const DrillItem: React.FC<DrillItemProps> = ({
                             fontSize: '0.85rem',
                             display: 'block',
                             marginBottom: '0.25rem',
-                            color: '#64748b', // Slate-500
+                            color: '#64748b',
                             fontStyle: clearCount > 0 && !isMastered ? 'italic' : 'normal',
                             fontWeight: clearCount > 0 && !isMastered ? 'bold' : 'normal'
                         }}
