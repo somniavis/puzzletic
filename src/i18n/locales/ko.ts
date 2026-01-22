@@ -7,6 +7,7 @@ import numberBalanceKo from '../../games/math/adventure/level1/NumberBalance/loc
 import mathArcheryKo from '../../games/math/adventure/level1/MathArchery/locales/ko';
 import frontAdditionKo from '../../games/math/genius/FrontAddition/locales/ko';
 import frontSubtractionKo from '../../games/math/genius/FrontSubtraction/locales/ko';
+import backMultiplicationKo from '../../games/math/genius/BackMultiplication/locales/ko';
 import tenFrameCountKo from '../../games/math/adventure/level2/TenFrameCount/locales/ko';
 import mathPinwheelKo from '../../games/math/adventure/level2/PinwheelPop/locales/ko';
 import deepSeaDiveKo from '../../games/math/adventure/level2/DeepSeaDive/locales/ko';
@@ -716,6 +717,7 @@ export const ko = {
         'math-archery': mathArcheryKo,
         frontAddition: frontAdditionKo,
         frontSubtraction: frontSubtractionKo,
+        backMultiplication: backMultiplicationKo,
         'ten-frame-count': tenFrameCountKo,
         'pinwheel-pop': mathPinwheelKo,
         'animal-banquet': animalBanquetKo,

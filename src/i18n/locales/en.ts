@@ -8,6 +8,7 @@ import numberBalanceEn from '../../games/math/adventure/level1/NumberBalance/loc
 import mathArcheryEn from '../../games/math/adventure/level1/MathArchery/locales/en';
 import frontAdditionEn from '../../games/math/genius/FrontAddition/locales/en';
 import frontSubtractionEn from '../../games/math/genius/FrontSubtraction/locales/en';
+import backMultiplicationEn from '../../games/math/genius/BackMultiplication/locales/en';
 import tenFrameCountEn from '../../games/math/adventure/level2/TenFrameCount/locales/en';
 import mathPinwheelEn from '../../games/math/adventure/level2/PinwheelPop/locales/en';
 import deepSeaDiveEn from '../../games/math/adventure/level2/DeepSeaDive/locales/en';
@@ -715,6 +716,7 @@ export const en = {
     'math-archery': mathArcheryEn,
     frontAddition: frontAdditionEn,
     frontSubtraction: frontSubtractionEn,
+    backMultiplication: backMultiplicationEn,
     'ten-frame-count': tenFrameCountEn,
     'pinwheel-pop': mathPinwheelEn,
     'deep-sea-dive': deepSeaDiveEn,

@@ -48,6 +48,8 @@ export const usePlayPageLogic = ({ gameScores }: UsePlayPageLogicProps) => {
     const filteredDrills = useMemo(() => {
         if (selectedOp === 'ADD') return drillGames.filter(g => g.id.includes('front-addition'));
         if (selectedOp === 'SUB') return drillGames.filter(g => g.id.includes('front-subtraction'));
+        if (selectedOp === 'MUL') return drillGames.filter(g => g.id.includes('back-multiplication'));
+        if (selectedOp === 'DIV') return drillGames.filter(g => g.id.includes('division')); // Placeholder for future
         return [];
     }, [drillGames, selectedOp]);
 

@@ -21,6 +21,8 @@ const L2_UFOInvasion = lazy(() => import('./math/adventure/level2/UFOInvasion'))
 // Math Genius Games (calculation drills)
 const L2_FrontAddition = lazy(() => import('./math/genius/FrontAddition').then(m => ({ default: m.FrontAdditionGame })));
 const L2_FrontSubtraction = lazy(() => import('./math/genius/FrontSubtraction').then(m => ({ default: m.FrontSubtractionGame })));
+const L2_BackMultiplication = lazy(() => import('./math/genius/BackMultiplication').then(m => ({ default: m.BackMultiplicationGame })));
+const L2_BackMultiplicationLv2 = lazy(() => import('./math/genius/BackMultiplication/Level2').then(m => ({ default: m.BackMultiplicationGameLv2 })));
 
 // Brain Level 1 (default exports except noted)
 const L1_ColorLink = lazy(() => import('./brain/level1/ColorLink')); // default export
@@ -303,6 +305,37 @@ export const GAMES: GameManifest[] = [
         mode: 'genius',
         component: L2_FrontSubtraction,
         thumbnail: '➖',
+        tagsKey: 'games.tags.mentalMath'
+    },
+    // Back Multiplication Levels
+    {
+        id: 'back-multiplication-lv1',
+        title: 'Back Multiplication Lv.1',
+        titleKey: 'games.backMultiplication.lv1.title',
+        subtitle: '2x1 digits',
+        subtitleKey: 'games.backMultiplication.lv1.subtitle',
+        description: 'Practice back multiplication',
+        descriptionKey: 'games.backMultiplication.description',
+        category: 'math',
+        level: 2,
+        mode: 'genius',
+        component: L2_BackMultiplication,
+        thumbnail: '✖️',
+        tagsKey: 'games.tags.mentalMath'
+    },
+    {
+        id: 'back-multiplication-lv2',
+        title: 'Back Multiplication Lv.2',
+        titleKey: 'games.backMultiplication.lv2.title',
+        subtitle: '3x1 digits',
+        subtitleKey: 'games.backMultiplication.lv2.subtitle',
+        description: 'Practice back multiplication',
+        descriptionKey: 'games.backMultiplication.description',
+        category: 'math',
+        level: 2,
+        mode: 'genius',
+        component: L2_BackMultiplicationLv2,
+        thumbnail: '✖️',
         tagsKey: 'games.tags.mentalMath'
     },
 
