@@ -129,7 +129,7 @@ export const useOmokGame = ({ onGameOver }: UseOmokGameProps) => {
             if (emptyCells.length === 0) {
                 setWinner('draw');
                 isGameOverRef.current = true;
-                onGameOver({ success: true, score: 50 }); // Draw
+                onGameOver({ success: true, score: 30 }); // Draw
                 return;
             }
 

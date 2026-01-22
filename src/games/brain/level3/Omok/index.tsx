@@ -63,10 +63,10 @@ const OmokBoardWrapper = ({ engine }: { engine: any }) => {
         if (!winner) return;
 
         if (winner === 'draw') {
-            updateScore(50);
+            updateScore(30);
             // registerEvent({ type: 'draw' }); // Optional
         } else if (winner === playerSide) {
-            updateScore(150);
+            updateScore(500);
             registerEvent({ type: 'correct' });
         } else {
             updateLives(false);
@@ -95,14 +95,14 @@ const OmokBoardWrapper = ({ engine }: { engine: any }) => {
                     <>
                         AI Thinking...
                         <span className={styles.statusIcon}>
-                            {playerSide === 'black' ? '⚪' : '⚫'}
+                            <div className={`${styles.statusStone} ${playerSide === 'black' ? styles.white : styles.black}`} />
                         </span>
                     </>
                 ) : (
                     <>
                         Your Turn
                         <span className={styles.statusIcon}>
-                            {playerSide === 'black' ? '⚫' : '⚪'}
+                            <div className={`${styles.statusStone} ${playerSide === 'black' ? styles.black : styles.white}`} />
                         </span>
                     </>
                 )}

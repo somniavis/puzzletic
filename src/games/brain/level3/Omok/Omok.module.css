@@ -42,17 +42,25 @@
 }
 
 
-.stoneIconBlack {
-    color: black;
-    font-weight: 800;
+
+.statusStone {
+    width: 1.4rem;
+    height: 1.4rem;
+    border-radius: 50%;
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
 }
 
-.stoneIconWhite {
-    color: #666;
-    /* Slightly darker than pure white for visibility on white bg */
-    font-weight: 800;
-    text-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
+.statusStone.black {
+    background: radial-gradient(circle at 30% 30%, #555, #000);
 }
+
+.statusStone.white {
+    background: radial-gradient(circle at 30% 30%, #fff, #e0e0e0);
+    border: 1px solid #ccc;
+    /* For visibility against white */
+}
+
+
 
 .omokBoard {
     display: grid;
@@ -65,14 +73,21 @@
     width: min(90vw, 500px);
     height: min(90vw, 500px);
 
-    /* Modern Flat Look: Light Steel Blue */
-    background-color: #B0C4DE;
-    border: none;
-    border-radius: 8px;
-    /* Slight rounding */
+    /* Modern Ivory / Sang-a-saek */
+    background-color: #F0E5D3;
+
+    /* 3D Thickness Effect */
+    border: 1px solid #D7C6A5;
+    /* Subtle side definition */
+    border-bottom: 8px solid #C4B298;
+    /* Physical thickness */
+    border-radius: 6px;
+
     position: relative;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-    /* Softer shadow */
+    /* Rich drop shadow for elevation */
+    box-shadow:
+        0 20px 25px -5px rgba(0, 0, 0, 0.2),
+        0 10px 10px -5px rgba(0, 0, 0, 0.1);
 }
 
 
@@ -91,8 +106,9 @@
     left: 0;
     width: 100%;
     height: 1px;
-    background-color: #4a5568;
-    /* Cool Dark Grey */
+
+    background-color: #5D4037;
+    /* Warm Dark Brown */
     transform: translateY(-50%);
     z-index: 1;
     /* Low z-index */
@@ -106,8 +122,9 @@
     left: 50%;
     width: 1px;
     height: 100%;
-    background-color: #4a5568;
-    /* Cool Dark Grey */
+
+    background-color: #5D4037;
+    /* Warm Dark Brown */
     transform: translateX(-50%);
     z-index: 1;
 }
@@ -121,8 +138,8 @@
     width: 18%;
     /* Slightly smaller for elegance */
     height: 18%;
-    background-color: #4a5568;
-    /* Cool Dark Grey */
+    background-color: #5D4037;
+    /* Warm Dark Brown */
     border-radius: 50%;
     transform: translate(-50%, -50%);
     z-index: 2;
