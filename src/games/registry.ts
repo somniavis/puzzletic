@@ -434,7 +434,7 @@ export const GAMES: GameManifest[] = [
         category: 'brain',
         level: 3,
         component: L3_TicTacToe,
-        thumbnail: '❌',
+        thumbnail: 'quad:🔥,,,❄️',
         tagsKey: 'games.tags.strategy'
     },
     {
@@ -449,7 +449,7 @@ export const GAMES: GameManifest[] = [
         mode: 'adventure',
         level: 3,
         component: L3_Omok,
-        thumbnail: '⚫',
+        thumbnail: 'quad:⚫,⚪,⚪,⚫',
         tagsKey: 'games.tags.strategy'
     },
 ];

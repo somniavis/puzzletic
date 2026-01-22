@@ -41,6 +41,7 @@ export const getIconBackground = (thumbnail: string | React.ReactNode | undefine
         '🦉': '#ecfccb', // lime-200 (Wild Link - Jungle theme)
         '🦢': '#e0f2fe', // sky-100 (Wild Link swan)
         '🍌': '#fef9c3', // yellow-100 (Pair Up Connect banana)
+        '⚫': '#ffedd5', // Omok - Match Maze Hunter
     };
 
     // Extract searchable content (for quad: format, use the emoji part)
