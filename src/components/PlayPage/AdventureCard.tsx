@@ -63,6 +63,30 @@ export const AdventureCard: React.FC<AdventureCardProps> = ({
         );
     }
 
+    const [showTooltip, setShowTooltip] = React.useState(false);
+
+    // Add useState to imports or use React.useState
+
+    const handleMedalClick = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        if (!showTooltip) {
+            setShowTooltip(true);
+            setTimeout(() => setShowTooltip(false), 3000);
+        }
+    };
+
+    const getTooltipMessage = () => {
+        if (!isMastered) return null; // Should usually be locked/gray if not mastered but unlocked game handling
+        // Based on tiered logic:
+        // Bronze: 4-9 plays (Target 10)
+        // Silver: 10-19 plays (Target 20)
+        // Gold: 20+ plays
+
+        if (clearCount >= 20) return t('games.medal.gold');
+        if (clearCount >= 10) return t('games.medal.silver', { count: 20 - clearCount });
+        return t('games.medal.bronze', { count: 10 - clearCount });
+    };
+
     return (
         <div
             className={`adventure-card ${!unlocked ? 'locked' : ''}`}
@@ -94,8 +118,16 @@ export const AdventureCard: React.FC<AdventureCardProps> = ({
                 </button>
 
                 {/* Mastery Badge Button */}
-                <div className={`badge-box ${!isMastered ? 'gray' : clearCount >= 20 ? 'gold' : clearCount >= 10 ? 'silver' : 'bronze'}`}>
+                <div
+                    className={`badge-box ${!isMastered ? 'gray' : clearCount >= 20 ? 'gold' : clearCount >= 10 ? 'silver' : 'bronze'}`}
+                    onClick={handleMedalClick}
+                >
                     <i className="fas fa-medal"></i>
+                    {showTooltip && isMastered && (
+                        <div className="medal-tooltip">
+                            {getTooltipMessage()}
+                        </div>
+                    )}
                 </div>
             </div>
         </div >

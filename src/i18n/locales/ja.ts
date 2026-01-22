@@ -755,6 +755,11 @@ export const ja = {
             challenge: '挑戦！ ({{current}}/{{total}})',
             challenge10: '挑戦！ ({{current}}/{{total}})',
         },
+        medal: {
+            bronze: '🥈 銀メダルまであと{{count}}回！',
+            silver: '🥇 金メダルまであと{{count}}回！',
+            gold: 'すごい！マスターしました！🎉',
+        },
     },
     train: {
         reward: {

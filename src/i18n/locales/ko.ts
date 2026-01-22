@@ -755,6 +755,11 @@ export const ko = {
             challenge: '성공 도전! ({{current}}/{{total}})',
             challenge10: '도전! ({{current}}/{{total}})',
         },
+        medal: {
+            bronze: '🥈 은메달까지 {{count}}판 남았어요!',
+            silver: '🥇 금메달까지 {{count}}판 남았어요!',
+            gold: '최고에요! 마스터하셨군요! 🎉',
+        },
     },
     train: {
         reward: {

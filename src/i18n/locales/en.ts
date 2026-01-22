@@ -753,6 +753,11 @@ export const en = {
       challenge: 'Challenge! ({{current}}/{{total}})',
       challenge10: 'Challenge! ({{current}}/{{total}})',
     },
+    medal: {
+      bronze: '🥈 Silver in {{count}} plays!',
+      silver: '🥇 Gold in {{count}} plays!',
+      gold: 'Awesome! Mastered! 🎉',
+    },
   },
   train: {
     reward: {
