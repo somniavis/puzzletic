@@ -21,6 +21,7 @@ import ufoInvasionEn from '../../games/math/adventure/level2/UFOInvasion/locales
 import mazeEscapeEn from '../../games/brain/level1/MazeEscape/locales/en';
 import mazeHunterEn from '../../games/brain/level2/MazeHunter/locales/en';
 import ticTacToeEn from '../../games/brain/level3/TicTacToe/locales/en';
+import omokEn from '../../games/brain/level3/Omok/locales/en';
 
 export const en = {
   profile: {
@@ -727,6 +728,7 @@ export const en = {
     'maze-escape': mazeEscapeEn,
     'maze-hunter': mazeHunterEn,
     'tic-tac-toe': ticTacToeEn,
+    omok: omokEn,
     tags: {
       counting: 'Counting',
       sequence: 'Sequencing',

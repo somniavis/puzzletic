@@ -21,6 +21,7 @@ import animalBanquetJa from '../../games/brain/level2/AnimalBanquet/locales/ja';
 import signalHunterJa from '../../games/brain/level2/SignalHunter/locales/ja';
 import mazeHunterJa from '../../games/brain/level2/MazeHunter/locales/ja';
 import ticTacToeJa from '../../games/brain/level3/TicTacToe/locales/ja';
+import omokJa from '../../games/brain/level3/Omok/locales/ja';
 
 
 
@@ -729,6 +730,7 @@ export const ja = {
         'signal-hunter': signalHunterJa,
         'maze-hunter': mazeHunterJa,
         'tic-tac-toe': ticTacToeJa,
+        omok: omokJa,
         tags: {
             counting: '数え方',
             sequence: '数の順序',

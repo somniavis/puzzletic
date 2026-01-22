@@ -36,6 +36,7 @@ const L2_SignalHunter = lazy(() => import('./brain/level2/SignalHunter').then(m 
 
 // Brain Level 3
 const L3_TicTacToe = lazy(() => import('./brain/level3/TicTacToe')); // default export
+const L3_Omok = lazy(() => import('./brain/level3/Omok').then(m => ({ default: m.OmokGame }))); // named export
 
 // --- Game Manifests (metadata with lazy component references) ---
 export const GAMES: GameManifest[] = [
@@ -434,6 +435,17 @@ export const GAMES: GameManifest[] = [
         level: 3,
         component: L3_TicTacToe,
         thumbnail: '❌',
+        tagsKey: 'games.tags.strategy'
+    },
+    {
+        id: 'brain-omok',
+        title: 'Omok',
+        subtitle: 'Five in a Row',
+        category: 'brain',
+        mode: 'adventure',
+        level: 3,
+        component: L3_Omok,
+        thumbnail: '⚫',
         tagsKey: 'games.tags.strategy'
     },
 ];

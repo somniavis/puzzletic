@@ -21,6 +21,7 @@ import animalBanquetKo from '../../games/brain/level2/AnimalBanquet/locales/ko';
 import signalHunterKo from '../../games/brain/level2/SignalHunter/locales/ko';
 import mazeHunterKo from '../../games/brain/level2/MazeHunter/locales/ko';
 import ticTacToeKo from '../../games/brain/level3/TicTacToe/locales/ko';
+import omokKo from '../../games/brain/level3/Omok/locales/ko';
 
 
 
@@ -729,6 +730,7 @@ export const ko = {
         'signal-hunter': signalHunterKo,
         'maze-hunter': mazeHunterKo,
         'tic-tac-toe': ticTacToeKo,
+        omok: omokKo,
         tags: {
             counting: '수 세기',
             sequence: '수 순서',

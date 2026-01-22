@@ -1,0 +1,165 @@
+.boardContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    width: 100%;
+}
+
+.statusMessage {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #475569;
+    min-height: 2rem;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 15px;
+
+    /* Added for visibility against wave background */
+    background-color: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(8px);
+    padding: 0.5rem 1.5rem;
+    border-radius: 9999px;
+    /* Pill shape */
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    border: 2px solid rgba(255, 255, 255, 0.8);
+}
+
+.statusIcon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    background-color: white;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    line-height: 1;
+}
+
+
+.stoneIconBlack {
+    color: black;
+    font-weight: 800;
+}
+
+.stoneIconWhite {
+    color: #666;
+    /* Slightly darker than pure white for visibility on white bg */
+    font-weight: 800;
+    text-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
+}
+
+.omokBoard {
+    display: grid;
+    grid-template-columns: repeat(15, 1fr);
+    grid-template-rows: repeat(15, 1fr);
+    /* width: 90vw;
+    height: 90vw;
+    max-width: 500px;
+    max-height: 500px; */
+    width: min(90vw, 500px);
+    height: min(90vw, 500px);
+
+    /* Modern Flat Look: Light Steel Blue */
+    background-color: #B0C4DE;
+    border: none;
+    border-radius: 8px;
+    /* Slight rounding */
+    position: relative;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    /* Softer shadow */
+}
+
+
+
+.cell {
+    position: relative;
+    cursor: pointer;
+    box-sizing: border-box;
+}
+
+/* Horizontal Line */
+.cell::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background-color: #4a5568;
+    /* Cool Dark Grey */
+    transform: translateY(-50%);
+    z-index: 1;
+    /* Low z-index */
+}
+
+/* Vertical Line */
+.cell::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 1px;
+    height: 100%;
+    background-color: #4a5568;
+    /* Cool Dark Grey */
+    transform: translateX(-50%);
+    z-index: 1;
+}
+
+/* Remove outer borders for grid look if desired, but simple grid is fine */
+
+.hoshi {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 18%;
+    /* Slightly smaller for elegance */
+    height: 18%;
+    background-color: #4a5568;
+    /* Cool Dark Grey */
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+    /* Above lines */
+}
+
+.stone {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 85%;
+    height: 85%;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
+    z-index: 3;
+    /* Above lines and hoshi */
+}
+
+.black {
+    background: radial-gradient(circle at 30% 30%, #555, #000);
+}
+
+.white {
+    background: radial-gradient(circle at 30% 30%, #fff, #ddd);
+}
+
+.lastMoveMarker {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 30%;
+    height: 30%;
+    background-color: rgba(255, 0, 0, 0.8);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 5px red;
+    z-index: 4;
+    /* Top most */
+}
