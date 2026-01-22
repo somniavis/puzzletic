@@ -19,11 +19,11 @@ export { getProgressionCategory };
 
 // ==================== Constants ====================
 
-/** Clears required to unlock next game (Adventure Mode: 1 + 3 = 4) */
-export const ADVENTURE_UNLOCK_THRESHOLD = 4;
+/** Clears required to unlock next game (Adventure Mode: Total 3) */
+export const ADVENTURE_UNLOCK_THRESHOLD = 3;
 
-/** Clears required to unlock next game (Genius Mode) */
-export const GENIUS_UNLOCK_THRESHOLD = 5;
+/** Clears required to unlock next game (Genius Mode: Total 3) */
+export const GENIUS_UNLOCK_THRESHOLD = 3;
 
 // ==================== Helper Functions ====================
 
