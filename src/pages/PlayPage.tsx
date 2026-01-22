@@ -16,6 +16,7 @@ import { CATEGORY_ICONS } from '../utils/playPageUtils';
 import { AdventureCard } from '../components/PlayPage/AdventureCard';
 import { DrillItem } from '../components/PlayPage/DrillItem';
 import { GeniusDashboard } from '../components/PlayPage/GeniusDashboard';
+import { GameErrorBoundary } from '../components/Game/GameErrorBoundary';
 
 const PlayPage: React.FC = () => {
     const navigate = useNavigate();
@@ -233,16 +234,18 @@ const PlayPage: React.FC = () => {
         const GameComponent = activeGame.component;
         return (
             <div className="game-wrapper">
-                <Suspense fallback={
-                    <div className="loading-overlay">
-                        <div className="loading-spinner-container">
-                            <div className="loading-spinner">🐾</div>
-                            <div className="loading-text">{t('common.loading')}</div>
+                <GameErrorBoundary>
+                    <Suspense fallback={
+                        <div className="loading-overlay">
+                            <div className="loading-spinner-container">
+                                <div className="loading-spinner">🐾</div>
+                                <div className="loading-text">{t('common.loading')}</div>
+                            </div>
                         </div>
-                    </div>
-                }>
-                    <GameComponent onExit={handleExitGame} gameId={activeGame.id} />
-                </Suspense>
+                    }>
+                        <GameComponent onExit={handleExitGame} gameId={activeGame.id} />
+                    </Suspense>
+                </GameErrorBoundary>
             </div>
         );
     }
