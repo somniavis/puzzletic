@@ -149,12 +149,12 @@ export interface HallOfFameEntry {
 
 /**
  * Game Score Value (Compact Format)
- * - number: High score only (for mastered/unlocked games)
- * - string: "highScore:clearCount" format (for games in progress)
+ * - string: "highScore:clearCount" format (Preferred format, always tracks count)
+ * - number: High score only (Legacy format for previously mastered games)
  * 
  * Examples:
- * - 2500: Mastered game with high score of 2500
- * - "1200:3": Game in progress with high score 1200 and 3 clears toward unlock
+ * - "1200:3": Game with high score 1200 and 3 clears
+ * - 2500: (Legacy) Mastered game with high score 2500, count assumed 999
  */
 export type GameScoreValue = number | string;
 

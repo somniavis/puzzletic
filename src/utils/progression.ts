@@ -38,7 +38,7 @@ export const parseGameScore = (value: GameScoreValue | undefined): { highScore: 
     }
 
     if (typeof value === 'number') {
-        // Number only = already mastered/unlocked, count doesn't matter
+        // Legacy: Number only = already mastered/unlocked (old format)
         // Return a high count to indicate mastery
         return { highScore: value, clearCount: 999 };
     }
@@ -53,21 +53,18 @@ export const parseGameScore = (value: GameScoreValue | undefined): { highScore: 
 
 /**
  * Create compact game score value
+ * Always uses string format to preserve play count even after unlock
  * @param highScore - The high score
  * @param clearCount - Number of clears
- * @param isUnlocked - Whether the next game is already unlocked
- * @returns Compact format: number OR "score:count"
+ * @param _isUnlocked - Whether the next game is already unlocked (deprecated, ignored)
+ * @returns Compact format: "score:count"
  */
 export const createGameScore = (
     highScore: number,
     clearCount: number,
-    isUnlocked: boolean
+    _isUnlocked: boolean
 ): GameScoreValue => {
-    // If already unlocked next game, store score only (compact)
-    if (isUnlocked) {
-        return highScore;
-    }
-    // Otherwise store both score and count
+    // Always store both score and count to track actual play stats
     return `${highScore}:${clearCount}`;
 };
 

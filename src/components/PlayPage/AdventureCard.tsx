@@ -94,10 +94,10 @@ export const AdventureCard: React.FC<AdventureCardProps> = ({
                 </button>
 
                 {/* Mastery Badge Button */}
-                <div className={`badge-box ${isMastered ? 'gold' : 'gray'}`}>
-                    <i className={`fas ${isMastered ? 'fa-medal' : 'fa-medal'}`}></i>
+                <div className={`badge-box ${!isMastered ? 'gray' : clearCount >= 20 ? 'gold' : clearCount >= 10 ? 'silver' : 'bronze'}`}>
+                    <i className="fas fa-medal"></i>
                 </div>
             </div>
-        </div>
+        </div >
     );
 };
