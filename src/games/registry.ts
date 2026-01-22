@@ -52,7 +52,7 @@ export const GAMES: GameManifest[] = [
         level: 1,
         component: L1_FishingCount,
         thumbnail: '🎣',
-        tagsKey: 'games.tags.counting1to5'
+        tagsKey: 'games.tags.counting'
     },
     {
         id: 'math-round-counting',
@@ -66,7 +66,7 @@ export const GAMES: GameManifest[] = [
         level: 1,
         component: L1_RoundCounting,
         thumbnail: '🌀',
-        tagsKey: 'games.tags.counting1to5'
+        tagsKey: 'games.tags.counting'
     },
     {
         id: 'math-number-hive',
@@ -80,7 +80,7 @@ export const GAMES: GameManifest[] = [
         level: 1,
         component: L1_NumberHive,
         thumbnail: '🐝',
-        tagsKey: 'games.tags.sequence1to10'
+        tagsKey: 'games.tags.sequence'
     },
     {
         id: 'math-number-balance',
@@ -94,7 +94,7 @@ export const GAMES: GameManifest[] = [
         level: 1,
         component: L1_NumberBalance,
         thumbnail: '⚖️',
-        tagsKey: 'games.tags.additionBasic'
+        tagsKey: 'games.tags.addition'
     },
     {
         id: 'math-fruit-slice',
@@ -122,7 +122,7 @@ export const GAMES: GameManifest[] = [
         level: 1,
         component: L1_MathArchery,
         thumbnail: '🏹',
-        tagsKey: 'games.tags.operations1to10'
+        tagsKey: 'games.tags.mixedOps'
     },
 
     // [Math Level 2]
@@ -138,7 +138,7 @@ export const GAMES: GameManifest[] = [
         level: 2,
         component: L2_TenFrameCount,
         thumbnail: '🧱',
-        tagsKey: 'games.tags.grouping10s'
+        tagsKey: 'games.tags.numberSense'
     },
     {
         id: 'pinwheel-pop',
@@ -152,7 +152,7 @@ export const GAMES: GameManifest[] = [
         level: 2,
         component: L2_PinwheelPop,
         thumbnail: '🍭',
-        tagsKey: 'games.tags.additionApplied'
+        tagsKey: 'games.tags.addition'
     },
     {
         id: 'deep-sea-dive',
@@ -196,7 +196,7 @@ export const GAMES: GameManifest[] = [
         mode: 'genius',
         component: L2_FrontAddition,
         thumbnail: '➕',
-        tagsKey: 'games.tags.frontAddition'
+        tagsKey: 'games.tags.mentalMath'
     },
     {
         id: 'front-addition-lv2',
@@ -211,7 +211,7 @@ export const GAMES: GameManifest[] = [
         mode: 'genius',
         component: L2_FrontAddition,
         thumbnail: '➕',
-        tagsKey: 'games.tags.frontAddition'
+        tagsKey: 'games.tags.mentalMath'
     },
     {
         id: 'front-addition-lv3',
@@ -226,7 +226,7 @@ export const GAMES: GameManifest[] = [
         mode: 'genius',
         component: L2_FrontAddition,
         thumbnail: '➕',
-        tagsKey: 'games.tags.frontAddition'
+        tagsKey: 'games.tags.mentalMath'
     },
     {
         id: 'front-addition-lv4',
@@ -241,7 +241,7 @@ export const GAMES: GameManifest[] = [
         mode: 'genius',
         component: L2_FrontAddition,
         thumbnail: '➕',
-        tagsKey: 'games.tags.frontAddition'
+        tagsKey: 'games.tags.mentalMath'
     },
     // Front Subtraction Levels
     {
@@ -257,7 +257,7 @@ export const GAMES: GameManifest[] = [
         mode: 'genius',
         component: L2_FrontSubtraction,
         thumbnail: '➖',
-        tagsKey: 'games.tags.frontSubtraction'
+        tagsKey: 'games.tags.mentalMath'
     },
     {
         id: 'front-subtraction-lv2',
@@ -272,7 +272,7 @@ export const GAMES: GameManifest[] = [
         mode: 'genius',
         component: L2_FrontSubtraction,
         thumbnail: '➖',
-        tagsKey: 'games.tags.frontSubtraction'
+        tagsKey: 'games.tags.mentalMath'
     },
     {
         id: 'front-subtraction-lv3',
@@ -287,7 +287,7 @@ export const GAMES: GameManifest[] = [
         mode: 'genius',
         component: L2_FrontSubtraction,
         thumbnail: '➖',
-        tagsKey: 'games.tags.frontSubtraction'
+        tagsKey: 'games.tags.mentalMath'
     },
     {
         id: 'front-subtraction-lv4',
@@ -302,7 +302,7 @@ export const GAMES: GameManifest[] = [
         mode: 'genius',
         component: L2_FrontSubtraction,
         thumbnail: '➖',
-        tagsKey: 'games.tags.frontSubtraction'
+        tagsKey: 'games.tags.mentalMath'
     },
 
     // [Brain Level 1]
@@ -418,7 +418,7 @@ export const GAMES: GameManifest[] = [
         level: 2,
         component: L2_SignalHunter,
         thumbnail: '📡',
-        tagsKey: 'games.tags.focusTiming'
+        tagsKey: 'games.tags.concentration'
     },
 
     // [Brain Level 3]
@@ -434,7 +434,7 @@ export const GAMES: GameManifest[] = [
         level: 3,
         component: L3_TicTacToe,
         thumbnail: '❌',
-        tagsKey: 'games.tags.spatial'
+        tagsKey: 'games.tags.strategy'
     },
 ];
 
