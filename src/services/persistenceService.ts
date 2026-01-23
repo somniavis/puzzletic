@@ -101,6 +101,7 @@ export const createDefaultState = (): NurturingPersistentState => {
     unlockedJellos: {},
     hallOfFame: [],
     categoryProgress: {}, // Initialize empty progression map
+    totalGameStars: 0,
     gameScores: {}, // Initialize empty scores map (Hybrid Storage v2)
     currentHouseId: 'tent',
   };
@@ -582,6 +583,7 @@ export const startNewGeneration = (
     ...defaultState,
     // Keep persistent data
     gro: currentState.gro,
+    totalGameStars: currentState.totalGameStars || 0, // Preserve Stars
     totalCurrencyEarned: currentState.totalCurrencyEarned,
     studyCount: currentState.studyCount,
     inventory: currentState.inventory,

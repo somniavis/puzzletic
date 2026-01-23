@@ -40,6 +40,7 @@ export interface EvolutionConditions {
   gamesPlayed?: Record<string, number>; // e.g. { 'fruitSlash': 10 }
   minHappinessAvg?: number;    // Average happiness maintained? (Complex to track, maybe just current?)
   requiredActionCount?: Record<string, number>; // e.g. { 'study': 100, 'clean': 20 }
+  requiredStars?: number;      // Stage 5 Evolution: Required stars to unlock (non-XP condition)
 }
 
 // History Tracking (Efficient Counters)

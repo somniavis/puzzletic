@@ -118,6 +118,7 @@ export default {
 					const level = body.level;
 					const xp = body.xp;
 					const gro = body.gro;
+					const star = body.star; // Added star
 					const currentLand = body.current_land || body.currentLand;
 					const inventory = body.inventory;
 					const gameData = body.game_data || body.gameData;
@@ -173,14 +174,15 @@ export default {
 					const now = Date.now();
 
 					const stmt = env.DB.prepare(`
-            INSERT INTO users (uid, email, display_name, level, xp, gro, current_land, inventory, game_data, created_at, last_synced_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO users (uid, email, display_name, level, xp, gro, star, current_land, inventory, game_data, created_at, last_synced_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT(uid) DO UPDATE SET
               email = excluded.email,
               display_name = excluded.display_name,
               level = excluded.level,
               xp = excluded.xp,
               gro = excluded.gro,
+              star = excluded.star,
               current_land = excluded.current_land,
               inventory = excluded.inventory,
               game_data = excluded.game_data,
@@ -192,6 +194,7 @@ export default {
 						level || 1,
 						xp || 0,
 						gro || 0,
+						star || 0,
 						currentLand || 'default_ground',
 						JSON.stringify(inventory || []),
 						typeof gameData === 'string' ? gameData : JSON.stringify(gameData || {}),

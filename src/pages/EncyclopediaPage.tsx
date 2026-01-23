@@ -23,7 +23,7 @@ export const EncyclopediaPage: React.FC = () => {
     const navigate = useNavigate();
 
     // Get unlock status from context to ensure persistent state is used
-    const { unlockedJellos } = useNurturing();
+    const { unlockedJellos, totalGameStars } = useNurturing();
     // unlockedJellos is already the state object
     const speciesList = Object.values(CHARACTER_SPECIES);
 
@@ -39,9 +39,14 @@ export const EncyclopediaPage: React.FC = () => {
         <div className="encyclopedia-page">
             <header className="encyclopedia-header">
                 <h1>📚 {t('encyclopedia.title')}</h1>
-                <button className="close-button" onClick={() => navigate('/profile')} aria-label="Back">
-                    ←
-                </button>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <div className="star-display" style={{ marginRight: '12px', display: 'flex', alignItems: 'center', background: 'rgba(255,255,255,0.2)', padding: '4px 12px', borderRadius: '16px', fontWeight: 'bold', color: '#FFD700', fontSize: '1rem', textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>
+                        <span>⭐ {totalGameStars || 0}</span>
+                    </div>
+                    <button className="close-button" onClick={() => navigate('/profile')} aria-label="Back">
+                        ←
+                    </button>
+                </div>
             </header>
 
             <div className="encyclopedia-content">

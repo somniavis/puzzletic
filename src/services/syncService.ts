@@ -177,6 +177,7 @@ export const syncUserData = async (
             level: state.evolutionStage || 1,
             xp: state.xp || 0,
             gro: state.gro || 0,
+            star: state.totalGameStars || 0,
             current_land: state.currentLand || 'default_ground',
             /* 
              * Redundancy: explicitly send house_id even if column doesn't exist yet, 

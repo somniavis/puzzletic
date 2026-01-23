@@ -58,22 +58,26 @@ export const EVOLUTION_STAGES: Record<number, EvolutionStageInfo> = {
   5: {
     stage: 5,
     name: '성체',
-    requiredXP: 13550, // 4단계 지속: 10000 XP
-    requiredXPFromPrevious: 10000,
-    estimatedGames: 600,
-    description: '[인내심] 마지막 끈기가 필요한 구간 - 졸업 가능',
+    requiredXP: 6500, // 4단계 지속: ~3000 XP (6500 XP 도달 시 분기점)
+    requiredXPFromPrevious: 3000,
+    estimatedGames: 250,
+    description: '[분기점] 스타 1000개로 진화하거나, 현재 상태로 졸업',
   },
 };
 
 // ==================== 졸업(Graduation) 시스템 ====================
 
 /**
- * 졸업 조건
- * - 5단계(성체) 도달
- * - 13550 XP 달성
+ * 졸업 조건/분기점
+ * - Stage 4 졸업: 6500 XP (스타 부족 또는 선택)
+ * - Stage 5 진화: 6500 XP + 1000 스타
+ * - Stage 5 졸업: 10000 XP
  */
-export const GRADUATION_STAGE = 5;
-export const GRADUATION_XP = 15000; // 성체(13550) 이후 약 1500 XP(약 60~100판) 추가 플레이 필요
+export const GRADUATION_STAGE = 4; // 기본 졸업 가능 단계 (최소)
+// Note: GRADUATION_XP는 이제 사용하지 않고 아래 상수를 사용 권장
+export const GRADUATION_XP_STAGE4 = 6500;
+export const GRADUATION_XP_STAGE5 = 10000;
+export const STAGE5_REQUIRED_STARS = 1000;
 
 // ==================== 보상 시스템 ====================
 

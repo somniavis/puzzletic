@@ -15,7 +15,8 @@ import {
   JELLO_SPECIES_CONDITIONS,
   MIN_TENDENCY_FOR_BRANCH,
   GRADUATION_STAGE,
-  GRADUATION_XP,
+  GRADUATION_XP_STAGE4,
+  GRADUATION_XP_STAGE5,
 } from '../constants/gameMechanics';
 
 /**
@@ -26,40 +27,37 @@ import {
  */
 export const checkEvolutionConditions = (
   history: CharacterHistory | undefined,
-  conditions: EvolutionConditions | undefined
+  conditions: EvolutionConditions | undefined,
+  totalGameStars: number = 0 // Added totalGameStars
 ): boolean => {
-  // If no conditions are set, it's not a restricted evolution (or logic doesn't apply)
-  // But here we use this to BLOCK stage 5 if conditions exist and aren't met.
-  // If conditions is undefined, we assume it's NOT a hidden stage or it's allowed?
-  // User logic: Level 60 -> Check Condition -> If met Stage 5, else Stage 4.
-  if (!conditions) return true; // No special conditions, proceed based on level
-  if (!history) return false; // Conditions exist but no history to check against
+  if (!conditions) return true;
+  if (!history && !conditions.requiredStars) return false;
+
+  // Check Stars (New Stage 5 Condition)
+  if (conditions.requiredStars) {
+    if (totalGameStars < conditions.requiredStars) return false;
+  }
 
   // Check Foods
-  if (conditions.foodsEaten) {
+  if (history && conditions.foodsEaten) {
     for (const [foodId, count] of Object.entries(conditions.foodsEaten)) {
       if ((history.foodsEaten[foodId] || 0) < count) return false;
     }
   }
 
   // Check Games
-  if (conditions.gamesPlayed) {
+  if (history && conditions.gamesPlayed) {
     for (const [gameId, count] of Object.entries(conditions.gamesPlayed)) {
       if ((history.gamesPlayed[gameId] || 0) < count) return false;
     }
   }
 
   // Check Actions
-  if (conditions.requiredActionCount) {
+  if (history && conditions.requiredActionCount) {
     for (const [actionId, count] of Object.entries(conditions.requiredActionCount)) {
       if ((history.actionsPerformed[actionId] || 0) < count) return false;
     }
   }
-
-  // Check Min Happiness (Current check for now, later avg if implemented)
-  // Note: Happiness is in 'stats', not 'history'. This function might need stats too.
-  // For now, let's assume history tracks "accumulated happy events" or similar if needed.
-  // Or simply rely on history metrics.
 
   return true;
 };
@@ -71,10 +69,11 @@ export const checkEvolutionConditions = (
 export const calculateEvolutionStage = (
   currentXP: number,
   history?: CharacterHistory,
-  unlockConditions?: EvolutionConditions
+  unlockConditions?: EvolutionConditions,
+  totalGameStars: number = 0
 ): EvolutionStage => {
   if (currentXP >= EVOLUTION_STAGES[5].requiredXP) {
-    if (checkEvolutionConditions(history, unlockConditions)) {
+    if (checkEvolutionConditions(history, unlockConditions, totalGameStars)) {
       return 5;
     }
     return 4; // XP는 충분하지만 조건 미달성 시 4단계 유지
@@ -116,7 +115,9 @@ export const getEvolutionProgress = (currentXP: number, currentStage: EvolutionS
  * 졸업 가능 여부 체크
  */
 export const canGraduate = (currentXP: number, currentStage: EvolutionStage): boolean => {
-  return currentStage >= GRADUATION_STAGE && currentXP >= GRADUATION_XP;
+  if (currentStage === 4 && currentXP >= GRADUATION_XP_STAGE4) return true;
+  if (currentStage === 5 && currentXP >= GRADUATION_XP_STAGE5) return true;
+  return false;
 };
 
 /**
@@ -196,33 +197,51 @@ export const addXPAndCheckEvolution = (
   currentStage: EvolutionStage,
   xpToAdd: number,
   history?: CharacterHistory,
-  unlockConditions?: EvolutionConditions
+  unlockConditions?: EvolutionConditions,
+  totalGameStars: number = 0
 ): {
   newXP: number;
   newStage: EvolutionStage;
   evolved: boolean;
-  canGraduate: boolean; // Added flag
+  canGraduate: boolean;
+  showChoicePopup: boolean; // New flag for Stage 4 choice
   stageInfo?: typeof EVOLUTION_STAGES[keyof typeof EVOLUTION_STAGES];
 } => {
   const newXP = currentXP + xpToAdd;
-  const newStage = calculateEvolutionStage(newXP, history, unlockConditions);
-  const evolved = newStage > currentStage;
+  // Calculate potential new stage
+  let newStage = calculateEvolutionStage(newXP, history, unlockConditions, totalGameStars);
 
-  // Check graduation condition:
-  // 1. Current Stage is 4
-  // 2. XP met Stage 5 requirement (5000)
-  // 3. Did NOT evolve to Stage 5 (meaning conditions failed or hidden logic blocked it)
-  // 4. Actually, calculateEvolutionStage returns 4 if conditions fail even if XP is enough.
-  const isCappedStage4 =
-    currentStage === 4 &&
-    newStage === 4 &&
-    newXP >= EVOLUTION_STAGES[5].requiredXP;
+  let showChoicePopup = false;
+  let canGraduate = false;
+
+  // Choice Logic at Stage 4 Limit (6500 XP)
+  if (currentStage === 4) {
+    // If calculated stage is 5 (means XP >= 6500 AND Stars >= 1000)
+    if (newStage === 5) {
+      // DO NOT evolve automatically. Show choice.
+      newStage = 4;
+      showChoicePopup = true;
+    }
+    // If calculated stage is 4 but XP >= GRADUATION_XP_STAGE4 (means Stars < 1000)
+    else if (newXP >= GRADUATION_XP_STAGE4) {
+      // Auto-graduate at Stage 4
+      canGraduate = true;
+    }
+  }
+
+  // Graduation Logic at Stage 5 Limit (10000 XP)
+  if (currentStage === 5 && newXP >= GRADUATION_XP_STAGE5) {
+    canGraduate = true;
+  }
+
+  const evolved = newStage > currentStage;
 
   return {
     newXP,
     newStage,
     evolved,
-    canGraduate: isCappedStage4,
+    canGraduate,
+    showChoicePopup,
     stageInfo: evolved ? EVOLUTION_STAGES[newStage] : undefined,
   };
 };

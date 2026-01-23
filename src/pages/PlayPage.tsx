@@ -22,7 +22,7 @@ const PlayPage: React.FC = () => {
     const navigate = useNavigate();
     const { gameId } = useParams();
     const { t } = useTranslation();
-    const { setGameDifficulty, pauseTick, resumeTick, gameScores, categoryProgress } = useNurturing();
+    const { setGameDifficulty, pauseTick, resumeTick, gameScores, categoryProgress, totalGameStars } = useNurturing();
 
     // -- Custom Hook for State & Logic --
     const {
@@ -84,7 +84,12 @@ const PlayPage: React.FC = () => {
                 <div className="brand-icon"><i className="fas fa-gamepad"></i></div>
                 <h1 className="brand-title">Play & Learn</h1>
             </div>
-            <button className="header-close-btn" onClick={handleHomeClick}><i className="fas fa-xmark"></i></button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <div className="star-display" style={{ display: 'flex', alignItems: 'center', background: 'rgba(0,0,0,0.2)', padding: '4px 12px', borderRadius: '16px', fontWeight: 'bold', color: '#FFD700', fontSize: '1rem' }}>
+                    <span>⭐ {totalGameStars || 0}</span>
+                </div>
+                <button className="header-close-btn" onClick={handleHomeClick}><i className="fas fa-xmark"></i></button>
+            </div>
         </header>
     );
 

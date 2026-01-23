@@ -29,6 +29,8 @@ import { generateShareUrl, type ShareData } from '../../utils/shareUtils';
 import { FabMenu } from './FabMenu';
 import { SurpriseTrain } from '../SurpriseTrain';
 import { TrainRewardModal } from '../TrainRewardModal';
+import { EvolutionChoiceModal } from './EvolutionChoiceModal';
+import { STAGE5_REQUIRED_STARS } from '../../constants/gameMechanics';
 import './PetRoom.css';
 
 import { useNavigate } from 'react-router-dom';
@@ -87,6 +89,12 @@ export const PetRoom: React.FC<PetRoomProps> = ({
   // 양육 시스템 사용
   const { t } = useTranslation();
   const nurturing = useNurturing();
+  const {
+    showEvolutionChoice,
+    evolveToStage5,
+    graduateAtStage4,
+    totalGameStars
+  } = nurturing;
   const { user } = useAuth();
 
   // Resume tick when entering Pet Room (safety check)
@@ -868,6 +876,10 @@ export const PetRoom: React.FC<PetRoomProps> = ({
             </div>
           </div>
 
+          <div style={{ flex: 1 }} />
+
+
+
           <div className="stats-row">
             <div className="stat-badge stat-badge--hunger">
               <span className="stat-icon">🍖</span>
@@ -1331,6 +1343,16 @@ export const PetRoom: React.FC<PetRoomProps> = ({
           rewardType={pendingTrainReward.type}
           amount={pendingTrainReward.amount}
           onConfirm={handleConfirmTrainReward}
+        />
+      )}
+
+      {/* Evolution Choice Modal */}
+      {showEvolutionChoice && (
+        <EvolutionChoiceModal
+          currentStars={totalGameStars || 0}
+          requiredStars={STAGE5_REQUIRED_STARS}
+          onGraduate={graduateAtStage4}
+          onEvolve={evolveToStage5}
         />
       )}
     </div >

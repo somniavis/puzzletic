@@ -56,6 +56,7 @@ import { addXPAndCheckEvolution } from '../services/evolutionService';
 import { POOP_CONFIG } from '../constants/nurturing';
 import { updateCategoryProgress, parseGameScore, createGameScore, getUnlockThreshold, getProgressionCategory } from '../utils/progression';
 import { GAME_ORDER } from '../constants/gameOrder';
+import { getGameById } from '../games/registry';
 import type { Poop, GameScoreValue } from '../types/nurturing';
 
 interface NurturingContextValue {
@@ -65,6 +66,7 @@ interface NurturingContextValue {
   bugs: Bug[];
   gameScores?: Record<string, GameScoreValue>;
   categoryProgress?: Record<string, string>; // 카테고리별 도달한 게임 ID (해금용)
+  totalGameStars: number;
   condition: CharacterCondition;
   gro: number;
   currentLand: string;
@@ -115,6 +117,11 @@ interface NurturingContextValue {
   completeEvolutionAnimation: () => void;
   isGraduating: boolean; // Stage 4 -> Graduation
   completeGraduationAnimation: (name: string) => void;
+
+  // Evolution Choice (Stage 4 -> 5)
+  showEvolutionChoice: boolean;
+  evolveToStage5: () => void;
+  graduateAtStage4: () => void;
 
   // Stats
   recordGameScore: (gameId: string, score: number, incrementPlayCount?: boolean) => void;
@@ -407,6 +414,9 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
         isSick: parsedGameData.isSick ?? defaultState.isSick ?? false,
         isSleeping: parsedGameData.isSleeping ?? defaultState.isSleeping ?? false,
 
+        // Stats
+        totalGameStars: parsedGameData.totalGameStars ?? (cloudData as any).star ?? 0,
+
         // Ensure lastActiveTime is updated to now if we just pulled it
         lastActiveTime: Date.now(),
       };
@@ -602,65 +612,52 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
         }
       }
 
-      const { newXP, newStage, evolved, canGraduate } = addXPAndCheckEvolution(
-        currentState.xp || 0,
+      // Add XP & Check Evolution
+      const { newXP, newStage, evolved, canGraduate, showChoicePopup } = addXPAndCheckEvolution(
+        currentState.xp,
         (currentState.evolutionStage || 1) as import('../types/character').EvolutionStage,
         xpAmount,
-        currentState.history,
-        conditions
+        {
+          foodsEaten: currentState.history?.foodsEaten || {},
+          gamesPlayed: currentState.history?.gamesPlayed || {},
+          actionsPerformed: currentState.history?.actionsPerformed || {},
+          totalLifetimeGroEarned: currentState.history?.totalLifetimeGroEarned || 0,
+        } as any, // History cast (simplified for this context)
+        conditions,
+        currentState.totalGameStars || 0
       );
 
-      // Trigger animation if stage changed
-      // Note: We don't set isEvolving here directly to keep it decoupled, 
-      // but if we wanted to be explicit we could.
-      // However, the useEffect below watches for stage change.
+      // Handle Choice Popup
+      if (showChoicePopup) {
+        setShowEvolutionChoice(true);
+      }
 
-      // Handle Graduation
+      const newState = {
+        ...currentState,
+        xp: newXP,
+        gro: currentState.gro + groAmount, // Add Gro
+        totalCurrencyEarned: currentState.totalCurrencyEarned + groAmount,
+        // Only update stage if evolved (and not waiting for choice)
+        evolutionStage: evolved ? newStage : currentState.evolutionStage,
+      };
+
+      // Handle Immediate Evolution (if happened automatically)
+      if (evolved && !showChoicePopup) {
+        setIsEvolving(true);
+        // Also update lastSeenStage logic if needed
+      }
+
+      // Handle Graduation (Auto)
       if (canGraduate) {
         setIsGraduating(true);
       }
 
-      // Handle Evolution (useEffect handles this usually, but let's double check)
-      // The existing useEffect relies on state.evolutionStage changing.
-      // If evolved is true, state.evolutionStage will change below.
-
-      // Persist Species if Stage 4 (Branching) or earlier
-      // ... (existing logic)oAmount,
-      const newState = {
-        ...currentState,
-        xp: newXP,
-        evolutionStage: newStage,
-        gro: (currentState.gro || 0) + groAmount,
-        totalCurrencyEarned: (currentState.totalCurrencyEarned || 0) + groAmount,
-      };
-
-      // Encyclopedia Unlock Logic
-      if (evolved && currentState.speciesId) {
-        const speciesId = currentState.speciesId;
-        const unlockedMap = newState.unlockedJellos || {};
-        const currentUnlocks = unlockedMap[speciesId] || [];
-
-        if (!currentUnlocks.includes(newStage)) {
-          // Add new stage
-          const updatedUnlocks = [...currentUnlocks, newStage].sort((a, b) => a - b);
-          newState.unlockedJellos = {
-            ...unlockedMap,
-            [speciesId]: updatedUnlocks
-          };
-        }
-      }
-
-
-      if (evolved) {
-        console.log(`🎉 EVOLUTION! Stage ${newStage}`);
-        // Animation handled by useEffect monitoring state.evolutionStage
-      }
-
-      // saveNurturingState(newState); // Handled by throttle
-      // Removed immediate syncUserData(user, newState);
+      // Save etc...
       return newState;
     });
-  }, [user]);
+  }, []);
+
+
 
   // ... (existing actions) ...
 
@@ -764,8 +761,19 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
         }
       }
 
+      // Star Accumulation (Stage 5 Evolution)
+      // Accumulate stars when play count is incremented (indicating a successful/meaningful play)
+      let newTotalStars = currentState.totalGameStars || 0;
+      if (incrementPlayCount) {
+        const game = getGameById(gameId);
+        // Default to 1 star if level is missing, though games should have levels 1-5
+        const starsEarned = game ? game.level : 1;
+        newTotalStars += starsEarned;
+      }
+
       const newState = {
         ...currentState,
+        totalGameStars: newTotalStars,
         gameScores: {
           ...scoresMap,
           [gameId]: newScoreValue
@@ -1391,6 +1399,41 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     setIsEvolving(false);
   }, [user]);
 
+  // Evolution Choice State
+  const [showEvolutionChoice, setShowEvolutionChoice] = useState(false);
+
+  // Action: Pay Stars to Evolve to Stage 5
+  const evolveToStage5 = useCallback(() => {
+    setState(currentState => {
+      const cost = 1000;
+      if ((currentState.totalGameStars || 0) < cost) {
+        // Should not happen if UI is correct, but safety check
+        console.warn("Attempted Stage 5 evolution without enough stars");
+        return currentState;
+      }
+
+      const newState = {
+        ...currentState,
+        totalGameStars: (currentState.totalGameStars || 0) - cost,
+        evolutionStage: 5,
+      };
+
+      // Close modal
+      setShowEvolutionChoice(false);
+
+      // Trigger animation via state change (useEffect watches evolutionStage)
+      // But we can also set isEvolving explicitly to be safe
+      setIsEvolving(true);
+
+      return newState;
+    });
+  }, []);
+
+  // Action: Graduate at Stage 4
+  const graduateAtStage4 = useCallback(() => {
+    setShowEvolutionChoice(false);
+    setIsGraduating(true);
+  }, []);
   // Graduation Animation State
   const [isGraduating, setIsGraduating] = useState(false);
 
@@ -1549,6 +1592,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     equipLand,
     equipHouse,
     inventory: state.inventory || ['default_ground'],
+    totalGameStars: state.totalGameStars || 0,
     resetGame,
     pauseTick,
     resumeTick,
@@ -1560,6 +1604,9 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     completeEvolutionAnimation,
     isGraduating,
     completeGraduationAnimation,
+    showEvolutionChoice,
+    evolveToStage5,
+    graduateAtStage4,
     recordGameScore,
     debugUnlockAllGames,
 
@@ -1589,6 +1636,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     state.evolutionStage,
     state.unlockedJellos, // Added dependency
     state.categoryProgress, // Added dependency
+    state.totalGameStars, // Added dependency
     state.gameScores, // CRITICAL: Added for Hybrid Storage v2
     state.isSick, // Added dependency
     state.isSleeping, // Added dependency
