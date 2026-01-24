@@ -2,8 +2,7 @@
 import { useState, useEffect, useRef } from 'react'
 import './App.css'
 import { PetRoom } from './components/PetRoom/PetRoom'
-import { EvolutionAnimation } from './components/EvolutionAnimation/EvolutionAnimation'
-import { GraduationAnimation } from './components/GraduationAnimation/GraduationAnimation'
+
 import { createCharacter } from './data/characters'
 import type { CharacterAction, CharacterMood, Character, EvolutionStage } from './types/character'
 import { NurturingProvider, useNurturing } from './contexts/NurturingContext'
@@ -268,24 +267,6 @@ function AppContent() {
         <Route path="/" element={<Navigate to="/home" replace />} />
         <Route path="*" element={<Navigate to="/home" replace />} />
       </Routes>
-      {
-        nurturing.isEvolving && nurturing.speciesId && (
-          <EvolutionAnimation
-            speciesId={nurturing.speciesId as CharacterSpeciesId}
-            newStage={nurturing.evolutionStage as EvolutionStage}
-            onComplete={nurturing.completeEvolutionAnimation}
-          />
-        )
-      }
-      {
-        nurturing.isGraduating && nurturing.speciesId && (
-          <GraduationAnimation
-            speciesId={nurturing.speciesId as CharacterSpeciesId}
-            currentStage={nurturing.evolutionStage as EvolutionStage}
-            onComplete={() => nurturing.completeGraduationAnimation(character.name)}
-          />
-        )
-      }
     </>
   )
 }

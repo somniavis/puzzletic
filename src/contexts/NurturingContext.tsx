@@ -34,6 +34,7 @@ import type { SubscriptionState } from './hooks/useNurturingSync';
 import { useNurturingTick } from './hooks/useNurturingTick';
 import { useNurturingActions } from './hooks/useNurturingActions';
 import { useEvolutionLogic } from './hooks/useEvolutionLogic';
+import type { EvolutionPhase } from '../services/evolutionService';
 
 interface NurturingContextValue {
   // 상태
@@ -95,9 +96,10 @@ interface NurturingContextValue {
   completeGraduationAnimation: (name: string) => void;
 
   // Evolution Choice
-  showEvolutionChoice: boolean;
-  evolveToStage5: () => void;
-  graduateAtStage4: () => void;
+  // Evolution Control
+  evolutionPhase: EvolutionPhase;
+  triggerEvolution: () => void;
+  triggerGraduation: () => void;
 
   // Stats
   recordGameScore: (gameId: string, score: number, incrementPlayCount?: boolean) => void;
@@ -159,7 +161,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
   const actions = useNurturingActions(setState, setCondition, stateRef);
 
   // 4. Evolution Logic
-  const evolution = useEvolutionLogic(user, setState);
+  const evolution = useEvolutionLogic(user, state, setState);
 
   // 5. Remaining Logic (Not extracted to keep hooks focused or too specific)
   // setCharacterState, setCharacterName, resetGame, etc.

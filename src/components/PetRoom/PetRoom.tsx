@@ -29,8 +29,7 @@ import { generateShareUrl, type ShareData } from '../../utils/shareUtils';
 import { FabMenu } from './FabMenu';
 import { SurpriseTrain } from '../SurpriseTrain';
 import { TrainRewardModal } from '../TrainRewardModal';
-import { EvolutionChoiceModal } from './EvolutionChoiceModal';
-import { STAGE5_REQUIRED_STARS } from '../../constants/gameMechanics';
+import { EvolutionOverlay } from './EvolutionOverlay';
 import './PetRoom.css';
 
 import { useNavigate } from 'react-router-dom';
@@ -89,12 +88,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({
   // 양육 시스템 사용
   const { t } = useTranslation();
   const nurturing = useNurturing();
-  const {
-    showEvolutionChoice,
-    evolveToStage5,
-    graduateAtStage4,
-    totalGameStars
-  } = nurturing;
+  // Destructuring optimized for overlay usage
   const { user } = useAuth();
 
   // Resume tick when entering Pet Room (safety check)
@@ -1346,15 +1340,9 @@ export const PetRoom: React.FC<PetRoomProps> = ({
         />
       )}
 
-      {/* Evolution Choice Modal */}
-      {showEvolutionChoice && (
-        <EvolutionChoiceModal
-          currentStars={totalGameStars || 0}
-          requiredStars={STAGE5_REQUIRED_STARS}
-          onGraduate={graduateAtStage4}
-          onEvolve={evolveToStage5}
-        />
-      )}
+      {/* Evolution Overlay - Handles Wall Buttons & Animations */}
+      <EvolutionOverlay />
+
     </div >
   );
 };

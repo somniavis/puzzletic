@@ -135,11 +135,11 @@ export const ProfilePage: React.FC = () => {
                                 flex: 1
                             }}
                             onClick={() => {
-                                addRewards(50, 0); // Add 50 XP, 0 GRO
-                                alert(`✅ Added 50 XP!\nNew total: ${xp + 50}`);
+                                addRewards(500, 0); // Add 500 XP, 0 GRO
+                                alert(`✅ Added 500 XP!\nNew total: ${xp + 500}`);
                             }}
                         >
-                            ⭐ +50 XP
+                            ⭐ +500 XP
                         </button>
                         <button
                             style={{

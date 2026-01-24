@@ -1,113 +1,98 @@
 /**
  * useEvolutionLogic Hook
  * Handles character growth, evolution checks, graduation, and rewards.
+ * 
+ * [Redesign v2] Logic Flow:
+ * 1. addRewards() -> update XP -> changes state
+ * 2. evolutionPhase derived from state
+ * 3. triggerEvolution/Graduation() -> sets animation flags
+ * 4. completeAnimation() -> updates stage/level
  */
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import type { User } from 'firebase/auth';
 import type { NurturingPersistentState, HallOfFameEntry } from '../../types/nurturing';
-import { CHARACTER_SPECIES } from '../../data/species';
-import { addXPAndCheckEvolution } from '../../services/evolutionService';
+import type { EvolutionStage } from '../../types/gameMechanics';
+import {
+    getEvolutionPhase,
+    calculateNextState,
+    getNextStageInfo
+} from '../../services/evolutionService';
 import { saveToHallOfFame, startNewGeneration, saveFailSafeLastSeenStage } from '../../services/persistenceService';
 import { syncUserData } from '../../services/syncService';
 
 export const useEvolutionLogic = (
     user: User | null,
+    // The hook needs access to the CURRENT state to calculate phase
+    state: NurturingPersistentState,
     setState: React.Dispatch<React.SetStateAction<NurturingPersistentState>>
 ) => {
+    // UI Animation States
     const [isEvolving, setIsEvolving] = useState(false);
-    const [showEvolutionChoice, setShowEvolutionChoice] = useState(false);
     const [isGraduating, setIsGraduating] = useState(false);
 
-    // Add Rewards & Check Evolution
+    // Derived State: Calculate current phase instantly from state
+    const evolutionPhase = useMemo(() => {
+        return getEvolutionPhase(
+            (state.evolutionStage || 1) as EvolutionStage,
+            state.xp,
+            state.totalGameStars
+        );
+    }, [state.evolutionStage, state.xp, state.totalGameStars]);
+
+    // 1. Add Rewards (XP/Gro)
     const addRewards = useCallback((xpAmount: number, groAmount: number) => {
         setState((currentState) => {
-            let conditions = undefined;
-            if (currentState.speciesId && CHARACTER_SPECIES[currentState.speciesId]) {
-                const species = CHARACTER_SPECIES[currentState.speciesId];
-                const stage5 = species.evolutions.find(e => e.stage === 5);
-                if (stage5) {
-                    conditions = stage5.unlockConditions;
-                }
-            }
-
-            const { newXP, newStage, evolved, canGraduate, showChoicePopup } = addXPAndCheckEvolution(
+            const { newXP } = calculateNextState(
                 currentState.xp,
-                (currentState.evolutionStage || 1) as import('../../types/character').EvolutionStage,
+                (currentState.evolutionStage || 1) as EvolutionStage,
                 xpAmount,
-                {
-                    foodsEaten: currentState.history?.foodsEaten || {},
-                    gamesPlayed: currentState.history?.gamesPlayed || {},
-                    actionsPerformed: currentState.history?.actionsPerformed || {},
-                    totalLifetimeGroEarned: currentState.history?.totalLifetimeGroEarned || 0,
-                } as any,
-                conditions,
                 currentState.totalGameStars || 0
             );
 
-            if (showChoicePopup) {
-                setShowEvolutionChoice(true);
-            }
-
-            const newState = {
+            return {
                 ...currentState,
                 xp: newXP,
                 gro: currentState.gro + groAmount,
                 totalCurrencyEarned: currentState.totalCurrencyEarned + groAmount,
-                evolutionStage: evolved ? newStage : currentState.evolutionStage,
             };
-
-            if (evolved && !showChoicePopup) {
-                setIsEvolving(true);
-            }
-
-            if (canGraduate) {
-                setIsGraduating(true);
-            }
-
-            return newState;
         });
     }, [setState]);
 
-    // Evolve to Stage 5 (Choice)
-    const evolveToStage5 = useCallback(() => {
-        setState(currentState => {
-            const cost = 1000;
-            if ((currentState.totalGameStars || 0) < cost) {
-                console.warn("Attempted Stage 5 evolution without enough stars");
-                return currentState;
-            }
+    // 2. Trigger Evolution (Manual Action from UI)
+    const triggerEvolution = useCallback(() => {
+        // Validation: Can we actually evolve?
+        if (evolutionPhase !== 'READY_TO_EVOLVE' && evolutionPhase !== 'LEGENDARY_READY') {
+            console.warn('⚠️ Cannot evolve in current phase:', evolutionPhase);
+            return;
+        }
+        setIsEvolving(true);
+    }, [evolutionPhase]);
 
-            const newState = {
-                ...currentState,
-                totalGameStars: (currentState.totalGameStars || 0) - cost,
-                evolutionStage: 5,
-            };
-
-            setShowEvolutionChoice(false);
-            setIsEvolving(true);
-
-            return newState;
-        });
-    }, [setState]);
-
-    // Graduate at Stage 4 (Choice)
-    const graduateAtStage4 = useCallback(() => {
-        setShowEvolutionChoice(false);
-        setIsGraduating(true);
-    }, []);
-
+    // 3. Complete Evolution (Called after Animation finishes)
     const completeEvolutionAnimation = useCallback(() => {
         setState(currentState => {
+            const currentStage = (currentState.evolutionStage || 1) as EvolutionStage;
+            const nextInfo = getNextStageInfo(currentStage);
+
+            if (!nextInfo) return currentState;
+
+            // Cost for Legendary Evolution
+            let newStars = currentState.totalGameStars || 0;
+            if (currentStage === 4 && nextInfo.nextStage === 5) {
+                newStars -= 1000;
+            }
+
             const newState = {
                 ...currentState,
-                lastSeenStage: currentState.evolutionStage
+                evolutionStage: nextInfo.nextStage,
+                totalGameStars: newStars,
+                lastSeenStage: nextInfo.nextStage
             };
 
-            saveFailSafeLastSeenStage(currentState.evolutionStage);
+            saveFailSafeLastSeenStage(newState.evolutionStage);
 
             if (user) {
-                console.log('☁️ Evolution milestone reached. Syncing to cloud...');
                 syncUserData(user, newState);
             }
             return newState;
@@ -115,11 +100,18 @@ export const useEvolutionLogic = (
         setIsEvolving(false);
     }, [user, setState]);
 
-    const completeGraduationAnimation = useCallback((name: string) => {
-        let nextState: NurturingPersistentState;
-        setState(currentState => { // Need access to current state for snapshot
-            // Note: Logic requires state access. setState updater provides latest state.
+    // 4. Trigger Graduation (Manual Action from UI)
+    const triggerGraduation = useCallback(() => {
+        if (evolutionPhase !== 'MATURE' && evolutionPhase !== 'LEGENDARY_READY' && evolutionPhase !== 'MAX_LEVEL') {
+            console.warn('⚠️ Cannot graduate in current phase:', evolutionPhase);
+            return;
+        }
+        setIsGraduating(true);
+    }, [evolutionPhase]);
 
+    // 5. Complete Graduation (Called after Animation finishes)
+    const completeGraduationAnimation = useCallback((name: string) => {
+        setState(currentState => {
             const entry: HallOfFameEntry = {
                 id: Date.now().toString(),
                 name: name || 'Jello',
@@ -129,30 +121,29 @@ export const useEvolutionLogic = (
                 finalStats: currentState.stats
             };
 
+            // Save & Reset (XP -> 0 handled in startNewGeneration)
             const stateWithEntry = saveToHallOfFame(currentState, entry);
-            nextState = startNewGeneration(stateWithEntry);
+            const nextState = startNewGeneration(stateWithEntry);
+
+            if (user) {
+                syncUserData(user, nextState);
+            }
 
             return nextState;
         });
-
-        // Since we used updater, we can't reliably get 'nextState' out from inside sync-ly for other calls 
-        // unless we trust the updater runs first. 
-        // To be safe, we let setState handle the update and just reset flags.
-
         setIsGraduating(false);
+        // Force reset evolution flags
         setIsEvolving(false);
-    }, [setState]);
+    }, [user, setState]);
 
     return {
+        evolutionPhase,
         isEvolving,
-        showEvolutionChoice,
         isGraduating,
         addRewards,
-        evolveToStage5,
-        graduateAtStage4,
+        triggerEvolution,
+        triggerGraduation,
         completeEvolutionAnimation,
-        completeGraduationAnimation,
-        setShowEvolutionChoice // Needed? Maybe not exposed in original context but we might need to set it? 
-        // Actually original context only exposes 'showEvolutionChoice' boolean and action methods.
+        completeGraduationAnimation
     };
 };
