@@ -65,14 +65,24 @@
 
 ### 2. `PetRoom.tsx` (트리거 통합)
 *   **애니메이션 이관**: `App.tsx`에 있는 `<EvolutionAnimation>`, `<GraduationAnimation>`을 `PetRoom.tsx` 내부로 이동.
-*   **자동 감지**: `useEffect`를 통해 마운트 시 `evolutionStatus === 'READY_TO_EVOLVE'`이면 `triggerEvolution()` 호출.
-*   **UI 추가**: `evolutionStatus === 'MATURE'`일 때만 보이는 "운명의 선택" 버튼 추가.
+*   **벽 버튼 추가**:
+    *   `useEvolutionLogic`에서 `evolutionPhase`를 받아옵니다.
+    *   **Phase 1-3 (READY_TO_EVOLVE)**: [진화] 아이콘 표시. 클릭 시 `triggerEvolution()`.
+    *   **Phase 4 (MATURE)**: [졸업] 아이콘 기본 표시.
+    *   **Phase 4 (LEGENDARY_READY)**: [졸업], [전설 진화] 아이콘 동시 표시.
+*   **모달 제거**: `EvolutionChoiceModal`을 사용하지 않고, 아이콘 클릭 시 즉시 실행.
 
 ### 3. `evolutionService.ts`
 *   복잡한 `showChoicePopup` 플래그 제거. 순수하게 `getEvolutionStatus(xp, stage)` 함수로 상태만 반환하도록 정리.
 
 ## 검증 계획 (Verification Plan)
-1.  **게임 플레이**: 게임을 클리어하여 XP를 채움 -> 결과 화면에서 진화 안 함 확인.
-2.  **팻룸 이동**: 팻룸 입장 즉시 진화 애니메이션 시작 확인.
-3.  **4단계 달성**: 4단계 Max XP 달성 -> 자동 진화 안 함 -> 버튼 생성 확인.
-4.  **새로고침**: 팻룸 새로고침 시에도 버튼이 유지되며, 멋대로 팝업이 뜨지 않는지 확인.
+1.  **성장기 진화 (Stage 1-3)**:
+    *   XP 채움 -> 팻룸 진입 -> **자동 진화 안 함** 확인.
+    *   벽면 **[진화]** 아이콘 클릭 -> 진화 애니메이션 실행 확인.
+2.  **성숙기 도달 (Stage 4)**: 
+    *   6500 XP 달성 -> 팻룸 진입.
+    *   벽면 **[졸업]** 아이콘 등장 확인.
+    *   (별 1000개 미만) -> [전설 진화] 아이콘 **없음** 확인.
+    *   (별 1000개 이상) -> [전설 진화] 아이콘 **등장** 확인.
+3.  **졸업/진화 실행**: 
+    *   각 버튼 클릭 시 즉시 해당 애니메이션 실행 및 데이터 처리 확인.
