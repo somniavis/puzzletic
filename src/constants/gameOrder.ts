@@ -32,6 +32,9 @@ export const MATH_GENIUS_ORDER = [
     'front-subtraction-lv2',
     'front-subtraction-lv3',
     'front-subtraction-lv4',
+    'back-multiplication-lv1',
+    'back-multiplication-lv2',
+    'back-multiplication-lv3',
 ] as const;
 
 // Brain Adventure (Level 1 → Level 2 순차)

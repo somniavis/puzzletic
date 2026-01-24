@@ -7,6 +7,11 @@ export default {
         title: 'Back 곱셈 2',
         subtitle: '3자리 x 1자리',
     },
+    lv3: {
+        title: 'Back 곱셈 3',
+        subtitle: '2자리 x 2자리',
+        desc: '크로스 곱셈법으로 풀어보세요.'
+    },
     description: '뒤에서부터 계산하는 부분 곱셈법!',
     howToPlay: {
         step1: { title: '일의 자리' },

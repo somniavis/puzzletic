@@ -7,6 +7,11 @@ export default {
         title: 'Back Multiplication 2',
         subtitle: '3-digit x 1-digit',
     },
+    lv3: {
+        title: 'Back Multiplication 3',
+        subtitle: '2-digit x 2-digit',
+        desc: 'Solve using the cross-link method.'
+    },
     description: 'Calculate from the back using partial products!',
     howToPlay: {
         step1: { title: 'Units' },
