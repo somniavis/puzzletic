@@ -30,6 +30,34 @@ export interface SubscriptionState {
     expiryDate: number | null;
 }
 
+// Security: Max allowed gain per sync to prevent abnormal data
+const MAX_XP_GAIN_PER_SYNC = 2000;
+const MAX_GRO_GAIN_PER_SYNC = 2000;
+
+// Helper: Validate State Integrity
+const validateStateIntegrity = (currentState: NurturingPersistentState, lastSyncedJson: string | null): boolean => {
+    if (!lastSyncedJson) return true; // First sync is always trusted (or handled by server)
+
+    try {
+        const lastState = JSON.parse(lastSyncedJson) as NurturingPersistentState;
+        const xpDiff = (currentState.xp || 0) - (lastState.xp || 0);
+        const groDiff = (currentState.gro || 0) - (lastState.gro || 0);
+
+        if (xpDiff > MAX_XP_GAIN_PER_SYNC) {
+            console.error(`🛡️ [Security] Blocked Sync: Abnormal XP gain detected (+${xpDiff}). Limit: ${MAX_XP_GAIN_PER_SYNC}`);
+            return false;
+        }
+        if (groDiff > MAX_GRO_GAIN_PER_SYNC) {
+            console.error(`🛡️ [Security] Blocked Sync: Abnormal GRO gain detected (+${groDiff}). Limit: ${MAX_GRO_GAIN_PER_SYNC}`);
+            return false;
+        }
+        return true;
+    } catch (e) {
+        console.warn('Failed to validate integrity, skipping check:', e);
+        return true;
+    }
+};
+
 export const useNurturingSync = (user: User | null) => {
     const [isGlobalLoading, setIsGlobalLoading] = useState(true);
 
@@ -335,6 +363,13 @@ export const useNurturingSync = (user: User | null) => {
                 if (lastSyncedStateRef.current === currentStateStr) return;
 
                 console.log('☁️ Auto-save triggered.');
+
+                // Security Check
+                if (!validateStateIntegrity(stateRef.current, lastSyncedStateRef.current)) {
+                    console.warn('⚠️ Auto-save skipped due to integrity violation.');
+                    return;
+                }
+
                 syncUserData(user, stateRef.current).then(success => {
                     if (success) lastSyncedStateRef.current = currentStateStr;
                 });
@@ -347,6 +382,13 @@ export const useNurturingSync = (user: User | null) => {
     const saveToCloud = useCallback(async () => {
         if (!user) return false;
         const safeState = stateRef.current;
+
+        // Security Check
+        if (!validateStateIntegrity(safeState, lastSyncedStateRef.current)) {
+            alert('⚠️ Sync Blocked: Abnormal data detected (XP/Gro gain too high). Revert changes or reload.');
+            return false;
+        }
+
         const success = await syncUserData(user, safeState);
         if (success) {
             lastSyncedStateRef.current = JSON.stringify(safeState);

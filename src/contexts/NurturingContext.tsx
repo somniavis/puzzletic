@@ -118,6 +118,7 @@ interface NurturingContextValue {
 
   // Debug
   debugUnlockAllGames: () => void;
+  debugAddStars: (amount: number) => void;
 }
 
 const NurturingContext = createContext<NurturingContextValue | undefined>(undefined);
@@ -300,6 +301,17 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     });
   }, [setState]);
 
+  const debugAddStars = useCallback((amount: number) => {
+    setState((currentState) => {
+      const newStars = (currentState.totalGameStars || 0) + amount;
+      alert(`✅ Added ${amount} Stars!\nNew total: ${newStars}`);
+      return {
+        ...currentState,
+        totalGameStars: newStars
+      };
+    });
+  }, [setState]);
+
   // Need to implement resetGame properly with imports
 
   const abandonmentStatus = getAbandonmentStatusUI(state.abandonmentState, Date.now());
@@ -343,6 +355,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     recordGameScore,
     toggleSleep,
     debugUnlockAllGames,
+    debugAddStars,
 
     hasCharacter: state.hasCharacter ?? false,
     completeCharacterCreation,
@@ -371,6 +384,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     recordGameScore,
     toggleSleep,
     debugUnlockAllGames,
+    debugAddStars,
     completeCharacterCreation,
     user,
     isGlobalLoading

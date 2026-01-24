@@ -9,7 +9,7 @@ export const ProfilePage: React.FC = () => {
     const navigate = useNavigate();
     const { t } = useTranslation();
     const { user } = useAuth();
-    const { pauseTick, resumeTick, gro, xp, addRewards, maxStats, subscription, purchasePlan, debugUnlockAllGames } = useNurturing();
+    const { pauseTick, resumeTick, gro, xp, addRewards, maxStats, subscription, purchasePlan, debugUnlockAllGames, debugAddStars } = useNurturing();
     const isPremium = subscription.isPremium;
 
     // Pause ticks when entering Profile page, resume when leaving
@@ -140,6 +140,27 @@ export const ProfilePage: React.FC = () => {
                             }}
                         >
                             ⭐ +500 XP
+                        </button>
+                        <button
+                            style={{
+                                background: '#FFC107',
+                                color: 'black',
+                                padding: '12px 24px',
+                                borderRadius: '12px',
+                                border: 'none',
+                                fontWeight: 'bold',
+                                cursor: 'pointer',
+                                flex: 1
+                            }}
+                            onClick={() => {
+                                if (typeof debugAddStars === 'function') {
+                                    debugAddStars(1001);
+                                } else {
+                                    alert("Debug function not ready yet");
+                                }
+                            }}
+                        >
+                            🌟 +1001 Stars
                         </button>
                         <button
                             style={{

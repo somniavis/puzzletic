@@ -87,7 +87,14 @@ export const useEvolutionLogic = (
                 ...currentState,
                 evolutionStage: nextInfo.nextStage,
                 totalGameStars: newStars,
-                lastSeenStage: nextInfo.nextStage
+                lastSeenStage: nextInfo.nextStage,
+                unlockedJellos: {
+                    ...(currentState.unlockedJellos || {}),
+                    [currentState.speciesId || 'yellowJello']: [
+                        ...(currentState.unlockedJellos?.[currentState.speciesId || 'yellowJello'] || []),
+                        nextInfo.nextStage
+                    ].filter((v, i, a) => a.indexOf(v) === i).sort((a, b) => a - b)
+                }
             };
 
             saveFailSafeLastSeenStage(newState.evolutionStage);
