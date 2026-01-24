@@ -46,6 +46,9 @@ export const BRAIN_ADVENTURE_ORDER = [
     'pair-up-connect',
     'maze-hunter',
     'signal-hunter',
+    // Level 3
+    'tic-tac-toe',
+    'brain-omok',
 ] as const;
 
 // 카테고리 키 타입

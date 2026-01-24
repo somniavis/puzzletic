@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { playJelloClickSound, playClearSound, playButtonSound } from '../../../../utils/sound';
+import { playClearSound, playButtonSound } from '../../../../utils/sound';
 
 export type Player = 'black' | 'white';
 // Board is 15x15
@@ -146,7 +146,7 @@ export const useOmokGame = ({ onGameOver }: UseOmokGameProps) => {
             newBoard[move.r][move.c] = aiColor;
             setBoard(newBoard);
             setLastMove({ r: move.r, c: move.c });
-            playJelloClickSound();
+            // playJelloClickSound();
 
             if (checkWin(newBoard, move.r, move.c, aiColor)) {
                 setWinner(aiColor);
@@ -173,7 +173,7 @@ export const useOmokGame = ({ onGameOver }: UseOmokGameProps) => {
         newBoard[r][c] = playerSide;
         setBoard(newBoard);
         setLastMove({ r, c });
-        playJelloClickSound();
+        // playJelloClickSound();
 
         if (checkWin(newBoard, r, c, playerSide)) {
             setWinner(playerSide);
