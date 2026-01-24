@@ -159,7 +159,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
   const { pauseTick, resumeTick } = useNurturingTick(user, state, setState, setCondition);
 
   // 3. Actions
-  const actions = useNurturingActions(setState, setCondition, stateRef);
+  const actions = useNurturingActions(setState, setCondition, stateRef, user?.uid);
 
   // 4. Evolution Logic
   const evolution = useEvolutionLogic(user, state, setState);

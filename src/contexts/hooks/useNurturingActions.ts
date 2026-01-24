@@ -4,7 +4,6 @@
  */
 
 import { useCallback } from 'react';
-// import type { User } from 'firebase/auth'; // Unused
 import type {
     NurturingPersistentState,
     NurturingStats,
@@ -27,11 +26,13 @@ import {
     removePoop
 } from '../../services/actionService';
 import { evaluateCondition, clampStat } from '../../services/gameTickService';
+import { saveNurturingState } from '../../services/persistenceService';
 
 export const useNurturingActions = (
     setState: React.Dispatch<React.SetStateAction<NurturingPersistentState>>,
     setCondition: (condition: CharacterCondition) => void,
-    stateRef: React.MutableRefObject<NurturingPersistentState>
+    stateRef: React.MutableRefObject<NurturingPersistentState>,
+    userId?: string
 ) => {
 
     const performAction = useCallback(<T extends ActionResult>(
@@ -375,11 +376,14 @@ export const useNurturingActions = (
             if (currentState.inventory?.includes(itemId)) return currentState;
             if ((currentState.gro || 0) < price) return currentState;
 
-            return {
+            const newState = {
                 ...currentState,
                 gro: (currentState.gro || 0) - price,
                 inventory: [...(currentState.inventory || []), itemId],
+                lastActiveTime: Date.now(),
             };
+            setTimeout(() => saveNurturingState(newState, userId), 0);
+            return newState;
         });
 
         return true;
@@ -391,7 +395,11 @@ export const useNurturingActions = (
             console.warn('Cannot equip land not in inventory:', landId);
             return false;
         }
-        setState((currentState) => ({ ...currentState, currentLand: landId }));
+        setState((currentState) => {
+            const newState = { ...currentState, currentLand: landId, lastActiveTime: Date.now() };
+            setTimeout(() => saveNurturingState(newState, userId), 0);
+            return newState;
+        });
         return true;
     }, [stateRef, setState]);
 
@@ -401,7 +409,11 @@ export const useNurturingActions = (
             console.warn('Cannot equip house not in inventory:', houseId);
             return false;
         }
-        setState((currentState) => ({ ...currentState, currentHouseId: houseId }));
+        setState((currentState) => {
+            const newState = { ...currentState, currentHouseId: houseId, lastActiveTime: Date.now() };
+            setTimeout(() => saveNurturingState(newState, userId), 0);
+            return newState;
+        });
         return true;
     }, [stateRef, setState]);
 

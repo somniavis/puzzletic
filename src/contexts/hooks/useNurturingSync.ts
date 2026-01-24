@@ -69,17 +69,17 @@ export const useNurturingSync = (user: User | null) => {
     });
 
     // Initial State Strategy:
-    // If user is null (Guest/Logout), try loading guest data (uid=undefined).
-    // If user is present (Login flow), DO NOT load instantly. Wait for useEffect to load specific user data.
-    // This prevents the "Flash of Previous Content" issue.
+    // Sync load from localStorage to prevent "Flash of Default" -> "Autosave Overwrite" race condition.
     const [state, setState] = useState<NurturingPersistentState>(() => {
-        if (user) {
-            // If user exists on mount, return a safe temporary default.
-            // The useEffect below will fetch the REAL data immediately.
-            return createDefaultState();
+        if (user?.uid) {
+            // Synchronous Load for authenticated user
+            console.log('🔄 [Init] Synchronous load for:', user.uid);
+            const loaded = loadNurturingState(user.uid);
+            const { updatedState } = applyOfflineProgress(loaded);
+            return updatedState;
         }
-        // Guest mode / No User: Safe to load generic storage
-        const loaded = loadNurturingState(undefined); // Explicitly undefined for guest
+        // Guest mode / No User
+        const loaded = loadNurturingState(undefined);
         const { updatedState } = applyOfflineProgress(loaded);
         return updatedState;
     });
@@ -116,9 +116,6 @@ export const useNurturingSync = (user: User | null) => {
             hasLoadedRef.current = false; // Disable autosave during switch
 
             console.log('🔄 User changed, resetting state & loading specific data for:', user.uid);
-
-            // 1. Reset to clean state immediately to prevent bleeding
-            setState(createDefaultState());
 
             // 2. Load User Specific Data
             const userState = loadNurturingState(user.uid);
@@ -237,7 +234,7 @@ export const useNurturingSync = (user: User | null) => {
             const cloudTotalGro = parsedGameData.totalCurrencyEarned || 0;
             const localTotalGro = stateRef.current.totalCurrencyEarned || 0;
 
-            const isLocalLegitimatelyNewer = (localTime > cloudTime + 5000) && (localXP >= cloudXP) && (localTotalGro >= cloudTotalGro);
+            const isLocalLegitimatelyNewer = (localTime > cloudTime) && (localXP >= cloudXP) && (localTotalGro >= cloudTotalGro);
 
             if (isLocalLegitimatelyNewer && !isLocalFresh && !isLocalInvalid) {
                 console.log(`☁️ Keeping local data (Lazy Sync). Reason: Local is newer.`);

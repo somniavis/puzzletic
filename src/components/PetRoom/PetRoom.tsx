@@ -29,8 +29,8 @@ import { generateShareUrl, type ShareData } from '../../utils/shareUtils';
 import { FabMenu } from './FabMenu';
 import { SurpriseTrain } from '../SurpriseTrain';
 import { TrainRewardModal } from '../TrainRewardModal';
+import { EvolutionControls } from './EvolutionControls';
 import { EvolutionOverlay } from './EvolutionOverlay';
-import './PetRoom.css';
 
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
@@ -893,41 +893,13 @@ export const PetRoom: React.FC<PetRoomProps> = ({
         {/* FAB Menu Anchor - Positioned exactly below header */}
         <div style={{ position: 'relative', width: '100%', height: 0, zIndex: 20 }}>
           {/* Evolution Controls (Left Side) - Symmetric to FAB */}
-          {(nurturing.evolutionPhase === 'READY_TO_EVOLVE' || nurturing.evolutionPhase === 'LEGENDARY_READY' || nurturing.evolutionPhase === 'MATURE' || nurturing.evolutionPhase === 'MAX_LEVEL') && !showGiftBox && !isActionInProgress && (
-            <div className="evolution-controls-container">
-              {/* Evolution Button */}
-              {(nurturing.evolutionPhase === 'READY_TO_EVOLVE' || nurturing.evolutionPhase === 'LEGENDARY_READY') && (
-                <button
-                  className="evolution-btn type-evolution"
-                  onClick={() => {
-                    playButtonSound();
-                    nurturing.triggerEvolution();
-                  }}
-                  disabled={isActionInProgress}
-                  title={t('actions.evolve', 'Evolve')}
-                >
-                  <span className="action-icon">💫</span>
-                  <span className="btn-text">{t('actions.evolve', 'Evolution')}</span>
-                </button>
-              )}
-
-              {/* Graduation Button */}
-              {(nurturing.evolutionPhase === 'MATURE' || nurturing.evolutionPhase === 'LEGENDARY_READY' || nurturing.evolutionPhase === 'MAX_LEVEL') && (
-                <button
-                  className="evolution-btn"
-                  onClick={() => {
-                    playButtonSound();
-                    nurturing.triggerGraduation();
-                  }}
-                  disabled={isActionInProgress}
-                  title={t('actions.graduate', 'Graduate')}
-                >
-                  <span className="action-icon">🎓</span>
-                  <span className="btn-text">{t('actions.graduate', 'Graduation')}</span>
-                </button>
-              )}
-            </div>
-          )}
+          <EvolutionControls
+            evolutionPhase={nurturing.evolutionPhase}
+            showGiftBox={showGiftBox}
+            isActionInProgress={isActionInProgress}
+            triggerEvolution={nurturing.triggerEvolution}
+            triggerGraduation={nurturing.triggerGraduation}
+          />
 
           {/* FAB Menu (Floating Action Button) */}
           <FabMenu

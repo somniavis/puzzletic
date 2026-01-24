@@ -3,6 +3,7 @@ import { useNurturing } from '../../contexts/NurturingContext';
 import { EvolutionAnimation } from '../EvolutionAnimation/EvolutionAnimation';
 import { GraduationAnimation } from '../GraduationAnimation/GraduationAnimation';
 
+
 export const EvolutionOverlay: React.FC = () => {
     const {
         evolutionPhase, // Used for condition
@@ -13,7 +14,7 @@ export const EvolutionOverlay: React.FC = () => {
         completeEvolutionAnimation,
         completeGraduationAnimation,
         characterName,
-    } = useNurturing() as any;
+    } = useNurturing();
 
     return (
         <div className="evolution-overlay-container" style={{
@@ -29,7 +30,7 @@ export const EvolutionOverlay: React.FC = () => {
                 <div style={{ pointerEvents: 'auto', position: 'absolute', inset: 0 }}>
                     <EvolutionAnimation
                         speciesId={speciesId}
-                        newStage={evolutionPhase === 'LEGENDARY_READY' ? 5 : (evolutionStage + 1)}
+                        newStage={evolutionPhase === 'LEGENDARY_READY' ? 5 : ((evolutionStage + 1) as any)}
                         onComplete={completeEvolutionAnimation}
                     />
                 </div>
@@ -39,8 +40,8 @@ export const EvolutionOverlay: React.FC = () => {
                 <div style={{ pointerEvents: 'auto', position: 'absolute', inset: 0 }}>
                     <GraduationAnimation
                         speciesId={speciesId}
-                        currentStage={evolutionStage}
-                        onComplete={() => completeGraduationAnimation(characterName)}
+                        currentStage={evolutionStage as any}
+                        onComplete={() => completeGraduationAnimation(characterName || '')}
                     />
                 </div>
             )}
