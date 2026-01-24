@@ -141,7 +141,7 @@ const Tile = ({
 
 export const BackMultiplicationGameLv3: React.FC<{ onExit: () => void, gameId?: string }> = ({ onExit, gameId }) => {
     const { t } = useTranslation();
-    const engine = useGameEngine({ initialLives: 3, initialTime: 300 });
+    const engine = useGameEngine({ initialLives: 3, initialTime: 120 });
     const {
         currentProblem, userInput, currentStep, completedSteps, feedback, handleInput
     } = useBackMultiplicationLogicLv3(engine);

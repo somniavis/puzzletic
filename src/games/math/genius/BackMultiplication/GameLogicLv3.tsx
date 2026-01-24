@@ -18,6 +18,7 @@ const PAD_LEN = 2;
 
 // Partial interface for the engine helpers we use
 interface GameLogicEngine {
+    gameState: 'idle' | 'playing' | 'correct' | 'wrong' | 'gameover';
     updateScore: (amount: number) => void;
     updateLives: (isCorrect: boolean) => void;
     registerEvent: (event: { type: 'correct' | 'wrong'; isFinal?: boolean }) => void;
@@ -30,29 +31,45 @@ export const useBackMultiplicationLogicLv3 = (engine: GameLogicEngine) => {
     const [completedSteps, setCompletedSteps] = useState<{ [key: number]: string }>({});
     const [feedback, setFeedback] = useState<'correct' | 'wrong' | null>(null);
 
-    const { updateScore, updateLives, registerEvent } = engine;
+    const { updateScore, updateLives, registerEvent, gameState } = engine;
 
     // Generate Problem
     const generateProblem = useCallback(() => {
-        // Random 2-digit numbers (10-99)
-        const n1 = Math.floor(Math.random() * 90) + 10;
-        const n2 = Math.floor(Math.random() * 90) + 10;
+        let n1 = 0, n2 = 0, s1 = 0, s2 = 0, s3 = 0, s4 = 0, final = 0;
+        let attempts = 0;
 
-        const u1 = n1 % 10;
-        const t1 = Math.floor(n1 / 10);
-        const u2 = n2 % 10;
-        const t2 = Math.floor(n2 / 10);
+        // Try to find a problem with minimal carries (<= 1 carry event)
+        // Loop limit prevents infinite loop if strict criteria hard to meet
+        while (attempts < 50) {
+            n1 = Math.floor(Math.random() * 90) + 10;
+            n2 = Math.floor(Math.random() * 90) + 10;
 
-        // Step 1: Units x Units (Right aligned)
-        const s1 = u1 * u2;
-        // Step 2: Tens x Tens (Left aligned)
-        const s2 = t1 * t2;
-        // Step 3: Outer (T1 x U2)
-        const s3 = t1 * u2;
-        // Step 4: Inner (U1 x T2)
-        const s4 = u1 * t2;
-        // Step 5: Final
-        const final = n1 * n2;
+            const u1 = n1 % 10;
+            const t1 = Math.floor(n1 / 10);
+            const u2 = n2 % 10;
+            const t2 = Math.floor(n2 / 10);
+
+            s1 = u1 * u2;
+            s2 = t1 * t2;
+            s3 = t1 * u2;
+            s4 = u1 * t2;
+            final = n1 * n2;
+
+            // Check Carries for Final Addition
+            // Col 2 (Tens): s1_tens + s3_units + s4_units
+            const c2_sum = Math.floor(s1 / 10) + (s3 % 10) + (s4 % 10);
+            const c2_carry = Math.floor(c2_sum / 10);
+
+            // Col 1 (Hundreds): s2_units + s3_tens + s4_tens + c2_carry
+            const c1_sum = (s2 % 10) + Math.floor(s3 / 10) + Math.floor(s4 / 10) + c2_carry;
+            const c1_carry = Math.floor(c1_sum / 10);
+
+            // Total Carry Magnitude (Should be <= 1 for "easy" addition)
+            if ((c2_carry + c1_carry) <= 1) {
+                break;
+            }
+            attempts++;
+        }
 
         setCurrentProblem({
             num1: n1,
@@ -69,16 +86,23 @@ export const useBackMultiplicationLogicLv3 = (engine: GameLogicEngine) => {
         setFeedback(null);
     }, []);
 
-    // Initial Load
+    // Initial Load & Restart Handler
     useEffect(() => {
-        generateProblem();
-    }, [generateProblem]);
+        if (gameState === 'playing') {
+            generateProblem();
+        }
+    }, [gameState, generateProblem]);
 
     // Handle Input
     const handleInput = (val: string) => {
         if (feedback) return; // Block input during feedback animation
 
-        if (val === 'CHECK') return; // Ignore Check key (Auto-check enabled)
+        if (val === 'CHECK') {
+            if (userInput.length > 0 && currentProblem) {
+                checkAnswer(userInput, currentProblem);
+            }
+            return;
+        }
 
         if (val === 'AC') {
             setUserInput('');
