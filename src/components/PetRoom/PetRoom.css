@@ -1282,6 +1282,49 @@
   }
 }
 
+/* ==========/* Jello Wrapper for Responsive Sizing */
+.jello-wrapper {
+  width: 96px;
+  height: 96px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.jello-wrapper.baby {
+  padding: 8px;
+  /* Internal padding for baby jellos to appear slightly smaller */
+  box-sizing: border-box;
+}
+
+.jello-wrapper.legendary {
+  width: 144px;
+  /* 96 * 1.5 */
+  height: 144px;
+}
+
+/* Tablet & Desktop: Scale up by 1.25x */
+@media (min-width: 600px) {
+  .jello-wrapper {
+    width: 120px;
+    /* 96 * 1.25 */
+    height: 120px;
+  }
+
+  .jello-wrapper.baby {
+    padding: 10px;
+    /* 8 * 1.25 */
+  }
+
+  .jello-wrapper.legendary {
+    width: 180px;
+    /* 144 * 1.25 */
+    height: 180px;
+  }
+}
+
+/* ========== State Management ========== */
 /* ==================== 가출 경고 Alert ==================== */
 @keyframes heartbeat {
 
