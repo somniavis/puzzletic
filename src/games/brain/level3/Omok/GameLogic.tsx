@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { playClearSound, playButtonSound } from '../../../../utils/sound';
+import { playClearSound } from '../../../../utils/sound';
 
 export type Player = 'black' | 'white';
 // Board is 15x15
@@ -151,7 +151,6 @@ export const useOmokGame = ({ onGameOver }: UseOmokGameProps) => {
             if (checkWin(newBoard, move.r, move.c, aiColor)) {
                 setWinner(aiColor);
                 isGameOverRef.current = true;
-                playButtonSound(); // Loss sound (using button sound as failure effect for now)
                 onGameOver({ success: false });
             } else {
                 setCurrentPlayer(playerSide); // Pass turn to human
