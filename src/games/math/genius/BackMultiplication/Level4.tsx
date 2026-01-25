@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Layout2 } from '../../../layouts/Standard/Layout2';
 import { useGameEngine } from '../../../layouts/Standard/Layout0/useGameEngine';
-import { useBackMultiplicationLogicLv4 } from './GameLogicLv4';
+import { useBackMultiplicationLogicLv3 } from './GameLogicLv3';
 import { BlobBackground } from '../../components/BlobBackground';
 import { Keypad } from './Keypad';
 
@@ -139,12 +139,12 @@ const Tile = ({
     );
 };
 
-export const BackMultiplicationGameLv4: React.FC<{ onExit: () => void, gameId?: string }> = ({ onExit, gameId }) => {
+export const BackMultiplicationGameLv3: React.FC<{ onExit: () => void, gameId?: string }> = ({ onExit, gameId }) => {
     const { t } = useTranslation();
     const engine = useGameEngine({ initialLives: 3, initialTime: 120 });
     const {
         currentProblem, userInput, currentStep, completedSteps, feedback, handleInput
-    } = useBackMultiplicationLogicLv4(engine);
+    } = useBackMultiplicationLogicLv3(engine);
 
     // Grid Layout: 4 Columns (Thousands, Hundreds, Tens, Units)
     // Row 1: Problem Top (  T U )

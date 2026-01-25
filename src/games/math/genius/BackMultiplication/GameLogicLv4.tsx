@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import { playButtonSound, playClearSound } from '../../../../utils/sound';
 
-export interface BackMultiplicationProblemLv4 {
+export interface BackMultiplicationProblemLv3 {
     num1: number; // Top number (e.g. 83)
     num2: number; // Bottom number (e.g. 46)
 
@@ -24,8 +24,8 @@ interface GameLogicEngine {
     registerEvent: (event: { type: 'correct' | 'wrong'; isFinal?: boolean }) => void;
 }
 
-export const useBackMultiplicationLogicLv4 = (engine: GameLogicEngine) => {
-    const [currentProblem, setCurrentProblem] = useState<BackMultiplicationProblemLv4 | null>(null);
+export const useBackMultiplicationLogicLv3 = (engine: GameLogicEngine) => {
+    const [currentProblem, setCurrentProblem] = useState<BackMultiplicationProblemLv3 | null>(null);
     const [currentStep, setCurrentStep] = useState<number>(1); // 1..5
     const [userInput, setUserInput] = useState<string>('');
     const [completedSteps, setCompletedSteps] = useState<{ [key: number]: string }>({});
@@ -134,7 +134,7 @@ export const useBackMultiplicationLogicLv4 = (engine: GameLogicEngine) => {
         }
     };
 
-    const checkAnswer = (input: string, problem: BackMultiplicationProblemLv4) => {
+    const checkAnswer = (input: string, problem: BackMultiplicationProblemLv3) => {
         let target = '';
         if (currentStep === 1) target = problem.step1_target;
         else if (currentStep === 2) target = problem.step2_target;

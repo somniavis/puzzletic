@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Layout2 } from '../../../layouts/Standard/Layout2';
 import { useGameEngine } from '../../../layouts/Standard/Layout0/useGameEngine';
-import { useBackMultiplicationLogicLv2 } from './GameLogicLv2';
+import { useBackMultiplicationLogic } from './GameLogic';
 import { BlobBackground } from '../../components/BlobBackground';
 import { Keypad } from './Keypad'; // Use local Keypad
 import type { GameManifest } from '../../../types';
@@ -194,7 +194,7 @@ export const BackMultiplicationGameLv2: React.FC<{ onExit: () => void, gameId?: 
         completedSteps,
         feedback,
         handleInput
-    } = useBackMultiplicationLogicLv2(engine);
+    } = useBackMultiplicationLogic(engine);
 
     // Grid Layout: 4 Columns (Thousands, Hundreds, Tens, Units)
     // Row 1: Problem Top (  Tens Units )
@@ -230,10 +230,10 @@ export const BackMultiplicationGameLv2: React.FC<{ onExit: () => void, gameId?: 
 
     return (
         <Layout2
-            title="Back Multiplication 2"
-            subtitle="2-digit x 1-digit"
-            description={t('games.backMultiplication.description')}
-            gameId={gameId || 'back-multiplication-lv2'}
+            title={t('games.backMultiplication.lv1.title')} // Need to add key
+            subtitle={t('games.backMultiplication.lv1.subtitle')} // Need to add key
+            description={t('games.backMultiplication.description')} // Need to add key
+            gameId={gameId || 'back-multiplication-lv1'}
             engine={engine}
             onExit={onExit}
             cardBackground={<BlobBackground speed="slow" colors={{ blob1: '#fdf4ff', blob2: '#fae8ff', blob3: '#f0abfc', blob4: '#e879f9' }} />} // Purple/Pink theme
@@ -359,12 +359,14 @@ export const BackMultiplicationGameLv2: React.FC<{ onExit: () => void, gameId?: 
 
 export const manifestLv2: GameManifest = {
     id: 'back-multiplication-lv2',
-    title: 'Back Multiplication 2',
-    description: '2-digit x 1-digit',
+    title: 'Multiplication Lv2',
+    description: '3-digit x 1-digit',
     category: 'math',
     level: 2,
     thumbnail: '✖️',
-    titleKey: undefined,
-    subtitleKey: undefined,
+    titleKey: 'games.backMultiplication.lv2.title',
+    subtitleKey: 'games.backMultiplication.lv2.subtitle',
+    descriptionKey: 'games.backMultiplication.description',
+    mode: 'genius',
     component: BackMultiplicationGameLv2
 };

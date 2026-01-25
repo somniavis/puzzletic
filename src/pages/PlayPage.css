@@ -1024,32 +1024,3 @@
 }
 
 /* Desktop Center */
-@media (min-width: 768px) {
-
-    .play-page-container,
-    .bottom-nav-hub,
-    .mode-switcher-container {
-        max-width: 480px;
-        margin: 0 auto;
-        left: 50%;
-        transform: translateX(-50%);
-        /* For fixed elements */
-    }
-
-    .play-page-container {
-        transform: none;
-        /* Container itself shouldn't translate */
-        box-shadow: 0 0 40px rgba(0, 0, 0, 0.1);
-    }
-
-    .mode-switcher-container {
-        transform: none;
-        /* Allow standard flow inside container */
-        left: 0;
-        right: 0;
-    }
-
-    .bottom-nav-hub {
-        transform: translateX(-50%);
-    }
-}

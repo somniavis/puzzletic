@@ -375,11 +375,10 @@ export const useMazeHunterLogic = (engine: GameEngine) => {
 
             if (collectedItems < totalItems) {
                 // Not enough items!
-                // Feedback: Shake and reduce life
-                engine.updateLives(false);
-                engine.registerEvent({ type: 'wrong' });
-
-                // User Request: Clear path and let them retry the SAME level
+                // Feedback: Shake or message? For now, just reset path like a failure (or keep path but don't submit?)
+                // Defaulting to reset for strictness, or maybe just do nothing and let user continue?
+                // "One stroke" implies you can't just pause and go back easily without undoing.
+                // Let's reset but maybe play a "locked" sound? For now, plain reset.
                 setGrid(prev => prev.map(row => row.map(cell => ({
                     ...cell,
                     isPath: false, n: false, s: false, e: false, w: false
