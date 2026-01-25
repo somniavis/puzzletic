@@ -84,7 +84,7 @@ export const DeepSeaDive: React.FC<DeepSeaDiveProps> = ({ onExit }) => {
 
     // Helper for vertical position calculation
     const getVerticalPosition = (index: number | null | undefined): string => {
-        if (index === null || index === undefined) return '-8%';
+        if (index === null || index === undefined) return '0%';
         return `${16.6 + (index * 33.3)}%`;
     };
 

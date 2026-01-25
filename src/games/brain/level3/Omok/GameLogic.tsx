@@ -1,5 +1,4 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { playClearSound } from '../../../../utils/sound';
 
 export type Player = 'black' | 'white';
 // Board is 15x15
@@ -177,7 +176,6 @@ export const useOmokGame = ({ onGameOver }: UseOmokGameProps) => {
         if (checkWin(newBoard, r, c, playerSide)) {
             setWinner(playerSide);
             isGameOverRef.current = true;
-            playClearSound();
             onGameOver({ success: true, score: 100 });
         } else {
             setCurrentPlayer(playerSide === 'black' ? 'white' : 'black'); // Pass turn to AI
