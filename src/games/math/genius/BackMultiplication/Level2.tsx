@@ -4,10 +4,15 @@ import { Layout2 } from '../../../layouts/Standard/Layout2';
 import { useGameEngine } from '../../../layouts/Standard/Layout0/useGameEngine';
 import { useBackMultiplicationLogicLv2 } from './GameLogicLv2';
 import { BlobBackground } from '../../components/BlobBackground';
-import { Keypad } from './Keypad';
+import { Keypad } from './Keypad'; // Use local Keypad
 import type { GameManifest } from '../../../types';
 
-// Helper to fill slots Left-to-Right
+// Helper to split string values into grid slots (Left to Right filling)
+// Step 1 & 2 are strictly 2 digits. Step 3(Total) can be 3 or 4 digits.
+// Helper to distribute value Left-to-Right into active slots
+// Returns array of size `totalSlots`.
+// Inactive slots (left padding) are `null`.
+// Active slots (even if empty) are `''` or char.
 const fillSlots = (valStr: string | null, activeCols: number, totalSlots: number) => {
     if (valStr === null) return Array(totalSlots).fill(null);
 
@@ -16,12 +21,15 @@ const fillSlots = (valStr: string | null, activeCols: number, totalSlots: number
     const startCol = totalSlots - activeCols;
 
     for (let i = 0; i < activeCols; i++) {
+        // Assign char if available, else empty string (to show empty box)
         result[startCol + i] = chars[i] || '';
     }
     return result;
 };
 
-// Hint Arrow Component
+// Recreated Tile component for local customization if needed, 
+// basically identical to FrontAddition but simpler props where possible
+// Extracted Hint Arrow Component for cleaner code
 const HintArrow = ({ type }: { type: 'down' | 'diagonal' | 'plus' }) => {
     const style: React.CSSProperties = {
         position: 'absolute',
@@ -47,7 +55,7 @@ const HintArrow = ({ type }: { type: 'down' | 'diagonal' | 'plus' }) => {
         Object.assign(style, {
             left: '-10%',
             width: '100%',
-            top: '40%', // Between rows
+            top: '40%',
             transform: 'none'
         });
     }
@@ -90,7 +98,7 @@ const HintArrow = ({ type }: { type: 'down' | 'diagonal' | 'plus' }) => {
     );
 };
 
-// Tile Component
+// Simplified Tile Component
 const Tile = ({
     val,
     type = 'static',
@@ -110,10 +118,12 @@ const Tile = ({
     showArrow?: boolean,
     arrowType?: 'down' | 'diagonal' | 'plus'
 }) => {
+    // Base Styles
     let borderColor = '#e2e8f0';
     let shadowColor = '#cbd5e1';
     let backgroundColor = 'white';
 
+    // State-based Style Overrides
     if (highlight) {
         borderColor = '#fda4af';
         shadowColor = '#fda4af';
@@ -121,6 +131,7 @@ const Tile = ({
     }
 
     if (type === 'input' && active) {
+        // Feedback colors take precedence if active
         if (isFeedback) {
             const isCorrect = feedbackStatus === 'correct';
             borderColor = isCorrect ? '#22c55e' : '#ef4444';
@@ -132,6 +143,8 @@ const Tile = ({
         backgroundColor = 'white';
     }
 
+    // Ghost mode for empty tiles (just for hints)
+    // Only apply if NO value. If arrow is shown, we keep opacity 1, else 0.
     const isGhost = val === null;
     if (isGhost) {
         borderColor = 'transparent';
@@ -171,7 +184,7 @@ export const BackMultiplicationGameLv2: React.FC<{ onExit: () => void, gameId?: 
     const { t } = useTranslation();
     const engine = useGameEngine({
         initialLives: 3,
-        initialTime: 150 // More time for 3-digit multiplication
+        initialTime: 120 // A bit more time for multiplication
     });
 
     const {
@@ -183,47 +196,51 @@ export const BackMultiplicationGameLv2: React.FC<{ onExit: () => void, gameId?: 
         handleInput
     } = useBackMultiplicationLogicLv2(engine);
 
-    // Determines active columns for Step 4 (Total)
+    // Grid Layout: 4 Columns (Thousands, Hundreds, Tens, Units)
+    // Row 1: Problem Top (  Tens Units )
+    // Row 2: Problem Bot (x      Units )
+    // Row 3: Step 1      (    Tens Units ) (Strictly 2 digits, aligned right)
+    // Row 4: Step 2      (Hun Tens       ) (Strictly 2 digits, shifted left)
+    // Row 5: Total       (Tho Hun Tens Uni)
+
+    // Determines active columns for Step 3 (Total) based on expected answer length
     const totalStepDigits = useMemo(() => {
-        return currentProblem?.step4_str.length || 4;
+        return currentProblem?.step3_str.length || 3;
     }, [currentProblem]);
 
-    // Display Values
+    // Display Values (null if step not yet accessible)
+    // Step 1 is always accessible.
     const step1Disp = currentStep === 1 ? userInput : (completedSteps.step1 || '');
+    // Step 2 visible if >= Step 2
     const step2Disp = currentStep >= 2 ? (currentStep === 2 ? userInput : (completedSteps.step2 || '')) : null;
+    // Step 3 visible if >= Step 3
     const step3Disp = currentStep >= 3 ? (currentStep === 3 ? userInput : (completedSteps.step3 || '')) : null;
-    const step4Disp = currentStep >= 4 ? (currentStep === 4 ? userInput : (completedSteps.step4 || '')) : null;
 
-    // Step 1: Units x Mult (Cols 2, 3)
+    // Step 1 values: Dynamic active cols (1 or 2)
     const step1Digits = useMemo(() => currentProblem?.step1_str.length || 2, [currentProblem]);
     const step1Tiles = useMemo(() => fillSlots(step1Disp, step1Digits, 2), [step1Disp, step1Digits]);
 
-    // Step 2: Tens x Mult (Cols 1, 2)
+    // Step 2 values: Dynamic active cols (1 or 2)
     const step2Digits = useMemo(() => currentProblem?.step2_str.length || 2, [currentProblem]);
     const step2Tiles = useMemo(() => fillSlots(step2Disp, step2Digits, 2), [step2Disp, step2Digits]);
 
-    // Step 3: Hundreds x Mult (Cols 0, 1)
-    const step3Digits = useMemo(() => currentProblem?.step3_str.length || 2, [currentProblem]);
-    const step3Tiles = useMemo(() => fillSlots(step3Disp, step3Digits, 2), [step3Disp, step3Digits]);
-
-    // Step 4: Total (Cols 0, 1, 2, 3)
-    const step4Tiles = useMemo(() => fillSlots(step4Disp, totalStepDigits, 4), [step4Disp, totalStepDigits]);
+    // Step 3 (Total): Active cols dynamic. 4 Total Slots.
+    const step3Tiles = useMemo(() => fillSlots(step3Disp, totalStepDigits, 4), [step3Disp, totalStepDigits]);
 
 
     return (
         <Layout2
-            title={t('games.backMultiplication.lv2.title')}
-            subtitle={t('games.backMultiplication.lv2.subtitle')}
+            title="Back Multiplication 2"
+            subtitle="2-digit x 1-digit"
             description={t('games.backMultiplication.description')}
             gameId={gameId || 'back-multiplication-lv2'}
             engine={engine}
             onExit={onExit}
-            cardBackground={<BlobBackground speed="slow" colors={{ blob1: '#fdf4ff', blob2: '#fae8ff', blob3: '#f0abfc', blob4: '#e879f9' }} />}
+            cardBackground={<BlobBackground speed="slow" colors={{ blob1: '#fdf4ff', blob2: '#fae8ff', blob3: '#f0abfc', blob4: '#e879f9' }} />} // Purple/Pink theme
             instructions={[
                 { icon: '1️⃣', title: t('games.backMultiplication.howToPlay.step1.title'), description: t('games.backMultiplication.hint.step1') },
                 { icon: '2️⃣', title: t('games.backMultiplication.howToPlay.step2.title'), description: t('games.backMultiplication.hint.step2') },
-                { icon: '3️⃣', title: t('games.backMultiplication.howToPlay.step3_hundreds.title'), description: t('games.backMultiplication.hint.step3_hundreds') },
-                { icon: '✅', title: t('games.backMultiplication.howToPlay.step4.title'), description: t('games.backMultiplication.hint.step4') }
+                { icon: '✅', title: t('games.backMultiplication.howToPlay.step3.title'), description: t('games.backMultiplication.hint.step3') }
             ]}
             powerUps={[
                 { count: engine.powerUps.timeFreeze, color: 'blue', icon: '❄️', title: 'Freeze', onClick: () => engine.activatePowerUp('timeFreeze'), disabledConfig: engine.isTimeFrozen, status: engine.isTimeFrozen ? 'active' : 'normal' },
@@ -258,17 +275,17 @@ export const BackMultiplicationGameLv2: React.FC<{ onExit: () => void, gameId?: 
                                 maxHeight: '100cqi',
                                 display: 'grid',
                                 gridTemplateColumns: 'repeat(4, 1fr)',
-                                gridTemplateRows: 'repeat(2, minmax(0, 1fr)) auto repeat(3, minmax(0, 1fr)) auto minmax(0, 1fr)',
+                                gridTemplateRows: 'repeat(2, minmax(0, 1fr)) auto repeat(2, minmax(0, 1fr)) auto minmax(0, 1fr)', // 2 prob, sep, 2 steps, sep, 1 total
                                 gap: '8px',
                                 alignContent: 'stretch',
                                 justifyItems: 'stretch',
                                 containerType: 'inline-size'
                             }}>
-                                {/* Row 1: Problem Top (Hun Ten Uni) */}
+                                {/* Row 1: Problem Top (  Tens Units ) */}
                                 <Tile val={null} />
-                                <Tile val={currentProblem.row1_hundreds} highlight={currentStep === 3} />
-                                <Tile val={currentProblem.row1_tens} highlight={currentStep === 2} />
-                                <Tile val={currentProblem.row1_units} highlight={currentStep === 1} />
+                                <Tile val={null} />
+                                <Tile val={currentProblem.row1_tens} highlight={currentStep === 2} /> {/* Highligh for Diagonal step 2 */}
+                                <Tile val={currentProblem.row1_units} highlight={currentStep === 1} /> {/* Highlight for Down step 1 */}
 
                                 {/* Row 2: Problem Bot (x      Units ) */}
                                 <div style={{
@@ -282,34 +299,28 @@ export const BackMultiplicationGameLv2: React.FC<{ onExit: () => void, gameId?: 
                                 <Tile val={null} />
                                 <Tile val={null} />
                                 <Tile val={currentProblem.row2_units}
-                                    highlight={currentStep >= 1 && currentStep <= 3}
-                                    showArrow={currentStep >= 1 && currentStep <= 3}
+                                    highlight={currentStep === 1 || currentStep === 2}
+                                    showArrow={currentStep === 1 || currentStep === 2}
                                     arrowType={currentStep === 1 ? 'down' : 'diagonal'}
                                 />
 
                                 {/* Separator 1 */}
                                 <div style={{ gridColumn: '1 / -1', height: '4px', background: '#cbd5e1', borderRadius: '2px', alignSelf: 'center', width: '100%' }}></div>
 
-                                {/* Step 1: Units x Mult (Cols 2, 3) */}
+                                {/* Step 1 Result: Units x Mult. Right Aligned (Cols 2, 3) */}
                                 <Tile val={null}
-                                    showArrow={currentStep === 4}
+                                    showArrow={currentStep === 3}
                                     arrowType="plus"
                                 />
                                 <Tile val={null} />
                                 <Tile val={step1Tiles[0]} type={currentStep === 1 ? 'input' : 'static'} active={currentStep === 1} isFeedback={!!feedback} feedbackStatus={feedback} />
                                 <Tile val={step1Tiles[1]} type={currentStep === 1 ? 'input' : 'static'} active={currentStep === 1} isFeedback={!!feedback} feedbackStatus={feedback} />
 
-                                {/* Step 2: Tens x Mult (Cols 1, 2) */}
+                                {/* Step 2 Result: Tens x Mult. Shifted Left (Cols 1, 2) */}
                                 <Tile val={null} />
                                 <Tile val={step2Tiles[0]} type={currentStep === 2 ? 'input' : 'static'} active={currentStep === 2} isFeedback={!!feedback} feedbackStatus={feedback} />
                                 <Tile val={step2Tiles[1]} type={currentStep === 2 ? 'input' : 'static'} active={currentStep === 2} isFeedback={!!feedback} feedbackStatus={feedback} />
-                                <Tile val={null} />
-
-                                {/* Step 3: Hundreds x Mult (Cols 0, 1) */}
-                                <Tile val={step3Tiles[0]} type={currentStep === 3 ? 'input' : 'static'} active={currentStep === 3} isFeedback={!!feedback} feedbackStatus={feedback} />
-                                <Tile val={step3Tiles[1]} type={currentStep === 3 ? 'input' : 'static'} active={currentStep === 3} isFeedback={!!feedback} feedbackStatus={feedback} />
-                                <Tile val={null} />
-                                <Tile val={null} />
+                                <Tile val={null} /> {/* Empty slot under units */}
 
                                 {/* Separator 2 */}
                                 <div style={{
@@ -319,15 +330,15 @@ export const BackMultiplicationGameLv2: React.FC<{ onExit: () => void, gameId?: 
                                     borderRadius: '2px',
                                     alignSelf: 'center',
                                     width: '100%',
-                                    opacity: currentStep === 4 ? 1 : 0,
+                                    opacity: currentStep === 3 ? 1 : 0,
                                     transition: 'opacity 0.3s'
                                 }}></div>
 
-                                {/* Step 4: Total */}
-                                <Tile val={step4Tiles[0]} type={currentStep === 4 ? 'input' : 'static'} active={currentStep === 4} isFeedback={!!feedback} feedbackStatus={feedback} />
-                                <Tile val={step4Tiles[1]} type={currentStep === 4 ? 'input' : 'static'} active={currentStep === 4} isFeedback={!!feedback} feedbackStatus={feedback} />
-                                <Tile val={step4Tiles[2]} type={currentStep === 4 ? 'input' : 'static'} active={currentStep === 4} isFeedback={!!feedback} feedbackStatus={feedback} />
-                                <Tile val={step4Tiles[3]} type={currentStep === 4 ? 'input' : 'static'} active={currentStep === 4} isFeedback={!!feedback} feedbackStatus={feedback} />
+                                {/* Step 3: Total */}
+                                <Tile val={step3Tiles[0]} type={currentStep === 3 ? 'input' : 'static'} active={currentStep === 3} isFeedback={!!feedback} feedbackStatus={feedback} />
+                                <Tile val={step3Tiles[1]} type={currentStep === 3 ? 'input' : 'static'} active={currentStep === 3} isFeedback={!!feedback} feedbackStatus={feedback} />
+                                <Tile val={step3Tiles[2]} type={currentStep === 3 ? 'input' : 'static'} active={currentStep === 3} isFeedback={!!feedback} feedbackStatus={feedback} />
+                                <Tile val={step3Tiles[3]} type={currentStep === 3 ? 'input' : 'static'} active={currentStep === 3} isFeedback={!!feedback} feedbackStatus={feedback} />
 
                             </div>
                         </div>
@@ -348,14 +359,12 @@ export const BackMultiplicationGameLv2: React.FC<{ onExit: () => void, gameId?: 
 
 export const manifestLv2: GameManifest = {
     id: 'back-multiplication-lv2',
-    title: 'Multiplication Lv2',
-    description: '3-digit x 1-digit',
+    title: 'Back Multiplication 2',
+    description: '2-digit x 1-digit',
     category: 'math',
-    level: 3,
+    level: 2,
     thumbnail: '✖️',
-    titleKey: 'games.backMultiplication.lv2.title',
-    subtitleKey: 'games.backMultiplication.lv2.subtitle',
-    descriptionKey: 'games.backMultiplication.description',
-    mode: 'genius',
+    titleKey: undefined,
+    subtitleKey: undefined,
     component: BackMultiplicationGameLv2
 };

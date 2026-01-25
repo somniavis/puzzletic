@@ -191,7 +191,6 @@ export const BackMultiplicationGame: React.FC<{ onExit: () => void, gameId?: str
         currentProblem,
         userInput,
         currentStep,
-        completedSteps,
         feedback,
         handleInput
     } = useBackMultiplicationLogic(engine);
@@ -203,44 +202,26 @@ export const BackMultiplicationGame: React.FC<{ onExit: () => void, gameId?: str
     // Row 4: Step 2      (Hun Tens       ) (Strictly 2 digits, shifted left)
     // Row 5: Total       (Tho Hun Tens Uni)
 
-    // Determines active columns for Step 3 (Total) based on expected answer length
-    const totalStepDigits = useMemo(() => {
-        return currentProblem?.step3_str.length || 3;
-    }, [currentProblem]);
 
-    // Display Values (null if step not yet accessible)
-    // Step 1 is always accessible.
-    const step1Disp = currentStep === 1 ? userInput : (completedSteps.step1 || '');
-    // Step 2 visible if >= Step 2
-    const step2Disp = currentStep >= 2 ? (currentStep === 2 ? userInput : (completedSteps.step2 || '')) : null;
-    // Step 3 visible if >= Step 3
-    const step3Disp = currentStep >= 3 ? (currentStep === 3 ? userInput : (completedSteps.step3 || '')) : null;
 
-    // Step 1 values: Dynamic active cols (1 or 2)
+    // Display Values
+    const step1Disp = userInput; // Only 1 step
+
+    // Step 1: Result (Cols 1,2) of size 2.
     const step1Digits = useMemo(() => currentProblem?.step1_str.length || 2, [currentProblem]);
     const step1Tiles = useMemo(() => fillSlots(step1Disp, step1Digits, 2), [step1Disp, step1Digits]);
 
-    // Step 2 values: Dynamic active cols (1 or 2)
-    const step2Digits = useMemo(() => currentProblem?.step2_str.length || 2, [currentProblem]);
-    const step2Tiles = useMemo(() => fillSlots(step2Disp, step2Digits, 2), [step2Disp, step2Digits]);
-
-    // Step 3 (Total): Active cols dynamic. 4 Total Slots.
-    const step3Tiles = useMemo(() => fillSlots(step3Disp, totalStepDigits, 4), [step3Disp, totalStepDigits]);
-
-
     return (
         <Layout2
-            title={t('games.backMultiplication.lv1.title')} // Need to add key
-            subtitle={t('games.backMultiplication.lv1.subtitle')} // Need to add key
-            description={t('games.backMultiplication.description')} // Need to add key
+            title="Back Multiplication 1"
+            subtitle="1-digit x 1-digit"
+            description={t('games.backMultiplication.description')}
             gameId={gameId || 'back-multiplication-lv1'}
             engine={engine}
             onExit={onExit}
-            cardBackground={<BlobBackground speed="slow" colors={{ blob1: '#fdf4ff', blob2: '#fae8ff', blob3: '#f0abfc', blob4: '#e879f9' }} />} // Purple/Pink theme
+            cardBackground={<BlobBackground speed="slow" colors={{ blob1: '#fdf4ff', blob2: '#fae8ff', blob3: '#f0abfc', blob4: '#e879f9' }} />}
             instructions={[
-                { icon: '1️⃣', title: t('games.backMultiplication.howToPlay.step1.title'), description: t('games.backMultiplication.hint.step1') },
-                { icon: '2️⃣', title: t('games.backMultiplication.howToPlay.step2.title'), description: t('games.backMultiplication.hint.step2') },
-                { icon: '✅', title: t('games.backMultiplication.howToPlay.step3.title'), description: t('games.backMultiplication.hint.step3') }
+                { icon: '✅', title: t('games.backMultiplication.howToPlay.step1.title'), description: t('games.backMultiplication.hint.step1') }
             ]}
             powerUps={[
                 { count: engine.powerUps.timeFreeze, color: 'blue', icon: '❄️', title: 'Freeze', onClick: () => engine.activatePowerUp('timeFreeze'), disabledConfig: engine.isTimeFrozen, status: engine.isTimeFrozen ? 'active' : 'normal' },
@@ -270,75 +251,38 @@ export const BackMultiplicationGame: React.FC<{ onExit: () => void, gameId?: str
                         }}>
                             <div style={{
                                 width: '100%',
-                                maxWidth: '500px',
+                                maxWidth: '300px', // Smaller width for 1x1
                                 height: '100%',
                                 maxHeight: '100cqi',
                                 display: 'grid',
-                                gridTemplateColumns: 'repeat(4, 1fr)',
-                                gridTemplateRows: 'repeat(2, minmax(0, 1fr)) auto repeat(2, minmax(0, 1fr)) auto minmax(0, 1fr)', // 2 prob, sep, 2 steps, sep, 1 total
+                                gridTemplateColumns: 'repeat(2, 1fr)', // 2 Cols
+                                gridTemplateRows: 'repeat(2, minmax(0, 1fr)) auto minmax(0, 1fr)', // P1, P2, Sep, Ans
                                 gap: '8px',
-                                alignContent: 'stretch',
+                                alignContent: 'center',
                                 justifyItems: 'stretch',
                                 containerType: 'inline-size'
                             }}>
-                                {/* Row 1: Problem Top (  Tens Units ) */}
+                                {/* Row 1: Top Number [ ][U] */}
                                 <Tile val={null} />
-                                <Tile val={null} />
-                                <Tile val={currentProblem.row1_tens} highlight={currentStep === 2} /> {/* Highligh for Diagonal step 2 */}
-                                <Tile val={currentProblem.row1_units} highlight={currentStep === 1} /> {/* Highlight for Down step 1 */}
+                                <Tile val={currentProblem.row1_units} highlight={currentStep === 1} />
 
-                                {/* Row 2: Problem Bot (x      Units ) */}
+                                {/* Row 2: Bottom Number [x][U] */}
                                 <div style={{
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
-                                    fontSize: '8cqi',
+                                    fontSize: '12cqi',
                                     fontWeight: 'bold',
                                     color: '#334155'
                                 }}>×</div>
-                                <Tile val={null} />
-                                <Tile val={null} />
-                                <Tile val={currentProblem.row2_units}
-                                    highlight={currentStep === 1 || currentStep === 2}
-                                    showArrow={currentStep === 1 || currentStep === 2}
-                                    arrowType={currentStep === 1 ? 'down' : 'diagonal'}
-                                />
+                                <Tile val={currentProblem.row2_units} highlight={currentStep === 1} />
 
-                                {/* Separator 1 */}
+                                {/* Separator */}
                                 <div style={{ gridColumn: '1 / -1', height: '4px', background: '#cbd5e1', borderRadius: '2px', alignSelf: 'center', width: '100%' }}></div>
 
-                                {/* Step 1 Result: Units x Mult. Right Aligned (Cols 2, 3) */}
-                                <Tile val={null}
-                                    showArrow={currentStep === 3}
-                                    arrowType="plus"
-                                />
-                                <Tile val={null} />
-                                <Tile val={step1Tiles[0]} type={currentStep === 1 ? 'input' : 'static'} active={currentStep === 1} isFeedback={!!feedback} feedbackStatus={feedback} />
-                                <Tile val={step1Tiles[1]} type={currentStep === 1 ? 'input' : 'static'} active={currentStep === 1} isFeedback={!!feedback} feedbackStatus={feedback} />
-
-                                {/* Step 2 Result: Tens x Mult. Shifted Left (Cols 1, 2) */}
-                                <Tile val={null} />
-                                <Tile val={step2Tiles[0]} type={currentStep === 2 ? 'input' : 'static'} active={currentStep === 2} isFeedback={!!feedback} feedbackStatus={feedback} />
-                                <Tile val={step2Tiles[1]} type={currentStep === 2 ? 'input' : 'static'} active={currentStep === 2} isFeedback={!!feedback} feedbackStatus={feedback} />
-                                <Tile val={null} /> {/* Empty slot under units */}
-
-                                {/* Separator 2 */}
-                                <div style={{
-                                    gridColumn: '1 / -1',
-                                    height: '4px',
-                                    background: '#cbd5e1',
-                                    borderRadius: '2px',
-                                    alignSelf: 'center',
-                                    width: '100%',
-                                    opacity: currentStep === 3 ? 1 : 0,
-                                    transition: 'opacity 0.3s'
-                                }}></div>
-
-                                {/* Step 3: Total */}
-                                <Tile val={step3Tiles[0]} type={currentStep === 3 ? 'input' : 'static'} active={currentStep === 3} isFeedback={!!feedback} feedbackStatus={feedback} />
-                                <Tile val={step3Tiles[1]} type={currentStep === 3 ? 'input' : 'static'} active={currentStep === 3} isFeedback={!!feedback} feedbackStatus={feedback} />
-                                <Tile val={step3Tiles[2]} type={currentStep === 3 ? 'input' : 'static'} active={currentStep === 3} isFeedback={!!feedback} feedbackStatus={feedback} />
-                                <Tile val={step3Tiles[3]} type={currentStep === 3 ? 'input' : 'static'} active={currentStep === 3} isFeedback={!!feedback} feedbackStatus={feedback} />
+                                {/* Row 3: Answer [T][U] */}
+                                <Tile val={step1Tiles[0]} type="input" active={currentStep === 1} isFeedback={!!feedback} feedbackStatus={feedback} />
+                                <Tile val={step1Tiles[1]} type="input" active={currentStep === 1} isFeedback={!!feedback} feedbackStatus={feedback} />
 
                             </div>
                         </div>
@@ -359,14 +303,12 @@ export const BackMultiplicationGame: React.FC<{ onExit: () => void, gameId?: str
 
 export const manifestLv1: GameManifest = {
     id: 'back-multiplication-lv1',
-    title: 'Multiplication Lv1',
-    description: '2-digit x 1-digit',
+    title: 'Back Multiplication 1',
+    description: '1-digit x 1-digit',
     category: 'math',
-    level: 2,
+    level: 1, // Start easy
     thumbnail: '✖️',
-    titleKey: 'games.backMultiplication.lv1.title',
-    subtitleKey: 'games.backMultiplication.lv1.subtitle',
-    descriptionKey: 'games.backMultiplication.description',
-    mode: 'genius',
+    titleKey: undefined,
+    subtitleKey: undefined,
     component: BackMultiplicationGame
 };

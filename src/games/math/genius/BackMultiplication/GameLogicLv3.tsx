@@ -1,183 +1,171 @@
 import { useState, useCallback, useEffect } from 'react';
-import { playButtonSound, playClearSound } from '../../../../utils/sound';
+import { useGameEngine } from '../../../layouts/Standard/Layout0/useGameEngine';
 
 export interface BackMultiplicationProblemLv3 {
-    num1: number; // Top number (e.g. 83)
-    num2: number; // Bottom number (e.g. 46)
+    a: number; // 3 digit (XYZ)
+    b: number; // 1 digit (W)
 
-    // Step Targets (Strings for loosen comparison/display)
-    step1_target: string; // Units x Units (e.g. 3x6=18)
-    step2_target: string; // Tens x Tens (e.g. 8x4=32)
-    step3_target: string; // Outer: Tens1 x Units2 (e.g. 8x6=48)
-    step4_target: string; // Inner: Units1 x Tens2 (e.g. 3x4=12)
-    step5_target: string; // Final Sum
+    // Grid Display
+    row1_hundreds: number;
+    row1_tens: number;
+    row1_units: number;
+    row2_units: number;
+
+    // Logic Values
+    step1_val: number; // Z * W
+    step2_val: number; // Y * W
+    step3_val: number; // X * W
+    step4_val: number; // Total
+
+    // String Expectations (no leading zero)
+    step1_str: string;
+    step2_str: string;
+    step3_str: string;
+    step4_str: string;
 }
 
-// Fixed length for partial steps (always 2 digits, padded)
-const PAD_LEN = 2;
+export const useBackMultiplicationLogicLv3 = (engine: ReturnType<typeof useGameEngine>) => {
+    const {
+        lives,
+        submitAnswer,
+        gameState,
+        registerEvent
+    } = engine;
 
-// Partial interface for the engine helpers we use
-interface GameLogicEngine {
-    gameState: 'idle' | 'playing' | 'correct' | 'wrong' | 'gameover';
-    updateScore: (amount: number) => void;
-    updateLives: (isCorrect: boolean) => void;
-    registerEvent: (event: { type: 'correct' | 'wrong'; isFinal?: boolean }) => void;
-}
-
-export const useBackMultiplicationLogicLv3 = (engine: GameLogicEngine) => {
     const [currentProblem, setCurrentProblem] = useState<BackMultiplicationProblemLv3 | null>(null);
-    const [currentStep, setCurrentStep] = useState<number>(1); // 1..5
     const [userInput, setUserInput] = useState<string>('');
-    const [completedSteps, setCompletedSteps] = useState<{ [key: number]: string }>({});
+    const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4>(1);
+
+    const [completedSteps, setCompletedSteps] = useState<{
+        step1: string | null;
+        step2: string | null;
+        step3: string | null;
+        step4: string | null;
+    }>({ step1: null, step2: null, step3: null, step4: null });
+
     const [feedback, setFeedback] = useState<'correct' | 'wrong' | null>(null);
+    const [prevGameState, setPrevGameState] = useState(gameState);
 
-    const { updateScore, updateLives, registerEvent, gameState } = engine;
+    // Helper: 6 -> '6', 0 -> '0'
+    const toExpectationStr = (num: number): string => num.toString();
 
-    // Generate Problem
     const generateProblem = useCallback(() => {
-        let n1 = 0, n2 = 0, s1 = 0, s2 = 0, s3 = 0, s4 = 0, final = 0;
-        let attempts = 0;
+        // Level 2: 3-digit x 1-digit
+        // Range: [100, 999] x [2, 9]
+        const a = Math.floor(Math.random() * 900) + 100; // 100-999
+        const b = Math.floor(Math.random() * 8) + 2;     // 2-9
 
-        // Try to find a problem with minimal carries (<= 1 carry event)
-        // Loop limit prevents infinite loop if strict criteria hard to meet
-        while (attempts < 50) {
-            n1 = Math.floor(Math.random() * 90) + 10;
-            n2 = Math.floor(Math.random() * 90) + 10;
+        const hA = Math.floor(a / 100);
+        const tA = Math.floor((a % 100) / 10);
+        const uA = a % 10;
 
-            const u1 = n1 % 10;
-            const t1 = Math.floor(n1 / 10);
-            const u2 = n2 % 10;
-            const t2 = Math.floor(n2 / 10);
+        // Step 1: Units * Multiplier
+        const s1 = uA * b;
+        // Step 2: Tens * Multiplier 
+        const s2 = tA * b;
+        // Step 3: Hundreds * Multiplier
+        const s3 = hA * b;
 
-            s1 = u1 * u2;
-            s2 = t1 * t2;
-            s3 = t1 * u2;
-            s4 = u1 * t2;
-            final = n1 * n2;
+        // Final Total
+        // Logic: (s3 * 100) + (s2 * 10) + s1
+        const total = (s3 * 100) + (s2 * 10) + s1;
 
-            // Check Carries for Final Addition
-            // Col 2 (Tens): s1_tens + s3_units + s4_units
-            const c2_sum = Math.floor(s1 / 10) + (s3 % 10) + (s4 % 10);
-            const c2_carry = Math.floor(c2_sum / 10);
+        const problem: BackMultiplicationProblemLv3 = {
+            a, b,
+            row1_hundreds: hA,
+            row1_tens: tA,
+            row1_units: uA,
+            row2_units: b,
+            step1_val: s1,
+            step2_val: s2,
+            step3_val: s3,
+            step4_val: total,
+            step1_str: toExpectationStr(s1),
+            step2_str: toExpectationStr(s2),
+            step3_str: toExpectationStr(s3),
+            step4_str: total.toString()
+        };
 
-            // Col 1 (Hundreds): s2_units + s3_tens + s4_tens + c2_carry
-            const c1_sum = (s2 % 10) + Math.floor(s3 / 10) + Math.floor(s4 / 10) + c2_carry;
-            const c1_carry = Math.floor(c1_sum / 10);
-
-            // Total Carry Magnitude (Should be <= 1 for "easy" addition)
-            if ((c2_carry + c1_carry) <= 1) {
-                break;
-            }
-            attempts++;
-        }
-
-        setCurrentProblem({
-            num1: n1,
-            num2: n2,
-            step1_target: s1.toString().padStart(PAD_LEN, '0'),
-            step2_target: s2.toString().padStart(PAD_LEN, '0'),
-            step3_target: s3.toString().padStart(PAD_LEN, '0'),
-            step4_target: s4.toString().padStart(PAD_LEN, '0'),
-            step5_target: final.toString()
-        });
-        setCurrentStep(1);
+        setCurrentProblem(problem);
         setUserInput('');
-        setCompletedSteps({});
+        setCompletedSteps({ step1: null, step2: null, step3: null, step4: null });
+        setCurrentStep(1);
         setFeedback(null);
     }, []);
 
-    // Initial Load & Restart Handler
+    // Reset state
+    useEffect(() => {
+        if (gameState === 'idle') {
+            setCurrentProblem(null);
+            setUserInput('');
+            setCompletedSteps({ step1: null, step2: null, step3: null, step4: null });
+            setCurrentStep(1);
+            setFeedback(null);
+        }
+    }, [gameState]);
+
+    // Handle Game Start
     useEffect(() => {
         if (gameState === 'playing') {
-            generateProblem();
-        }
-    }, [gameState, generateProblem]);
-
-    // Handle Input
-    const handleInput = (val: string) => {
-        if (feedback) return; // Block input during feedback animation
-
-        if (val === 'CHECK') {
-            if (userInput.length > 0 && currentProblem) {
-                checkAnswer(userInput, currentProblem);
-            }
-            return;
-        }
-
-        if (val === 'AC') {
-            setUserInput('');
-            playButtonSound();
-            return;
-        }
-
-        if (val === 'BS') {
-            setUserInput(prev => prev.slice(0, -1));
-            playButtonSound();
-            return;
-        }
-
-        if (!currentProblem) return;
-
-        // Determine max length based on current step
-        let maxLength = 2; // Steps 1-4 are 2 digits
-        if (currentStep === 5) maxLength = currentProblem.step5_target.length;
-
-        if (userInput.length < maxLength) {
-            playButtonSound();
-            const nextInput = userInput + val;
-            setUserInput(nextInput);
-
-            // Auto-Check if full length reached
-            if (nextInput.length === maxLength) {
-                checkAnswer(nextInput, currentProblem);
+            if (!currentProblem || prevGameState === 'gameover') {
+                generateProblem();
             }
         }
-    };
+        setPrevGameState(gameState);
+    }, [gameState, currentProblem, generateProblem, prevGameState]);
 
-    const checkAnswer = (input: string, problem: BackMultiplicationProblemLv3) => {
-        let target = '';
-        if (currentStep === 1) target = problem.step1_target;
-        else if (currentStep === 2) target = problem.step2_target;
-        else if (currentStep === 3) target = problem.step3_target;
-        else if (currentStep === 4) target = problem.step4_target;
-        else if (currentStep === 5) target = problem.step5_target;
+    const handleInput = useCallback((key: string) => {
+        if (gameState !== 'playing' || feedback === 'correct' || !currentProblem) return;
 
-        if (input === target) {
-            // Correct
-            setFeedback('correct');
-            // Play sound immediately for intermediate steps. 
-            // For final step (5), let registerEvent handle it to avoid double audio.
-            if (currentStep < 5) {
-                playClearSound();
-            }
+        if (key === 'ENTER' || key === 'CHECK') {
+            let targetStr = '';
+            if (currentStep === 1) targetStr = currentProblem.step1_str;
+            else if (currentStep === 2) targetStr = currentProblem.step2_str;
+            else if (currentStep === 3) targetStr = currentProblem.step3_str;
+            else if (currentStep === 4) targetStr = currentProblem.step4_str;
 
-            setTimeout(() => {
-                setFeedback(null);
-                setCompletedSteps(prev => ({ ...prev, [currentStep]: input }));
+            const isStepCorrect = userInput === targetStr;
 
-                if (currentStep < 5) {
-                    setCurrentStep(prev => prev + 1);
+            if (isStepCorrect) {
+                registerEvent({ type: 'correct', isFinal: currentStep === 4 });
+                setCompletedSteps(prev => ({
+                    ...prev,
+                    [`step${currentStep}`]: userInput
+                }));
+
+                if (currentStep < 4) {
                     setUserInput('');
+                    setCurrentStep(prev => (prev + 1) as 1 | 2 | 3 | 4);
                 } else {
-                    // Game Over / Next Round
-                    registerEvent({ type: 'correct' });
-                    updateScore(100);
-                    generateProblem();
+                    setFeedback('correct');
+                    submitAnswer(true);
+                    setTimeout(() => generateProblem(), 1500);
                 }
-            }, 600); // Delay for visual feedback
+            } else {
+                setFeedback('wrong');
+                registerEvent({ type: 'wrong' });
+                submitAnswer(false, { skipDifficulty: true, skipCombo: true });
+                setTimeout(() => {
+                    setFeedback(null);
+                    setUserInput('');
+                }, 500);
+            }
+        } else if (key === 'AC' || key === 'CLEAR') {
+            setUserInput('');
+        } else if (key === 'DEL' || key === 'BACKSPACE') {
+            setUserInput(prev => prev.slice(0, -1));
         } else {
-            // Wrong
-            setFeedback('wrong');
-            playButtonSound();
-            registerEvent({ type: 'wrong' });
-            updateLives(false);
+            let maxLen = 2;
+            if (currentStep === 1) maxLen = currentProblem.step1_str.length;
+            else if (currentStep === 2) maxLen = currentProblem.step2_str.length;
+            else if (currentStep === 3) maxLen = currentProblem.step3_str.length;
+            else if (currentStep === 4) maxLen = currentProblem.step4_str.length;
 
-            setTimeout(() => {
-                setFeedback(null);
-                setUserInput(''); // Clear wrong input
-            }, 600);
+            if (userInput.length < maxLen) {
+                setUserInput(prev => prev + key);
+            }
         }
-    };
+    }, [gameState, feedback, userInput, currentStep, currentProblem, submitAnswer, registerEvent, generateProblem]);
 
     return {
         currentProblem,
@@ -185,6 +173,7 @@ export const useBackMultiplicationLogicLv3 = (engine: GameLogicEngine) => {
         currentStep,
         completedSteps,
         feedback,
-        handleInput
+        handleInput,
+        lives
     };
 };
