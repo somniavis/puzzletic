@@ -17,6 +17,7 @@
 
 ### 🐛 버그 수정 (Bug Fixes)
 - **Camera CORS Issue**: `html-to-image` 사용 시 Font Awesome CSS 로드 문제로 인한 SecurityError 해결 (`crossorigin="anonymous"` 속성 추가).
+- **Bubble Visibility Fix**: 리팩토링 후 젤로 클릭 시 말풍선 및 스탯 업데이트가 누락되던 문제 수정 (`handleCharacterClick` 연결 복구).
 
 ## 2026-01-20 (Previous Updates)
 

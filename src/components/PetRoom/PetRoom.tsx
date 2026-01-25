@@ -284,11 +284,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({
           onBugClick={actions.handlers.handleBugClick}
           onCharacterClick={interaction.handleCharacterClick}
           onGiftBoxClick={onOpenGift || (() => { })}
-          onJelloClick={() => {
-            if (action !== 'idle') return;
-            onActionChange?.('eating');
-            setTimeout(() => onActionChange?.('idle'), 1800);
-          }}
+          onJelloClick={interaction.handleCharacterClick}
           nurturing={nurturing}
         />
       </div>
