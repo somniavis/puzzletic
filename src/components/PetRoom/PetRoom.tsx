@@ -1070,6 +1070,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({
                   <JelloAvatar
                     character={character}
                     size="small"
+                    customSize={character.evolutionStage === 5 ? 144 : undefined}
                     mood={mood}
                     action={action}
                   />

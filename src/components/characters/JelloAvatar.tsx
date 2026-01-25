@@ -7,6 +7,7 @@ interface JelloAvatarProps extends CharacterComponentProps {
     speciesId?: string; // Optional override, otherwise use character.speciesId
     disableAnimation?: boolean; // New prop to stop float/bounce
     responsive?: boolean; // New prop for fluid sizing
+    customSize?: number; // New prop for arbitrary pixel size
 }
 
 export const JelloAvatar: React.FC<JelloAvatarProps> = ({
@@ -18,6 +19,7 @@ export const JelloAvatar: React.FC<JelloAvatarProps> = ({
     onClick,
     disableAnimation = false,
     responsive = false,
+    customSize,
 }) => {
     // Use passed speciesId or fall back to character's speciesId
     const targetSpeciesId = speciesId || character.speciesId;
@@ -42,7 +44,7 @@ export const JelloAvatar: React.FC<JelloAvatarProps> = ({
             default: return 192;
         }
     };
-    const sizeInPixels = getSizeInPixels();
+    const sizeInPixels = customSize || getSizeInPixels();
 
     // Visual balancing: Stage 1 & 2 images have less whitespace, so they appear larger.
     // We add padding to shrink them slightly relative to the container.

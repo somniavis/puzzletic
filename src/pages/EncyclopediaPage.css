@@ -342,6 +342,8 @@
     justify-content: center;
     transform: scale(0.65);
     /* Scale jello down to fit circle */
+    z-index: 3;
+    position: relative;
 }
 
 .node-locked-content {
