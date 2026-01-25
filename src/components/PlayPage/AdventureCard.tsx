@@ -89,7 +89,7 @@ export const AdventureCard: React.FC<AdventureCardProps> = ({
 
     return (
         <div
-            className={`adventure-card ${!unlocked ? 'locked' : ''}`}
+            className={`adventure-card ${game.category === 'brain' ? 'brain-card' : ''} ${!unlocked ? 'locked' : ''}`}
             onClick={handleClick}
         >
             <div className="card-top">
