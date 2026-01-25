@@ -1,14 +1,18 @@
 export default {
     lv1: {
         title: 'Back Multiplication 1',
-        subtitle: '2-digit x 1-digit',
+        subtitle: '1-digit x 1-digit',
     },
     lv2: {
         title: 'Back Multiplication 2',
-        subtitle: '3-digit x 1-digit',
+        subtitle: '2-digit x 1-digit',
     },
     lv3: {
         title: 'Back Multiplication 3',
+        subtitle: '3-digit x 1-digit',
+    },
+    lv4: {
+        title: 'Back Multiplication 4',
         subtitle: '2-digit x 2-digit',
         desc: 'Solve using the cross-link method.'
     },

@@ -24,6 +24,7 @@ const L2_FrontSubtraction = lazy(() => import('./math/genius/FrontSubtraction').
 const L2_BackMultiplication = lazy(() => import('./math/genius/BackMultiplication').then(m => ({ default: m.BackMultiplicationGame })));
 const L2_BackMultiplicationLv2 = lazy(() => import('./math/genius/BackMultiplication/Level2').then(m => ({ default: m.BackMultiplicationGameLv2 })));
 const L2_BackMultiplicationLv3 = lazy(() => import('./math/genius/BackMultiplication/Level3').then(m => ({ default: m.BackMultiplicationGameLv3 })));
+const L2_BackMultiplicationLv4 = lazy(() => import('./math/genius/BackMultiplication/Level4').then(m => ({ default: m.BackMultiplicationGameLv4 })));
 
 // Brain Level 1 (default exports except noted)
 const L1_ColorLink = lazy(() => import('./brain/level1/ColorLink')); // default export
@@ -313,7 +314,7 @@ export const GAMES: GameManifest[] = [
         id: 'back-multiplication-lv1',
         title: 'Back Multiplication Lv.1',
         titleKey: 'games.backMultiplication.lv1.title',
-        subtitle: '2x1 digits',
+        subtitle: '1-digit x 1-digit',
         subtitleKey: 'games.backMultiplication.lv1.subtitle',
         description: 'Practice back multiplication',
         descriptionKey: 'games.backMultiplication.description',
@@ -328,7 +329,7 @@ export const GAMES: GameManifest[] = [
         id: 'back-multiplication-lv2',
         title: 'Back Multiplication Lv.2',
         titleKey: 'games.backMultiplication.lv2.title',
-        subtitle: '3x1 digits',
+        subtitle: '2-digit x 1-digit',
         subtitleKey: 'games.backMultiplication.lv2.subtitle',
         description: 'Practice back multiplication',
         descriptionKey: 'games.backMultiplication.description',
@@ -490,14 +491,29 @@ export const GAMES: GameManifest[] = [
         id: 'back-multiplication-lv3',
         title: 'Back Multiplication Lv.3',
         titleKey: 'games.backMultiplication.lv3.title',
-        subtitle: '2x2 digits',
+        subtitle: '3-digit x 1-digit',
         subtitleKey: 'games.backMultiplication.lv3.subtitle',
-        description: 'Practice 2x2 cross multiplication',
+        description: 'Practice back multiplication',
         descriptionKey: 'games.backMultiplication.description',
         category: 'math',
         level: 2,
         mode: 'genius',
         component: L2_BackMultiplicationLv3,
+        thumbnail: '✖️',
+        tagsKey: 'games.tags.mentalMath'
+    },
+    {
+        id: 'back-multiplication-lv4',
+        title: 'Back Multiplication Lv.4',
+        titleKey: 'games.backMultiplication.lv4.title',
+        subtitle: '2-digit x 2-digit',
+        subtitleKey: 'games.backMultiplication.lv4.subtitle',
+        description: 'Practice 2x2 cross multiplication',
+        descriptionKey: 'games.backMultiplication.description',
+        category: 'math',
+        level: 2,
+        mode: 'genius',
+        component: L2_BackMultiplicationLv4,
         thumbnail: '✖️',
         tagsKey: 'games.tags.mentalMath'
     },

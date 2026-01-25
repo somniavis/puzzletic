@@ -1,8 +1,9 @@
 import React, { useMemo } from 'react';
+import type { GameManifest } from '../../../types';
 import { useTranslation } from 'react-i18next';
 import { Layout2 } from '../../../layouts/Standard/Layout2';
 import { useGameEngine } from '../../../layouts/Standard/Layout0/useGameEngine';
-import { useBackMultiplicationLogicLv3 } from './GameLogicLv3';
+import { useBackMultiplicationLogicLv4 } from './GameLogicLv4';
 import { BlobBackground } from '../../components/BlobBackground';
 import { Keypad } from './Keypad';
 
@@ -139,12 +140,12 @@ const Tile = ({
     );
 };
 
-export const BackMultiplicationGameLv3: React.FC<{ onExit: () => void, gameId?: string }> = ({ onExit, gameId }) => {
+export const BackMultiplicationGameLv4: React.FC<{ onExit: () => void, gameId?: string }> = ({ onExit, gameId }) => {
     const { t } = useTranslation();
     const engine = useGameEngine({ initialLives: 3, initialTime: 120 });
     const {
         currentProblem, userInput, currentStep, completedSteps, feedback, handleInput
-    } = useBackMultiplicationLogicLv3(engine);
+    } = useBackMultiplicationLogicLv4(engine);
 
     // Grid Layout: 4 Columns (Thousands, Hundreds, Tens, Units)
     // Row 1: Problem Top (  T U )
@@ -179,13 +180,13 @@ export const BackMultiplicationGameLv3: React.FC<{ onExit: () => void, gameId?: 
 
     return (
         <Layout2
-            title={t('games.backMultiplication.lv3.title')}
-            subtitle={t('games.backMultiplication.lv3.subtitle')}
+            title={t('games.backMultiplication.lv4.title')}
+            subtitle={t('games.backMultiplication.lv4.subtitle')}
             description={t('games.backMultiplication.description')}
-            gameId={gameId || 'back-multiplication-lv3'}
+            gameId={gameId || 'back-multiplication-lv4'}
             engine={engine}
             onExit={onExit}
-            cardBackground={<BlobBackground speed="slow" colors={{ blob1: '#fdf4ff', blob2: '#fae8ff', blob3: '#f0abfc', blob4: '#e879f9' }} />}
+            cardBackground={<BlobBackground colors={{ blob1: '#e0e7ff', blob2: '#c7d2fe', blob3: '#a5b4fc', blob4: '#818cf8' }} />}
             instructions={[
                 { icon: '1️⃣', title: t('games.backMultiplication.howToPlay.step1.title'), description: t('games.backMultiplication.hint.step1_lv3') },
                 { icon: '2️⃣', title: t('games.backMultiplication.howToPlay.step2.title'), description: t('games.backMultiplication.hint.step2_lv3') },
@@ -264,25 +265,7 @@ export const BackMultiplicationGameLv3: React.FC<{ onExit: () => void, gameId?: 
                                 <Tile val={step5Tiles[1]} type={currentStep === 5 ? 'input' : 'static'} active={currentStep === 5} isFeedback={!!feedback} feedbackStatus={feedback} />
                                 <Tile val={step5Tiles[2]} type={currentStep === 5 ? 'input' : 'static'} active={currentStep === 5} isFeedback={!!feedback} feedbackStatus={feedback} />
                                 <Tile val={step5Tiles[3]} type={currentStep === 5 ? 'input' : 'static'} active={currentStep === 5} isFeedback={!!feedback} feedbackStatus={feedback} />
-                                {/* Step5Tiles[0] is at StartCol. */}
-                                {/* Wait, FillSlots returns array of size 4. */}
-                                {/* So step5Tiles[0] corresponds to Col 1? Yes. */}
-                                {/* But if result is 3 digits, step5Tiles[0] is null. */}
-                                {/* Need to render all 4. */}
-                                {/* But Grid here is implicit? No, I need separate Tile calls. */}
-                                {/* My FillSlots puts null in left padding. */}
-                                {/* So: */}
-                                {/* Tile 1 (Col 1): step5Tiles[0] */}
-                                {/* Tile 2 (Col 2): step5Tiles[1] */}
-                                {/* Tile 3 (Col 3): step5Tiles[2] */}
-                                {/* Tile 4 (Col 4): step5Tiles[3] */}
-                                {/* Wait, previous render block was manual. Here I am inside Grid. */}
-                                {/* So I need to replace `Tile val={null}` above with `step5Tiles[0]` logic? */}
-                                {/* Actually, loop is cleaner. */}
                             </div>
-
-                            {/* Overlay Total Row manually to handle variable length? No, grid is fine. */}
-                            {/* Fixed the Total Row Logic below */}
                         </div>
                         <div style={{ flex: '0 0 auto', width: '100%', background: 'transparent', zIndex: 10, padding: '10px 10px 0 10px', marginBottom: '-12px' }}>
                             <Keypad onInput={handleInput} disabled={!!feedback && feedback !== 'correct'} />
@@ -294,4 +277,18 @@ export const BackMultiplicationGameLv3: React.FC<{ onExit: () => void, gameId?: 
             </div>
         </Layout2>
     );
+};
+
+export const manifestLv4: GameManifest = {
+    id: 'back-multiplication-lv4',
+    title: 'Multiplication Lv4',
+    description: '2-digit x 2-digit',
+    category: 'math',
+    level: 2,
+    thumbnail: '✖️',
+    titleKey: 'games.backMultiplication.lv4.title',
+    subtitleKey: 'games.backMultiplication.lv4.subtitle',
+    descriptionKey: 'games.backMultiplication.description',
+    mode: 'genius',
+    component: BackMultiplicationGameLv4
 };

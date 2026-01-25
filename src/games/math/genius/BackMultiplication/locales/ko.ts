@@ -1,15 +1,19 @@
 export default {
     lv1: {
         title: 'Back 곱셈 1',
-        subtitle: '2자리 x 1자리',
+        subtitle: '1-digit x 1-digit',
     },
     lv2: {
         title: 'Back 곱셈 2',
-        subtitle: '3자리 x 1자리',
+        subtitle: '2-digit x 1-digit',
     },
     lv3: {
         title: 'Back 곱셈 3',
-        subtitle: '2자리 x 2자리',
+        subtitle: '3-digit x 1-digit',
+    },
+    lv4: {
+        title: 'Back 곱셈 4',
+        subtitle: '2-digit x 2-digit',
         desc: '크로스 곱셈법으로 풀어보세요.'
     },
     description: '뒤에서부터 계산하는 부분 곱셈법!',

@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import { playButtonSound, playClearSound } from '../../../../utils/sound';
 
-export interface BackMultiplicationProblemLv3 {
+export interface BackMultiplicationProblemLv4 {
     num1: number; // Top number (e.g. 83)
     num2: number; // Bottom number (e.g. 46)
 
@@ -22,16 +22,18 @@ interface GameLogicEngine {
     updateScore: (amount: number) => void;
     updateLives: (isCorrect: boolean) => void;
     registerEvent: (event: { type: 'correct' | 'wrong'; isFinal?: boolean }) => void;
+    submitAnswer: (isCorrect: boolean, options?: any) => void;
+    lives: number;
 }
 
-export const useBackMultiplicationLogicLv3 = (engine: GameLogicEngine) => {
-    const [currentProblem, setCurrentProblem] = useState<BackMultiplicationProblemLv3 | null>(null);
+export const useBackMultiplicationLogicLv4 = (engine: GameLogicEngine) => {
+    const { gameState, registerEvent, submitAnswer, updateScore, updateLives, lives } = engine;
+
+    const [currentProblem, setCurrentProblem] = useState<BackMultiplicationProblemLv4 | null>(null);
     const [currentStep, setCurrentStep] = useState<number>(1); // 1..5
     const [userInput, setUserInput] = useState<string>('');
     const [completedSteps, setCompletedSteps] = useState<{ [key: number]: string }>({});
     const [feedback, setFeedback] = useState<'correct' | 'wrong' | null>(null);
-
-    const { updateScore, updateLives, registerEvent, gameState } = engine;
 
     // Generate Problem
     const generateProblem = useCallback(() => {
@@ -134,7 +136,7 @@ export const useBackMultiplicationLogicLv3 = (engine: GameLogicEngine) => {
         }
     };
 
-    const checkAnswer = (input: string, problem: BackMultiplicationProblemLv3) => {
+    const checkAnswer = (input: string, problem: BackMultiplicationProblemLv4) => {
         let target = '';
         if (currentStep === 1) target = problem.step1_target;
         else if (currentStep === 2) target = problem.step2_target;
@@ -145,11 +147,7 @@ export const useBackMultiplicationLogicLv3 = (engine: GameLogicEngine) => {
         if (input === target) {
             // Correct
             setFeedback('correct');
-            // Play sound immediately for intermediate steps. 
-            // For final step (5), let registerEvent handle it to avoid double audio.
-            if (currentStep < 5) {
-                playClearSound();
-            }
+            playClearSound();
 
             setTimeout(() => {
                 setFeedback(null);
@@ -162,7 +160,8 @@ export const useBackMultiplicationLogicLv3 = (engine: GameLogicEngine) => {
                     // Game Over / Next Round
                     registerEvent({ type: 'correct' });
                     updateScore(100);
-                    generateProblem();
+                    submitAnswer(true);
+                    setTimeout(() => generateProblem(), 1500);
                 }
             }, 600); // Delay for visual feedback
         } else {
@@ -185,6 +184,7 @@ export const useBackMultiplicationLogicLv3 = (engine: GameLogicEngine) => {
         currentStep,
         completedSteps,
         feedback,
-        handleInput
+        handleInput,
+        lives
     };
 };

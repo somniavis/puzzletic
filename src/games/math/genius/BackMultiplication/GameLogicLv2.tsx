@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useGameEngine } from '../../../layouts/Standard/Layout0/useGameEngine';
 
-export interface BackMultiplicationProblem {
+export interface BackMultiplicationProblemLv2 {
     a: number; // 2 digit (XY)
     b: number; // 1 digit (Z)
 
@@ -21,7 +21,7 @@ export interface BackMultiplicationProblem {
     step3_str: string;
 }
 
-export const useBackMultiplicationLogic = (engine: ReturnType<typeof useGameEngine>) => {
+export const useBackMultiplicationLogicLv2 = (engine: ReturnType<typeof useGameEngine>) => {
     const {
         lives,
         submitAnswer,
@@ -29,7 +29,7 @@ export const useBackMultiplicationLogic = (engine: ReturnType<typeof useGameEngi
         registerEvent
     } = engine;
 
-    const [currentProblem, setCurrentProblem] = useState<BackMultiplicationProblem | null>(null);
+    const [currentProblem, setCurrentProblem] = useState<BackMultiplicationProblemLv2 | null>(null);
     const [userInput, setUserInput] = useState<string>('');
     const [currentStep, setCurrentStep] = useState<1 | 2 | 3>(1);
 
@@ -70,7 +70,7 @@ export const useBackMultiplicationLogic = (engine: ReturnType<typeof useGameEngi
         //   (s2)   <-- shifted left
         const total = (s2 * 10) + s1;
 
-        const problem: BackMultiplicationProblem = {
+        const problem: BackMultiplicationProblemLv2 = {
             a, b,
             row1_tens: tA,
             row1_units: uA,
