@@ -47,7 +47,7 @@ export const useBackMultiplicationLogicLv3 = (engine: ReturnType<typeof useGameE
     const [prevGameState, setPrevGameState] = useState(gameState);
 
     const toExpectationStr = (num: number): string => {
-        return num.toString();
+        return num.toString().padStart(2, '0');
     };
 
     const generateProblem = useCallback(() => {

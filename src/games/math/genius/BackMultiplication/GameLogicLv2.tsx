@@ -45,7 +45,7 @@ export const useBackMultiplicationLogicLv2 = (engine: ReturnType<typeof useGameE
     // Padding helper: 6 -> '06', 0 -> '00', 12 -> '12'
     // Modified: User requested NO leading zeros if < 10. e.g. 6 -> '6', 0 -> '0'.
     const toExpectationStr = (num: number): string => {
-        return num.toString();
+        return num.toString().padStart(2, '0');
     };
 
     const generateProblem = useCallback(() => {

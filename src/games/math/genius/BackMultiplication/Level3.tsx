@@ -144,15 +144,18 @@ export const BackMultiplicationGameLv3: React.FC<{ onExit: () => void, gameId?: 
                             }}>
                                 {/* Row 1: Problem Top (  Hun Tens Units ) */}
                                 <Tile val={null} />
-                                <Tile val={currentProblem.row1_hundreds} highlight={currentStep === 3} showArrow={currentStep === 3} arrowType="diagonal-long" />
-                                <Tile val={currentProblem.row1_tens} highlight={currentStep === 2} showArrow={currentStep === 2} arrowType="diagonal" />
-                                <Tile val={currentProblem.row1_units} highlight={currentStep === 1} showArrow={currentStep === 1} arrowType="down" />
+                                <Tile val={currentProblem.row1_hundreds} highlight={currentStep === 3} />
+                                <Tile val={currentProblem.row1_tens} highlight={currentStep === 2} />
+                                <Tile val={currentProblem.row1_units} highlight={currentStep === 1} />
 
                                 {/* Row 2: Problem Bot (x            Units ) */}
                                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '8cqi', fontWeight: 'bold', color: '#334155' }}>×</div>
                                 <Tile val={null} />
                                 <Tile val={null} />
-                                <Tile val={currentProblem.row2_units} highlight={true} />
+                                <Tile val={currentProblem.row2_units} highlight={true}
+                                    showArrow={currentStep >= 1 && currentStep <= 3}
+                                    arrowType={currentStep === 3 ? 'diagonal-long' : (currentStep === 2 ? 'diagonal' : 'down')}
+                                />
 
                                 {/* Sep */}
                                 <div style={{ gridColumn: '1/-1', height: '4px', background: '#cbd5e1', borderRadius: '2px', alignSelf: 'center', width: '100%' }} />
