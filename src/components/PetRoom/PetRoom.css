@@ -613,11 +613,26 @@
 .character-container {
   position: absolute;
   z-index: 5;
+  /* Optimization: Removed expensive filter: drop-shadow */
   transition: left 1s ease-in-out, bottom 1s ease-in-out;
-  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
   /* Prevent container from blocking clicks on background/house */
   pointer-events: none;
   -webkit-tap-highlight-color: transparent;
+}
+
+.jello-shadow {
+  position: absolute;
+  bottom: 20px;
+  /* Raised from 5px to be closer to Jello feet */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 70%;
+  /* Slightly wider */
+  height: 12px;
+  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0) 70%);
+  border-radius: 50%;
+  z-index: -1;
+  pointer-events: none;
 }
 
 /* Action Bar */

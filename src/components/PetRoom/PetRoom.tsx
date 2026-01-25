@@ -1066,17 +1066,20 @@ export const PetRoom: React.FC<PetRoomProps> = ({
                   <GiftBox onOpen={handleGiftBoxClick} />
                 </div>
               ) : (
-                <div
-                  style={{ pointerEvents: 'auto' }}
-                  className={`jello-wrapper ${character.evolutionStage === 5 ? 'legendary' : ''} ${character.evolutionStage <= 2 ? 'baby' : ''}`}
-                >
-                  <JelloAvatar
-                    character={character}
-                    responsive={true}
-                    mood={mood}
-                    action={action}
-                  />
-                </div>
+                <>
+                  <div className="jello-shadow"></div>
+                  <div
+                    style={{ pointerEvents: 'auto' }}
+                    className={`jello-wrapper ${character.evolutionStage === 5 ? 'legendary' : ''} ${character.evolutionStage <= 2 ? 'baby' : ''}`}
+                  >
+                    <JelloAvatar
+                      character={character}
+                      responsive={true}
+                      mood={mood}
+                      action={action}
+                    />
+                  </div>
+                </>
               )}
             </div>
           )}
