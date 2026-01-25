@@ -186,7 +186,13 @@ export const BackMultiplicationGameLv3: React.FC<{ onExit: () => void, gameId?: 
             engine={engine}
             onExit={onExit}
             cardBackground={<BlobBackground colors={{ blob1: '#e0e7ff', blob2: '#c7d2fe', blob3: '#a5b4fc', blob4: '#818cf8' }} />}
-            instructions={[]}
+            instructions={[
+                { icon: '1️⃣', title: t('games.backMultiplication.howToPlay.step1.title'), description: t('games.backMultiplication.hint.step1_lv3') },
+                { icon: '2️⃣', title: t('games.backMultiplication.howToPlay.step2.title'), description: t('games.backMultiplication.hint.step2_lv3') },
+                { icon: '3️⃣', title: t('games.backMultiplication.howToPlay.step3_cross1.title'), description: t('games.backMultiplication.hint.step3_cross1') },
+                { icon: '4️⃣', title: t('games.backMultiplication.howToPlay.step4_cross2.title'), description: t('games.backMultiplication.hint.step4_cross2') },
+                { icon: '✅', title: t('games.backMultiplication.howToPlay.step5.title'), description: t('games.backMultiplication.hint.step5') }
+            ]}
             powerUps={[
                 { count: engine.powerUps.timeFreeze, color: 'blue', icon: '❄️', title: 'Freeze', onClick: () => engine.activatePowerUp('timeFreeze'), disabledConfig: engine.isTimeFrozen, status: engine.isTimeFrozen ? 'active' : 'normal' },
                 { count: engine.powerUps.extraLife, color: 'red', icon: '❤️', title: 'Life', onClick: () => engine.activatePowerUp('extraLife'), disabledConfig: engine.lives >= 3, status: engine.lives >= 3 ? 'maxed' : 'normal' },
