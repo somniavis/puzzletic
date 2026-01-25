@@ -188,7 +188,7 @@ const generateLevel = (size: number, difficulty: number): LevelDef => {
 };
 
 export const useMazeHunterLogic = (engine: GameEngine) => {
-    const { activatePowerUp, powerUps, isTimeFrozen, isDoubleScore, updateLives, registerEvent } = engine;
+    const { activatePowerUp, powerUps, isTimeFrozen, isDoubleScore } = engine;
 
     // State
     const [levelIndex, setLevelIndex] = useState(0);
