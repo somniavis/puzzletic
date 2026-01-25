@@ -12,6 +12,7 @@
 
 .jello-avatar__image {
     object-fit: contain;
+    image-rendering: -webkit-optimize-contrast;
     image-rendering: pixelated;
     image-rendering: -moz-crisp-edges;
     image-rendering: crisp-edges;

@@ -1304,12 +1304,12 @@
   height: 144px;
 }
 
-/* Tablet & Desktop: Scale up by 1.25x */
+/* Tablet & Desktop: Scale up by integer multiples for crisp pixel art (Base 32px) */
 @media (min-width: 600px) {
   .jello-wrapper {
-    width: 120px;
-    /* 96 * 1.25 */
-    height: 120px;
+    width: 128px;
+    /* 32 * 4 */
+    height: 128px;
   }
 
   .jello-wrapper.baby {
@@ -1318,9 +1318,9 @@
   }
 
   .jello-wrapper.legendary {
-    width: 180px;
-    /* 144 * 1.25 */
-    height: 180px;
+    width: 192px;
+    /* 32 * 6 */
+    height: 192px;
   }
 }
 

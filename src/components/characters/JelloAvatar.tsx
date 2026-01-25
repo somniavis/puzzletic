@@ -77,7 +77,6 @@ export const JelloAvatar: React.FC<JelloAvatarProps> = ({
                     style={{
                         width: '100%',
                         height: '100%',
-                        imageRendering: 'pixelated',
                         display: 'block', // Prevent baseline gap
                         objectFit: 'contain' // Ensure aspect ratio
                     }}
