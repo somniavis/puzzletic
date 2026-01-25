@@ -16,6 +16,9 @@
     image-rendering: pixelated;
     image-rendering: -moz-crisp-edges;
     image-rendering: crisp-edges;
+    /* Composite Layer Promotion for iOS WebKit */
+    transform: translateZ(0);
+    backface-visibility: hidden;
     /* Subtle breathing effect on the image itself */
     animation: slime-breathe 4s ease-in-out infinite;
 }
