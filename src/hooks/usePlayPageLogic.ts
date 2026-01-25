@@ -21,7 +21,9 @@ export const usePlayPageLogic = ({ gameScores }: UsePlayPageLogicProps) => {
         return (sessionStorage.getItem('play_math_mode') as MathMode) || 'adventure';
     });
 
-    const [selectedOp, setSelectedOp] = useState<Operator>('ADD');
+    const [selectedOp, setSelectedOpState] = useState<Operator>(() => {
+        return (sessionStorage.getItem('play_genius_op') as Operator) || 'ADD';
+    });
 
     // -- Handlers --
     const handleTabSelect = (category: GameCategory) => {
@@ -32,6 +34,11 @@ export const usePlayPageLogic = ({ gameScores }: UsePlayPageLogicProps) => {
     const handleMathModeSelect = (mode: MathMode) => {
         setMathMode(mode);
         sessionStorage.setItem('play_math_mode', mode);
+    };
+
+    const setSelectedOp = (op: Operator) => {
+        setSelectedOpState(op);
+        sessionStorage.setItem('play_genius_op', op);
     };
 
     // -- Data Filtering --
