@@ -6,8 +6,10 @@
     animation: slime-idle-float 3s ease-in-out infinite;
 }
 
-.jello-avatar:hover {
-    animation: slime-hover-pulse 0.6s ease-in-out infinite;
+@media (hover: hover) {
+    .jello-avatar:hover {
+        animation: slime-hover-pulse 0.6s ease-in-out infinite;
+    }
 }
 
 .jello-avatar__image {

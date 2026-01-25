@@ -1,0 +1,225 @@
+import React, { type Dispatch, type SetStateAction } from 'react';
+import { useTranslation } from 'react-i18next';
+import { MenuModal } from '../MenuModal';
+import { SettingsMenu } from '../../SettingsMenu/SettingsMenu';
+import { FOOD_ITEMS, FOOD_CATEGORIES, type FoodCategory, type FoodItem } from '../../../types/food';
+import { MEDICINE_ITEMS, type MedicineItem } from '../../../types/medicine';
+import { CLEANING_TOOLS, type CleaningTool } from '../../../types/cleaning';
+import { SHOP_ITEMS, SHOP_CATEGORIES, type ShopCategory, type ShopItem } from '../../../types/shop';
+import { playButtonSound } from '../../../utils/sound';
+import { useNurturing } from '../../../contexts/NurturingContext';
+import type { CharacterAction } from '../../../types/character';
+
+interface PetRoomMenusProps {
+    // States
+    showFoodMenu: boolean;
+    setShowFoodMenu: Dispatch<SetStateAction<boolean>>;
+    showMedicineMenu: boolean;
+    setShowMedicineMenu: Dispatch<SetStateAction<boolean>>;
+    showCleanMenu: boolean;
+    setShowCleanMenu: Dispatch<SetStateAction<boolean>>;
+    showShopMenu: boolean;
+    setShowShopMenu: Dispatch<SetStateAction<boolean>>;
+    showSettingsMenu: boolean;
+    setShowSettingsMenu: Dispatch<SetStateAction<boolean>>;
+
+    // Selections
+    selectedFoodCategory: FoodCategory;
+    setSelectedFoodCategory: Dispatch<SetStateAction<FoodCategory>>;
+    selectedShopCategory: ShopCategory;
+    setSelectedShopCategory: Dispatch<SetStateAction<ShopCategory>>;
+
+    // Handlers
+    onFeed: (food: FoodItem, onClose: () => void) => void;
+    onGiveMedicine: (medicine: MedicineItem, onClose: () => void) => void;
+    onClean: (tool: CleaningTool, onClose: () => void) => void;
+    onShopItemClick: (item: ShopItem) => void;
+
+    // Context
+    nurturing: ReturnType<typeof useNurturing>;
+    action: CharacterAction;
+    flyingFood: any;
+}
+
+export const PetRoomMenus: React.FC<PetRoomMenusProps> = ({
+    showFoodMenu, setShowFoodMenu,
+    showMedicineMenu, setShowMedicineMenu,
+    showCleanMenu, setShowCleanMenu,
+    showShopMenu, setShowShopMenu,
+    showSettingsMenu, setShowSettingsMenu,
+    selectedFoodCategory, setSelectedFoodCategory,
+    selectedShopCategory, setSelectedShopCategory,
+    onFeed,
+    onGiveMedicine,
+    onClean,
+    onShopItemClick,
+    nurturing,
+    action,
+    flyingFood
+}) => {
+    const { t } = useTranslation();
+
+    const filteredFoods = FOOD_ITEMS.filter(food => food.category === selectedFoodCategory);
+    const filteredShopItems = SHOP_ITEMS.filter(item => item.category === selectedShopCategory);
+
+    return (
+        <>
+            {/* Food Menu Submenu */}
+            {showFoodMenu && (
+                <MenuModal
+                    title={t('food.menu.title')}
+                    onClose={() => setShowFoodMenu(false)}
+                    headerContent={
+                        <div className="food-categories">
+                            {(Object.keys(FOOD_CATEGORIES) as FoodCategory[]).map((category) => (
+                                <button
+                                    key={category}
+                                    className={`category-tab ${selectedFoodCategory === category ? 'active' : ''}`}
+                                    onClick={() => { playButtonSound(); setSelectedFoodCategory(category); }}
+                                >
+                                    <span className="category-icon">{FOOD_CATEGORIES[category].icon}</span>
+                                    <span className="category-name">{t(FOOD_CATEGORIES[category].nameKey)}</span>
+                                </button>
+                            ))}
+                        </div>
+                    }
+                >
+                    {filteredFoods.map((food) => (
+                        <button
+                            key={food.id}
+                            className="food-item"
+                            onClick={() => onFeed(food, () => setShowFoodMenu(false))}
+                            disabled={action !== 'idle' || flyingFood !== null || nurturing.gro < food.price}
+                        >
+                            <span className="food-item-icon">{food.icon}</span>
+                            <span className="food-item-name">{t(food.nameKey)}</span>
+                            <div className="food-item-effects">
+                                <span className="food-item-price">💰 {food.price}</span>
+                            </div>
+                        </button>
+                    ))}
+                </MenuModal>
+            )}
+
+            {/* Medicine Menu Submenu */}
+            {showMedicineMenu && (
+                <MenuModal
+                    title={t('medicine.menu.title')}
+                    onClose={() => setShowMedicineMenu(false)}
+                >
+                    {MEDICINE_ITEMS.map((medicine) => (
+                        <button
+                            key={medicine.id}
+                            className="food-item"
+                            onClick={() => onGiveMedicine(medicine, () => setShowMedicineMenu(false))}
+                            disabled={action !== 'idle' || flyingFood !== null || nurturing.gro < medicine.price || nurturing.stats.health >= 60}
+                        >
+                            <span className="food-item-icon">{medicine.icon}</span>
+                            <span className="food-item-name">{t(medicine.nameKey)}</span>
+                            <div className="food-item-effects">
+                                <span className="food-item-price">💰 {medicine.price}</span>
+                            </div>
+                        </button>
+                    ))}
+                </MenuModal>
+            )}
+
+            {/* Clean Menu Submenu */}
+            {showCleanMenu && (
+                <MenuModal
+                    title={t('cleanMenu.title')}
+                    onClose={() => setShowCleanMenu(false)}
+                >
+                    {CLEANING_TOOLS.map((tool) => (
+                        <button
+                            key={tool.id}
+                            className="food-item"
+                            onClick={() => onClean(tool, () => setShowCleanMenu(false))}
+                            disabled={
+                                action !== 'idle' ||
+                                (tool.id === 'broom' && nurturing.poops.length === 0) ||
+                                (tool.id === 'newspaper' && nurturing.bugs.length === 0) ||
+                                (tool.id === 'shower' && nurturing.gro < tool.price) ||
+                                (tool.id === 'robot_cleaner' && (nurturing.gro < tool.price || (nurturing.poops.length === 0 && nurturing.bugs.length === 0)))
+                            }
+                        >
+                            <span className="food-item-icon">{tool.icon}</span>
+                            <span className="food-item-name">{t(tool.nameKey)}</span>
+                            <div className="food-item-effects">
+                                <span className="effect">{t(tool.descriptionKey)}</span>
+                            </div>
+                            <div className="food-item-price">
+                                {tool.price > 0 ? `💰 ${tool.price}` : 'Free'}
+                            </div>
+                        </button>
+                    ))}
+                </MenuModal>
+            )}
+
+            {/* Shop Menu Submenu */}
+            {showShopMenu && (
+                <MenuModal
+                    title={t('shop.menu.title', 'Shop')}
+                    onClose={() => setShowShopMenu(false)}
+                    headerContent={
+                        <div className="food-categories">
+                            {(Object.keys(SHOP_CATEGORIES) as ShopCategory[]).map((category) => (
+                                <button
+                                    key={category}
+                                    className={`category-tab ${selectedShopCategory === category ? 'active' : ''}`}
+                                    onClick={() => { playButtonSound(); setSelectedShopCategory(category); }}
+                                >
+                                    <span className="category-icon">{SHOP_CATEGORIES[category].icon}</span>
+                                    <span className="category-name">{t(SHOP_CATEGORIES[category].nameKey)}</span>
+                                </button>
+                            ))}
+                        </div>
+                    }
+                >
+                    {filteredShopItems.map((item) => (
+                        <button
+                            key={item.id}
+                            className={`food-item ${(item.category === 'ground' && nurturing.currentLand === item.id) ||
+                                (item.category === 'house' && nurturing.currentHouseId === item.id)
+                                ? 'active-item' : ''
+                                }`}
+                            onClick={() => onShopItemClick(item)}
+                            style={
+                                (item.category === 'ground' && nurturing.currentLand === item.id) ||
+                                    (item.category === 'house' && nurturing.currentHouseId === item.id)
+                                    ? { borderColor: '#FFD700', backgroundColor: '#FFF9E6' } : {}
+                            }
+                        >
+                            <span className="food-item-icon">
+                                {item.id === 'shape_ground' ? (
+                                    <span className="custom-icon-shape-ground" />
+                                ) : (
+                                    item.icon
+                                )}
+                            </span>
+                            <span className="food-item-name">{t(item.nameKey)}</span>
+                            <div className="food-item-effects">
+                                {nurturing.inventory.includes(item.id) || (item.category === 'house' && item.id === 'tent') ? (
+                                    (item.category === 'ground' && nurturing.currentLand === item.id) ||
+                                        (item.category === 'house' && nurturing.currentHouseId === item.id) ? (
+                                        <span className="food-item-price">✅ Owned</span>
+                                    ) : (
+                                        <span className="food-item-price">Owned</span>
+                                    )
+                                ) : (
+                                    <span className="food-item-price">💰 {item.price}</span>
+                                )}
+                            </div>
+                        </button>
+                    ))}
+                </MenuModal>
+            )}
+
+            {/* Settings Menu */}
+            <SettingsMenu
+                isOpen={showSettingsMenu}
+                onClose={() => setShowSettingsMenu(false)}
+            />
+        </>
+    );
+};

@@ -1,7 +1,24 @@
 # 변경 이력 (Changelog)
 
 
-## 2026-01-20 (Latest Updates)
+## 2026-01-26 (Latest Updates)
+
+### 🧹 PetRoom 리팩토링 (Refactoring)
+- **대규모 구조 개선**: 1400줄에 달하던 `PetRoom.tsx` 파일을 역할별로 분리하여 코드 복잡도를 60% 이상 감소시켰습니다.
+- **Custom Hooks 분리**:
+  - `usePetRoomUI`: UI 상태 (메뉴, 모달) 관리
+  - `usePetInteraction`: 캐릭터 상호작용 및 움직임
+  - `usePetActions`: 먹이주기, 씻기 등 주요 행동 로직
+  - `usePetCamera`: 화면 캡처 및 공유 기능
+- **Sub-components 분리**:
+  - `PetWorldLayer`: 게임 월드(배경, 캐릭터, 오브젝트) 렌더링
+  - `PetRoomMenus`: 복잡한 팝업 메뉴들 별도 관리
+  - `PetRoomHeader`, `PetActionButtons`: 상하단 UI 분리
+
+### 🐛 버그 수정 (Bug Fixes)
+- **Camera CORS Issue**: `html-to-image` 사용 시 Font Awesome CSS 로드 문제로 인한 SecurityError 해결 (`crossorigin="anonymous"` 속성 추가).
+
+## 2026-01-20 (Previous Updates)
 
 ### 🚀 진행도 저장 최적화 (Progression Storage Optimization)
 - **문제**: 게임 수 증가 시 데이터 크기가 선형적으로 증가 (200게임 → ~40KB/유저)
