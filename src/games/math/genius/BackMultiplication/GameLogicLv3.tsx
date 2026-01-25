@@ -145,7 +145,11 @@ export const useBackMultiplicationLogicLv3 = (engine: GameLogicEngine) => {
         if (input === target) {
             // Correct
             setFeedback('correct');
-            playClearSound();
+            // Play sound immediately for intermediate steps. 
+            // For final step (5), let registerEvent handle it to avoid double audio.
+            if (currentStep < 5) {
+                playClearSound();
+            }
 
             setTimeout(() => {
                 setFeedback(null);

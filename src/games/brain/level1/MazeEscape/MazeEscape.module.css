@@ -47,6 +47,11 @@
     /* Prevent content from pushing bounds */
 }
 
+/* Make internal elements ignore clicks so drag works on the whole cell area */
+.cell>* {
+    pointer-events: none;
+}
+
 /* --- Nodes (Start/End) --- */
 .startNode,
 .endNode {

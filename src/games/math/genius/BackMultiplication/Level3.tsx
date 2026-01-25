@@ -185,7 +185,7 @@ export const BackMultiplicationGameLv3: React.FC<{ onExit: () => void, gameId?: 
             gameId={gameId || 'back-multiplication-lv3'}
             engine={engine}
             onExit={onExit}
-            cardBackground={<BlobBackground colors={{ blob1: '#e0e7ff', blob2: '#c7d2fe', blob3: '#a5b4fc', blob4: '#818cf8' }} />}
+            cardBackground={<BlobBackground speed="slow" colors={{ blob1: '#fdf4ff', blob2: '#fae8ff', blob3: '#f0abfc', blob4: '#e879f9' }} />}
             instructions={[
                 { icon: '1️⃣', title: t('games.backMultiplication.howToPlay.step1.title'), description: t('games.backMultiplication.hint.step1_lv3') },
                 { icon: '2️⃣', title: t('games.backMultiplication.howToPlay.step2.title'), description: t('games.backMultiplication.hint.step2_lv3') },
