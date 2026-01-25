@@ -141,6 +141,15 @@ export const PetRoom: React.FC<PetRoomProps> = ({
   const [showCleanMenu, setShowCleanMenu] = useState(false);
   const [showMedicineMenu, setShowMedicineMenu] = useState(false);
   const [showShopMenu, setShowShopMenu] = useState(false);
+
+  // Mobile/Tablet: One-time pulse animation on click
+  const handleJelloClick = () => {
+    if (action !== 'idle') return;
+    if (onActionChange) {
+      onActionChange('eating'); // Triggers pulse animation via CSS class
+      setTimeout(() => onActionChange('idle'), 1800); // 0.6s * 3 = 1.8s (Three pulses)
+    }
+  };
   const [showSettingsMenu, setShowSettingsMenu] = useState(false);
   const [selectedFoodCategory, setSelectedFoodCategory] = useState<FoodCategory>('fruit');
   const [selectedShopCategory, setSelectedShopCategory] = useState<ShopCategory>('ground');
@@ -360,9 +369,9 @@ export const PetRoom: React.FC<PetRoomProps> = ({
     }
   };
 
-  const showBubble = (category: EmotionCategory, level: 1 | 2 | 3) => {
+  const showBubble = (category: EmotionCategory, level: 1 | 2 | 3, duration: number = 3000) => {
     setBubble({ category, level, key: Date.now() });
-    setTimeout(() => setBubble(null), 3000); // Hide bubble after 3 seconds
+    setTimeout(() => setBubble(null), duration);
   };
 
   const bubbles = useMemo(() => {
@@ -745,7 +754,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({
     });
 
     // 말풍선 표시
-    showBubble(category, level);
+    showBubble(category, level, 1800); // Sync with pulse animation (1.8s)
 
     // 스탯 업데이트: 행복도 변화 + 애정도 증가
     onStatsChange({
@@ -1071,6 +1080,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({
                   <div
                     style={{ pointerEvents: 'auto' }}
                     className={`jello-wrapper ${character.evolutionStage === 5 ? 'legendary' : ''} ${character.evolutionStage <= 2 ? 'baby' : ''}`}
+                    onClick={handleJelloClick}
                   >
                     <JelloAvatar
                       character={character}
