@@ -282,7 +282,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
         lastActiveTime: Date.now(), // [CRITICAL] Update timestamp to prevent sync overwrite
       };
 
-      saveNurturingState(newState, user?.uid); // Force Save
+      saveNurturingState(newState, user?.uid); // Force Save immediately (Fixes navigation data loss)
       return newState;
     });
   }, [user?.uid, setState]);

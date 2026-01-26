@@ -43,6 +43,7 @@
 | **로그아웃** | localStorage → D1 | `saveToCloud` 호출. 즉시 동기화 후 로그아웃. | `SettingsMenu.tsx:131-143` |
 | **자동 저장** | localStorage → D1 | 15분 주기. (변경 사항 없으면 Skip) | `NurturingContext.tsx:287-302` |
 | **진화/생성** | localStorage → D1 | 중요 이벤트 발생 시 즉시 업로드. | `NurturingContext.tsx` |
+| **게임 클리어** | **Force-Save (L2)** | **즉시 저장 (Sync)**. 빠른 페이지 이동 시 데이터 유실 방어. | `NurturingContext.tsx:282` |
 
 ---
 

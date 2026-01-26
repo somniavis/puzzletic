@@ -18,7 +18,7 @@ import {
     calculateNextState,
     getNextStageInfo
 } from '../../services/evolutionService';
-import { saveToHallOfFame, startNewGeneration, saveFailSafeLastSeenStage } from '../../services/persistenceService';
+import { addToHallOfFame, createNewGenerationState, saveFailSafeLastSeenStage } from '../../services/persistenceService';
 import { syncUserData } from '../../services/syncService';
 
 export const useEvolutionLogic = (
@@ -128,9 +128,10 @@ export const useEvolutionLogic = (
                 finalStats: currentState.stats
             };
 
-            // Save & Reset (XP -> 0 handled in startNewGeneration)
-            const stateWithEntry = saveToHallOfFame(currentState, entry);
-            const nextState = startNewGeneration(stateWithEntry);
+            // Save & Reset (Pure Functions now)
+            // No redundant local saves here, rely on useNurturingSync auto-save + syncUserData
+            const stateWithEntry = addToHallOfFame(currentState, entry);
+            const nextState = createNewGenerationState(stateWithEntry);
 
             if (user) {
                 syncUserData(user, nextState);
