@@ -5,7 +5,7 @@ import { useTenFrameCountLogic } from './GameLogic';
 import manifest_en from './locales/en';
 import './TenFrameCount.css';
 import type { GameManifest } from '../../../../types';
-import { GameIds } from '../../../../constants/gameIds';
+import { GameIds } from '../../../../../constants/gameIds';
 
 interface TenFrameCountProps {
     onExit: () => void;

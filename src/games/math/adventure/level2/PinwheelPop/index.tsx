@@ -5,7 +5,7 @@ import { usePinwheelLogic } from './GameLogic';
 import manifest_en from './locales/en.ts';
 import './PinwheelPop.css';
 import type { GameManifest } from '../../../../types';
-import { GameIds } from '../../../../constants/gameIds';
+import { GameIds } from '../../../../../constants/gameIds';
 import type { PowerUpBtnProps } from '../../../../../components/Game/PowerUpBtn';
 
 interface MathPinwheelProps {

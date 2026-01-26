@@ -6,7 +6,7 @@ import { DeepSeaBackground } from '../../../components/DeepSeaBackground';
 import manifest_en from './locales/en';
 import './DeepSeaDive.css';
 import type { GameManifest } from '../../../../types';
-import { GameIds } from '../../../../constants/gameIds';
+import { GameIds } from '../../../../../constants/gameIds';
 import type { PowerUpBtnProps } from '../../../../../components/Game/PowerUpBtn';
 
 interface DeepSeaDiveProps {

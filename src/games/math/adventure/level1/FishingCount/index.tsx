@@ -6,7 +6,7 @@ import { FishingBackground } from './FishingBackground';
 import manifest_en from './locales/en';
 import './FishingCount.css';
 import type { GameManifest } from '../../../../types';
-import { GameIds } from '../../../../constants/gameIds';
+import { GameIds } from '../../../../../constants/gameIds';
 
 interface FishingCountProps {
     onExit: () => void;

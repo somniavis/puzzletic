@@ -10,7 +10,7 @@ import styles from './UFO.module.css';
 import { useUFOInvasionLogic } from './GameLogic';
 import manifest_en from './locales/en';
 
-import { GameIds } from '../../../../constants/gameIds';
+import { GameIds } from '../../../../../constants/gameIds';
 
 const GAME_ID = GameIds.MATH_UFO_INVASION;
 

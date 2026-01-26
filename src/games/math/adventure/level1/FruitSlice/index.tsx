@@ -6,7 +6,7 @@ import manifest_en from './locales/en';
 import './FruitSlice.css';
 import { BlobBackground } from '../../../components/BlobBackground';
 import type { GameManifest } from '../../../../types';
-import { GameIds } from '../../../../constants/gameIds';
+import { GameIds } from '../../../../../constants/gameIds';
 import type { PowerUpBtnProps } from '../../../../../components/Game/PowerUpBtn';
 
 interface FruitSliceProps {
