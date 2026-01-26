@@ -10,6 +10,7 @@ import { JelloAvatar } from '../../characters/JelloAvatar';
 import { EmotionBubble } from '../../EmotionBubble/EmotionBubble';
 import { useNurturing } from '../../../contexts/NurturingContext';
 import type { Character, CharacterMood, CharacterAction } from '../../../types/character';
+import { CHARACTER_SPECIES } from '../../../data/species';
 
 interface PetWorldLayerProps {
     // States
@@ -71,6 +72,10 @@ export const PetWorldLayer: React.FC<PetWorldLayerProps> = ({
     nurturing
 }) => {
     const { t } = useTranslation();
+
+    // Helper to get personality
+    const species = CHARACTER_SPECIES[character.speciesId];
+    const personality = species?.personality;
 
     return (
         <div className="room-container">
@@ -172,6 +177,7 @@ export const PetWorldLayer: React.FC<PetWorldLayerProps> = ({
                             key={bubble.key}
                             category={bubble.category}
                             level={bubble.level}
+                            personality={personality}
                         />
                     )}
                     {/* Sick Status - Bandaid */}

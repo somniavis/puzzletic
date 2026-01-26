@@ -68,12 +68,12 @@ export const calculateClickResponse = (
 
   // 1. 건강이 매우 나쁘면 클릭을 더 싫어함 (-1~-3)
   if (health < 30) {
-    happinessChange -= Math.floor(Math.random() * 3) + 1;
+    happinessChange -= Math.floor(Math.random() * 3) + 3; // -3 ~ -5 Additional penalty
   }
 
   // 2. 매우 배고프면 클릭을 싫어함 (-1~-2)
   if (fullness < 20) {
-    happinessChange -= Math.floor(Math.random() * 2) + 1;
+    happinessChange -= Math.floor(Math.random() * 2) + 2; // -2 ~ -3 Additional penalty
   }
 
   // 3. 행복도가 매우 높으면 클릭 효과 증가 (+1~+2)
@@ -85,9 +85,6 @@ export const calculateClickResponse = (
   if (happiness < 20 && happinessChange > 0) {
     happinessChange = Math.max(0, Math.floor(happinessChange / 2));
   }
-
-  // 5. energetic 성격 특수 처리: 연속 클릭 카운트에 따라 변화
-  // (이 부분은 PetRoom에서 클릭 카운트를 추적하여 처리)
 
   return happinessChange;
 };

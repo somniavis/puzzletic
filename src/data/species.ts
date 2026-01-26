@@ -55,7 +55,7 @@ export const CHARACTER_SPECIES: Record<string, CharacterSpecies> = {
     id: 'redJello',
     name: 'Red Jello',
     description: 'A vibrant red jello full of energy.',
-    personality: 'energetic',
+    personality: 'playful',
     tags: ['attack', 'fire_flame'],
     evolutions: [
       {

@@ -8,6 +8,7 @@ export interface NurturingStats {
   fullness: number;    // 포만감 (0-100)
   health: number;      // 건강 (0-100) - 청결도 + 질병 통합
   happiness: number;   // 행복도 (0-100)
+  affection?: number;  // 애정도 (0-100) - Hidden Stat
 }
 
 // 스탯 상태 (Stat States)

@@ -72,6 +72,7 @@ interface NurturingContextValue {
   takeShower: () => ActionResult;
   brushTeeth: () => ActionResult;
   play: () => ActionResult;
+  petCharacter: (happinessChange: number, affectionChange?: number) => void;
   study: () => ActionResult;
   clickPoop: (poopId: string, happinessBonus?: number) => void;
   clickBug: (bugId: string) => void;

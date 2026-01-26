@@ -390,32 +390,48 @@ export const useNurturingActions = (
     }, [stateRef, setState]);
 
     const equipLand = useCallback((landId: string): boolean => {
-        const current = stateRef.current;
-        if (landId !== 'default_ground' && !current.inventory?.includes(landId)) {
-            console.warn('Cannot equip land not in inventory:', landId);
-            return false;
-        }
         setState((currentState) => {
+            if (landId !== 'default_ground' && !currentState.inventory?.includes(landId)) {
+                console.warn('Cannot equip land not in inventory (checked in setState):', landId);
+                return currentState;
+            }
             const newState = { ...currentState, currentLand: landId, lastActiveTime: Date.now() };
             setTimeout(() => saveNurturingState(newState, userId), 0);
             return newState;
         });
         return true;
-    }, [stateRef, setState]);
+    }, [setState, userId]);
 
     const equipHouse = useCallback((houseId: string): boolean => {
-        const current = stateRef.current;
-        if (houseId !== 'tent' && !current.inventory?.includes(houseId)) {
-            console.warn('Cannot equip house not in inventory:', houseId);
-            return false;
-        }
         setState((currentState) => {
+            if (houseId !== 'tent' && !currentState.inventory?.includes(houseId)) {
+                console.warn('Cannot equip house not in inventory (checked in setState):', houseId);
+                return currentState;
+            }
             const newState = { ...currentState, currentHouseId: houseId, lastActiveTime: Date.now() };
             setTimeout(() => saveNurturingState(newState, userId), 0);
             return newState;
         });
         return true;
-    }, [stateRef, setState]);
+    }, [setState, userId]);
+
+    const petCharacter = useCallback((happinessChange: number, affectionChange: number = 0) => {
+        setState((currentState) => {
+            const newStats: NurturingStats = {
+                ...currentState.stats,
+                happiness: clampStat(currentState.stats.happiness + happinessChange),
+                affection: clampStat((currentState.stats.affection || 0) + affectionChange), // Start affection at 0 if undefined
+            };
+
+            setCondition(evaluateCondition(newStats));
+
+            return {
+                ...currentState,
+                stats: newStats,
+                lastActiveTime: Date.now(),
+            };
+        });
+    }, [setState, setCondition]);
 
     return {
         performAction,
@@ -434,6 +450,7 @@ export const useNurturingActions = (
         cleanBug,
         purchaseItem,
         equipLand,
-        equipHouse
+        equipHouse,
+        petCharacter
     };
 };

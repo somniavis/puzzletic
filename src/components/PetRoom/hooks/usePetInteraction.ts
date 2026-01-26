@@ -83,9 +83,13 @@ export const usePetInteraction = ({
 
         showBubble(category, level, 1800);
 
+        // Update Global Context Logic (Fix for UI sync)
+        nurturing.petCharacter(happinessChange, 1);
+
+        // Keep local log for debugging (App.tsx)
         onStatsChange({
             happiness: Math.max(0, Math.min(100, happiness + happinessChange)),
-            affection: Math.min(100, character.stats.affection + 1),
+            affection: Math.min(100, (character.stats.affection || 0) + 1),
         });
 
         if (action === 'idle' && onActionChange) {
