@@ -78,6 +78,7 @@ export const BackMultiplicationGame: React.FC<{ onExit: () => void, gameId?: str
             subtitle={t('games.backMultiplication.lv1.subtitle')}
             description={t('games.backMultiplication.description')}
             gameId={gameId || GameIds.BACK_MULTIPLICATION_LV1}
+            gameLevel={2} // Explicit Level passing
             engine={engine}
             onExit={onExit}
             cardBackground={<BlobBackground speed="slow" colors={{ blob1: '#fdf4ff', blob2: '#fae8ff', blob3: '#f0abfc', blob4: '#e879f9' }} />}

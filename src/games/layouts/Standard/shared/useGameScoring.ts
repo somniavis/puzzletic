@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from 'react';
 import { useNurturing } from '../../../../contexts/NurturingContext';
 import { calculateMinigameReward } from '../../../../services/rewardService';
 import { parseGameScore } from '../../../../utils/progression';
-import { getGameById } from '../../../../games/registry';
 import type { RewardCalculation, MinigameDifficulty } from '../../../../types/gameMechanics';
 
 interface ScoringProps {
@@ -10,6 +9,7 @@ interface ScoringProps {
     score: number;
     lives: number;
     gameId?: string;
+    gameLevel?: number; // Added to avoid circular dependency with registry
     engineDifficulty: string | MinigameDifficulty;
     stats?: { correct: number; wrong: number };
     gameOverReason?: 'time' | 'lives' | 'cleared' | null;
@@ -20,6 +20,7 @@ export const useGameScoring = ({
     score,
     lives,
     gameId,
+    gameLevel = 1, // Default to 1 if not provided
     engineDifficulty,
     stats,
     gameOverReason
@@ -59,8 +60,7 @@ export const useGameScoring = ({
         let starsEarned = 0;
         // CRITICAL: Do NOT award stars if gameOverReason is 'lives' (Survival Failed)
         if (gameId && (gameOverReason === 'cleared' || (gameOverReason === 'time' && score > 0))) {
-            const game = getGameById(gameId);
-            starsEarned = game ? game.level : 1;
+            starsEarned = gameLevel;
         }
 
         setRewardResult({

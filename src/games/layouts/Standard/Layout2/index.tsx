@@ -19,6 +19,7 @@ interface Layout2Props {
     title: string;
     subtitle?: string;
     gameId?: string;
+    gameLevel?: number; // Added for scoring
     description?: string;
     instructions?: { icon?: string; title: string; description: string }[];
     engine: ReturnType<typeof useGameEngine>;
@@ -35,6 +36,7 @@ export const Layout2: React.FC<Layout2Props> = ({
     title,
     subtitle,
     gameId,
+    gameLevel = 1, // Default 1
     description,
     instructions,
     engine,
@@ -66,6 +68,7 @@ export const Layout2: React.FC<Layout2Props> = ({
         score,
         lives,
         gameId,
+        gameLevel, // Pass to hook
         engineDifficulty: engine.difficultyLevel as MinigameDifficulty,
         stats: stats || { correct: 0, wrong: 0 },
         gameOverReason
