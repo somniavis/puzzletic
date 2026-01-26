@@ -89,6 +89,16 @@ export const calculateClickResponse = (
   return happinessChange;
 };
 
+// Click Response Thresholds (Tuning)
+// 긍정적 반응 기준
+const THRESHOLD_LOVE_LEVEL_3 = 4;
+const THRESHOLD_JOY_LEVEL_2 = 2;
+const THRESHOLD_PLAYFUL_LEVEL_1 = 1;
+
+// 부정적 반응 기준
+const THRESHOLD_ANGRY_LEVEL_3 = -4;
+const THRESHOLD_WORRIED_LEVEL_2 = -2;
+
 /**
  * 클릭 반응에 따른 감정 카테고리 반환
  * @param happinessChange 행복도 변화량
@@ -98,11 +108,11 @@ export const getClickEmotionCategory = (
   happinessChange: number
 ): { category: 'joy' | 'love' | 'playful' | 'neutral' | 'worried' | 'angry'; level: 1 | 2 | 3 } => {
   // 긍정적 반응
-  if (happinessChange >= 4) {
+  if (happinessChange >= THRESHOLD_LOVE_LEVEL_3) {
     return { category: 'love', level: 3 };
-  } else if (happinessChange >= 2) {
+  } else if (happinessChange >= THRESHOLD_JOY_LEVEL_2) {
     return { category: 'joy', level: 2 };
-  } else if (happinessChange > 0) {
+  } else if (happinessChange >= THRESHOLD_PLAYFUL_LEVEL_1) {
     return { category: 'playful', level: 1 };
   }
 
@@ -112,11 +122,12 @@ export const getClickEmotionCategory = (
   }
 
   // 부정적 반응
-  if (happinessChange <= -4) {
+  if (happinessChange <= THRESHOLD_ANGRY_LEVEL_3) {
     return { category: 'angry', level: 3 };
-  } else if (happinessChange <= -2) {
+  } else if (happinessChange <= THRESHOLD_WORRIED_LEVEL_2) {
     return { category: 'worried', level: 2 };
   } else {
+    // -1 ~ -2 범위 (Worried Level 1)
     return { category: 'worried', level: 1 };
   }
 };

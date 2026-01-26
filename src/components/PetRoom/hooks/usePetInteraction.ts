@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
 import { useNurturing } from '../../../contexts/NurturingContext';
-import type { Character, CharacterAction } from '../../../types/character';
+import type { CharacterAction } from '../../../types/character';
 import { CHARACTER_SPECIES, type CharacterSpeciesId } from '../../../data/species';
 import { calculateClickResponse, getClickEmotionCategory } from '../../../constants/personality';
 import { playJelloClickSound } from '../../../utils/sound';
@@ -9,8 +9,7 @@ import { useEmotionBubbles } from '../../../hooks/useEmotionBubbles';
 
 interface UsePetInteractionProps {
     speciesId: CharacterSpeciesId;
-    character: Character;
-    onStatsChange: (stats: Partial<Character['stats']>) => void;
+
     onActionChange?: (action: CharacterAction) => void;
     action: CharacterAction;
     showGiftBox: boolean;
@@ -21,8 +20,8 @@ interface UsePetInteractionProps {
 
 export const usePetInteraction = ({
     speciesId,
-    character,
-    onStatsChange,
+
+
     onActionChange,
     action,
     showGiftBox,
@@ -86,11 +85,7 @@ export const usePetInteraction = ({
         // Update Global Context Logic (Fix for UI sync)
         nurturing.petCharacter(happinessChange, 1);
 
-        // Keep local log for debugging (App.tsx)
-        onStatsChange({
-            happiness: Math.max(0, Math.min(100, happiness + happinessChange)),
-            affection: Math.min(100, (character.stats.affection || 0) + 1),
-        });
+
 
         if (action === 'idle' && onActionChange) {
             onActionChange('eating'); // Pulse animation reuse

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { EmotionCategory, EmotionExpression } from '../../types/emotion';
 import type { PersonalityTrait } from '../../types/character';
@@ -31,46 +31,41 @@ export const EmotionBubble: React.FC<EmotionBubbleProps> = ({
   personality,
 }) => {
   const { t } = useTranslation();
-  const [position, setPosition] = useState<'left' | 'right'>('right');
-  const [expression, setExpression] = useState<EmotionExpression | null>(null);
-  const [personalityMessage, setPersonalityMessage] = useState<string | null>(null);
 
-  useEffect(() => {
-    // 1. Get Base Expression (mostly for Emoji)
-    const newExpression = getRandomExpression(category, level);
-    setExpression(newExpression);
+  // 1. Calculate Random Values only once per instance (or when dependencies change)
+  const { position, expression, message } = useMemo(() => {
+    // Random Position
+    const pos = Math.random() > 0.5 ? 'right' : 'left';
 
-    // 2. Random Position
-    const randomPosition = Math.random() > 0.5 ? 'right' : 'left';
-    setPosition(randomPosition);
+    // Base Expression (Emoji)
+    const expr = getRandomExpression(category, level);
 
-    // 3. Resolve Message
+    // Resolve Message
+    let msg: string | null = null;
+
     if (personality) {
-      // New Logic: Personality-based
+      // New: Personality-based message
       const key = `emotions.${category}.l${level}.${personality}`;
-      const translated = t(key, { returnObjects: true }) as any;
+      const translated = t(key, { returnObjects: true }) as string | string[];
 
       if (Array.isArray(translated) && translated.length > 0) {
-        setPersonalityMessage(translated[Math.floor(Math.random() * translated.length)]);
-      } else if (typeof translated === 'string' && translated.startsWith('emotions.')) {
-        // Fallback if key missing (returns key itself usually)
-        setPersonalityMessage(null);
-      } else if (typeof translated === 'string') {
-        setPersonalityMessage(translated);
-      } else {
-        setPersonalityMessage(null);
+        msg = translated[Math.floor(Math.random() * translated.length)];
+      } else if (typeof translated === 'string' && !translated.startsWith('emotions.')) {
+        msg = translated; // Single string value
       }
-    } else {
-      setPersonalityMessage(null);
     }
+
+    // Fallback: Legacy message key
+    if (!msg && expr) {
+      msg = t(expr.messageKey);
+    }
+
+    return { position: pos, expression: expr, message: msg };
   }, [category, level, personality, t]);
 
   if (!expression) {
     return null;
   }
-
-  // Use personality message if available, otherwise fallback to legacy messageKey
-  const message = personalityMessage || (expression ? t(expression.messageKey) : '');
 
   return (
     <div

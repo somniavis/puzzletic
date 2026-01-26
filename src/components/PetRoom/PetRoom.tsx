@@ -28,7 +28,7 @@ import { PetActionButtons } from './components/PetActionButtons';
 interface PetRoomProps {
   character: Character;
   speciesId: CharacterSpeciesId;
-  onStatsChange: (stats: Partial<Character['stats']>) => void;
+
   showGiftBox?: boolean;
   onOpenGift?: () => void;
   mood?: CharacterMood;
@@ -40,7 +40,7 @@ interface PetRoomProps {
 export const PetRoom: React.FC<PetRoomProps> = ({
   character,
   speciesId,
-  onStatsChange,
+
   showGiftBox = false,
   onOpenGift,
   mood = 'neutral',
@@ -92,8 +92,8 @@ export const PetRoom: React.FC<PetRoomProps> = ({
   // 3. Interaction (Needs showBubble + isShowering from actions)
   const interaction = usePetInteraction({
     speciesId,
-    character,
-    onStatsChange,
+
+
     onActionChange,
     action,
     showGiftBox,

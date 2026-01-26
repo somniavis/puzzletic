@@ -4,7 +4,7 @@ import './App.css'
 import { PetRoom } from './components/PetRoom/PetRoom'
 
 import { createCharacter } from './data/characters'
-import type { CharacterAction, CharacterMood, Character, EvolutionStage } from './types/character'
+import type { CharacterAction, CharacterMood, EvolutionStage } from './types/character'
 import { NurturingProvider, useNurturing } from './contexts/NurturingContext'
 import { SoundProvider } from './contexts/SoundContext'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
@@ -144,10 +144,7 @@ function AppContent() {
     }
   }
 
-  const handleStatsChange = (newStats: Partial<Character['stats']>) => {
-    // Stats are now handled via context, this might be redundant or for local UI updates
-    console.log('Stats changed:', newStats)
-  }
+
 
   // Prevent double-click/race conditions during gift opening
   const isOpeningRef = useRef(false);
@@ -203,7 +200,7 @@ function AppContent() {
             <PetRoom
               character={character}
               speciesId={selectedSpeciesId}
-              onStatsChange={handleStatsChange}
+
               mood={mood}
               action={action}
               showGiftBox={!nurturing.hasCharacter}
