@@ -10,7 +10,8 @@ import { PairUpBackground } from '../../level1/PairUpTwin/PairUpBackground';
 import type { GameManifest } from '../../../types';
 import manifest_en from './locales/en';
 
-const GAME_ID = 'pair-up-connect';
+import { GameIds } from '../../../../constants/gameIds';
+const GAME_ID = GameIds.PAIR_UP_CONNECT;
 
 export const manifest: GameManifest = {
     id: GAME_ID,

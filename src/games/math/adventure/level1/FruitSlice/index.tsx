@@ -6,6 +6,7 @@ import manifest_en from './locales/en';
 import './FruitSlice.css';
 import { BlobBackground } from '../../../components/BlobBackground';
 import type { GameManifest } from '../../../../types';
+import { GameIds } from '../../../../constants/gameIds';
 import type { PowerUpBtnProps } from '../../../../../components/Game/PowerUpBtn';
 
 interface FruitSliceProps {
@@ -177,7 +178,7 @@ export const FruitSlice: React.FC<FruitSliceProps> = ({ onExit }) => {
         <Layout3
             title={t('games.math-fruit-slice.title')}
             subtitle={t('games.math-fruit-slice.subtitle')}
-            gameId="math-fruit-slice"
+            gameId={GameIds.MATH_FRUIT_SLICE}
             engine={layoutEngine as any}
             instructions={[
                 { icon: '🧮', title: t('games.math-fruit-slice.howToPlay.step1.title'), description: t('games.math-fruit-slice.howToPlay.step1.description') },
@@ -270,7 +271,7 @@ export const FruitSlice: React.FC<FruitSliceProps> = ({ onExit }) => {
 };
 
 export const manifest: GameManifest = {
-    id: 'math-fruit-slice',
+    id: GameIds.MATH_FRUIT_SLICE,
     title: 'Fruit Slice',
     titleKey: 'games.math-fruit-slice.title',
     subtitle: 'Slice the fruits!',

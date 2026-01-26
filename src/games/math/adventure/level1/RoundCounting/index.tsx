@@ -7,6 +7,7 @@ import manifest_en from './locales/en';
 import './RoundCounting.css';
 import { BlobBackground } from '../../../components/BlobBackground';
 import type { GameManifest } from '../../../../types';
+import { GameIds } from '../../../../constants/gameIds';
 import type { PowerUpBtnProps } from '../../../../../components/Game/PowerUpBtn';
 
 interface RoundCountingProps {
@@ -117,7 +118,7 @@ export const RoundCounting: React.FC<RoundCountingProps> = ({ onExit }) => {
         <Layout3
             title={t('games.math-round-counting.title')}
             subtitle={t('games.math-round-counting.subtitle')}
-            gameId="math-round-counting"
+            gameId={GameIds.MATH_ROUND_COUNTING}
             engine={layoutEngine as any}
             instructions={[
                 { icon: '🎯', title: t('games.math-round-counting.howToPlay.step1.title'), description: t('games.math-round-counting.howToPlay.step1.description') },
@@ -169,7 +170,7 @@ export const RoundCounting: React.FC<RoundCountingProps> = ({ onExit }) => {
 };
 
 export const manifest: GameManifest = {
-    id: 'math-round-counting',
+    id: GameIds.MATH_ROUND_COUNTING,
     title: 'Round Counting',
     titleKey: 'games.math-round-counting.title',
     subtitle: 'Count the circles!',

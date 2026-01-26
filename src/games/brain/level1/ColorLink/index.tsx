@@ -7,7 +7,8 @@ import styles from './ColorLink.module.css';
 import { useColorLinkLogic } from './GameLogic';
 import type { PowerUpBtnProps } from '../../../../components/Game/PowerUpBtn';
 import manifest_en from './locales/en';
-const GAME_ID = 'color-link';
+import { GameIds } from '../../../../constants/gameIds';
+const GAME_ID = GameIds.COLOR_LINK;
 
 interface ColorLinkProps {
     onExit?: () => void;

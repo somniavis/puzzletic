@@ -10,7 +10,9 @@ import styles from './UFO.module.css';
 import { useUFOInvasionLogic } from './GameLogic';
 import manifest_en from './locales/en';
 
-const GAME_ID = 'math-level2-ufo-invasion';
+import { GameIds } from '../../../../constants/gameIds';
+
+const GAME_ID = GameIds.MATH_UFO_INVASION;
 
 interface UFOInvasionProps {
     onExit?: () => void;

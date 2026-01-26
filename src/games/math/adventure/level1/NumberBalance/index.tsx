@@ -9,6 +9,7 @@ import manifest_en from './locales/en';
 import './NumberBalance.css';
 
 import type { GameManifest } from '../../../../types';
+import { GameIds } from '../../../../constants/gameIds';
 import type { PowerUpBtnProps } from '../../../../../components/Game/PowerUpBtn';
 
 interface NumberBalanceProps {
@@ -144,7 +145,7 @@ export const NumberBalance: React.FC<NumberBalanceProps> = ({ onExit }) => {
         <Layout2
             title={t('games.math-number-balance.title')}
             subtitle={t('games.math-number-balance.subtitle')}
-            gameId="math-number-balance"
+            gameId={GameIds.MATH_NUMBER_BALANCE}
             engine={layoutEngine as any}
             instructions={[
                 { icon: '⚖️', title: t('games.math-number-balance.howToPlay.step1.title'), description: t('games.math-number-balance.howToPlay.step1.description') },
@@ -233,7 +234,7 @@ export const NumberBalance: React.FC<NumberBalanceProps> = ({ onExit }) => {
 };
 
 export const manifest: GameManifest = {
-    id: 'math-number-balance',
+    id: GameIds.MATH_NUMBER_BALANCE,
     title: 'Number Balance',
     titleKey: 'games.math-number-balance.title',
     subtitle: 'Balance the scale!',

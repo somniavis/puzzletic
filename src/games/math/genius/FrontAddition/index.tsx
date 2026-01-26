@@ -6,6 +6,7 @@ import { useGameLogic } from './GameLogic';
 import { BlobBackground } from '../../components/BlobBackground';
 import { Keypad } from './Keypad';
 import type { GameManifest } from '../../../types';
+import { GameIds } from '../../../../constants/gameIds';
 
 // Helper to distribute digits Left-to-Right into active slots (Hiding leading zeros based on targetVal)
 const getStepValues = (strVal: string | null, targetVal: number, stepType: 'hundreds' | 'tens' | 'units' | 'total') => {
@@ -171,11 +172,11 @@ export const FrontAdditionGame: React.FC<{ onExit: () => void, gameId?: string }
 
     // Determine config keys based on gameId (Memoized)
     const { titleKey, subtitleKey } = React.useMemo(() => {
-        if (gameId === 'front-addition-lv2') {
+        if (gameId === GameIds.FRONT_ADDITION_LV2) {
             return { titleKey: 'games.frontAddition.lv2.title', subtitleKey: 'games.frontAddition.lv2.subtitle' };
-        } else if (gameId === 'front-addition-lv3') {
+        } else if (gameId === GameIds.FRONT_ADDITION_LV3) {
             return { titleKey: 'games.frontAddition.lv3.title', subtitleKey: 'games.frontAddition.lv3.subtitle' };
-        } else if (gameId === 'front-addition-lv4') {
+        } else if (gameId === GameIds.FRONT_ADDITION_LV4) {
             return { titleKey: 'games.frontAddition.lv4.title', subtitleKey: 'games.frontAddition.lv4.subtitle' };
         }
         return { titleKey: 'games.frontAddition.lv1.title', subtitleKey: 'games.frontAddition.lv1.subtitle' };
@@ -234,7 +235,7 @@ export const FrontAdditionGame: React.FC<{ onExit: () => void, gameId?: string }
             title={t(titleKey)}
             subtitle={t(subtitleKey)}
             description={t('games.frontAddition.description')}
-            gameId={gameId || 'front-addition-lv1'}
+            gameId={gameId || GameIds.FRONT_ADDITION_LV1}
             engine={engine}
             onExit={onExit}
             cardBackground={<BlobBackground speed="slow" colors={{ blob1: '#eff6ff', blob2: '#f0f9ff', blob3: '#e0f2fe', blob4: '#dbeafe' }} />}
@@ -364,7 +365,7 @@ export const FrontAdditionGame: React.FC<{ onExit: () => void, gameId?: string }
 };
 
 export const manifestLv1: GameManifest = {
-    id: 'front-addition-lv1',
+    id: GameIds.FRONT_ADDITION_LV1,
     title: 'Front Addition 1',
     description: '2-digit + 1-digit Addition',
     category: 'math',
@@ -378,7 +379,7 @@ export const manifestLv1: GameManifest = {
 };
 
 export const manifestLv2: GameManifest = {
-    id: 'front-addition-lv2',
+    id: GameIds.FRONT_ADDITION_LV2,
     title: 'Front Addition 2',
     description: '2-digit + 2-digit Addition',
     category: 'math',
@@ -392,7 +393,7 @@ export const manifestLv2: GameManifest = {
 };
 
 export const manifestLv3: GameManifest = {
-    id: 'front-addition-lv3',
+    id: GameIds.FRONT_ADDITION_LV3,
     title: 'Front Addition 3',
     description: '3-digit + 2-digit Addition',
     category: 'math',
@@ -406,7 +407,7 @@ export const manifestLv3: GameManifest = {
 };
 
 export const manifestLv4: GameManifest = {
-    id: 'front-addition-lv4',
+    id: GameIds.FRONT_ADDITION_LV4,
     title: 'Front Addition 4',
     description: '3-digit + 3-digit Addition',
     category: 'math',

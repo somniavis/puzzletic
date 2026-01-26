@@ -5,6 +5,7 @@ import { useNumberHiveLogic } from './GameLogic';
 import manifest_en from './locales/en';
 import './NumberHive.css';
 import type { GameManifest } from '../../../../types';
+import { GameIds } from '../../../../constants/gameIds';
 import type { PowerUpBtnProps } from '../../../../../components/Game/PowerUpBtn';
 
 interface NumberHiveProps {
@@ -91,7 +92,7 @@ export const NumberHive: React.FC<NumberHiveProps> = ({ onExit }) => {
         <Layout3
             title={t('games.math-number-hive.title')}
             subtitle={t('games.math-number-hive.subtitle')}
-            gameId="math-number-hive"
+            gameId={GameIds.MATH_NUMBER_HIVE}
             engine={layoutEngine as any}
             instructions={[
                 { icon: '🎯', title: t('games.math-number-hive.howToPlay.step1.title'), description: t('games.math-number-hive.howToPlay.step1.description') },
@@ -152,7 +153,7 @@ export const NumberHive: React.FC<NumberHiveProps> = ({ onExit }) => {
 };
 
 export const manifest: GameManifest = {
-    id: 'math-number-hive',
+    id: GameIds.MATH_NUMBER_HIVE,
     title: 'Number Hive',
     titleKey: 'games.math-number-hive.title',
     subtitle: 'Find sequences!',

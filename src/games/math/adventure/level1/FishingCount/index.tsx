@@ -6,6 +6,7 @@ import { FishingBackground } from './FishingBackground';
 import manifest_en from './locales/en';
 import './FishingCount.css';
 import type { GameManifest } from '../../../../types';
+import { GameIds } from '../../../../constants/gameIds';
 
 interface FishingCountProps {
     onExit: () => void;
@@ -143,7 +144,7 @@ export const FishingCount: React.FC<FishingCountProps> = ({ onExit }) => {
         <Layout3
             title={t('games.math-fishing-count.title')}
             subtitle={t('games.math-fishing-count.subtitle')}
-            gameId="math-fishing-count"
+            gameId={GameIds.MATH_FISHING_COUNT}
             engine={layoutEngine as any} // Cast safely
             powerUps={[]} // No powerups for this Level 1 game yet
             target={{
@@ -209,7 +210,7 @@ export const FishingCount: React.FC<FishingCountProps> = ({ onExit }) => {
 };
 
 export const manifest: GameManifest = {
-    id: 'math-fishing-count',
+    id: GameIds.MATH_FISHING_COUNT,
     title: 'Fishing Count',
     titleKey: 'games.math-fishing-count.title',
     subtitle: 'Count the fish!',

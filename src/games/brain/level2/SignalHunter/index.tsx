@@ -7,6 +7,7 @@ import { useSignalHunterLogic } from './GameLogic';
 import manifest_en from './locales/en.ts';
 import './SignalHunter.css';
 import type { GameManifest } from '../../../types';
+import { GameIds } from '../../../../constants/gameIds';
 
 
 interface SignalHunterProps {
@@ -70,7 +71,7 @@ export const SignalHunter: React.FC<SignalHunterProps> = ({ onExit }) => {
         <Layout2
             title={t('games.signal-hunter.title')}
             subtitle={t('games.signal-hunter.subtitle')}
-            gameId="signal-hunter"
+            gameId={GameIds.SIGNAL_HUNTER}
             engine={logic}
             powerUps={powerUps}
             instructions={[
@@ -155,7 +156,7 @@ export const SignalHunter: React.FC<SignalHunterProps> = ({ onExit }) => {
 };
 
 export const manifest: GameManifest = {
-    id: 'signal-hunter',
+    id: GameIds.SIGNAL_HUNTER,
     title: 'Signal Hunter',
     titleKey: 'games.signal-hunter.title',
     subtitle: 'Catch the Signal!',

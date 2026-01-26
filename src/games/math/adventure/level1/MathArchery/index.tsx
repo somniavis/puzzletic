@@ -6,6 +6,7 @@ import manifest_en from './locales/en';
 import './MathArchery.css';
 import { RisingShapesBackground } from '../../../components/RisingShapesBackground';
 import type { GameManifest } from '../../../../types';
+import { GameIds } from '../../../../constants/gameIds';
 import type { PowerUpBtnProps } from '../../../../../components/Game/PowerUpBtn';
 
 interface MathArcheryProps {
@@ -142,7 +143,7 @@ export const MathArchery: React.FC<MathArcheryProps> = ({ onExit }) => {
         <Layout3
             title={t('games.math-archery.title')}
             subtitle={t('games.math-archery.subtitle')}
-            gameId="math-archery"
+            gameId={GameIds.MATH_ARCHERY}
             engine={layoutEngine as any}
             powerUps={powerUpConfig}
             onExit={onExit}
@@ -235,7 +236,7 @@ export const MathArchery: React.FC<MathArcheryProps> = ({ onExit }) => {
 };
 
 export const manifest: GameManifest = {
-    id: 'math-archery',
+    id: GameIds.MATH_ARCHERY,
     title: 'Math Archery',
     titleKey: 'games.math-archery.title',
     subtitle: 'Shoot the answer!',

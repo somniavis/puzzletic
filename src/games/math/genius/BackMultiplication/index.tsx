@@ -6,6 +6,7 @@ import { useBackMultiplicationLogic } from './GameLogic';
 import { BlobBackground } from '../../components/BlobBackground';
 import { Keypad } from './Keypad';
 import type { GameManifest } from '../../../types';
+import { GameIds } from '../../../../constants/gameIds';
 
 // Simplified Fill Slots for 1x1
 const fillSlots = (valStr: string | null, activeCols: number, totalSlots: number) => {
@@ -76,7 +77,7 @@ export const BackMultiplicationGame: React.FC<{ onExit: () => void, gameId?: str
             title={t('games.backMultiplication.lv1.title')}
             subtitle={t('games.backMultiplication.lv1.subtitle')}
             description={t('games.backMultiplication.description')}
-            gameId={gameId || 'back-multiplication-lv1'}
+            gameId={gameId || GameIds.BACK_MULTIPLICATION_LV1}
             engine={engine}
             onExit={onExit}
             cardBackground={<BlobBackground speed="slow" colors={{ blob1: '#fdf4ff', blob2: '#fae8ff', blob3: '#f0abfc', blob4: '#e879f9' }} />}
@@ -129,7 +130,7 @@ export const BackMultiplicationGame: React.FC<{ onExit: () => void, gameId?: str
 };
 
 export const manifestLv1: GameManifest = {
-    id: 'back-multiplication-lv1',
+    id: GameIds.BACK_MULTIPLICATION_LV1,
     title: 'Multiplication Lv1',
     description: '1-digit x 1-digit',
     category: 'math',

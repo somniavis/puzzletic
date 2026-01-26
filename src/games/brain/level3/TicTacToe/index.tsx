@@ -4,6 +4,7 @@ import { useGameEngine } from '../../../layouts/Standard/Layout0/useGameEngine';
 import { useTranslation } from 'react-i18next';
 import styles from './TicTacToe.module.css';
 import { TicTacToeGame } from './TicTacToeGame';
+import { GameIds } from '../../../../constants/gameIds';
 
 const WaveBackground = () => {
     return (
@@ -40,7 +41,7 @@ export const TicTacToe: React.FC = () => {
 
     return (
         <Layout1
-            gameId="tic-tac-toe"
+            gameId={GameIds.TIC_TAC_TOE}
             title={t('games.tic-tac-toe.title')}
             subtitle={t('games.tic-tac-toe.subtitle')}
             description={t('games.tic-tac-toe.description')}

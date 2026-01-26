@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import type { GameManifest } from '../../../types';
+import { GameIds } from '../../../../constants/gameIds';
 import { useTranslation } from 'react-i18next';
 import { Layout2 } from '../../../layouts/Standard/Layout2';
 import { useGameEngine } from '../../../layouts/Standard/Layout0/useGameEngine';
@@ -233,7 +234,7 @@ export const BackMultiplicationGameLv2: React.FC<{ onExit: () => void, gameId?: 
             title={t('games.backMultiplication.lv2.title')} // Need to add key
             subtitle={t('games.backMultiplication.lv2.subtitle')} // Need to add key
             description={t('games.backMultiplication.description')} // Need to add key
-            gameId={gameId || 'back-multiplication-lv2'}
+            gameId={gameId || GameIds.BACK_MULTIPLICATION_LV2}
             engine={engine}
             onExit={onExit}
             cardBackground={<BlobBackground speed="slow" colors={{ blob1: '#fdf4ff', blob2: '#fae8ff', blob3: '#f0abfc', blob4: '#e879f9' }} />} // Purple/Pink theme
@@ -358,7 +359,7 @@ export const BackMultiplicationGameLv2: React.FC<{ onExit: () => void, gameId?: 
 };
 
 export const manifestLv2: GameManifest = {
-    id: 'back-multiplication-lv2',
+    id: GameIds.BACK_MULTIPLICATION_LV2,
     title: 'Multiplication Lv2',
     description: '2-digit x 1-digit',
     category: 'math',

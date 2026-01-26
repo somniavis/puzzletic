@@ -1,5 +1,6 @@
 import { lazy } from 'react';
 import type { GameManifest, GameCategory, GameDifficulty } from './types';
+import { GameIds } from '../constants/gameIds';
 
 // --- Lazy-loaded Game Components ---
 // Each game component is loaded only when the game is accessed
@@ -46,7 +47,7 @@ const L3_Omok = lazy(() => import('./brain/level3/Omok').then(m => ({ default: m
 export const GAMES: GameManifest[] = [
     // [Math Level 1]
     {
-        id: 'math-fishing-count',
+        id: GameIds.MATH_FISHING_COUNT,
         title: 'Fishing Count',
         titleKey: 'games.math-fishing-count.title',
         subtitle: 'Count the fish!',
@@ -60,7 +61,7 @@ export const GAMES: GameManifest[] = [
         tagsKey: 'games.tags.counting'
     },
     {
-        id: 'math-round-counting',
+        id: GameIds.MATH_ROUND_COUNTING,
         title: 'Round Counting',
         titleKey: 'games.math-round-counting.title',
         subtitle: 'Hit the marks!',
@@ -74,7 +75,7 @@ export const GAMES: GameManifest[] = [
         tagsKey: 'games.tags.counting'
     },
     {
-        id: 'math-number-hive',
+        id: GameIds.MATH_NUMBER_HIVE,
         title: 'Number Hive',
         titleKey: 'games.math-number-hive.title',
         subtitle: 'Collect the bees!',
@@ -88,7 +89,7 @@ export const GAMES: GameManifest[] = [
         tagsKey: 'games.tags.sequence'
     },
     {
-        id: 'math-number-balance',
+        id: GameIds.MATH_NUMBER_BALANCE,
         title: 'Number Balance',
         titleKey: 'games.math-number-balance.title',
         subtitle: 'Balance the scales!',
@@ -102,7 +103,7 @@ export const GAMES: GameManifest[] = [
         tagsKey: 'games.tags.addition'
     },
     {
-        id: 'math-fruit-slice',
+        id: GameIds.MATH_FRUIT_SLICE,
         title: 'Fruit Slice',
         titleKey: 'games.math-fruit-slice.title',
         subtitle: 'Slice the fruits!',
@@ -116,7 +117,7 @@ export const GAMES: GameManifest[] = [
         tagsKey: 'games.tags.partWhole'
     },
     {
-        id: 'math-archery',
+        id: GameIds.MATH_ARCHERY,
         title: 'Math Archery',
         titleKey: 'games.math-archery.title',
         subtitle: 'Hit the target!',
@@ -132,7 +133,7 @@ export const GAMES: GameManifest[] = [
 
     // [Math Level 2]
     {
-        id: 'ten-frame-count',
+        id: GameIds.TEN_FRAME_COUNT,
         title: 'Ten Frame',
         titleKey: 'games.ten-frame-count.title',
         subtitle: 'Fill the frame!',
@@ -146,7 +147,7 @@ export const GAMES: GameManifest[] = [
         tagsKey: 'games.tags.numberSense'
     },
     {
-        id: 'pinwheel-pop',
+        id: GameIds.PINWHEEL_POP,
         title: 'Pinwheel Pop',
         titleKey: 'games.pinwheel-pop.title',
         subtitle: 'Spin and pop!',
@@ -160,7 +161,7 @@ export const GAMES: GameManifest[] = [
         tagsKey: 'games.tags.addition'
     },
     {
-        id: 'deep-sea-dive',
+        id: GameIds.DEEP_SEA_DIVE,
         title: 'Deep Sea Dive',
         titleKey: 'games.deep-sea-dive.title',
         subtitle: 'Dive deep!',
@@ -174,7 +175,7 @@ export const GAMES: GameManifest[] = [
         tagsKey: 'games.tags.subtraction'
     },
     {
-        id: 'math-level2-ufo-invasion',
+        id: GameIds.MATH_UFO_INVASION,
         title: 'UFO Invasion',
         titleKey: 'games.math-level2-ufo-invasion.title',
         subtitle: 'Defend Earth!',
@@ -189,7 +190,7 @@ export const GAMES: GameManifest[] = [
     },
     // Front Addition Levels
     {
-        id: 'front-addition-lv1',
+        id: GameIds.FRONT_ADDITION_LV1,
         title: 'Front Addition Lv.1',
         titleKey: 'games.frontAddition.lv1.title',
         subtitle: '2+1 digits',
@@ -204,7 +205,7 @@ export const GAMES: GameManifest[] = [
         tagsKey: 'games.tags.mentalMath'
     },
     {
-        id: 'front-addition-lv2',
+        id: GameIds.FRONT_ADDITION_LV2,
         title: 'Front Addition Lv.2',
         titleKey: 'games.frontAddition.lv2.title',
         subtitle: '2+2 digits',
@@ -219,7 +220,7 @@ export const GAMES: GameManifest[] = [
         tagsKey: 'games.tags.mentalMath'
     },
     {
-        id: 'front-addition-lv3',
+        id: GameIds.FRONT_ADDITION_LV3,
         title: 'Front Addition Lv.3',
         titleKey: 'games.frontAddition.lv3.title',
         subtitle: '3+2 digits',
@@ -234,7 +235,7 @@ export const GAMES: GameManifest[] = [
         tagsKey: 'games.tags.mentalMath'
     },
     {
-        id: 'front-addition-lv4',
+        id: GameIds.FRONT_ADDITION_LV4,
         title: 'Front Addition Lv.4',
         titleKey: 'games.frontAddition.lv4.title',
         subtitle: '3+3 digits',
@@ -250,7 +251,7 @@ export const GAMES: GameManifest[] = [
     },
     // Front Subtraction Levels
     {
-        id: 'front-subtraction-lv1',
+        id: GameIds.FRONT_SUBTRACTION_LV1,
         title: 'Front Subtraction Lv.1',
         titleKey: 'games.frontSubtraction.lv1.title',
         subtitle: '2-1 digits',
@@ -265,7 +266,7 @@ export const GAMES: GameManifest[] = [
         tagsKey: 'games.tags.mentalMath'
     },
     {
-        id: 'front-subtraction-lv2',
+        id: GameIds.FRONT_SUBTRACTION_LV2,
         title: 'Front Subtraction Lv.2',
         titleKey: 'games.frontSubtraction.lv2.title',
         subtitle: '2-2 digits',
@@ -280,7 +281,7 @@ export const GAMES: GameManifest[] = [
         tagsKey: 'games.tags.mentalMath'
     },
     {
-        id: 'front-subtraction-lv3',
+        id: GameIds.FRONT_SUBTRACTION_LV3,
         title: 'Front Subtraction Lv.3',
         titleKey: 'games.frontSubtraction.lv3.title',
         subtitle: '3-2 digits',
@@ -295,7 +296,7 @@ export const GAMES: GameManifest[] = [
         tagsKey: 'games.tags.mentalMath'
     },
     {
-        id: 'front-subtraction-lv4',
+        id: GameIds.FRONT_SUBTRACTION_LV4,
         title: 'Front Subtraction Lv.4',
         titleKey: 'games.frontSubtraction.lv4.title',
         subtitle: '3-3 digits',
@@ -311,7 +312,7 @@ export const GAMES: GameManifest[] = [
     },
     // Back Multiplication Levels
     {
-        id: 'back-multiplication-lv1',
+        id: GameIds.BACK_MULTIPLICATION_LV1,
         title: 'Back Multiplication Lv.1',
         titleKey: 'games.backMultiplication.lv1.title',
         subtitle: '1-digit x 1-digit',
@@ -326,7 +327,7 @@ export const GAMES: GameManifest[] = [
         tagsKey: 'games.tags.mentalMath'
     },
     {
-        id: 'back-multiplication-lv2',
+        id: GameIds.BACK_MULTIPLICATION_LV2,
         title: 'Back Multiplication Lv.2',
         titleKey: 'games.backMultiplication.lv2.title',
         subtitle: '2-digit x 1-digit',
@@ -343,7 +344,7 @@ export const GAMES: GameManifest[] = [
 
     // [Brain Level 1]
     {
-        id: 'color-link',
+        id: GameIds.COLOR_LINK,
         title: 'Color Link',
         titleKey: 'games.color-link.title',
         subtitle: 'Connect colors!',
@@ -357,7 +358,7 @@ export const GAMES: GameManifest[] = [
         tagsKey: 'games.tags.spatial'
     },
     {
-        id: 'pair-up-twin',
+        id: GameIds.PAIR_UP_TWIN,
         title: 'Pair Up Twin',
         titleKey: 'games.pair-up-twin.title',
         subtitle: 'Find twins!',
@@ -371,7 +372,7 @@ export const GAMES: GameManifest[] = [
         tagsKey: 'games.tags.observation'
     },
     {
-        id: 'maze-escape',
+        id: GameIds.MAZE_ESCAPE,
         title: 'Maze Escape',
         titleKey: 'games.maze-escape.title',
         subtitle: 'Escape the maze!',
@@ -387,7 +388,7 @@ export const GAMES: GameManifest[] = [
 
     // [Brain Level 2]
     {
-        id: 'wild-link',
+        id: GameIds.WILD_LINK,
         title: 'Wild Link',
         titleKey: 'games.wild-link.title',
         subtitle: 'Connect animals!',
@@ -401,7 +402,7 @@ export const GAMES: GameManifest[] = [
         tagsKey: 'games.tags.categorization'
     },
     {
-        id: 'animal-banquet',
+        id: GameIds.ANIMAL_BANQUET,
         title: 'Animal Banquet',
         titleKey: 'games.animal-banquet.title',
         subtitle: 'Serve the animals!',
@@ -415,7 +416,7 @@ export const GAMES: GameManifest[] = [
         tagsKey: 'games.tags.workingMemory'
     },
     {
-        id: 'pair-up-connect',
+        id: GameIds.PAIR_UP_CONNECT,
         title: 'Pair Up Connect',
         titleKey: 'games.pair-up-connect.title',
         subtitle: 'Find Related Pairs',
@@ -429,7 +430,7 @@ export const GAMES: GameManifest[] = [
         tagsKey: 'games.tags.association'
     },
     {
-        id: 'maze-hunter',
+        id: GameIds.MAZE_HUNTER,
         title: 'Maze Hunter',
         titleKey: 'games.maze-hunter.title',
         subtitle: 'Hunt in the maze!',
@@ -443,7 +444,7 @@ export const GAMES: GameManifest[] = [
         tagsKey: 'games.tags.spatial'
     },
     {
-        id: 'signal-hunter',
+        id: GameIds.SIGNAL_HUNTER,
         title: 'Signal Hunter',
         titleKey: 'games.signal-hunter.title',
         subtitle: 'Find the signal!',
@@ -459,7 +460,7 @@ export const GAMES: GameManifest[] = [
 
     // [Brain Level 3]
     {
-        id: 'tic-tac-toe',
+        id: GameIds.TIC_TAC_TOE,
         title: 'Tic Tac Toe',
         titleKey: 'games.tic-tac-toe.title',
         subtitle: 'Win 3 in a row!',
@@ -473,7 +474,7 @@ export const GAMES: GameManifest[] = [
         tagsKey: 'games.tags.strategy'
     },
     {
-        id: 'brain-omok',
+        id: GameIds.BRAIN_OMOK,
         title: 'Omok',
         titleKey: 'games.omok.title',
         subtitle: 'Make 5 in a row',
@@ -488,7 +489,7 @@ export const GAMES: GameManifest[] = [
         tagsKey: 'games.tags.strategy'
     },
     {
-        id: 'back-multiplication-lv3',
+        id: GameIds.BACK_MULTIPLICATION_LV3,
         title: 'Back Multiplication Lv.3',
         titleKey: 'games.backMultiplication.lv3.title',
         subtitle: '3-digit x 1-digit',
@@ -503,7 +504,7 @@ export const GAMES: GameManifest[] = [
         tagsKey: 'games.tags.mentalMath'
     },
     {
-        id: 'back-multiplication-lv4',
+        id: GameIds.BACK_MULTIPLICATION_LV4,
         title: 'Back Multiplication Lv.4',
         titleKey: 'games.backMultiplication.lv4.title',
         subtitle: '2-digit x 2-digit',

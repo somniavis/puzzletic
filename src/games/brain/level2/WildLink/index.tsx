@@ -8,7 +8,8 @@ import { useColorLinkLogic } from './GameLogic';
 import type { PowerUpBtnProps } from '../../../../components/Game/PowerUpBtn';
 import manifest_en from './locales/en';
 
-const GAME_ID = 'wild-link';
+import { GameIds } from '../../../../constants/gameIds';
+const GAME_ID = GameIds.WILD_LINK;
 
 interface WildLinkProps {
     onExit?: () => void;
@@ -150,7 +151,7 @@ export default function WildLink({ onExit }: WildLinkProps) {
 }
 
 export const manifest = {
-    id: 'brain-level2-wild-link',
+    id: GameIds.WILD_LINK,
     title: 'Wild Link',
     titleKey: 'games.wild-link.title',
     subtitle: 'Connect matching species!',

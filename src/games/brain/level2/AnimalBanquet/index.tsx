@@ -16,7 +16,8 @@ const FOOD_ICONS: Record<FoodType, string> = {
     cheese: '🧀', bone: '🦴', fish: '🐟', vegetable: '🥬'
 };
 
-const GAME_ID = 'animal-banquet';
+import { GameIds } from '../../../../constants/gameIds';
+const GAME_ID = GameIds.ANIMAL_BANQUET;
 
 interface AnimalBanquetProps {
     onExit?: () => void;
@@ -149,7 +150,7 @@ export default function AnimalBanquet({ onExit }: AnimalBanquetProps) {
 }
 
 export const manifest = {
-    id: 'brain-level2-animal-banquet',
+    id: GameIds.ANIMAL_BANQUET,
     title: 'Animal Banquet',
     titleKey: 'games.animal-banquet.title',
     subtitle: 'Feed them once!',

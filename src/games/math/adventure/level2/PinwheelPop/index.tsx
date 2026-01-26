@@ -5,6 +5,7 @@ import { usePinwheelLogic } from './GameLogic';
 import manifest_en from './locales/en.ts';
 import './PinwheelPop.css';
 import type { GameManifest } from '../../../../types';
+import { GameIds } from '../../../../constants/gameIds';
 import type { PowerUpBtnProps } from '../../../../../components/Game/PowerUpBtn';
 
 interface MathPinwheelProps {
@@ -76,7 +77,7 @@ export const MathPinwheel: React.FC<MathPinwheelProps> = ({ onExit }) => {
         <Layout2
             title={t('games.pinwheel-pop.title')}
             subtitle={t('games.pinwheel-pop.subtitle')}
-            gameId="pinwheel-pop"
+            gameId={GameIds.PINWHEEL_POP}
             engine={logic as any}
             powerUps={powerUpConfig}
             instructions={[
@@ -164,7 +165,7 @@ export const MathPinwheel: React.FC<MathPinwheelProps> = ({ onExit }) => {
 };
 
 export const manifest: GameManifest = {
-    id: 'pinwheel-pop',
+    id: GameIds.PINWHEEL_POP,
     title: 'Pinwheel Pop',
     titleKey: 'games.pinwheel-pop.title',
     subtitle: 'Pop & Solve!',

@@ -6,6 +6,7 @@ import { DeepSeaBackground } from '../../../components/DeepSeaBackground';
 import manifest_en from './locales/en';
 import './DeepSeaDive.css';
 import type { GameManifest } from '../../../../types';
+import { GameIds } from '../../../../constants/gameIds';
 import type { PowerUpBtnProps } from '../../../../../components/Game/PowerUpBtn';
 
 interface DeepSeaDiveProps {
@@ -92,7 +93,7 @@ export const DeepSeaDive: React.FC<DeepSeaDiveProps> = ({ onExit }) => {
         <Layout3
             title={t('games.deep-sea-dive.title')}
             subtitle={t('games.deep-sea-dive.subtitle')}
-            gameId="deep-sea-dive"
+            gameId={GameIds.DEEP_SEA_DIVE}
             engine={engine as any} // Layout3 types might drag
             powerUps={powerUps}
             onExit={onExit}
@@ -173,7 +174,7 @@ export const DeepSeaDive: React.FC<DeepSeaDiveProps> = ({ onExit }) => {
 };
 
 export const manifest: GameManifest = {
-    id: 'deep-sea-dive',
+    id: GameIds.DEEP_SEA_DIVE,
     title: 'Deep Sea Dive',
     titleKey: 'games.deep-sea-dive.title',
     subtitle: 'Dive deep with correct answers!',

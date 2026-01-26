@@ -5,6 +5,7 @@ import { useTenFrameCountLogic } from './GameLogic';
 import manifest_en from './locales/en';
 import './TenFrameCount.css';
 import type { GameManifest } from '../../../../types';
+import { GameIds } from '../../../../constants/gameIds';
 
 interface TenFrameCountProps {
     onExit: () => void;
@@ -47,7 +48,7 @@ export const TenFrameCount: React.FC<TenFrameCountProps> = ({ onExit }) => {
         <Layout1
             title={t('games.ten-frame-count.title')}
             subtitle={t('games.ten-frame-count.subtitle')}
-            gameId="ten-frame-count"
+            gameId={GameIds.TEN_FRAME_COUNT}
             engine={layoutEngine as any}
             instructions={[
                 { icon: '🧱', title: t('games.ten-frame-count.howToPlay.step1.title'), description: t('games.ten-frame-count.howToPlay.step1.description') },
@@ -109,7 +110,7 @@ export const TenFrameCount: React.FC<TenFrameCountProps> = ({ onExit }) => {
 };
 
 export const manifest: GameManifest = {
-    id: 'ten-frame-count',
+    id: GameIds.TEN_FRAME_COUNT,
     title: 'Ten-Frame Count',
     titleKey: 'games.ten-frame-count.title',
     subtitle: 'Group counting practice',

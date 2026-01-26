@@ -179,19 +179,31 @@ const handleAnswer = (selected) => {
 };
 ```
 
+
+### 4.6. Game ID Management (CRITICAL)
+**Problem**: Hardcoded ID strings (e.g., `'my-new-game'`) scattered across files lead to mismatches (Registry vs Component vs Manifest) resulting in bugs like high scores not saving or incorrect localized text loading.
+**Solution**: Centralize ALL Game IDs in `src/constants/gameIds.ts`.
+1.  **Define**: Add `MY_GAME: 'my-game-id'` to `GameIds` object in `src/constants/gameIds.ts`.
+2.  **Usage**:
+    *   **Manifest**: `id: GameIds.MY_GAME`
+    *   **Component**: `const GAME_ID = GameIds.MY_GAME;`
+    *   **Registry**: `id: GameIds.MY_GAME` in `GAMES` array.
+
 ---
 
 ## 5. Development Checklist (New Game)
 
-1.  **Select Layout**: Choose Layout 1, 2, or 3.
-2.  **Engine Setup**: `const engine = useGameEngine({ initialTime: 60 });`
-3.  **Implement Logic**:
+1.  **Register ID**: Add unique ID to `src/constants/gameIds.ts`.
+2.  **Select Layout**: Choose Layout 1, 2, or 3.
+3.  **Engine Setup**: `const engine = useGameEngine({ initialTime: 60 });`
+4.  **Implement Logic**:
     *   Use `useRef` for Input Lock.
     *   Call `engine.submitAnswer(bool)`.
     *   **Start Power-Ups at 0**.
-4.  **Implement Visuals**:
+5.  **Implement Visuals**:
     *   Wrap in `<LayoutX>`.
     *   Pass background: `<LayoutX background={<MyBackgroundComponent />} ... >`
+    *   Pass `gameId={GameIds.MY_GAME}` to Layout.
     *   Apply `useEffect` Focus Fix.
 
 ## Feedback System (Sound & Animation)
