@@ -72,13 +72,16 @@ export const useGameScoring = ({
                 setHighScore(currentBest); // High score remains the same
             }
 
-            // ONLY increment play count if:
-            // 1. Time Up AND Score > 0 (Success duration with participation)
-            // 2. Cleared (Objective Met)
-            const shouldIncrementPlayCount = (gameOverReason === 'time' && score > 0) || gameOverReason === 'cleared';
+            // Increment play count (Unlock Progress) if:
+            // 1. Cleared (Objective Met)
+            // 2. Score > 0 (Even if failed/time up, effort counts!) - NEW RELAXED RULE
+            const shouldIncrementPlayCount = score > 0;
+
+            // Grant Stars ONLY if actually cleared
+            const isClear = gameOverReason === 'cleared';
 
             // Persist (Context updates state and saves to localStorage/Cloud)
-            recordGameScore(gameId, score, shouldIncrementPlayCount);
+            recordGameScore(gameId, score, shouldIncrementPlayCount, isClear);
         }
     };
 

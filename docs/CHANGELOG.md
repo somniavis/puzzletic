@@ -18,6 +18,7 @@
 ### 🐛 버그 수정 (Bug Fixes)
 - **Camera CORS Issue**: `html-to-image` 사용 시 Font Awesome CSS 로드 문제로 인한 SecurityError 해결 (`crossorigin="anonymous"` 속성 추가).
 - **Bubble Visibility Fix**: 리팩토링 후 젤로 클릭 시 말풍선 및 스탯 업데이트가 누락되던 문제 수정 (`handleCharacterClick` 연결 복구).
+- **Game Unlock Condition Relaxed**: 해금 조건 완화 (점수 획득 시 승패 무관하게 플레이 횟수 인정, 별 획득은 클리어 시에만 유지).
 
 ## 2026-01-20 (Previous Updates)
 

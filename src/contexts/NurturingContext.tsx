@@ -102,7 +102,7 @@ interface NurturingContextValue {
   triggerGraduation: () => void;
 
   // Stats
-  recordGameScore: (gameId: string, score: number, incrementPlayCount?: boolean) => void;
+  recordGameScore: (gameId: string, score: number, incrementPlayCount?: boolean, isClear?: boolean) => void;
 
   // Subscription
   subscription: SubscriptionState;
@@ -237,7 +237,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     setState((currentState) => ({ ...currentState, gameDifficulty: difficulty }));
   }, [setState]);
 
-  const recordGameScore = useCallback((gameId: string, score: number, incrementPlayCount: boolean = true) => {
+  const recordGameScore = useCallback((gameId: string, score: number, incrementPlayCount: boolean = true, isClear: boolean = false) => {
     setState(currentState => {
       const scoresMap = currentState.gameScores || {};
       const currentValue = scoresMap[gameId];
@@ -266,7 +266,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
       }
 
       let newTotalStars = currentState.totalGameStars || 0;
-      if (incrementPlayCount) {
+      if (isClear) {
         const game = getGameById(gameId);
         const starsEarned = game ? game.level : 1;
         newTotalStars += starsEarned;
