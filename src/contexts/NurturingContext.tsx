@@ -279,6 +279,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
           [gameId]: newScoreValue
         },
         categoryProgress: updatedCategoryProgress,
+        lastActiveTime: Date.now(), // [CRITICAL] Update timestamp to prevent sync overwrite
       };
 
       saveNurturingState(newState, user?.uid); // Force Save

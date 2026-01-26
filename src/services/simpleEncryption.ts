@@ -57,6 +57,7 @@ function simpleChecksum(data: string): string {
 
 /**
  * 민감한 데이터 보호
+ * Robust Checksum V2: _enc 필드와 lastActiveTime만 검증 (객체 키 순서 문제 해결)
  */
 export function protectData(state: any): { protectedData: any; checksum: string } {
   const protectedData: any = { ...state };
@@ -74,8 +75,10 @@ export function protectData(state: any): { protectedData: any; checksum: string 
   const dataStr = JSON.stringify(sensitiveData);
   protectedData._enc = xorEncrypt(dataStr, SECRET_KEY);
 
-  // 체크섬 생성
-  const checksum = simpleChecksum(JSON.stringify(protectedData));
+  // 체크섬 생성 (Robust: Encrypted String + Timestamp only)
+  // 전체 JSON.stringify는 키 순서 문제로 깨지기 쉬움
+  const checksumPayload = `${protectedData._enc}|${protectedData.lastActiveTime}`;
+  const checksum = simpleChecksum(checksumPayload);
 
   return { protectedData, checksum };
 }
@@ -85,11 +88,16 @@ export function protectData(state: any): { protectedData: any; checksum: string 
  */
 export function restoreData(protectedState: any, storedChecksum: string): any | null {
   try {
-    // 체크섬 검증
-    const computedChecksum = simpleChecksum(JSON.stringify(protectedState));
-    if (computedChecksum !== storedChecksum) {
-      console.warn('⚠️ Data tampering detected! Checksum mismatch.');
-      return null;
+    // 체크섬 검증 (Rough Integrity Check)
+    // _enc가 없으면(구버전) 검증 패스 (하위 호환성)
+    if (protectedState._enc) {
+      const checksumPayload = `${protectedState._enc}|${protectedState.lastActiveTime}`;
+      const computedChecksum = simpleChecksum(checksumPayload);
+
+      if (computedChecksum !== storedChecksum) {
+        console.warn('⚠️ Data tampering detected! Checksum mismatch.');
+        return null;
+      }
     }
 
     const state = { ...protectedState };

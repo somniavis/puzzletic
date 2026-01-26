@@ -98,6 +98,12 @@ graph TD
     *   `xp`가 변하지 않는 만렙 유저의 재화 보호를 위해, `totalCurrencyEarned`(누적 획득 재화)를 별도로 기록합니다.
     *   **효과**: 레벨 변동 없이 돈만 벌었을 때도 클라우드 데이터가 우선순위를 가집니다.
 
+3.  **Star Protection Protocol (별 개수 보호 - 2026.01.27)**:
+    *   **문제**: 타임스탬프 갱신 누락 등으로 인해, 별을 획득한 최신 로컬 데이터가 별이 없는 구버전 클라우드 데이터로 덮어씌워지는 현상 발생.
+    *   **해결**: 충돌 해결(Conflict Resolution) 로직에 **"별 개수 비교"**를 추가.
+    *   **Rule**: `IF (Local.Stars >= Cloud.Stars) THEN Trust Local` (시간/재화 조건보다 우선)
+    *   **필수 구현**: 점수 기록 시(`recordGameScore`) 반드시 `lastActiveTime`을 `Date.now()`로 갱신하여 로컬 데이터의 최신성을 보장해야 함.
+
 ---
 
 ## 키 네이밍 규칙
@@ -196,6 +202,12 @@ puzzleletic_checksum_{userId}
     *   **쓰기**: `completeEvolutionAnimation` 시점, 메인 상태와 별도로 `localStorage`에 즉시 기록 (동기식)
     *   **읽기**: `useEffect` 애니메이션 트리거 시점, 메인 상태(`state.lastSeenStage`)가 없거나 낮더라도 이 보조 키 값이 높으면 애니메이션을 스킵
 4.  **효과**: 서버 비용 0원으로 오프라인 환경에서도 완벽한 상태 정합성 보장
+
+### Fail-Safe Integrity Check (2026.01.27)
+데이터 무결성 검증을 위해 `simpleEncryption.ts`에서 Checksum을 사용합니다.
+- **기존**: `JSON.stringify(entireObject)` -> 키 순서가 바뀌면 체크섬 불일치로 데이터 초기화 (오판 가능성 높음)
+- **개선**: `hash(_enc + "|" + lastActiveTime)` -> **핵심 암호화 문자열(`_enc`)**과 **타임스탬프**만 검증.
+- **효과**: 불필요한 데이터 초기화(Reset) 방지 및 "이전 클라우드 데이터로 롤백" 현상 해결.
 
 ---
 

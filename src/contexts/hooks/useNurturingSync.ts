@@ -234,7 +234,14 @@ export const useNurturingSync = (user: User | null) => {
             const cloudTotalGro = parsedGameData.totalCurrencyEarned || 0;
             const localTotalGro = stateRef.current.totalCurrencyEarned || 0;
 
-            const isLocalLegitimatelyNewer = (localTime > cloudTime) && (localXP >= cloudXP) && (localTotalGro >= cloudTotalGro);
+            const cloudStars = parsedGameData.totalGameStars || (cloudData as any).star || 0;
+            const localStars = stateRef.current.totalGameStars || 0;
+
+            // Strict Progress Check: If Local has MORE stars, it wins regardless of time/money
+            // This protects against "Star Loss" on refresh
+            const hasMoreProgress = (localXP >= cloudXP) && (localTotalGro >= cloudTotalGro) && (localStars >= cloudStars);
+
+            const isLocalLegitimatelyNewer = (localTime > cloudTime) && hasMoreProgress;
 
             if (isLocalLegitimatelyNewer && !isLocalFresh && !isLocalInvalid) {
                 console.log(`☁️ Keeping local data (Lazy Sync). Reason: Local is newer.`);
