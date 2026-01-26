@@ -11,7 +11,7 @@ import styles from './MazeEscape.module.css';
 import { useNurturing } from '../../../../contexts/NurturingContext';
 import { JelloAvatar } from '../../../../components/characters/JelloAvatar';
 
-const GAME_ID = 'brain-level1-maze-escape';
+const GAME_ID = 'maze-escape';
 
 // Memoized Cell Component to prevent grid re-renders on drag
 const MazeCell = React.memo(({

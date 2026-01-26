@@ -69,6 +69,7 @@ const OmokBoardWrapper = ({ engine }: { engine: any }) => {
             updateScore(500);
             registerEvent({ type: 'correct' });
         } else {
+            updateScore(1); // Consolation point to count as "attempt"
             updateLives(false);
             registerEvent({ type: 'wrong' });
         }

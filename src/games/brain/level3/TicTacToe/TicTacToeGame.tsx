@@ -52,6 +52,7 @@ export const TicTacToeGame: React.FC<GameLogicProps> = ({ engine }) => {
             updateScore(150); // Good points for winning
             registerEvent({ type: 'correct' });
         } else if (result === 'lost') {
+            updateScore(1); // Consolation point to count as "attempt"
             updateLives(false); // Decrement life
             registerEvent({ type: 'wrong' }); // Shake effect & wrong animation
         } else {

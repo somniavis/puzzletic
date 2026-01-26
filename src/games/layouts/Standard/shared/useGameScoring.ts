@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useNurturing } from '../../../../contexts/NurturingContext';
 import { calculateMinigameReward } from '../../../../services/rewardService';
 import { parseGameScore } from '../../../../utils/progression';
+import { getGameById } from '../../../../games/registry';
 import type { RewardCalculation, MinigameDifficulty } from '../../../../types/gameMechanics';
 
 interface ScoringProps {
@@ -54,7 +55,17 @@ export const useGameScoring = ({
             masteryBonus: 1.0
         }, evolutionStage as any);
 
-        setRewardResult(calculated);
+        // Calculate Stars (Clear only)
+        let starsEarned = 0;
+        if (gameOverReason === 'cleared' && gameId) {
+            const game = getGameById(gameId);
+            starsEarned = game ? game.level : 1;
+        }
+
+        setRewardResult({
+            ...calculated,
+            starsEarned
+        });
         addRewards(calculated.xpEarned, calculated.groEarned);
 
         // Record Global Cumulative Score & Handle High Score Persistence
@@ -74,14 +85,11 @@ export const useGameScoring = ({
 
             // Increment play count (Unlock Progress) if:
             // 1. Cleared (Objective Met)
-            // 2. Score > 0 (Even if failed/time up, effort counts!) - NEW RELAXED RULE
+            // 2. Score > 0 (Earned points) - Must have played effectively
             const shouldIncrementPlayCount = score > 0;
 
-            // Grant Stars ONLY if actually cleared
-            const isClear = gameOverReason === 'cleared';
-
             // Persist (Context updates state and saves to localStorage/Cloud)
-            recordGameScore(gameId, score, shouldIncrementPlayCount, isClear);
+            recordGameScore(gameId, score, shouldIncrementPlayCount, starsEarned);
         }
     };
 

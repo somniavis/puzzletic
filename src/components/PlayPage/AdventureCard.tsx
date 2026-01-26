@@ -48,7 +48,7 @@ export const AdventureCard: React.FC<AdventureCardProps> = ({
         );
     } else if (!isMastered) {
         // Challenge Phase: 1-3 plays
-        const current = Math.max(0, clearCount - 1);
+        const current = clearCount;
         subtitleContent = (
             <span className="card-mission-text">
                 {t('games.mission.challenge', { current, total: 3 })}

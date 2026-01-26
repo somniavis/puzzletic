@@ -87,7 +87,12 @@ export const GameOverScreen: React.FC<GameOverProps> = ({
                     </div>
                     <div className="rewards-grid-split">
                         <div className="reward-card-split xp"><span className="reward-icon">✨</span><span className="reward-amount text-purple">+{earnedXp}</span><span className="reward-label text-purple">XP</span></div>
-                        <div className="reward-card-split gro"><span className="reward-icon">💰</span><span className="reward-amount text-yellow">+{earnedGro}</span><span className="reward-label text-yellow">GRO</span></div>
+                        <div className="reward-card-split gro"><span className="reward-icon">💰</span><span className="reward-amount text-green">+{earnedGro}</span><span className="reward-label text-green">GRO</span></div>
+                        <div className="reward-card-split star" style={{ opacity: (rewardResult?.starsEarned || 0) > 0 ? 1 : 0.4 }}>
+                            <span className="reward-icon">⭐</span>
+                            <span className="reward-amount text-yellow">+{rewardResult?.starsEarned || 0}</span>
+                            <span className="reward-label text-yellow">STAR</span>
+                        </div>
                     </div>
                 </div>
             </div>

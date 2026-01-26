@@ -19,6 +19,13 @@
 - **Camera CORS Issue**: `html-to-image` 사용 시 Font Awesome CSS 로드 문제로 인한 SecurityError 해결 (`crossorigin="anonymous"` 속성 추가).
 - **Bubble Visibility Fix**: 리팩토링 후 젤로 클릭 시 말풍선 및 스탯 업데이트가 누락되던 문제 수정 (`handleCharacterClick` 연결 복구).
 - **Game Unlock Condition Relaxed**: 해금 조건 완화 (점수 획득 시 승패 무관하게 플레이 횟수 인정, 별 획득은 클리어 시에만 유지).
+- **Game Over UI Update**: 게임 오버 화면에 별(Star) 획득 배지 추가 및 GRO 색상 변경 (Yellow → Green).
+- **Circular Dependency Fix**: `NurturingContext`와 `Registry` 간의 순환 참조 문제 해결 (별 획득 로직 계산 주체 변경: Context -> useGameScoring).
+- **Adventure UI Fix**: 플레이 페이지에서 Adventure/Brain 카드 진행도 표시 오류 수정 (`clearCount - 1` 로직 제거하여 즉시 반영되도록 변경).
+- **Brain Game Unlock Fix**: 점수 획득 여부와 관계없이 게임 종료(Game Over) 시 무조건 플레이 횟수가 인정되도록 해금 조건 로직 전면 수정.
+- **Unlock Logic Refinement**: 플레이 횟수 인정 조건을 `score > 0`으로 재조정 (0점인 경우 카운트 제외).
+- **Strategy Games Update**: `TicTacToe`, `Omok` 등 난이도가 높은 전략 게임은 패배 시에도 1점(위로 점수)을 부여하여 도전 횟수가 인정되도록 개선.
+- **Brain Game ID Uniformity**: `ColorLink` 등 일부 브레인 게임의 내부 ID와 레지스트리 ID 불일치 문제 수정 (점수 저장 키 통일).
 
 ## 2026-01-20 (Previous Updates)
 

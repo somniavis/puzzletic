@@ -44,6 +44,7 @@ export interface MinigameResult {
 export interface RewardCalculation {
   groEarned: number;        // 획득 그로 (GRO)
   xpEarned: number;         // 획득 경험치 (XP)
+  starsEarned?: number;     // 획득 별 (Star) - Optional because it's only for Clear
   perfectBonus: boolean;    // 퍼펙트 보너스 적용 여부
   breakdown: {
     baseReward: number;     // 기본 보상

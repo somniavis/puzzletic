@@ -8,7 +8,7 @@ import { useColorLinkLogic } from './GameLogic';
 import type { PowerUpBtnProps } from '../../../../components/Game/PowerUpBtn';
 import manifest_en from './locales/en';
 
-const GAME_ID = 'brain-level2-wild-link';
+const GAME_ID = 'wild-link';
 
 interface WildLinkProps {
     onExit?: () => void;

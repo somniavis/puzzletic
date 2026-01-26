@@ -16,7 +16,7 @@ const FOOD_ICONS: Record<FoodType, string> = {
     cheese: '🧀', bone: '🦴', fish: '🐟', vegetable: '🥬'
 };
 
-const GAME_ID = 'brain-level2-animal-banquet';
+const GAME_ID = 'animal-banquet';
 
 interface AnimalBanquetProps {
     onExit?: () => void;

@@ -22,7 +22,7 @@ import type { CleaningTool } from '../types/cleaning';
 import { useAuth } from './AuthContext';
 import { evaluateCondition } from '../services/gameTickService';
 import { getAbandonmentStatusUI } from '../services/gameTickService';
-import { getGameById } from '../games/registry';
+
 import { updateCategoryProgress, parseGameScore, createGameScore, getUnlockThreshold, getProgressionCategory } from '../utils/progression';
 import { GAME_ORDER } from '../constants/gameOrder';
 import { saveNurturingState, resetNurturingState } from '../services/persistenceService';
@@ -102,7 +102,7 @@ interface NurturingContextValue {
   triggerGraduation: () => void;
 
   // Stats
-  recordGameScore: (gameId: string, score: number, incrementPlayCount?: boolean, isClear?: boolean) => void;
+  recordGameScore: (gameId: string, score: number, incrementPlayCount?: boolean, starsEarned?: number) => void;
 
   // Subscription
   subscription: SubscriptionState;
@@ -237,7 +237,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     setState((currentState) => ({ ...currentState, gameDifficulty: difficulty }));
   }, [setState]);
 
-  const recordGameScore = useCallback((gameId: string, score: number, incrementPlayCount: boolean = true, isClear: boolean = false) => {
+  const recordGameScore = useCallback((gameId: string, score: number, incrementPlayCount: boolean = true, starsEarned: number = 0) => {
     setState(currentState => {
       const scoresMap = currentState.gameScores || {};
       const currentValue = scoresMap[gameId];
@@ -266,9 +266,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
       }
 
       let newTotalStars = currentState.totalGameStars || 0;
-      if (isClear) {
-        const game = getGameById(gameId);
-        const starsEarned = game ? game.level : 1;
+      if (starsEarned > 0) {
         newTotalStars += starsEarned;
       }
 

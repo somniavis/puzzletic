@@ -52,8 +52,8 @@
 /* Split Rewards Grid */
 .rewards-grid-split {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.75rem;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0.5rem;
     width: 100%;
 }
 
@@ -69,6 +69,7 @@
     border: 2px solid transparent;
 }
 
+
 .reward-card-split.xp {
     background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%);
     /* Purple */
@@ -76,11 +77,18 @@
     box-shadow: 0 4px 0 #c084fc;
 }
 
-.reward-card-split.gro {
+.reward-card-split.star {
     background: linear-gradient(135deg, #fef9c3 0%, #fef08a 100%);
     /* Yellow */
     border-color: #fde047;
     box-shadow: 0 4px 0 #eab308;
+}
+
+.reward-card-split.gro {
+    background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+    /* Green */
+    border-color: #86efac;
+    box-shadow: 0 4px 0 #4ade80;
 }
 
 /* Reward Text Styles */
@@ -207,6 +215,8 @@
     gap: 0.25rem;
 }
 
+/* ... existing code ... */
+
 /* Text Colors */
 .text-blue {
     color: #3b82f6;
@@ -222,6 +232,10 @@
 
 .text-yellow {
     color: #eab308;
+}
+
+.text-green {
+    color: #16a34a;
 }
 
 /* Game Over Buttons */
