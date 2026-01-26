@@ -55,9 +55,10 @@ export const useGameScoring = ({
             masteryBonus: 1.0
         }, evolutionStage as any);
 
-        // Calculate Stars (Clear only)
+        // Calculate Stars (Clear or Time Over with Score)
         let starsEarned = 0;
-        if (gameOverReason === 'cleared' && gameId) {
+        // CRITICAL: Do NOT award stars if gameOverReason is 'lives' (Survival Failed)
+        if (gameId && (gameOverReason === 'cleared' || (gameOverReason === 'time' && score > 0))) {
             const game = getGameById(gameId);
             starsEarned = game ? game.level : 1;
         }
