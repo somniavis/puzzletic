@@ -72,7 +72,6 @@ export const EmotionBubble: React.FC<EmotionBubbleProps> = ({
       className={`emotion-bubble emotion-bubble--${position} emotion-bubble--visible`}
     >
       <div className="emotion-bubble__content">
-        <span className="emotion-bubble__emoji">{expression.emoji}</span>
         {message && <span className="emotion-bubble__message">{message}</span>}
       </div>
       <div className="emotion-bubble__tail"></div>

@@ -43,13 +43,13 @@ export const usePetActions = ({
     const handlePoopClick = (poopId: string, happinessBonus: number = 0) => {
         playCleaningSound();
         nurturing.clickPoop(poopId, happinessBonus);
-        showBubble('playful', 1);
+        showBubble('joy', 1);
     };
 
     const handleBugClick = (bugId: string) => {
         playCleaningSound();
         nurturing.clickBug(bugId);
-        showBubble('playful', 1);
+        showBubble('joy', 1);
     };
 
     const handleFeed = (food: FoodItem, onCloseMenu: () => void) => {
@@ -174,7 +174,7 @@ export const usePetActions = ({
                         else {
                             playCleaningSound();
                             nurturing.cleanBug();
-                            showBubble('playful', 1);
+                            showBubble('joy', 1);
                         }
                     }, 500);
                     setTimeout(() => setIsCleaning(false), 1000);
