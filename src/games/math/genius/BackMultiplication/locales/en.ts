@@ -26,7 +26,8 @@ export default {
         // Lv3
         step3_cross1: { title: 'Cross Step 1' },
         step4_cross2: { title: 'Cross Step 2' },
-        step5: { title: 'Total' }
+        step5: { title: 'Total' },
+        answer: { title: 'Answer' }
     },
     hint: {
         step1: 'Multiply units (1s) first.',
@@ -39,6 +40,7 @@ export default {
         step2_lv3: 'Multiply tens x tens next.',
         step3_cross1: 'Top Tens x Bottom Units (↘)',
         step4_cross2: 'Top Units x Bottom Tens (↙)',
-        step5: 'Sum all partial products!'
+        step5: 'Sum all partial products!',
+        answer: 'Enter result.'
     }
 };

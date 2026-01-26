@@ -83,7 +83,7 @@ export const BackMultiplicationGame: React.FC<{ onExit: () => void, gameId?: str
             cardBackground={<BlobBackground speed="slow" colors={{ blob1: '#fdf4ff', blob2: '#fae8ff', blob3: '#f0abfc', blob4: '#e879f9' }} />}
             instructions={[
                 { icon: '1️⃣', title: t('games.backMultiplication.howToPlay.step1.title'), description: t('games.backMultiplication.hint.step1') },
-                { icon: '✅', title: 'Answer', description: 'Enter result' }
+                { icon: '✅', title: t('games.backMultiplication.howToPlay.answer.title'), description: t('games.backMultiplication.hint.answer') }
             ]}
             powerUps={[
                 { count: engine.powerUps.timeFreeze, color: 'blue', icon: '❄️', title: 'Freeze', onClick: () => engine.activatePowerUp('timeFreeze'), disabledConfig: engine.isTimeFrozen, status: engine.isTimeFrozen ? 'active' : 'normal' },

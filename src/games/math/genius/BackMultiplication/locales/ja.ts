@@ -26,7 +26,8 @@ export default {
         // Lv3
         step3_cross1: { title: 'クロス ①' },
         step4_cross2: { title: 'クロス ②' },
-        step5: { title: '合計' }
+        step5: { title: '合計' },
+        answer: { title: '答え' }
     },
     hint: {
         step1: '一の位同士を先に掛け算します。',
@@ -39,6 +40,7 @@ export default {
         step2_lv3: '十の位同士を掛け算します。',
         step3_cross1: '上の十の位と下の一の位を掛けます (↘)',
         step4_cross2: '上の一の位と下の十の位を掛けます (↙)',
-        step5: 'すべての部分積を足して完成です！'
+        step5: 'すべての部分積を足して完成です！',
+        answer: '答えを入力してください。'
     }
 };

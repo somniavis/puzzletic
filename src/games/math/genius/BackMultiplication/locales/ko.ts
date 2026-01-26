@@ -26,7 +26,8 @@ export default {
         // Lv3
         step3_cross1: { title: '크로스 ①' },
         step4_cross2: { title: '크로스 ②' },
-        step5: { title: '합계' }
+        step5: { title: '합계' },
+        answer: { title: '정답' }
     },
     hint: {
         step1: '일의 자리끼리 먼저 곱해요.',
@@ -39,6 +40,7 @@ export default {
         step2_lv3: '십의 자리끼리 곱해요.',
         step3_cross1: '위 십의 자리와 아래 일의 자리를 곱해요 (↘)',
         step4_cross2: '위 일의 자리와 아래 십의 자리를 곱해요 (↙)',
-        step5: '모든 부분 곱을 더해서 완성해요!'
+        step5: '모든 부분 곱을 더해서 완성해요!',
+        answer: '결과를 입력하세요.'
     }
 };
