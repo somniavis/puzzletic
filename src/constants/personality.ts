@@ -91,15 +91,15 @@ export const calculateClickResponse = (
   const varianceRoll = Math.random();
 
   if (['grumpy', 'shy'].includes(personality)) {
-    // 20% 확률로 긍정적인 반응 (츤데레/수줍지만 기쁨)
+    // 35% 확률로 긍정적인 반응 (츤데레/수줍지만 기쁨) - Gap Moe 강화
     // 원래는 음수(-5 ~ -1)만 나오지만, 양수(1 ~ 3)로 강제 변환
-    if (varianceRoll < 0.2) {
+    if (varianceRoll < 0.35) {
       happinessChange = Math.floor(Math.random() * 3) + 1; // +1 ~ +3 (Playful L1 ~ Joy L2)
     }
   } else if (['affectionate', 'energetic', 'playful'].includes(personality)) {
-    // 15% 확률로 귀찮아하거나 무덤덤한 반응 (현실적인 피로감)
+    // 30% 확률로 귀찮아하거나 무덤덤한 반응 (현실적인 피로감 반영)
     // 원래는 양수(2 ~ 5)만 나오지만, 0 이하(-2 ~ 0)로 강제 변환
-    if (varianceRoll < 0.15) {
+    if (varianceRoll < 0.3) {
       happinessChange = Math.floor(Math.random() * 3) - 2; // -2 ~ 0 (Worried L1 ~ Neutral)
     }
   }
