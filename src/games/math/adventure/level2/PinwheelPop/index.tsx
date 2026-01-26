@@ -166,7 +166,7 @@ export const MathPinwheel: React.FC<MathPinwheelProps> = ({ onExit }) => {
 
 export const manifest: GameManifest = {
     id: GameIds.PINWHEEL_POP,
-    title: 'Pinwheel Pop',
+    title: 'Broken Pinwheel',
     titleKey: 'games.pinwheel-pop.title',
     subtitle: 'Pop & Solve!',
     subtitleKey: 'games.pinwheel-pop.subtitle',

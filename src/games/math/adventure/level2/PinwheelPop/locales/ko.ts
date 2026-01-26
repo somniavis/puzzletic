@@ -1,5 +1,5 @@
 export default {
-    title: "바람개비 수학",
+    title: "고장난 바람개비",
     subtitle: "날개를 고쳐줘!",
     description: "날개 4개를 모두 고치면 바람개비가 돌아가요!",
     howToPlay: {

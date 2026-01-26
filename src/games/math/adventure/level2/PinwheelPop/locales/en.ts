@@ -1,5 +1,5 @@
 export default {
-    title: "Spin Wheel",
+    title: "Broken Pinwheel",
     subtitle: "Fix the Propeller!",
     description: "Complete the wings to spin the wheel!",
     howToPlay: {

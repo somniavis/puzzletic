@@ -169,8 +169,8 @@ export const syncUserData = async (
 
         // Prepare payload - clean and simple
         const payload = {
-            // User info
-            email: user.email,
+            // User info (email excluded for privacy)
+            email: null,
             display_name: user.displayName || state.characterName || 'Player',
 
             // Individual columns (for D1 statistics/dashboard)
@@ -202,8 +202,10 @@ export const syncUserData = async (
         // Sanitize entire payload to remove any undefined values
         const sanitizedPayload = sanitizeForD1(payload);
 
-        // Debug: Log the exact payload being sent
-        console.log('☁️ Payload being sent:', JSON.stringify(sanitizedPayload, null, 2));
+        // Debug: Log the exact payload being sent (Mask email for privacy)
+        const logPayload = { ...sanitizedPayload };
+        if (logPayload.email) logPayload.email = '*** (hidden) ***';
+        console.log('☁️ Payload being sent:', JSON.stringify(logPayload, null, 2));
 
         // Create AbortController for timeout
         const controller = new AbortController();

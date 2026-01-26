@@ -1,5 +1,5 @@
 export default {
-    title: "さんすう風車",
+    title: "壊れた風車",
     subtitle: "羽をなおして！",
     description: "4つの羽をなおして、風車をまわそう！",
     howToPlay: {
