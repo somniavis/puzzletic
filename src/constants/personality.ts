@@ -86,6 +86,24 @@ export const calculateClickResponse = (
     happinessChange = Math.max(0, Math.floor(happinessChange / 2));
   }
 
+  // 5. [NEW] 성격적 반전 (Gap Moe / Variance)
+  // 확률적으로 성격과 반대되는 반응을 보여줌으로써 의외성을 부여
+  const varianceRoll = Math.random();
+
+  if (['grumpy', 'shy'].includes(personality)) {
+    // 20% 확률로 긍정적인 반응 (츤데레/수줍지만 기쁨)
+    // 원래는 음수(-5 ~ -1)만 나오지만, 양수(1 ~ 3)로 강제 변환
+    if (varianceRoll < 0.2) {
+      happinessChange = Math.floor(Math.random() * 3) + 1; // +1 ~ +3 (Playful L1 ~ Joy L2)
+    }
+  } else if (['affectionate', 'energetic', 'playful'].includes(personality)) {
+    // 15% 확률로 귀찮아하거나 무덤덤한 반응 (현실적인 피로감)
+    // 원래는 양수(2 ~ 5)만 나오지만, 0 이하(-2 ~ 0)로 강제 변환
+    if (varianceRoll < 0.15) {
+      happinessChange = Math.floor(Math.random() * 3) - 2; // -2 ~ 0 (Worried L1 ~ Neutral)
+    }
+  }
+
   return happinessChange;
 };
 
