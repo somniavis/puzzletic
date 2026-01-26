@@ -1,5 +1,6 @@
 
-import { useState, useEffect, useRef } from 'react'
+
+import { useState, useEffect, useRef, Suspense, lazy } from 'react'
 import './App.css'
 import { PetRoom } from './components/PetRoom/PetRoom'
 
@@ -14,18 +15,32 @@ import { useTranslation } from 'react-i18next'
 // React Router
 import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom'
 
-// Pages
-import { PlayPage } from './pages/PlayPage'
-import { LoginPage } from './pages/LoginPage'
-import { SignupPage } from './pages/SignupPage'
-import { StatsPage } from './pages/StatsPage'
-import { GalleryPage } from './pages/GalleryPage'
-import { EncyclopediaPage } from './pages/EncyclopediaPage'
-import { ProfilePage } from './pages/ProfilePage'
-import { SharePage } from './pages/SharePage'
-import { DebugLayoutPreview } from './pages/DebugLayoutPreview'
-
 import { CHARACTER_SPECIES, type CharacterSpeciesId, getEvolutionName } from './data/species';
+
+// Lazy Load Pages
+const PlayPage = lazy(() => import('./pages/PlayPage').then(module => ({ default: module.PlayPage })));
+const LoginPage = lazy(() => import('./pages/LoginPage').then(module => ({ default: module.LoginPage })));
+const SignupPage = lazy(() => import('./pages/SignupPage').then(module => ({ default: module.SignupPage })));
+const StatsPage = lazy(() => import('./pages/StatsPage').then(module => ({ default: module.StatsPage })));
+const GalleryPage = lazy(() => import('./pages/GalleryPage').then(module => ({ default: module.GalleryPage })));
+const EncyclopediaPage = lazy(() => import('./pages/EncyclopediaPage').then(module => ({ default: module.EncyclopediaPage })));
+const ProfilePage = lazy(() => import('./pages/ProfilePage').then(module => ({ default: module.ProfilePage })));
+const SharePage = lazy(() => import('./pages/SharePage').then(module => ({ default: module.SharePage })));
+const DebugLayoutPreview = lazy(() => import('./pages/DebugLayoutPreview').then(module => ({ default: module.DebugLayoutPreview })));
+
+// Simple Loading Component
+const Loading = () => (
+  <div style={{
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: '100vh',
+    fontSize: '1.2rem',
+    color: '#666'
+  }}>
+    Loading...
+  </div>
+);
 
 // Protected Route Wrapper
 const ProtectedRoute = ({ children }: { children: React.ReactElement }) => {
@@ -187,7 +202,7 @@ function AppContent() {
   };
 
   return (
-    <>
+    <Suspense fallback={<Loading />}>
       <Routes>
         {/* Public Routes */}
         <Route path="/login" element={<LoginPage />} />
@@ -264,7 +279,7 @@ function AppContent() {
         <Route path="/" element={<Navigate to="/home" replace />} />
         <Route path="*" element={<Navigate to="/home" replace />} />
       </Routes>
-    </>
+    </Suspense>
   )
 }
 
