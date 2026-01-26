@@ -8,9 +8,10 @@ interface EvolutionNodeProps {
     speciesId: string;
     stage: number;
     isUnlocked: boolean;
+    onClick?: (speciesId: string, stage: number) => void;
 }
 
-export const EvolutionNode: React.FC<EvolutionNodeProps> = React.memo(({ speciesId, stage, isUnlocked }) => {
+export const EvolutionNode: React.FC<EvolutionNodeProps> = React.memo(({ speciesId, stage, isUnlocked, onClick }) => {
     const isHiddenNode = stage === 5;
 
     // Memoize the character object creation to prevent unnecessary re-calculations
@@ -22,8 +23,21 @@ export const EvolutionNode: React.FC<EvolutionNodeProps> = React.memo(({ species
         return char;
     }, [speciesId, stage, isUnlocked]);
 
+    const handleClick = () => {
+        if ((isUnlocked || isHiddenNode) && onClick) {
+            onClick(speciesId, stage);
+        }
+    };
+
+    const isClickable = (isUnlocked || isHiddenNode) && onClick;
+
     return (
-        <div className={`evolution-node ${isUnlocked ? 'unlocked' : 'locked'} ${isHiddenNode ? 'hidden-node' : ''}`}>
+        <div
+            className={`evolution-node ${isUnlocked ? 'unlocked' : 'locked'} ${isHiddenNode ? 'hidden-node' : ''} ${isClickable ? 'clickable' : ''}`}
+            onClick={handleClick}
+            role={isClickable ? 'button' : undefined}
+            tabIndex={isClickable ? 0 : undefined}
+        >
             {isUnlocked && displayCharacter ? (
                 <div className="node-avatar-wrapper">
                     <JelloAvatar

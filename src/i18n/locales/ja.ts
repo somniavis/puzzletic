@@ -78,6 +78,7 @@ export const ja = {
             mintJello: 'ミントジェロ',
             blueJello: 'ブルージェロ',
             creamJello: 'クリームジェロ',
+            pinkJello: 'ピンクジェロ',
             purpleJello: 'パープルジェロ',
             skyJello: 'スカイジェロ',
             brownJello: 'ブラウンジェロ',
@@ -627,6 +628,11 @@ export const ja = {
         species: '種類',
         stage: '段階 {{stage}}',
         hidden: '？？？',
+        legendary: {
+            title: '伝説の進化',
+            prefix: 'この姿を解除するには',
+            suffix: 'が必要です！',
+        },
     },
     auth: {
         login: {

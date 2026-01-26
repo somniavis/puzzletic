@@ -78,6 +78,7 @@ export const ko = {
             mintJello: '민트 젤로',
             blueJello: '블루 젤로',
             creamJello: '크림 젤로',
+            pinkJello: '핑크 젤로',
             purpleJello: '퍼플 젤로',
             skyJello: '스카이 젤로',
             brownJello: '브라운 젤로',
@@ -627,6 +628,11 @@ export const ko = {
         species: '종족',
         stage: '단계 {{stage}}',
         hidden: '???',
+        legendary: {
+            title: '전설의 진화',
+            prefix: '이 모습을 해금하려면',
+            suffix: '이(가) 필요해요!',
+        },
     },
     auth: {
         login: {

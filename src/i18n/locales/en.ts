@@ -76,6 +76,7 @@ export const en = {
       mintJello: 'Mint Jello',
       blueJello: 'Blue Jello',
       creamJello: 'Cream Jello',
+      pinkJello: 'Pink Jello',
       purpleJello: 'Purple Jello',
       skyJello: 'Sky Jello',
       brownJello: 'Brown Jello',
@@ -626,6 +627,11 @@ export const en = {
     species: 'Species',
     stage: 'Stage {{stage}}',
     hidden: 'HIDDEN',
+    legendary: {
+      title: 'Legendary Evolution',
+      prefix: 'You need',
+      suffix: 'to unlock this form!',
+    },
   },
   auth: {
     login: {

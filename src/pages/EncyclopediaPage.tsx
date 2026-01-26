@@ -4,6 +4,8 @@ import { useTranslation } from 'react-i18next';
 import { useNurturing } from '../contexts/NurturingContext';
 import { CHARACTER_SPECIES } from '../data/species';
 import { EvolutionNode } from '../components/Encyclopedia/EvolutionNode';
+import { JelloAvatar } from '../components/characters/JelloAvatar';
+import { createCharacter } from '../data/characters';
 import './EncyclopediaPage.css';
 
 // Color themes for each species
@@ -30,10 +32,34 @@ export const EncyclopediaPage: React.FC = () => {
 
 
 
+    const [selectedJello, setSelectedJello] = React.useState<{ speciesId: string, stage: number } | null>(null);
+
     const isUnlocked = (speciesId: string, stage: number) => {
         const speciesUnlocks = unlockedJellos?.[speciesId];
         return speciesUnlocks ? speciesUnlocks.includes(stage) : false;
     };
+
+    const handleNodeClick = (speciesId: string, stage: number) => {
+        setSelectedJello({ speciesId, stage });
+    };
+
+    const closeModal = () => {
+        setSelectedJello(null);
+    };
+
+    // Helper to get display character for modal
+    const getModalCharacter = () => {
+        if (!selectedJello) return null;
+        const char = {
+            ...createCharacter(selectedJello.speciesId), // Helper from data/characters
+            evolutionStage: selectedJello.stage as any
+        };
+        // Ensure name is correct if we want to show it
+        return char;
+    };
+
+    const modalCharacter = getModalCharacter();
+    const modalSpecies = modalCharacter ? CHARACTER_SPECIES[selectedJello!.speciesId] : null;
 
     return (
         <div className="encyclopedia-page">
@@ -66,7 +92,7 @@ export const EncyclopediaPage: React.FC = () => {
                                             color: theme.text
                                         }}
                                     >
-                                        {t(`character.species.${species.id}`, species.name).replace(' ', '\n')}
+                                        {t(`character.species.${species.id}`, { defaultValue: species.name }).replace(' ', '\n')}
                                     </span>
                                 </div>
 
@@ -92,6 +118,7 @@ export const EncyclopediaPage: React.FC = () => {
                                                             speciesId={species.id}
                                                             stage={stage}
                                                             isUnlocked={unlocked}
+                                                            onClick={(unlocked || stage === 5) ? handleNodeClick : undefined}
                                                         />
                                                     </div>
                                                 </React.Fragment>
@@ -104,6 +131,70 @@ export const EncyclopediaPage: React.FC = () => {
                     })}
                 </div>
             </div>
+
+            {/* Jello Detail Modal OR Legendary Lock Modal */}
+            {selectedJello && (
+                <div className="jello-detail-modal-overlay" onClick={closeModal}>
+                    {isUnlocked(selectedJello.speciesId, selectedJello.stage) ? (
+                        // 1. Unlocked Character Detail Modal
+                        <div className="jello-detail-modal-content" onClick={e => e.stopPropagation()}>
+                            <button className="modal-close-btn" onClick={closeModal}>✕</button>
+
+                            <div className="modal-jello-display">
+                                <div className="modal-avatar-wrapper">
+                                    <JelloAvatar
+                                        character={modalCharacter!}
+                                        speciesId={selectedJello.speciesId}
+                                        size="large"
+                                        action="idle"
+                                        mood="happy"
+                                    />
+                                </div>
+
+                                <div className="modal-jello-info">
+                                    <h2 className="modal-species-name">
+                                        {t(`character.species.${selectedJello.speciesId}`, { defaultValue: modalSpecies?.name })}
+                                    </h2>
+                                    <div className="modal-stage-badge">
+                                        Stage {selectedJello.stage}
+                                    </div>
+                                    <p className="modal-description">
+                                        {t(`character.description.${selectedJello.speciesId}`, { defaultValue: modalSpecies?.description })}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    ) : selectedJello.stage === 5 ? (
+                        // 2. Legendary Lock Modal
+                        <div className="jello-detail-modal-content legendary-locked" onClick={e => e.stopPropagation()}>
+                            <button className="modal-close-btn" onClick={closeModal}>✕</button>
+
+                            <div className="modal-jello-display">
+                                <div className="modal-avatar-wrapper legendary-lock-wrapper">
+                                    <div className="legendary-lock-icon">🔒</div>
+                                </div>
+
+                                <div className="modal-jello-info">
+                                    <h2 className="modal-species-name legendary-title">
+                                        {t('encyclopedia.legendary.title')}
+                                    </h2>
+                                    <div className="modal-stage-badge legendary-badge">
+                                        {t('encyclopedia.stage', { stage: 5 })}
+                                    </div>
+                                    <div className="legendary-requirement">
+                                        <p>{t('encyclopedia.legendary.prefix')}</p>
+                                        <div className="star-requirement">
+                                            <span className="star-icon">⭐</span>
+                                            <span className="star-count">1000</span>
+                                        </div>
+                                        <p>{t('encyclopedia.legendary.suffix')}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    ) : null}
+                </div>
+            )}
         </div>
     );
 };
