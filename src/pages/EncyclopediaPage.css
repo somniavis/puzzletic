@@ -482,6 +482,15 @@
     background: radial-gradient(circle, rgba(255, 215, 0, 0.2) 0%, rgba(255, 255, 255, 0) 70%);
 }
 
+.modal-jello-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    /* Uniform spacing */
+    width: 100%;
+}
+
 .modal-species-name {
     margin: 0;
     font-size: 1.8rem;
@@ -490,12 +499,74 @@
 }
 
 .modal-stage-badge {
-    background: #eee;
-    padding: 4px 12px;
-    border-radius: 12px;
+    /* Remove background from container */
+    background: transparent;
+    padding: 0;
+    margin: 0;
+    /* Handled by gap */
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+}
+
+.tag-badge {
+    padding: 6px 14px;
+    border-radius: 20px;
     font-size: 0.9rem;
-    color: #666;
-    font-weight: 600;
+    font-weight: 700;
+    color: #4a6fa5;
+    background-color: #e6f2ff;
+    box-shadow: none;
+    border: none;
+    transform: none;
+    transition: background-color 0.2s;
+}
+
+/* Species-Specific Tag Colors */
+.tag-badge.yellowJello {
+    background-color: #FFF9C4;
+    color: #FBC02D;
+}
+
+.tag-badge.redJello {
+    background-color: #FFEBEE;
+    color: #D32F2F;
+}
+
+.tag-badge.blueJello {
+    background-color: #E3F2FD;
+    color: #1976D2;
+}
+
+.tag-badge.mintJello {
+    background-color: #E8F5E9;
+    color: #388E3C;
+}
+
+.tag-badge.purpleJello {
+    background-color: #F3E5F5;
+    color: #7B1FA2;
+}
+
+.tag-badge.orangeJello {
+    background-color: #FFF3E0;
+    color: #F57C00;
+}
+
+.tag-badge.creamJello {
+    background-color: #EFEBE9;
+    color: #8D6E63;
+}
+
+.tag-badge.pinkJello {
+    background-color: #FCE4EC;
+    color: #C2185B;
+}
+
+.tag-badge:hover {
+    filter: brightness(0.95);
+    transform: none;
 }
 
 .modal-description {

@@ -72,6 +72,7 @@ export interface CharacterSpecies {
   name: string;
   description: string;
   personality: PersonalityTrait;  // 캐릭터의 성격
+  tags?: string[]; // 캐릭터 태그 (예: [공격력], [불/화염])
   evolutions: CharacterEvolution[];
 }
 

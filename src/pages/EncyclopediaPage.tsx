@@ -60,6 +60,7 @@ export const EncyclopediaPage: React.FC = () => {
 
     const modalCharacter = getModalCharacter();
     const modalSpecies = modalCharacter ? CHARACTER_SPECIES[selectedJello!.speciesId] : null;
+    const evolutionData = modalSpecies?.evolutions.find(e => e.stage === selectedJello?.stage);
 
     return (
         <div className="encyclopedia-page">
@@ -153,13 +154,19 @@ export const EncyclopediaPage: React.FC = () => {
 
                                 <div className="modal-jello-info">
                                     <h2 className="modal-species-name">
-                                        {t(`character.species.${selectedJello.speciesId}`, { defaultValue: modalSpecies?.name })}
+                                        {t(`character.evolutions.${selectedJello.speciesId}_stage${selectedJello.stage}_name`, { defaultValue: evolutionData?.name })}
                                     </h2>
                                     <div className="modal-stage-badge">
-                                        Stage {selectedJello.stage}
+                                        {modalSpecies?.tags?.flatMap(tagKey =>
+                                            t(`character.tags.${tagKey}`).split('/').map(subTag => subTag.trim())
+                                        ).map((tagLabel, idx) => (
+                                            <span key={idx} className={`tag-badge ${selectedJello.speciesId}`}>
+                                                {tagLabel}
+                                            </span>
+                                        ))}
                                     </div>
                                     <p className="modal-description">
-                                        {t(`character.description.${selectedJello.speciesId}`, { defaultValue: modalSpecies?.description })}
+                                        {t(`character.evolutions.${selectedJello.speciesId}_stage${selectedJello.stage}_desc`, { defaultValue: evolutionData?.description })}
                                     </p>
                                 </div>
                             </div>
