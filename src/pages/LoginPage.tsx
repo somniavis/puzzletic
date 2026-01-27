@@ -2,15 +2,18 @@ import React, { useState } from 'react';
 import './Auth.css';
 import { playButtonSound } from '../utils/sound';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '../contexts/AuthContext'; // Import useAuth
 import { auth, googleProvider } from '../firebase';
 import { signInWithEmailAndPassword, signInWithPopup, signInWithRedirect, getRedirectResult } from 'firebase/auth';
 
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 // interface LoginPageProps removed as it's no longer needed (or empty)
 export const LoginPage: React.FC = () => {
     const navigate = useNavigate();
+    const location = useLocation();
     const { t } = useTranslation();
+    const { loading } = useAuth(); // Destructure loading from context
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [isRedirecting, setIsRedirecting] = useState(false);
@@ -112,13 +115,44 @@ export const LoginPage: React.FC = () => {
 
     return (
         <div className="auth-page">
-            {/* Back to Home Button */}
-            {/* Back to Home Button Removed per user request */}
-
             <div className="auth-container">
-                <header className="auth-header">
-                    <h1>{t('auth.login.title')}</h1>
-                    <p>{t('auth.login.subtitle')}</p>
+                <header className="auth-header" style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    gap: '16px',
+                    textAlign: 'left'
+                }}>
+                    <div>
+                        <h1 style={{ margin: 0, fontSize: '1.8rem', lineHeight: '1.2' }}>{t('auth.login.title')}</h1>
+                        <p style={{ margin: '4px 0 0 0', fontSize: '0.9rem', opacity: 0.9 }}>{t('auth.login.subtitle')}</p>
+                    </div>
+
+
+                    <button
+                        className="back-btn"
+                        onClick={() => {
+                            const from = (location.state as any)?.from;
+                            if (from) {
+                                navigate(from);
+                            } else {
+                                navigate('/');
+                            }
+                        }}
+                        aria-label="Back"
+                        style={{
+                            width: '42px',
+                            height: '42px',
+                            fontSize: '1.5rem',
+                            flexShrink: 0,
+                            paddingBottom: '4px',
+                            backgroundColor: '#8B4513', // Explicit Brown background
+                            color: '#FFFFFF', // White text
+                            border: '2px solid #5e2f0d'
+                        }}
+                    >
+                        ←
+                    </button>
                 </header>
 
                 <form className="auth-form" onSubmit={handleLogin}>
@@ -146,8 +180,8 @@ export const LoginPage: React.FC = () => {
                         />
                     </div>
 
-                    <button type="submit" className="auth-btn auth-btn--primary">
-                        {t('auth.login.action')}
+                    <button type="submit" className="auth-btn auth-btn--primary" disabled={loading} style={{ width: '100%' }}>
+                        {loading ? t('auth.logging_in') : t('auth.login.action')}
                     </button>
                 </form>
 

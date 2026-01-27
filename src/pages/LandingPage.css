@@ -1,0 +1,141 @@
+.landing-container {
+    width: 100%;
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #fceeff 0%, #e0f7fa 100%);
+    padding: 24px;
+    box-sizing: border-box;
+}
+
+.landing-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 400px;
+}
+
+.landing-jello-preview {
+    width: 200px;
+    height: 200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 40px;
+}
+
+.jello-silhouette {
+    width: 160px;
+    height: 160px;
+    background-color: rgba(255, 255, 255, 0.6);
+    border-radius: 50%;
+    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.1);
+    backdrop-filter: blur(4px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: float 3s ease-in-out infinite;
+}
+
+.jello-silhouette::after {
+    content: "🥚";
+    font-size: 80px;
+}
+
+.landing-title {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #333;
+    margin-bottom: 12px;
+    text-align: center;
+    line-height: 1.2;
+}
+
+.landing-subtitle {
+    font-size: 1rem;
+    color: #666;
+    margin-bottom: 48px;
+    text-align: center;
+}
+
+.cta-button {
+    width: 100%;
+    padding: 20px;
+    border: none;
+    border-radius: 20px;
+    font-size: 1.2rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+}
+
+.guest-start-button {
+    background: linear-gradient(45deg, #FF6B6B, #FF8E53);
+    color: white;
+    box-shadow: 0 10px 20px rgba(255, 107, 107, 0.3);
+    margin-bottom: 40px;
+}
+
+.guest-start-button:active {
+    transform: scale(0.98);
+}
+
+.auth-links {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    padding-top: 20px;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.auth-text {
+    font-size: 0.9rem;
+    color: #888;
+    margin-bottom: 8px;
+}
+
+.auth-buttons {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.text-link {
+    background: none;
+    border: none;
+    color: #666;
+    font-weight: 600;
+    font-size: 1rem;
+    padding: 8px;
+    cursor: pointer;
+}
+
+.text-link:hover {
+    color: #333;
+    text-decoration: underline;
+}
+
+.divider {
+    color: #ccc;
+    font-size: 0.8rem;
+}
+
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+}

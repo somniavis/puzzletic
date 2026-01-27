@@ -23,6 +23,7 @@ import { syncUserData } from '../../services/syncService';
 
 export const useEvolutionLogic = (
     user: User | null,
+    isGuest: boolean,
     // The hook needs access to the CURRENT state to calculate phase
     state: NurturingPersistentState,
     setState: React.Dispatch<React.SetStateAction<NurturingPersistentState>>
@@ -30,6 +31,7 @@ export const useEvolutionLogic = (
     // UI Animation States
     const [isEvolving, setIsEvolving] = useState(false);
     const [isGraduating, setIsGraduating] = useState(false);
+    const [showSignupModal, setShowSignupModal] = useState(false);
 
     // Derived State: Calculate current phase instantly from state
     const evolutionPhase = useMemo(() => {
@@ -66,8 +68,17 @@ export const useEvolutionLogic = (
             console.warn('⚠️ Cannot evolve in current phase:', evolutionPhase);
             return;
         }
+
+        // Phase 2: Guest Migration Trigger
+        // If Guest tries to evolve from Stage 1 -> 2, block and show Signup Modal
+        if (isGuest && (state.evolutionStage || 1) === 1) {
+            console.log('🛑 Guest Evolution Prompt Triggered');
+            setShowSignupModal(true);
+            return;
+        }
+
         setIsEvolving(true);
-    }, [evolutionPhase]);
+    }, [evolutionPhase, isGuest, state.evolutionStage]);
 
     // 3. Complete Evolution (Called after Animation finishes)
     const completeEvolutionAnimation = useCallback(() => {
@@ -152,6 +163,8 @@ export const useEvolutionLogic = (
         triggerEvolution,
         triggerGraduation,
         completeEvolutionAnimation,
-        completeGraduationAnimation
+        completeGraduationAnimation,
+        showSignupModal,
+        setShowSignupModal,
     };
 };

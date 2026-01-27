@@ -65,9 +65,13 @@ graph TD
 
 ### 신규 유저 온보딩 (New User Flow)
 신규 유저(D1에 데이터 없음)의 경우, 로컬 데이터 상태에 따라 두 가지로 분기합니다:
-1.  **Guest Promotion** (`hasCharacter: true`):
-    *   게스트 플레이 기록이 있으면 이를 **새 계정으로 승계**합니다.
-    *   동작: `Sync to Cloud` + `Save to Local (User ID)`
+1.  **Guest Promotion Strategy** (`hasCharacter: true`):
+    *   **Goal**: 게스트 유저가 키우던 펫 데이터를 회원가입 시 그대로 클라우드로 이관.
+    *   **Trigger**: 단계 2(Stage 2) 진화 시도 시 `SignupPromoModal` 강제 노출 (게스트는 2단계 진화 불가).
+    *   **Migration**: 
+        *   회원가입 직후 `migrateGuestToCloud()` 실행.
+        *   로컬의 Guest Data를 읽어와 로그인된 User ID의 클라우드 스토리지로 전송.
+        *   성공 시 로컬 Guest Data 삭제.
 2.  **Fresh Start** (`hasCharacter: false`):
     *   게스트 기록이 없으면 **완전히 초기화된 상태**로 시작합니다.
     *   동작: `Create Default State` + `Sync to Cloud` + `Overwrite Local (User ID)`
@@ -204,11 +208,21 @@ puzzleletic_checksum_{userId}
     *   **읽기**: `useEffect` 애니메이션 트리거 시점, 메인 상태(`state.lastSeenStage`)가 없거나 낮더라도 이 보조 키 값이 높으면 애니메이션을 스킵
 4.  **효과**: 서버 비용 0원으로 오프라인 환경에서도 완벽한 상태 정합성 보장
 
-### Fail-Safe Integrity Check (2026.01.27)
+
+### Fail-Safe Integrity Check (2026.01.27 Updates)
 데이터 무결성 검증을 위해 `simpleEncryption.ts`에서 Checksum을 사용합니다.
+
+#### 1. Robust Checksum (v2)
 - **기존**: `JSON.stringify(entireObject)` -> 키 순서가 바뀌면 체크섬 불일치로 데이터 초기화 (오판 가능성 높음)
-- **개선**: `hash(_enc + "|" + lastActiveTime)` -> **핵심 암호화 문자열(`_enc`)**과 **타임스탬프**만 검증.
-- **효과**: 불필요한 데이터 초기화(Reset) 방지 및 "이전 클라우드 데이터로 롤백" 현상 해결.
+- **개선**: `hash(_enc + "|" + (lastActiveTime || 0))` -> **핵심 암호화 문자열(`_enc`)**과 **타임스탬프**만 검증.
+- **안전장치**: `lastActiveTime`이 없거나 `NaN`일 경우 `0`으로 처리하여 계산 일관성 보장.
+
+#### 2. Self-Healing Mechanism (자가 치유)
+- **문제**: 배포로 인해 체크섬 로직이 변경되거나(v1 -> v2), 저장 타이밍 이슈로 인해 디스크의 실제 데이터와 체크섬이 일시적으로 불일치하는 경우, 기존 로직은 "해킹"으로 간주하여 데이터를 즉시 초기화했습니다.
+- **해결**: 불일치 감지 시 **"체크섬 키(`puzzleletic_checksum`)"를 삭제**하고 데이터를 그대로 로드(Legacy Mode)합니다.
+- **효과**: 
+    - 오탐(False Alarm)으로 인한 선량한 유저의 데이터 초기화/손실 방지.
+    - 다음 자동 저장 시 새로운 로직으로 정상 체크섬이 생성되어 시스템이 스스로 정상화됨.
 
 ---
 

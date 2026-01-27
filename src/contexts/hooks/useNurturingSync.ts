@@ -58,7 +58,7 @@ const validateStateIntegrity = (currentState: NurturingPersistentState, lastSync
     }
 };
 
-export const useNurturingSync = (user: User | null) => {
+export const useNurturingSync = (user: User | null, guestId: string | null = null) => {
     const [isGlobalLoading, setIsGlobalLoading] = useState(true);
 
     // Subscription State
@@ -78,8 +78,11 @@ export const useNurturingSync = (user: User | null) => {
             const { updatedState } = applyOfflineProgress(loaded);
             return updatedState;
         }
-        // Guest mode / No User
-        const loaded = loadNurturingState(undefined);
+
+        // Guest mode
+        const targetId = guestId || undefined;
+        console.log('🔄 [Init] Loading Guest Data for:', targetId);
+        const loaded = loadNurturingState(targetId);
         const { updatedState } = applyOfflineProgress(loaded);
         return updatedState;
     });
@@ -95,8 +98,9 @@ export const useNurturingSync = (user: User | null) => {
         if (!hasLoadedRef.current && user) {
             return;
         }
-        saveNurturingState(debouncedState, user?.uid);
-    }, [debouncedState, user?.uid]);
+        const targetId = user?.uid || guestId || undefined;
+        saveNurturingState(debouncedState, targetId);
+    }, [debouncedState, user?.uid, guestId]);
     // =================================================
 
     const stateRef = useRef(state);

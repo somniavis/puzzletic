@@ -1,17 +1,19 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Character, CharacterMood, CharacterAction } from '../../types/character';
 import type { CharacterSpeciesId } from '../../data/species';
 import type { EmotionCategory } from '../../types/emotion';
 import { useNurturing } from '../../contexts/NurturingContext';
 import { startBackgroundMusic, playButtonSound, playCleaningSound, playEatingSound } from '../../utils/sound';
-import { ConfirmModal } from './ConfirmModal';
-import { CameraModal } from './CameraModal';
-import { FabMenu } from './FabMenu';
-import { TrainRewardModal } from '../TrainRewardModal';
-import { EvolutionControls } from './EvolutionControls';
+// import { ActionResultModal } from './ActionResultModal'; // Placeholder, verify location
+import { CameraModal } from './CameraModal'; // Confirmed in PetRoom dir
+import { GiftBoxModal } from '../GiftBoxModal'; // Confirmed in components
+import { SignupPromoModal } from '../SignupPromoModal'; // Confirmed in components
 import { EvolutionOverlay } from './EvolutionOverlay';
-import { GiftBoxModal } from '../GiftBoxModal';
+import { ConfirmModal } from './ConfirmModal'; // Confirmed in PetRoom
+import { FabMenu } from './FabMenu'; // Confirmed in PetRoom
+import { TrainRewardModal } from '../TrainRewardModal'; // Will update if index.tsx exists
+import { EvolutionControls } from './EvolutionControls';
 
 // Hooks
 import { usePetRoomUI } from './hooks/usePetRoomUI';
@@ -74,10 +76,30 @@ export const PetRoom: React.FC<PetRoomProps> = ({
 
   // Lifted Bubble State (Must be defined BEFORE hooks that use it)
   const [bubble, setBubble] = useState<{ category: EmotionCategory; level: 1 | 2 | 3; key: number } | null>(null);
-  const showBubble = (category: EmotionCategory, level: 1 | 2 | 3, duration: number = 3000) => {
+  const bubbleTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const showBubble = useCallback((category: EmotionCategory, level: 1 | 2 | 3, duration: number = 3000) => {
+    // Clear existing timeout to prevent premature hiding
+    if (bubbleTimeoutRef.current) {
+      clearTimeout(bubbleTimeoutRef.current);
+    }
+
     setBubble({ category, level, key: Date.now() });
-    setTimeout(() => setBubble(null), duration);
-  };
+
+    bubbleTimeoutRef.current = setTimeout(() => {
+      setBubble(null);
+      bubbleTimeoutRef.current = null;
+    }, duration);
+  }, []);
+
+  // Clean up on unmount
+  useEffect(() => {
+    return () => {
+      if (bubbleTimeoutRef.current) {
+        clearTimeout(bubbleTimeoutRef.current);
+      }
+    };
+  }, []);
 
   // 1. UI State
   const ui = usePetRoomUI(showGiftBox);
@@ -317,6 +339,13 @@ export const PetRoom: React.FC<PetRoomProps> = ({
       {/* Modals */}
       {ui.modals.showNicknameModal && (
         <GiftBoxModal onComplete={handleNicknameComplete} />
+      )}
+
+      {nurturing.showSignupModal && (
+        <SignupPromoModal
+          onClose={() => nurturing.setShowSignupModal(false)}
+          onSignup={() => nurturing.setShowSignupModal(false)} // Navigation handled inside component
+        />
       )}
 
       {camera.showCameraModal && (

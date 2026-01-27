@@ -57,6 +57,16 @@ export const en = {
     },
     myJelloBox: 'My Jello Box',
   },
+  landing: {
+    title: 'Raise Your Jello',
+    subtitle: 'Grow with your cute friend',
+    start_experience: 'Start Experience Now',
+    auth_prompt: 'Already have an account?',
+    login: 'Log In',
+    signup: 'Sign Up',
+    back_to_home: 'Back to Home',
+  },
+
   character: {
     profile: {
       level: 'Lv.{{level}}',
@@ -175,7 +185,9 @@ export const en = {
       pinkJello_stage5_name: 'Candios',
       pinkJello_stage5_desc: 'A Fantasy Dragon with cotton candy wings. The sweet powder it scatters puts enemies into a deep, happy sleep.',
 
-      // Purple Jello
+
+
+      // Authrple Jello
       purpleJello_stage1_name: 'Purple Jello',
       purpleJello_stage1_desc: 'A jelly that glows at night. It makes sounds like chanting unknown spells in babble.',
       purpleJello_stage2_name: 'Wisper',
@@ -450,6 +462,11 @@ export const en = {
     clean: 'Clean',
     camera: 'Camera',
     settings: 'Settings',
+    evolve: 'Evolve',
+    graduate: 'Graduate',
+    cancel: 'Cancel',
+    confirm: 'Confirm',
+    close: 'Close',
   },
   camera: {
     title: 'Snapshot!',
@@ -764,47 +781,50 @@ export const en = {
     },
   },
   auth: {
+    promo: {
+      title: 'Save your Jello!',
+      desc: 'To evolve to Stage 2, you need to save your progress. Sign up now to keep your Jello safe forever!',
+      later: 'Maybe Later',
+    },
     login: {
-      title: 'Hello there!',
-      subtitle: 'Log in to meet your jello 🐾',
+      title: 'Log In',
+      subtitle: 'Log in to sync your data.',
       email: 'Email',
       emailPlaceholder: 'Enter your email',
       password: 'Password',
       passwordPlaceholder: 'Enter your password',
-      action: 'Log In 🔑',
       or: 'OR',
-      signup: 'Sign Up with Email',
-      backToHome: 'Back to Home',
-      google: 'Sign in with Google',
+      google: 'Continue with Google',
+      signup: 'Sign up with Email',
+      action: 'Log In', // Explicit action key
     },
     signup: {
-      title: 'Join Grogro Jello!',
-      subtitle: 'Create account to raise your jello 🐣',
-      emailLabel: 'Email (ID)',
-      emailPlaceholder: 'hello@example.com',
-      nicknameLabel: 'Nickname',
-      nicknamePlaceholder: 'Your jello calls you...',
+      title: 'Sign Up',
+      subtitle: 'Create an account to join Jello!',
+      emailLabel: 'Email',
+      emailPlaceholder: 'Enter your email',
       passwordLabel: 'Password',
-      passwordPlaceholder: 'Secret password',
+      passwordPlaceholder: 'Enter password (6+ chars)',
       confirmPasswordLabel: 'Confirm Password',
-      confirmPasswordPlaceholder: 'Type it again',
-      action: 'Register ✨',
+      confirmPasswordPlaceholder: 'Re-enter password',
       haveAccount: 'Already have an account?',
-      loginLink: 'Log In Here',
-      backToLogin: 'Back to Login',
-      passwordMismatch: 'Passwords do not match! ❌',
-      success: 'Registration Successful! Welcome to Grogro Jello! 🎉'
+      loginLink: 'Log In',
+      passwordMismatch: 'Passwords do not match.',
+      success: 'Sign up successful!',
+      action: 'Sign Up', // Explicit action key
     },
     errors: {
-      default: 'Login failed! ❌',
-      invalidCredential: 'Invalid email or password. Please check again.',
-      tooManyRequests: 'Too many failed attempts. Please try again later.',
-      googleFailed: 'Google Sign-In failed ❌. Please try again.',
-      emailInUse: 'This email is already registered.',
+      default: 'Login failed.',
+      invalidCredential: 'Invalid email or password.',
+      tooManyRequests: 'Too many attempts. Please try again later.',
+      googleFailed: 'Google login failed.',
+      registrationFailed: 'Registration failed.',
+      emailInUse: 'Email is already in use.',
       weakPassword: 'Password should be at least 6 characters.',
       invalidEmail: 'Invalid email format.',
-      registrationFailed: 'Registration failed! ❌',
-    }
+    },
+    logging_in: 'Logging in...',
+    signing_up: 'Signing up...',
   },
   play: {
     title: 'Play & Learn',

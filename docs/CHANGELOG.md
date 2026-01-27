@@ -1,7 +1,21 @@
 # 변경 이력 (Changelog)
 
 
-## 2026-01-26 (Latest Updates)
+## 2026-01-27 (Today's Updates)
+
+### 🔒 데이터 무결성 및 보안 (Data Integrity & Security)
+- **자가 치유(Self-Healing) 저장소**: 데이터와 체크섬이 일시적으로 불일치할 경우, 데이터를 삭제(Reset)하는 대신 **올바른 체크섬으로 자동 복구**하도록 개선하여 무한 에러 루프 방지.
+- **Robust Checksum V2**: `lastActiveTime`이 누락되거나 잘못된 경우에도 체크섬 계산이 안전하게 수행되도록 로직 강화 (`|| 0` 처리).
+
+### 👥 게스트 관리 개선 (Guest Management)
+- **진화 제한 (Guest Restriction)**: 게스트 유저가 Stage 2 진화를 시도할 때 차단하고, **회원가입 유도 팝업(`SignupPromoModal`)**을 표시.
+- **데이터 이관 준비**: 게스트 데이터를 클라우드로 이관하기 위한 `migrateGuestToCloud` 서비스 함수 구현.
+
+### 🌐 UI/UX 및 현지화 (UI/UX & Localization)
+- **Back Navigation Fix**: 로그인/가입 페이지에서 '뒤로가기' 클릭 시, 진입했던 위치(예: 펫룸)로 정확히 돌아가도록 라우팅 로직 개선.
+- **Auth Flow Localization**: 로그인/가입/홍보 팝업의 모든 텍스트(한국어, 영어, 일본어) 완벽 지원.
+- **Lint Fix**: 불필요한 콘솔 로그(`useLocation`) 및 사용하지 않는 import 정리.
+
 
 ### 🧹 PetRoom 리팩토링 (Refactoring)
 - **대규모 구조 개선**: 1400줄에 달하던 `PetRoom.tsx` 파일을 역할별로 분리하여 코드 복잡도를 60% 이상 감소시켰습니다.

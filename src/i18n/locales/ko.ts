@@ -59,6 +59,16 @@ export const ko = {
         },
         myJelloBox: '마이 젤로 박스',
     },
+    landing: {
+        title: '나만의 젤로 키우기',
+        subtitle: '귀여운 친구와 함께 성장하세요',
+        start_experience: '지금 바로 시작하기 (체험)',
+        auth_prompt: '이미 계정이 있으신가요?',
+        login: '로그인',
+        signup: '회원가입',
+        back_to_home: '돌아가기 (체험)',
+    },
+
     character: {
         profile: {
             level: 'Lv.{{level}}',
@@ -177,7 +187,9 @@ export const ko = {
             pinkJello_stage5_name: '캔디오스',
             pinkJello_stage5_desc: '솜사탕 날개를 가진 환상의 드래곤입니다. 지나간 자리에 뿌리는 달콤한 가루는 적을 깊고 행복한 잠에 빠뜨립니다.',
 
-            // Purple Jello
+
+
+            // Authrple Jello
             purpleJello_stage1_name: '퍼플 젤로',
             purpleJello_stage1_desc: '밤이 되면 몸에서 빛이 나는 젤리. 알 수 없는 옹알이로 주문을 외우는 소리를 냅니다.',
             purpleJello_stage2_name: '위스퍼',
@@ -452,6 +464,11 @@ export const ko = {
         clean: '청소',
         camera: '카메라',
         settings: '설정',
+        evolve: '진화하기',
+        graduate: '졸업하기',
+        cancel: '취소',
+        confirm: '확인',
+        close: '닫기',
     },
     camera: {
         title: '스냅샷!',
@@ -766,47 +783,50 @@ export const ko = {
         },
     },
     auth: {
+        promo: {
+            title: '젤로를 지켜주세요!',
+            desc: '2단계로 진화하려면 진행 상황 저장이 필요합니다. 지금 가입하여 젤로를 영원히 안전하게 보관하세요!',
+            later: '다음에 할게요',
+        },
         login: {
-            title: '반가워요!',
-            subtitle: '로그인하고 젤로를 만나보세요 🐾',
+            title: '로그인',
+            subtitle: '계정에 로그인하여 데이터를 동기화하세요.',
             email: '이메일',
             emailPlaceholder: '이메일을 입력하세요',
             password: '비밀번호',
             passwordPlaceholder: '비밀번호를 입력하세요',
-            action: '로그인 🔑',
             or: '또는',
+            google: 'Google로 계속하기',
             signup: '이메일로 회원가입',
-            backToHome: '홈으로 돌아가기',
-            google: 'Google로 로그인',
+            action: '로그인', // Explicit action key
         },
         signup: {
-            title: 'Grogro Jello 가입하기!',
-            subtitle: '계정을 만들고 젤로를 키워보세요 🐣',
-            emailLabel: '이메일 (ID)',
-            emailPlaceholder: 'hello@example.com',
-            nicknameLabel: '닉네임',
-            nicknamePlaceholder: '젤로가 부를 별명...',
+            title: '회원가입',
+            subtitle: '계정을 만들고 젤로와 함께하세요!',
+            emailLabel: '이메일',
+            emailPlaceholder: '이메일을 입력하세요',
             passwordLabel: '비밀번호',
-            passwordPlaceholder: '비밀번호 입력',
+            passwordPlaceholder: '비밀번호를 입력하세요 (6자 이상)',
             confirmPasswordLabel: '비밀번호 확인',
-            confirmPasswordPlaceholder: '한 번 더 입력',
-            action: '가입하기 ✨',
+            confirmPasswordPlaceholder: '비밀번호를 다시 입력하세요',
             haveAccount: '이미 계정이 있으신가요?',
             loginLink: '로그인하기',
-            backToLogin: '로그인으로 돌아가기',
-            passwordMismatch: '비밀번호가 일치하지 않습니다! ❌',
-            success: '가입 성공! 환영합니다! 🎉'
+            passwordMismatch: '비밀번호가 일치하지 않습니다.',
+            success: '회원가입이 완료되었습니다!',
+            action: '회원가입', // Explicit action key
         },
         errors: {
-            default: '로그인 실패! ❌',
+            default: '로그인에 실패했습니다.',
             invalidCredential: '이메일 또는 비밀번호가 올바르지 않습니다.',
             tooManyRequests: '너무 많은 시도가 있었습니다. 잠시 후 다시 시도해주세요.',
-            googleFailed: 'Google 로그인 실패 ❌. 다시 시도해주세요.',
-            emailInUse: '이미 가입된 이메일입니다.',
-            weakPassword: '비밀번호는 6자리 이상이어야 합니다.',
-            invalidEmail: '올바르지 않은 이메일 형식입니다.',
-            registrationFailed: '가입 실패! ❌',
-        }
+            googleFailed: 'Google 로그인에 실패했습니다.',
+            registrationFailed: '회원가입에 실패했습니다.',
+            emailInUse: '이미 사용 중인 이메일입니다.',
+            weakPassword: '비밀번호는 6자 이상이어야 합니다.',
+            invalidEmail: '유효하지 않은 이메일 형식입니다.',
+        },
+        logging_in: '로그인 중...',
+        signing_up: '가입 중...',
     },
     play: {
         title: '놀이 & 학습',

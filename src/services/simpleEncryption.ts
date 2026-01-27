@@ -77,7 +77,8 @@ export function protectData(state: any): { protectedData: any; checksum: string 
 
   // 체크섬 생성 (Robust: Encrypted String + Timestamp only)
   // 전체 JSON.stringify는 키 순서 문제로 깨지기 쉬움
-  const checksumPayload = `${protectedData._enc}|${protectedData.lastActiveTime}`;
+  const ts = protectedData.lastActiveTime || 0;
+  const checksumPayload = `${protectedData._enc}|${ts}`;
   const checksum = simpleChecksum(checksumPayload);
 
   return { protectedData, checksum };
@@ -91,12 +92,16 @@ export function restoreData(protectedState: any, storedChecksum: string): any | 
     // 체크섬 검증 (Rough Integrity Check)
     // _enc가 없으면(구버전) 검증 패스 (하위 호환성)
     if (protectedState._enc) {
-      const checksumPayload = `${protectedState._enc}|${protectedState.lastActiveTime}`;
+      const ts = protectedState.lastActiveTime || 0;
+      const checksumPayload = `${protectedState._enc}|${ts}`;
       const computedChecksum = simpleChecksum(checksumPayload);
 
       if (computedChecksum !== storedChecksum) {
         console.warn('⚠️ Data tampering detected! Checksum mismatch.');
-        return null;
+        console.warn('Expected:', storedChecksum);
+        console.warn('Computed:', computedChecksum);
+        console.warn('Payload:', checksumPayload); // Debugging
+        return null; // Tampering detected
       }
     }
 

@@ -2,14 +2,17 @@ import React, { useState } from 'react';
 import './Auth.css';
 import { playButtonSound } from '../utils/sound';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '../contexts/AuthContext'; // Import useAuth
 import { auth } from '../firebase';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 export const SignupPage: React.FC = () => {
     const navigate = useNavigate();
+    const location = useLocation();
     const { t } = useTranslation();
+    const { loading } = useAuth(); // Destructure loading from context
     const [formData, setFormData] = useState({
         email: '',
         password: '',
@@ -62,12 +65,44 @@ export const SignupPage: React.FC = () => {
 
     return (
         <div className="auth-page">
-            {/* Back Button removed per user request */}
-
             <div className="auth-container">
-                <header className="auth-header">
-                    <h1>{t('auth.signup.title')}</h1>
-                    <p>{t('auth.signup.subtitle')}</p>
+                <header className="auth-header" style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    gap: '16px',
+                    textAlign: 'left'
+                }}>
+                    <div>
+                        <h1 style={{ margin: 0, fontSize: '1.8rem', lineHeight: '1.2' }}>{t('auth.signup.title')}</h1>
+                        <p style={{ margin: '4px 0 0 0', fontSize: '0.9rem', opacity: 0.9 }}>{t('auth.signup.subtitle')}</p>
+                    </div>
+
+
+                    <button
+                        className="back-btn"
+                        onClick={() => {
+                            const from = (location.state as any)?.from;
+                            if (from) {
+                                navigate(from);
+                            } else {
+                                navigate('/');
+                            }
+                        }}
+                        aria-label="Back"
+                        style={{
+                            width: '42px',
+                            height: '42px',
+                            fontSize: '1.5rem',
+                            flexShrink: 0,
+                            paddingBottom: '4px',
+                            backgroundColor: '#8B4513', // Explicit Brown background
+                            color: '#FFFFFF', // White text
+                            border: '2px solid #5e2f0d'
+                        }}
+                    >
+                        ←
+                    </button>
                 </header>
 
                 <form className="auth-form" onSubmit={handleSignup}>
@@ -110,8 +145,8 @@ export const SignupPage: React.FC = () => {
                         />
                     </div>
 
-                    <button type="submit" className="auth-btn auth-btn--primary">
-                        {t('auth.signup.action')}
+                    <button type="submit" className="auth-btn auth-btn--primary" disabled={loading} style={{ width: '100%' }}>
+                        {loading ? t('auth.signing_up') : t('auth.signup.action')}
                     </button>
                 </form>
 
@@ -120,9 +155,23 @@ export const SignupPage: React.FC = () => {
                 </div>
 
                 <button
-                    className="auth-link-btn"
+                    className="auth-btn"
                     onClick={handleBackToLogin}
+                    style={{
+                        backgroundColor: '#FFD700', /* Stronger Gold */
+                        color: '#4d3e2f',
+                        border: '1px solid #d4961f',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '8px',
+                        fontSize: '15px',
+                        width: '100%',
+                        height: '56px',
+                        boxSizing: 'border-box'
+                    }}
                 >
+                    <span style={{ fontSize: '18px' }}>🔑</span>
                     {t('auth.signup.loginLink')}
                 </button>
             </div>

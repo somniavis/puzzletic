@@ -224,6 +224,9 @@ export const loadNurturingState = (userId?: string): NurturingPersistentState =>
       loaded = restoreData(protectedState, storedChecksum);
       if (!loaded) {
         console.warn('⚠️ Data tampering detected! Resetting sensitive data.');
+        // Clean up invalid checksum to prevent persistent errors on reload
+        localStorage.removeItem(getChecksumKey(userId));
+
         loaded = protectedState;
         delete loaded._enc;
         loaded.gro = 20;
@@ -267,6 +270,12 @@ export const loadNurturingState = (userId?: string): NurturingPersistentState =>
       unlockedJellos: loaded.unlockedJellos || {},
       hallOfFame: loaded.hallOfFame || [],
     };
+
+    // Sanitize Abandonment State: If no character exists (e.g. after reset or fresh start), 
+    // ensure abandonment logic is cleared to prevent "Leaving soon" messages.
+    if (!finalState.hasCharacter) {
+      finalState.abandonmentState = { ...DEFAULT_ABANDONMENT_STATE };
+    }
 
     // One-time encyclopedia init check
     if (finalState.hasCharacter && finalState.speciesId && finalState.evolutionStage) {

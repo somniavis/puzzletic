@@ -59,6 +59,16 @@ export const ja = {
         },
         myJelloBox: 'マイジェロ図鑑',
     },
+    landing: {
+        title: 'ジェロを育てよう',
+        subtitle: 'かわいい友達と一緒に成長しましょう',
+        start_experience: '今すぐ体験する',
+        auth_prompt: 'アカウントをお持ちですか？',
+        login: 'ログイン',
+        signup: '新規登録',
+        back_to_home: 'ホームに戻る',
+    },
+
     character: {
         profile: {
             level: 'Lv.{{level}}',
@@ -177,7 +187,9 @@ export const ja = {
             pinkJello_stage5_name: 'キャンディオス',
             pinkJello_stage5_desc: '綿あめの翼を持つ幻想のドラゴンです。通り過ぎた場所に撒く甘い粉は、敵を深く幸せな眠りに落とします。',
 
-            // Purple Jello
+
+
+            // Authrple Jello
             purpleJello_stage1_name: 'パープルジェロ',
             purpleJello_stage1_desc: '夜になると体から光が出るゼリー。正体不明の言葉で呪文を唱えるような音を出します。',
             purpleJello_stage2_name: 'ウィスパー',
@@ -452,6 +464,11 @@ export const ja = {
         clean: '掃除',
         camera: 'カメラ',
         settings: '設定',
+        evolve: '進化する',
+        graduate: '卒業する',
+        cancel: 'キャンセル',
+        confirm: '確認',
+        close: '閉じる',
     },
     camera: {
         title: 'スナップショット！',
@@ -766,47 +783,50 @@ export const ja = {
         },
     },
     auth: {
+        promo: {
+            title: 'ジェロを守ろう！',
+            desc: 'ステージ2に進化するには進行状況の保存が必要です。今すぐ登録してジェロを永遠に守りましょう！',
+            later: '後で',
+        },
         login: {
-            title: 'ようこそ！',
-            subtitle: 'ログインしてジェロに会いに行こう 🐾',
+            title: 'ログイン',
+            subtitle: 'ログインしてデータを同期しましょう。',
             email: 'メールアドレス',
             emailPlaceholder: 'メールアドレスを入力',
             password: 'パスワード',
             passwordPlaceholder: 'パスワードを入力',
-            action: 'ログイン 🔑',
             or: 'または',
-            signup: 'メールアドレスで登録',
-            backToHome: 'ホームに戻る',
-            google: 'Googleでログイン',
+            google: 'Googleで続ける',
+            signup: 'メールで登録',
+            action: 'ログイン', // Explicit action key
         },
         signup: {
-            title: 'Grogro Jello アカウント作成',
-            subtitle: 'アカウントを作ってジェロを育てよう 🐣',
-            emailLabel: 'メールアドレス (ID)',
-            emailPlaceholder: 'hello@example.com',
-            nicknameLabel: 'ニックネーム',
-            nicknamePlaceholder: 'ジェロになんて呼ばれたい？',
+            title: '新規登録',
+            subtitle: 'アカウントを作成して始めましょう！',
+            emailLabel: 'メールアドレス',
+            emailPlaceholder: 'メールアドレスを入力',
             passwordLabel: 'パスワード',
-            passwordPlaceholder: '秘密のパスワード',
+            passwordPlaceholder: 'パスワード (6文字以上)',
             confirmPasswordLabel: 'パスワード確認',
-            confirmPasswordPlaceholder: 'もう一度入力',
-            action: '登録する ✨',
+            confirmPasswordPlaceholder: 'パスワードを再入力',
             haveAccount: 'すでにアカウントをお持ちですか？',
-            loginLink: 'ログインはこちら',
-            backToLogin: 'ログイン画面に戻る',
-            passwordMismatch: 'パスワードが一致しません！ ❌',
-            success: '登録完了！ようこそ Grogro Jelloへ！ 🎉',
+            loginLink: 'ログイン',
+            passwordMismatch: 'パスワードが一致しません。',
+            success: '登録が完了しました！',
+            action: '新規登録', // Explicit action key
         },
         errors: {
-            default: 'ログイン失敗！ ❌',
-            invalidCredential: 'メールアドレスまたはパスワードが違います。',
+            default: 'ログインに失敗しました。',
+            invalidCredential: 'メールアドレスまたはパスワードが間違っています。',
             tooManyRequests: '試行回数が多すぎます。しばらく待ってから再度お試しください。',
-            googleFailed: 'Googleログインに失敗しました ❌。もう一度お試しください。',
-            emailInUse: 'すでに登録されているメールアドレスです。',
-            weakPassword: 'パスワードは6文字以上で入力してください。',
-            invalidEmail: '無効なメールアドレスの形式です。',
-            registrationFailed: '登録失敗！ ❌',
-        }
+            googleFailed: 'Googleログインに失敗しました。',
+            registrationFailed: '登録に失敗しました。',
+            emailInUse: 'すでに使用されているメールアドレスです。',
+            weakPassword: 'パスワードは6文字以上にする必要があります。',
+            invalidEmail: '無効なメールアドレス形式です。',
+        },
+        logging_in: 'ログイン中...',
+        signing_up: '登録中...',
     },
     play: {
         title: 'プレイ & 学び',

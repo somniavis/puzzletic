@@ -29,6 +29,8 @@ const ProfilePage = lazy(() => import('./pages/ProfilePage').then(module => ({ d
 const SharePage = lazy(() => import('./pages/SharePage').then(module => ({ default: module.SharePage })));
 const DebugLayoutPreview = lazy(() => import('./pages/DebugLayoutPreview').then(module => ({ default: module.DebugLayoutPreview })));
 
+const LandingPage = lazy(() => import('./pages/LandingPage').then(module => ({ default: module.LandingPage })));
+
 // Simple Loading Component
 const Loading = () => (
   <div style={{
@@ -45,10 +47,13 @@ const Loading = () => (
 
 // Protected Route Wrapper
 const ProtectedRoute = ({ children }: { children: React.ReactElement }) => {
-  const { user, loading } = useAuth();
+  const { user, isGuest, loading } = useAuth();
   const { t } = useTranslation();
-  if (loading) return <div>{t('common.loading')}</div>; // Or a splash screen
-  if (!user) return <Navigate to="/login" replace />;
+  if (loading) return <div>{t('common.loading')}</div>;
+
+  // Allow if User is logged in OR is a Guest
+  if (!user && !isGuest) return <Navigate to="/" replace />;
+
   return children;
 };
 
@@ -141,8 +146,8 @@ function AppContent() {
     // Reset mood and action when changing character
     setMood('neutral')
     setAction('idle')
-    // Navigate to home after selection
-    navigate('/home');
+    // Navigate to room after selection
+    navigate('/room');
   }
 
   const handleMoodChange = (newMood: CharacterMood) => {
@@ -209,12 +214,13 @@ function AppContent() {
     <Suspense fallback={<Loading />}>
       <Routes>
         {/* Public Routes */}
+        <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/share" element={<SharePage />} />
 
-        {/* Protected Routes */}
-        <Route path="/home" element={
+        {/* Protected Routes (Guest or User) */}
+        <Route path="/room" element={
           <ProtectedRoute>
             <PetRoom
               character={character}
@@ -229,6 +235,9 @@ function AppContent() {
             />
           </ProtectedRoute>
         } />
+
+        {/* Redirect legacy /home to /room */}
+        <Route path="/home" element={<Navigate to="/room" replace />} />
 
         <Route path="/play" element={
           <ProtectedRoute>
@@ -280,8 +289,7 @@ function AppContent() {
         } />
 
         {/* Default Redirect */}
-        <Route path="/" element={<Navigate to="/home" replace />} />
-        <Route path="*" element={<Navigate to="/home" replace />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Suspense>
   )

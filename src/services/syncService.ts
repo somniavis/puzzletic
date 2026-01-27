@@ -160,6 +160,32 @@ export const purchaseSubscription = async (
  * 
  * On sync: We send both, but game_data is what gets restored on login
  */
+/**
+ * Migrate Guest Data to Cloud (Phase 2)
+ * Uploads local guest data to the new user's cloud storage
+ */
+export const migrateGuestToCloud = async (user: User, guestData: NurturingPersistentState): Promise<boolean> => {
+    try {
+        console.log('🚀 [Migration] Starting Guest -> Cloud migration for:', user.uid);
+
+        // syncUserData handles compaction internally
+        // We assume guestData is the "latest" truth to overwrite cloud state
+
+        const success = await syncUserData(user, guestData);
+
+        if (success) {
+            console.log('✅ [Migration] Successfully migrated guest data!');
+            return true;
+        } else {
+            console.error('❌ [Migration] Failed to migrate');
+            return false;
+        }
+    } catch (e) {
+        console.error('❌ [Migration] Exception during migration:', e);
+        return false;
+    }
+};
+
 export const syncUserData = async (
     user: User,
     state: NurturingPersistentState

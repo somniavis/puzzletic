@@ -9,21 +9,28 @@ interface GiftBoxModalProps {
 }
 
 export const GiftBoxModal: React.FC<GiftBoxModalProps> = ({ onComplete }) => {
-    const { user } = useAuth();
+    const { user, isGuest } = useAuth();
     // Removed 'step' state as we go directly to input
     const [nickname, setNickname] = useState('');
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!nickname.trim() || !user) return;
+        if (!nickname.trim()) return;
+
+        // Safety check: Must be either logged in OR a guest
+        if (!user && !isGuest) return;
 
         playButtonSound();
         try {
-            // Update local state is handled by parent or context, but here we update Firebase
-            await updateProfile(user, { displayName: nickname });
+            // Only update Firebase profile if we have a real user
+            if (user) {
+                await updateProfile(user, { displayName: nickname });
+            }
             onComplete(nickname);
         } catch (error) {
             console.error('Failed to update profile:', error);
+            // Even if Firebase fails, we should probably let them in locally?
+            // But usually we want consistency. For now, let's just alert.
             alert('Could not save nickname. Please try again.');
         }
     };

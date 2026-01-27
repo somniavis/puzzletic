@@ -101,6 +101,8 @@ interface NurturingContextValue {
   evolutionPhase: EvolutionPhase;
   triggerEvolution: () => void;
   triggerGraduation: () => void;
+  showSignupModal: boolean;
+  setShowSignupModal: (show: boolean) => void;
 
   // Stats
   recordGameScore: (gameId: string, score: number, incrementPlayCount?: boolean, starsEarned?: number) => void;
@@ -137,7 +139,7 @@ interface NurturingProviderProps {
 }
 
 export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }) => {
-  const { user } = useAuth();
+  const { user, guestId, isGuest } = useAuth();
 
   // 1. Sync & State Management
   const {
@@ -149,7 +151,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     purchasePlan,
     stateRef,
     completeCharacterCreation
-  } = useNurturingSync(user);
+  } = useNurturingSync(user, guestId);
 
   // Derived State (Condition)
   const [condition, setCondition] = useState<CharacterCondition>(() =>
@@ -163,7 +165,12 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
   const actions = useNurturingActions(setState, setCondition, stateRef, user?.uid);
 
   // 4. Evolution Logic
-  const evolution = useEvolutionLogic(user, state, setState);
+  const evolution = useEvolutionLogic(
+    user,
+    isGuest,
+    state,
+    setState
+  );
 
   // 5. Remaining Logic (Not extracted to keep hooks focused or too specific)
   // setCharacterState, setCharacterName, resetGame, etc.
@@ -340,6 +347,8 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     // Hooks
     ...actions,
     ...evolution,
+    showSignupModal: evolution.showSignupModal,
+    setShowSignupModal: evolution.setShowSignupModal,
 
     saveToCloud,
     purchasePlan,
