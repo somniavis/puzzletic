@@ -146,7 +146,7 @@ export const EncyclopediaPage: React.FC = () => {
                                     <JelloAvatar
                                         character={modalCharacter!}
                                         speciesId={selectedJello.speciesId}
-                                        size="large"
+                                        size="medium"
                                         action="idle"
                                         mood="happy"
                                     />

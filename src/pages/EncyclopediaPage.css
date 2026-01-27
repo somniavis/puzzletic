@@ -473,13 +473,15 @@
 }
 
 .modal-avatar-wrapper {
-    width: 200px;
-    height: 200px;
+    width: 100%;
+    min-height: 220px;
     display: flex;
     justify-content: center;
     align-items: center;
     /* Add a subtle glow behind the avatar */
     background: radial-gradient(circle, rgba(255, 215, 0, 0.2) 0%, rgba(255, 255, 255, 0) 70%);
+    overflow: visible;
+    /* Ensure large avatar is not clipped */
 }
 
 .modal-jello-info {
@@ -605,8 +607,25 @@
 }
 
 .evolution-node.unlocked.clickable:hover {
-    transform: scale(1.1);
+    transform: scale(1.15);
     z-index: 10;
+    border-color: #FFD700;
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.6), 0 8px 0 #8B4513;
+}
+
+.evolution-node.unlocked.clickable::after {
+    /* Optional: Magnifying glass hint or just rely on cursor/scale */
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.5);
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.evolution-node.unlocked.clickable:hover::after {
+    opacity: 1;
 }
 
 .evolution-node.unlocked.clickable:active {
