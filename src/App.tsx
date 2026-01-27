@@ -16,6 +16,7 @@ import { useTranslation } from 'react-i18next'
 import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom'
 
 import { CHARACTER_SPECIES, type CharacterSpeciesId, getEvolutionName } from './data/species';
+import { useSmartImagePreloader } from './hooks/useSmartImagePreloader';
 
 // Lazy Load Pages
 const PlayPage = lazy(() => import('./pages/PlayPage').then(module => ({ default: module.PlayPage })));
@@ -60,6 +61,9 @@ function AppContent() {
   const [action, setAction] = useState<CharacterAction>('idle')
 
   const nurturing = useNurturing();
+
+  // Smart Image Preloader: Cache images for owned Jellos
+  useSmartImagePreloader(nurturing.unlockedJellos);
 
   // Handle character mood updates based on nurturing state
   useEffect(() => {
