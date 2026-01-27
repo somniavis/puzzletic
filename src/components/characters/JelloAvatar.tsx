@@ -80,6 +80,21 @@ export const JelloAvatar: React.FC<JelloAvatarProps> = ({
                         display: 'block', // Prevent baseline gap
                         objectFit: 'contain' // Ensure aspect ratio
                     }}
+                    onError={(e) => {
+                        // [Layer 3] Ultimate Local Fallback
+                        // If R2 server completely fails, show a local silhouette/placeholder
+                        // Using a simple embedded SVG data URI to guarantee 0 network dependency
+                        const target = e.target as HTMLImageElement;
+                        console.warn(`⚠️ [JelloAvatar] Image load failed, switching to local fallback: ${species.name}`);
+
+                        // A cute ghost/silhouette placeholder
+                        const fallbackSvg = `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='40' fill='%23eee'/><text x='50' y='55' font-size='40' text-anchor='middle' dominant-baseline='middle'>👻</text></svg>`;
+
+                        // Prevent infinite loop if fallback also fails (rare but possible)
+                        if (target.src !== fallbackSvg) {
+                            target.src = fallbackSvg;
+                        }
+                    }}
                 />
             ) : (
                 <div

@@ -2,20 +2,66 @@ import { useEffect, useRef } from 'react';
 import { CHARACTER_SPECIES } from '../data/species';
 
 /**
- * Smart Image Preloader Hook
+ * Smart Image Preloader Hook (Robust Version)
  * 
- * Automatically preloads images for characters the user owns (unlocked).
- * This ensures that when the user visits "My Jello Box" (Encyclopedia),
- * the images render instantly from the browser cache without network delay.
+ * Features:
+ * 1. Strong RAM Caching: Keeps HTMLImageElement references to prevent GC.
+ * 2. Auto-Retry: Retries failed downloads up to 3 times.
+ * 3. CrossOrigin Sync: Matches 'anonymous' setting for cache hits.
  * 
  * @param unlockedJellos Record of unlocked species and stages from NurturingContext
  */
 export const useSmartImagePreloader = (unlockedJellos: Record<string, number[]> | undefined) => {
-    // Keep track of URLs we have already requested to preload to avoid redundant processing
-    const preloadedUrls = useRef<Set<string>>(new Set());
+    // [Layer 1] Strong RAM Poll: Holds actual DOM elements to prevent Garbage Collection
+    const imagePool = useRef<Map<string, HTMLImageElement>>(new Map());
+
+    // Track ongoing retries to prevent duplicate attempts
+    const loadingAttempts = useRef<Set<string>>(new Set());
 
     useEffect(() => {
         if (!unlockedJellos) return;
+
+        const loadImageWithRetry = (url: string, attempt: number = 0) => {
+            // Already loaded? Skip.
+            if (imagePool.current.has(url)) return;
+
+            // Already trying? Skip.
+            if (loadingAttempts.current.has(url)) return;
+
+            loadingAttempts.current.add(url);
+
+            const img = new Image();
+            img.crossOrigin = 'anonymous'; // [CRITICAL] Matches JelloAvatar
+
+            img.onload = () => {
+                // Success: Pin to RAM pool
+                imagePool.current.set(url, img);
+                loadingAttempts.current.delete(url);
+                // console.log(`✅ [Pool] Pinned to RAM: ${url.split('/').pop()}`);
+            };
+
+            img.onerror = () => {
+                loadingAttempts.current.delete(url);
+
+                // [Layer 2] Retry Logic
+                if (attempt < 3) {
+                    const delay = Math.pow(2, attempt) * 1000; // 1s, 2s, 4s
+                    // console.warn(`⚠️ [Pool] Load failed, retrying in ${delay}ms... (${url.split('/').pop()})`);
+                    setTimeout(() => {
+                        loadImageWithRetry(url, attempt + 1);
+                    }, delay);
+                } else {
+                    console.error(`❌ [Pool] Gave up after 3 attempts: ${url}`);
+                    // Layer 3 (Fallback) is handled by JelloAvatar's onError
+                }
+            };
+
+            img.src = url;
+
+            if ('decode' in img) {
+                (img as any).decode().catch(() => { });
+            }
+        };
 
         Object.entries(unlockedJellos).forEach(([speciesId, stages]) => {
             const species = CHARACTER_SPECIES[speciesId];
@@ -24,31 +70,10 @@ export const useSmartImagePreloader = (unlockedJellos: Record<string, number[]> 
             stages.forEach(stage => {
                 const evolution = species.evolutions.find(e => e.stage === stage);
                 if (evolution && evolution.imageUrl) {
-                    const url = evolution.imageUrl;
-
-                    // If not already preloaded in this session
-                    if (!preloadedUrls.current.has(url)) {
-                        preloadedUrls.current.add(url);
-
-                        // Create image object to trigger browser download/cache
-                        const img = new Image();
-                        // CRITICAL: Must match JelloAvatar's crossOrigin setting to reuse cache
-                        img.crossOrigin = 'anonymous';
-
-                        // No verbose logging for production, just silent preloading
-                        // We only log critical errors if needed, but for preloading it's often better to fail silently
-                        // img.onerror = (e) => console.warn(`Failed to preload: ${url}`, e);
-
-                        img.src = url;
-
-                        // Optional: Decoding hints helps move decoding off the main thread
-                        if ('decode' in img) {
-                            (img as any).decode().catch(() => { });
-                        }
-                    }
+                    loadImageWithRetry(evolution.imageUrl);
                 }
             });
         });
 
-    }, [unlockedJellos]); // Re-run if user unlocks something new
+    }, [unlockedJellos]);
 };
