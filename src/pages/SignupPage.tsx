@@ -37,65 +37,69 @@ export const SignupPage: React.FC = () => {
         if (isSubmitting || loading) return;
         setIsSubmitting(true);
 
+        // Validation: Check mismatch
         if (formData.password !== formData.confirmPassword) {
             alert(t('auth.signup.passwordMismatch'));
+            setIsSubmitting(false); // Fix: Reset state so user can try again
             return;
         }
 
-        try {
-            const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
-            const user = userCredential.user;
+        // Use setTimeout to ensure the "Loading" overlay renders/paints 
+        // BEFORE the heavy Firebase/Network operation starts.
+        setTimeout(async () => {
+            try {
+                const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
+                const user = userCredential.user;
+
+                // [MIGRATION] Transfer Guest Data to New User
+                const guestId = localStorage.getItem('puzzleletic_guest_id');
+                if (guestId) {
+                    try {
+                        const guestData = loadNurturingState(guestId);
+                        // Only migrate if there is actual data (character exists)
+                        if (guestData && guestData.hasCharacter) {
 
 
+                            // 1. Save to User's Local Storage (Instant Access for UI)
+                            saveNurturingState(guestData, user.uid);
 
-            // [MIGRATION] Transfer Guest Data to New User
-            const guestId = localStorage.getItem('puzzleletic_guest_id');
-            if (guestId) {
-                try {
-                    const guestData = loadNurturingState(guestId);
-                    // Only migrate if there is actual data (character exists)
-                    if (guestData && guestData.hasCharacter) {
+                            // 2. Upload to Cloud (Persistence & Backup)
+                            // This ensures the data is safely stored in D1
+                            await migrateGuestToCloud(user, guestData);
 
-
-                        // 1. Save to User's Local Storage (Instant Access for UI)
-                        saveNurturingState(guestData, user.uid);
-
-                        // 2. Upload to Cloud (Persistence & Backup)
-                        // This ensures the data is safely stored in D1
-                        await migrateGuestToCloud(user, guestData);
-
-                        // 3. Cleanup Guest Data (Method 1: Force clear so "Continue" doesn't show on logout)
-                        const guestStorageKey = getStorageKey(guestId);
-                        localStorage.removeItem('puzzleletic_guest_id'); // Clear Guest ID
-                        localStorage.removeItem(guestStorageKey);        // Clear Guest Data
-                        // console.log('🧹 [Signup] Guest data cleared from local (Method 1 applied).');
+                            // 3. Cleanup Guest Data (Method 1: Force clear so "Continue" doesn't show on logout)
+                            const guestStorageKey = getStorageKey(guestId);
+                            localStorage.removeItem('puzzleletic_guest_id'); // Clear Guest ID
+                            localStorage.removeItem(guestStorageKey);        // Clear Guest Data
+                            // console.log('🧹 [Signup] Guest data cleared from local (Method 1 applied).');
 
 
+                        }
+                    } catch (e) {
+                        console.error('⚠️ [Signup] Data Migration Failed:', e);
+                        // Continue anyway, don't block signup flow
                     }
-                } catch (e) {
-                    console.error('⚠️ [Signup] Data Migration Failed:', e);
-                    // Continue anyway, don't block signup flow
                 }
+
+                // alert(t('auth.signup.success')); // REMOVED: Smoother flow without popup
+                navigate('/home');
+            } catch (error: any) {
+                console.error('Signup failed:', error);
+                setIsSubmitting(false); // Enable retry
+                let errorMessage = t('auth.errors.registrationFailed');
+
+
+                if (error.code === 'auth/email-already-in-use') {
+                    errorMessage = t('auth.errors.emailInUse');
+                } else if (error.code === 'auth/weak-password') {
+                    errorMessage = t('auth.errors.weakPassword');
+                } else if (error.code === 'auth/invalid-email') {
+                    errorMessage = t('auth.errors.invalidEmail');
+                }
+
+                alert(errorMessage);
             }
-
-            // alert(t('auth.signup.success')); // REMOVED: Smoother flow without popup
-            navigate('/home');
-        } catch (error: any) {
-            console.error('Signup failed:', error);
-            setIsSubmitting(false); // Enable retry
-            let errorMessage = t('auth.errors.registrationFailed');
-
-
-            if (error.code === 'auth/email-already-in-use') {
-                errorMessage = t('auth.errors.emailInUse');
-            } else if (error.code === 'auth/weak-password') {
-                errorMessage = t('auth.errors.weakPassword');
-            } else if (error.code === 'auth/invalid-email') {
-                errorMessage = t('auth.errors.invalidEmail');
-            }
-
-            alert(errorMessage);
-        }
+        }, 50); // Small delay to allow React render cycle to complete
     };
 
     const handleBackToLogin = () => {
