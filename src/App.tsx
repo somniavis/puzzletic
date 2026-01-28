@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, Suspense, lazy } from 'react'
 import './App.css'
 import { PetRoom } from './components/PetRoom/PetRoom'
+import { GlobalErrorBoundary } from './components/GlobalErrorBoundary'
 
 import { createCharacter } from './data/characters'
 import type { CharacterAction, CharacterMood, EvolutionStage } from './types/character'
@@ -309,7 +310,9 @@ function App() {
       <AuthProvider>
         <SoundProvider>
           <NurturingProviderWrapper>
-            <AppContent />
+            <GlobalErrorBoundary>
+              <AppContent />
+            </GlobalErrorBoundary>
           </NurturingProviderWrapper>
         </SoundProvider>
       </AuthProvider>
