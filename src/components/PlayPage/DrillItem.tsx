@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import type { GameManifest } from '../../games/types';
+import { PremiumLockOverlay } from '../Premium/PremiumLockOverlay';
 import { GENIUS_UNLOCK_THRESHOLD } from '../../utils/progression';
 
 interface DrillItemProps {
@@ -52,19 +53,9 @@ export const DrillItem: React.FC<DrillItemProps> = ({
         <div
             className={`drill-item ${unlocked ? 'unlocked' : ''} ${isPremiumLocked ? 'locked' : ''}`}
             onClick={handleClick}
-            style={isPremiumLocked ? { opacity: 0.8, filter: 'grayscale(0.3)' } : {}}
+            style={{ position: 'relative' }}
         >
-            {isPremiumLocked && (
-                <div style={{
-                    position: 'absolute',
-                    top: '8px',
-                    right: '8px',
-                    zIndex: 5,
-                    fontSize: '1rem' // Small lock icon
-                }}>
-                    🔒
-                </div>
-            )}
+            {isPremiumLocked && <PremiumLockOverlay />}
             {isMastered ? (
                 <div
                     className={`badge-box ${medalClass}`}

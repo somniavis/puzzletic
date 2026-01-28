@@ -1,6 +1,5 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
 import { playButtonSound } from '../../utils/sound';
 import { useNurturing } from '../../contexts/NurturingContext';
 import './PetRoom.css';
@@ -12,6 +11,7 @@ interface FabMenuProps {
     handleCameraClick: () => void;
     showGiftBox: boolean;
     isActionInProgress: boolean;
+    onPremiumClick: () => void;
 }
 
 export const FabMenu: React.FC<FabMenuProps> = ({
@@ -21,9 +21,9 @@ export const FabMenu: React.FC<FabMenuProps> = ({
     handleCameraClick,
     showGiftBox,
     isActionInProgress,
+    onPremiumClick,
 }) => {
     const { t } = useTranslation();
-    const navigate = useNavigate();
     const nurturing = useNurturing();
 
     return (
@@ -79,7 +79,8 @@ export const FabMenu: React.FC<FabMenuProps> = ({
                             className="premium-btn-floating"
                             onClick={() => {
                                 playButtonSound();
-                                navigate('/profile');
+                                // navigate('/profile'); // Removed: using modal now
+                                onPremiumClick();
                             }}
                             disabled={isActionInProgress}
                             title={t('profile.upgradePrompt', 'Upgrade to Premium')}

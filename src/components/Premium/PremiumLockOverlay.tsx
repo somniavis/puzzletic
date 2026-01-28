@@ -11,17 +11,18 @@ export const PremiumLockOverlay: React.FC = () => {
             bottom: 0,
             backgroundColor: 'rgba(0, 0, 0, 0.65)',
             display: 'flex',
-            flexDirection: 'column',
+            flexDirection: 'row', // Horizontal layout
             alignItems: 'center',
             justifyContent: 'center',
+            gap: '8px', // Add spacing between lock and badge
             borderRadius: '16px', // Matches card border radius
             zIndex: 10,
             backdropFilter: 'blur(2px)'
         }}>
             <div style={{
-                fontSize: '2rem',
-                marginBottom: '8px',
-                filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))'
+                fontSize: '1.5rem', // Slightly smaller for horizontal fit
+                filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))',
+                lineHeight: 1
             }}>
                 🔒
             </div>

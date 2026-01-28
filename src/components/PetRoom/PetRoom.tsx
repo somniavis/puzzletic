@@ -14,6 +14,7 @@ import { ConfirmModal } from './ConfirmModal'; // Confirmed in PetRoom
 import { FabMenu } from './FabMenu'; // Confirmed in PetRoom
 import { TrainRewardModal } from '../TrainRewardModal'; // Will update if index.tsx exists
 import { EvolutionControls } from './EvolutionControls';
+import { PremiumPurchaseModal } from '../Premium/PremiumPurchaseModal';
 
 // Hooks
 import { usePetRoomUI } from './hooks/usePetRoomUI';
@@ -242,6 +243,20 @@ export const PetRoom: React.FC<PetRoomProps> = ({
     if (nickname) nurturing.setCharacterName(nickname);
   };
 
+  // --- Evolution Premium Lock & Premium Modal ---
+  const [showPremiumModal, setShowPremiumModal] = useState(false);
+
+  const handleEvolutionTrigger = () => {
+    // Level 3 -> 4 Lock (Premium Only)
+    // evolutionStage 3 means current level is 3. Trying to evolve to 4.
+    if (nurturing.evolutionStage === 3 && !nurturing.subscription.isPremium) {
+      playButtonSound();
+      setShowPremiumModal(true);
+      return;
+    }
+    nurturing.triggerEvolution();
+  };
+
   return (
     <div className="pet-room">
       <div className="pet-room-content" ref={camera.petRoomRef} style={{ flex: 1, display: 'flex', flexDirection: 'column', position: 'relative', overflow: 'hidden' }}>
@@ -269,7 +284,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({
             evolutionPhase={nurturing.evolutionPhase}
             showGiftBox={showGiftBox}
             isActionInProgress={actions.isActionInProgress}
-            triggerEvolution={nurturing.triggerEvolution}
+            triggerEvolution={handleEvolutionTrigger}
             triggerGraduation={nurturing.triggerGraduation}
           />
 
@@ -280,6 +295,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({
             handleCameraClick={camera.handleCameraClick}
             showGiftBox={showGiftBox}
             isActionInProgress={actions.isActionInProgress}
+            onPremiumClick={() => setShowPremiumModal(true)}
           />
         </div>
 
@@ -384,6 +400,11 @@ export const PetRoom: React.FC<PetRoomProps> = ({
       )}
 
       <EvolutionOverlay />
+
+      <PremiumPurchaseModal
+        isOpen={showPremiumModal}
+        onClose={() => setShowPremiumModal(false)}
+      />
     </div>
   );
 };

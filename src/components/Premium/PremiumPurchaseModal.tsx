@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation, Trans } from 'react-i18next';
 import { playButtonSound } from '../../utils/sound';
 
 interface PremiumPurchaseModalProps {
@@ -9,6 +10,7 @@ interface PremiumPurchaseModalProps {
 
 export const PremiumPurchaseModal: React.FC<PremiumPurchaseModalProps> = ({ isOpen, onClose }) => {
     const navigate = useNavigate();
+    const { t } = useTranslation();
 
     if (!isOpen) return null;
 
@@ -61,17 +63,37 @@ export const PremiumPurchaseModal: React.FC<PremiumPurchaseModalProps> = ({ isOp
                         position: 'absolute',
                         top: '16px',
                         right: '16px',
-                        background: 'rgba(255, 255, 255, 0.1)',
-                        border: 'none',
-                        borderRadius: '50%',
-                        width: '32px',
-                        height: '32px',
-                        color: '#fff',
-                        fontSize: '18px',
-                        cursor: 'pointer',
+                        background: 'transparent',
+                        border: '3px solid #FFD700',
+                        borderRadius: '12px',
+                        width: '40px',
+                        height: '40px',
                         display: 'flex',
                         alignItems: 'center',
-                        justifyContent: 'center'
+                        justifyContent: 'center',
+                        cursor: 'pointer',
+                        fontSize: '1.5rem',
+                        color: '#FFD700',
+                        boxShadow: '0 3px 0 rgba(255, 215, 0, 0.3)',
+                        transition: 'all 0.1s ease',
+                        padding: 0,
+                        lineHeight: 1
+                    }}
+                    onMouseEnter={(e) => {
+                        e.currentTarget.style.transform = 'scale(1.05)';
+                        e.currentTarget.style.backgroundColor = 'rgba(255, 215, 0, 0.1)';
+                    }}
+                    onMouseLeave={(e) => {
+                        e.currentTarget.style.transform = 'scale(1)';
+                        e.currentTarget.style.backgroundColor = 'transparent';
+                    }}
+                    onMouseDown={(e) => {
+                        e.currentTarget.style.transform = 'translateY(2px) scale(1.05)';
+                        e.currentTarget.style.boxShadow = '0 1px 0 rgba(255, 215, 0, 0.3)';
+                    }}
+                    onMouseUp={(e) => {
+                        e.currentTarget.style.transform = 'scale(1.05)';
+                        e.currentTarget.style.boxShadow = '0 3px 0 rgba(255, 215, 0, 0.3)';
                     }}
                 >
                     ✕
@@ -88,7 +110,7 @@ export const PremiumPurchaseModal: React.FC<PremiumPurchaseModalProps> = ({ isOp
                     WebkitTextFillColor: 'transparent',
                     fontWeight: 800
                 }}>
-                    Unlock Premium!
+                    {t('common.modal.title', 'Unlock Premium!')}
                 </h2>
 
                 <p style={{
@@ -97,8 +119,11 @@ export const PremiumPurchaseModal: React.FC<PremiumPurchaseModalProps> = ({ isOp
                     marginBottom: '24px',
                     lineHeight: '1.5'
                 }}>
-                    This game is available for <b>Premium Users only</b>.<br />
-                    Start growing <b>3x faster</b> now! 🚀
+                    <Trans
+                        i18nKey="common.modal.desc"
+                        defaults="This game is available for <bold>Premium Users only</bold>.<br/>Start growing <bold>3x faster</bold> now! 🚀"
+                        components={{ bold: <b />, br: <br /> }}
+                    />
                 </p>
 
                 {/* Benefits List */}
@@ -110,13 +135,13 @@ export const PremiumPurchaseModal: React.FC<PremiumPurchaseModalProps> = ({ isOp
                     textAlign: 'left'
                 }}>
                     <div style={{ padding: '8px 0', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-                        ✅ <b>Unlock ALL 20+ Games</b>
+                        ✅ <b>{t('common.modal.benefit1', 'Unlock ALL 20+ Games')}</b>
                     </div>
                     <div style={{ padding: '8px 0', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-                        ✅ <b>Earn 3x-8x More XP</b>
+                        ✅ <b>{t('common.modal.benefit2', 'Earn 3x-8x More XP')}</b>
                     </div>
                     <div style={{ padding: '8px 0' }}>
-                        ✅ <b>Exclusive Jello Evolutions</b>
+                        ✅ <b>{t('common.modal.benefit3', 'Exclusive Jello Evolutions')}</b>
                     </div>
                 </div>
 
@@ -128,21 +153,41 @@ export const PremiumPurchaseModal: React.FC<PremiumPurchaseModalProps> = ({ isOp
                         navigate('/profile');
                     }}
                     style={{
-                        background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)',
-                        color: '#000',
-                        border: 'none',
+                        background: 'linear-gradient(180deg, #FFD700 0%, #FFA500 100%)',
+                        color: '#4d3e2f',
+                        border: '3px solid #d4961f',
                         width: '100%',
                         padding: '16px',
                         borderRadius: '16px',
-                        fontSize: '1.1rem',
-                        fontWeight: 'bold',
+                        fontSize: '1.2rem',
+                        fontWeight: '800',
                         cursor: 'pointer',
-                        boxShadow: '0 4px 15px rgba(255, 165, 0, 0.4)',
+                        boxShadow: '0 4px 0 #b4761f, 0 5px 15px rgba(255, 165, 0, 0.6)', // 3D Solid + Glow
                         transform: 'translateY(0)',
-                        transition: 'transform 0.1s'
+                        transition: 'all 0.1s ease',
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.5px'
+                    }}
+                    onMouseEnter={(e) => {
+                        e.currentTarget.style.transform = 'translateY(-2px)';
+                        e.currentTarget.style.filter = 'brightness(1.1)';
+                        e.currentTarget.style.boxShadow = '0 6px 0 #b4761f, 0 8px 20px rgba(255, 165, 0, 0.7)'; // Enhanced glow on hover
+                    }}
+                    onMouseLeave={(e) => {
+                        e.currentTarget.style.transform = 'translateY(0)';
+                        e.currentTarget.style.filter = 'brightness(1)';
+                        e.currentTarget.style.boxShadow = '0 4px 0 #b4761f, 0 5px 15px rgba(255, 165, 0, 0.6)'; // Return to normal
+                    }}
+                    onMouseDown={(e) => {
+                        e.currentTarget.style.transform = 'translateY(4px)';
+                        e.currentTarget.style.boxShadow = '0 0 0 #b4761f, 0 2px 5px rgba(255, 165, 0, 0.4)'; // Pressed: No 3D, reduced glow
+                    }}
+                    onMouseUp={(e) => {
+                        e.currentTarget.style.transform = 'translateY(-2px)';
+                        e.currentTarget.style.boxShadow = '0 6px 0 #b4761f, 0 8px 20px rgba(255, 165, 0, 0.7)'; // Release to hover state
                     }}
                 >
-                    Upgrade Now ✨
+                    $1 {t('common.upgrade_btn_text', 'UPGRADE')} ✨
                 </button>
             </div>
         </div>
