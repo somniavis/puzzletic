@@ -11,6 +11,8 @@ import { isGameUnlocked, parseGameScore, ADVENTURE_UNLOCK_THRESHOLD, GENIUS_UNLO
 // Hooks & Utils
 import { usePlayPageLogic, type Operator } from '../hooks/usePlayPageLogic';
 import { CATEGORY_ICONS } from '../utils/playPageUtils';
+import { usePremiumStatus, isPremiumGame } from '../utils/premiumLogic';
+import { PremiumPurchaseModal } from '../components/Premium/PremiumPurchaseModal';
 
 // Components
 import { AdventureCard } from '../components/PlayPage/AdventureCard';
@@ -37,6 +39,9 @@ const PlayPage: React.FC = () => {
         handleMathModeSelect
     } = usePlayPageLogic({ gameScores });
 
+    const { isPremium } = usePremiumStatus();
+    const [isPremiumModalOpen, setIsPremiumModalOpen] = React.useState(false);
+
     const activeGame = gameId ? getGameById(gameId) : null;
 
     // -- Effects --
@@ -62,6 +67,14 @@ const PlayPage: React.FC = () => {
     };
 
     const handlePlayClick = (game: GameManifest, isLocked: boolean, reason?: string) => {
+        // 1. Check Premium Lock
+        const premiumLocked = !isPremium && isPremiumGame(game);
+        if (premiumLocked) {
+            playButtonSound();
+            setIsPremiumModalOpen(true);
+            return;
+        }
+
         if (isLocked) {
             console.log('Game Locked:', reason);
             return;
@@ -166,6 +179,7 @@ const PlayPage: React.FC = () => {
                                 clearCount={clearCount}
                                 isMastered={isMastered}
                                 onPlay={handlePlayClick}
+                                isPremiumLocked={!isPremium && isPremiumGame(game)}
                             />
                         );
                     })
@@ -222,6 +236,7 @@ const PlayPage: React.FC = () => {
                                 isMastered={isMastered}
                                 reason={reason}
                                 onPlay={handlePlayClick}
+                                isPremiumLocked={!isPremium && isPremiumGame(game)}
                             />
                         );
                     })
@@ -271,6 +286,11 @@ const PlayPage: React.FC = () => {
             </div>
 
             {renderBottomNav()}
+
+            <PremiumPurchaseModal
+                isOpen={isPremiumModalOpen}
+                onClose={() => setIsPremiumModalOpen(false)}
+            />
         </div>
     );
 };

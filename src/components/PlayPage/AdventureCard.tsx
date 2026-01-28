@@ -10,6 +10,7 @@ interface AdventureCardProps {
     clearCount: number;
     isMastered: boolean;
     onPlay: (game: GameManifest, isLocked: boolean, reason?: string) => void;
+    isPremiumLocked?: boolean;
 }
 
 export const AdventureCard: React.FC<AdventureCardProps> = ({
@@ -18,9 +19,14 @@ export const AdventureCard: React.FC<AdventureCardProps> = ({
     displayReason,
     clearCount,
     isMastered,
-    onPlay
+    onPlay,
+    isPremiumLocked = false
 }) => {
     const { t } = useTranslation();
+
+    // Import overlay (Lazy or direct - using direct here as it's small)
+    // Note: Ensure PremiumLockOverlay is imported at top or dynamically required
+    // Assuming imported at top - will fix imports in next block
 
     const handleClick = () => {
         onPlay(game, !unlocked, displayReason);
@@ -89,9 +95,43 @@ export const AdventureCard: React.FC<AdventureCardProps> = ({
 
     return (
         <div
-            className={`adventure-card ${game.category === 'brain' ? 'brain-card' : ''} ${!unlocked ? 'locked' : ''}`}
+            className={`adventure-card ${game.category === 'brain' ? 'brain-card' : ''} ${(!unlocked || isPremiumLocked) ? 'locked' : ''}`}
             onClick={handleClick}
         >
+            {isPremiumLocked && (
+                // We need to import PremiumLockOverlay. 
+                // Since I cannot add import in this block easily without hitting top, I will handle import in another tool call or rely on subsequent fix.
+                // Actually I can add the overlay here assuming the component exists.
+                // IMPORTANT: I must add the import statement at the top. I'll do that in a separate chunk in this call if possible or next.
+                // For now I will put a placeholder logic and fix imports after.
+                <div style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    backgroundColor: 'rgba(0, 0, 0, 0.65)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    borderRadius: '16px',
+                    zIndex: 10,
+                    backdropFilter: 'blur(2px)'
+                }}>
+                    <div style={{ fontSize: '2rem', marginBottom: '8px', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }}>🔒</div>
+                    <div style={{
+                        background: 'linear-gradient(135deg, #FFD700, #FFA500)',
+                        color: '#fff',
+                        padding: '4px 12px',
+                        borderRadius: '12px',
+                        fontSize: '0.8rem',
+                        fontWeight: 'bold',
+                        boxShadow: '0 2px 8px rgba(255, 215, 0, 0.4)',
+                        border: '1px solid rgba(255, 255, 255, 0.3)'
+                    }}>Premium</div>
+                </div>
+            )}
             <div className="card-top">
                 <div className="card-icon-box" style={{ background: getIconBackground(game.thumbnail) }}>
                     {renderThumbnail(game.thumbnail, game.category)}

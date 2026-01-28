@@ -10,6 +10,7 @@ interface DrillItemProps {
     isMastered: boolean;
     reason?: string;
     onPlay: (game: GameManifest, isLocked: boolean, reason?: string) => void;
+    isPremiumLocked?: boolean;
 }
 
 export const DrillItem: React.FC<DrillItemProps> = ({
@@ -18,7 +19,8 @@ export const DrillItem: React.FC<DrillItemProps> = ({
     clearCount,
     isMastered,
     reason,
-    onPlay
+    onPlay,
+    isPremiumLocked = false
 }) => {
     const { t } = useTranslation();
     const [showTooltip, setShowTooltip] = React.useState(false);
@@ -48,9 +50,21 @@ export const DrillItem: React.FC<DrillItemProps> = ({
 
     return (
         <div
-            className={`drill-item ${unlocked ? 'unlocked' : ''}`}
+            className={`drill-item ${unlocked ? 'unlocked' : ''} ${isPremiumLocked ? 'locked' : ''}`}
             onClick={handleClick}
+            style={isPremiumLocked ? { opacity: 0.8, filter: 'grayscale(0.3)' } : {}}
         >
+            {isPremiumLocked && (
+                <div style={{
+                    position: 'absolute',
+                    top: '8px',
+                    right: '8px',
+                    zIndex: 5,
+                    fontSize: '1rem' // Small lock icon
+                }}>
+                    🔒
+                </div>
+            )}
             {isMastered ? (
                 <div
                     className={`badge-box ${medalClass}`}
