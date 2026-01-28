@@ -17,25 +17,29 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
-    const [isGuest, setIsGuest] = useState(false);
-    const [guestId, setGuestId] = useState<string | null>(null);
 
-    useEffect(() => {
-        // Initialize Guest ID only if needed (lazy init)
-        const storedGuestId = localStorage.getItem('puzzleletic_guest_id');
-        if (storedGuestId) {
-            setGuestId(storedGuestId);
-        }
-    }, []);
+    // Initialize isGuest synchronously from localStorage to persist session on refresh
+    const [isGuest, setIsGuest] = useState(() => {
+        return localStorage.getItem('puzzleletic_is_guest_active') === 'true';
+    });
+
+    // Initialize Guest ID synchronously to prevent race conditions in NurturingContext
+    const [guestId, setGuestId] = useState<string | null>(() => {
+        return localStorage.getItem('puzzleletic_guest_id');
+    });
+
+    // Removed redundant useEffect for guestId loading
+    // useEffect(() => { ... }, []);
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
             setUser(currentUser);
             if (currentUser) {
-                // If logged in, we are NOT a guest
+                // If logged in, we are NOT a guest. Clear guest flag.
                 setIsGuest(false);
+                localStorage.removeItem('puzzleletic_is_guest_active');
             }
-            // If no user, we MIGHT be a guest if explicitly set, but checking "isGuest" state is enough
+            // If no user, isGuest state persists from localStorage initialization
             setLoading(false);
         });
 
@@ -50,11 +54,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
         setGuestId(id);
         setIsGuest(true);
+        localStorage.setItem('puzzleletic_is_guest_active', 'true');
     };
 
     const logout = async () => {
         await firebaseSignOut(auth);
         setIsGuest(false); // Reset guest state on logout
+        localStorage.removeItem('puzzleletic_is_guest_active');
     };
 
     return (

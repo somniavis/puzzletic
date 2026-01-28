@@ -129,3 +129,26 @@ export function restoreData(protectedState: any, storedChecksum: string): any | 
     return null;
   }
 }
+
+/**
+ * 체크섬 없이 데이터 복원 (Emergency Recovery)
+ * 데이터 무결성을 보장할 수 없지만, 초기화를 방지하기 위해 사용
+ */
+export function restoreDataWithoutChecksum(protectedState: any): any {
+  if (!protectedState._enc) return { ...protectedState };
+
+  try {
+    const state = { ...protectedState };
+    const encrypted = state._enc;
+    delete state._enc;
+
+    const decrypted = xorDecrypt(encrypted, SECRET_KEY);
+    if (!decrypted) return state; // 복호화 실패 시 원본 반환 (Reset Sensitive)
+
+    const sensitiveData = JSON.parse(decrypted);
+    return { ...state, ...sensitiveData };
+  } catch (error) {
+    console.error('Failed to force restore data:', error);
+    return { ...protectedState };
+  }
+}

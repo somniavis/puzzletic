@@ -295,14 +295,22 @@ function AppContent() {
   )
 }
 
+// Wrapper to force remounting of NurturingProvider when User/Guest ID changes
+const NurturingProviderWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { user, guestId } = useAuth();
+  // Ensure provider remounts when identity changes to force data reload
+  const key = user?.uid || guestId || 'anonymous';
+  return <NurturingProvider key={key}>{children}</NurturingProvider>;
+};
+
 function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
         <SoundProvider>
-          <NurturingProvider>
+          <NurturingProviderWrapper>
             <AppContent />
-          </NurturingProvider>
+          </NurturingProviderWrapper>
         </SoundProvider>
       </AuthProvider>
     </BrowserRouter>

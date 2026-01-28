@@ -67,6 +67,8 @@ export const ja = {
         login: 'ログイン',
         signup: '新規登録',
         back_to_home: 'ホームに戻る',
+        continue_experience: 'つづきから',
+        new_game: 'はじめから',
     },
 
     character: {
@@ -785,11 +787,11 @@ export const ja = {
     auth: {
         promo: {
             title: 'ジェロを守ろう！',
-            desc: 'ステージ2に進化するには進行状況の保存が必要です。今すぐ登録してジェロを永遠に守りましょう！',
+            desc: 'ステージ2に進化するには進行状況の保存が必要です。<highlight>今すぐ登録</highlight>してジェロを永遠に守りましょう！',
             later: '後で',
         },
         login: {
-            title: 'ログイン',
+            title: 'Join us',
             subtitle: 'ログインしてデータを同期しましょう。',
             email: 'メールアドレス',
             emailPlaceholder: 'メールアドレスを入力',

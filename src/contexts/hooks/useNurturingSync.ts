@@ -81,10 +81,19 @@ export const useNurturingSync = (user: User | null, guestId: string | null = nul
 
         // Guest mode
         const targetId = guestId || undefined;
-        console.log('🔄 [Init] Loading Guest Data for:', targetId);
-        const loaded = loadNurturingState(targetId);
-        const { updatedState } = applyOfflineProgress(loaded);
-        return updatedState;
+        console.log('🔄 [Init] useNurturingSync Init for TargetID:', targetId);
+
+        try {
+            const loaded = loadNurturingState(targetId);
+            console.log('🔄 [Init] Loaded Raw State:', { hasCharacter: loaded.hasCharacter, health: loaded.stats?.health });
+
+            const { updatedState } = applyOfflineProgress(loaded);
+            console.log('🔄 [Init] Post-Offline State:', { hasCharacter: updatedState.hasCharacter, health: updatedState.stats?.health });
+            return updatedState;
+        } catch (e) {
+            console.error('🔄 [Init] FAIL:', e);
+            return createDefaultState();
+        }
     });
 
     // ========== THROTTLED LOCAL PERSISTENCE ==========
@@ -98,7 +107,20 @@ export const useNurturingSync = (user: User | null, guestId: string | null = nul
         if (!hasLoadedRef.current && user) {
             return;
         }
+
         const targetId = user?.uid || guestId || undefined;
+
+        // [SAFETY CHECK] Prevent overwriting valid data with empty state
+        // If current state has no character, but storage implies valid data exists, SKIP SAVE.
+        // This handles cases where load failed or context switched incompletely.
+        if (targetId && !debouncedState.hasCharacter) {
+            const existingData = loadNurturingState(targetId);
+            if (existingData.hasCharacter) {
+                console.warn('🛡️ [Safety] Prevented overwriting valid data with empty state for:', targetId);
+                return;
+            }
+        }
+
         saveNurturingState(debouncedState, targetId);
     }, [debouncedState, user?.uid, guestId]);
     // =================================================
@@ -137,13 +159,15 @@ export const useNurturingSync = (user: User | null, guestId: string | null = nul
         } else {
             // [Log Out] Switch to Guest Mode
             setIsGlobalLoading(false);
-            // Optional: Reload guest data? Or keep screen clear?
-            // For now, load guest data to allow guest play
-            const guestState = loadNurturingState(undefined);
+
+            // Fix: Load guest data using guestId (previously undefined)
+            console.log('🔄 Switching to Guest/Anonymous Mode. GuestID:', guestId);
+            const targetId = guestId || undefined;
+            const guestState = loadNurturingState(targetId);
             setState(guestState);
             hasLoadedRef.current = true;
         }
-    }, [user?.uid]);
+    }, [user?.uid, guestId]);
 
     // Cloud Sync on Login (Unchanged logic, just ensure it uses current user)
     useEffect(() => {

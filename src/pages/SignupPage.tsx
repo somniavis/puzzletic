@@ -5,6 +5,8 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext'; // Import useAuth
 import { auth } from '../firebase';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { loadNurturingState, saveNurturingState } from '../services/persistenceService';
+import { migrateGuestToCloud } from '../services/syncService';
 
 import { useNavigate, useLocation } from 'react-router-dom';
 
@@ -37,9 +39,35 @@ export const SignupPage: React.FC = () => {
         }
 
         try {
-            await createUserWithEmailAndPassword(auth, formData.email, formData.password);
+            const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
+            const user = userCredential.user;
 
             console.log('Signup successful:', formData.email);
+
+            // [MIGRATION] Transfer Guest Data to New User
+            const guestId = localStorage.getItem('puzzleletic_guest_id');
+            if (guestId) {
+                try {
+                    const guestData = loadNurturingState(guestId);
+                    // Only migrate if there is actual data (character exists)
+                    if (guestData && guestData.hasCharacter) {
+                        console.log('🚀 [Signup] Active Guest Session found. Migrating to:', user.uid);
+
+                        // 1. Save to User's Local Storage (Instant Access for UI)
+                        saveNurturingState(guestData, user.uid);
+
+                        // 2. Upload to Cloud (Persistence & Backup)
+                        // This ensures the data is safely stored in D1
+                        await migrateGuestToCloud(user, guestData);
+
+                        console.log('✅ [Signup] Migration complete.');
+                    }
+                } catch (e) {
+                    console.error('⚠️ [Signup] Data Migration Failed:', e);
+                    // Continue anyway, don't block signup flow
+                }
+            }
+
             alert(t('auth.signup.success'));
             navigate('/home');
         } catch (error: any) {

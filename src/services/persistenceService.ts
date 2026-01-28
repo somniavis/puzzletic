@@ -12,7 +12,7 @@ import {
   DEFAULT_ABANDONMENT_STATE,
 } from '../constants/nurturing';
 import { calculateOfflineProgress, checkAbandonmentState } from './gameTickService';
-import { protectData, restoreData } from './simpleEncryption';
+import { protectData, restoreData, restoreDataWithoutChecksum } from './simpleEncryption';
 import { createGameScore, getUnlockThreshold, getProgressionCategory } from '../utils/progression';
 import type { GameScoreValue } from '../types/nurturing';
 
@@ -32,11 +32,11 @@ export const setCurrentUserId = (userId: string | null) => {
 };
 
 // Generate user-specific storage keys
-const getStorageKey = (userId?: string) => {
+export const getStorageKey = (userId?: string) => {
   const id = userId || currentUserId;
   return id ? `${STORAGE_KEY_PREFIX}_${id}` : STORAGE_KEY_PREFIX;
 };
-const getChecksumKey = (userId?: string) => {
+export const getChecksumKey = (userId?: string) => {
   const id = userId || currentUserId;
   return id ? `${CHECKSUM_KEY_PREFIX}_${id}` : CHECKSUM_KEY_PREFIX;
 };
@@ -113,9 +113,17 @@ export const saveNurturingState = (state: NurturingPersistentState, userId?: str
   try {
     // 민감한 데이터 암호화 및 체크섬 생성
     const { protectedData, checksum } = protectData(state);
+    const key = getStorageKey(userId);
+
+    // DEBUG: Log saving action
+    console.log('💾 Saving State to:', key, {
+      hasCharacter: state.hasCharacter,
+      health: state.stats?.health,
+      xp: state.xp
+    });
 
     const serialized = JSON.stringify(protectedData);
-    localStorage.setItem(getStorageKey(userId), serialized);
+    localStorage.setItem(key, serialized);
     localStorage.setItem(getChecksumKey(userId), checksum);
   } catch (error) {
     console.error('Failed to save nurturing state:', error);
@@ -200,6 +208,34 @@ const migrateLegacyData = (loaded: any): any => {
     });
   }
 
+  // 5. Encrypted Data Integrity (Implicitly covered by checksum, but ensure no zero-timestamp)
+  if (!loaded.lastActiveTime) {
+    console.log('🔄 Migrating old data: setting missing lastActiveTime to now');
+    loaded.lastActiveTime = Date.now();
+  }
+
+  // 6. [Critical Fix] Dead-on-Arrival Rescue
+  // XP가 0인데(신규 유저급) 스탯이 모두 0이거나(사망) 매우 낮다면, 초기값으로 복구
+  // (저장 시점 문제나 이전 버그로 인해 0,0,0으로 저장된 데이터 복구)
+  const isDead = (loaded.stats?.health || 0) <= 0;
+  const isNoXP = (loaded.xp || 0) === 0;
+
+  if (isNoXP && isDead) {
+    console.log('🚑 [Rescue] Found invalid 0/0/0 stats for new user. Resetting to defaults.');
+    loaded.stats = { ...DEFAULT_NURTURING_STATS };
+    loaded.lastActiveTime = Date.now(); // 시간도 리셋
+  }
+
+  // 7. Tick Config Migration
+  if (!loaded.tickConfig) {
+    console.log('🔄 Migrating old data: adding missing tickConfig');
+    loaded.tickConfig = {
+      intervalMs: 60000,
+      lastTickTime: loaded.lastActiveTime || Date.now(),
+      isActive: true
+    };
+  }
+
   return loaded;
 };
 
@@ -210,41 +246,66 @@ const migrateLegacyData = (loaded: any): any => {
  */
 export const loadNurturingState = (userId?: string): NurturingPersistentState => {
   try {
-    const serialized = localStorage.getItem(getStorageKey(userId));
+    const key = getStorageKey(userId);
+    console.log('📂 Loading State from:', key);
+    const serialized = localStorage.getItem(key);
+
+    if (serialized) {
+      // Data exists
+    } else {
+      console.warn('⚠️ No state found for key:', key);
+    }
+
+    // const serialized = ... (Removed duplicate)
     const storedChecksum = localStorage.getItem(getChecksumKey(userId));
 
     if (!serialized) {
+      console.log('📂 No saved state found via key:', key);
       return createDefaultState();
     }
 
     const protectedState = JSON.parse(serialized) as any;
     let loaded: any;
 
-    if (protectedState._enc && storedChecksum) {
-      loaded = restoreData(protectedState, storedChecksum);
-      if (!loaded) {
-        console.warn('⚠️ Data tampering detected! Resetting sensitive data.');
-        // Clean up invalid checksum to prevent persistent errors on reload
-        localStorage.removeItem(getChecksumKey(userId));
+    if (protectedState._enc) {
+      // 1. Checksum exists: Verify and decrypt
+      if (storedChecksum) {
+        loaded = restoreData(protectedState, storedChecksum);
+        if (!loaded) {
+          console.warn('⚠️ Data tampering detected! Resetting sensitive data.');
+          localStorage.removeItem(getChecksumKey(userId)); // Self-Healing
 
-        loaded = protectedState;
-        delete loaded._enc;
-        loaded.gro = 20;
-        loaded.totalCurrencyEarned = 0;
-        loaded.studyCount = 0;
+          loaded = { ...protectedState };
+          delete loaded._enc;
+          // Fallback values
+          loaded.gro = 20;
+          loaded.totalCurrencyEarned = 0;
+          loaded.studyCount = 0;
+        }
+      }
+      // 2. Checksum missing (Self-Healed or Legacy): Force decrypt
+      else {
+        console.warn('⚠️ Found encrypted data without checksum. Attempting manual decryption...');
+        loaded = restoreDataWithoutChecksum(protectedState);
       }
     } else {
       loaded = protectedState;
     }
 
-    // 데이터 무결성 검증 (최소 조건)
+    // Apply Migrations FIRST (to fix missing timestamps, legacy formats)
+    loaded = migrateLegacyData(loaded);
+
+    // THEN Data Integrity Verification
+    // (Now lastActiveTime should be fixed by migrateLegacyData)
     if (!loaded.stats || !loaded.lastActiveTime) {
-      console.warn('Invalid saved state, resetting to default');
+      console.warn('Invalid saved state, resetting to default. Reason:', {
+        hasStats: !!loaded.stats,
+        hasTime: !!loaded.lastActiveTime,
+        stats: loaded.stats,
+        lastActiveTime: loaded.lastActiveTime
+      });
       return createDefaultState();
     }
-
-    // Apply Migrations
-    loaded = migrateLegacyData(loaded);
 
     // Final Safe Merge with Schema Enforcement
     const defaultState = createDefaultState();

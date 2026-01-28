@@ -67,6 +67,8 @@ export const ko = {
         login: '로그인',
         signup: '회원가입',
         back_to_home: '돌아가기 (체험)',
+        continue_experience: '이어하기',
+        new_game: '새로 시작하기',
     },
 
     character: {
@@ -785,11 +787,11 @@ export const ko = {
     auth: {
         promo: {
             title: '젤로를 지켜주세요!',
-            desc: '2단계로 진화하려면 진행 상황 저장이 필요합니다. 지금 가입하여 젤로를 영원히 안전하게 보관하세요!',
+            desc: '2단계로 진화하려면 진행 상황 저장이 필요합니다. <highlight>지금 가입하여</highlight> 젤로를 영원히 안전하게 보관하세요!',
             later: '다음에 할게요',
         },
         login: {
-            title: '로그인',
+            title: 'Join us',
             subtitle: '계정에 로그인하여 데이터를 동기화하세요.',
             email: '이메일',
             emailPlaceholder: '이메일을 입력하세요',

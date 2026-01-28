@@ -65,6 +65,8 @@ export const en = {
     login: 'Log In',
     signup: 'Sign Up',
     back_to_home: 'Back to Home',
+    continue_experience: 'Continue Journey',
+    new_game: 'Start Fresh',
   },
 
   character: {
@@ -783,11 +785,11 @@ export const en = {
   auth: {
     promo: {
       title: 'Save your Jello!',
-      desc: 'To evolve to Stage 2, you need to save your progress. Sign up now to keep your Jello safe forever!',
+      desc: 'To evolve to Stage 2, you need to save your progress. <highlight>Sign up now</highlight> to keep your Jello safe forever!',
       later: 'Maybe Later',
     },
     login: {
-      title: 'Log In',
+      title: 'Join us',
       subtitle: 'Log in to sync your data.',
       email: 'Email',
       emailPlaceholder: 'Enter your email',

@@ -1,5 +1,4 @@
-import React from 'react';
-import { useTranslation } from 'react-i18next';
+import { useTranslation, Trans } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { playButtonSound } from '../utils/sound';
 import '../pages/Auth.css'; // Reuse auth styles
@@ -13,14 +12,9 @@ export const SignupPromoModal: React.FC<SignupPromoModalProps> = ({ onClose, onS
     const { t } = useTranslation();
     const navigate = useNavigate();
 
-    const handleSignup = () => {
+    const handleAction = () => {
         playButtonSound();
-        onSignup(); // This should handle the navigation or whatever parent wants
-        navigate('/signup', { state: { from: '/room' } });
-    };
-
-    const handleLogin = () => {
-        playButtonSound();
+        onSignup();
         navigate('/login', { state: { from: '/room' } });
     };
 
@@ -39,11 +33,56 @@ export const SignupPromoModal: React.FC<SignupPromoModalProps> = ({ onClose, onS
             animation: 'fadeIn 0.3s'
         }}>
             <div className="auth-container" style={{
+                position: 'relative', // For absolute positioning of close button
                 maxWidth: '320px',
                 padding: '24px',
+                paddingTop: '40px', // Extra space for close button
                 textAlign: 'center',
                 animation: 'popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
             }}>
+                {/* Close Button (Matches App Style) */}
+                <button
+                    onClick={() => { playButtonSound(); onClose(); }}
+                    style={{
+                        position: 'absolute',
+                        top: '12px',
+                        right: '12px',
+                        background: 'transparent',
+                        border: '3px solid #4d3e2f',
+                        borderRadius: '12px',
+                        width: '40px',
+                        height: '40px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        cursor: 'pointer',
+                        fontSize: '1.5rem',
+                        color: '#4d3e2f', // Dark Brown for visibility on white
+                        boxShadow: '0 3px 0 rgba(0, 0, 0, 0.1)',
+                        transition: 'all 0.2s ease',
+                        padding: 0,
+                        lineHeight: 1
+                    }}
+                    onMouseEnter={(e) => {
+                        e.currentTarget.style.transform = 'scale(1.05)';
+                        e.currentTarget.style.backgroundColor = 'rgba(77, 62, 47, 0.05)';
+                    }}
+                    onMouseLeave={(e) => {
+                        e.currentTarget.style.transform = 'scale(1)';
+                        e.currentTarget.style.backgroundColor = 'transparent';
+                    }}
+                    onMouseDown={(e) => {
+                        e.currentTarget.style.transform = 'translateY(2px) scale(1.05)';
+                        e.currentTarget.style.boxShadow = '0 1px 0 rgba(0, 0, 0, 0.1)';
+                    }}
+                    onMouseUp={(e) => {
+                        e.currentTarget.style.transform = 'scale(1.05)';
+                        e.currentTarget.style.boxShadow = '0 3px 0 rgba(0, 0, 0, 0.1)';
+                    }}
+                >
+                    ✕
+                </button>
+
                 <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🥚 ➡️ 🐣</div>
 
                 <h2 style={{
@@ -61,48 +100,29 @@ export const SignupPromoModal: React.FC<SignupPromoModalProps> = ({ onClose, onS
                     marginBottom: '1.5rem',
                     lineHeight: 1.5
                 }}>
-                    {t('auth.promo.desc', 'To evolve to Stage 2, you need to save your progress. Sign up now to keep your Jello safe forever!')}
+                    <Trans
+                        i18nKey="auth.promo.desc"
+                        defaults="To evolve to Stage 2, you need to save your progress. <highlight>Sign up now</highlight> to keep your Jello safe forever!"
+                        components={{
+                            highlight: <span style={{
+                                backgroundColor: '#FFFACD', // LemonChiffon
+                                padding: '2px 6px',
+                                borderRadius: '6px',
+                                border: '1px solid #F0E68C', // Khaki
+                                color: '#8B4513', // SaddleBrown
+                                fontWeight: 'bold'
+                            }} />
+                        }}
+                    />
                 </p>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                     <button
                         className="auth-btn auth-btn--primary"
-                        onClick={handleSignup}
+                        onClick={handleAction}
                         style={{ width: '100%' }}
                     >
-                        {t('auth.signup.action')}
-                    </button>
-
-                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center', justifyContent: 'center' }}>
-                        <span style={{ fontSize: '0.9rem', color: '#888' }}>{t('auth.signup.haveAccount')}</span>
-                        <button
-                            onClick={handleLogin}
-                            style={{
-                                background: 'none',
-                                border: 'none',
-                                color: '#8B4513',
-                                fontWeight: 'bold',
-                                cursor: 'pointer',
-                                fontSize: '0.9rem'
-                            }}
-                        >
-                            {t('auth.login.action')}
-                        </button>
-                    </div>
-
-                    <button
-                        onClick={() => { playButtonSound(); onClose(); }}
-                        style={{
-                            marginTop: '8px',
-                            background: 'none',
-                            border: 'none',
-                            color: '#999',
-                            fontSize: '0.9rem',
-                            cursor: 'pointer',
-                            textDecoration: 'underline'
-                        }}
-                    >
-                        {t('common.cancel', 'Maybe Later')}
+                        Jello Save
                     </button>
                 </div>
             </div>
