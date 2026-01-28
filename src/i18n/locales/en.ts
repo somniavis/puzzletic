@@ -741,6 +741,90 @@ export const en = {
         energetic: ['🔥 Super anger!', '🔨 Destroy earth!', '🤬 Rampage!'],
       },
     },
+    emoji: {
+      joy: {
+        l1: { affectionate: ['😊', '🍼', '✨'], playful: ['😆', '🎶', '😁'], calm: ['😌', '🎵', '👌'], shy: ['☺️', '😳', '😚'], grumpy: ['😒', '😏', '🙄'], energetic: ['✨', '👍', '😲'] },
+        l2: { affectionate: ['🥰', '🌈', '🎈'], playful: ['🏃', '⚽️', '🦖'], calm: ['☕️', '🍀', '🍃'], shy: ['😽', '🌸', '🙈'], grumpy: ['😑', '😼', '😮'], energetic: ['🏆', '💪', '🚀'] },
+        l3: { affectionate: ['❤️', '💖', '🌟'], playful: ['💡', '👑', '😂'], calm: ['🙏', '🙇', '👏'], shy: ['🍅', '🎁', '🦄'], grumpy: ['🆗', '💬', '😤'], energetic: ['🔥', '🌍', '📢'] },
+      },
+      love: {
+        l1: { affectionate: ['😘', '🐣', '👋'], playful: ['🎣', '💎', '👉'], calm: ['🌤️', '👤', '🛡️'], shy: ['😺', '🧣', '😊'], grumpy: ['😕', '✋', '😤'], energetic: ['💘', '🤜🤛', '👍'] },
+        l2: { affectionate: ['🤗', '🌞', '💋'], playful: ['👐', '🐨', '🏹'], calm: ['💎', '🌲', '🤝'], shy: ['☺️', '💌', '💓'], grumpy: ['😳', '⏱️', '😒'], energetic: ['⚡️', '🤖', '♾️'] },
+        l3: { affectionate: ['🏡', '👫', '💝'], playful: ['👮', '🎖️', '🫡'], calm: ['💐', '🧶', '✨'], shy: ['🫂', '😻', '🍀'], grumpy: ['😎', '😠', '🐕'], energetic: ['👯', '🚀', '🎉'] },
+      },
+      playful: {
+        l1: { affectionate: ['😋', '🍓', '🍭'], playful: ['🐊', '🍔', '😛'], calm: ['🥄', '🍵', '🥗'], shy: ['🐹', '🍪', '🐿️'], grumpy: ['😐', '🦴', '😑'], energetic: ['🍡', '🍚', '🥕'] },
+        l2: { affectionate: ['🎡', '🤣', '😆'], playful: ['🔫', '⚔️', '🛡️'], calm: ['🧐', '🎲', '😏'], shy: ['🫣', '👉👈', '👻'], grumpy: ['🛑', '😩', '👋'], energetic: ['🐇', '🌀', '💨'] },
+        l3: { affectionate: ['🎪', '🎈', '😵'], playful: ['🎆', '🎺', '🦸'], calm: ['🥺', '😲', '👏'], shy: ['🤭', '✨', '🤩'], grumpy: ['🙀', '😼', '👀'], energetic: ['📈', '🚄', '🏎️'] },
+      },
+      neutral: {
+        l1: { affectionate: ['🧸', '🥺', '💧'], playful: ['🤔', '😈', '💬'], calm: ['🤫', '😶', '🕊️'], shy: ['👀', '😐', '🐜'], grumpy: ['😩', '🌬️', '😑'], energetic: ['🤸', '🚪', '💣'] },
+        l2: { affectionate: ['🔭', '👣', '🐕'], playful: ['⚡️', '👆', '📢'], calm: ['💭', '🧘', '🍵'], shy: ['👉👈', '🍃', '🔇'], grumpy: ['🌵', '🛌', '😤'], energetic: ['🐜', '💨', '📢'] },
+        l3: { affectionate: ['😿', '🍂', '😭'], playful: ['🤪', '😈', '🖌️'], calm: ['🌑', '🤐', '😶'], shy: ['🤧', '😨', '🌃'], grumpy: ['✋', '🙉', '👎'], energetic: ['🌋', '🏃', '😫'] },
+      },
+      sleepy: {
+        l1: { affectionate: ['🥱', '🎶', '🧸'], playful: ['🥴', '🙅', '😪'], calm: ['🫢', '🛀', '🍵'], shy: ['😵', '🛌', '🤤'], grumpy: ['💡', '🚫', '💤'], energetic: ['🚲', '🔋', '😵'] },
+        l2: { affectionate: ['🌈', '🐑', '💤'], playful: ['😴', '🤥', '💬'], calm: ['🛌', '🌙', '🤫'], shy: ['🛌', '😪', '🌛'], grumpy: ['👿', '🐕', '✋'], energetic: ['🔌', '📴', '🪫'] },
+        l3: { affectionate: ['🌠', '💜', '😴'], playful: ['💤', '🐴', '🛌'], calm: ['🌑', '😶', '🔇'], shy: ['👶', '🌙', '🫧'], grumpy: ['😑', '💢', '💤'], energetic: ['🪫', '☠️', '😵'] },
+      },
+      sick: {
+        l1: { affectionate: ['🤕', '🩹', '🤒'], playful: ['😖', '🤥', '💥'], calm: ['🌡️', '💫', '🛌'], shy: ['😣', '😢', '🤧'], grumpy: ['🤦', '💢', '😔'], energetic: ['😵', '📉', '🥴'] },
+        l2: { affectionate: ['😭', '🆘', '💦'], playful: ['🦆', '📢', '🌀'], calm: ['🏥', '🔥', '💊'], shy: ['😓', '😨', '🚑'], grumpy: ['💊', '😤', '😣'], energetic: ['🛌', '🏳️', '📉'] },
+        l3: { affectionate: ['😿', '👋', '🛌'], playful: ['😵', '🎮', '❌'], calm: ['📉', '🌫️', '🏥'], shy: ['🧎', '😶', '🏥'], grumpy: ['👿', '🤐', '😫'], energetic: ['⏹️', '⏸️'] },
+      },
+      worried: {
+        l1: { affectionate: ['😟', '😥', '⚠️'], playful: ['😲', '💦', '😳'], calm: ['🔍', '⁉️', '🛡️'], shy: ['😖', '👣', '😢'], grumpy: ['😒', '😠', '☁️'], energetic: ['🚨', '☢️', '🚧'] },
+        l2: { affectionate: ['😨', '🛡️', '🥶'], playful: ['🏃', '📢', '😱'], calm: ['✋', '⛔️', '↩️'], shy: ['🫨', '📦', '🙈'], grumpy: ['😫', '😤', '🦁'], energetic: ['🫢', '🆘', '🌪️'] },
+        l3: { affectionate: ['😭', '💔', '🧟'], playful: ['😭', '🚑', '🤱'], calm: ['📉', '🧩', '❌'], shy: ['🥀', '💦', '😱'], grumpy: ['🚮', '😫', '🤬'], energetic: ['🤯', '🧱', '🆘'] },
+      },
+      angry: {
+        l1: { affectionate: ['😤', '😞', '😒'], playful: ['👊', '🥊', '⚔️'], calm: ['😔', '✋', '😐'], shy: ['🥺', '😢', '😿'], grumpy: ['👉', '🤫', '🌩️'], energetic: ['😡', '🥋', '🦁'] },
+        l2: { affectionate: ['😠', '🙅', '🤥'], playful: ['💣', '🐊', '🦖'], calm: ['⚠️', '🚫', '🛑'], shy: ['😭', '👋', '😣'], grumpy: ['👿', '🙈', '🗯️'], energetic: ['👺', '💢', '🥊'] },
+        l3: { affectionate: ['😤', '🙈', '💢'], playful: ['🚂', '🌪️', '😈'], calm: ['😑', '🛑', '🔚'], shy: ['🌊', '😭', '👶'], grumpy: ['🌋', '💨', '😫'], energetic: ['🔥', '🔨', '🤬'] },
+      },
+    },
+    toddler: {
+      joy: {
+        l1: { affectionate: ['😊 Hehe', '🍼 Yay!', '✨'], playful: ['😆 Yee-haw!', '🎶 La-la!', '😁 Hee!'], calm: ['😌 Hmm~', '🎵 Hum~', '👌 Good!'], shy: ['☺️ Hehe..', '😳 Oh..', '😚 Chu!'], grumpy: ['😒 Hmph.', '😏 Heh.', '🙄 Not bad.'], energetic: ['✨ Wow!', '👍 Ooh!', '😲 Whoa!'] },
+        l2: { affectionate: ['🥰 Happy!', '🌈 Yay!', '🎈 Kya!'], playful: ['🏃 Run!', '⚽️ Play!', '🦖 Rawr!'], calm: ['☕️ Nice.', '🍀 Good.', '🍃 Ahh~'], shy: ['😽 Thanks..', '🌸 Hehe..', '🙈 Shy..'], grumpy: ['😑 Okay.', '😼 Heh.', '😮 Oh.'], energetic: ['🏆 Best!', '💪 Power!', '🚀 Go!'] },
+        l3: { affectionate: ['❤️ Love!', '💖 Yay!!', '🌟 Star!'], playful: ['💡 Aha!', '👑 King!', '😂 Haha!'], calm: ['🙏 Thanks.', '🙇 Bow.', '👏 Clap!'], shy: ['🍅 Blush..', '🎁 Thanks..', '🦄 Dream..'], grumpy: ['🆗 Okay.', '💬 Thanks.', '😤 Hmph!'], energetic: ['🔥 Fire!', '🌍 World!', '📢 Shout!'] },
+      },
+      love: {
+        l1: { affectionate: ['😘 Chu!', '🐣 Cute!', '👋 Pat-pat'], playful: ['🎣 Gotcha!', '💎 Mine!', '👉 Yap!'], calm: ['🌤️ Phew.', '👤 Good.', '🛡️ Safe.'], shy: ['😺 Nuzzle..', '🧣 Warm..', '😊 Hehe..'], grumpy: ['😕 What?', '✋ Move.', '😤 Hmph.'], energetic: ['💘 Heart!', '🤜🤛 Bro!', '👍 Nice!'] },
+        l2: { affectionate: ['🤗 Hug!', '🌞 Warm~', '💋 Smooch!'], playful: ['👐 Tickle!', '🐨 Stuck!', '🏹 Mine!'], calm: ['💎 Jem.', '🌲 Stay.', '🤝 Trust.'], shy: ['☺️ Shy..', '💌 Like..', '💓 Thump..'], grumpy: ['😳 Warm..', '⏱️ Brief.', '😒 Hmm..'], energetic: ['⚡️ Power!', '🤖 Unite!', '♾️ 4ever!'] },
+        l3: { affectionate: ['🏡 4ever!', '👫 Friend!', '💝 Love!'], playful: ['👮 Stop!', '🎖️ Best!', '🫡 Sir!'], calm: ['💐 Thanks.', '🧶 Fate.', '✨ Bless.'], shy: ['🫂 Hug..', '😻 Luv u..', '🍀 Happy..'], grumpy: ['😎 Okay.', '😠 Not like..', '🐕 Stay.'], energetic: ['👯 Combo!', '🚀 Space!', '🎉 Yeah!!'] },
+      },
+      playful: {
+        l1: { affectionate: ['😋 Yum!', '🍓 Berry!', '🍭 Sweet'], playful: ['🐊 Chomp!', '🍔 Nom-nom', '😛 Blep!'], calm: ['🥄 Eat.', '🍵 Sip.', '🥗 Yum.'], shy: ['🐹 Nibble..', '🍪 Yum..', '🐿️ Chew..'], grumpy: ['😐 Okay.', '🦴 Chomp.', '😑 Hmph.'], energetic: ['🍡 Gulp!', '🍚 More!', '🥕 Cronch'] },
+        l2: { affectionate: ['🎡 Fun!', '🤣 Tickle~', '😆 Haha'], playful: ['🔫 Pew-pew!', '⚔️ Attack!', '🛡️ Dodge!'], calm: ['🧐 Hmm.', '🎲 Fun.', '😏 Huhu.'], shy: ['🫣 Peek!', '👉👈 Umm..', '👻 Boo!'], grumpy: ['🛑 Stop.', '😩 Ugh.', '👋 Shoo.'], energetic: ['🐇 Jump!', '🌀 Roll!', '💨 Zoom!'] },
+        l3: { affectionate: ['🎪 Party!', '🎈 Fly!', '😵 Spin!'], playful: ['🎆 Bang!', '🎺 Toot!', '🦸 Super!'], calm: ['🥺 Aww.', '😲 Wow.', '👏 Clap!'], shy: ['🤭 Tee-hee.', '✨ Sparkle..', '🤩 Ooh..'], grumpy: ['🙀 Ack!', '😼 Hmm?', '👀 Oh.'], energetic: ['📈 Up!', '🚄 Go!', '🏎️ Fast!'] },
+      },
+      neutral: {
+        l1: { affectionate: ['🧸 Bored..', '🥺 Play..', '💧 Sob'], playful: ['🤔 Hmm?', '😈 Hehe?', '💬 Bored..'], calm: ['🤫 Shh.', '😶 ...', '🕊️ Peace.'], shy: ['👀 Glance', '😐 ...', '🐜 Umm..'], grumpy: ['😩 Boring.', '🌬️ Sigh..', '😑 Dul.'], energetic: ['🤸 Itch!', '🚪 Go!', '💣 Boom!'] },
+        l2: { affectionate: ['🔭 Look..', '👣 Gone?', '🐕 Wait.'], playful: ['⚡️ Zap!', '👆 Poke.', '📢 Hey!'], calm: ['💭 Think.', '🧘 Zen.', '🍵 Tea.'], shy: ['👉👈 Fidget', '🍃 Alone..', '🔇 Quiet..'], grumpy: ['🌵 Don\'t.', '🛌 Leave.', '😤 Tsh.'], energetic: ['🐜 Itchy!', '💨 Ugh!', '📢 Aah!'] },
+        l3: { affectionate: ['😿 Forgot?', '🍂 Lonely..', '😭 Sob'], playful: ['🤪 Mess!', '😈 Grr!', '🖌️ Prank.'], calm: ['🌑 Lone.', '🤐 Zip.', '😶 Blank.'], shy: ['🤧 Sniff', '😨 Scared..', '🌃 Dark..'], grumpy: ['✋ Away!', '🙉 Loud.', '👎 Bad.'], energetic: ['🌋 Mad!', '🏃 Run!', '😫 Argh!'] },
+      },
+      sleepy: {
+        l1: { affectionate: ['🥱 Yawn..', '🎶 Lullaby', '🧸 Hug zZ'], playful: ['🥴 Play..', '🙅 No sleep', '😪 Nod..'], calm: ['🫢 Yawn.', '🛀 Tired.', '🍵 Rest.'], shy: ['😵 Drowsy..', '🛌 Sleep?', '🤤 Drool..'], grumpy: ['💡 Off.', '🚫 Shh.', '💤 Zzz'], energetic: ['🚲 Awake..', '🔋 zZ', '😵 Faint..'] },
+        l2: { affectionate: ['🌈 Dream..', '🐑 Cozy..', '💤 Zzz..'], playful: ['😴 Snore!', '🤥 Phew..', '💬 Murnble..'], calm: ['🛌 Sleep.', '🌙 Deep.', '🤫 Shh.'], shy: ['🛌 Huddle', '😪 Zzz', '🌛 Night..'], grumpy: ['👿 Don\'t.', '🐕 Grr.', '✋ Away.'], energetic: ['🔌 Charge!', '📴 Off.', '🪫 Low.'] },
+        l3: { affectionate: ['🌠 Night..', '💜 Love..', '😴 zZz'], playful: ['💤 Krr..', '🐴 Prr..', '🛌 Thud!'], calm: ['🌑 ...', '😶 ...', '🔇 ...'], shy: ['👶 Zzz..', '🌙 ...', '🫧 zZ..'], grumpy: ['😑 ...', '💢 Don\'t..', '💤 ...'], energetic: ['🪫 ...', '☠️ Dead.', '😵 ...'] },
+      },
+      sick: {
+        l1: { affectionate: ['🤕 Ouch..', '🩹 Help..', '🤒 Sick..'], playful: ['😖 Ugh!', '🤥 Fine?', '💥 Ouch!'], calm: ['🌡️ Sick.', '💫 Dizzy.', '🛌 Rest.'], shy: ['😣 Groan..', '😢 Hurt..', '🤧 Sniff..'], grumpy: ['🤦 Oh.', '💢 Pain.', '😔 Sad.'], energetic: ['😵 Why?', '📉 Weak..', '🥴 Stumble'] },
+        l2: { affectionate: ['😭 Hurt..', '🆘 Help..', '💦 Sob'], playful: ['🦆 Quack!', '📢 Help!', '🌀 Spin'], calm: ['🏥 Bad.', '🔥 Hot.', '💊 Pill..'], shy: ['😓 Sweat', '😨 Fear..', '🚑 Help..'], grumpy: ['💊 Pill!', '😤 Body..', '😣 Ugh..'], energetic: ['🛌 Can\'t..', '🏳️ Lose..', '📉 Thud.'] },
+        l3: { affectionate: ['😿 Pain..', '👋 Bye..', '🛌 Rest..'], playful: ['😵 Dead.', '🎮 Over.', '❌ ...'], calm: ['📉 Limit.', '🌫️ Blur.', '🏥 ...'], shy: ['🧎 Thud', '😶 ...', '🏥 Save..'], grumpy: ['👿 See ya..', '🤐 ...', '😫 Argh!'], energetic: ['⏹️ ...', '⏸️ Pause.'] },
+      },
+      worried: {
+        l1: { affectionate: ['😟 Okay?', '😥 Worry..', '⚠️ Care'], playful: ['😲 Huh?', '💦 Oh no!', '😳 Eh?'], calm: ['🔍 Check.', '⁉️ Problem.', '🛡️ Safe.'], shy: ['😖 Ugh..', '👣 Fidget..', '😢 Sob..'], grumpy: ['😒 What?', '😠 Bad.', '☁️ Ominous.'], energetic: ['🚨 Alert!', '☢️ Danger!', '🚧 Watch!'] },
+        l2: { affectionate: ['😨 Scared..', '🛡️ Protect..', '🥶 Shake..'], playful: ['🏃 Run!', '📢 Trouble!', '😱 Ack!'], calm: ['✋ Careful.', '⛔️ Danger.', '↩️ Avoid.'], shy: ['🫨 Shake', '📦 Hide..', '🙈 Can\'t look'], grumpy: ['😫 Annoy.', '😤 Move.', '🦁 Grr.'], energetic: ['🫢 Ah!', '🆘 Help!', '🌪️ Crash!'] },
+        l3: { affectionate: ['😭 No go..', '💔 Lonely..', '🧟 Scary..'], playful: ['😭 Waa!', '🚑 Help!', '🤱 Mama!'], calm: ['📉 Bad.', '🧩 Hard.', '❌ No.'], shy: ['🥀 Thud', '💦 Tears', '😱 No way..'], grumpy: ['🚮 Mess!', '😫 Ruin.', '🤬 Argh!'], energetic: ['🤯 What!', '🧱 Crash!', '🆘 Help!!'] },
+      },
+      angry: {
+        l1: { affectionate: ['😤 Hmph!', '😞 Mean!', '😒 Pout'], playful: ['👊 Hah!', '🥊 Pow!', '⚔️ Attack!'], calm: ['😔 Disappoint.', '✋ Stop.', '😐 Unpleasant.'], shy: ['🥺 Sob', '😢 Mean..', '😿 Hate..'], grumpy: ['👉 Go.', '🤫 Shh.', '🌩️ Scold.'], energetic: ['😡 Mad!', '🥋 Fight!', '🦁 Raah!'] },
+        l2: { affectionate: ['😠 Hate!', '🙅 No play!', '🤥 Liar!'], playful: ['💣 Boom!', '🐊 Bite!', '🦖 Rawr!'], calm: ['⚠️ Warn.', '🚫 No.', '🛑 Stop.'], shy: ['😭 Sob', '👋 Go!', '😣 No!'], grumpy: ['👿 Scold?', '🙈 Don\'t look.', '🗯️ No.'], energetic: ['👺 Rage!!', '💢 Angry!', '🥊 Come on!'] },
+        l3: { affectionate: ['😤 Hmph!', '🙈 Hate!', '💢 Hmph!!'], playful: ['🚂 Choo!', '🌪️ Mess!', '😈 Grr!'], calm: ['😑 Over.', '🛑 Stop.', '🔚 End.'], shy: ['🌊 Waa!', '😭 Waa!!', '👶 Waa!'], grumpy: ['🌋 Mad.', '💨 Gone.', '😫 Ugh!'], energetic: ['🔥 Fury!', '🔨 Smash!', '🤬 Rage!'] },
+      },
+    },
   },
   abandonment: {
     danger: 'Needs attention!',

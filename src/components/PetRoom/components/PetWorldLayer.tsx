@@ -178,6 +178,7 @@ export const PetWorldLayer: React.FC<PetWorldLayerProps> = ({
                             category={bubble.category}
                             level={bubble.level}
                             personality={personality}
+                            stage={character.evolutionStage}
                         />
                     )}
                     {/* Sick Status - Bandaid */}

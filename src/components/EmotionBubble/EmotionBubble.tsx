@@ -9,6 +9,7 @@ interface EmotionBubbleProps {
   category: EmotionCategory;
   level: 1 | 2 | 3;
   personality?: PersonalityTrait;
+  stage?: number;
 }
 
 const getRandomExpression = (
@@ -29,6 +30,7 @@ export const EmotionBubble: React.FC<EmotionBubbleProps> = ({
   category,
   level,
   personality,
+  stage,
 }) => {
   const { t } = useTranslation();
 
@@ -44,8 +46,15 @@ export const EmotionBubble: React.FC<EmotionBubbleProps> = ({
     let msg: string | null = null;
 
     if (personality) {
-      // New: Personality-based message
-      const key = `emotions.${category}.l${level}.${personality}`;
+      // New: Personality-based message with stage progression
+      let rootKey = 'emotions';
+      // Stage 1: Emoji only
+      if (stage === 1) rootKey = 'emotions.emoji';
+      // Stage 2-3: Toddler speech (Babbling)
+      else if (stage && stage <= 3) rootKey = 'emotions.toddler';
+      // Stage 4-5: Standard speech (Default)
+
+      const key = `${rootKey}.${category}.l${level}.${personality}`;
       const translated = t(key, { returnObjects: true }) as string | string[];
 
       if (Array.isArray(translated) && translated.length > 0) {
@@ -56,12 +65,20 @@ export const EmotionBubble: React.FC<EmotionBubbleProps> = ({
     }
 
     // Fallback: Legacy message key
-    if (!msg && expr) {
+    // For Stage 1 (Emoji), we don't want fallback text unless it's emoji-compatible or handled elsewhere
+    // But currently legacy messages are strings. For Stage 1 we might want to suppress legacy fallback or ensure it's emoji.
+    // However, the prompt says "Stage 1... using only emojis". 
+    // If we rely on translation files, we should be good. 
+    // If msg is null (translation missing), it falls back here.
+    if (!msg && expr && (!stage || stage > 1)) {
+      // Only use legacy fallback for stage > 1 to avoid mixed text for infants
+      // Or we can just let it be if we trust our translations cover everything.
+      // Let's keep it safe: if stage is 1, don't use legacy fallback which might be text.
       msg = t(expr.messageKey);
     }
 
     return { position: pos, expression: expr, message: msg };
-  }, [category, level, personality, t]);
+  }, [category, level, personality, stage, t]);
 
   if (!expression) {
     return null;
