@@ -102,6 +102,15 @@ export class GameErrorBoundary extends Component<Props, State> {
                     >
                         다시 시도
                     </button>
+                    {/* Debug: Show actual error */}
+                    <details style={{ marginTop: '2rem', maxWidth: '80%', overflow: 'auto', textAlign: 'left', background: '#f1f5f9', padding: '1rem', borderRadius: '0.5rem' }}>
+                        <summary style={{ cursor: 'pointer', color: '#64748b' }}>Error Details</summary>
+                        <pre style={{ fontSize: '0.75rem', marginTop: '0.5rem', whiteSpace: 'pre-wrap' }}>
+                            {this.state.error?.toString()}
+                            <br />
+                            {this.state.error?.stack}
+                        </pre>
+                    </details>
                 </div>
             );
         }
