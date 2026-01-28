@@ -15,11 +15,11 @@ export const LandingPage: React.FC = () => {
 
     React.useEffect(() => {
         if (guestId) {
-            console.log('🛬 [Landing] Checking Guest ID:', guestId);
+
             // Load state synchronously (lightweight check) to see if character exists
             try {
                 const savedState = loadNurturingState(guestId);
-                console.log('🛬 [Landing] Saved State Found:', { hasCharacter: savedState?.hasCharacter });
+
 
                 // We consider 'active session' if they have a character initialized
                 // (If they only have empty state, better to start fresh)
@@ -30,7 +30,7 @@ export const LandingPage: React.FC = () => {
                 console.warn('Failed to check guest session:', e);
             }
         } else {
-            console.log('🛬 [Landing] No Guest ID found yet.');
+
         }
     }, [guestId]);
 

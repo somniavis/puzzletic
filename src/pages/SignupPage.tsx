@@ -42,7 +42,7 @@ export const SignupPage: React.FC = () => {
             const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
             const user = userCredential.user;
 
-            console.log('Signup successful:', formData.email);
+
 
             // [MIGRATION] Transfer Guest Data to New User
             const guestId = localStorage.getItem('puzzleletic_guest_id');
@@ -51,7 +51,7 @@ export const SignupPage: React.FC = () => {
                     const guestData = loadNurturingState(guestId);
                     // Only migrate if there is actual data (character exists)
                     if (guestData && guestData.hasCharacter) {
-                        console.log('🚀 [Signup] Active Guest Session found. Migrating to:', user.uid);
+
 
                         // 1. Save to User's Local Storage (Instant Access for UI)
                         saveNurturingState(guestData, user.uid);
@@ -60,7 +60,7 @@ export const SignupPage: React.FC = () => {
                         // This ensures the data is safely stored in D1
                         await migrateGuestToCloud(user, guestData);
 
-                        console.log('✅ [Signup] Migration complete.');
+
                     }
                 } catch (e) {
                     console.error('⚠️ [Signup] Data Migration Failed:', e);

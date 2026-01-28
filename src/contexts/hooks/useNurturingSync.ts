@@ -73,7 +73,7 @@ export const useNurturingSync = (user: User | null, guestId: string | null = nul
     const [state, setState] = useState<NurturingPersistentState>(() => {
         if (user?.uid) {
             // Synchronous Load for authenticated user
-            console.log('🔄 [Init] Synchronous load for:', user.uid);
+
             const loaded = loadNurturingState(user.uid);
             const { updatedState } = applyOfflineProgress(loaded);
             return updatedState;
@@ -81,14 +81,14 @@ export const useNurturingSync = (user: User | null, guestId: string | null = nul
 
         // Guest mode
         const targetId = guestId || undefined;
-        console.log('🔄 [Init] useNurturingSync Init for TargetID:', targetId);
+        // console.log('🔄 [Init] useNurturingSync Init for TargetID:', targetId);
 
         try {
             const loaded = loadNurturingState(targetId);
-            console.log('🔄 [Init] Loaded Raw State:', { hasCharacter: loaded.hasCharacter, health: loaded.stats?.health });
+            // console.log('🔄 [Init] Loaded Raw State:', { hasCharacter: loaded.hasCharacter, health: loaded.stats?.health });
 
             const { updatedState } = applyOfflineProgress(loaded);
-            console.log('🔄 [Init] Post-Offline State:', { hasCharacter: updatedState.hasCharacter, health: updatedState.stats?.health });
+            // console.log('🔄 [Init] Post-Offline State:', { hasCharacter: updatedState.hasCharacter, health: updatedState.stats?.health });
             return updatedState;
         } catch (e) {
             console.error('🔄 [Init] FAIL:', e);
@@ -141,7 +141,7 @@ export const useNurturingSync = (user: User | null, guestId: string | null = nul
             setIsGlobalLoading(true);
             hasLoadedRef.current = false; // Disable autosave during switch
 
-            console.log('🔄 User changed, resetting state & loading specific data for:', user.uid);
+
 
             // 2. Load User Specific Data
             const userState = loadNurturingState(user.uid);
@@ -161,7 +161,7 @@ export const useNurturingSync = (user: User | null, guestId: string | null = nul
             setIsGlobalLoading(false);
 
             // Fix: Load guest data using guestId (previously undefined)
-            console.log('🔄 Switching to Guest/Anonymous Mode. GuestID:', guestId);
+
             const targetId = guestId || undefined;
             const guestState = loadNurturingState(targetId);
             setState(guestState);

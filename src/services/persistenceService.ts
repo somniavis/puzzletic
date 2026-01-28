@@ -28,7 +28,7 @@ let currentUserId: string | null = null;
  */
 export const setCurrentUserId = (userId: string | null) => {
   currentUserId = userId;
-  console.log('📦 PersistenceService: User ID set to', userId);
+
 };
 
 // Generate user-specific storage keys
@@ -116,11 +116,7 @@ export const saveNurturingState = (state: NurturingPersistentState, userId?: str
     const key = getStorageKey(userId);
 
     // DEBUG: Log saving action
-    console.log('💾 Saving State to:', key, {
-      hasCharacter: state.hasCharacter,
-      health: state.stats?.health,
-      xp: state.xp
-    });
+
 
     const serialized = JSON.stringify(protectedData);
     localStorage.setItem(key, serialized);
@@ -137,7 +133,7 @@ export const saveNurturingState = (state: NurturingPersistentState, userId?: str
 const migrateLegacyData = (loaded: any): any => {
   // 1. Cleanliness Integration (-> Health)
   if (loaded.stats?.cleanliness !== undefined) {
-    console.log('🔄 Migrating old data: removing cleanliness, integrating into health');
+
     const oldHealth = loaded.stats.health || 50;
     const oldCleanliness = loaded.stats.cleanliness || 50;
     loaded.stats.health = Math.round((oldHealth + oldCleanliness) / 2);
@@ -146,7 +142,7 @@ const migrateLegacyData = (loaded: any): any => {
 
   // 2. Glo -> Gro
   if (loaded.glo !== undefined && loaded.gro === undefined) {
-    console.log('🔄 Migrating old data: Glo -> Gro');
+
     loaded.gro = loaded.glo;
     delete loaded.glo;
   }
@@ -164,7 +160,7 @@ const migrateLegacyData = (loaded: any): any => {
 
   // 4. GP -> XP
   if (loaded.gp !== undefined && loaded.xp === undefined) {
-    console.log('🔄 Migrating old data: GP -> XP');
+
     loaded.xp = loaded.gp;
     delete loaded.gp;
   }
@@ -172,7 +168,7 @@ const migrateLegacyData = (loaded: any): any => {
 
   // 5. MinigameStats -> GameScores (Hybrid Storage v2)
   if (loaded.minigameStats && !loaded.gameScores) {
-    console.log('🔄 [MIGRATION] Converting minigameStats to gameScores...');
+
     const migratedScores: Record<string, GameScoreValue> = {};
 
     for (const [gameId, stats] of Object.entries(loaded.minigameStats as Record<string, any>)) {
@@ -210,7 +206,7 @@ const migrateLegacyData = (loaded: any): any => {
 
   // 5. Encrypted Data Integrity (Implicitly covered by checksum, but ensure no zero-timestamp)
   if (!loaded.lastActiveTime) {
-    console.log('🔄 Migrating old data: setting missing lastActiveTime to now');
+
     loaded.lastActiveTime = Date.now();
   }
 
@@ -228,7 +224,7 @@ const migrateLegacyData = (loaded: any): any => {
 
   // 7. Tick Config Migration
   if (!loaded.tickConfig) {
-    console.log('🔄 Migrating old data: adding missing tickConfig');
+
     loaded.tickConfig = {
       intervalMs: 60000,
       lastTickTime: loaded.lastActiveTime || Date.now(),
@@ -247,7 +243,7 @@ const migrateLegacyData = (loaded: any): any => {
 export const loadNurturingState = (userId?: string): NurturingPersistentState => {
   try {
     const key = getStorageKey(userId);
-    console.log('📂 Loading State from:', key);
+
     const serialized = localStorage.getItem(key);
 
     if (serialized) {

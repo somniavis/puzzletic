@@ -24,7 +24,7 @@ export const LoginPage: React.FC = () => {
             try {
                 const result = await getRedirectResult(auth);
                 if (result) {
-                    console.log('Google Login (Redirect) successful', result);
+
                     playButtonSound();
                     navigate('/home');
                 }
@@ -42,7 +42,7 @@ export const LoginPage: React.FC = () => {
 
         try {
             await signInWithEmailAndPassword(auth, email, password);
-            console.log('Login successful');
+
             navigate('/home');
         } catch (error: any) {
             console.error('Login failed:', error);
@@ -73,7 +73,7 @@ export const LoginPage: React.FC = () => {
             } else {
                 // Use Popup for Desktop
                 await signInWithPopup(auth, googleProvider);
-                console.log('Google Login (Popup) successful');
+
                 navigate('/home');
             }
         } catch (error: any) {
@@ -85,33 +85,14 @@ export const LoginPage: React.FC = () => {
         }
     };
 
-    /*
-        const handleAppleLogin = async () => {
-            playButtonSound();
-            try {
-                await signInWithPopup(auth, appleProvider);
-                console.log('Apple Login successful');
-                navigate('/home');
-            } catch (error: any) {
-                 console.error('Apple Login failed:', error);
-                 alert("Apple Sign-In failed ❌. Please check your configuration.");
-            }
-        };
-    */
+
 
     const handleGoToSignup = () => {
         playButtonSound();
         navigate('/signup');
     };
 
-    /*
-    const handleBackToHome = () => {
-        playButtonSound();
-        // For now, back to home logic or main landing. 
-        // If unauthenticated, maybe stay here? But let's assume home is protected.
-        navigate('/');
-    };
-    */
+
 
     return (
         <div className="auth-page">

@@ -1,3 +1,4 @@
+import React from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { playButtonSound } from '../utils/sound';

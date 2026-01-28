@@ -166,7 +166,7 @@ export const purchaseSubscription = async (
  */
 export const migrateGuestToCloud = async (user: User, guestData: NurturingPersistentState): Promise<boolean> => {
     try {
-        console.log('🚀 [Migration] Starting Guest -> Cloud migration for:', user.uid);
+
 
         // syncUserData handles compaction internally
         // We assume guestData is the "latest" truth to overwrite cloud state
@@ -174,7 +174,7 @@ export const migrateGuestToCloud = async (user: User, guestData: NurturingPersis
         const success = await syncUserData(user, guestData);
 
         if (success) {
-            console.log('✅ [Migration] Successfully migrated guest data!');
+
             return true;
         } else {
             console.error('❌ [Migration] Failed to migrate');
@@ -223,7 +223,7 @@ export const syncUserData = async (
                 : Date.now(),
         };
 
-        console.log('☁️ Syncing to cloud...', { level: payload.level, xp: payload.xp, gro: payload.gro });
+
 
         // Sanitize entire payload to remove any undefined values
         const sanitizedPayload = sanitizeForD1(payload);
@@ -231,7 +231,7 @@ export const syncUserData = async (
         // Debug: Log the exact payload being sent (Mask email for privacy)
         const logPayload = { ...sanitizedPayload };
         if (logPayload.email) logPayload.email = '*** (hidden) ***';
-        console.log('☁️ Payload being sent:', JSON.stringify(logPayload, null, 2));
+
 
         // Create AbortController for timeout
         const controller = new AbortController();
@@ -258,7 +258,7 @@ export const syncUserData = async (
             }
 
             const json = await response.json();
-            console.log('☁️ Sync complete:', json.success ? '✅' : '❌');
+
             return json.success;
         } catch (error: any) {
             clearTimeout(timeoutId);
