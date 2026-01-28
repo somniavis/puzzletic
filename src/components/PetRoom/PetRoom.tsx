@@ -239,6 +239,8 @@ export const PetRoom: React.FC<PetRoomProps> = ({
   };
 
   const handleNicknameComplete = (nickname: string) => {
+    // Force scroll reset to prevent mobile keyboard offset issues
+    window.scrollTo(0, 0);
     ui.modals.setShowNicknameModal(false);
     if (nickname) nurturing.setCharacterName(nickname);
   };
