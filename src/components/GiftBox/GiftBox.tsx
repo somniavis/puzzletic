@@ -10,39 +10,52 @@ export const GiftBox: React.FC<GiftBoxProps> = ({ onOpen }) => {
     const [isOpening, setIsOpening] = useState(false);
     const [progress, setProgress] = useState(0);
     const decayIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+    const isOpeningLock = useRef(false);
 
-    // Decay logic
+    // Decay logic - Optimized to only run when there is progress
     useEffect(() => {
-        if (isOpening) return;
+        if (isOpening || progress <= 0) return;
 
         decayIntervalRef.current = setInterval(() => {
             setProgress(prev => {
-                if (prev <= 0) return 0;
-                return Math.max(0, prev - 2); // Decay rate: -2 per 50ms
+                const next = prev - 2;
+                if (next <= 0) {
+                    if (decayIntervalRef.current) clearInterval(decayIntervalRef.current);
+                    return 0;
+                }
+                if (isOpeningLock.current) return prev;
+                return next;
             });
         }, 50);
 
         return () => {
             if (decayIntervalRef.current) clearInterval(decayIntervalRef.current);
         };
-    }, [isOpening]);
+    }, [isOpening, progress > 0]); // Re-run when progress becomes positive
+
 
     const handleClick = () => {
-        if (isOpening) return;
+        if (isOpening || isOpeningLock.current) return;
 
         playButtonSound(); // Play sound on every click
 
         setProgress(prev => {
+            if (isOpeningLock.current) return prev; // Prevent updates if already locked
+
             const newProgress = Math.min(100, prev + 15); // Click rate: +15
 
             if (newProgress >= 100) {
-                setIsOpening(true);
-                if (decayIntervalRef.current) clearInterval(decayIntervalRef.current);
+                // Critical Section: Ensure we only trigger once
+                if (!isOpeningLock.current) {
+                    isOpeningLock.current = true;
+                    setIsOpening(true);
+                    if (decayIntervalRef.current) clearInterval(decayIntervalRef.current);
 
-                // Play open animation then trigger callback
-                setTimeout(() => {
-                    onOpen();
-                }, 800); // Slightly faster transition for explosion
+                    // Play open animation then trigger callback
+                    setTimeout(() => {
+                        onOpen();
+                    }, 800); // Slightly faster transition for explosion
+                }
             }
 
             return newProgress;

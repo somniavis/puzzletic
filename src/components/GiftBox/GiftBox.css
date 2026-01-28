@@ -7,8 +7,9 @@
     justify-content: center;
     transition: transform 0.3s ease;
     z-index: 100;
-    touch-action: manipulation;
-    /* Prevent double-tap zoom on mobile */
+    z-index: 100;
+    touch-action: none;
+    /* Stronger prevention: Disables all browser gestures (zoom/pan) for tapping */
 }
 
 .gift-emoji {

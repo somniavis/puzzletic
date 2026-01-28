@@ -262,6 +262,14 @@ export const PetRoom: React.FC<PetRoomProps> = ({
     nurturing.triggerEvolution();
   };
 
+  const handleToggleShop = useCallback(() => {
+    ui.menus.setShowShopMenu(prev => !prev);
+  }, [ui.menus.setShowShopMenu]);
+
+  const handlePremiumClick = useCallback(() => {
+    setShowPremiumModal(true);
+  }, []);
+
   return (
     <div className="pet-room">
       <div className="pet-room-content" ref={camera.petRoomRef} style={{ flex: 1, display: 'flex', flexDirection: 'column', position: 'relative', overflow: 'hidden' }}>
@@ -296,11 +304,11 @@ export const PetRoom: React.FC<PetRoomProps> = ({
           <FabMenu
             isFabOpen={isFabOpen}
             setIsFabOpen={setIsFabOpen}
-            toggleShopMenu={() => ui.menus.setShowShopMenu(!ui.menus.showShopMenu)}
+            toggleShopMenu={handleToggleShop}
             handleCameraClick={camera.handleCameraClick}
             showGiftBox={showGiftBox}
             isActionInProgress={actions.isActionInProgress}
-            onPremiumClick={() => setShowPremiumModal(true)}
+            onPremiumClick={handlePremiumClick}
           />
         </div>
 

@@ -14,7 +14,7 @@ interface FabMenuProps {
     onPremiumClick: () => void;
 }
 
-export const FabMenu: React.FC<FabMenuProps> = ({
+export const FabMenu: React.FC<FabMenuProps> = React.memo(({
     isFabOpen,
     setIsFabOpen,
     toggleShopMenu,
@@ -93,4 +93,5 @@ export const FabMenu: React.FC<FabMenuProps> = ({
             )}
         </div>
     );
-};
+});
+
