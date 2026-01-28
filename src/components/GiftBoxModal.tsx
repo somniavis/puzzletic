@@ -12,14 +12,16 @@ export const GiftBoxModal: React.FC<GiftBoxModalProps> = ({ onComplete }) => {
     const { user, isGuest } = useAuth();
     // Removed 'step' state as we go directly to input
     const [nickname, setNickname] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!nickname.trim()) return;
+        if (!nickname.trim() || isSubmitting) return;
 
         // Safety check: Must be either logged in OR a guest
         if (!user && !isGuest) return;
 
+        setIsSubmitting(true);
         playButtonSound();
         try {
             // Only update Firebase profile if we have a real user
@@ -29,8 +31,7 @@ export const GiftBoxModal: React.FC<GiftBoxModalProps> = ({ onComplete }) => {
             onComplete(nickname);
         } catch (error) {
             console.error('Failed to update profile:', error);
-            // Even if Firebase fails, we should probably let them in locally?
-            // But usually we want consistency. For now, let's just alert.
+            setIsSubmitting(false); // Only reset on error, otherwise we are done/closing
             alert('Could not save nickname. Please try again.');
         }
     };
@@ -69,12 +70,18 @@ export const GiftBoxModal: React.FC<GiftBoxModalProps> = ({ onComplete }) => {
                             onChange={(e) => setNickname(e.target.value)}
                             required
                             autoFocus
+                            disabled={isSubmitting}
                             style={{ textAlign: 'center', fontSize: '1.2rem' }}
                         />
                     </div>
 
-                    <button type="submit" className="auth-btn auth-btn--primary">
-                        Start! ✨
+                    <button
+                        type="submit"
+                        className="auth-btn auth-btn--primary"
+                        disabled={isSubmitting}
+                        style={{ opacity: isSubmitting ? 0.7 : 1, cursor: isSubmitting ? 'not-allowed' : 'pointer' }}
+                    >
+                        {isSubmitting ? 'Saving...' : 'Start! ✨'}
                     </button>
                 </form>
             </div>
