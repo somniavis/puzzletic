@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { playButtonSound } from '../../utils/sound';
 import './GiftBox.css';
 
@@ -8,57 +8,34 @@ interface GiftBoxProps {
 
 export const GiftBox: React.FC<GiftBoxProps> = ({ onOpen }) => {
     const [isOpening, setIsOpening] = useState(false);
-    const [progress, setProgress] = useState(0);
-    const decayIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+    const [taps, setTaps] = useState(0);
     const isOpeningLock = useRef(false);
+    const MAX_TAPS = 10;
 
-    // Decay logic - Optimized to only run when there is progress
-    useEffect(() => {
-        if (isOpening || progress <= 0) return;
-
-        decayIntervalRef.current = setInterval(() => {
-            setProgress(prev => {
-                const next = prev - 2;
-                if (next <= 0) {
-                    if (decayIntervalRef.current) clearInterval(decayIntervalRef.current);
-                    return 0;
-                }
-                if (isOpeningLock.current) return prev;
-                return next;
-            });
-        }, 50);
-
-        return () => {
-            if (decayIntervalRef.current) clearInterval(decayIntervalRef.current);
-        };
-    }, [isOpening, progress > 0]); // Re-run when progress becomes positive
-
+    // Calculate progress for UI: 0 to 100%
+    const progress = Math.min(100, (taps / MAX_TAPS) * 100);
 
     const handleClick = () => {
         if (isOpening || isOpeningLock.current) return;
 
         playButtonSound(); // Play sound on every click
 
-        setProgress(prev => {
-            if (isOpeningLock.current) return prev; // Prevent updates if already locked
+        setTaps(prev => {
+            const newTaps = prev + 1;
 
-            const newProgress = Math.min(100, prev + 15); // Click rate: +15
-
-            if (newProgress >= 100) {
-                // Critical Section: Ensure we only trigger once
+            if (newTaps >= MAX_TAPS) {
+                // Trigger Opening
                 if (!isOpeningLock.current) {
                     isOpeningLock.current = true;
                     setIsOpening(true);
-                    if (decayIntervalRef.current) clearInterval(decayIntervalRef.current);
 
                     // Play open animation then trigger callback
                     setTimeout(() => {
                         onOpen();
-                    }, 800); // Slightly faster transition for explosion
+                    }, 800);
                 }
             }
-
-            return newProgress;
+            return newTaps;
         });
     };
 
@@ -99,7 +76,7 @@ export const GiftBox: React.FC<GiftBoxProps> = ({ onOpen }) => {
                 </div>
             )}
 
-            {!isOpening && <div className="gift-hint">Tap Fast! {Math.round(progress)}%</div>}
+            {!isOpening && <div className="gift-hint">Tap! {taps}/{MAX_TAPS}</div>}
         </div>
     );
 };
