@@ -2,46 +2,55 @@ import { lazy } from 'react';
 import type { GameManifest, GameCategory, GameDifficulty } from './types';
 import { GameIds } from '../constants/gameIds';
 
+// Helper to enforce minimum loading time (fixes mobile blue flash)
+const MIN_LOADING_TIME = 800; // 0.8s
+const delayedImport = <T>(importPromise: Promise<T>): Promise<T> => {
+    return Promise.all([
+        importPromise,
+        new Promise(resolve => setTimeout(resolve, MIN_LOADING_TIME))
+    ]).then(([moduleExports]) => moduleExports);
+};
+
 // --- Lazy-loaded Game Components ---
 // Each game component is loaded only when the game is accessed
 
 // Math Adventure Level 1 Games (named exports)
-const L1_FishingCount = lazy(() => import('./math/adventure/level1/FishingCount').then(m => ({ default: m.FishingCount })));
-const L1_RoundCounting = lazy(() => import('./math/adventure/level1/RoundCounting').then(m => ({ default: m.RoundCounting })));
-const L1_NumberHive = lazy(() => import('./math/adventure/level1/NumberHive').then(m => ({ default: m.NumberHive })));
-const L1_NumberBalance = lazy(() => import('./math/adventure/level1/NumberBalance').then(m => ({ default: m.NumberBalance })));
-const L1_FruitSlice = lazy(() => import('./math/adventure/level1/FruitSlice').then(m => ({ default: m.FruitSlice })));
-const L1_MathArchery = lazy(() => import('./math/adventure/level1/MathArchery').then(m => ({ default: m.MathArchery })));
+const L1_FishingCount = lazy(() => delayedImport(import('./math/adventure/level1/FishingCount').then(m => ({ default: m.FishingCount }))));
+const L1_RoundCounting = lazy(() => delayedImport(import('./math/adventure/level1/RoundCounting').then(m => ({ default: m.RoundCounting }))));
+const L1_NumberHive = lazy(() => delayedImport(import('./math/adventure/level1/NumberHive').then(m => ({ default: m.NumberHive }))));
+const L1_NumberBalance = lazy(() => delayedImport(import('./math/adventure/level1/NumberBalance').then(m => ({ default: m.NumberBalance }))));
+const L1_FruitSlice = lazy(() => delayedImport(import('./math/adventure/level1/FruitSlice').then(m => ({ default: m.FruitSlice }))));
+const L1_MathArchery = lazy(() => delayedImport(import('./math/adventure/level1/MathArchery').then(m => ({ default: m.MathArchery }))));
 
 // Math Adventure Level 2 Games (mixed exports)
-const L2_TenFrameCount = lazy(() => import('./math/adventure/level2/TenFrameCount').then(m => ({ default: m.TenFrameCount })));
-const L2_PinwheelPop = lazy(() => import('./math/adventure/level2/PinwheelPop').then(m => ({ default: m.MathPinwheel })));
-const L2_DeepSeaDive = lazy(() => import('./math/adventure/level2/DeepSeaDive').then(m => ({ default: m.DeepSeaDive })));
-const L2_UFOInvasion = lazy(() => import('./math/adventure/level2/UFOInvasion')); // default export
+const L2_TenFrameCount = lazy(() => delayedImport(import('./math/adventure/level2/TenFrameCount').then(m => ({ default: m.TenFrameCount }))));
+const L2_PinwheelPop = lazy(() => delayedImport(import('./math/adventure/level2/PinwheelPop').then(m => ({ default: m.MathPinwheel }))));
+const L2_DeepSeaDive = lazy(() => delayedImport(import('./math/adventure/level2/DeepSeaDive').then(m => ({ default: m.DeepSeaDive }))));
+const L2_UFOInvasion = lazy(() => delayedImport(import('./math/adventure/level2/UFOInvasion'))); // default export
 
 // Math Genius Games (calculation drills)
-const L2_FrontAddition = lazy(() => import('./math/genius/FrontAddition').then(m => ({ default: m.FrontAdditionGame })));
-const L2_FrontSubtraction = lazy(() => import('./math/genius/FrontSubtraction').then(m => ({ default: m.FrontSubtractionGame })));
-const L2_BackMultiplication = lazy(() => import('./math/genius/BackMultiplication').then(m => ({ default: m.BackMultiplicationGame })));
-const L2_BackMultiplicationLv2 = lazy(() => import('./math/genius/BackMultiplication/Level2').then(m => ({ default: m.BackMultiplicationGameLv2 })));
-const L2_BackMultiplicationLv3 = lazy(() => import('./math/genius/BackMultiplication/Level3').then(m => ({ default: m.BackMultiplicationGameLv3 })));
-const L2_BackMultiplicationLv4 = lazy(() => import('./math/genius/BackMultiplication/Level4').then(m => ({ default: m.BackMultiplicationGameLv4 })));
+const L2_FrontAddition = lazy(() => delayedImport(import('./math/genius/FrontAddition').then(m => ({ default: m.FrontAdditionGame }))));
+const L2_FrontSubtraction = lazy(() => delayedImport(import('./math/genius/FrontSubtraction').then(m => ({ default: m.FrontSubtractionGame }))));
+const L2_BackMultiplication = lazy(() => delayedImport(import('./math/genius/BackMultiplication').then(m => ({ default: m.BackMultiplicationGame }))));
+const L2_BackMultiplicationLv2 = lazy(() => delayedImport(import('./math/genius/BackMultiplication/Level2').then(m => ({ default: m.BackMultiplicationGameLv2 }))));
+const L2_BackMultiplicationLv3 = lazy(() => delayedImport(import('./math/genius/BackMultiplication/Level3').then(m => ({ default: m.BackMultiplicationGameLv3 }))));
+const L2_BackMultiplicationLv4 = lazy(() => delayedImport(import('./math/genius/BackMultiplication/Level4').then(m => ({ default: m.BackMultiplicationGameLv4 }))));
 
 // Brain Level 1 (default exports except noted)
-const L1_ColorLink = lazy(() => import('./brain/level1/ColorLink')); // default export
-const L1_PairUpTwin = lazy(() => import('./brain/level1/PairUpTwin')); // default export
-const L1_MazeEscape = lazy(() => import('./brain/level1/MazeEscape')); // default export
+const L1_ColorLink = lazy(() => delayedImport(import('./brain/level1/ColorLink'))); // default export
+const L1_PairUpTwin = lazy(() => delayedImport(import('./brain/level1/PairUpTwin'))); // default export
+const L1_MazeEscape = lazy(() => delayedImport(import('./brain/level1/MazeEscape'))); // default export
 
 // Brain Level 2 (mixed exports)
-const L2_WildLink = lazy(() => import('./brain/level2/WildLink')); // default export
-const L2_AnimalBanquet = lazy(() => import('./brain/level2/AnimalBanquet')); // default export
-const L2_PairUpConnect = lazy(() => import('./brain/level2/PairUpConnect')); // default export
-const L2_MazeHunter = lazy(() => import('./brain/level2/MazeHunter')); // default export
-const L2_SignalHunter = lazy(() => import('./brain/level2/SignalHunter').then(m => ({ default: m.SignalHunter }))); // named export
+const L2_WildLink = lazy(() => delayedImport(import('./brain/level2/WildLink'))); // default export
+const L2_AnimalBanquet = lazy(() => delayedImport(import('./brain/level2/AnimalBanquet'))); // default export
+const L2_PairUpConnect = lazy(() => delayedImport(import('./brain/level2/PairUpConnect'))); // default export
+const L2_MazeHunter = lazy(() => delayedImport(import('./brain/level2/MazeHunter'))); // default export
+const L2_SignalHunter = lazy(() => delayedImport(import('./brain/level2/SignalHunter').then(m => ({ default: m.SignalHunter })))); // named export
 
 // Brain Level 3
-const L3_TicTacToe = lazy(() => import('./brain/level3/TicTacToe')); // default export
-const L3_Omok = lazy(() => import('./brain/level3/Omok').then(m => ({ default: m.OmokGame }))); // named export
+const L3_TicTacToe = lazy(() => delayedImport(import('./brain/level3/TicTacToe'))); // default export
+const L3_Omok = lazy(() => delayedImport(import('./brain/level3/Omok').then(m => ({ default: m.OmokGame })))); // named export
 
 // --- Game Manifests (metadata with lazy component references) ---
 export const GAMES: GameManifest[] = [
