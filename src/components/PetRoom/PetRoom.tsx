@@ -239,10 +239,13 @@ export const PetRoom: React.FC<PetRoomProps> = ({
   };
 
   const handleNicknameComplete = (nickname: string) => {
-    // Force scroll reset to prevent mobile keyboard offset issues
-    window.scrollTo(0, 0);
     ui.modals.setShowNicknameModal(false);
     if (nickname) nurturing.setCharacterName(nickname);
+
+    // Force scroll reset with a slight delay to ensure keyboard is fully dismissed
+    setTimeout(() => {
+      window.scrollTo(0, 0);
+    }, 300);
   };
 
   // --- Evolution Premium Lock & Premium Modal ---

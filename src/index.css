@@ -72,16 +72,14 @@ body {
   margin: 0;
   padding: 0;
   min-width: 320px;
-  min-height: 100vh;
-  min-height: 100dvh;
+  min-height: 100%;
   overflow: hidden;
-  /* position: fixed;  <-- REMOVED: Causes touch offset issues after keyboard usage */
   width: 100%;
   height: 100%;
-  /* Changed from 100vh/100dvh to 100% to fill html */
   touch-action: manipulation;
   -webkit-text-size-adjust: 100%;
-  /* Prevent font scaling */
+  overscroll-behavior: none;
+  /* Prevent rubber-banding */
 }
 
 #root {
