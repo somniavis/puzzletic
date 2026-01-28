@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext'; // Import useAuth
 import { auth } from '../firebase';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { loadNurturingState, saveNurturingState } from '../services/persistenceService';
+import { loadNurturingState, saveNurturingState, getStorageKey } from '../services/persistenceService';
 import { migrateGuestToCloud } from '../services/syncService';
 
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -20,6 +20,7 @@ export const SignupPage: React.FC = () => {
         password: '',
         confirmPassword: '',
     });
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -32,6 +33,9 @@ export const SignupPage: React.FC = () => {
     const handleSignup = async (e: React.FormEvent) => {
         e.preventDefault();
         playButtonSound();
+
+        if (isSubmitting || loading) return;
+        setIsSubmitting(true);
 
         if (formData.password !== formData.confirmPassword) {
             alert(t('auth.signup.passwordMismatch'));
@@ -60,6 +64,12 @@ export const SignupPage: React.FC = () => {
                         // This ensures the data is safely stored in D1
                         await migrateGuestToCloud(user, guestData);
 
+                        // 3. Cleanup Guest Data (Method 1: Force clear so "Continue" doesn't show on logout)
+                        const guestStorageKey = getStorageKey(guestId);
+                        localStorage.removeItem('puzzleletic_guest_id'); // Clear Guest ID
+                        localStorage.removeItem(guestStorageKey);        // Clear Guest Data
+                        // console.log('🧹 [Signup] Guest data cleared from local (Method 1 applied).');
+
 
                     }
                 } catch (e) {
@@ -72,7 +82,9 @@ export const SignupPage: React.FC = () => {
             navigate('/home');
         } catch (error: any) {
             console.error('Signup failed:', error);
+            setIsSubmitting(false); // Enable retry
             let errorMessage = t('auth.errors.registrationFailed');
+
 
             if (error.code === 'auth/email-already-in-use') {
                 errorMessage = t('auth.errors.emailInUse');
@@ -173,8 +185,8 @@ export const SignupPage: React.FC = () => {
                         />
                     </div>
 
-                    <button type="submit" className="auth-btn auth-btn--primary" disabled={loading} style={{ width: '100%' }}>
-                        {loading ? t('auth.signing_up') : t('auth.signup.action')}
+                    <button type="submit" className="auth-btn auth-btn--primary" disabled={loading || isSubmitting} style={{ width: '100%' }}>
+                        {isSubmitting ? t('auth.signing_up') : t('auth.signup.action')}
                     </button>
                 </form>
 
