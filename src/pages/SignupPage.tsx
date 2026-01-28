@@ -78,7 +78,7 @@ export const SignupPage: React.FC = () => {
                 }
             }
 
-            alert(t('auth.signup.success'));
+            // alert(t('auth.signup.success')); // REMOVED: Smoother flow without popup
             navigate('/home');
         } catch (error: any) {
             console.error('Signup failed:', error);
@@ -105,6 +105,34 @@ export const SignupPage: React.FC = () => {
 
     return (
         <div className="auth-page">
+            {isSubmitting && (
+                <div style={{
+                    position: 'fixed',
+                    inset: 0,
+                    zIndex: 200,
+                    background: 'linear-gradient(135deg, #FFF9E6 0%, #FFE4B5 100%)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flexDirection: 'column'
+                }}>
+                    <div className="loading-spinner-container">
+                        <div className="loading-spinner">🐾</div>
+                        <div className="loading-text" style={{
+                            fontSize: '1.2rem',
+                            fontWeight: 800,
+                            color: '#8B4513',
+                            textTransform: 'uppercase',
+                            letterSpacing: '2px',
+                            marginTop: '1rem',
+                            animation: 'pulse-text 1.5s infinite ease-in-out'
+                        }}>
+                            {t('common.loading')}...
+                        </div>
+                    </div>
+                </div>
+            )}
+
             <div className="auth-container">
                 <header className="auth-header" style={{
                     display: 'flex',
