@@ -120,6 +120,7 @@ export const RoomBackground: React.FC<RoomBackgroundProps> = React.memo(({
                 {currentBackground === 'sweet_ground' && <SweetGround />}
                 {currentBackground === 'night_city' && <NightCityGround />}
                 {currentBackground === 'layout1_template' && <Layout1Template />}
+                {currentBackground === 'amusement_park_ground' && <AmusementParkGround />}
                 {currentBackground === 'deep_sea_ground' && <DeepSeaGround />}
                 {currentBackground === 'shape_ground' && <ShapeGround />}
             </div>
@@ -232,6 +233,43 @@ const Layout1Template = React.memo(() => (
             <div style={{ position: 'absolute', top: '50%', width: '100%', borderTop: '1px dashed red' }} />
             */}
         </div>
+    </>
+));
+
+const AmusementParkGround = React.memo(() => (
+    <>
+        {/* Phase 1: Left Horizontal Island */}
+        <div className="am-island-left">
+            {/* Base Island Shape (handled by CSS) */}
+
+            {/* Decorations on the Island */}
+            <div className="am-item ferris-wheel">🎡</div>
+            <div className="am-item roller-coaster">🎢</div>
+            <div className="am-item slide">🛝</div>
+            <div className="am-item circus-tent">🎪</div>
+            <div className="am-item carousel">🎠</div>
+
+            {/* Floating Balloons Effect */}
+            <div className="am-balloon b1">🎈</div>
+            <div className="am-balloon b2">🎈</div>
+            <div className="am-balloon b3">🎈</div>
+        </div>
+
+        {/* Static Rail Line (Global Context) */}
+        <div className="am-rail" />
+
+        {/* Sky Train (Global Context) */}
+        <div className="am-train-container">
+            <div className="am-train">🚂🚃🚃🚃</div>
+        </div>
+
+        {/* Pure CSS Fireworks Effect */}
+        <div className="am-firework fw1"></div>
+        <div className="am-firework fw2"></div>
+        <div className="am-firework fw3"></div>
+
+        {/* Structure Reference (Optional, can keep for debugging or remove) */}
+        {/* <div className="layout1-structure-reference" /> */}
     </>
 ));
 

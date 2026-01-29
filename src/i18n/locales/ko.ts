@@ -445,6 +445,8 @@ export const ko = {
             'night_city.desc': '잠들지 않는 화려한 도시.',
             deep_sea_ground: '심해 랜드',
             'deep_sea_ground.desc': '신비로운 깊은 바다 속 세상.',
+            amusement_park_ground: '꿈의 놀이공원',
+            'amusement_park_ground.desc': '즐거운 놀이기구가 가득한 환상의 나라입니다.',
             layout1_template: '레이아웃 템플릿 1',
             'layout1_template.desc': '새로운 랜드를 만들기 위한 템플릿.',
 

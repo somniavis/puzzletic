@@ -443,6 +443,8 @@ export const en = {
       'night_city.desc': 'A city that never sleeps.',
       deep_sea_ground: 'Deep Sea',
       'deep_sea_ground.desc': 'A mysterious underwater world.',
+      amusement_park_ground: 'Dreamy Amusement Park',
+      'amusement_park_ground.desc': 'A fantasy land full of fun rides.',
       layout1_template: 'Layout Template 1',
       'layout1_template.desc': 'Template for creating new lands.te (Wall 50%, Floor 80%).',
 

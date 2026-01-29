@@ -105,6 +105,15 @@ export const SHOP_ITEMS: ShopItem[] = [
         isOwned: false,
     },
     {
+        id: 'amusement_park_ground',
+        nameKey: 'shop.items.amusement_park_ground',
+        descriptionKey: 'shop.items.amusement_park_ground.desc',
+        icon: '🎡',
+        category: 'ground',
+        price: 600,
+        isOwned: false,
+    },
+    {
         id: 'layout1_template',
         nameKey: 'shop.items.layout1_template',
         descriptionKey: 'shop.items.layout1_template.desc',
