@@ -1,0 +1,456 @@
+/* Amusement Park Ground (Clone of Layout 1 Template) */
+.room-background.amusement_park_ground .room-wall {
+    height: 50vh !important;
+    /* Exact Structure of Layout 1: */
+    /* Top 33%: Upper Layer (Sky) - Covered by Animation */
+    /* Bottom 67%: Middle Layer (Ocean) -> Overlapped by Floor */
+    background: linear-gradient(180deg, #E0E0E0 0%, #E0E0E0 33%, #9FA8DA 33%, #7986CB 100%);
+    /* Indigo Middle */
+    border-bottom: none;
+    overflow: hidden;
+    position: relative;
+
+    /* Animation Vars */
+    --stripe-size: 80px;
+    --color1: #B39DDB;
+    /* Soft Purple */
+    --color2: #F8BBD0;
+    /* Soft Pink */
+    --duration: 10s;
+}
+
+/* Sky Animation (Top 33% Only) */
+.room-background.amusement_park_ground .room-wall::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: calc(100% + var(--stripe-size));
+    height: 33%;
+    /* Match Sky height */
+    background: repeating-linear-gradient(45deg,
+            var(--color2) 25%,
+            var(--color2) 50%,
+            var(--color1) 50%,
+            var(--color1) 75%);
+    background-size: var(--stripe-size) var(--stripe-size);
+    animation: stripeTransform var(--duration) linear infinite;
+    z-index: 1;
+    /* On top of wall gradient */
+    border-bottom: none;
+    /* Removed moving rail */
+    will-change: transform;
+    /* Optimize performance */
+}
+
+/* Static Rail Line (Fixed) */
+.room-background.amusement_park_ground .am-rail {
+    position: absolute;
+    top: 16.5vh;
+    left: 15%;
+    /* Starts from Island (Island is at 10%) */
+    right: 0;
+    /* Extends to Right Edge */
+    width: auto;
+    /* Auto width based on left/right */
+    height: 4px;
+    border-bottom: 4px dashed rgba(255, 255, 255, 0.7);
+    z-index: 1;
+    /* Behind Island (2), Above Wall (0) */
+    pointer-events: none;
+}
+
+/* Sky Train Animation */
+.room-background.amusement_park_ground .am-train-container {
+    position: absolute;
+    top: 13vh;
+    left: 100%;
+    z-index: 20;
+    pointer-events: none;
+    animation: trainRoundTrip 65s linear infinite;
+    will-change: transform;
+}
+
+.room-background.amusement_park_ground .am-train {
+    font-size: 2rem;
+    /* Reduced to 2rem */
+    display: inline-block;
+    transform-origin: center;
+    filter: drop-shadow(2px 4px 0px rgba(0, 0, 0, 0.1));
+    white-space: nowrap;
+    /* Prevent wrapping (Fixes glitch) */
+    width: max-content;
+    line-height: 1;
+}
+
+/* Mobile adjustments for train */
+@media (max-width: 480px) {
+    .room-background.amusement_park_ground .am-train {
+        font-size: 1.5rem;
+    }
+}
+
+/* Performance checks */
+@media (prefers-reduced-motion: reduce) {
+
+    .room-background.amusement_park_ground .room-wall::before,
+    .room-background.amusement_park_ground .am-train-container {
+        animation: none;
+        display: none;
+    }
+}
+
+/* Animation Keyframes */
+@keyframes trainRoundTrip {
+
+    /* Phase 1: Incoming (Right -> Island) */
+    0% {
+        left: 120%;
+        /* Start further off-screen (was 105%) */
+        opacity: 1;
+        transform: scaleX(1);
+        /* Face Left (Default) */
+    }
+
+    30% {
+        left: 14%;
+        /* Approaching station */
+        opacity: 1;
+        transform: scaleX(1);
+    }
+
+    35% {
+        left: 11%;
+        /* Arrived deeper */
+        opacity: 0;
+        /* Fade out at station */
+        transform: scaleX(1);
+    }
+
+    /* Phase 2: Wait */
+    45% {
+        opacity: 0;
+        left: 11%;
+        transform: scaleX(-1);
+        /* Flip to Face Right */
+    }
+
+    /* Phase 3: Outgoing (Island -> Right) */
+    50% {
+        opacity: 1;
+        left: 15%;
+        /* Depart */
+        transform: scaleX(-1);
+    }
+
+    95% {
+        left: 120%;
+        /* Exit Screen completely (Just go through) */
+        opacity: 1;
+        /* No fade out, just visual exit */
+        transform: scaleX(-1);
+    }
+
+    100% {
+        left: 120%;
+        opacity: 0;
+        /* Silent Reset */
+        transform: scaleX(-1);
+    }
+}
+
+/* 
+  Pure CSS Fireworks 
+  - Uses box-shadow to create particles without extra DOM elements 
+  - Animates scale to simulate explosion
+*/
+.room-background.amusement_park_ground .am-firework {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    z-index: 10;
+    pointer-events: none;
+}
+
+.room-background.amusement_park_ground .am-firework::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    /* 8-point particle pattern */
+    box-shadow:
+        0 -24px 0,
+        17px -17px 0,
+        24px 0 0,
+        17px 17px 0,
+        0 24px 0,
+        -17px 17px 0,
+        -24px 0 0,
+        -17px -17px 0;
+    animation: fireworkParticle 3s ease-out infinite;
+    opacity: 0;
+}
+
+/* Firework 1: Gold/Yellow (Top Right) */
+.room-background.amusement_park_ground .am-firework.fw1 {
+    top: 15%;
+    right: 15%;
+    color: #FFF59D;
+    /* Shadow color inherits from this if not specified, but we specify manually for multi-color support usually, here simple mono-color per firework */
+}
+
+.room-background.amusement_park_ground .am-firework.fw1::before {
+    color: #FFF59D;
+    animation-duration: 4s;
+}
+
+/* Firework 2: Hot Pink (Higher, slightly Left) */
+.room-background.amusement_park_ground .am-firework.fw2 {
+    top: 10%;
+    right: 25%;
+}
+
+.room-background.amusement_park_ground .am-firework.fw2::before {
+    color: #FF80AB;
+    animation-duration: 5s;
+    animation-delay: 1.5s;
+}
+
+/* Firework 3: Cyan/Mint (Lower Right) */
+.room-background.amusement_park_ground .am-firework.fw3 {
+    top: 22%;
+    right: 8%;
+}
+
+.room-background.amusement_park_ground .am-firework.fw3::before {
+    color: #84FFFF;
+    animation-duration: 4.5s;
+    animation-delay: 3s;
+}
+
+@keyframes fireworkParticle {
+    0% {
+        transform: translate(-50%, -50%) scale(0.5);
+        opacity: 0;
+    }
+
+    15% {
+        opacity: 1;
+    }
+
+    50% {
+        transform: translate(-50%, -50%) scale(2.5);
+        /* Expand outward */
+        opacity: 0;
+        /* Fade out */
+    }
+
+    100% {
+        transform: translate(-50%, -50%) scale(2.5);
+        opacity: 0;
+    }
+}
+
+/* Optimize */
+@media (prefers-reduced-motion: reduce) {
+    .room-background.amusement_park_ground .am-firework::before {
+        animation: none;
+        display: none;
+    }
+}
+
+@keyframes stripeTransform {
+    0% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(calc(var(--stripe-size) * -1));
+    }
+}
+
+.room-background.amusement_park_ground .room-floor {
+    height: 80vh !important;
+    margin-top: -30vh !important;
+    /* Overlap */
+    background: #EDE7F6;
+    /* Soft Lavender Floor */
+    border-top-left-radius: 50% 40px;
+    border-top-right-radius: 50% 40px;
+    overflow: hidden;
+    box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.1);
+    position: relative;
+    z-index: 2;
+    /* Ensure above sky/wall */
+}
+
+/* Middle Placeholder */
+.room-background.amusement_park_ground .layout1-middle-placeholder {
+    display: none;
+    /* Hide template placeholder */
+}
+
+/* Floating Balloons Animation */
+.room-background.amusement_park_ground .am-balloon {
+    position: absolute;
+    bottom: 10px;
+    opacity: 0;
+    z-index: 1;
+    /* Behind front items but visible */
+    pointer-events: none;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+}
+
+.room-background.amusement_park_ground .am-balloon.b1 {
+    left: 20%;
+    font-size: 0.9rem;
+    /* 0.8rem * 1.1 */
+    animation: balloonFloatAndPop 7s ease-in infinite;
+    animation-delay: 0s;
+}
+
+.room-background.amusement_park_ground .am-balloon.b2 {
+    left: 60%;
+    font-size: 0.7rem;
+    /* 0.6rem * 1.1 */
+    animation: balloonFloatAndPop 9s ease-in infinite;
+    animation-delay: 3s;
+}
+
+.room-background.amusement_park_ground .am-balloon.b3 {
+    left: 85%;
+    font-size: 1.0rem;
+    /* 0.9rem * 1.1 */
+    animation: balloonFloatAndPop 8s ease-in infinite;
+    animation-delay: 5s;
+}
+
+@keyframes balloonFloatAndPop {
+    0% {
+        bottom: 5px;
+        opacity: 0;
+        transform: scale(0.5) translateX(0);
+    }
+
+    10% {
+        opacity: 0.9;
+        transform: scale(1) translateX(2px);
+    }
+
+    80% {
+        opacity: 0.8;
+        transform: scale(0.9) translateX(-5px);
+    }
+
+    95% {
+        opacity: 0.9;
+        transform: scale(1.1);
+    }
+
+    100% {
+        bottom: 250px;
+        /* Fly high */
+        opacity: 0;
+        transform: scale(1.5);
+        /* POP */
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .room-background.amusement_park_ground .am-balloon {
+        display: none;
+        /* Hide particles if motion reduced */
+    }
+}
+
+/* Phase 1: Left Horizontal Island */
+.room-background.amusement_park_ground .am-island-left {
+    position: absolute;
+    left: 10%;
+    /* Tropical Beach Style */
+    bottom: 32vh;
+    width: 200px;
+    /* Small distant island (Scaled 1.1x) */
+    height: 40px;
+    background: linear-gradient(180deg, #C5E1A5 0%, #AED581 100%);
+    /* Fresh Pastel Green */
+    /* Reverted to Green for harmony */
+    border-radius: 25px;
+    z-index: 2;
+    /* Content Layer (Must be > 1 to sit on background) */
+    pointer-events: auto;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Decoration Items Common */
+.room-background.amusement_park_ground .am-item {
+    position: absolute;
+    /* Removed common bottom, setting individually */
+    font-size: 1.2rem;
+    transform-origin: bottom center;
+}
+
+/* Specific Item Positioning on the Island - "Inside" Layout */
+.room-background.amusement_park_ground .ferris-wheel {
+    left: 5%;
+    font-size: 3rem;
+    /* 2.7rem * 1.1 */
+    bottom: 8px;
+    /* Sits low inside */
+    z-index: 1;
+    /* Back layer */
+    /* animation: slow-spin 20s linear infinite; REMOVED */
+}
+
+.room-background.amusement_park_ground .roller-coaster {
+    left: 25%;
+    font-size: 2.8rem;
+    /* 2.5rem * 1.1 */
+    bottom: -2px;
+    /* Very low, front layer */
+    z-index: 3;
+}
+
+.room-background.amusement_park_ground .carousel {
+    left: 80%;
+    /* Swapped with Tent */
+    font-size: 2.2rem;
+    /* 2rem * 1.1 */
+    bottom: 15px;
+    /* Slightly elevated/back */
+    z-index: 2;
+}
+
+.room-background.amusement_park_ground .slide {
+    left: 65%;
+    font-size: 2.2rem;
+    /* 2rem * 1.1 */
+    bottom: 0px;
+    /* Front layer */
+    z-index: 3;
+}
+
+.room-background.amusement_park_ground .circus-tent {
+    left: 45%;
+    /* Swapped with Carousel */
+    font-size: 2.9rem;
+    /* 2.6rem * 1.1 */
+    bottom: 10px;
+    /* Back layer */
+    z-index: 1;
+}
+
+@keyframes slow-spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}

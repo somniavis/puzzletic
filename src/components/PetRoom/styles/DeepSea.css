@@ -1,0 +1,172 @@
+/* Deep Sea Land (Layout 1 Variation) */
+.room-background.deep_sea_ground .room-wall {
+    height: 50vh !important;
+    /* Deep Sea Gradient with Horizon Line (Hard Stop at 33%) */
+    /* Top 33%: Distant Water / Surface Light */
+    /* Bottom 67%: Deep Water Wall */
+    background: linear-gradient(180deg, #1A4060 0%, #2b5876 33%, #141E30 33%, #0f0c29 100%);
+    border-bottom: none;
+    overflow: hidden;
+    position: relative;
+}
+
+.room-background.deep_sea_ground .room-floor {
+    height: 80vh !important;
+    margin-top: -30vh !important;
+    /* Ocean Floor: Sandy/Rocky Dark Blue */
+    background: linear-gradient(180deg, #000428 0%, #004e92 100%);
+    border-top-left-radius: 50% 40px;
+    border-top-right-radius: 50% 40px;
+    overflow: hidden;
+    position: relative;
+    /* Faint/Blurrier outer glow for depth */
+    border-top: none;
+    box-shadow: 0 -4px 30px rgba(30, 50, 90, 0.4);
+    z-index: 5;
+}
+
+/* Decorations Container */
+.room-background.deep_sea_ground .deep-sea-decorations {
+    position: absolute;
+    /* Align with Gradient Horizon Line (Bottom 67% of Wall) */
+    bottom: 67%;
+    left: 0;
+    width: 100%;
+    height: 0;
+    overflow: visible;
+    /* Ensure clearly above floor curve */
+    z-index: 6;
+}
+
+/* Deep Sea Distant Mountains */
+.ds-mountain {
+    position: absolute;
+    bottom: 0;
+    /* Sits on the horizon line */
+    width: 0;
+    height: 0;
+    border-left: 100px solid transparent;
+    border-right: 100px solid transparent;
+    border-bottom: 60px solid rgba(15, 25, 50, 0.4);
+    /* Dark silhouette */
+    z-index: -1;
+    /* Behind other decorations */
+    transform-origin: bottom center;
+}
+
+.ds-mountain.wide {
+    border-left: 200px solid transparent;
+    border-right: 200px solid transparent;
+    border-bottom: 50px solid rgba(20, 35, 65, 0.5);
+}
+
+.ds-mountain.canyon-wall {
+    border-left: 80px solid transparent;
+    border-right: 50px solid transparent;
+    border-bottom: 180px solid rgba(10, 20, 40, 0.5);
+    /* Taller and imposing */
+    z-index: -2;
+}
+
+.ds-mountain.tall {
+    border-left: 80px solid transparent;
+    border-right: 80px solid transparent;
+    border-bottom: 90px solid rgba(10, 20, 40, 0.3);
+}
+
+/* Base Styles for Items - adapted from FishingBackground.css */
+.ds-rock,
+.ds-coral,
+.ds-shell,
+.ds-oyster {
+    position: absolute;
+    bottom: -20px;
+    /* Slight overlap with floor to look grounded */
+    pointer-events: none;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4));
+}
+
+.ds-coral {
+    font-size: 3rem;
+    opacity: 0.9;
+}
+
+.ds-coral.large {
+    font-size: 4rem;
+    z-index: 1;
+}
+
+.ds-coral.small {
+    font-size: 2rem;
+    z-index: 3;
+}
+
+.ds-rock {
+    font-size: 2.5rem;
+    opacity: 0.9;
+    filter: brightness(0.8) drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5));
+}
+
+.ds-shell {
+    font-size: 1.5rem;
+    opacity: 1;
+    z-index: 4;
+}
+
+
+/* Bubbles - adapted from FishingBackground.css */
+.deep-sea-bubbles {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* Full Wall height */
+    pointer-events: none;
+    z-index: 1;
+}
+
+.ds-bubble-item {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    bottom: -20px;
+    /* Start below */
+    animation: fishing-rise var(--rise-duration) ease-in infinite;
+    animation-delay: var(--rise-delay);
+    left: var(--rise-left);
+    width: var(--bubble-size);
+    height: var(--bubble-size);
+    will-change: transform;
+}
+
+@keyframes fishing-rise {
+    0% {
+        transform: translateY(0) translateX(0);
+        opacity: 0;
+    }
+
+    10% {
+        opacity: 0.7;
+    }
+
+    50% {
+        transform: translateY(-20vh) translateX(20px);
+    }
+
+    100% {
+        transform: translateY(-50vh) translateX(-20px);
+        opacity: 0;
+    }
+}
+
+@keyframes boat-float {
+    0% {
+        transform: translateY(0) rotate(5deg);
+    }
+
+    100% {
+        transform: translateY(10px) rotate(-5deg);
+    }
+}

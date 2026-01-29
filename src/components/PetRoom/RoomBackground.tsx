@@ -1,5 +1,7 @@
 import React, { useMemo } from 'react';
 import './PetRoom.css';
+import './styles/DeepSea.css';
+import './styles/AmusementPark.css';
 
 interface RoomBackgroundProps {
     background: string;
