@@ -96,6 +96,15 @@ export const SHOP_ITEMS: ShopItem[] = [
         isOwned: false,
     },
     {
+        id: 'deep_sea_ground',
+        nameKey: 'shop.items.deep_sea_ground',
+        descriptionKey: 'shop.items.deep_sea_ground.desc',
+        icon: '🌊',
+        category: 'ground',
+        price: 500,
+        isOwned: false,
+    },
+    {
         id: 'layout1_template',
         nameKey: 'shop.items.layout1_template',
         descriptionKey: 'shop.items.layout1_template.desc',

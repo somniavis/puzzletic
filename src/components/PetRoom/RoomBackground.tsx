@@ -120,6 +120,7 @@ export const RoomBackground: React.FC<RoomBackgroundProps> = React.memo(({
                 {currentBackground === 'sweet_ground' && <SweetGround />}
                 {currentBackground === 'night_city' && <NightCityGround />}
                 {currentBackground === 'layout1_template' && <Layout1Template />}
+                {currentBackground === 'deep_sea_ground' && <DeepSeaGround />}
                 {currentBackground === 'shape_ground' && <ShapeGround />}
             </div>
             <div className="room-floor" />
@@ -233,6 +234,136 @@ const Layout1Template = React.memo(() => (
         </div>
     </>
 ));
+
+const DeepSeaGround = React.memo(() => {
+    // Interfaces for Type Safety
+    interface DeepSeaLandscapeItem {
+        type: string;
+        left?: string;
+        right?: string;
+        bottom: string;
+        transform?: string;
+        color?: string;
+        opacity?: number;
+        zIndex?: number;
+        height?: string;
+    }
+
+    interface DeepSeaDecorationItem {
+        type: string;
+        emoji: string;
+        left?: string;
+        right?: string;
+        bottom?: string;
+        size?: string;
+        zIndex?: number;
+        transform?: string;
+        className?: string; // Optional class for sizing (large/small)
+    }
+
+    // Data for Background Landscape
+    const DEEP_SEA_LANDSCAPE: DeepSeaLandscapeItem[] = [
+        // Left Canyon Peaks
+        { type: 'canyon-wall', left: '-8%', bottom: '0px', transform: 'scale(1.1)', zIndex: -3 },
+        { type: 'canyon-wall', left: '0%', bottom: '0px', transform: 'scale(0.9)', color: 'rgba(20, 35, 65, 0.6)', zIndex: -2 },
+        { type: 'canyon-wall', left: '8%', bottom: '0px', transform: 'scale(0.7)', color: 'rgba(25, 45, 80, 0.5)', zIndex: -1 },
+        // Right Low Hills
+        { type: 'wide', right: '40%', bottom: '0px', opacity: 0.5, transform: 'scale(0.8)' },
+        { type: 'wide', right: '15%', bottom: '0px', opacity: 0.7, transform: 'scale(1.2)' },
+        { type: 'wide', right: '-15%', bottom: '0px', color: 'rgba(20, 30, 60, 0.6)', transform: 'scale(0.9)' },
+    ];
+
+    // Data for Foreground Items
+    const DEEP_SEA_ITEMS: DeepSeaDecorationItem[] = [
+        // Left Side Group
+        { type: 'rock', emoji: '🪨', left: '2%' },
+        { type: 'coral', emoji: '🪸', className: 'large', left: '8%' },
+        { type: 'shell', emoji: '🐚', left: '18%' },
+        { type: 'coral', emoji: '🪸', className: 'small', left: '22%' },
+        { type: 'coral', emoji: '🪸', left: '30%' },
+        // Center Group
+        { type: 'rock', emoji: '🪨', left: '45%', bottom: '-12px', size: '2.8rem', zIndex: 1 },
+        { type: 'coral', emoji: '🪸', className: 'large', left: '50%', bottom: '-22px', size: '3.5rem', zIndex: 0, transform: 'translateX(-50%)' },
+        { type: 'rock', emoji: '🪨', left: '55%', bottom: '-18px', size: '2.2rem', zIndex: 2 },
+        { type: 'coral', emoji: '🪸', className: 'small', left: '42%', bottom: '-8px', size: '2rem', zIndex: 3 },
+        { type: 'shell', emoji: '🐚', left: '58%', bottom: '-12px', zIndex: 4 },
+        { type: 'oyster', emoji: '🦪', left: '48%', bottom: '-8px', size: '1.5rem', zIndex: 5 },
+        // Right Side Group
+        { type: 'coral', emoji: '🪸', className: 'small', right: '35%' },
+        { type: 'oyster', emoji: '🦪', right: '28%', bottom: '-12px', size: '1.2rem', zIndex: 1 },
+        // Diagonal Rocks
+        { type: 'rock', emoji: '🪨', right: '15%', bottom: '-20px', size: '3.2rem', zIndex: 0 },
+        { type: 'rock', emoji: '🪨', right: '22%', bottom: '-25px', size: '2rem', zIndex: 2 },
+    ];
+
+    // Generate static random bubbles (similar to FishingBackground)
+    const bubbles = useMemo(() => Array.from({ length: 15 }).map((_, i) => ({
+        id: i,
+        left: `${Math.random() * 100}%`,
+        size: `${10 + Math.random() * 20}px`,
+        duration: `${10 + Math.random() * 10}s`,
+        delay: `${Math.random() * 10}s`
+    })), []);
+
+    return (
+        <>
+            {/* Bubbles */}
+            <div className="deep-sea-bubbles">
+                {bubbles.map(b => (
+                    <div
+                        key={b.id}
+                        className="ds-bubble-item"
+                        style={{
+                            '--rise-left': b.left,
+                            '--bubble-size': b.size,
+                            '--rise-duration': b.duration,
+                            '--rise-delay': b.delay
+                        } as React.CSSProperties}
+                    />
+                ))}
+            </div>
+
+            {/* Deep Sea Decorations (Matched with Ocean Catch) */}
+            <div className="deep-sea-decorations">
+                {/* Background Landscape */}
+                {DEEP_SEA_LANDSCAPE.map((item, index) => (
+                    <div
+                        key={`landscape-${index}`}
+                        className={`ds-mountain ${item.type}`}
+                        style={{
+                            left: item.left,
+                            right: item.right,
+                            bottom: item.bottom || '0px',
+                            height: item.height,
+                            transform: item.transform,
+                            borderBottomColor: item.color,
+                            opacity: item.opacity,
+                            zIndex: item.zIndex
+                        }}
+                    />
+                ))}
+
+                {/* Foreground Decorations */}
+                {DEEP_SEA_ITEMS.map((item, index) => (
+                    <div
+                        key={`item-${index}`}
+                        className={`ds-${item.type} ${item.className || ''}`}
+                        style={{
+                            left: item.left,
+                            right: item.right,
+                            bottom: item.bottom,
+                            fontSize: item.size,
+                            zIndex: item.zIndex,
+                            transform: item.transform
+                        }}
+                    >
+                        {item.emoji}
+                    </div>
+                ))}
+            </div>
+        </>
+    );
+});
 
 const ShapeGround = React.memo(() => {
     // Generate random floating shapes localized to this component
