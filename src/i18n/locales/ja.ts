@@ -52,6 +52,10 @@ export const ja = {
             unit: '/ 月',
             currency: 'USD',
         },
+        cancelSubscription: 'サブスクリプションをキャンセル',
+        cancelConfirmTitle: '本当にキャンセルしますか？',
+        cancelConfirmMessage: 'キャンセルすると即座に無料プランに戻り、\nプレミアム特典(XP 3倍など)が失われます。',
+        cancelSuccess: 'サブスクリプションがキャンセルされました。',
         cancelPolicy: 'プランはいつでもキャンセル可能です。',
         premiumActive: {
             title: 'プレミアム会員です！',

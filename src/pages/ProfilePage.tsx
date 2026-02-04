@@ -8,8 +8,9 @@ import './ProfilePage.css';
 export const ProfilePage: React.FC = () => {
     const navigate = useNavigate();
     const { t } = useTranslation();
+    const [showCancelModal, setShowCancelModal] = React.useState(false);
     const { user } = useAuth();
-    const { pauseTick, resumeTick, gro, xp, addRewards, maxStats, subscription, purchasePlan, debugUnlockAllGames, debugAddStars } = useNurturing();
+    const { pauseTick, resumeTick, gro, xp, addRewards, maxStats, subscription, purchasePlan, cancelSubscription, debugUnlockAllGames, debugAddStars } = useNurturing();
     const isPremium = subscription.isPremium;
 
     // Pause ticks when entering Profile page, resume when leaving
@@ -19,6 +20,14 @@ export const ProfilePage: React.FC = () => {
             resumeTick();
         };
     }, [pauseTick, resumeTick]);
+
+    const handleCancelSubscription = async () => {
+        const success = await cancelSubscription();
+        if (success) {
+            alert(t('profile.cancelSuccess'));
+            setShowCancelModal(false);
+        }
+    };
 
     const handlePurchase = async (plan: '3_months' | '12_months') => {
         if (window.confirm(`Confirm purchase for ${plan === '3_months' ? '3 Months' : '1 Year'}?`)) {
@@ -56,6 +65,24 @@ export const ProfilePage: React.FC = () => {
                                 <span className="sub-desc" style={{ fontSize: '0.8rem', opacity: 0.8 }}>
                                     Expires: {new Date(subscription.expiryDate).toLocaleDateString()}
                                 </span>
+                            )}
+                            {isPremium && (
+                                <button
+                                    className="text-btn"
+                                    onClick={() => setShowCancelModal(true)}
+                                    style={{
+                                        fontSize: '0.8rem',
+                                        color: '#999',
+                                        textDecoration: 'underline',
+                                        background: 'none',
+                                        border: 'none',
+                                        cursor: 'pointer',
+                                        marginTop: '4px',
+                                        padding: 0
+                                    }}
+                                >
+                                    {t('profile.cancelSubscription')}
+                                </button>
                             )}
                         </div>
                     </div>
@@ -235,6 +262,128 @@ export const ProfilePage: React.FC = () => {
                     </div>
                 </section>
             </div>
-        </div>
+
+            {/* Cancel Subscription Modal */}
+            {
+                showCancelModal && (
+                    <div style={{
+                        position: 'fixed',
+                        top: 0,
+                        left: 0,
+                        width: '100%',
+                        height: '100%',
+                        backgroundColor: 'rgba(0,0,0,0.6)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        zIndex: 2000,
+                        animation: 'fadeIn 0.3s ease-out'
+                    }}>
+                        <div className="auth-container" style={{
+                            maxWidth: '320px',
+                            padding: '1.5rem',
+                            animation: 'popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+                            textAlign: 'center',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: '1rem',
+                            background: 'white',
+                            borderRadius: '20px',
+                            boxShadow: '0 10px 25px rgba(0,0,0,0.2)',
+                            position: 'relative'
+                        }}>
+                            <button
+                                onClick={() => setShowCancelModal(false)}
+                                style={{
+                                    position: 'absolute',
+                                    top: '16px',
+                                    right: '16px',
+                                    background: 'transparent',
+                                    border: '3px solid #ccc',
+                                    borderRadius: '12px',
+                                    width: '40px',
+                                    height: '40px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    cursor: 'pointer',
+                                    fontSize: '1.5rem',
+                                    color: '#999',
+                                    boxShadow: '0 3px 0 #bbb',
+                                    transition: 'all 0.1s ease',
+                                    padding: 0,
+                                    lineHeight: 1
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.transform = 'scale(1.05)';
+                                    e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.05)';
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.transform = 'scale(1)';
+                                    e.currentTarget.style.backgroundColor = 'transparent';
+                                }}
+                                onMouseDown={(e) => {
+                                    e.currentTarget.style.transform = 'translateY(2px) scale(1.05)';
+                                    e.currentTarget.style.boxShadow = '0 1px 0 #bbb';
+                                }}
+                                onMouseUp={(e) => {
+                                    e.currentTarget.style.transform = 'scale(1.05)';
+                                    e.currentTarget.style.boxShadow = '0 3px 0 #bbb';
+                                }}
+                            >
+                                ✕
+                            </button>
+
+                            {/* Header Emoji */}
+                            <div style={{ fontSize: '3rem', marginBottom: '10px', marginTop: '10px' }}>😢</div>
+
+                            <h3 style={{ margin: '0 0 8px 0', color: '#443', fontSize: '1.4rem', fontWeight: 800 }}>{t('profile.cancelConfirmTitle')}</h3>
+                            <p style={{ margin: '0 0 24px 0', color: '#666', fontSize: '0.95rem', lineHeight: '1.5', whiteSpace: 'pre-line' }}>
+                                {t('profile.cancelConfirmMessage')}
+                            </p>
+
+                            <button
+                                onClick={handleCancelSubscription}
+                                style={{
+                                    width: '100%',
+                                    background: 'linear-gradient(180deg, #ff6b6b 0%, #ee5253 100%)',
+                                    color: 'white',
+                                    border: 'none',
+                                    padding: '16px',
+                                    borderRadius: '16px',
+                                    fontSize: '1.1rem',
+                                    fontWeight: '800',
+                                    cursor: 'pointer',
+                                    boxShadow: '0 4px 0 #d32f2f, 0 5px 15px rgba(238, 82, 83, 0.4)',
+                                    transform: 'translateY(0)',
+                                    transition: 'all 0.1s ease',
+                                    letterSpacing: '0.5px'
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.transform = 'translateY(-2px)';
+                                    e.currentTarget.style.filter = 'brightness(1.1)';
+                                    e.currentTarget.style.boxShadow = '0 6px 0 #d32f2f, 0 8px 20px rgba(238, 82, 83, 0.5)';
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.transform = 'translateY(0)';
+                                    e.currentTarget.style.filter = 'brightness(1)';
+                                    e.currentTarget.style.boxShadow = '0 4px 0 #d32f2f, 0 5px 15px rgba(238, 82, 83, 0.4)';
+                                }}
+                                onMouseDown={(e) => {
+                                    e.currentTarget.style.transform = 'translateY(4px)';
+                                    e.currentTarget.style.boxShadow = '0 0 0 #d32f2f, 0 2px 5px rgba(238, 82, 83, 0.3)';
+                                }}
+                                onMouseUp={(e) => {
+                                    e.currentTarget.style.transform = 'translateY(-2px)';
+                                    e.currentTarget.style.boxShadow = '0 6px 0 #d32f2f, 0 8px 20px rgba(238, 82, 83, 0.5)';
+                                }}
+                            >
+                                {t('common.confirm')}
+                            </button>
+                        </div>
+                    </div>
+                )
+            }
+        </div >
     );
 };

@@ -36,6 +36,10 @@ export const en = {
       premiumLabel: '✨ Premium Member',
       freeLabel: '🌱 Free Plan',
     },
+    cancelSubscription: 'Cancel Subscription',
+    cancelConfirmTitle: 'Cancel Subscription?',
+    cancelConfirmMessage: 'You will lose all Premium benefits immediately.\nAre you sure you want to cancel?',
+    cancelSuccess: 'Subscription cancelled.',
     upgradePrompt: 'Upgrade to Premium',
     subscription: {
       quarterly: {

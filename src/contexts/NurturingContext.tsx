@@ -110,6 +110,7 @@ interface NurturingContextValue {
   // Subscription
   subscription: SubscriptionState;
   purchasePlan: (planId: '3_months' | '12_months') => Promise<boolean>;
+  cancelSubscription: () => Promise<boolean>; // [NEW]
 
   // Jello House & Sleep
   isSleeping: boolean;
@@ -149,6 +150,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     subscription,
     saveToCloud,
     purchasePlan,
+    cancelSubscription,
     stateRef,
     completeCharacterCreation
   } = useNurturingSync(user, guestId);
@@ -352,6 +354,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
 
     saveToCloud,
     purchasePlan,
+    cancelSubscription,
     subscription,
     pauseTick,
     resumeTick,
@@ -385,6 +388,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     saveToCloud,
     purchasePlan,
     subscription,
+    cancelSubscription,
     pauseTick,
     resumeTick,
     setCharacterState,

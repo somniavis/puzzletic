@@ -451,6 +451,17 @@ export const useNurturingSync = (user: User | null, guestId: string | null = nul
         });
     }, [user]);
 
+    const cancelSubscription = useCallback(async (): Promise<boolean> => {
+        if (!user) return false;
+        // Mock Cancellation
+        setSubscription({
+            isPremium: false,
+            plan: null,
+            expiryDate: null,
+        });
+        return true;
+    }, [user]);
+
     return {
         state,
         setState,
@@ -459,6 +470,7 @@ export const useNurturingSync = (user: User | null, guestId: string | null = nul
         setSubscription,
         saveToCloud,
         purchasePlan,
+        cancelSubscription, // [NEW]
         stateRef,
         completeCharacterCreation
     };

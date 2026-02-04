@@ -38,6 +38,10 @@ export const ko = {
             premiumLabel: '✨ 프리미엄 멤버',
             freeLabel: '🌱 무료 플랜',
         },
+        cancelSubscription: '구독 취소',
+        cancelConfirmTitle: '구독을 취소하시겠습니까?',
+        cancelConfirmMessage: '취소하면 즉시 무료 플랜으로 전환되며,\n프리미엄 혜택(XP 3배 등)을 잃게 됩니다.',
+        cancelSuccess: '구독이 취소되었습니다.',
         upgradePrompt: '프리미엄 업그레이드',
         subscription: {
             quarterly: {
