@@ -1,0 +1,247 @@
+/* Shape Land Background (Forest Structure Match) */
+.room-background.shape_ground {
+    /* No special container styles needed */
+}
+
+.room-background.shape_ground .room-wall {
+    /* Sky */
+    position: relative !important;
+    height: 50vh !important;
+    width: 100%;
+    order: -1 !important;
+    inset: auto !important;
+    background: linear-gradient(180deg, #E6E6FA 0%, #B2CCFF 100%);
+    border-bottom: none;
+    overflow: hidden;
+    z-index: 0;
+}
+
+.room-background.shape_ground .room-floor {
+    position: relative !important;
+    height: 80vh !important;
+    width: 100%;
+    inset: auto !important;
+    margin-top: -30vh !important;
+    /* Soft Cream/Vanilla Floor - Elegant & Warm */
+    background-color: #FFF9E6;
+
+    background-image:
+        radial-gradient(#FFD700 15%, transparent 16%),
+        radial-gradient(#FF69B4 15%, transparent 16%);
+    background-size: 30px 30px;
+    background-position: 0 0, 15px 15px;
+    opacity: 0.2;
+    border-top-left-radius: 50% 40px;
+    border-top-right-radius: 50% 40px;
+    /* Reduced blur/shadow for cleaner look */
+    box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+    z-index: 1;
+    /* Above Wall */
+}
+
+/* Add a central rug/area to ground the content */
+.room-background.shape_ground .room-floor::before {
+    content: '';
+    position: absolute;
+    bottom: 0px;
+    /* Start from bottom */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%;
+    height: 70%;
+    /* Covers most of the floor area */
+    background: radial-gradient(circle at 50% 30%, rgba(255, 255, 255, 0.4) 0%, transparent 60%);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+/* Lake - Pure CSS Shape */
+.room-background.shape_ground .shape-lake {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 180px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.4) 0%, rgba(135, 206, 235, 0.2) 100%);
+    border: 4px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 4px 10px rgba(135, 206, 235, 0.3);
+    z-index: 2;
+    /* Above floor pattern */
+}
+
+.room-background.shape_ground .shape-lake::before {
+    content: '';
+    position: absolute;
+    top: 10px;
+    left: 20px;
+    width: 30px;
+    height: 10px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.6);
+    transform: rotate(-10deg);
+}
+
+/* Floating Shapes */
+.room-background.shape_ground .shape-triangle {
+    position: absolute;
+    top: 15%;
+    left: 10%;
+    width: 0;
+    height: 0;
+    border-left: 25px solid transparent;
+    border-right: 25px solid transparent;
+    border-bottom: 45px solid rgba(255, 182, 193, 0.6);
+    /* Pink */
+    filter: drop-shadow(0 4px 6px rgba(255, 182, 193, 0.4));
+    animation: float-shape 6s infinite ease-in-out;
+}
+
+.room-background.shape_ground .shape-circle {
+    position: absolute;
+    top: 25%;
+    right: 15%;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, rgba(255, 230, 230, 0.9), rgba(255, 182, 193, 0.5));
+    box-shadow: 0 4px 8px rgba(255, 182, 193, 0.3);
+    animation: float-shape 5s infinite ease-in-out 1s;
+}
+
+.room-background.shape_ground .shape-square {
+    position: absolute;
+    top: 10%;
+    left: 50%;
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, rgba(173, 216, 230, 0.8), rgba(135, 206, 235, 0.5));
+    border-radius: 8px;
+    transform: rotate(15deg);
+    box-shadow: 0 4px 8px rgba(135, 206, 235, 0.3);
+    animation: float-rotate-square 8s infinite linear;
+}
+
+/* Custom Shop Icon for Shape Land */
+.custom-icon-shape-ground {
+    display: inline-block;
+    width: 44px;
+    height: 44px;
+    /* Matches ~3rem font size comfortably */
+    background: linear-gradient(180deg, #E6E6FA 0%, #B2CCFF 100%);
+    /* Wall Gradient */
+    border-radius: 12px;
+    border: 3px solid #FFF9E6;
+    /* Cream border */
+    box-shadow: 0 4px 6px rgba(178, 204, 255, 0.4);
+    position: relative;
+    vertical-align: middle;
+}
+
+/* Geometric decoration (Circle) inside icon */
+.custom-icon-shape-ground::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 18px;
+    height: 18px;
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 50%;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+}
+
+@keyframes float-shape {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-15px);
+    }
+}
+
+@keyframes float-rotate-square {
+    0% {
+        transform: translateY(0) rotate(0deg);
+    }
+
+    50% {
+        transform: translateY(-10px) rotate(180deg);
+    }
+
+    100% {
+        transform: translateY(0) rotate(360deg);
+    }
+}
+
+/* Animations (Generic) */
+@keyframes pop-in {
+    from {
+        transform: scale(0.5);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes shine {
+    0% {
+        transform: translateX(-100%) rotate(45deg);
+    }
+
+    100% {
+        transform: translateX(200%) rotate(45deg);
+    }
+}
+
+@keyframes twinkle {
+
+    0%,
+    100% {
+        opacity: 0.6;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 1;
+        transform: scale(1.2);
+    }
+}
+
+.room-background.shape_ground .star-1,
+.room-background.shape_ground .star-2,
+.room-background.shape_ground .star-3 {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    background: radial-gradient(circle, #FFF 10%, transparent 70%);
+    opacity: 0.8;
+    animation: twinkle 3s infinite ease-in-out;
+}
+
+.star-1 {
+    top: 10%;
+    left: 20%;
+    animation-delay: 0s;
+}
+
+.star-2 {
+    top: 15%;
+    right: 25%;
+    animation-delay: 1s;
+}
+
+.star-3 {
+    top: 5%;
+    left: 50%;
+    animation-delay: 2s;
+}

@@ -1,0 +1,146 @@
+/* Tropical Island Background */
+.room-background.tropical_ground {
+    /* same layout structure as Forest */
+}
+
+.room-background.tropical_ground .room-wall {
+    height: 50vh !important;
+    /* Top 33%: Blue Sky, Lower 67%: Ocean */
+    background: linear-gradient(180deg, #87CEEB 0%, #87CEEB 33%, #00BFFF 33%, #1E90FF 100%);
+    border-bottom: none;
+    overflow: hidden;
+    position: relative;
+}
+
+.room-background.tropical_ground .room-wall::before {
+    content: '';
+    position: absolute;
+    top: 33%;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.5);
+    /* Horizon Line */
+    box-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
+}
+
+
+/* Clouds relative to Sky (top 33%) */
+.room-background.tropical_ground .cloud-1 {
+    position: absolute;
+    top: 10%;
+    left: 10%;
+    width: 60px;
+    height: 30px;
+    background: #fff;
+    border-radius: 50px;
+    opacity: 0.9;
+    animation: float-cloud 20s linear infinite;
+}
+
+.room-background.tropical_ground .cloud-2 {
+    position: absolute;
+    top: 5%;
+    right: 20%;
+    width: 80px;
+    height: 40px;
+    background: #fff;
+    border-radius: 50px;
+    opacity: 0.8;
+    animation: float-cloud 25s linear infinite reverse;
+}
+
+@keyframes float-cloud {
+    from {
+        transform: translateX(0);
+    }
+
+    to {
+        transform: translateX(50px);
+    }
+}
+
+/* Distant Island in the Sea (Middle Layer) */
+.room-background.tropical_ground .sand-island {
+    position: absolute;
+    top: 55%;
+    /* In the sea */
+    left: 20%;
+    width: 120px;
+    height: 30px;
+    background: #F4A460;
+    /* Sandy Brown */
+    border-radius: 50%;
+    z-index: 1;
+}
+
+/* Island Palm Trees */
+.room-background.tropical_ground .island-palm-1 {
+    position: absolute;
+    top: -25px;
+    left: 20px;
+    font-size: 2rem;
+    z-index: 2;
+    transform: rotate(-5deg);
+}
+
+.room-background.tropical_ground .island-palm-2 {
+    position: absolute;
+    top: -20px;
+    left: 50px;
+    font-size: 1.8rem;
+    z-index: 2;
+    transform: rotate(5deg);
+}
+
+.room-background.tropical_ground .island-palm-3 {
+    position: absolute;
+    top: -15px;
+    right: 15px;
+    font-size: 1.5rem;
+    z-index: 2;
+}
+
+
+/* Floor: Beach Sand */
+.room-background.tropical_ground .room-floor {
+    height: 80vh !important;
+    margin-top: -30vh !important;
+    background: #FFE4B5;
+    /* Moccasin Sand */
+    border-top-left-radius: 50% 40px;
+    border-top-right-radius: 50% 40px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+}
+
+/* Wave/Foam effect at the edge of the floor */
+.room-background.tropical_ground .room-floor::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 15px;
+    /* Small strip at the top curve */
+    background: #E0FFFF;
+    /* Light Cyan Foam */
+    opacity: 0.8;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.6);
+}
+
+/* Sand Texture (Dots) */
+.room-background.tropical_ground .room-floor::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+        radial-gradient(#DEB887 1px, transparent 1px),
+        radial-gradient(#D2691E 1px, transparent 1px);
+    background-size: 20px 20px;
+    background-position: 0 0, 10px 10px;
+    opacity: 0.4;
+    pointer-events: none;
+}

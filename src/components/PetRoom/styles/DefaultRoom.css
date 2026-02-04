@@ -1,0 +1,11 @@
+/* Default Ground */
+.room-background.default_ground .room-wall {
+    height: 50vh !important;
+    background: linear-gradient(135deg, #FFF9E6 0%, #FFE4B5 100%);
+}
+
+.room-background.default_ground .room-floor {
+    height: 100%;
+    margin-top: 0;
+    background: linear-gradient(180deg, #FFF9E6 0%, #FFE4B5 100%);
+}

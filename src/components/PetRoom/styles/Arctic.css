@@ -1,0 +1,235 @@
+/* Arctic Background */
+.room-background.arctic_ground .room-wall {
+    height: 50vh !important;
+    /* Extended for overlap (Template Structure) */
+    /* Night Sky (0-33%) -> Icy Ocean (33-100%) */
+    /* Matching Tropical Ratio: Sky 67%, Ocean 33% (Horizon at 33%) */
+    background: linear-gradient(180deg, #0B1026 0%, #2B32B2 33%, #1A2980 33%, #26D0CE 100%);
+    border-bottom: none;
+    overflow: hidden;
+    /* Ensure aurora doesn't spill out */
+}
+
+/* Aurora Effect */
+.room-background.arctic_ground .aurora {
+    position: absolute;
+    top: 0;
+    /* Start from very top */
+    right: -10%;
+    left: auto;
+    width: 70%;
+    height: 20%;
+    /* Restrict to top 20% (Upper Sky) */
+    background: linear-gradient(90deg,
+            transparent 0%,
+            rgba(0, 255, 128, 0.5) 40%,
+            rgba(148, 0, 211, 0.5) 60%,
+            transparent 100%);
+    filter: blur(15px);
+    opacity: 0;
+    transform: rotate(-15deg);
+    animation: aurora-wave 10s ease-in-out infinite;
+    z-index: 1;
+    pointer-events: none;
+}
+
+@keyframes aurora-wave {
+    0% {
+        transform: rotate(-5deg) translateX(-20px) scaleY(1);
+        opacity: 0;
+    }
+
+    20% {
+        opacity: 0.8;
+    }
+
+    /* Fade in */
+    80% {
+        opacity: 0.6;
+    }
+
+    /* Stay visible */
+    100% {
+        transform: rotate(0deg) translateX(20px) scaleY(1.1);
+        opacity: 0;
+    }
+
+    /* Fade out */
+}
+
+/* Stars (Individual Elements) */
+.room-background.arctic_ground .star-1,
+.room-background.arctic_ground .star-2,
+.room-background.arctic_ground .star-3,
+.room-background.arctic_ground .star-4 {
+    position: absolute;
+    background: white;
+    border-radius: 50%;
+    opacity: 0.8;
+    box-shadow: 0 0 4px rgba(255, 255, 255, 0.8);
+}
+
+.room-background.arctic_ground .star-1 {
+    top: 15%;
+    left: 20%;
+    width: 3px;
+    height: 3px;
+    animation: twinkle 3s infinite alternate 0s;
+}
+
+.room-background.arctic_ground .star-2 {
+    top: 8%;
+    left: 75%;
+    width: 2px;
+    height: 2px;
+    animation: twinkle 4s infinite alternate 1s;
+}
+
+.room-background.arctic_ground .star-3 {
+    top: 25%;
+    left: 45%;
+    width: 3px;
+    height: 3px;
+    animation: twinkle 2.5s infinite alternate 0.5s;
+}
+
+.room-background.arctic_ground .star-4 {
+    top: 20%;
+    left: 85%;
+    width: 2px;
+    height: 2px;
+    animation: twinkle 5s infinite alternate 2s;
+}
+
+@keyframes twinkle {
+    0% {
+        opacity: 0.5;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+/* Iceberg 1 (3 Overlapping Triangles) */
+.room-background.arctic_ground .iceberg-1 {
+    position: absolute;
+    bottom: 25%;
+    /* Floating in the ocean (above the floor overlap) */
+    left: 15%;
+    width: 80px;
+    height: 60px;
+    opacity: 0.9;
+    animation: iceberg-float 6s ease-in-out infinite alternate;
+}
+
+/* Centre Triangle (Largest) - but using Main Element as Right Triangle logic, see below */
+/* Wait, I should copy the logic exactly as it is in current file */
+/* CURRENT LOGIC:
+   .iceberg-1 { position... width:0; height:0; border-left... (Right Triangle) }
+   ::before { Center Triangle }
+   ::after { Left Triangle }
+*/
+
+.room-background.arctic_ground .iceberg-1 {
+    position: absolute;
+    bottom: 65%;
+    /* Moved up to be visible above the 60% floor overlap */
+    left: 15%;
+    width: 0;
+    height: 0;
+    /* Right Triangle */
+    border-left: 25px solid transparent;
+    border-right: 25px solid transparent;
+    border-bottom: 40px solid rgba(176, 224, 230, 0.8);
+    /* Powder Blue */
+    animation: iceberg-float 6s ease-in-out infinite alternate;
+}
+
+/* Center Triangle (Largest) */
+.room-background.arctic_ground .iceberg-1::before {
+    content: '';
+    position: absolute;
+    bottom: -40px;
+    /* Align bottom with container */
+    left: -40px;
+    /* Shift left */
+    border-left: 35px solid transparent;
+    border-right: 35px solid transparent;
+    border-bottom: 60px solid rgba(224, 255, 255, 0.95);
+    /* Lightest */
+    z-index: 2;
+}
+
+/* Left Triangle */
+.room-background.arctic_ground .iceberg-1::after {
+    content: '';
+    position: absolute;
+    bottom: -40px;
+    left: -60px;
+    border-left: 20px solid transparent;
+    border-right: 20px solid transparent;
+    border-bottom: 35px solid rgba(135, 206, 235, 0.8);
+    /* Sky Blue */
+    z-index: 1;
+}
+
+@keyframes iceberg-float {
+    0% {
+        transform: translateY(0) rotate(0deg);
+    }
+
+    100% {
+        transform: translateY(3px) rotate(1deg);
+    }
+}
+
+.room-background.arctic_ground .room-floor {
+    height: 80vh !important;
+    margin-top: -30vh !important;
+    /* Overlap (Template Structure) */
+    /* Snow/Ice Gradient */
+    background: linear-gradient(180deg, #E0FFFF 0%, #F0F8FF 100%);
+    /* Curved Snow Effect */
+    border-top-left-radius: 50% 40px;
+    border-top-right-radius: 50% 40px;
+    overflow: hidden;
+    /* Clip texture to rounded corners */
+    box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Icy Edge (replacing Wave Foam) */
+.room-background.arctic_ground .room-floor::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 15px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.8) 0%, transparent 100%);
+    opacity: 0.9;
+}
+
+/* Snow Texture (Sparkles - Randomized) */
+.room-background.arctic_ground .room-floor::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+        radial-gradient(white 1px, transparent 1px),
+        radial-gradient(rgba(200, 240, 255, 0.6) 1px, transparent 1px),
+        radial-gradient(white 0.8px, transparent 0.8px),
+        radial-gradient(rgba(224, 255, 255, 0.5) 1px, transparent 1px);
+    background-size:
+        13px 13px,
+        29px 29px,
+        17px 17px,
+        23px 23px;
+    background-position:
+        2px 5px,
+        15px 10px,
+        7px 20px,
+        0 0;
+    opacity: 0.6;
+    pointer-events: none;
+}

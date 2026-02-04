@@ -1,0 +1,284 @@
+/* Volcano Ground */
+.room-background.volcanic_ground .room-wall {
+    height: 50vh !important;
+    /* Dark Red/Ashy Sky */
+    background: linear-gradient(180deg, #2c0e0e 0%, #4a1919 40%, #8b0000 100%);
+    border-bottom: none;
+    overflow: hidden;
+    position: relative;
+}
+
+.room-background.volcanic_ground .room-floor {
+    height: 80vh !important;
+    margin-top: -30vh !important;
+    /* Lava/Rock Floor */
+    background: linear-gradient(180deg, #3e2723 0%, #5d4037 100%);
+    border-top-left-radius: 50% 40px;
+    border-top-right-radius: 50% 40px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 -5px 15px rgba(255, 69, 0, 0.2);
+    /* Lava Glow */
+    z-index: 10;
+}
+
+/* Lava Texture */
+.room-background.volcanic_ground .room-floor::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image:
+        repeating-linear-gradient(45deg,
+            transparent,
+            transparent 20px,
+            rgba(255, 87, 34, 0.1) 20px,
+            rgba(255, 87, 34, 0.1) 40px);
+    pointer-events: none;
+}
+
+/* Floating Lava Patches */
+.room-background.volcanic_ground .room-floor::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 30% 40%, #bf360c 5%, transparent 10%),
+        radial-gradient(circle at 70% 60%, #e64a19 8%, transparent 15%);
+    filter: blur(2px);
+    opacity: 0.6;
+}
+
+/* Volcano Mountain */
+.room-background.volcanic_ground .volcano {
+    position: absolute;
+    bottom: 0px;
+    /* Align to Wall Bottom */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 150px solid transparent;
+    border-right: 150px solid transparent;
+    border-bottom: 200px solid #3e2723;
+    /* Dark Rock */
+    z-index: 2;
+}
+
+/* Volcano Crater Glow */
+.room-background.volcanic_ground .volcano::after {
+    content: '';
+    position: absolute;
+    top: 0px;
+    /* Relative to border-bottom top edge? No, ::after on 0x0 div is tricky. */
+    /* Re-positioning relative to the TIP */
+    /* Actually border hack makes the content box 0. Pseudo elements are positioned relative to the box. */
+    /* Top of border-bottom (200px) is at -200px from bottom when content is 0? */
+    /* To place at the tip (top center), let's use a separate element or adjust calc */
+    left: -40px;
+    top: 10px;
+    /* Approx location of crater */
+    width: 80px;
+    height: 20px;
+    background: radial-gradient(ellipse at center, #ffeb3b 0%, #ff5722 60%, transparent 100%);
+    filter: blur(5px);
+    border-radius: 50%;
+    /* This actually renders inside the border-box (bottom). */
+    /* Since height is 0, top: is from top edge. border-bottom pushes content up? No, borders add to dimensions. */
+    /* Let's trust the existing layout logic */
+    transform: translateY(0px) translateX(0px);
+    /* Adjust manually */
+    /* Since it's border-bottom, the 'content area' is 0x0. The border extends downwards. */
+    /* Top of the element is the TOP of the border-bottom. */
+}
+
+/* Distant Volcano */
+.room-background.volcanic_ground .volcano-2 {
+    position: absolute;
+    bottom: 0px;
+    left: 10%;
+    width: 0;
+    height: 0;
+    border-left: 80px solid transparent;
+    border-right: 80px solid transparent;
+    border-bottom: 120px solid #4e342e;
+    z-index: 1;
+}
+
+/* Smoke Particles - Using box-shadow or multiple divs */
+.room-background.volcanic_ground .volcano-smoke-main-1,
+.room-background.volcanic_ground .volcano-smoke-main-2,
+.room-background.volcanic_ground .volcano-smoke-main-3,
+.room-background.volcanic_ground .volcano-smoke-main-4,
+.room-background.volcanic_ground .volcano-smoke-main-5,
+.room-background.volcanic_ground .volcano-smoke-main-6 {
+    position: absolute;
+    bottom: 200px;
+    /* Top of Volcano */
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    background: rgba(100, 100, 100, 0.6);
+    border-radius: 50%;
+    filter: blur(5px);
+    z-index: 1;
+    pointer-events: none;
+}
+
+
+.room-background.volcanic_ground .volcano-smoke-small-1,
+.room-background.volcanic_ground .volcano-smoke-small-2,
+.room-background.volcanic_ground .volcano-smoke-small-3 {
+    position: absolute;
+    bottom: 120px;
+    /* Top of Small Volcano */
+    left: 20%;
+    /* Approx center of small volcano */
+    width: 15px;
+    height: 15px;
+    background: rgba(120, 120, 120, 0.5);
+    border-radius: 50%;
+    filter: blur(4px);
+    z-index: 0;
+}
+
+/* Animations */
+.room-background.volcanic_ground .volcano-smoke-main-1 {
+    animation: smoke-rise-left 4s infinite ease-out 0s;
+    left: 48%;
+}
+
+.room-background.volcanic_ground .volcano-smoke-main-2 {
+    animation: smoke-rise-left 4s infinite ease-out 0.7s;
+    left: 64%;
+}
+
+.room-background.volcanic_ground .volcano-smoke-main-3 {
+    animation: smoke-rise-left 4s infinite ease-out 1.4s;
+    left: 66%;
+}
+
+.room-background.volcanic_ground .volcano-smoke-main-4 {
+    animation: smoke-rise-left 4s infinite ease-out 2.1s;
+}
+
+.room-background.volcanic_ground .volcano-smoke-main-5 {
+    animation: smoke-rise-left 4s infinite ease-out 2.8s;
+    left: 64%;
+}
+
+.room-background.volcanic_ground .volcano-smoke-main-6 {
+    animation: smoke-rise-left 4s infinite ease-out 3.5s;
+    left: 66%;
+}
+
+.room-background.volcanic_ground .volcano-smoke-small-1 {
+    animation: smoke-rise-left 3.5s infinite ease-out 0s;
+}
+
+.room-background.volcanic_ground .volcano-smoke-small-2 {
+    animation: smoke-rise-left 3.5s infinite ease-out 1.2s;
+    left: 44%;
+}
+
+.room-background.volcanic_ground .volcano-smoke-small-3 {
+    animation: smoke-rise-left 3.5s infinite ease-out 2.4s;
+    left: 46%;
+}
+
+@keyframes smoke-rise-left {
+    0% {
+        transform: translateX(-50%) translateY(0) scale(0.5);
+        opacity: 0;
+    }
+
+    20% {
+        opacity: 0.8;
+    }
+
+    100% {
+        /* Move diagonally top-left */
+        transform: translateX(-250%) translateY(-180px) scale(2.5);
+        opacity: 0;
+    }
+}
+
+/* Volcanic Lightning Effect */
+.room-background.volcanic_ground .volcano-lightning {
+    position: absolute;
+    top: 2%;
+    /* Moved higher up */
+    left: 15%;
+    width: 2px;
+    height: 100px;
+    background: #fff;
+    box-shadow: 0 0 10px #fff, 0 0 20px #FFD700;
+    /* White core with Gold glow */
+    opacity: 0;
+    transform: rotate(15deg);
+    z-index: 0;
+    /* Behind volcano */
+    animation: lightning-flash 8s infinite ease-in-out;
+}
+
+/* Lightning Branches (Pseudo-elements) */
+.room-background.volcanic_ground .volcano-lightning::before {
+    content: '';
+    position: absolute;
+    top: 40%;
+    left: -20px;
+    width: 2px;
+    height: 60px;
+    background: #fff;
+    transform: rotate(-45deg);
+    box-shadow: 0 0 8px #fff;
+}
+
+.room-background.volcanic_ground .volcano-lightning::after {
+    content: '';
+    position: absolute;
+    top: 60%;
+    left: 10px;
+    width: 2px;
+    height: 40px;
+    background: #fff;
+    transform: rotate(30deg);
+    box-shadow: 0 0 8px #fff;
+}
+
+@keyframes lightning-flash {
+
+    0%,
+    90% {
+        opacity: 0;
+    }
+
+    91% {
+        opacity: 1;
+    }
+
+    92% {
+        opacity: 0;
+    }
+
+    93% {
+        opacity: 1;
+    }
+
+    94% {
+        opacity: 0;
+    }
+
+    95% {
+        opacity: 0.5;
+    }
+
+    96% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
