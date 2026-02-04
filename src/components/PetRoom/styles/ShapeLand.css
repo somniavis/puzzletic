@@ -1,8 +1,3 @@
-/* Shape Land Background (Forest Structure Match) */
-.room-background.shape_ground {
-    /* No special container styles needed */
-}
-
 .room-background.shape_ground .room-wall {
     /* Sky */
     position: relative !important;

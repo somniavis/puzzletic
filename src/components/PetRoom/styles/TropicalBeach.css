@@ -1,8 +1,3 @@
-/* Tropical Island Background */
-.room-background.tropical_ground {
-    /* same layout structure as Forest */
-}
-
 .room-background.tropical_ground .room-wall {
     height: 50vh !important;
     /* Top 33%: Blue Sky, Lower 67%: Ocean */
