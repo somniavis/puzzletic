@@ -312,6 +312,11 @@ export const useNurturingSync = (user: User | null, guestId: string | null = nul
                 isSick: parsedGameData.isSick ?? defaultState.isSick ?? false,
                 isSleeping: parsedGameData.isSleeping ?? defaultState.isSleeping ?? false,
                 totalGameStars: parsedGameData.totalGameStars ?? (cloudData as any).star ?? 0,
+
+                // Pet System Persistence
+                currentPetId: parsedGameData.currentPetId,
+                petExpiresAt: parsedGameData.petExpiresAt,
+
                 lastActiveTime: Date.now(),
             };
 
