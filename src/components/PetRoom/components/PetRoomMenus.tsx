@@ -231,8 +231,8 @@ export const PetRoomMenus: React.FC<PetRoomMenusProps> = ({
                                     className={`category-tab ${selectedShopCategory === category ? 'active' : ''}`}
                                     onClick={() => { playButtonSound(); setSelectedShopCategory(category); }}
                                 >
-                                    <span className="cat-icon">{SHOP_CATEGORIES[category].icon}</span>
-                                    <span className="cat-name">{t(SHOP_CATEGORIES[category].nameKey)}</span>
+                                    <span className="category-icon">{SHOP_CATEGORIES[category].icon}</span>
+                                    <span className="category-name">{t(SHOP_CATEGORIES[category].nameKey)}</span>
                                 </button>
                             ))}
                         </div>
@@ -269,11 +269,7 @@ export const PetRoomMenus: React.FC<PetRoomMenusProps> = ({
                                         }
                                     >
                                         <span className="food-item-icon">
-                                            {item.id === 'shape_ground' ? (
-                                                <span className="custom-icon-shape-ground" />
-                                            ) : (
-                                                item.icon
-                                            )}
+                                            {item.icon}
                                         </span>
                                         <span className="food-item-name">{t(item.nameKey)}</span>
                                         <div className="food-item-effects">

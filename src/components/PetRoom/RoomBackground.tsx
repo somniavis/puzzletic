@@ -4,7 +4,7 @@ import './styles/DefaultRoom.css';
 import './styles/ShapeLand.css';
 import './styles/Forest.css';
 import './styles/TropicalBeach.css';
-import './styles/Volcano.css';
+// import './styles/Volcano.css';
 import './styles/Desert.css';
 import './styles/Arctic.css';
 import './styles/SweetLand.css';

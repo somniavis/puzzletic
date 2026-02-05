@@ -274,15 +274,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({
     <div className="pet-room">
       <div className="pet-room-content" ref={camera.petRoomRef} style={{ flex: 1, display: 'flex', flexDirection: 'column', position: 'relative', overflow: 'hidden' }}>
 
-        {/* Loading Overlay */}
-        {ui.isLoading && (
-          <div className="loading-overlay">
-            <div className="loading-spinner-container">
-              <div className="loading-spinner">🐾</div>
-              <div className="loading-text">{t('common.loading')}</div>
-            </div>
-          </div>
-        )}
+
 
         <PetRoomHeader
           character={character}
@@ -418,6 +410,16 @@ export const PetRoom: React.FC<PetRoomProps> = ({
         isOpen={showPremiumModal}
         onClose={() => setShowPremiumModal(false)}
       />
+
+      {/* Loading Overlay (Moved to end for Z-Index Supremacy) */}
+      {ui.isLoading && (
+        <div className="loading-overlay">
+          <div className="loading-spinner-container">
+            <div className="loading-spinner">🐾</div>
+            <div className="loading-text">{t('common.loading')}</div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -1,141 +1,228 @@
-.room-background.tropical_ground .room-wall {
-    height: 50vh !important;
-    /* Top 33%: Blue Sky, Lower 67%: Ocean */
-    background: linear-gradient(180deg, #87CEEB 0%, #87CEEB 33%, #00BFFF 33%, #1E90FF 100%);
-    border-bottom: none;
-    overflow: hidden;
-    position: relative;
+/* Tropical Island Background */
+.room-background.tropical_ground {
+    display: flex !important;
+    flex-direction: column !important;
 }
 
+.room-background.tropical_ground .room-wall {
+    position: relative !important;
+    height: 50vh !important;
+    width: 100%;
+    order: -1 !important;
+    inset: auto !important;
+    /* Sky (0-33%) -> Ocean (33-100%) */
+    /* Updated gradient: Horizon adjusted to 33% */
+    background: linear-gradient(180deg, #AEEEEE 0%, #87CEEB 33%, #40E0D0 33%, #20B2AA 100%);
+    overflow: hidden;
+    border-bottom: none;
+    z-index: 0;
+}
+
+/* Sun */
 .room-background.tropical_ground .room-wall::before {
     content: '';
     position: absolute;
-    top: 33%;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background: rgba(255, 255, 255, 0.5);
-    /* Horizon Line */
-    box-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
+    top: 8%;
+    right: 15%;
+    width: 50px;
+    height: 50px;
+    background: radial-gradient(circle, #FFF9C4 0%, #FFEB3B 40%, #FFC107 100%);
+    border-radius: 50%;
+    box-shadow: 0 0 30px rgba(255, 235, 59, 0.6);
+    animation: sun-glow 4s ease-in-out infinite alternate;
 }
 
+@keyframes sun-glow {
+    0% {
+        box-shadow: 0 0 30px rgba(255, 235, 59, 0.6);
+        transform: scale(1);
+    }
 
-/* Clouds relative to Sky (top 33%) */
+    100% {
+        /* Intense expanding rays */
+        box-shadow:
+            0 0 60px rgba(255, 235, 59, 0.9),
+            0 0 100px rgba(255, 165, 0, 0.6);
+        transform: scale(1.1);
+    }
+}
+
+/* Cloud 1 (Left) */
 .room-background.tropical_ground .cloud-1 {
     position: absolute;
-    top: 10%;
-    left: 10%;
-    width: 60px;
-    height: 30px;
+    top: 15%;
+    left: 8%;
+    width: 50px;
+    height: 20px;
     background: #fff;
-    border-radius: 50px;
-    opacity: 0.9;
-    animation: float-cloud 20s linear infinite;
+    border-radius: 20px;
+    box-shadow:
+        12px -12px 0 1px #fff,
+        28px -5px 0 0 #fff;
+    opacity: 0.95;
+    animation: cloud-float-1 6s ease-in-out infinite alternate;
 }
 
+/* Cloud 2 (Center) */
 .room-background.tropical_ground .cloud-2 {
     position: absolute;
-    top: 5%;
-    right: 20%;
-    width: 80px;
-    height: 40px;
+    top: 20%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50px;
+    /* Rounded Rectangle Base (Larger) */
+    height: 20px;
     background: #fff;
-    border-radius: 50px;
-    opacity: 0.8;
-    animation: float-cloud 25s linear infinite reverse;
+    border-radius: 10px;
+    box-shadow:
+        15px -8px 0 -2px #fff;
+    /* Smaller Circle Puff on Top */
+    opacity: 0.9;
+    animation: cloud-float-2 8s ease-in-out infinite alternate;
 }
 
-@keyframes float-cloud {
-    from {
-        transform: translateX(0);
+@keyframes cloud-float-1 {
+    0% {
+        transform: translateX(-10px);
     }
 
-    to {
-        transform: translateX(50px);
+    100% {
+        transform: translateX(10px);
     }
 }
 
-/* Distant Island in the Sea (Middle Layer) */
+@keyframes cloud-float-2 {
+    0% {
+        transform: translateX(-50%) translateX(-8px);
+    }
+
+    100% {
+        transform: translateX(-50%) translateX(8px);
+    }
+}
+
+/* Sand Island (Left Ocean) */
 .room-background.tropical_ground .sand-island {
     position: absolute;
-    top: 55%;
-    /* In the sea */
-    left: 20%;
-    width: 120px;
-    height: 30px;
-    background: #F4A460;
-    /* Sandy Brown */
-    border-radius: 50%;
+    left: 10%;
+    bottom: calc(65% - 8px);
+    /* Moved higher (was 25%) to clear floor overlap (60%) */
+    width: 70px;
+    /* Reduced width (was 80px) */
+    height: 25px;
+    background: #FFF8DC;
+    /* Sand color */
+    border-radius: 15px;
+    /* Rounded rectangle */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    opacity: 0.9;
     z-index: 1;
 }
 
-/* Island Palm Trees */
 .room-background.tropical_ground .island-palm-1 {
     position: absolute;
-    top: -25px;
-    left: 20px;
-    font-size: 2rem;
+    left: 5px;
+    bottom: 5px;
+    /* Moved down (was 10px) */
+    font-size: 24px;
     z-index: 2;
-    transform: rotate(-5deg);
+    transform: rotate(-10deg);
+    /* Slight tilt left */
 }
 
 .room-background.tropical_ground .island-palm-2 {
     position: absolute;
-    top: -20px;
-    left: 50px;
-    font-size: 1.8rem;
+    left: 25px;
+    bottom: 3px;
+    /* Moved down (was 8px) */
+    font-size: 26px;
+    /* 1.3x larger (was 20px) */
     z-index: 2;
-    transform: rotate(5deg);
+    transform: scaleX(-1) rotate(-5deg);
+    /* Mirrored and tilted */
 }
 
 .room-background.tropical_ground .island-palm-3 {
     position: absolute;
-    top: -15px;
-    right: 15px;
-    font-size: 1.5rem;
-    z-index: 2;
+    left: 15px;
+    /* Middle */
+    bottom: 10px;
+    /* Moved down (was 15px) */
+    /* Higher up (Back) */
+    font-size: 26px;
+    /* Medium size */
+    z-index: 1;
+    /* Behind others */
+    transform: rotate(5deg);
+    /* Slight tilt */
+    filter: brightness(0.9);
+    /* Slightly darker for depth */
 }
 
 
-/* Floor: Beach Sand */
 .room-background.tropical_ground .room-floor {
+    position: relative !important;
     height: 80vh !important;
+    width: 100%;
+    inset: auto !important;
     margin-top: -30vh !important;
-    background: #FFE4B5;
-    /* Moccasin Sand */
+    /* White Sand Color based on reference - Lighter gradient */
+    background: linear-gradient(180deg, #FFF8DC 0%, #FFF0D4 100%);
+    overflow: hidden;
+    z-index: 1;
+    /* Curved Sand Effect */
     border-top-left-radius: 50% 40px;
     border-top-right-radius: 50% 40px;
-    overflow: hidden;
-    position: relative;
     box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.1);
-    z-index: 10;
 }
 
-/* Wave/Foam effect at the edge of the floor */
+/* Wave Foam at the shoreline (Top of floor) */
 .room-background.tropical_ground .room-floor::before {
     content: '';
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
-    height: 15px;
-    /* Small strip at the top curve */
-    background: #E0FFFF;
-    /* Light Cyan Foam */
+    height: 20px;
+    background:
+        radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.8) 0%, transparent 70%);
+    background-size: 40px 20px;
+    background-repeat: repeat-x;
+    animation: wave-foam 2s ease-in-out infinite alternate;
     opacity: 0.8;
-    border-bottom: 2px solid rgba(255, 255, 255, 0.6);
 }
 
-/* Sand Texture (Dots) */
+@keyframes wave-foam {
+    0% {
+        transform: translateY(0) scaleY(1);
+        opacity: 0.8;
+    }
+
+    100% {
+        transform: translateY(2px) scaleY(1.2);
+        opacity: 0.5;
+    }
+}
+
+/* Sand Texture - Irregular Noise (Subtle & Randomized) */
 .room-background.tropical_ground .room-floor::after {
     content: '';
     position: absolute;
     inset: 0;
     background-image:
-        radial-gradient(#DEB887 1px, transparent 1px),
-        radial-gradient(#D2691E 1px, transparent 1px);
-    background-size: 20px 20px;
-    background-position: 0 0, 10px 10px;
+        radial-gradient(rgba(160, 82, 45, 0.1) 0.5px, transparent 0.5px),
+        radial-gradient(rgba(160, 82, 45, 0.08) 0.5px, transparent 0.5px),
+        radial-gradient(rgba(255, 255, 255, 0.2) 0.5px, transparent 0.5px),
+        radial-gradient(rgba(160, 82, 45, 0.05) 0.5px, transparent 0.5px);
+    background-size:
+        13px 13px,
+        29px 29px,
+        17px 17px,
+        23px 23px;
+    background-position:
+        15px 10px,
+        7px 20px,
+        0 0;
     opacity: 0.4;
     pointer-events: none;
 }

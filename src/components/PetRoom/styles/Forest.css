@@ -2,165 +2,140 @@
 .room-background.forest_ground {
     display: flex !important;
     flex-direction: column !important;
-    /* Use flex column to stack Wall and Floor vertically */
-    position: absolute;
-    inset: 0;
 }
 
 .room-background.forest_ground .room-wall {
-    height: 50vh !important;
-    order: -1 !important;
-    /* Wall on top */
     position: relative !important;
-    /* Reset absolute */
+    height: 50vh !important;
+    width: 100%;
+    order: -1 !important;
     inset: auto !important;
-    /* Reset inset */
-    background: linear-gradient(180deg, #87CEEB 0%, #E0F7FA 100%);
-    /* Sky */
-    border-bottom: none !important;
+    /* Sky (0-33%) -> Forest Green (33-100%) */
+    background: linear-gradient(180deg, #87CEEB 0%, #B0E0E6 33%, #228B22 33%, #006400 100%);
     overflow: hidden;
+    border-bottom: none;
     z-index: 0;
 }
 
 .room-background.forest_ground .room-floor {
-    height: 80vh !important;
-    /* Taller to overlap */
-    width: 100%;
-    margin-top: -30vh !important;
-    /* Overlap the wall by 30vh */
     position: relative !important;
-    /* Reset absolute */
+    height: 80vh !important;
+    width: 100%;
     inset: auto !important;
-    background: #4caf50;
-    /* Grass Green Fallback */
-    background: linear-gradient(180deg, #66bb6a 0%, #43a047 100%);
-    /* Grass Gradient */
+    margin-top: -30vh !important;
+    background: #b0cd74;
+    /* User specified color */
+    overflow: hidden;
+    z-index: 1;
+    /* Curved Floor Effect (Same as Tropical) */
     border-top-left-radius: 50% 40px;
-    /* Curved Horizon */
     border-top-right-radius: 50% 40px;
     box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.1);
-    /* Slight shadow for depth */
-    z-index: 10;
-    /* Ensure Floor covers bottom of Wall */
-    overflow: hidden;
 }
 
-/* Mountains */
+/* Forest Mountains */
 .room-background.forest_ground .forest-mountain {
     position: absolute;
-    bottom: 0;
-    /* Align to bottom of WALL */
-    left: 0;
-    right: 0;
-    height: 40%;
-    /* Height relative to wall */
-    pointer-events: none;
-    z-index: 1;
-}
-
-.room-background.forest_ground .mountain-large {
-    position: absolute;
-    bottom: -10%;
-    left: 20%;
-    width: 0;
-    height: 0;
-    border-left: 150px solid transparent;
-    border-right: 150px solid transparent;
-    border-bottom: 200px solid #81c784;
-    /* Lighter mountain */
-}
-
-.room-background.forest_ground .mountain-small {
-    position: absolute;
-    bottom: -5%;
-    left: 50%;
-    width: 0;
-    height: 0;
-    border-left: 100px solid transparent;
-    border-right: 100px solid transparent;
-    border-bottom: 120px solid #66bb6a;
-    /* Slightly darker */
-}
-
-.room-background.forest_ground .mountain-right-large {
-    position: absolute;
-    bottom: -10%;
-    right: -50px;
-    /* Offscreen overlap */
-    width: 0;
-    height: 0;
-    border-left: 180px solid transparent;
-    border-right: 180px solid transparent;
-    border-bottom: 250px solid #a5d6a7;
-    /* Pale mountain */
+    bottom: 67%;
+    /* Moved down slightly to sit behind the curved horizon */
+    clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
     z-index: 0;
 }
 
+.room-background.forest_ground .mountain-large {
+    left: 40%;
+    transform: translateX(-50%);
+    width: 30%;
+    /* Responsive width */
+    min-width: 240px;
+    height: 96px;
+    background: linear-gradient(180deg, #2E8B57 0%, #006400 100%);
+    opacity: 0.9;
+    z-index: 2;
+}
+
+.room-background.forest_ground .mountain-small {
+    left: 60%;
+    transform: translateX(-50%);
+    width: 20%;
+    /* Responsive width */
+    min-width: 160px;
+    height: 72px;
+    background: linear-gradient(180deg, #3CB371 0%, #2E8B57 100%);
+    opacity: 0.8;
+    z-index: 1;
+}
+
+.room-background.forest_ground .mountain-right-large {
+    left: 80%;
+    transform: translateX(-50%);
+    width: 25%;
+    /* Responsive width */
+    min-width: 192px;
+    height: 77px;
+    background: linear-gradient(180deg, #2E8B57 0%, #006400 100%);
+    opacity: 0.9;
+    z-index: 2;
+}
+
 .room-background.forest_ground .mountain-right-small {
-    position: absolute;
-    bottom: -5%;
-    right: 15%;
-    width: 0;
-    height: 0;
-    border-left: 80px solid transparent;
-    border-right: 80px solid transparent;
-    border-bottom: 100px solid #81c784;
+    left: 90%;
+    transform: translateX(-50%);
+    width: 18%;
+    /* Responsive width */
+    min-width: 128px;
+    height: 58px;
+    background: linear-gradient(180deg, #3CB371 0%, #2E8B57 100%);
+    opacity: 0.8;
+    z-index: 1;
 }
 
 .room-background.forest_ground .mountain-left-large {
-    position: absolute;
-    bottom: -15%;
-    left: -100px;
-    width: 0;
-    height: 0;
-    border-left: 200px solid transparent;
-    border-right: 200px solid transparent;
-    border-bottom: 280px solid #a5d6a7;
-    z-index: -1;
+    left: 20%;
+    transform: translateX(-50%);
+    width: 22%;
+    /* Responsive width */
+    min-width: 173px;
+    height: 69px;
+    background: linear-gradient(180deg, #2E8B57 0%, #006400 100%);
+    opacity: 0.9;
+    z-index: 2;
 }
 
 .room-background.forest_ground .mountain-left-small {
-    position: absolute;
-    bottom: -8%;
-    left: 5%;
-    width: 0;
-    height: 0;
-    border-left: 90px solid transparent;
-    border-right: 90px solid transparent;
-    border-bottom: 110px solid #66bb6a;
+    left: 10%;
+    transform: translateX(-50%);
+    width: 15%;
+    /* Responsive width */
+    min-width: 115px;
+    height: 52px;
+    background: linear-gradient(180deg, #3CB371 0%, #2E8B57 100%);
+    opacity: 0.8;
+    z-index: 1;
 }
 
-/* Trees */
 .room-background.forest_ground .forest-tree {
     position: absolute;
-    font-size: 2rem;
-    z-index: 2;
-    /* In front of mountains */
-    filter: drop-shadow(2px 4px 6px rgba(0, 0, 0, 0.2));
+    transform: translateX(-50%);
+    /* bottom, left, fontSize, zIndex are set inline */
+    filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.2));
 }
 
-/* Lake */
 .room-background.forest_ground .forest-lake {
     position: absolute;
-    top: 15%;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 150px;
-    height: 60px;
-    background: #4fc3f7;
-    border-radius: 50%;
-    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.2);
-    opacity: 0.8;
-}
-
-.room-background.forest_ground .forest-lake::after {
-    content: '';
-    position: absolute;
-    top: 10px;
-    right: 30px;
-    width: 20px;
-    height: 5px;
-    background: rgba(255, 255, 255, 0.6);
-    border-radius: 50%;
-    transform: rotate(10deg);
+    left: 5%;
+    /* Moved to 5% */
+    bottom: 60%;
+    /* Moved slightly down from 61% */
+    width: 70px;
+    /* 70% of 100px */
+    height: 21px;
+    /* 70% of 30px */
+    background: #5D9CEC;
+    border-radius: 10px;
+    /* Scaled radius */
+    box-shadow: -14px 7px 0 0 #5D9CEC;
+    /* Scaled shadow */
+    z-index: 1;
+    opacity: 0.9;
 }

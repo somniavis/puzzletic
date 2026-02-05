@@ -1,5 +1,10 @@
+/* Shape Land Background (Forest Structure Match) */
+.room-background.shape_ground {
+    display: flex !important;
+    flex-direction: column !important;
+}
+
 .room-background.shape_ground .room-wall {
-    /* Sky */
     position: relative !important;
     height: 50vh !important;
     width: 100%;
@@ -19,134 +24,98 @@
     margin-top: -30vh !important;
     /* Soft Cream/Vanilla Floor - Elegant & Warm */
     background-color: #FFF9E6;
-
+    /* Creamy Vanilla */
     background-image:
-        radial-gradient(#FFD700 15%, transparent 16%),
-        radial-gradient(#FF69B4 15%, transparent 16%);
+        linear-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
     background-size: 30px 30px;
-    background-position: 0 0, 15px 15px;
-    opacity: 0.2;
+    /* Detailed grid */
+    background-position: center bottom;
+    box-shadow: inset 0 10px 20px rgba(230, 230, 250, 0.2);
+    /* Very subtle lavender tint shadow */
     border-top-left-radius: 50% 40px;
     border-top-right-radius: 50% 40px;
-    /* Reduced blur/shadow for cleaner look */
-    box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.05);
-    overflow: hidden;
     z-index: 1;
-    /* Above Wall */
 }
 
-/* Add a central rug/area to ground the content */
-.room-background.shape_ground .room-floor::before {
-    content: '';
+.shape-bg-gradient {
     position: absolute;
-    bottom: 0px;
-    /* Start from bottom */
-    left: 50%;
-    transform: translateX(-50%);
-    width: 80%;
-    height: 70%;
-    /* Covers most of the floor area */
+    inset: 0;
     background: radial-gradient(circle at 50% 30%, rgba(255, 255, 255, 0.4) 0%, transparent 60%);
-    border-radius: 50%;
     pointer-events: none;
 }
 
-/* Lake - Pure CSS Shape */
+/* Shape Lake (Middle Layer) */
 .room-background.shape_ground .shape-lake {
     position: absolute;
-    bottom: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 180px;
-    height: 60px;
-    border-radius: 50%;
+    left: 0;
+    bottom: 60%;
+    /* Aligned with forest-lake */
+    width: 100%;
+    height: 120px;
     background: linear-gradient(180deg, rgba(255, 255, 255, 0.4) 0%, rgba(135, 206, 235, 0.2) 100%);
-    border: 4px solid rgba(255, 255, 255, 0.5);
-    box-shadow: 0 4px 10px rgba(135, 206, 235, 0.3);
-    z-index: 2;
-    /* Above floor pattern */
+    clip-path: ellipse(70% 60% at 50% 100%);
+    z-index: 0;
+    filter: blur(2px);
+    animation: lake-ripple 5s ease-in-out infinite alternate;
 }
 
-.room-background.shape_ground .shape-lake::before {
-    content: '';
+@keyframes lake-ripple {
+    0% {
+        transform: scaleY(0.95);
+        opacity: 0.6;
+    }
+
+    100% {
+        transform: scaleY(1.05);
+        opacity: 0.8;
+    }
+}
+
+.shape-bg-gradient {
     position: absolute;
-    top: 10px;
-    left: 20px;
-    width: 30px;
-    height: 10px;
-    border-radius: 50%;
+    inset: 0;
+    background: radial-gradient(circle at 50% 30%, rgba(255, 255, 255, 0.4) 0%, transparent 60%);
+    pointer-events: none;
+}
+
+.shape-item {
+    position: absolute;
     background: rgba(255, 255, 255, 0.6);
-    transform: rotate(-10deg);
+    border: 2px solid rgba(255, 255, 255, 0.9);
+    pointer-events: none;
+    animation: float-shape infinite ease-in-out;
 }
 
-/* Floating Shapes */
-.room-background.shape_ground .shape-triangle {
-    position: absolute;
-    top: 15%;
-    left: 10%;
-    width: 0;
-    height: 0;
-    border-left: 25px solid transparent;
-    border-right: 25px solid transparent;
-    border-bottom: 45px solid rgba(255, 182, 193, 0.6);
-    /* Pink */
-    filter: drop-shadow(0 4px 6px rgba(255, 182, 193, 0.4));
-    animation: float-shape 6s infinite ease-in-out;
-}
-
-.room-background.shape_ground .shape-circle {
-    position: absolute;
-    top: 25%;
-    right: 15%;
-    width: 50px;
-    height: 50px;
+.shape-circle {
     border-radius: 50%;
     background: radial-gradient(circle at 30% 30%, rgba(255, 230, 230, 0.9), rgba(255, 182, 193, 0.5));
-    box-shadow: 0 4px 8px rgba(255, 182, 193, 0.3);
-    animation: float-shape 5s infinite ease-in-out 1s;
+    box-shadow: 0 4px 10px rgba(255, 182, 193, 0.3);
 }
 
-.room-background.shape_ground .shape-square {
-    position: absolute;
-    top: 10%;
-    left: 50%;
-    width: 40px;
-    height: 40px;
+.shape-square {
+    border-radius: 4px;
     background: linear-gradient(135deg, rgba(173, 216, 230, 0.8), rgba(135, 206, 235, 0.5));
-    border-radius: 8px;
     transform: rotate(15deg);
-    box-shadow: 0 4px 8px rgba(135, 206, 235, 0.3);
-    animation: float-rotate-square 8s infinite linear;
+    animation: float-rotate-square infinite linear;
 }
 
-/* Custom Shop Icon for Shape Land */
-.custom-icon-shape-ground {
-    display: inline-block;
-    width: 44px;
-    height: 44px;
-    /* Matches ~3rem font size comfortably */
-    background: linear-gradient(180deg, #E6E6FA 0%, #B2CCFF 100%);
-    /* Wall Gradient */
-    border-radius: 12px;
-    border: 3px solid #FFF9E6;
-    /* Cream border */
-    box-shadow: 0 4px 6px rgba(178, 204, 255, 0.4);
-    position: relative;
-    vertical-align: middle;
+.shape-triangle {
+    width: 0 !important;
+    height: 0 !important;
+    background: none;
+    border: none;
+    border-left: 15px solid transparent;
+    border-right: 15px solid transparent;
+    border-bottom: 30px solid rgba(255, 255, 224, 0.8);
+    filter: drop-shadow(0 4px 6px rgba(255, 215, 0, 0.2));
+    animation: float-shape infinite ease-in-out;
 }
 
-/* Geometric decoration (Circle) inside icon */
-.custom-icon-shape-ground::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 18px;
-    height: 18px;
-    background: rgba(255, 255, 255, 0.6);
-    border-radius: 50%;
-    box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+/* Override inline width/height for triangle */
+.shape-triangle[style] {
+    width: 0 !important;
+    height: 0 !important;
 }
 
 @keyframes float-shape {
@@ -175,51 +144,43 @@
     }
 }
 
-/* Animations (Generic) */
-@keyframes pop-in {
-    from {
-        transform: scale(0.5);
-        opacity: 0;
-    }
-
-    to {
-        transform: scale(1);
-        opacity: 1;
-    }
-}
-
-@keyframes shine {
-    0% {
-        transform: translateX(-100%) rotate(45deg);
-    }
-
-    100% {
-        transform: translateX(200%) rotate(45deg);
-    }
-}
-
-@keyframes twinkle {
-
-    0%,
-    100% {
-        opacity: 0.6;
-        transform: scale(1);
-    }
-
-    50% {
-        opacity: 1;
-        transform: scale(1.2);
-    }
-}
-
-.room-background.shape_ground .star-1,
-.room-background.shape_ground .star-2,
-.room-background.shape_ground .star-3 {
+/* Decorative Structures */
+.shape-structure {
     position: absolute;
-    width: 12px;
-    height: 12px;
-    background: radial-gradient(circle, #FFF 10%, transparent 70%);
-    opacity: 0.8;
+    bottom: 0;
+    z-index: 1;
+}
+
+.structure-left {
+    left: 10%;
+    width: 60px;
+    height: 120px;
+    background:
+        radial-gradient(circle at 50% 20%, #FFB6C1 20px, transparent 21px),
+        linear-gradient(#B0E0E6 60%, transparent 0);
+    background-size: 100% 40px, 40px 100%;
+    background-repeat: no-repeat;
+    background-position: center top, center bottom;
+}
+
+.structure-right {
+    right: 15%;
+    width: 80px;
+    height: 100px;
+    background:
+        conic-gradient(from 45deg at 50% 50%, #FFDAB9 25%, transparent 0),
+        linear-gradient(#E6E6FA 100%, transparent 0);
+    background-size: 60px 60px, 40px 100%;
+    background-position: center top, center bottom;
+    background-repeat: no-repeat;
+}
+
+.shape-star {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background: #FFFACD;
+    clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
     animation: twinkle 3s infinite ease-in-out;
 }
 
@@ -239,4 +200,18 @@
     top: 5%;
     left: 50%;
     animation-delay: 2s;
+}
+
+@keyframes twinkle {
+
+    0%,
+    100% {
+        opacity: 0.6;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 1;
+        transform: scale(1.2);
+    }
 }

@@ -19,7 +19,7 @@
 .loading-overlay {
   position: fixed;
   inset: 0;
-  z-index: 200;
+  z-index: 2000;
   background: linear-gradient(135deg, #FFF9E6 0%, #FFE4B5 100%);
   display: flex;
   align-items: center;
@@ -375,12 +375,16 @@
   z-index: 1;
 }
 
-/* Shape Land Background (Forest Structure Match) */
+/* Shape Land Background moved to styles/ShapeLand.css */
+
+/* Default Ground moved to styles/DefaultRoom.css */
+
+/* Tropical Island Background */
 
 /* Character Container */
 .character-container {
   position: absolute;
-  z-index: 85;
+  z-index: 200;
   /* Optimization: Removed expensive filter: drop-shadow */
   transition: left 1s ease-in-out, bottom 1s ease-in-out;
   /* Prevent container from blocking clicks on background/house */
@@ -492,7 +496,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 100;
+  z-index: 1000;
   padding: 1rem;
 }
 
@@ -514,8 +518,10 @@
   align-items: center;
   justify-content: space-between;
   padding: 1.5rem;
+  /* ... */
   background: linear-gradient(180deg, #7d5e4f 0%, #6d4e3f 100%);
   border-bottom: 4px solid #4d3e2f;
+  flex-shrink: 0;
 }
 
 .food-menu-header h3 {
@@ -559,6 +565,7 @@
   background: rgba(139, 69, 19, 0.1);
   border-bottom: 3px solid #8B4513;
   overflow-x: auto;
+  flex-shrink: 0;
 }
 
 .category-tab {
@@ -613,20 +620,25 @@
   text-align: center;
 }
 
+
+.menu-modal-content {
+  flex: 1;
+  overflow-y: auto;
+  width: 100%;
+  padding: 1.5rem;
+}
+
+.shop-content {
+  width: 100%;
+}
+
 .food-items-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
   gap: 1rem;
-  padding: 1.5rem 1.5rem 3rem 1.5rem;
+  padding: 1.5rem;
   overflow-y: auto;
   max-height: 50vh;
-}
-
-.menu-modal-content {
-  padding: 1.5rem 1.5rem 3rem 1.5rem;
-  overflow-y: auto;
-  max-height: 50vh;
-  display: block;
 }
 
 .food-item {
@@ -641,6 +653,8 @@
   cursor: pointer;
   transition: all 0.2s ease;
   box-shadow: 0 4px 0 #6B3513, 0 6px 8px rgba(0, 0, 0, 0.2);
+  position: relative;
+  z-index: 1;
 }
 
 .food-item:hover:not(:disabled) {
@@ -694,7 +708,7 @@
 .eating-food {
   position: absolute;
   font-size: 3rem;
-  z-index: 100;
+  z-index: 300;
   /* Boosted z-index for visibility */
   pointer-events: none;
   transform: translateX(-50%) translateY(0);
@@ -1468,6 +1482,600 @@
 }
 
 /* Forest Background */
+/* Forest Background moved to styles/Forest.css */
+
+/* Tropical Island Background */
+/* Tropical Island Background moved to styles/TropicalBeach.css */
+
+/* Volcanic Background */
+/* Volcanic Background */
+.room-background.volcanic_ground .room-wall {
+  height: 50vh !important;
+  /* Template Structure */
+  /* Dark Red Sunset Sky (0-33%) -> Red Lava Ocean (33-100%) */
+  background: linear-gradient(180deg, #1a0505 0%, #4a0505 20%, #8b0000 33%, #FF0000 33%, #DC143C 100%);
+  border-bottom: none;
+  overflow: hidden;
+}
+
+.room-background.volcanic_ground .room-floor {
+  height: 80vh !important;
+  margin-top: -30vh !important;
+  /* Template Structure */
+  /* Volcanic Earth Gradient */
+  background: linear-gradient(180deg, #3c2925 0%, #251815 100%);
+  /* Curved Effect */
+  border-top-left-radius: 50% 40px;
+  border-top-right-radius: 50% 40px;
+  overflow: hidden;
+  box-shadow: 0 -5px 15px rgba(220, 20, 60, 0.2);
+  /* Red glow shadow */
+}
+
+/* Lava Glow at Shoreline */
+.room-background.volcanic_ground .room-floor::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 15px;
+  background: linear-gradient(180deg, rgba(220, 20, 60, 0.8) 0%, transparent 100%);
+  opacity: 0.8;
+  animation: lava-pulse 3s ease-in-out infinite alternate;
+}
+
+@keyframes lava-pulse {
+  0% {
+    opacity: 0.6;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+/* Ash Texture (Matching Tropical Dot Pattern) */
+.room-background.volcanic_ground .room-floor::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(rgba(0, 0, 0, 0.2) 0.5px, transparent 0.5px),
+    radial-gradient(rgba(0, 0, 0, 0.15) 0.5px, transparent 0.5px),
+    radial-gradient(rgba(255, 255, 255, 0.1) 0.5px, transparent 0.5px),
+    radial-gradient(rgba(0, 0, 0, 0.1) 0.5px, transparent 0.5px);
+  background-size:
+    13px 13px,
+    29px 29px,
+    17px 17px,
+    23px 23px;
+  background-position:
+    15px 10px,
+    7px 20px,
+    0 0;
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* Volcano (Main - Satgat Shape) */
+.room-background.volcanic_ground .volcano {
+  position: absolute;
+  bottom: 65%;
+  /* Moved up further */
+  left: 65%;
+  /* Moved right */
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  /* Wide and large triangle */
+  border-left: 150px solid transparent;
+  border-right: 150px solid transparent;
+  border-bottom: 120px solid #2D0505;
+  /* Darkest Rock */
+  z-index: 2;
+  /* In front */
+}
+
+
+/* Volcano 2 (Small - Background) */
+.room-background.volcanic_ground .volcano-2 {
+  position: absolute;
+  bottom: 65%;
+  /* Same horizon line */
+  left: 45%;
+  /* To the left of main volcano */
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  /* Smaller triangle */
+  border-left: 100px solid transparent;
+  border-right: 100px solid transparent;
+  border-bottom: 80px solid #3E0808;
+  /* Slightly lighter/different shade */
+  z-index: 1;
+  /* Behind main volcano */
+}
+
+/* Volcanic Smoke Animation (Main Volcano) */
+.room-background.volcanic_ground .volcano-smoke-main-1,
+.room-background.volcanic_ground .volcano-smoke-main-2,
+.room-background.volcanic_ground .volcano-smoke-main-3,
+.room-background.volcanic_ground .volcano-smoke-main-4,
+.room-background.volcanic_ground .volcano-smoke-main-5,
+.room-background.volcanic_ground .volcano-smoke-main-6 {
+  position: absolute;
+  bottom: calc(65% + 90px);
+  /* Main Crater */
+  left: 65%;
+  width: 35px;
+  height: 35px;
+  background: radial-gradient(circle, rgba(220, 220, 220, 0.7) 0%, rgba(150, 150, 150, 0) 70%);
+  border-radius: 50%;
+  transform: translateX(-50%) scale(0.5);
+  filter: blur(6px);
+  opacity: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+
+/* Volcanic Smoke Animation (Small Volcano) */
+.room-background.volcanic_ground .volcano-smoke-small-1,
+.room-background.volcanic_ground .volcano-smoke-small-2,
+.room-background.volcanic_ground .volcano-smoke-small-3 {
+  position: absolute;
+  bottom: calc(65% + 60px);
+  /* Small Crater (Lower) */
+  left: 45%;
+  width: 25px;
+  height: 25px;
+  background: radial-gradient(circle, rgba(200, 200, 200, 0.6) 0%, rgba(150, 150, 150, 0) 70%);
+  border-radius: 50%;
+  transform: translateX(-50%) scale(0.5);
+  filter: blur(5px);
+  opacity: 0;
+  z-index: 0;
+  /* Behind main volcano */
+  pointer-events: none;
+}
+
+/* Staggered Animations & Position Variations */
+.room-background.volcanic_ground .volcano-smoke-main-1 {
+  animation: smoke-rise-left 4s infinite ease-out 0s;
+}
+
+.room-background.volcanic_ground .volcano-smoke-main-2 {
+  animation: smoke-rise-left 4s infinite ease-out 0.7s;
+  left: 64%;
+}
+
+.room-background.volcanic_ground .volcano-smoke-main-3 {
+  animation: smoke-rise-left 4s infinite ease-out 1.4s;
+  left: 66%;
+}
+
+.room-background.volcanic_ground .volcano-smoke-main-4 {
+  animation: smoke-rise-left 4s infinite ease-out 2.1s;
+}
+
+.room-background.volcanic_ground .volcano-smoke-main-5 {
+  animation: smoke-rise-left 4s infinite ease-out 2.8s;
+  left: 64%;
+}
+
+.room-background.volcanic_ground .volcano-smoke-main-6 {
+  animation: smoke-rise-left 4s infinite ease-out 3.5s;
+  left: 66%;
+}
+
+.room-background.volcanic_ground .volcano-smoke-small-1 {
+  animation: smoke-rise-left 3.5s infinite ease-out 0s;
+}
+
+.room-background.volcanic_ground .volcano-smoke-small-2 {
+  animation: smoke-rise-left 3.5s infinite ease-out 1.2s;
+  left: 44%;
+}
+
+.room-background.volcanic_ground .volcano-smoke-small-3 {
+  animation: smoke-rise-left 3.5s infinite ease-out 2.4s;
+  left: 46%;
+}
+
+@keyframes smoke-rise-left {
+  0% {
+    transform: translateX(-50%) translateY(0) scale(0.5);
+    opacity: 0;
+  }
+
+  20% {
+    opacity: 0.8;
+  }
+
+  100% {
+    /* Move diagonally top-left */
+    transform: translateX(-250%) translateY(-180px) scale(2.5);
+    opacity: 0;
+  }
+}
+
+/* Volcanic Lightning Effect */
+.room-background.volcanic_ground .volcano-lightning {
+  position: absolute;
+  top: 2%;
+  /* Moved higher up */
+  left: 15%;
+  width: 2px;
+  height: 100px;
+  background: #fff;
+  box-shadow: 0 0 10px #fff, 0 0 20px #FFD700;
+  /* White core with Gold glow */
+  opacity: 0;
+  transform: rotate(15deg);
+  z-index: 0;
+  /* Behind volcano */
+  animation: lightning-flash 8s infinite ease-in-out;
+}
+
+/* Lightning Branches (Pseudo-elements) */
+.room-background.volcanic_ground .volcano-lightning::before {
+  content: '';
+  position: absolute;
+  top: 40%;
+  left: -20px;
+  width: 2px;
+  height: 60px;
+  background: #fff;
+  transform: rotate(-45deg);
+  box-shadow: 0 0 8px #fff;
+}
+
+.room-background.volcanic_ground .volcano-lightning::after {
+  content: '';
+  position: absolute;
+  top: 60%;
+  left: 10px;
+  width: 2px;
+  height: 40px;
+  background: #fff;
+  transform: rotate(30deg);
+  box-shadow: 0 0 8px #fff;
+}
+
+@keyframes lightning-flash {
+
+  0%,
+  90% {
+    opacity: 0;
+  }
+
+  91% {
+    opacity: 1;
+  }
+
+  92% {
+    opacity: 0;
+  }
+
+  93% {
+    opacity: 1;
+  }
+
+  94% {
+    opacity: 0;
+  }
+
+  95% {
+    opacity: 0.5;
+  }
+
+  96% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Desert Background */
+/* Desert Background moved to styles/Desert.css */
+
+/* Arctic Background */
+.room-background.arctic_ground .room-wall {
+  height: 50vh !important;
+  /* Extended for overlap (Template Structure) */
+  /* Night Sky (0-33%) -> Icy Ocean (33-100%) */
+  /* Matching Tropical Ratio: Sky 67%, Ocean 33% (Horizon at 33%) */
+  background: linear-gradient(180deg, #0B1026 0%, #2B32B2 33%, #1A2980 33%, #26D0CE 100%);
+  border-bottom: none;
+  overflow: hidden;
+  /* Ensure aurora doesn't spill out */
+}
+
+/* Aurora Effect */
+.room-background.arctic_ground .aurora {
+  position: absolute;
+  top: 0;
+  /* Start from very top */
+  right: -10%;
+  left: auto;
+  width: 70%;
+  height: 20%;
+  /* Restrict to top 20% (Upper Sky) */
+  background: linear-gradient(90deg,
+      transparent 0%,
+      rgba(0, 255, 128, 0.5) 40%,
+      rgba(148, 0, 211, 0.5) 60%,
+      transparent 100%);
+  filter: blur(15px);
+  opacity: 0;
+  transform: rotate(-15deg);
+  animation: aurora-wave 10s ease-in-out infinite;
+  z-index: 1;
+  pointer-events: none;
+}
+
+@keyframes aurora-wave {
+  0% {
+    transform: rotate(-5deg) translateX(-20px) scaleY(1);
+    opacity: 0;
+  }
+
+  20% {
+    opacity: 0.8;
+  }
+
+  /* Fade in */
+  80% {
+    opacity: 0.6;
+  }
+
+  /* Stay visible */
+  100% {
+    transform: rotate(0deg) translateX(20px) scaleY(1.1);
+    opacity: 0;
+  }
+
+  /* Fade out */
+}
+
+/* Stars (Individual Elements) */
+.room-background.arctic_ground .star-1,
+.room-background.arctic_ground .star-2,
+.room-background.arctic_ground .star-3,
+.room-background.arctic_ground .star-4 {
+  position: absolute;
+  background: white;
+  border-radius: 50%;
+  opacity: 0.8;
+  box-shadow: 0 0 4px rgba(255, 255, 255, 0.8);
+}
+
+.room-background.arctic_ground .star-1 {
+  top: 15%;
+  left: 20%;
+  width: 3px;
+  height: 3px;
+  animation: twinkle 3s infinite alternate 0s;
+}
+
+.room-background.arctic_ground .star-2 {
+  top: 8%;
+  left: 75%;
+  width: 2px;
+  height: 2px;
+  animation: twinkle 4s infinite alternate 1s;
+}
+
+.room-background.arctic_ground .star-3 {
+  top: 25%;
+  left: 45%;
+  width: 3px;
+  height: 3px;
+  animation: twinkle 2.5s infinite alternate 0.5s;
+}
+
+.room-background.arctic_ground .star-4 {
+  top: 20%;
+  left: 85%;
+  width: 2px;
+  height: 2px;
+  animation: twinkle 5s infinite alternate 2s;
+}
+
+@keyframes twinkle {
+  0% {
+    opacity: 0.5;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+/* Iceberg 1 (3 Overlapping Triangles) */
+.room-background.arctic_ground .iceberg-1 {
+  position: absolute;
+  bottom: 25%;
+  /* Floating in the ocean (above the floor overlap) */
+  left: 15%;
+  width: 80px;
+  height: 60px;
+  opacity: 0.9;
+  animation: iceberg-float 6s ease-in-out infinite alternate;
+}
+
+/* Triangle 1 (Main/Center) */
+.room-background.arctic_ground .iceberg-1::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 30px solid transparent;
+  border-right: 30px solid transparent;
+  border-bottom: 50px solid rgba(224, 255, 255, 0.9);
+  /* Light Cyan */
+  z-index: 2;
+}
+
+/* Triangle 2 (Left/Back) */
+.room-background.arctic_ground .iceberg-1::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  border-left: 20px solid transparent;
+  border-right: 20px solid transparent;
+  border-bottom: 35px solid rgba(175, 238, 238, 0.8);
+  /* Darker Cyan */
+  z-index: 1;
+}
+
+/* Triangle 3 (Right/Back) - Using a child pseudo-element hack or box-shadow? 
+   Actually, CSS only supports ::before and ::after. 
+   To get 3 triangles with 1 div, I can use box-shadow on a transparent element or clip-path.
+   Or I can use the main element itself as a triangle + before + after.
+   Let's use the main element as the 3rd triangle.
+*/
+.room-background.arctic_ground .iceberg-1 {
+  /* Resetting width/height for the main triangle approach */
+  width: 0;
+  height: 0;
+  border-left: 25px solid transparent;
+  border-right: 25px solid transparent;
+  border-bottom: 40px solid rgba(200, 240, 255, 0.85);
+  /* Medium Cyan */
+  /* Re-positioning logic since width is now 0 */
+  margin-left: 40px;
+  /* Offset to compensate */
+}
+
+/* Wait, if I make the main element a triangle, I lose the container for positioning before/after relative to a "box".
+   Better approach: Keep main element as a container (transparent), and add a child div in TSX?
+   User said "Iceberg 1" (singular).
+   I can use `box-shadow` to create copies of a triangle? No, box-shadow on a triangle (border hack) follows the box, not the shape.
+   `clip-path` is better for shapes.
+   But I want to stick to simple CSS.
+   
+   Alternative: 
+   - Main element: Triangle 3 (Right)
+   - ::before: Triangle 1 (Center)
+   - ::after: Triangle 2 (Left)
+   
+   Let's try:
+   .iceberg-1 { width: 0; height: 0; border... (Right Triangle) }
+   .iceberg-1::before { ... (Center Triangle) }
+   .iceberg-1::after { ... (Left Triangle) }
+*/
+
+.room-background.arctic_ground .iceberg-1 {
+  position: absolute;
+  bottom: 65%;
+  /* Moved up to be visible above the 60% floor overlap */
+  left: 15%;
+  width: 0;
+  height: 0;
+  /* Right Triangle */
+  border-left: 25px solid transparent;
+  border-right: 25px solid transparent;
+  border-bottom: 40px solid rgba(176, 224, 230, 0.8);
+  /* Powder Blue */
+  animation: iceberg-float 6s ease-in-out infinite alternate;
+}
+
+/* Center Triangle (Largest) */
+.room-background.arctic_ground .iceberg-1::before {
+  content: '';
+  position: absolute;
+  bottom: -40px;
+  /* Align bottom with container */
+  left: -40px;
+  /* Shift left */
+  border-left: 35px solid transparent;
+  border-right: 35px solid transparent;
+  border-bottom: 60px solid rgba(224, 255, 255, 0.95);
+  /* Lightest */
+  z-index: 2;
+}
+
+/* Left Triangle */
+.room-background.arctic_ground .iceberg-1::after {
+  content: '';
+  position: absolute;
+  bottom: -40px;
+  left: -60px;
+  border-left: 20px solid transparent;
+  border-right: 20px solid transparent;
+  border-bottom: 35px solid rgba(135, 206, 235, 0.8);
+  /* Sky Blue */
+  z-index: 1;
+}
+
+@keyframes iceberg-float {
+  0% {
+    transform: translateY(0) rotate(0deg);
+  }
+
+  100% {
+    transform: translateY(3px) rotate(1deg);
+  }
+}
+
+.room-background.arctic_ground .room-floor {
+  height: 80vh !important;
+  margin-top: -30vh !important;
+  /* Overlap (Template Structure) */
+  /* Snow/Ice Gradient */
+  background: linear-gradient(180deg, #E0FFFF 0%, #F0F8FF 100%);
+  /* Curved Snow Effect */
+  border-top-left-radius: 50% 40px;
+  border-top-right-radius: 50% 40px;
+  overflow: hidden;
+  /* Clip texture to rounded corners */
+  box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Icy Edge (replacing Wave Foam) */
+.room-background.arctic_ground .room-floor::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 15px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.8) 0%, transparent 100%);
+  opacity: 0.9;
+}
+
+/* Snow Texture (Sparkles - Randomized) */
+.room-background.arctic_ground .room-floor::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(white 1px, transparent 1px),
+    radial-gradient(rgba(200, 240, 255, 0.6) 1px, transparent 1px),
+    radial-gradient(white 0.8px, transparent 0.8px),
+    radial-gradient(rgba(224, 255, 255, 0.5) 1px, transparent 1px);
+  background-size:
+    13px 13px,
+    29px 29px,
+    17px 17px,
+    23px 23px;
+  background-position:
+    2px 5px,
+    15px 10px,
+    7px 20px,
+    0 0;
+  opacity: 0.6;
+  pointer-events: none;
+}
 
 /* Death UI */
 .death-overlay {
@@ -1626,150 +2234,226 @@
   transform: scale(1.05);
 }
 
-/* Pet Shop UI */
+/* Sweet Kingdom Background moved to styles/SweetLand.css */
+
+/* Ice Cream Boat (Floating Cone) */
+/* Ice Cream Boat (Floating Cone) */
+.room-background.sweet_ground .ice-cream-boat {
+  position: absolute;
+  bottom: 64%;
+  right: 15%;
+  width: 50px;
+  /* Reduced from 60px */
+  height: 80px;
+  /* Reduced from 90px */
+  animation: boat-float 5s ease-in-out infinite alternate;
+  z-index: 2;
+  transform-origin: center bottom;
+}
+
+/* Boat Ripple Effect */
+.room-background.sweet_ground .boat-ripple {
+  position: absolute;
+  bottom: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  height: 20px;
+  z-index: -1;
+}
+
+.room-background.sweet_ground .boat-ripple::before,
+.room-background.sweet_ground .boat-ripple::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  /* Softer initial border */
+  opacity: 0;
+  animation: boat-wake 3s linear infinite;
+}
+
+.room-background.sweet_ground .boat-ripple::after {
+  animation-delay: 1.5s;
+}
+
+@keyframes boat-wake {
+  0% {
+    width: 60%;
+    height: 60%;
+    opacity: 0.5;
+    /* Reduced initial opacity */
+    border-width: 2px;
+  }
+
+  100% {
+    width: 200%;
+    height: 150%;
+    opacity: 0;
+    border-width: 0px;
+  }
+}
+
+/* ==================== Layout 1 Template (Reference) ==================== */
+
+/* Night City moved to styles/NightCity.css */
+/* 
+   Structure Reference:
+   - Wall: 50vh height
+   - Floor: 80vh height (Overlap -30vh), Curved Top
+   - Middle Layer: Elements positioned at bottom of Wall/Top of Floor
+*/
+
+.room-background.layout1_template .room-wall {
+  height: 50vh !important;
+  /* Exact Structure of Frozen Tundra: */
+  /* Top 33%: Upper Layer (Sky) */
+  /* Bottom 67%: Middle Layer (Ocean) -> Overlapped by Floor */
+  background: linear-gradient(180deg, #E0E0E0 0%, #E0E0E0 33%, #90A4AE 33%, #607D8B 100%);
+  border-bottom: none;
+  overflow: hidden;
+  position: relative;
+}
+
+.room-background.layout1_template .room-floor {
+  height: 80vh !important;
+  margin-top: -30vh !important;
+  /* Overlap */
+  background: #F5F5F5;
+  /* Almost White Floor */
+  border-top-left-radius: 50% 40px;
+  border-top-right-radius: 50% 40px;
+  overflow: hidden;
+  box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+/* Middle Placeholder */
+.room-background.layout1_template .layout1-middle-placeholder {
+  position: absolute;
+  bottom: 25%;
+  /* Roughly where iceberg/mountain sits */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 100px;
+  background: rgba(0, 0, 255, 0.1);
+  border: 2px dashed blue;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.room-background.layout1_template .layout1-middle-placeholder::after {
+  content: 'Middle Element';
+  color: blue;
+  font-size: 12px;
+}
+
+/* Deep Sea moved to styles/DeepSea.css */
+
+/* Amusement Park moved to styles/AmusementPark.css */
+/* Pet Shop Gacha Styles */
 .pet-shop-container {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  width: 100%;
 }
 
-.pet-status-info {
-  background: rgba(255, 255, 255, 0.6);
-  padding: 0.75rem;
-  border-radius: 12px;
-  border: 2px solid #8B4513;
-  margin-bottom: 1rem;
-}
-
-.current-pet-status {
+.pet-gacha-section {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-weight: 700;
-  color: #4d3e2f;
-}
-
-.time-remaining {
-  color: #d32f2f;
-  background: #ffebee;
-  padding: 2px 8px;
-  border-radius: 8px;
-  font-size: 0.9rem;
+  justify-content: center;
+  width: 100%;
 }
 
 .gacha-button {
-  width: 100%;
-  padding: 1rem;
-  background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
-  border: 4px solid #b71c1c;
-  border-radius: 16px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: 4px solid #483d8b;
+  border-radius: 20px;
+  padding: 1rem 1.5rem;
   display: flex;
   align-items: center;
-  justify-content: center;
   gap: 1rem;
+  width: 100%;
   cursor: pointer;
-  box-shadow: 0 6px 0 #8c1b1b, 0 8px 12px rgba(0, 0, 0, 0.3);
-  transition: all 0.2s ease;
+  box-shadow: 0 6px 0 #483d8b, 0 10px 15px rgba(0, 0, 0, 0.3);
+  transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+  position: relative;
+  overflow: hidden;
 }
 
 .gacha-button:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 9px 0 #8c1b1b, 0 11px 15px rgba(0, 0, 0, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 0 #483d8b, 0 12px 20px rgba(0, 0, 0, 0.4);
+  filter: brightness(1.1);
 }
 
 .gacha-button:active {
   transform: translateY(4px);
-  box-shadow: 0 2px 0 #8c1b1b;
+  box-shadow: 0 2px 0 #483d8b, 0 4px 6px rgba(0, 0, 0, 0.2);
 }
 
 .gacha-icon {
-  font-size: 2.5rem;
+  font-size: 3rem;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+  animation: bounce-subtle 2s infinite ease-in-out;
 }
 
 .gacha-text {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  gap: 0.25rem;
+  flex: 1;
 }
 
 .gacha-title {
-  color: white;
   font-size: 1.2rem;
   font-weight: 800;
-  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.3);
+  color: #fff;
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.2);
 }
 
 .gacha-desc {
-  color: rgba(255, 255, 255, 0.9);
   font-size: 0.85rem;
-  font-weight: 600;
-  margin-bottom: 0.5rem;
+  color: rgba(255, 255, 255, 0.9);
+  text-align: left;
 }
 
 .gacha-price-tag {
-  background: #FFF9E6;
-  color: #4d3e2f;
-  border: 2px solid #8B4513;
-  padding: 0.2rem 0.6rem;
-  border-radius: 8px;
+  background: #FFD700;
+  color: #483d8b;
+  font-weight: 800;
   font-size: 0.9rem;
-  font-weight: 700;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  display: inline-block;
+  margin-top: 0.25rem;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.2);
+  border: 2px solid #fff;
 }
 
 .shop-divider {
   height: 2px;
-  background: rgba(139, 69, 19, 0.2);
-  margin: 0.5rem 0;
+  background: rgba(139, 69, 19, 0.1);
+  border-bottom: 2px dashed rgba(139, 69, 19, 0.2);
+  width: 100%;
 }
 
-.showcase-title {
-  font-size: 1rem;
-  font-weight: 700;
-  color: #4d3e2f;
-  margin: 0 0 0.75rem 0;
-}
+@keyframes bounce-subtle {
 
-.pet-showcase-grid {
-  display: flex;
-  flex-direction: column;
-}
+  0%,
+  100% {
+    transform: translateY(0);
+  }
 
-.showcase-items {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
-  gap: 0.75rem;
-}
-
-.showcase-item {
-  aspect-ratio: 1;
-  background: rgba(255, 255, 255, 0.5);
-  border: 2px solid transparent;
-  /* Highlighted by inline style */
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  font-size: 1.5rem;
-}
-
-.showcase-item.active {
-  background: #fff;
-  box-shadow: 0 0 10px rgba(255, 107, 107, 0.3);
-}
-
-.pet-active-badge {
-  position: absolute;
-  bottom: -5px;
-  right: -5px;
-  font-size: 1rem;
-  background: white;
-  border-radius: 50%;
-  width: 20px;
-  height: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid #4d3e2f;
+  50% {
+    transform: translateY(-5px);
+  }
 }

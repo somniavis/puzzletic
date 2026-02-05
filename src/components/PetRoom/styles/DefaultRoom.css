@@ -1,7 +1,6 @@
-/* Default Ground */
+/* Default Ground Override: Full height floor with light yellow wall color */
 .room-background.default_ground .room-wall {
-    height: 50vh !important;
-    background: linear-gradient(135deg, #FFF9E6 0%, #FFE4B5 100%);
+    display: none;
 }
 
 .room-background.default_ground .room-floor {
