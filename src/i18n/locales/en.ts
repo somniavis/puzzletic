@@ -480,7 +480,26 @@ export const en = {
       'pet.gacha.title': 'Random Pet',
       'pet.gacha.desc': 'A friend visits for a while and leaves',
       'pet.gacha.price': '💰 1',
+
+      // Pet Names
+      'pet.monkey': 'Monkey',
+      'pet.hedgehog': 'Hedgehog',
+      'pet.lizard': 'Lizard',
+      'pet.octopus': 'Octopus',
+      'pet.squid': 'Squid',
+      'pet.snail': 'Snail',
+      'pet.scorpion': 'Scorpion',
+      'pet.turtle': 'Turtle',
+      'pet.dodo': 'Dodo',
+      'pet.snowman': 'Snowman',
+      'pet.dino': 'Dino',
+      'pet.phoenix': 'Phoenix',
     },
+  },
+  rarity: {
+    common: 'Common',
+    uncommon: 'Uncommon',
+    rare: 'Rare',
   },
   actions: {
     feed: 'Feed',

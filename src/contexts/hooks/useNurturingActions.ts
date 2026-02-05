@@ -14,6 +14,7 @@ import type {
 import type { FoodItem } from '../../types/food';
 import type { MedicineItem } from '../../types/medicine';
 import type { CleaningTool } from '../../types/cleaning';
+import { PET_ITEMS } from '../../types/shop';
 
 import {
     feedCharacter as serviceFeed,
@@ -28,22 +29,25 @@ import {
 import { evaluateCondition, clampStat } from '../../services/gameTickService';
 import { saveNurturingState } from '../../services/persistenceService';
 
-// Helper for Weighted Random Selection
+// Helper for Weighted Random Selection (Dynamic from Config)
 const getRandomPetId = (): string => {
-    // Common (60%)
-    const commonPets = ['monkey', 'hedgehog', 'lizard', 'octopus', 'squid', 'snail'];
-    // Uncommon (37%)
-    const uncommonPets = ['scorpion', 'turtle', 'dodo', 'snowman'];
-    // Rare (3%)
-    const rarePets = ['dino', 'phoenix'];
+    // categorizing pets by rarity
+    const commonPets = PET_ITEMS.filter(p => p.rarity === 'common').map(p => p.id);
+    const uncommonPets = PET_ITEMS.filter(p => p.rarity === 'uncommon').map(p => p.id);
+    const rarePets = PET_ITEMS.filter(p => p.rarity === 'rare').map(p => p.id);
 
     const rand = Math.random() * 100;
-    if (rand < 60) {
+
+    // Fallback if arrays are empty (safety)
+    if (rand < 60 && commonPets.length > 0) {
         return commonPets[Math.floor(Math.random() * commonPets.length)];
-    } else if (rand < 97) {
+    } else if (rand < 97 && uncommonPets.length > 0) {
         return uncommonPets[Math.floor(Math.random() * uncommonPets.length)];
-    } else {
+    } else if (rarePets.length > 0) {
         return rarePets[Math.floor(Math.random() * rarePets.length)];
+    } else {
+        // Absolute fallback to any pet
+        return PET_ITEMS[Math.floor(Math.random() * PET_ITEMS.length)].id;
     }
 };
 

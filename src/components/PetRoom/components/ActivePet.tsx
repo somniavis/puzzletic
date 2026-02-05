@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { PET_ITEMS } from '../../../types/shop';
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import { PET_ITEMS, type PetSpeed } from '../../../types/shop';
 import { useNurturing } from '../../../contexts/NurturingContext';
 import './styles/ActivePet.css';
 
@@ -8,7 +8,7 @@ interface ActivePetProps {
 }
 
 const MOVE_INTERVAL = 3000;
-const SPEED_MULTIPLIERS: Record<string, number> = {
+const SPEED_MULTIPLIERS: Record<PetSpeed, number> = {
     fast: 1.2,      // 1.5 * 0.8
     normal: 0.8,    // 1.0 * 0.8
     slow: 0.56,     // 0.7 * 0.8
@@ -17,7 +17,7 @@ const SPEED_MULTIPLIERS: Record<string, number> = {
 
 export const ActivePet: React.FC<ActivePetProps> = ({ petId }) => {
     const { petCharacter } = useNurturing();
-    const petData = PET_ITEMS.find(p => p.id === petId);
+    const petData = useMemo(() => PET_ITEMS.find(p => p.id === petId), [petId]);
 
     // Position State (Percent)
     const [position, setPosition] = useState({ x: 50, y: 50 });
@@ -57,7 +57,10 @@ export const ActivePet: React.FC<ActivePetProps> = ({ petId }) => {
         setIsMoving(true);
 
         // Stop moving animation after some time
-        setTimeout(() => setIsMoving(false), 2000 / (SPEED_MULTIPLIERS[petData.speed] || 1));
+        const speed = petData?.speed || 'normal';
+        // Fallback to 1 if speed key not found (though types prevent this)
+        const multiplier = SPEED_MULTIPLIERS[speed] || 1;
+        setTimeout(() => setIsMoving(false), 2000 / multiplier);
 
     }, [petData]); // Removed position.x dependency
 

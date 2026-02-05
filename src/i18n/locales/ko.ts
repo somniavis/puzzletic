@@ -482,7 +482,26 @@ export const ko = {
             'pet.gacha.title': '랜덤 펫',
             'pet.gacha.desc': '친구가 잠시 놀러왔다 사라져요',
             'pet.gacha.price': '💰 1',
+
+            // Pet Names
+            'pet.monkey': '원숭이',
+            'pet.hedgehog': '고슴도치',
+            'pet.lizard': '도마뱀',
+            'pet.octopus': '문어',
+            'pet.squid': '오징어',
+            'pet.snail': '달팽이',
+            'pet.scorpion': '전갈',
+            'pet.turtle': '거북이',
+            'pet.dodo': '도도새',
+            'pet.snowman': '눈사람',
+            'pet.dino': '공룡',
+            'pet.phoenix': '불사조',
         },
+    },
+    rarity: {
+        common: '일반',
+        uncommon: '고급',
+        rare: '희귀',
     },
     actions: {
         feed: '먹이',

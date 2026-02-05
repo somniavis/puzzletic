@@ -480,7 +480,26 @@ export const ja = {
             'pet.gacha.title': 'ランダムペット',
             'pet.gacha.desc': '友達がしばらく遊びに来て帰ります',
             'pet.gacha.price': '💰 1',
+
+            // Pet Names
+            'pet.monkey': 'サル',
+            'pet.hedgehog': 'ハリネズミ',
+            'pet.lizard': 'トカゲ',
+            'pet.octopus': 'タコ',
+            'pet.squid': 'イカ',
+            'pet.snail': 'カタツムリ',
+            'pet.scorpion': 'サソリ',
+            'pet.turtle': 'カメ',
+            'pet.dodo': 'ドードー',
+            'pet.snowman': '雪だるま',
+            'pet.dino': '恐竜',
+            'pet.phoenix': '不死鳥',
         },
+    },
+    rarity: {
+        common: 'コモン',
+        uncommon: 'アンコモン',
+        rare: 'レア',
     },
     actions: {
         feed: '食事',

@@ -252,6 +252,7 @@ export type PetRarity = 'common' | 'uncommon' | 'rare';
 
 export interface PetItem {
     id: string;
+    nameKey: string; // Added nameKey
     icon: string;
     speed: PetSpeed;
     rarity: PetRarity;
@@ -259,20 +260,20 @@ export interface PetItem {
 
 export const PET_ITEMS: PetItem[] = [
     // Common (High Probability ~60%)
-    { id: 'monkey', icon: '🐒', speed: 'fast', rarity: 'common' },
-    { id: 'hedgehog', icon: '🦔', speed: 'normal', rarity: 'common' },
-    { id: 'lizard', icon: '🦎', speed: 'fast', rarity: 'common' },
-    { id: 'octopus', icon: '🐙', speed: 'normal', rarity: 'common' },
-    { id: 'squid', icon: '🦑', speed: 'normal', rarity: 'common' },
-    { id: 'snail', icon: '🐌', speed: 'very_slow', rarity: 'common' },
+    { id: 'monkey', nameKey: 'shop.items.pet.monkey', icon: '🐒', speed: 'fast', rarity: 'common' },
+    { id: 'hedgehog', nameKey: 'shop.items.pet.hedgehog', icon: '🦔', speed: 'normal', rarity: 'common' },
+    { id: 'lizard', nameKey: 'shop.items.pet.lizard', icon: '🦎', speed: 'fast', rarity: 'common' },
+    { id: 'octopus', nameKey: 'shop.items.pet.octopus', icon: '🐙', speed: 'normal', rarity: 'common' },
+    { id: 'squid', nameKey: 'shop.items.pet.squid', icon: '🦑', speed: 'normal', rarity: 'common' },
+    { id: 'snail', nameKey: 'shop.items.pet.snail', icon: '🐌', speed: 'very_slow', rarity: 'common' },
 
     // Uncommon (Medium Probability ~37%)
-    { id: 'scorpion', icon: '🦂', speed: 'normal', rarity: 'uncommon' },
-    { id: 'turtle', icon: '🐢', speed: 'slow', rarity: 'uncommon' },
-    { id: 'dodo', icon: '🦤', speed: 'normal', rarity: 'uncommon' },
-    { id: 'snowman', icon: '⛄', speed: 'slow', rarity: 'uncommon' },
+    { id: 'scorpion', nameKey: 'shop.items.pet.scorpion', icon: '🦂', speed: 'normal', rarity: 'uncommon' },
+    { id: 'turtle', nameKey: 'shop.items.pet.turtle', icon: '🐢', speed: 'slow', rarity: 'uncommon' },
+    { id: 'dodo', nameKey: 'shop.items.pet.dodo', icon: '🦤', speed: 'normal', rarity: 'uncommon' },
+    { id: 'snowman', nameKey: 'shop.items.pet.snowman', icon: '⛄', speed: 'slow', rarity: 'uncommon' },
 
     // Rare (Low Probability ~3%)
-    { id: 'dino', icon: '🦖', speed: 'slow', rarity: 'rare' },
-    { id: 'phoenix', icon: '🐦‍🔥', speed: 'fast', rarity: 'rare' },
+    { id: 'dino', nameKey: 'shop.items.pet.dino', icon: '🦖', speed: 'slow', rarity: 'rare' },
+    { id: 'phoenix', nameKey: 'shop.items.pet.phoenix', icon: '🐦‍🔥', speed: 'fast', rarity: 'rare' },
 ];

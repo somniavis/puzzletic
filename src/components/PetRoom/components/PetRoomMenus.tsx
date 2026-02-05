@@ -1,4 +1,4 @@
-import React, { type Dispatch, type SetStateAction } from 'react';
+import React, { type Dispatch, type SetStateAction, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { MenuModal } from '../MenuModal';
 import { SettingsMenu } from '../../SettingsMenu/SettingsMenu';
@@ -41,45 +41,13 @@ interface PetRoomMenusProps {
     flyingFood: any;
 }
 const PetShopContent: React.FC<{ nurturing: any, onPetGacha: () => void }> = ({ nurturing, onPetGacha }) => {
-    const { currentPetId, petExpiresAt } = nurturing;
-    const [timeRemaining, setTimeRemaining] = React.useState<string>('');
+    const { currentPetId } = nurturing;
     const { t } = useTranslation();
-
-    React.useEffect(() => {
-        if (currentPetId && petExpiresAt) {
-            const updateTimer = () => {
-                const now = Date.now();
-                const diff = petExpiresAt - now;
-                if (diff <= 0) {
-                    setTimeRemaining(t('shop.items.pet.expired'));
-                } else {
-                    const hours = Math.floor(diff / (1000 * 60 * 60));
-                    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                    setTimeRemaining(`${hours}h ${minutes}m`);
-                }
-            };
-            updateTimer();
-            const interval = setInterval(updateTimer, 60000);
-            return () => clearInterval(interval);
-        } else {
-            setTimeRemaining('');
-        }
-    }, [currentPetId, petExpiresAt, t]); // Added t dependency
-
-    const currentPet = PET_ITEMS.find(p => p.id === currentPetId);
 
     return (
         <div className="pet-shop-container">
             {/* Top: Gacha Button */}
             <div className="pet-gacha-section">
-                {currentPet && (
-                    <div className="pet-status-info">
-                        <div className="current-pet-status">
-                            <span>{t('shop.items.pet.partner')}: {currentPet.icon}</span>
-                            <span className="time-remaining">{t('shop.items.pet.timeRemaining')}: {timeRemaining}</span>
-                        </div>
-                    </div>
-                )}
 
                 <button className="gacha-button" onClick={onPetGacha}>
                     <span className="gacha-icon">🐾</span>
@@ -94,22 +62,27 @@ const PetShopContent: React.FC<{ nurturing: any, onPetGacha: () => void }> = ({ 
             <div className="shop-divider"></div>
 
             {/* Bottom: Showcase */}
-            <div className="pet-showcase-grid">
-                <div className="showcase-items">
-                    {PET_ITEMS.map((pet) => {
-                        const isCurrent = currentPetId === pet.id;
-                        // Rarity Color Logic (Optional)
-                        let borderColor = 'transparent';
-                        if (isCurrent) borderColor = '#ff6b6b';
-
-                        return (
-                            <div key={pet.id} className={`showcase-item ${isCurrent ? 'active' : ''}`} style={{ borderColor }}>
-                                <div className="pet-icon" style={{ fontSize: '2rem' }}>{pet.icon}</div>
-                                {isCurrent && <div className="pet-active-badge">✅</div>}
+            {/* Bottom: Showcase */}
+            <div className="food-items-grid" style={{ padding: 0, maxHeight: 'none', marginTop: 0 }}>
+                {PET_ITEMS.map((pet) => {
+                    const isCurrent = currentPetId === pet.id;
+                    return (
+                        <button
+                            key={pet.id}
+                            className={`food-item ${isCurrent ? 'active-item' : ''}`}
+                            onClick={() => { /* No click action for now as it is gacha */ }}
+                            style={isCurrent ? { borderColor: '#FFD700', backgroundColor: '#FFF9E6', cursor: 'default' } : { cursor: 'default' }}
+                        >
+                            <span className="food-item-icon" style={{ fontSize: '2.5rem' }}>{pet.icon}</span>
+                            <span className="food-item-name">{t(pet.nameKey)}</span>
+                            <div className="food-item-effects">
+                                {isCurrent && (
+                                    <span className="food-item-price">✅ Active</span>
+                                )}
                             </div>
-                        );
-                    })}
-                </div>
+                        </button>
+                    );
+                })}
             </div>
         </div>
     );
@@ -133,8 +106,8 @@ export const PetRoomMenus: React.FC<PetRoomMenusProps> = ({
 }) => {
     const { t } = useTranslation();
 
-    const filteredFoods = FOOD_ITEMS.filter(food => food.category === selectedFoodCategory);
-    const filteredShopItems = SHOP_ITEMS.filter(item => item.category === selectedShopCategory);
+    const filteredFoods = useMemo(() => FOOD_ITEMS.filter(food => food.category === selectedFoodCategory), [selectedFoodCategory]);
+    const filteredShopItems = useMemo(() => SHOP_ITEMS.filter(item => item.category === selectedShopCategory), [selectedShopCategory]);
 
     return (
         <>
