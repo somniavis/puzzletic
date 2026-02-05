@@ -100,7 +100,7 @@ export const PremiumPurchaseModal: React.FC<PremiumPurchaseModalProps> = ({ isOp
                 </button>
 
                 {/* Header */}
-                <div style={{ fontSize: '3rem', marginBottom: '16px' }}>💎</div>
+                <div style={{ fontSize: '3rem', marginBottom: '16px' }}>🌍</div>
 
                 <h2 style={{
                     fontSize: '1.8rem',
@@ -187,7 +187,7 @@ export const PremiumPurchaseModal: React.FC<PremiumPurchaseModalProps> = ({ isOp
                         e.currentTarget.style.boxShadow = '0 6px 0 #b4761f, 0 8px 20px rgba(255, 165, 0, 0.7)'; // Release to hover state
                     }}
                 >
-                    $1 {t('common.upgrade_btn_text', 'UPGRADE')} ✨
+                    {t('common.upgrade_btn_text', 'UPGRADE')} ✨
                 </button>
             </div>
         </div>
