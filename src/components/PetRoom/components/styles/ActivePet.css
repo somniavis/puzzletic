@@ -22,12 +22,13 @@
 }
 
 .pet-sprite.left {
-    transform: scaleX(-1);
-    /* Flip for left */
+    transform: scaleX(1);
+    /* Default is Left for emojis */
 }
 
 .pet-sprite.right {
-    transform: scaleX(1);
+    transform: scaleX(-1);
+    /* Flip for Right */
 }
 
 @keyframes pet-bounce {
@@ -51,21 +52,21 @@
 
 @keyframes pet-bounce-left {
     0% {
-        transform: scaleX(-1) translateY(0);
-    }
-
-    100% {
-        transform: scaleX(-1) translateY(-5px);
-    }
-}
-
-@keyframes pet-bounce-right {
-    0% {
         transform: scaleX(1) translateY(0);
     }
 
     100% {
         transform: scaleX(1) translateY(-5px);
+    }
+}
+
+@keyframes pet-bounce-right {
+    0% {
+        transform: scaleX(-1) translateY(0);
+    }
+
+    100% {
+        transform: scaleX(-1) translateY(-5px);
     }
 }
 
