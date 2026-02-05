@@ -39,10 +39,13 @@ export const usePetCamera = ({ character, speciesId, nurturing }: UsePetCameraPr
     const [capturedImage, setCapturedImage] = useState<string>('');
     const [currentShareUrl, setCurrentShareUrl] = useState<string>('');
 
+    const isCapturingRef = useRef(false);
+
     const handleCameraClick = async () => {
-        if (!petRoomRef.current) return;
+        if (!petRoomRef.current || isCapturingRef.current) return;
 
         try {
+            isCapturingRef.current = true;
             playButtonSound();
 
             await waitForImages(petRoomRef.current);
@@ -106,6 +109,8 @@ export const usePetCamera = ({ character, speciesId, nurturing }: UsePetCameraPr
 
         } catch (err) {
             console.error('Failed to capture image:', err);
+        } finally {
+            isCapturingRef.current = false;
         }
     };
 
