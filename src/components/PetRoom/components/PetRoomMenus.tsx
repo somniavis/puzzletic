@@ -1,4 +1,4 @@
-import React, { type Dispatch, type SetStateAction, useMemo } from 'react';
+import React, { type Dispatch, type SetStateAction, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { MenuModal } from '../MenuModal';
 import { SettingsMenu } from '../../SettingsMenu/SettingsMenu';
@@ -43,6 +43,20 @@ interface PetRoomMenusProps {
 const PetShopContent: React.FC<{ nurturing: any, onPetGacha: () => void }> = ({ nurturing, onPetGacha }) => {
     const { currentPetId } = nurturing;
     const { t } = useTranslation();
+
+    // Auto-scroll to active pet when it changes (e.g., after purchase)
+    useEffect(() => {
+        if (currentPetId) {
+            // Small timeout to ensure DOM is updated
+            const timer = setTimeout(() => {
+                const activeItem = document.querySelector('.food-items-grid .active-item');
+                if (activeItem) {
+                    activeItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }, 100);
+            return () => clearTimeout(timer);
+        }
+    }, [currentPetId]);
 
     return (
         <div className="pet-shop-container">
@@ -232,8 +246,7 @@ export const PetRoomMenus: React.FC<PetRoomMenusProps> = ({
                                     const result = nurturing.purchaseRandomPet();
                                     if (result.success) {
                                         playButtonSound();
-                                        // Show toast or alert? For now alert is simple, or use a local state for toast
-                                        alert(result.message);
+                                        // Success alert removed as per request
                                     } else {
                                         alert(result.message);
                                     }
