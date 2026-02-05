@@ -80,6 +80,9 @@ interface NurturingContextValue {
   purchaseItem: (itemId: string, price: number) => boolean;
   equipLand: (landId: string) => boolean;
   equipHouse: (houseId: string) => boolean;
+  purchaseRandomPet: () => { success: boolean; petId?: string; message?: string };
+  currentPetId?: string;
+  petExpiresAt?: number;
   inventory: string[];
 
   // 유틸리티
@@ -142,6 +145,8 @@ interface NurturingProviderProps {
 export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }) => {
   const { user, guestId, isGuest } = useAuth();
 
+
+
   // 1. Sync & State Management
   const {
     state,
@@ -154,6 +159,24 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     stateRef,
     completeCharacterCreation
   } = useNurturingSync(user, guestId);
+
+  // Lazy Expiry Check for Pet (Reactive)
+  React.useEffect(() => {
+    if (state.currentPetId && state.petExpiresAt) {
+      if (Date.now() > state.petExpiresAt) {
+        console.log(`⌛ Pet ${state.currentPetId} has expired. Saying goodbye...`);
+        setState(prev => {
+          // Double check inside setter to be safe
+          if (prev.petExpiresAt && Date.now() > prev.petExpiresAt) {
+            const newState = { ...prev, currentPetId: undefined, petExpiresAt: undefined };
+            saveNurturingState(newState, user?.uid);
+            return newState;
+          }
+          return prev;
+        });
+      }
+    }
+  }, [state.currentPetId, state.petExpiresAt, setState, user?.uid]);
 
   // Derived State (Condition)
   const [condition, setCondition] = useState<CharacterCondition>(() =>
@@ -376,6 +399,11 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     currentHouseId: state.currentHouseId || 'tent',
     inventory: state.inventory || ['default_ground'],
     totalGameStars: state.totalGameStars || 0,
+
+    // Pet System
+    currentPetId: state.currentPetId,
+    petExpiresAt: state.petExpiresAt,
+    purchaseRandomPet: actions.purchaseRandomPet,
 
     isGlobalLoading,
 

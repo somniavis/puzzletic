@@ -226,4 +226,8 @@ export interface NurturingPersistentState {
 
   // Stage 5 Evolution Stars
   totalGameStars?: number;
+
+  // Pet System
+  currentPetId?: string; // 현재 보유 중인 펫 ID (24시간 제한)
+  petExpiresAt?: number; // 펫 만료 시간 (timestamp)
 }

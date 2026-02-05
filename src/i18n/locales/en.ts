@@ -425,6 +425,7 @@ export const en = {
     categories: {
       ground: 'Land',
       house: 'House',
+      pet: 'Pet',
     },
     items: {
       default_ground: 'Cozy Room',
@@ -471,6 +472,14 @@ export const en = {
       kaaba: 'Kaaba',
       japanese_castle: 'Japanese Castle',
       european_castle: 'European Castle',
+
+      // Pet
+      'pet.partner': 'Partner',
+      'pet.timeRemaining': 'Time Remaining',
+      'pet.expired': 'Expired',
+      'pet.gacha.title': 'Random Pet',
+      'pet.gacha.desc': 'A friend visits for a while and leaves',
+      'pet.gacha.price': '💰 1',
     },
   },
   actions: {

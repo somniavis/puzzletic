@@ -5,7 +5,7 @@ import { SettingsMenu } from '../../SettingsMenu/SettingsMenu';
 import { FOOD_ITEMS, FOOD_CATEGORIES, type FoodCategory, type FoodItem } from '../../../types/food';
 import { MEDICINE_ITEMS, type MedicineItem } from '../../../types/medicine';
 import { CLEANING_TOOLS, type CleaningTool } from '../../../types/cleaning';
-import { SHOP_ITEMS, SHOP_CATEGORIES, type ShopCategory, type ShopItem } from '../../../types/shop';
+import { SHOP_ITEMS, SHOP_CATEGORIES, PET_ITEMS, type ShopCategory, type ShopItem } from '../../../types/shop';
 import { playButtonSound } from '../../../utils/sound';
 import { useNurturing } from '../../../contexts/NurturingContext';
 import type { CharacterAction } from '../../../types/character';
@@ -40,6 +40,80 @@ interface PetRoomMenusProps {
     action: CharacterAction;
     flyingFood: any;
 }
+const PetShopContent: React.FC<{ nurturing: any, onPetGacha: () => void }> = ({ nurturing, onPetGacha }) => {
+    const { currentPetId, petExpiresAt } = nurturing;
+    const [timeRemaining, setTimeRemaining] = React.useState<string>('');
+    const { t } = useTranslation();
+
+    React.useEffect(() => {
+        if (currentPetId && petExpiresAt) {
+            const updateTimer = () => {
+                const now = Date.now();
+                const diff = petExpiresAt - now;
+                if (diff <= 0) {
+                    setTimeRemaining(t('shop.items.pet.expired'));
+                } else {
+                    const hours = Math.floor(diff / (1000 * 60 * 60));
+                    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                    setTimeRemaining(`${hours}h ${minutes}m`);
+                }
+            };
+            updateTimer();
+            const interval = setInterval(updateTimer, 60000);
+            return () => clearInterval(interval);
+        } else {
+            setTimeRemaining('');
+        }
+    }, [currentPetId, petExpiresAt, t]); // Added t dependency
+
+    const currentPet = PET_ITEMS.find(p => p.id === currentPetId);
+
+    return (
+        <div className="pet-shop-container">
+            {/* Top: Gacha Button */}
+            <div className="pet-gacha-section">
+                {currentPet && (
+                    <div className="pet-status-info">
+                        <div className="current-pet-status">
+                            <span>{t('shop.items.pet.partner')}: {currentPet.icon}</span>
+                            <span className="time-remaining">{t('shop.items.pet.timeRemaining')}: {timeRemaining}</span>
+                        </div>
+                    </div>
+                )}
+
+                <button className="gacha-button" onClick={onPetGacha}>
+                    <span className="gacha-icon">🐾</span>
+                    <div className="gacha-text">
+                        <span className="gacha-title">{t('shop.items.pet.gacha.title')}</span>
+                        <span className="gacha-desc">{t('shop.items.pet.gacha.desc')}</span>
+                        <div className="gacha-price-tag">{t('shop.items.pet.gacha.price')}</div>
+                    </div>
+                </button>
+            </div>
+
+            <div className="shop-divider"></div>
+
+            {/* Bottom: Showcase */}
+            <div className="pet-showcase-grid">
+                <div className="showcase-items">
+                    {PET_ITEMS.map((pet) => {
+                        const isCurrent = currentPetId === pet.id;
+                        // Rarity Color Logic (Optional)
+                        let borderColor = 'transparent';
+                        if (isCurrent) borderColor = '#ff6b6b';
+
+                        return (
+                            <div key={pet.id} className={`showcase-item ${isCurrent ? 'active' : ''}`} style={{ borderColor }}>
+                                <div className="pet-icon" style={{ fontSize: '2rem' }}>{pet.icon}</div>
+                                {isCurrent && <div className="pet-active-badge">✅</div>}
+                            </div>
+                        );
+                    })}
+                </div>
+            </div>
+        </div>
+    );
+};
 
 export const PetRoomMenus: React.FC<PetRoomMenusProps> = ({
     showFoodMenu, setShowFoodMenu,
@@ -161,6 +235,7 @@ export const PetRoomMenus: React.FC<PetRoomMenusProps> = ({
                 <MenuModal
                     title={t('shop.menu.title', 'Shop')}
                     onClose={() => setShowShopMenu(false)}
+                    variant="custom"
                     headerContent={
                         <div className="food-categories">
                             {(Object.keys(SHOP_CATEGORIES) as ShopCategory[]).map((category) => (
@@ -169,50 +244,70 @@ export const PetRoomMenus: React.FC<PetRoomMenusProps> = ({
                                     className={`category-tab ${selectedShopCategory === category ? 'active' : ''}`}
                                     onClick={() => { playButtonSound(); setSelectedShopCategory(category); }}
                                 >
-                                    <span className="category-icon">{SHOP_CATEGORIES[category].icon}</span>
-                                    <span className="category-name">{t(SHOP_CATEGORIES[category].nameKey)}</span>
+                                    <span className="cat-icon">{SHOP_CATEGORIES[category].icon}</span>
+                                    <span className="cat-name">{t(SHOP_CATEGORIES[category].nameKey)}</span>
                                 </button>
                             ))}
                         </div>
                     }
                 >
-                    {filteredShopItems.map((item) => (
-                        <button
-                            key={item.id}
-                            className={`food-item ${(item.category === 'ground' && nurturing.currentLand === item.id) ||
-                                (item.category === 'house' && nurturing.currentHouseId === item.id)
-                                ? 'active-item' : ''
-                                }`}
-                            onClick={() => onShopItemClick(item)}
-                            style={
-                                (item.category === 'ground' && nurturing.currentLand === item.id) ||
-                                    (item.category === 'house' && nurturing.currentHouseId === item.id)
-                                    ? { borderColor: '#FFD700', backgroundColor: '#FFF9E6' } : {}
-                            }
-                        >
-                            <span className="food-item-icon">
-                                {item.id === 'shape_ground' ? (
-                                    <span className="custom-icon-shape-ground" />
-                                ) : (
-                                    item.icon
-                                )}
-                            </span>
-                            <span className="food-item-name">{t(item.nameKey)}</span>
-                            <div className="food-item-effects">
-                                {nurturing.inventory.includes(item.id) || (item.category === 'house' && item.id === 'tent') ? (
-                                    (item.category === 'ground' && nurturing.currentLand === item.id) ||
-                                        (item.category === 'house' && nurturing.currentHouseId === item.id) ? (
-                                        <span className="food-item-price">✅ Owned</span>
-                                    ) : (
-                                        <span className="food-item-price">Owned</span>
-                                    )
-                                ) : (
-                                    <span className="food-item-price">💰 {item.price}</span>
-                                )}
+                    <div className="shop-content">
+                        {selectedShopCategory === 'pet' ? (
+                            <PetShopContent
+                                nurturing={nurturing}
+                                onPetGacha={async () => {
+                                    const result = nurturing.purchaseRandomPet();
+                                    if (result.success) {
+                                        playButtonSound();
+                                        // Show toast or alert? For now alert is simple, or use a local state for toast
+                                        alert(result.message);
+                                    } else {
+                                        alert(result.message);
+                                    }
+                                }}
+                            />
+                        ) : (
+                            <div className="food-items-grid" style={{ padding: 0, maxHeight: 'none' }}>
+                                {filteredShopItems.map((item) => (
+                                    <button
+                                        key={item.id}
+                                        className={`food-item ${(item.category === 'ground' && nurturing.currentLand === item.id) ||
+                                            (item.category === 'house' && nurturing.currentHouseId === item.id)
+                                            ? 'active-item' : ''
+                                            }`}
+                                        onClick={() => onShopItemClick(item)}
+                                        style={
+                                            (item.category === 'ground' && nurturing.currentLand === item.id) ||
+                                                (item.category === 'house' && nurturing.currentHouseId === item.id)
+                                                ? { borderColor: '#FFD700', backgroundColor: '#FFF9E6' } : {}
+                                        }
+                                    >
+                                        <span className="food-item-icon">
+                                            {item.id === 'shape_ground' ? (
+                                                <span className="custom-icon-shape-ground" />
+                                            ) : (
+                                                item.icon
+                                            )}
+                                        </span>
+                                        <span className="food-item-name">{t(item.nameKey)}</span>
+                                        <div className="food-item-effects">
+                                            {nurturing.inventory.includes(item.id) || (item.category === 'house' && item.id === 'tent') ? (
+                                                (item.category === 'ground' && nurturing.currentLand === item.id) ||
+                                                    (item.category === 'house' && nurturing.currentHouseId === item.id) ? (
+                                                    <span className="food-item-price">✅ Owned</span>
+                                                ) : (
+                                                    <span className="food-item-price">Owned</span>
+                                                )
+                                            ) : (
+                                                <span className="food-item-price">💰 {item.price}</span>
+                                            )}
+                                        </div>
+                                    </button>
+                                ))}
                             </div>
-                        </button>
-                    ))}
-                </MenuModal>
+                        )}
+                    </div>
+                </MenuModal >
             )}
 
             {/* Settings Menu */}
@@ -223,3 +318,5 @@ export const PetRoomMenus: React.FC<PetRoomMenusProps> = ({
         </>
     );
 };
+
+

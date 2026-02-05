@@ -30,13 +30,17 @@ export const useNurturingTick = (
                 }
             }
 
+            // 펫 보유 여부 체크 (만료 시간 확인)
+            const hasPet = !!(currentState.currentPetId && currentState.petExpiresAt && Date.now() < currentState.petExpiresAt);
+
             const tickResult = executeGameTick(
                 currentState.stats,
                 currentState.poops,
                 currentState.bugs || [],
                 currentState.gameDifficulty ?? null,
                 currentState.isSick,
-                isStillSleeping
+                isStillSleeping,
+                hasPet // [NEW]
             );
 
             const newStats: NurturingStats = {

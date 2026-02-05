@@ -8,11 +8,12 @@ export interface ShopItem {
     isOwned?: boolean; // For future use
 }
 
-export type ShopCategory = 'ground' | 'house';
+export type ShopCategory = 'ground' | 'house' | 'pet';
 
 export const SHOP_CATEGORIES: Record<ShopCategory, { nameKey: string; icon: string }> = {
     ground: { nameKey: 'shop.categories.ground', icon: '🏞️' },
     house: { nameKey: 'shop.categories.house', icon: '🏠' },
+    pet: { nameKey: 'shop.categories.pet', icon: '🐾' },
 };
 
 export const SHOP_ITEMS: ShopItem[] = [
@@ -244,4 +245,34 @@ export const SHOP_ITEMS: ShopItem[] = [
         category: 'house',
         price: 1800,
     },
+];
+
+export type PetSpeed = 'fast' | 'normal' | 'slow' | 'very_slow';
+export type PetRarity = 'common' | 'uncommon' | 'rare';
+
+export interface PetItem {
+    id: string;
+    icon: string;
+    speed: PetSpeed;
+    rarity: PetRarity;
+}
+
+export const PET_ITEMS: PetItem[] = [
+    // Common (High Probability ~60%)
+    { id: 'monkey', icon: '🐒', speed: 'fast', rarity: 'common' },
+    { id: 'hedgehog', icon: '🦔', speed: 'normal', rarity: 'common' },
+    { id: 'lizard', icon: '🦎', speed: 'fast', rarity: 'common' },
+    { id: 'octopus', icon: '🐙', speed: 'normal', rarity: 'common' },
+    { id: 'squid', icon: '🦑', speed: 'normal', rarity: 'common' },
+    { id: 'snail', icon: '🐌', speed: 'very_slow', rarity: 'common' },
+
+    // Uncommon (Medium Probability ~37%)
+    { id: 'scorpion', icon: '🦂', speed: 'normal', rarity: 'uncommon' },
+    { id: 'turtle', icon: '🐢', speed: 'slow', rarity: 'uncommon' },
+    { id: 'dodo', icon: '🦤', speed: 'normal', rarity: 'uncommon' },
+    { id: 'snowman', icon: '⛄', speed: 'slow', rarity: 'uncommon' },
+
+    // Rare (Low Probability ~3%)
+    { id: 'dino', icon: '🦖', speed: 'slow', rarity: 'rare' },
+    { id: 'phoenix', icon: '🐦‍🔥', speed: 'fast', rarity: 'rare' },
 ];

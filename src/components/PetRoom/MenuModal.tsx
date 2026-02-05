@@ -7,9 +7,10 @@ interface MenuModalProps {
     onClose: () => void;
     children: React.ReactNode;
     headerContent?: React.ReactNode; // For category tabs in Shop
+    variant?: 'grid' | 'custom';
 }
 
-export const MenuModal: React.FC<MenuModalProps> = ({ title, onClose, children, headerContent }) => {
+export const MenuModal: React.FC<MenuModalProps> = ({ title, onClose, children, headerContent, variant = 'grid' }) => {
     return (
         <div className="food-menu-overlay" onClick={() => { playButtonSound(); onClose(); }}>
             <div className="food-menu" onClick={(e) => e.stopPropagation()}>
@@ -20,7 +21,7 @@ export const MenuModal: React.FC<MenuModalProps> = ({ title, onClose, children, 
 
                 {headerContent}
 
-                <div className="food-items-grid">
+                <div className={variant === 'grid' ? "food-items-grid" : "menu-modal-content"}>
                     {children}
                 </div>
             </div>

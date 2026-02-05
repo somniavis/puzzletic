@@ -406,7 +406,8 @@ export const applyOfflineProgress = (
     state.poops,
     state.bugs || [],
     state.isSleeping,
-    sleepRemainingMs
+    sleepRemainingMs,
+    state.petExpiresAt // [NEW]
   );
 
   // 가출 상태 체크

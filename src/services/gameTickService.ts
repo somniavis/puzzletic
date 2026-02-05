@@ -105,7 +105,8 @@ export const executeGameTick = (
   bugs: Bug[] = [],
   gameDifficulty: number | null = null,
   isSick: boolean = false,
-  isSleeping: boolean = false
+  isSleeping: boolean = false,
+  hasPet: boolean = false
 ): TickResult & { newIsSick: boolean } => {
   // 새 스탯 객체 (변경사항 누적)
   const newStats = { ...currentStats };
@@ -116,13 +117,16 @@ export const executeGameTick = (
 
   // ==================== A. 기본 감소 (Natural Decay) ====================
   // 수면 상태일 경우 감소율 50% 적용 (tick 2배 느림)
-  const decayMultiplier = isSleeping ? 0.5 : 1.0;
+  // 펫 보유 시 감소율 40% 추가 완화 (x0.6)
+  const sleepMult = isSleeping ? 0.5 : 1.0;
+  const petMult = hasPet ? 0.6 : 1.0;
+  const decayMultiplier = sleepMult * petMult;
 
   if (gameDifficulty !== null) {
     // 게임 플레이 중: 난이도에 따른 차등 적용
     // 행복도: 1.5 * 난이도 - 0.5 (1단계: 1.0 ~ 5단계: 7.0)
     // 포만감: -1.0 * 난이도 - 0.5 (1단계: -1.5 ~ 5단계: -5.5)
-    // 게임 중엔 수면 불가하므로 multiplier 미적용 (어차피 isSleeping=false여야 함)
+    // 게임 중엔 수면 불가하므로 multiplier 미적용
     const happinessBonus = (1.5 * gameDifficulty) - 0.5;
     const fullnessDecay = (-1.0 * gameDifficulty) - 0.5;
 
@@ -131,6 +135,14 @@ export const executeGameTick = (
     newStats.health += NATURAL_DECAY.health;
   } else {
     // 평상시
+    // Pet effect applies to fullness and health? Or just happiness/health?
+    // Usually "care" pets affect loneliness (happiness) and health. But let's apply globally for simplicity or specific stats.
+    // User asked "Happy & Health better". So apply petMult to those.
+    // Let's stick to decayMultiplier applying to all Natural Decay for consistency,
+    // or specifically target health/happiness.
+    // Code below applies decayMultiplier to fullness too currently (line 134 in orig).
+    // Let's keep it consistent: Pet makes Jello endure everything better.
+
     const fullnessChange = NATURAL_DECAY.fullness * decayMultiplier;
     const healthChange = NATURAL_DECAY.health * decayMultiplier;
 
@@ -297,7 +309,8 @@ export const calculateOfflineProgress = (
   poops: Poop[] = [],
   bugs: Bug[] = [],
   isSleeping: boolean = false,
-  sleepRemainingMs: number = 0
+  sleepRemainingMs: number = 0,
+  petExpiresAt?: number // [NEW] Pet expiration timestamp
 ): {
   finalStats: NurturingStats;
   ticksElapsed: number;
@@ -320,7 +333,7 @@ export const calculateOfflineProgress = (
   let currentSleepRemaining = sleepRemainingMs;
 
   for (let i = 0; i < ticksElapsed; i++) {
-    // 수면 상태 판정: 남은 수면 시간이 틱 간격보다 많으면 수면 중
+    // 수면 상태 판정
     const isCurrentlySleeping = isSleeping && currentSleepRemaining > 0;
 
     // 수면 시간 차감
@@ -328,19 +341,22 @@ export const calculateOfflineProgress = (
       currentSleepRemaining -= tickIntervalMs;
     }
 
-    const tickResult = executeGameTick(stats, poops, bugs, null, false, isCurrentlySleeping);
+    // 펫 보유 여부 체크 (현재 시뮬레이션 시간 기준)
+    const currentTickTime = lastActiveTime + (i * tickIntervalMs);
+    const hasPet = !!petExpiresAt && currentTickTime < petExpiresAt;
+
+    const tickResult = executeGameTick(stats, poops, bugs, null, false, isCurrentlySleeping, hasPet);
 
     // 스탯 업데이트
     stats.fullness += tickResult.statChanges.fullness || 0;
     stats.health += tickResult.statChanges.health || 0;
     stats.happiness += tickResult.statChanges.happiness || 0;
 
-    // 이벤트 기록 (중요한 것만)
+    // 이벤트 기록
     if (tickResult.condition.needsAttention) {
       events.push(`틱 ${i + 1}: 위험 상태 발생`);
     }
     if (tickResult.alerts.length > 0 && i % 10 === 0) {
-      // 10틱마다 한 번씩만 기록 (너무 많은 이벤트 방지)
       events.push(`틱 ${i + 1}: ${tickResult.alerts.join(', ')}`);
     }
   }

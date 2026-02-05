@@ -28,6 +28,25 @@ import {
 import { evaluateCondition, clampStat } from '../../services/gameTickService';
 import { saveNurturingState } from '../../services/persistenceService';
 
+// Helper for Weighted Random Selection
+const getRandomPetId = (): string => {
+    // Common (60%)
+    const commonPets = ['monkey', 'hedgehog', 'lizard', 'octopus', 'squid', 'snail'];
+    // Uncommon (37%)
+    const uncommonPets = ['scorpion', 'turtle', 'dodo', 'snowman'];
+    // Rare (3%)
+    const rarePets = ['dino', 'phoenix'];
+
+    const rand = Math.random() * 100;
+    if (rand < 60) {
+        return commonPets[Math.floor(Math.random() * commonPets.length)];
+    } else if (rand < 97) {
+        return uncommonPets[Math.floor(Math.random() * uncommonPets.length)];
+    } else {
+        return rarePets[Math.floor(Math.random() * rarePets.length)];
+    }
+};
+
 export const useNurturingActions = (
     setState: React.Dispatch<React.SetStateAction<NurturingPersistentState>>,
     setCondition: (condition: CharacterCondition) => void,
@@ -433,6 +452,37 @@ export const useNurturingActions = (
         });
     }, [setState, setCondition]);
 
+    const purchaseRandomPet = useCallback((): { success: boolean; petId?: string; message?: string } => {
+        let result = { success: false, petId: undefined as string | undefined, message: '' };
+
+        setState((currentState) => {
+            if ((currentState.gro || 0) < 1) {
+                result = { success: false, petId: undefined, message: '돈이 부족해요! (1 필요)' };
+                return currentState;
+            }
+
+            const newPetId = getRandomPetId();
+            const expiresAt = Date.now() + (24 * 60 * 60 * 1000); // 24 hours from now
+
+            const newState = {
+                ...currentState,
+                gro: (currentState.gro || 0) - 1,
+                currentPetId: newPetId,
+                petExpiresAt: expiresAt,
+                lastActiveTime: Date.now(),
+            };
+
+            setTimeout(() => saveNurturingState(newState, userId), 0);
+
+            result = { success: true, petId: newPetId, message: '새로운 친구를 만났어요!' };
+            console.log(`🐾 Pet Purchased: ${newPetId} (Expires: ${new Date(expiresAt).toLocaleString()})`);
+
+            return newState;
+        });
+
+        return result;
+    }, [setState, userId]);
+
     return {
         performAction,
         feed,
@@ -451,6 +501,10 @@ export const useNurturingActions = (
         purchaseItem,
         equipLand,
         equipHouse,
-        petCharacter
+        petCharacter,
+        purchaseRandomPet
     };
 };
+
+
+

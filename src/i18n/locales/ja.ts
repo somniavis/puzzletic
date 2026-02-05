@@ -427,6 +427,7 @@ export const ja = {
         categories: {
             ground: '背景',
             house: 'ハウス',
+            pet: 'ペット',
         },
         items: {
             default_ground: '居心地の良い部屋',
@@ -471,6 +472,14 @@ export const ja = {
             kaaba: 'カアバ',
             japanese_castle: '日本のお城',
             european_castle: '西洋のお城',
+
+            // Pet
+            'pet.partner': 'パートナー',
+            'pet.timeRemaining': '残り時間',
+            'pet.expired': '期限切れ',
+            'pet.gacha.title': 'ランダムペット',
+            'pet.gacha.desc': '友達がしばらく遊びに来て帰ります',
+            'pet.gacha.price': '💰 1',
         },
     },
     actions: {

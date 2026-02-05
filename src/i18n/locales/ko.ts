@@ -427,6 +427,7 @@ export const ko = {
         categories: {
             ground: '배경',
             house: '하우스',
+            pet: '펫',
         },
         items: {
             default_ground: '포근한 방',
@@ -473,6 +474,14 @@ export const ko = {
             kaaba: '카바 신전',
             japanese_castle: '일본 성',
             european_castle: '유럽 성',
+
+            // Pet
+            'pet.partner': '파트너',
+            'pet.timeRemaining': '남은 시간',
+            'pet.expired': '만료됨',
+            'pet.gacha.title': '랜덤 펫',
+            'pet.gacha.desc': '친구가 잠시 놀러왔다 사라져요',
+            'pet.gacha.price': '💰 1',
         },
     },
     actions: {

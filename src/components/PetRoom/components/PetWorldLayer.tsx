@@ -11,6 +11,7 @@ import { EmotionBubble } from '../../EmotionBubble/EmotionBubble';
 import { useNurturing } from '../../../contexts/NurturingContext';
 import type { Character, CharacterMood, CharacterAction } from '../../../types/character';
 import { CHARACTER_SPECIES } from '../../../data/species';
+import { ActivePet } from './ActivePet';
 
 interface PetWorldLayerProps {
     // States
@@ -146,6 +147,11 @@ export const PetWorldLayer: React.FC<PetWorldLayerProps> = ({
             {!showGiftBox && nurturing.bugs.map((bug) => (
                 <Bug key={bug.id} bug={bug} onClick={onBugClick} />
             ))}
+
+            {/* Active Pet */}
+            {!showGiftBox && nurturing.currentPetId && (
+                <ActivePet petId={nurturing.currentPetId} />
+            )}
 
             {/* Flying Food Animation */}
             {flyingFood && (

@@ -1,0 +1,102 @@
+.active-pet-container {
+    position: absolute;
+    transform: translate(-50%, -100%);
+    /* Anchor at bottom center */
+    cursor: pointer;
+    user-select: none;
+    pointer-events: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 60px;
+    height: 60px;
+}
+
+.pet-sprite {
+    transition: transform 0.3s ease;
+}
+
+/* Walking Animation */
+.pet-sprite.moving {
+    animation: pet-bounce 0.5s infinite alternate;
+}
+
+.pet-sprite.left {
+    transform: scaleX(-1);
+    /* Flip for left */
+}
+
+.pet-sprite.right {
+    transform: scaleX(1);
+}
+
+@keyframes pet-bounce {
+    0% {
+        transform: translateY(0);
+    }
+
+    100% {
+        transform: translateY(-5px);
+    }
+}
+
+/* Ensure direction flip is preserved with bounce */
+.pet-sprite.left.moving {
+    animation: pet-bounce-left 0.5s infinite alternate;
+}
+
+.pet-sprite.right.moving {
+    animation: pet-bounce-right 0.5s infinite alternate;
+}
+
+@keyframes pet-bounce-left {
+    0% {
+        transform: scaleX(-1) translateY(0);
+    }
+
+    100% {
+        transform: scaleX(-1) translateY(-5px);
+    }
+}
+
+@keyframes pet-bounce-right {
+    0% {
+        transform: scaleX(1) translateY(0);
+    }
+
+    100% {
+        transform: scaleX(1) translateY(-5px);
+    }
+}
+
+.pet-reaction-emoji {
+    position: absolute;
+    top: -40px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 2rem;
+    animation: pet-emoji-pop 1s ease-out forwards;
+    pointer-events: none;
+}
+
+@keyframes pet-emoji-pop {
+    0% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(10px) scale(0.5);
+    }
+
+    20% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0) scale(1.2);
+    }
+
+    80% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(-20px) scale(1);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-30px) scale(0.8);
+    }
+}
