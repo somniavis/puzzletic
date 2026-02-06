@@ -496,6 +496,7 @@ export const ko = {
             'pet.snowman': '꽁꽁이',
             'pet.dino': '크앙이',
             'pet.phoenix': '활활이',
+            'pet.r2_pet_1': '스페셜 펫',
         },
     },
     rarity: {

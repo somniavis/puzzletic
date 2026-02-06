@@ -494,6 +494,7 @@ export const en = {
       'pet.snowman': 'Frosty',
       'pet.dino': 'Roar',
       'pet.phoenix': 'Blaze',
+      'pet.r2_pet_1': 'Special Pet',
     },
   },
   rarity: {

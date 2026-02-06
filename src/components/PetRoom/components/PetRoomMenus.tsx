@@ -78,14 +78,20 @@ const PetShopContent: React.FC<{ nurturing: any, onPetGacha: () => void }> = ({ 
             {/* Bottom: Showcase */}
             {/* Bottom: Showcase */}
             <div className="food-items-grid" style={{ padding: 0, maxHeight: 'none', marginTop: 0 }}>
-                {PET_ITEMS.map((pet) => {
-                    const isCurrent = currentPetId === pet.id;
+                {PET_ITEMS.filter(pet => !pet.isHidden).map((pet) => {
+                    const isCurrent = currentPetId === pet.id || (currentPetId && currentPetId.startsWith('special_pet_')); // Keep highlighted if special variant is active? 
+                    // check logic: if we want to highlight the 'special pet' button when a variant is active.
+                    // But wait, the button for special pet has id 'r2_pet_1'.
+                    // If currentPetId is 'special_pet_3', 'r2_pet_1' button should probably be highlighted.
+
+                    const effectiveIsCurrent = currentPetId === pet.id || (pet.id === 'r2_pet_1' && currentPetId?.startsWith('special_pet_'));
+
                     return (
                         <button
                             key={pet.id}
-                            className={`food-item ${isCurrent ? 'active-item' : ''}`}
+                            className={`food-item ${effectiveIsCurrent ? 'active-item' : ''}`}
                             onClick={() => { /* No click action for now as it is gacha */ }}
-                            style={isCurrent ? { borderColor: '#FFD700', backgroundColor: '#FFF9E6', cursor: 'default' } : { cursor: 'default' }}
+                            style={effectiveIsCurrent ? { borderColor: '#FFD700', backgroundColor: '#FFF9E6', cursor: 'default' } : { cursor: 'default' }}
                         >
                             <span className="food-item-icon" style={{ fontSize: '2.5rem' }}>{pet.icon}</span>
                             <span className="food-item-name">{t(pet.nameKey)}</span>

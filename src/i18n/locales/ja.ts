@@ -494,6 +494,7 @@ export const ja = {
             'pet.snowman': 'ヒエヒエ',
             'pet.dino': 'ガオー',
             'pet.phoenix': 'メラメラ',
+            'pet.r2_pet_1': 'スペシャルペット',
         },
     },
     rarity: {

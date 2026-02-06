@@ -35,16 +35,25 @@ const getRandomPetId = (): string => {
     const commonPets = PET_ITEMS.filter(p => p.rarity === 'common').map(p => p.id);
     const uncommonPets = PET_ITEMS.filter(p => p.rarity === 'uncommon').map(p => p.id);
     const rarePets = PET_ITEMS.filter(p => p.rarity === 'rare').map(p => p.id);
+    const specialPets = PET_ITEMS.filter(p => p.rarity === 'special' && !p.isHidden).map(p => p.id); // Only include the trigger item
 
     const rand = Math.random() * 100;
 
-    // Fallback if arrays are empty (safety)
-    if (rand < 60 && commonPets.length > 0) {
+    // Common: ~55%
+    if (rand < 55 && commonPets.length > 0) {
         return commonPets[Math.floor(Math.random() * commonPets.length)];
-    } else if (rand < 97 && uncommonPets.length > 0) {
+    }
+    // Uncommon: ~35% (55 + 35 = 90)
+    else if (rand < 90 && uncommonPets.length > 0) {
         return uncommonPets[Math.floor(Math.random() * uncommonPets.length)];
-    } else if (rarePets.length > 0) {
+    }
+    // Rare: ~7% (90 + 7 = 97)
+    else if (rand < 97 && rarePets.length > 0) {
         return rarePets[Math.floor(Math.random() * rarePets.length)];
+    }
+    // Special: ~3% (High Rarity)
+    else if (specialPets.length > 0) {
+        return specialPets[Math.floor(Math.random() * specialPets.length)];
     } else {
         // Absolute fallback to any pet
         return PET_ITEMS[Math.floor(Math.random() * PET_ITEMS.length)].id;
@@ -465,7 +474,13 @@ export const useNurturingActions = (
                 return currentState;
             }
 
-            const newPetId = getRandomPetId();
+            let newPetId = getRandomPetId();
+
+            // Special Pet Logic: Pick 1 of 16 variants if r2_pet_1 is selected
+            if (newPetId === 'r2_pet_1') {
+                const variantIndex = Math.floor(Math.random() * 16); // 0 to 15
+                newPetId = `special_pet_${variantIndex}`;
+            }
             const expiresAt = Date.now() + (24 * 60 * 60 * 1000); // 24 hours from now
 
             const newState = {

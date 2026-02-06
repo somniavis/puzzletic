@@ -248,7 +248,7 @@ export const SHOP_ITEMS: ShopItem[] = [
 ];
 
 export type PetSpeed = 'fast' | 'normal' | 'slow' | 'very_slow';
-export type PetRarity = 'common' | 'uncommon' | 'rare';
+export type PetRarity = 'common' | 'uncommon' | 'rare' | 'special';
 
 export interface PetItem {
     id: string;
@@ -256,6 +256,7 @@ export interface PetItem {
     icon: string;
     speed: PetSpeed;
     rarity: PetRarity;
+    isHidden?: boolean; // New property to hide implementation variants from UI
 }
 
 export const PET_ITEMS: PetItem[] = [
@@ -276,4 +277,24 @@ export const PET_ITEMS: PetItem[] = [
     // Rare (Low Probability ~3%)
     { id: 'dino', nameKey: 'shop.items.pet.dino', icon: '🦖', speed: 'slow', rarity: 'rare' },
     { id: 'phoenix', nameKey: 'shop.items.pet.phoenix', icon: '🐦‍🔥', speed: 'fast', rarity: 'rare' },
-];
+
+    // Special (Displayed in Gacha List)
+    { id: 'r2_pet_1', nameKey: 'shop.items.pet.r2_pet_1', icon: '🐾', speed: 'normal', rarity: 'special' },
+
+    // Hidden Variants (Selected via Logic)
+    { id: 'special_pet_0', nameKey: 'shop.items.pet.r2_pet_1', icon: 'https://pub-1411335941ed4406b5f667f40e04a814.r2.dev/pet_img/Pet1.png', speed: 'normal', rarity: 'special' as PetRarity, isHidden: true },
+    { id: 'special_pet_1', nameKey: 'shop.items.pet.r2_pet_1', icon: 'https://pub-1411335941ed4406b5f667f40e04a814.r2.dev/pet_img/pet2.png', speed: 'normal', rarity: 'special' as PetRarity, isHidden: true },
+    { id: 'special_pet_2', nameKey: 'shop.items.pet.r2_pet_1', icon: 'https://pub-1411335941ed4406b5f667f40e04a814.r2.dev/pet_img/pet3.png', speed: 'normal', rarity: 'special' as PetRarity, isHidden: true },
+    { id: 'special_pet_3', nameKey: 'shop.items.pet.r2_pet_1', icon: 'https://pub-1411335941ed4406b5f667f40e04a814.r2.dev/pet_img/pet4.png', speed: 'normal', rarity: 'special' as PetRarity, isHidden: true },
+    { id: 'special_pet_4', nameKey: 'shop.items.pet.r2_pet_1', icon: 'https://pub-1411335941ed4406b5f667f40e04a814.r2.dev/pet_img/pet5.png', speed: 'normal', rarity: 'special' as PetRarity, isHidden: true },
+    { id: 'special_pet_5', nameKey: 'shop.items.pet.r2_pet_1', icon: 'https://pub-1411335941ed4406b5f667f40e04a814.r2.dev/pet_img/pet6.png', speed: 'normal', rarity: 'special' as PetRarity, isHidden: true },
+    { id: 'special_pet_6', nameKey: 'shop.items.pet.r2_pet_1', icon: 'https://pub-1411335941ed4406b5f667f40e04a814.r2.dev/pet_img/pet7.png', speed: 'normal', rarity: 'special' as PetRarity, isHidden: true },
+    { id: 'special_pet_7', nameKey: 'shop.items.pet.r2_pet_1', icon: 'https://pub-1411335941ed4406b5f667f40e04a814.r2.dev/pet_img/pet8.png', speed: 'normal', rarity: 'special' as PetRarity, isHidden: true },
+    { id: 'special_pet_8', nameKey: 'shop.items.pet.r2_pet_1', icon: 'https://pub-1411335941ed4406b5f667f40e04a814.r2.dev/pet_img/pet9.png', speed: 'normal', rarity: 'special' as PetRarity, isHidden: true },
+    { id: 'special_pet_9', nameKey: 'shop.items.pet.r2_pet_1', icon: 'https://pub-1411335941ed4406b5f667f40e04a814.r2.dev/pet_img/pet10.png', speed: 'normal', rarity: 'special' as PetRarity, isHidden: true },
+    { id: 'special_pet_10', nameKey: 'shop.items.pet.r2_pet_1', icon: 'https://pub-1411335941ed4406b5f667f40e04a814.r2.dev/pet_img/pet11.png', speed: 'normal', rarity: 'special' as PetRarity, isHidden: true },
+    { id: 'special_pet_11', nameKey: 'shop.items.pet.r2_pet_1', icon: 'https://pub-1411335941ed4406b5f667f40e04a814.r2.dev/pet_img/pet12.png', speed: 'normal', rarity: 'special' as PetRarity, isHidden: true },
+    { id: 'special_pet_12', nameKey: 'shop.items.pet.r2_pet_1', icon: 'https://pub-1411335941ed4406b5f667f40e04a814.r2.dev/pet_img/pet13.png', speed: 'normal', rarity: 'special' as PetRarity, isHidden: true },
+    { id: 'special_pet_13', nameKey: 'shop.items.pet.r2_pet_1', icon: 'https://pub-1411335941ed4406b5f667f40e04a814.r2.dev/pet_img/pet15.png', speed: 'normal', rarity: 'special' as PetRarity, isHidden: true },
+    { id: 'special_pet_14', nameKey: 'shop.items.pet.r2_pet_1', icon: 'https://pub-1411335941ed4406b5f667f40e04a814.r2.dev/pet_img/pet16.png', speed: 'normal', rarity: 'special' as PetRarity, isHidden: true },
+    { id: 'special_pet_15', nameKey: 'shop.items.pet.r2_pet_1', icon: 'https://pub-1411335941ed4406b5f667f40e04a814.r2.dev/pet_img/pet17.png', speed: 'normal', rarity: 'special' as PetRarity, isHidden: true },];
