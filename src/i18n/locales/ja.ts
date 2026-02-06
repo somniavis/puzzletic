@@ -243,7 +243,7 @@ export const ja = {
         premium: 'プレミアム',
         upgrade_btn_text: 'アップグレード',
         modal: {
-            title: 'あなたに一つ。\n機会が必要な友達に一つ。',
+            title: 'One for you,\none for a friend in need.',
             desc: '<bold>あなた</bold>がプレミアムになることで、<br/><bold>学びを必要とする学生</bold>にも機会が届きます。',
             benefit1: '全てのジェロ進化 & ゲームを解除',
             benefit2: 'XPブーストで3倍-8倍速く学習',

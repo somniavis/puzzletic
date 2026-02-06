@@ -44,8 +44,12 @@ export const PremiumPurchaseModal: React.FC<PremiumPurchaseModalProps> = ({ isOp
                     background: 'linear-gradient(180deg, #1a1a2e 0%, #16213e 100%)',
                     width: '90%',
                     maxWidth: '400px',
+                    maxHeight: '90vh',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    overflow: 'hidden', // Parent handles clipping, no scrolling
                     borderRadius: '24px',
-                    padding: '32px 24px',
+                    padding: 0, // Padding moved to inner containers
                     position: 'relative',
                     textAlign: 'center',
                     border: '2px solid #FFD700',
@@ -53,7 +57,7 @@ export const PremiumPurchaseModal: React.FC<PremiumPurchaseModalProps> = ({ isOp
                     color: '#fff'
                 }}
             >
-                {/* Close Button */}
+                {/* Close Button (Fixed) */}
                 <button
                     onClick={() => {
                         playButtonSound();
@@ -63,6 +67,7 @@ export const PremiumPurchaseModal: React.FC<PremiumPurchaseModalProps> = ({ isOp
                         position: 'absolute',
                         top: '16px',
                         right: '16px',
+                        zIndex: 10,
                         background: 'transparent',
                         border: '3px solid #FFD700',
                         borderRadius: '12px',
@@ -99,96 +104,127 @@ export const PremiumPurchaseModal: React.FC<PremiumPurchaseModalProps> = ({ isOp
                     ✕
                 </button>
 
-                {/* Header */}
-                <div style={{ fontSize: '3rem', marginBottom: '16px' }}>🌍</div>
-
-                <h2 style={{
-                    fontSize: '1.8rem',
-                    marginBottom: '8px',
-                    background: 'linear-gradient(to right, #FFD700, #FDB931)',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                    fontWeight: 800
-                }}>
-                    {t('common.modal.title', 'Unlock Premium!')}
-                </h2>
-
-                <p style={{
-                    fontSize: '1rem',
-                    opacity: 0.9,
-                    marginBottom: '24px',
-                    lineHeight: '1.5'
-                }}>
-                    <Trans
-                        i18nKey="common.modal.desc"
-                        defaults="This game is available for <bold>Premium Users only</bold>.<br/>Start growing <bold>3x faster</bold> now! 🚀"
-                        components={{ bold: <b />, br: <br /> }}
-                    />
-                </p>
-
-                {/* Benefits List */}
+                {/* Header Emoji (Fixed Top-Center) */}
                 <div style={{
-                    background: 'rgba(255, 255, 255, 0.05)',
-                    borderRadius: '16px',
-                    padding: '16px',
-                    marginBottom: '24px',
-                    textAlign: 'left'
+                    position: 'absolute',
+                    top: '16px',
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    zIndex: 10,
+                    fontSize: '2.5rem',
+                    lineHeight: 1
                 }}>
-                    <div style={{ padding: '8px 0', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-                        ✅ <b>{t('common.modal.benefit1', 'Unlock ALL 20+ Games')}</b>
-                    </div>
-                    <div style={{ padding: '8px 0', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-                        ✅ <b>{t('common.modal.benefit2', 'Earn 3x-8x More XP')}</b>
-                    </div>
-                    <div style={{ padding: '8px 0' }}>
-                        ✅ <b>{t('common.modal.benefit3', 'Exclusive Jello Evolutions')}</b>
+                    🌍
+                </div>
+
+                {/* Scrollable Content Area */}
+                <div style={{
+                    flex: 1,
+                    overflowY: 'auto',
+                    padding: '68px 20px 0', // Reduced top padding (Halved gap)
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center'
+                }}>
+                    {/* Title */}
+
+                    <h2 style={{
+                        fontSize: '1.5rem',
+                        marginBottom: '8px',
+                        background: 'linear-gradient(to right, #FFD700, #FDB931)',
+                        WebkitBackgroundClip: 'text',
+                        WebkitTextFillColor: 'transparent',
+                        fontWeight: 800,
+                        whiteSpace: 'pre-line' // Allow newlines in title
+                    }}>
+                        {t('common.modal.title', 'Unlock Premium!')}
+                    </h2>
+
+                    <p style={{
+                        fontSize: '1rem',
+                        opacity: 0.9,
+                        marginBottom: '24px',
+                        lineHeight: '1.5'
+                    }}>
+                        <Trans
+                            i18nKey="common.modal.desc"
+                            defaults="This game is available for <bold>Premium Users only</bold>.<br/>Start growing <bold>3x faster</bold> now! 🚀"
+                            components={{ bold: <b />, br: <br /> }}
+                        />
+                    </p>
+
+                    {/* Benefits List */}
+                    <div style={{
+                        background: 'rgba(255, 255, 255, 0.05)',
+                        borderRadius: '16px',
+                        padding: '16px',
+                        marginBottom: '24px',
+                        textAlign: 'left',
+                        width: '100%'
+                    }}>
+                        <div style={{ padding: '8px 0', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+                            ✅ <b>{t('common.modal.benefit1', 'Unlock ALL 20+ Games')}</b>
+                        </div>
+                        <div style={{ padding: '8px 0', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+                            ✅ <b>{t('common.modal.benefit2', 'Earn 3x-8x More XP')}</b>
+                        </div>
+                        <div style={{ padding: '8px 0' }}>
+                            ✅ <b>{t('common.modal.benefit3', 'Exclusive Jello Evolutions')}</b>
+                        </div>
                     </div>
                 </div>
 
-                {/* Action Button */}
-                <button
-                    onClick={() => {
-                        playButtonSound();
-                        onClose();
-                        navigate('/profile');
-                    }}
-                    style={{
-                        background: 'linear-gradient(180deg, #FFD700 0%, #FFA500 100%)',
-                        color: '#4d3e2f',
-                        border: '3px solid #d4961f',
-                        width: '100%',
-                        padding: '16px',
-                        borderRadius: '16px',
-                        fontSize: '1.2rem',
-                        fontWeight: '800',
-                        cursor: 'pointer',
-                        boxShadow: '0 4px 0 #b4761f, 0 5px 15px rgba(255, 165, 0, 0.6)', // 3D Solid + Glow
-                        transform: 'translateY(0)',
-                        transition: 'all 0.1s ease',
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.5px'
-                    }}
-                    onMouseEnter={(e) => {
-                        e.currentTarget.style.transform = 'translateY(-2px)';
-                        e.currentTarget.style.filter = 'brightness(1.1)';
-                        e.currentTarget.style.boxShadow = '0 6px 0 #b4761f, 0 8px 20px rgba(255, 165, 0, 0.7)'; // Enhanced glow on hover
-                    }}
-                    onMouseLeave={(e) => {
-                        e.currentTarget.style.transform = 'translateY(0)';
-                        e.currentTarget.style.filter = 'brightness(1)';
-                        e.currentTarget.style.boxShadow = '0 4px 0 #b4761f, 0 5px 15px rgba(255, 165, 0, 0.6)'; // Return to normal
-                    }}
-                    onMouseDown={(e) => {
-                        e.currentTarget.style.transform = 'translateY(4px)';
-                        e.currentTarget.style.boxShadow = '0 0 0 #b4761f, 0 2px 5px rgba(255, 165, 0, 0.4)'; // Pressed: No 3D, reduced glow
-                    }}
-                    onMouseUp={(e) => {
-                        e.currentTarget.style.transform = 'translateY(-2px)';
-                        e.currentTarget.style.boxShadow = '0 6px 0 #b4761f, 0 8px 20px rgba(255, 165, 0, 0.7)'; // Release to hover state
-                    }}
-                >
-                    {t('common.upgrade_btn_text', 'UPGRADE')} ✨
-                </button>
+                {/* Footer Action Button (Fixed) */}
+                <div style={{
+                    flexShrink: 0,
+                    padding: '0 20px 24px',
+                    background: 'transparent', // Gradient from parent shows through
+                    marginTop: 'auto'
+                }}>
+                    <button
+                        onClick={() => {
+                            playButtonSound();
+                            onClose();
+                            navigate('/profile');
+                        }}
+                        style={{
+                            background: 'linear-gradient(180deg, #FFD700 0%, #FFA500 100%)',
+                            color: '#4d3e2f',
+                            border: '3px solid #d4961f',
+                            width: '100%',
+                            padding: '16px',
+                            borderRadius: '16px',
+                            fontSize: '1.2rem',
+                            fontWeight: '800',
+                            cursor: 'pointer',
+                            boxShadow: '0 4px 0 #b4761f, 0 5px 15px rgba(255, 165, 0, 0.6)', // 3D Solid + Glow
+                            transform: 'translateY(0)',
+                            transition: 'all 0.1s ease',
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.5px'
+                        }}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.transform = 'translateY(-2px)';
+                            e.currentTarget.style.filter = 'brightness(1.1)';
+                            e.currentTarget.style.boxShadow = '0 6px 0 #b4761f, 0 8px 20px rgba(255, 165, 0, 0.7)'; // Enhanced glow on hover
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.transform = 'translateY(0)';
+                            e.currentTarget.style.filter = 'brightness(1)';
+                            e.currentTarget.style.boxShadow = '0 4px 0 #b4761f, 0 5px 15px rgba(255, 165, 0, 0.6)'; // Return to normal
+                        }}
+                        onMouseDown={(e) => {
+                            e.currentTarget.style.transform = 'translateY(4px)';
+                            e.currentTarget.style.boxShadow = '0 0 0 #b4761f, 0 2px 5px rgba(255, 165, 0, 0.4)'; // Pressed: No 3D, reduced glow
+                        }}
+                        onMouseUp={(e) => {
+                            e.currentTarget.style.transform = 'translateY(-2px)';
+                            e.currentTarget.style.boxShadow = '0 6px 0 #b4761f, 0 8px 20px rgba(255, 165, 0, 0.7)'; // Release to hover state
+                        }}
+                    >
+                        {t('common.upgrade_btn_text', 'UPGRADE')} ✨
+                    </button>
+                </div>
             </div>
         </div>
     );

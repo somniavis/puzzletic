@@ -241,7 +241,7 @@ export const en = {
     premium: 'Premium',
     upgrade_btn_text: 'UPGRADE',
     modal: {
-      title: 'One for You.\nOne for a Student in Need.',
+      title: 'One for you,\none for a friend in need.',
       desc: 'Your subscription unlocks Premium for <bold>YOU</bold> + gives free access to a <bold>student in need</bold>.',
       benefit1: 'Unlock All Jello Evolutions & Games',
       benefit2: 'Learn 3x-8x Faster with XP Boost',

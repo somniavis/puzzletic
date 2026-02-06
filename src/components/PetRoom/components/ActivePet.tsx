@@ -31,10 +31,7 @@ export const ActivePet: React.FC<ActivePetProps> = ({ petId }) => {
     const moveRandomly = useCallback(() => {
         if (!petData) return;
 
-        const BOUNDARY_RADIUS = 20; // Max distance from center allowed
         const MAX_STEP = 15; // Max distance to move in one tick
-        const centerX = 50;
-        const centerY = 50;
 
         setPosition((prev) => {
             // Calculate random step
@@ -45,10 +42,11 @@ export const ActivePet: React.FC<ActivePetProps> = ({ petId }) => {
             let newX = prev.x + deltaX;
             let newY = prev.y + deltaY;
 
-            // Clamp to boundary area (circular-ish or box)
-            // Using box for simplicity
-            newX = Math.max(centerX - BOUNDARY_RADIUS, Math.min(centerX + BOUNDARY_RADIUS, newX));
-            newY = Math.max(centerY - BOUNDARY_RADIUS, Math.min(centerY + BOUNDARY_RADIUS, newY));
+            // Clamp to boundary area (Full Floor Range)
+            // X: 10% (Left) to 90% (Right)
+            // Y: 30% (Top of floor) to 90% (Bottom of floor)
+            newX = Math.max(10, Math.min(90, newX));
+            newY = Math.max(30, Math.min(90, newY));
 
             const direction = newX > prev.x ? 'right' : 'left';
             setDirection(direction);
