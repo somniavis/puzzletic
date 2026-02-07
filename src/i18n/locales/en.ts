@@ -26,7 +26,7 @@ import omokEn from '../../games/brain/level3/Omok/locales/en';
 
 export const en = {
   profile: {
-    title: 'Profile',
+    title: 'My Jello',
     home: 'Home',
     signedInAs: 'Signed in as',
     guestUser: 'Guest User',

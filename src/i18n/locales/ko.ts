@@ -28,7 +28,7 @@ import omokKo from '../../games/brain/level3/Omok/locales/ko';
 
 export const ko = {
     profile: {
-        title: '프로필',
+        title: 'My Jello',
         home: '홈으로',
         signedInAs: '로그인 계정',
         guestUser: '게스트 유저',

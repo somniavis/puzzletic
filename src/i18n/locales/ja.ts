@@ -28,7 +28,7 @@ import omokJa from '../../games/brain/level3/Omok/locales/ja';
 
 export const ja = {
     profile: {
-        title: 'プロフィール',
+        title: 'My Jello',
         home: 'ホーム',
         signedInAs: 'ログイン中',
         guestUser: 'ゲスト',

@@ -230,7 +230,8 @@ export const executeGameTick = (
   }
 
   // ==================== D. 벌레 생성 및 질병 감염 ====================
-  if (newBugs.length < BUG_CONFIG.MAX_BUGS) {
+  // 펫 효과: 펫이 있으면 벌레가 생성되지 않음
+  if (!hasPet && newBugs.length < BUG_CONFIG.MAX_BUGS) {
     let bugSpawned = false;
 
     // 파리 생성 (똥이 있을 때만)
