@@ -58,17 +58,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const currentSessionId = Date.now().toString() + Math.random().toString(36).substr(2, 9);
 
         // 1. Register this session in Firebase
+        console.log("🔥 [AuthContext] Setting session ID:", currentSessionId);
         set(userSessionRef, {
             id: currentSessionId,
             lastActive: Date.now(),
             deviceInfo: navigator.userAgent
-        }).catch(err => console.error("Session set error:", err));
+        })
+            .then(() => console.log("✅ [AuthContext] Session set successfully"))
+            .catch(err => console.error("❌ [AuthContext] Session set error:", err));
 
         // 2. Monitor for changes (Remote Session ID)
         const unsubscribe = onValue(userSessionRef, (snapshot) => {
             const data = snapshot.val();
+            console.log("👀 [AuthContext] Remote session change detected:", data);
+
             // If ID in DB is different from our local ID -> Another device logged in
             if (data && data.id && data.id !== currentSessionId) {
+                console.warn("⚠️ [AuthContext] Duplicate login detected! Remote:", data.id, "Local:", currentSessionId);
                 alert(t('landing.auth.duplicateLoginAlert'));
                 logout(); // Logout this device
             }

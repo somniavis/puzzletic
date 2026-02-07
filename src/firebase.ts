@@ -8,7 +8,8 @@ const firebaseConfig = {
     storageBucket: "grogro-jello-4a53a.firebasestorage.app",
     messagingSenderId: "446942822900",
     appId: "1:446942822900:web:5c2adc16a33bf9b54a79a1",
-    measurementId: "G-5NZ351FRHB"
+    measurementId: "G-5NZ351FRHB",
+    databaseURL: "https://grogro-jello-4a53a-default-rtdb.firebaseio.com"
 };
 
 // Initialize Firebase
