@@ -73,6 +73,9 @@ export const ja = {
         back_to_home: 'ホームに戻る',
         continue_experience: 'つづきから',
         new_game: 'はじめから',
+        auth: {
+            duplicateLoginAlert: '他の端末でログインされたため、接続を終了します。',
+        },
     },
 
     character: {

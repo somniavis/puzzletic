@@ -1,7 +1,9 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { onAuthStateChanged, signOut as firebaseSignOut } from 'firebase/auth';
+import { ref, set, onValue } from 'firebase/database';
+import { useTranslation } from 'react-i18next';
 import type { User } from 'firebase/auth';
-import { auth } from '../firebase';
+import { auth, database } from '../firebase';
 
 interface AuthContextType {
     user: User | null;
@@ -17,6 +19,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
+    const { t } = useTranslation();
 
     // Initialize isGuest synchronously from localStorage to persist session on refresh
     const [isGuest, setIsGuest] = useState(() => {
@@ -45,6 +48,36 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         return () => unsubscribe();
     }, []);
+
+    // Duplicate Login Prevention (Session Management)
+    useEffect(() => {
+        if (!user) return;
+
+        const userSessionRef = ref(database, `users/${user.uid}/session`);
+        // Generate a unique session ID for this instance
+        const currentSessionId = Date.now().toString() + Math.random().toString(36).substr(2, 9);
+
+        // 1. Register this session in Firebase
+        set(userSessionRef, {
+            id: currentSessionId,
+            lastActive: Date.now(),
+            deviceInfo: navigator.userAgent
+        }).catch(err => console.error("Session set error:", err));
+
+        // 2. Monitor for changes (Remote Session ID)
+        const unsubscribe = onValue(userSessionRef, (snapshot) => {
+            const data = snapshot.val();
+            // If ID in DB is different from our local ID -> Another device logged in
+            if (data && data.id && data.id !== currentSessionId) {
+                alert(t('landing.auth.duplicateLoginAlert'));
+                logout(); // Logout this device
+            }
+        });
+
+        return () => {
+            unsubscribe();
+        };
+    }, [user?.uid]); // Re-run only if UID changes (login/switch user)
 
     const loginAsGuest = () => {
         let id = localStorage.getItem('puzzleletic_guest_id');

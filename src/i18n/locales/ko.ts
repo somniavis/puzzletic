@@ -73,6 +73,9 @@ export const ko = {
         back_to_home: '돌아가기 (체험)',
         continue_experience: '이어하기',
         new_game: '새로 시작하기',
+        auth: {
+            duplicateLoginAlert: '다른 기기에서 로그인하여 접속을 종료합니다.',
+        },
     },
 
     character: {

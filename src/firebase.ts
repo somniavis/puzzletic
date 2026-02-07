@@ -16,3 +16,5 @@ const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const googleProvider = new GoogleAuthProvider();
 export const appleProvider = new OAuthProvider('apple.com');
+import { getDatabase } from "firebase/database";
+export const database = getDatabase(app);

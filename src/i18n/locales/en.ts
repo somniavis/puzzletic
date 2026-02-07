@@ -71,6 +71,9 @@ export const en = {
     back_to_home: 'Back to Home',
     continue_experience: 'Continue Journey',
     new_game: 'Start Fresh',
+    auth: {
+      duplicateLoginAlert: 'You have been logged in on another device. This session will be closed.',
+    },
   },
 
   character: {
