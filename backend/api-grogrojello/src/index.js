@@ -22,8 +22,12 @@ export default {
 
 		// Router
 		if (path.startsWith('/api/users/')) {
-			const uid = path.split('/').pop();
-			if (!uid) return new Response('Missing UID', { status: 400, headers: corsHeaders });
+			// Fix: Extract UID from correct path segment (index 3)
+			// Path: /api/users/:uid or /api/users/:uid/purchase
+			// Split: ['', 'api', 'users', 'uid', 'purchase']
+			const pathSegments = path.split('/');
+			const uid = pathSegments[3]; // Always the UID
+			if (!uid || uid === 'purchase') return new Response('Missing UID', { status: 400, headers: corsHeaders });
 
 			// GET: Retrieve User Data
 			if (request.method === 'GET') {
@@ -40,10 +44,9 @@ export default {
 					// Check Subscription Expiry
 					const now = Date.now();
 					if (result.is_premium === 1 && result.subscription_end && result.subscription_end < now) {
-						console.log(`[Subscription] Expired for user ${uid}. Downgrading.`);
+						// console.log(`[Subscription] Expired for user ${uid}. Downgrading.`); // Keep as a comment if needed for debugging
 						result.is_premium = 0;
-						// Update DB asynchronously to avoid blocking read too much, or just return downgraded state
-						// Ideally update DB:
+						// Downgrade expired subscription in DB
 						await env.DB.prepare('UPDATE users SET is_premium = 0 WHERE uid = ?').bind(uid).run();
 					}
 
