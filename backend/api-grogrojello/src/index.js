@@ -112,6 +112,26 @@ export default {
 					}
 				}
 
+				// Cancel Subscription Endpoint
+				if (path.endsWith('/cancel')) {
+					try {
+						await env.DB.prepare(`
+							UPDATE users 
+							SET is_premium = 0, subscription_end = 0, subscription_plan = NULL 
+							WHERE uid = ?
+						`).bind(uid).run();
+
+						return new Response(JSON.stringify({ success: true, is_premium: 0 }), {
+							headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+						});
+					} catch (err) {
+						return new Response(JSON.stringify({ error: err.message }), {
+							status: 500,
+							headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+						});
+					}
+				}
+
 				// --- Normal Sync Logic (POST /api/users/:uid) ---
 				try {
 					const body = await request.json();

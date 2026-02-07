@@ -458,13 +458,23 @@ export const useNurturingSync = (user: User | null, guestId: string | null = nul
 
     const cancelSubscription = useCallback(async (): Promise<boolean> => {
         if (!user) return false;
-        // Mock Cancellation
-        setSubscription({
-            isPremium: false,
-            plan: null,
-            expiryDate: null,
-        });
-        return true;
+
+        try {
+            const { cancelSubscription: cancelApi } = await import('../../services/syncService');
+            const result = await cancelApi(user);
+
+            if (result.success) {
+                setSubscription({
+                    isPremium: false,
+                    plan: null,
+                    expiryDate: null,
+                });
+                return true;
+            }
+            return false;
+        } catch {
+            return false;
+        }
     }, [user]);
 
     return {

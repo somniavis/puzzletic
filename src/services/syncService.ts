@@ -152,6 +152,36 @@ export const purchaseSubscription = async (
 };
 
 /**
+ * Cancel Subscription
+ * Calls the dedicated cancel endpoint to revoke premium status
+ */
+export const cancelSubscription = async (
+    user: User
+): Promise<{ success: boolean }> => {
+    try {
+        const token = await user.getIdToken();
+        const response = await fetch(`${API_BASE_URL}/api/users/${user.uid}/cancel`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+        });
+
+        if (!response.ok) {
+            const text = await response.text();
+            throw new Error(text);
+        }
+
+        const json = await response.json();
+        return json;
+    } catch (error: any) {
+        console.error('Cancellation failed:', error);
+        return { success: false };
+    }
+};
+
+/**
  * Sync (Upsert) user data to Cloudflare D1
  * 
  * HYBRID STORAGE ARCHITECTURE:
