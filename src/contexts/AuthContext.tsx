@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { onAuthStateChanged, signOut as firebaseSignOut } from 'firebase/auth';
 import { ref, set, onValue } from 'firebase/database';
-import { useTranslation } from 'react-i18next';
 import type { User } from 'firebase/auth';
 import { auth, database } from '../firebase';
 
@@ -19,7 +18,6 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
-    const { t } = useTranslation();
 
     // Initialize isGuest synchronously from localStorage to persist session on refresh
     const [isGuest, setIsGuest] = useState(() => {
@@ -58,25 +56,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const currentSessionId = Date.now().toString() + Math.random().toString(36).substr(2, 9);
 
         // 1. Register this session in Firebase
-        console.log("🔥 [AuthContext] Setting session ID:", currentSessionId);
         set(userSessionRef, {
             id: currentSessionId,
             lastActive: Date.now(),
             deviceInfo: navigator.userAgent
-        })
-            .then(() => console.log("✅ [AuthContext] Session set successfully"))
-            .catch(err => console.error("❌ [AuthContext] Session set error:", err));
+        }).catch(err => console.error("Session set error:", err));
 
         // 2. Monitor for changes (Remote Session ID)
         const unsubscribe = onValue(userSessionRef, (snapshot) => {
             const data = snapshot.val();
-            console.log("👀 [AuthContext] Remote session change detected:", data);
 
             // If ID in DB is different from our local ID -> Another device logged in
             if (data && data.id && data.id !== currentSessionId) {
-                console.warn("⚠️ [AuthContext] Duplicate login detected! Remote:", data.id, "Local:", currentSessionId);
-                alert(t('landing.auth.duplicateLoginAlert'));
-                logout(); // Logout this device
+                logout(); // Logout this device silently
             }
         });
 
