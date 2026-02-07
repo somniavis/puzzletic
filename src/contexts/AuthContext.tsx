@@ -47,35 +47,59 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return () => unsubscribe();
     }, []);
 
-    // Duplicate Login Prevention (Session Management)
+    // Duplicate Login Prevention (Session Management) - PREMIUM ONLY
     useEffect(() => {
         if (!user) return;
 
-        const userSessionRef = ref(database, `users/${user.uid}/session`);
-        // Generate a unique session ID for this instance
-        const currentSessionId = Date.now().toString() + Math.random().toString(36).substr(2, 9);
+        const checkPremiumAndInitSession = async () => {
+            // Fetch user data to check premium status
+            // We use a direct fetch here to avoid circular dependency with NurturingContext
+            try {
+                const { fetchUserData } = await import('../services/syncService');
+                const result = await fetchUserData(user);
 
-        // 1. Register this session in Firebase
-        set(userSessionRef, {
-            id: currentSessionId,
-            lastActive: Date.now(),
-            deviceInfo: navigator.userAgent
-        }).catch(err => console.error("Session set error:", err));
+                if (result.success && result.data && result.data.is_premium === 1) {
+                    console.log("💎 [AuthContext] Premium user detected. Enabling duplicate login protection.");
 
-        // 2. Monitor for changes (Remote Session ID)
-        const unsubscribe = onValue(userSessionRef, (snapshot) => {
-            const data = snapshot.val();
+                    const userSessionRef = ref(database, `users/${user.uid}/session`);
+                    // Generate a unique session ID for this instance
+                    const currentSessionId = Date.now().toString() + Math.random().toString(36).substr(2, 9);
 
-            // If ID in DB is different from our local ID -> Another device logged in
-            if (data && data.id && data.id !== currentSessionId) {
-                logout(); // Logout this device silently
+                    // 1. Register this session in Firebase
+                    set(userSessionRef, {
+                        id: currentSessionId,
+                        lastActive: Date.now(),
+                        deviceInfo: navigator.userAgent
+                    }).catch(err => console.error("Session set error:", err));
+
+                    // 2. Monitor for changes (Remote Session ID)
+                    const unsubscribe = onValue(userSessionRef, (snapshot) => {
+                        const data = snapshot.val();
+
+                        // If ID in DB is different from our local ID -> Another device logged in
+                        if (data && data.id && data.id !== currentSessionId) {
+                            logout(); // Logout this device silently
+                        }
+                    });
+
+                    return unsubscribe;
+                } else {
+                    console.log("🆓 [AuthContext] Free user detected. Skipping duplicate login protection.");
+                }
+            } catch (error) {
+                console.error("Failed to check premium status:", error);
             }
+        };
+
+        let unsubscribeCallback: (() => void) | undefined;
+        checkPremiumAndInitSession().then(unsub => {
+            unsubscribeCallback = unsub;
         });
 
         return () => {
-            unsubscribe();
+            if (unsubscribeCallback) unsubscribeCallback();
         };
-    }, [user?.uid]); // Re-run only if UID changes (login/switch user)
+    }, [user?.uid]); // Re-run only if UID changes
 
     const loginAsGuest = () => {
         let id = localStorage.getItem('puzzleletic_guest_id');
