@@ -192,14 +192,35 @@
     box-shadow: -2px 2px 0 rgba(0, 0, 0, 0.1);
 }
 
-/* Upgrade Prompt */
-.upgrade-prompt {
-    font-size: 0.95rem;
+/* Upgrade Prompt Area */
+.upgrade-title {
+    font-size: 1.1rem;
     color: #3a6c4d;
-    font-weight: 700;
+    font-weight: 800;
     text-align: center;
-    margin-top: 0;
-    margin-bottom: 0.8rem;
+    margin: 0 0 0.5rem 0;
+    white-space: pre-line;
+    line-height: 1.3;
+}
+
+.upgrade-subtitle {
+    font-size: 0.85rem;
+    color: #5a9c7d;
+    font-weight: 600;
+    text-align: center;
+    margin: 0 0 1.2rem 0;
+    line-height: 1.4;
+    padding: 0 10px;
+    white-space: pre-line;
+}
+
+.highlight {
+    background-color: rgba(255, 215, 0, 0.3);
+    /* Soft Gold Highlight */
+    padding: 0 4px;
+    border-radius: 4px;
+    font-weight: 700;
+    color: #2c563d;
 }
 
 /* Cancel Policy Text */
@@ -280,7 +301,10 @@
 }
 
 .sub-btn.quarterly {
-    box-shadow: 0 6px 0 #111827;
+    background: #4f46e5;
+    /* Indigo-600 (Even lighter) */
+    box-shadow: 0 6px 0 #3730a3;
+    /* Indigo-800 */
     color: white;
 }
 

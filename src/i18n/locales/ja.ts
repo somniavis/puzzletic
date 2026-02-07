@@ -39,6 +39,8 @@ export const ja = {
             freeLabel: '🌱 無料プラン',
         },
         upgradePrompt: 'プレミアムにアップグレード',
+        premiumTitle: 'UPGRADE TO PREMIUM',
+        premiumSubtitle: 'Unlocks premium <highlight>for you</highlight> + gives free access to <highlight>a friend in need</highlight>.',
         subscription: {
             quarterly: {
                 title: '3ヶ月払い',

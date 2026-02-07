@@ -41,6 +41,8 @@ export const en = {
     cancelConfirmMessage: 'You will lose all Premium benefits immediately.\nAre you sure you want to cancel?',
     cancelSuccess: 'Subscription cancelled.',
     upgradePrompt: 'Upgrade to Premium',
+    premiumTitle: 'UPGRADE TO PREMIUM',
+    premiumSubtitle: 'Unlocks premium <highlight>for you</highlight> + gives free access to <highlight>a friend in need</highlight>.',
     subscription: {
       quarterly: {
         title: 'Billed quarterly',

@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
+import { useTranslation, Trans } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
 import { useNurturing } from '../contexts/NurturingContext';
 import './ProfilePage.css';
@@ -89,7 +89,13 @@ export const ProfilePage: React.FC = () => {
 
                     {!isPremium && (
                         <div className="premium-upgrade-area">
-                            <p className="upgrade-prompt">{t('profile.upgradePrompt')}</p>
+                            <h3 className="upgrade-title">{t('profile.premiumTitle')}</h3>
+                            <p className="upgrade-subtitle">
+                                <Trans
+                                    i18nKey="profile.premiumSubtitle"
+                                    components={{ highlight: <span className="highlight" /> }}
+                                />
+                            </p>
                             <div className="subscription-options">
                                 {/* Quarterly Card */}
                                 <button className="sub-btn quarterly" onClick={() => handlePurchase('3_months')}>
