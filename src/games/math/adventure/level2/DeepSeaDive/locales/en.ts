@@ -1,7 +1,7 @@
 export default {
     title: "Deep Dive",
-    "title-lv1": "Deep Dive (Lv1)",
-    "title-lv2": "Deep Dive (Lv2)",
+    "title-lv1": "Deep Dive (Lv.1)",
+    "title-lv2": "Deep Dive (Lv.2)",
     subtitle: "Dive Deeper!",
     description: "Solve subtraction problems to help the sea animals dive.",
     howToPlay: {

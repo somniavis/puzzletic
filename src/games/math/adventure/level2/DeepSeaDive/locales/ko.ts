@@ -1,7 +1,7 @@
 export default {
     title: "깊은 바다 잠수",
-    "title-lv1": "깊은 바다 잠수 (Lv1)",
-    "title-lv2": "깊은 바다 잠수 (Lv2)",
+    "title-lv1": "깊은 바다 잠수 (Lv.1)",
+    "title-lv2": "깊은 바다 잠수 (Lv.2)",
     subtitle: "더 깊이 내려가자!",
     description: "뺄셈 문제를 풀어서 바다 친구들이 잠수하도록 도와주세요.",
     howToPlay: {

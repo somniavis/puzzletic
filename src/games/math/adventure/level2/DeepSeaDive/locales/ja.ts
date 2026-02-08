@@ -1,7 +1,7 @@
 export default {
     title: "深海ダイビング",
-    "title-lv1": "深海ダイビング (Lv1)",
-    "title-lv2": "深海ダイビング (Lv2)",
+    "title-lv1": "深海ダイビング (Lv.1)",
+    "title-lv2": "深海ダイビング (Lv.2)",
     subtitle: "もっとふかく！",
     description: "ひきざんをといて、海のなかまたちをもぐらせてあげよう。",
     howToPlay: {

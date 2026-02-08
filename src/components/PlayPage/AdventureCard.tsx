@@ -143,7 +143,11 @@ export const AdventureCard: React.FC<AdventureCardProps> = ({
                         </span>
                         {renderDifficultyStars(game.level)}
                     </div>
-                    <h3 className="card-title">{game.titleKey ? t(game.titleKey) : game.title}</h3>
+                    <h3 className="card-title">
+                        {(game.titleKey ? t(game.titleKey) : game.title).split(/(\(Lv\.?\d+\))/).map((part, i) =>
+                            part.match(/^\(Lv\.?\d+\)$/) ? <span key={i} style={{ fontSize: '0.75em', marginLeft: '2px' }}>{part}</span> : part
+                        )}
+                    </h3>
 
                     {/* Dynamic Subtitle Area */}
                     <div style={{ marginTop: '0.25rem', fontSize: '0.8rem', minHeight: '1.2em' }}>
