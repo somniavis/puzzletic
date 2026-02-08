@@ -10,7 +10,9 @@ export const GameIds = {
     // Math Level 2
     TEN_FRAME_COUNT: 'ten-frame-count',
     PINWHEEL_POP: 'pinwheel-pop',
-    DEEP_SEA_DIVE: 'deep-sea-dive',
+    DEEP_SEA_DIVE: 'deep-sea-dive', // Legacy?
+    DEEP_SEA_DIVE_LV1: 'deep-sea-dive-lv1',
+    DEEP_SEA_DIVE_LV2: 'deep-sea-dive-lv2',
     MATH_UFO_INVASION: 'math-level2-ufo-invasion',
 
     // Math Genius - Front Addition

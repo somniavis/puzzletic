@@ -11,11 +11,12 @@ import type { PowerUpBtnProps } from '../../../../../components/Game/PowerUpBtn'
 
 interface DeepSeaDiveProps {
     onExit: () => void;
+    level?: number;
 }
 
-export const DeepSeaDive: React.FC<DeepSeaDiveProps> = ({ onExit }) => {
+export const DeepSeaDive: React.FC<DeepSeaDiveProps> = ({ onExit, level = 1 }) => {
     const { t, i18n } = useTranslation();
-    const gameLogic = useDeepSeaLogic();
+    const gameLogic = useDeepSeaLogic(level);
     const {
         stats, isPlaying, gameOver, lives,
         currentProblem, currentAnimal, isDiving,

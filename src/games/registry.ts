@@ -1,4 +1,4 @@
-import { lazy } from 'react';
+import { lazy, createElement } from 'react';
 import type { GameManifest, GameCategory, GameDifficulty } from './types';
 import { GameIds } from '../constants/gameIds';
 
@@ -25,7 +25,9 @@ const L1_MathArchery = lazy(() => delayedImport(import('./math/adventure/level1/
 // Math Adventure Level 2 Games (mixed exports)
 const L2_TenFrameCount = lazy(() => delayedImport(import('./math/adventure/level2/TenFrameCount').then(m => ({ default: m.TenFrameCount }))));
 const L2_PinwheelPop = lazy(() => delayedImport(import('./math/adventure/level2/PinwheelPop').then(m => ({ default: m.MathPinwheel }))));
-const L2_DeepSeaDive = lazy(() => delayedImport(import('./math/adventure/level2/DeepSeaDive').then(m => ({ default: m.DeepSeaDive }))));
+
+const L1_DeepSeaDive = lazy(() => delayedImport(import('./math/adventure/level2/DeepSeaDive').then(m => ({ default: (props: any) => createElement(m.DeepSeaDive, { ...props, level: 1 }) }))));
+const L2_DeepSeaDive = lazy(() => delayedImport(import('./math/adventure/level2/DeepSeaDive').then(m => ({ default: (props: any) => createElement(m.DeepSeaDive, { ...props, level: 2 }) }))));
 const L2_UFOInvasion = lazy(() => delayedImport(import('./math/adventure/level2/UFOInvasion'))); // default export
 
 // Math Genius Games (calculation drills)
@@ -126,16 +128,16 @@ export const GAMES: GameManifest[] = [
         tagsKey: 'games.tags.partWhole'
     },
     {
-        id: GameIds.DEEP_SEA_DIVE,
-        title: 'Deep Sea Dive',
-        titleKey: 'games.deep-sea-dive.title',
+        id: GameIds.DEEP_SEA_DIVE_LV1,
+        title: 'Deep Dive (Lv1)',
+        titleKey: 'games.deep-sea-dive.title-lv1',
         subtitle: 'Dive deep!',
         subtitleKey: 'games.deep-sea-dive.subtitle',
         description: 'Explore the ocean depths.',
         descriptionKey: 'games.deep-sea-dive.description',
         category: 'math',
         level: 1,
-        component: L2_DeepSeaDive,
+        component: L1_DeepSeaDive,
         thumbnail: '🤿',
         tagsKey: 'games.tags.subtraction'
     },
@@ -182,6 +184,20 @@ export const GAMES: GameManifest[] = [
         component: L2_PinwheelPop,
         thumbnail: '🍭',
         tagsKey: 'games.tags.addition'
+    },
+    {
+        id: GameIds.DEEP_SEA_DIVE_LV2,
+        title: 'Deep Dive (Lv2)',
+        titleKey: 'games.deep-sea-dive.title-lv2',
+        subtitle: 'More challenging dive!',
+        subtitleKey: 'games.deep-sea-dive.subtitle',
+        description: 'Explore the ocean depths.',
+        descriptionKey: 'games.deep-sea-dive.description',
+        category: 'math',
+        level: 2,
+        component: L2_DeepSeaDive,
+        thumbnail: '🤿',
+        tagsKey: 'games.tags.subtraction'
     },
     {
         id: GameIds.MATH_UFO_INVASION,

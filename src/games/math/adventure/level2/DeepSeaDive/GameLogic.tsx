@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { DIFFICULTY_CONFIG, ANIMALS, ANIMATION_TIMING } from './constants';
+import { LEVEL_CONFIGS, ANIMALS, ANIMATION_TIMING } from './constants';
 
 export interface Problem {
     a: number;
@@ -9,7 +9,7 @@ export interface Problem {
     equation: string;
 }
 
-export const useDeepSeaLogic = () => {
+export const useDeepSeaLogic = (levelMode: number = 1) => {
     // Game State
     const [gameState, setGameState] = useState({
         score: 0,
@@ -37,18 +37,22 @@ export const useDeepSeaLogic = () => {
     const [questionStartTime, setQuestionStartTime] = useState(0);
 
     // Logic: Generate Subtraction Problem
-    const generateProblem = useCallback((level: number) => {
-        const config = DIFFICULTY_CONFIG[level as keyof typeof DIFFICULTY_CONFIG] || DIFFICULTY_CONFIG[3];
+    const generateProblem = useCallback((internalDifficulty: number) => {
+        // Use the level passed to hook, default to 1 if undefined/unexpected
+        const modeConfig = LEVEL_CONFIGS[levelMode as keyof typeof LEVEL_CONFIGS] || LEVEL_CONFIGS[1];
+
+        // Internal Difficulty Scaling (1-3) can slightly adjust min/borrow chance within the mode bounds
+        // For now, simplify: use the mode config primarily.
 
         // Generate A (Minuend)
-        const a = Math.floor(Math.random() * (config.max - config.min + 1)) + config.min;
+        const a = Math.floor(Math.random() * (modeConfig.max - modeConfig.min + 1)) + modeConfig.min;
 
         // Generate B (Subtrahend)
         // Ensure result > 0
         let b = Math.floor(Math.random() * (a - 1)) + 1;
 
-        // Adjust for "Borrowing" difficulty logic if possible (simple heuristic)
-        const wantBorrow = Math.random() < config.borrowChance;
+        // Adjust for "Borrowing" difficulty logic
+        const wantBorrow = Math.random() < modeConfig.borrowChance;
         const unitA = a % 10;
 
         if (wantBorrow && unitA < 9) {
@@ -164,8 +168,8 @@ export const useDeepSeaLogic = () => {
         setDiveTargetIndex(null);
         setLastEvent(null);
 
-        generateProblem(1);
-    }, [generateProblem]);
+        generateProblem(gameState.difficultyLevel);
+    }, [generateProblem, gameState.difficultyLevel]);
 
     const stopTimer = useCallback(() => setGameState(prev => ({ ...prev, isPlaying: false })), []);
 

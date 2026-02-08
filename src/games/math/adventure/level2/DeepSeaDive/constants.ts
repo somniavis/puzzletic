@@ -13,11 +13,12 @@ export const ANIMALS = [
     '🪼'  // Jellyfish
 ];
 
-export const DIFFICULTY_CONFIG = {
-    1: { min: 10, max: 30, borrowChance: 0.2 },
-    2: { min: 30, max: 60, borrowChance: 0.5 },
-    3: { min: 60, max: 99, borrowChance: 0.8 }
+
+export const LEVEL_CONFIGS = {
+    1: { min: 2, max: 20, borrowChance: 0.2, description: "Subtraction within 20" },
+    2: { min: 10, max: 100, borrowChance: 0.5, description: "Subtraction within 100" }
 };
+
 
 export const ANIMATION_TIMING = {
     DIVE_DURATION: 800, // Time for animal to reach depth
