@@ -56,20 +56,6 @@ const L3_Omok = lazy(() => delayedImport(import('./brain/level3/Omok').then(m =>
 export const GAMES: GameManifest[] = [
     // [Math Level 1]
     {
-        id: GameIds.MATH_FISHING_COUNT,
-        title: 'Fishing Count',
-        titleKey: 'games.math-fishing-count.title',
-        subtitle: 'Count the fish!',
-        subtitleKey: 'games.math-fishing-count.subtitle',
-        description: 'Catch the requested number of fish.',
-        descriptionKey: 'games.math-fishing-count.description',
-        category: 'math',
-        level: 1,
-        component: L1_FishingCount,
-        thumbnail: '🎣',
-        tagsKey: 'games.tags.counting'
-    },
-    {
         id: GameIds.MATH_ROUND_COUNTING,
         title: 'Round Counting',
         titleKey: 'games.math-round-counting.title',
@@ -81,6 +67,20 @@ export const GAMES: GameManifest[] = [
         level: 1,
         component: L1_RoundCounting,
         thumbnail: '🌀',
+        tagsKey: 'games.tags.counting'
+    },
+    {
+        id: GameIds.MATH_FISHING_COUNT,
+        title: 'Fishing Count',
+        titleKey: 'games.math-fishing-count.title',
+        subtitle: 'Count the fish!',
+        subtitleKey: 'games.math-fishing-count.subtitle',
+        description: 'Catch the requested number of fish.',
+        descriptionKey: 'games.math-fishing-count.description',
+        category: 'math',
+        level: 1,
+        component: L1_FishingCount,
+        thumbnail: '🎣',
         tagsKey: 'games.tags.counting'
     },
     {
@@ -126,6 +126,22 @@ export const GAMES: GameManifest[] = [
         tagsKey: 'games.tags.partWhole'
     },
     {
+        id: GameIds.DEEP_SEA_DIVE,
+        title: 'Deep Sea Dive',
+        titleKey: 'games.deep-sea-dive.title',
+        subtitle: 'Dive deep!',
+        subtitleKey: 'games.deep-sea-dive.subtitle',
+        description: 'Explore the ocean depths.',
+        descriptionKey: 'games.deep-sea-dive.description',
+        category: 'math',
+        level: 1,
+        component: L2_DeepSeaDive,
+        thumbnail: '🤿',
+        tagsKey: 'games.tags.subtraction'
+    },
+
+    // [Math Level 2]
+    {
         id: GameIds.MATH_ARCHERY,
         title: 'Math Archery',
         titleKey: 'games.math-archery.title',
@@ -134,13 +150,11 @@ export const GAMES: GameManifest[] = [
         description: 'Shoot arrows at math targets.',
         descriptionKey: 'games.math-archery.description',
         category: 'math',
-        level: 1,
+        level: 2,
         component: L1_MathArchery,
         thumbnail: '🏹',
         tagsKey: 'games.tags.mixedOps'
     },
-
-    // [Math Level 2]
     {
         id: GameIds.TEN_FRAME_COUNT,
         title: 'Ten Frame',
@@ -168,20 +182,6 @@ export const GAMES: GameManifest[] = [
         component: L2_PinwheelPop,
         thumbnail: '🍭',
         tagsKey: 'games.tags.addition'
-    },
-    {
-        id: GameIds.DEEP_SEA_DIVE,
-        title: 'Deep Sea Dive',
-        titleKey: 'games.deep-sea-dive.title',
-        subtitle: 'Dive deep!',
-        subtitleKey: 'games.deep-sea-dive.subtitle',
-        description: 'Explore the ocean depths.',
-        descriptionKey: 'games.deep-sea-dive.description',
-        category: 'math',
-        level: 2,
-        component: L2_DeepSeaDive,
-        thumbnail: '🤿',
-        tagsKey: 'games.tags.subtraction'
     },
     {
         id: GameIds.MATH_UFO_INVASION,

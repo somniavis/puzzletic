@@ -3,9 +3,9 @@ import { useState, useEffect, useCallback } from 'react';
 
 export interface FruitItem {
     id: number;
-    value: number; // The answer (B)
-    equationA: number;
-    equationResult: number;
+    value: number; // The answer (C)
+    equationA: number; // Minuend (A)
+    equationResult: number; // Subtrahend (B) - REUSING FIELD NAME to minimize interface change
     fruitType: 'grape' | 'melon' | 'watermelon' | 'orange' | 'lemon' | 'lime' | 'banana' | 'pineapple' | 'mango' | 'apple' | 'green-apple' | 'pear' | 'peach' | 'cherry' | 'strawberry' | 'blueberry' | 'kiwi' | 'tomato';
 }
 
@@ -35,6 +35,7 @@ export interface GameState {
         correct: number;
         wrong: number;
     };
+    correctInLevel: number;
 }
 
 export const FRUITS = [
@@ -58,35 +59,30 @@ export const FRUITS = [
     { type: 'tomato', emoji: '🍅', color: '#ef4444' },
 ] as const;
 
-const generateProblem = (difficulty: number): Problem => {
+const generateProblem = (difficulty: number, lastProblem?: Problem | null): Problem => {
     let a: number, b: number;
+    let attempts = 0;
 
-    // Logic: A - B = Result. User finds B.
-
-    if (difficulty === 1) {
-        // Beginner: (2-9) - (1-8) = Result (1+)
-        // Avoid 0. A >= 2, B >= 1, A > B
-        a = Math.floor(Math.random() * 8) + 2; // 2 to 9
-        b = Math.floor(Math.random() * (a - 1)) + 1; // 1 to a-1
-    } else if (difficulty === 2) {
-        // Intermediate: (10-19) - (1-9)
-        a = Math.floor(Math.random() * 10) + 10; // 10 to 19
-        b = Math.floor(Math.random() * 9) + 1;   // 1 to 9
-    } else {
-        // Advanced: (12-20) - (10-19)
-        // Ensure result >= 1.
-        a = Math.floor(Math.random() * 9) + 12; // 12 to 20
-        b = Math.floor(Math.random() * 10) + 10; // 10 to 19
-
-        // Validation: Ensure A > B and B >= 1 (already true)
-        if (b >= a) {
-            // Adjust B to be smaller than A
-            b = Math.floor(Math.random() * (a - 10)) + 10; // 10 to A-1
+    do {
+        attempts++;
+        if (difficulty === 1) {
+            // Level 1: Subtraction within 5
+            a = Math.floor(Math.random() * 4) + 2; // 2 to 5
+            b = Math.floor(Math.random() * (a - 1)) + 1; // 1 to a-1
+        } else {
+            // Level 2: Subtraction within 10
+            a = Math.floor(Math.random() * 5) + 6; // 6 to 10
+            b = Math.floor(Math.random() * (a - 1)) + 1; // 1 to a-1
         }
-    }
+
+        // Break if different or tried too many times (safety)
+        if (!lastProblem || lastProblem.fruit.equationA !== a || lastProblem.fruit.equationResult !== b) {
+            break;
+        }
+    } while (attempts < 5);
 
     const result = a - b;
-    const correctValue = b;
+    const correctValue = result; // User finds the result (C)
 
     const randomFruit = FRUITS[Math.floor(Math.random() * FRUITS.length)];
 
@@ -94,7 +90,7 @@ const generateProblem = (difficulty: number): Problem => {
         id: Date.now(),
         value: correctValue,
         equationA: a,
-        equationResult: result,
+        equationResult: b, // Note: We store 'B' in equationResult field to pass to UI, UI will show A - B = ?
         fruitType: randomFruit.type as any
     };
 
@@ -149,7 +145,8 @@ export const useFruitSliceLogic = () => {
         difficultyLevel: 1,
         gameOver: false,
         isPlaying: false,
-        stats: { correct: 0, wrong: 0 }
+        stats: { correct: 0, wrong: 0 },
+        correctInLevel: 0
     });
 
     const [currentProblem, setCurrentProblem] = useState<Problem | null>(null);
@@ -178,7 +175,8 @@ export const useFruitSliceLogic = () => {
             difficultyLevel: initialDifficulty,
             gameOver: false,
             isPlaying: true,
-            stats: { correct: 0, wrong: 0 }
+            stats: { correct: 0, wrong: 0 },
+            correctInLevel: 0
         }));
     }, []);
 
@@ -201,45 +199,6 @@ export const useFruitSliceLogic = () => {
         }
     }, [gameState.isPlaying, gameState.gameOver, timeFrozen]);
 
-    const adjustDifficulty = useCallback((isCorrect: boolean) => {
-        setGameState(prev => {
-            let newLevel = prev.difficultyLevel;
-            if (isCorrect) {
-                // Check if 8 correct in current difficulty? 
-                // Simplified: combo check as per RoundCounting reference, but user asked for specific logic:
-                // "8문제를 맞히면 난이도 상승" - This needs a counter per level?
-                // Let's stick closer to the request:
-                // But simplified for now: Upgrade every 8 Correct or Combo based?
-                // User requirement: "8문제를 맞히면 난이도 상승, 연속 2문제를 틀리면 난이도 하락"
-                // We need to track consecutive correct/wrong or total correct in level.
-                // Let's approximate with combo for upgrade (8 combo) and wrong counter for downgrade.
-
-                // Note: The prompt says "8 questions correct in current difficulty".
-                // I'll stick to combo for upgrading for smoother gameplay feel like previous game, 
-                // but if I want to be strict I need 'stats.correctInLevel'.
-                // Let's use combo >= 8 for upgrade.
-                if (prev.combo > 0 && (prev.combo + 1) % 8 === 0 && prev.difficultyLevel < 3) {
-                    newLevel++;
-                }
-            } else {
-                // "2 Consecutive wrong" -> check if previous was wrong? 
-                // We don't track history of correctness easily here without extra state.
-                // Simplification: If combo becomes 0 (it is reset on wrong), maybe track 'consecutiveWrong'.
-                // Let's just use a simple heuristic: if lives drop quickly? 
-                // Actually, simpler: if wrong, combo resets. if lives < 2, maybe drop level?
-                // Let's downgrade if lives <= 1 as a mercy rule? 
-                // Or stick to user rule: "2 consecutive wrong".
-                // I will skip complex state for "consecutive wrong" and just downgrade on every wrong answer if level > 1 
-                // to be forgiving, or maybe just ignore for MVP.
-                if (prev.difficultyLevel > 1) {
-                    // Mercy downgrade on error?
-                    // newLevel--; 
-                }
-            }
-            return { ...prev, difficultyLevel: newLevel };
-        });
-    }, []);
-
     const handleAnswer = useCallback((knifeValue: number) => {
         if (gameState.gameOver || !currentProblem) return;
 
@@ -256,14 +215,31 @@ export const useFruitSliceLogic = () => {
 
             const totalAdd = Math.floor((baseScore + timeBonus + comboBonus) * (doubleScoreActive ? 2 : 1));
 
+            // State Update & Difficulty Logic
             setGameState(prev => {
                 const newCombo = prev.combo + 1;
+                const newCorrectInLevel = prev.correctInLevel + 1;
+                let newLevel = prev.difficultyLevel;
+
+                // Difficulty Upgrade Logic:
+                // Level 1 -> 2: Combo >= 6 OR Total Correct in Level >= 8
+                if (prev.difficultyLevel === 1) {
+                    if (newCombo >= 6 || newCorrectInLevel >= 8) {
+                        newLevel = 2;
+                    }
+                }
+
+                // If level changed, reset correctInLevel
+                const finalCorrectInLevel = newLevel !== prev.difficultyLevel ? 0 : newCorrectInLevel;
+
                 return {
                     ...prev,
                     score: prev.score + totalAdd,
                     combo: newCombo,
                     bestCombo: Math.max(prev.bestCombo, newCombo),
-                    stats: { ...prev.stats, correct: prev.stats.correct + 1 }
+                    difficultyLevel: newLevel,
+                    stats: { ...prev.stats, correct: prev.stats.correct + 1 },
+                    correctInLevel: finalCorrectInLevel
                 };
             });
 
@@ -275,14 +251,18 @@ export const useFruitSliceLogic = () => {
                 // playEatingSound(); // REMOVED
             }
 
-            adjustDifficulty(true);
-
             // Wait for animation then new problem
             setTimeout(() => {
-                setCurrentProblem(generateProblem(gameState.difficultyLevel)); // Use *current* level, adjustHistory uses previous state closure
-                setQuestionStartTime(Date.now());
-                setLastEvent(null);
-            }, 1500); // 1.5s slice animation to ensure full visibility
+                // Determine next level based on CURRENT state logic (replicated here because state update is async)
+                setGameState(latest => {
+                    // Use latest difficulty level for generation
+                    setCurrentProblem(prevProblem => generateProblem(latest.difficultyLevel, prevProblem));
+                    setQuestionStartTime(Date.now());
+                    setLastEvent(null);
+
+                    return latest; // Return state unchanged
+                });
+            }, 1500);
 
         } else {
             // playButtonSound(); // REMOVED
@@ -299,9 +279,9 @@ export const useFruitSliceLogic = () => {
                     stats: { ...prev.stats, wrong: prev.stats.wrong + 1 }
                 };
             });
-            adjustDifficulty(false);
+            // Downgrade logic skipped as agreed
         }
-    }, [gameState, currentProblem, doubleScoreActive, adjustDifficulty, powerUps, questionStartTime]);
+    }, [gameState, currentProblem, doubleScoreActive, powerUps, questionStartTime]);
 
 
     const usePowerUp = useCallback((type: keyof typeof powerUps) => {

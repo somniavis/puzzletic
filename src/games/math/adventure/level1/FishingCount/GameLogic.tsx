@@ -53,8 +53,8 @@ export const useFishingCountLogic = () => {
     const requestRef = useRef<number>(0);
 
     const generateRound = useCallback(() => {
-        // Random target 1-5
-        const count = Math.floor(Math.random() * 5) + 1;
+        // Random target 1-10
+        const count = Math.floor(Math.random() * 10) + 1;
         setTargetCount(count);
         setCaughtCount(0);
         setRoundStartTime(Date.now());
@@ -65,7 +65,11 @@ export const useFishingCountLogic = () => {
 
         // Generate animals (Targets + Distractors)
         const newAnimals: Animal[] = [];
-        const totalAnimals = 8 + Math.floor(Math.random() * 5); // 8 to 12 total animals
+
+        // Distractors: 0~7 random, but total (count + dist) <= 15
+        const maxDistractors = Math.min(7, 15 - count);
+        const distractorCount = Math.floor(Math.random() * (maxDistractors + 1)); // 0 to maxDistractors
+        const totalAnimals = count + distractorCount;
 
         // Add targets
         for (let i = 0; i < count; i++) {

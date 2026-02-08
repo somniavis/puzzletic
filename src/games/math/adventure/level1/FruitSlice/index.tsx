@@ -155,6 +155,8 @@ export const FruitSlice: React.FC<FruitSliceProps> = ({ onExit }) => {
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', width: '100%', justifyContent: 'center' }}>
             <span className="equation-part" style={{ fontSize: '2.5rem', lineHeight: 1 }}>{currentProblem.fruit.equationA}</span>
             <span style={{ fontSize: '2rem', margin: '0 0.2rem' }}>-</span>
+            <span className="equation-part" style={{ fontSize: '2.5rem', lineHeight: 1 }}>{currentProblem.fruit.equationResult}</span>
+            <span style={{ fontSize: '2rem', margin: '0 0.2rem' }}>=</span>
             <div style={{
                 width: '3.5rem',
                 height: '3.5rem',
@@ -169,8 +171,6 @@ export const FruitSlice: React.FC<FruitSliceProps> = ({ onExit }) => {
                 backgroundColor: 'rgba(255, 255, 255, 0.5)',
                 margin: '0 0.2rem'
             }}>?</div>
-            <span style={{ fontSize: '2rem', margin: '0 0.2rem' }}>=</span>
-            <span className="equation-part" style={{ fontSize: '2.5rem', lineHeight: 1 }}>{currentProblem.fruit.equationResult}</span>
         </div>
     ) : null;
 
