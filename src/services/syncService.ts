@@ -263,41 +263,65 @@ export const syncUserData = async (
         if (logPayload.email) logPayload.email = '*** (hidden) ***';
 
 
-        // Create AbortController for timeout
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+        // Retry Logic: Attempt up to 2 times to handle Cold Starts or Transient Network Issues
+        let attempt = 0;
+        const MAX_ATTEMPTS = 2;
 
-        try {
-            const response = await fetch(`${API_BASE_URL}/api/users/${user.uid}`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(sanitizedPayload),
-                keepalive: true,
-                signal: controller.signal,
-            });
+        while (attempt < MAX_ATTEMPTS) {
+            attempt++;
 
-            clearTimeout(timeoutId);
+            // increased timeout to 15s for cold starts
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 15000);
 
-            if (!response.ok) {
-                const errorText = await response.text();
-                console.error('☁️ Sync failed:', response.status, errorText);
-                throw new Error(`Sync Error: ${response.status} - ${errorText}`);
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/users/${user.uid}`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`, // Token might expire, but usually valid for 1h
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(sanitizedPayload),
+                    keepalive: true,
+                    signal: controller.signal,
+                });
+
+                clearTimeout(timeoutId);
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    // If 5xx error, it might be worth retrying. If 4xx, probably not (auth, bad request).
+                    // But for simplicity, we treat non-ok as failure to retry if possible.
+                    console.warn(`☁️ Sync attempt ${attempt} failed: ${response.status} ${errorText}`);
+                    throw new Error(`Sync Error: ${response.status} - ${errorText}`);
+                }
+
+                const json = await response.json();
+                if (attempt > 1) {
+                    console.log('✅ Sync succeeded on retry!');
+                }
+                return json.success;
+
+            } catch (error: any) {
+                clearTimeout(timeoutId);
+
+                if (error.name === 'AbortError') {
+                    console.warn(`☁️ Sync attempt ${attempt} timed out after 15s`);
+                } else {
+                    console.warn(`☁️ Sync attempt ${attempt} error:`, error.message);
+                }
+
+                if (attempt >= MAX_ATTEMPTS) {
+                    console.error('❌ All sync attempts failed.');
+                    return false;
+                }
+
+                // Wait 1s before retry
+                await new Promise(resolve => setTimeout(resolve, 1000));
             }
-
-            const json = await response.json();
-
-            return json.success;
-        } catch (error: any) {
-            clearTimeout(timeoutId);
-            if (error.name === 'AbortError') {
-                console.error('☁️ Sync timed out after 5s');
-                return false;
-            }
-            throw error;
         }
+
+        return false;
     } catch (error: any) {
         console.error('☁️ Sync error details:', error?.message || error);
         return false;

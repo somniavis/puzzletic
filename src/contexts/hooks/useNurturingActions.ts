@@ -469,8 +469,8 @@ export const useNurturingActions = (
         let result = { success: false, petId: undefined as string | undefined, message: '' };
 
         setState((currentState) => {
-            if ((currentState.gro || 0) < 1) {
-                result = { success: false, petId: undefined, message: '돈이 부족해요! (1 필요)' };
+            if ((currentState.gro || 0) < 350) {
+                result = { success: false, petId: undefined, message: '돈이 부족해요! (350 필요)' };
                 return currentState;
             }
 
@@ -485,7 +485,7 @@ export const useNurturingActions = (
 
             const newState = {
                 ...currentState,
-                gro: (currentState.gro || 0) - 1,
+                gro: (currentState.gro || 0) - 350,
                 currentPetId: newPetId,
                 petExpiresAt: expiresAt,
                 lastActiveTime: Date.now(),

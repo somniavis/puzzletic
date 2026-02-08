@@ -483,8 +483,8 @@ export const en = {
       'pet.timeRemaining': 'Time Remaining',
       'pet.expired': 'Expired',
       'pet.gacha.title': 'Random Pet',
-      'pet.gacha.desc': 'A friend visits for a while and leaves',
-      'pet.gacha.price': '💰 1',
+      'pet.gacha.desc': 'A pet visits for a while and leaves',
+      'pet.gacha.price': '💰 350',
 
       // Pet Names
       'pet.monkey': 'Ooky',

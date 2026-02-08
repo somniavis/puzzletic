@@ -485,8 +485,8 @@ export const ko = {
             'pet.timeRemaining': '남은 시간',
             'pet.expired': '만료됨',
             'pet.gacha.title': '랜덤 펫',
-            'pet.gacha.desc': '친구가 잠시 놀러왔다 사라져요',
-            'pet.gacha.price': '💰 1',
+            'pet.gacha.desc': '펫이 잠시 놀러왔다 떠나요.',
+            'pet.gacha.price': '💰 350',
 
             // Pet Names
             'pet.monkey': '우끼',
