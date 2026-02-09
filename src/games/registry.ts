@@ -20,7 +20,8 @@ const L1_RoundCounting = lazy(() => delayedImport(import('./math/adventure/level
 const L1_NumberHive = lazy(() => delayedImport(import('./math/adventure/level1/NumberHive').then(m => ({ default: m.NumberHive }))));
 const L1_NumberBalance = lazy(() => delayedImport(import('./math/adventure/level1/NumberBalance').then(m => ({ default: m.NumberBalance }))));
 const L1_FruitSlice = lazy(() => delayedImport(import('./math/adventure/level1/FruitSlice').then(m => ({ default: m.FruitSlice }))));
-const L1_MathArchery = lazy(() => delayedImport(import('./math/adventure/level1/MathArchery').then(m => ({ default: m.MathArchery }))));
+const L1_MathArchery = lazy(() => delayedImport(import('./math/adventure/level1/MathArchery').then(m => ({ default: (props: any) => createElement(m.MathArchery, { ...props, level: 1 }) }))));
+const L2_MathArchery = lazy(() => delayedImport(import('./math/adventure/level1/MathArchery').then(m => ({ default: (props: any) => createElement(m.MathArchery, { ...props, level: 2 }) }))));
 
 // Math Adventure Level 2 Games (mixed exports)
 const L2_TenFrameCount = lazy(() => delayedImport(import('./math/adventure/level2/TenFrameCount').then(m => ({ default: m.TenFrameCount }))));
@@ -141,22 +142,22 @@ export const GAMES: GameManifest[] = [
         thumbnail: '🤿',
         tagsKey: 'games.tags.subtraction'
     },
-
-    // [Math Level 2]
     {
-        id: GameIds.MATH_ARCHERY,
-        title: 'Math Archery',
-        titleKey: 'games.math-archery.title',
+        id: GameIds.MATH_ARCHERY_LV1,
+        title: 'Math Archery (Lv.1)',
+        titleKey: 'games.math-archery.title-lv1',
         subtitle: 'Hit the target!',
         subtitleKey: 'games.math-archery.subtitle',
         description: 'Shoot arrows at math targets.',
         descriptionKey: 'games.math-archery.description',
         category: 'math',
-        level: 2,
+        level: 1,
         component: L1_MathArchery,
         thumbnail: '🏹',
         tagsKey: 'games.tags.mixedOps'
     },
+    // [Math Level 2]
+
     {
         id: GameIds.TEN_FRAME_COUNT,
         title: 'Ten Frame',
@@ -198,6 +199,20 @@ export const GAMES: GameManifest[] = [
         component: L2_DeepSeaDive,
         thumbnail: '🤿',
         tagsKey: 'games.tags.subtraction'
+    },
+    {
+        id: GameIds.MATH_ARCHERY_LV2,
+        title: 'Math Archery (Lv.2)',
+        titleKey: 'games.math-archery.title-lv2',
+        subtitle: 'Hit the target!',
+        subtitleKey: 'games.math-archery.subtitle',
+        description: 'Shoot arrows at math targets.',
+        descriptionKey: 'games.math-archery.description',
+        category: 'math',
+        level: 2,
+        component: L2_MathArchery,
+        thumbnail: '🏹',
+        tagsKey: 'games.tags.mixedOps'
     },
     {
         id: GameIds.MATH_UFO_INVASION,

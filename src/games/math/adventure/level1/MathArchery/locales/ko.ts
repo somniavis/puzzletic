@@ -1,5 +1,7 @@
 const manifest = {
     title: "수학 궁수",
+    "title-lv1": "수학 궁수 (Lv.1)",
+    "title-lv2": "수학 궁수 (Lv.2)",
     subtitle: "명사수 도전!",
     description: "문제를 풀고 정답 과녁을 향해 활을 쏘세요.",
     howToPlay: {

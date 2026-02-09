@@ -10,7 +10,7 @@ import { GameIds } from '../../../../../constants/gameIds';
 import type { PowerUpBtnProps } from '../../../../../components/Game/PowerUpBtn';
 
 interface MathArcheryProps {
-    // ... no changes to props ...
+    level?: number;
     onExit: () => void;
 }
 
@@ -30,9 +30,9 @@ const ArrowSVG = ({ style }: { style: React.CSSProperties }) => (
     </div>
 );
 
-export const MathArchery: React.FC<MathArcheryProps> = ({ onExit }) => {
+export const MathArchery: React.FC<MathArcheryProps> = ({ level = 1, onExit }) => {
     const { t, i18n } = useTranslation();
-    const useMathArcheryLogicReturns = useMathArcheryLogic();
+    const useMathArcheryLogicReturns = useMathArcheryLogic(level);
     const {
         lives, isPlaying, gameOver,
         currentProblem,
@@ -141,9 +141,9 @@ export const MathArchery: React.FC<MathArcheryProps> = ({ onExit }) => {
 
     return (
         <Layout3
-            title={t('games.math-archery.title')}
+            title={level === 1 ? t('games.math-archery.title-lv1') : t('games.math-archery.title-lv2')}
             subtitle={t('games.math-archery.subtitle')}
-            gameId={GameIds.MATH_ARCHERY}
+            gameId={level === 1 ? GameIds.MATH_ARCHERY_LV1 : GameIds.MATH_ARCHERY_LV2}
             engine={layoutEngine as any}
             powerUps={powerUpConfig}
             onExit={onExit}

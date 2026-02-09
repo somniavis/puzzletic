@@ -8,6 +8,48 @@ export interface TargetOption {
     radius: number; // Hitbox radius
 }
 
+const generateLv1Problem = (_internalDifficulty: number, forceOp?: 'add' | 'sub') => {
+    const op = forceOp || (Math.random() > 0.5 ? 'add' : 'sub');
+    let a = 0, b = 0;
+
+    if (op === 'add') {
+        // Lv1: A + B <= 20
+        const minResult = 2;
+        const maxResult = 20;
+        const result = Math.floor(Math.random() * (maxResult - minResult + 1)) + minResult;
+        a = Math.floor(Math.random() * (result - 1)) + 1; // 1 ~ Result-1
+        b = result - a;
+    } else {
+        // Lv1: A - B >= 0 (Positive?) -> "Subtraction within 20" usually means positive result
+        // A <= 20
+        a = Math.floor(Math.random() * 19) + 2; // 2 ~ 20 (Ensure result >= 0 and subtrahend >=1)
+        b = Math.floor(Math.random() * (a - 1)) + 1; // 1 ~ A-1
+    }
+    return { a, b, op };
+};
+
+const generateLv2Problem = (_internalDifficulty: number, forceOp?: 'add' | 'sub') => {
+    const op = forceOp || (Math.random() > 0.5 ? 'add' : 'sub');
+    let a = 0, b = 0;
+
+    if (op === 'add') {
+        // Lv2: 2-digit + 1-digit <= 100
+        // A: 10 ~ 90
+        a = Math.floor(Math.random() * 81) + 10;
+        // B: 1 ~ 9 (Ensure A+B <= 100)
+        const maxB = Math.min(9, 100 - a);
+        b = Math.floor(Math.random() * maxB) + 1;
+    } else {
+        // Lv2: 2-digit - 1-digit
+        // A: 10 ~ 99
+        a = Math.floor(Math.random() * 90) + 10;
+        // B: 1 ~ 9
+        b = Math.floor(Math.random() * 9) + 1;
+        // Ensure result positive? Yes A >= 10, B <= 9. Always > 0.
+    }
+    return { a, b, op };
+};
+
 export interface Problem {
     equation: string;
     answer: number;
@@ -30,7 +72,7 @@ export interface GameState {
     };
 }
 
-export const useMathArcheryLogic = () => {
+export const useMathArcheryLogic = (gameLevel: number = 1) => {
     const [gameState, setGameState] = useState<GameState>({
         score: 0,
         lives: 3,
@@ -44,7 +86,6 @@ export const useMathArcheryLogic = () => {
     });
 
     const [currentProblem, setCurrentProblem] = useState<Problem | null>(null);
-    const [lastOperation, setLastOperation] = useState<'add' | 'sub'>('sub'); // Start with opposite so first is Add
     const [powerUps, setPowerUps] = useState({ timeFreeze: 0, extraLife: 0, doubleScore: 0 });
     const [timeFrozen, setTimeFrozen] = useState(false);
     const [doubleScoreActive, setDoubleScoreActive] = useState(false);
@@ -55,46 +96,27 @@ export const useMathArcheryLogic = () => {
     const [arrow, setArrow] = useState<{ x: number, y: number, vx: number, vy: number, active: boolean, angle: number } | null>(null);
 
     // Generate Problem
-    const generateProblem = useCallback((level: number, forceOp?: 'add' | 'sub') => {
-        let resultMin = 1, resultMax = 7;
-        if (level === 2) { resultMin = 8; resultMax = 12; }
-        if (level >= 3) { resultMin = 13; resultMax = 20; }
+    const generateProblem = useCallback((internalDifficulty: number, forceOp?: 'add' | 'sub') => {
+        let a: number, b: number, op: 'add' | 'sub';
 
-        const result = Math.floor(Math.random() * (resultMax - resultMin + 1)) + resultMin;
+        if (gameLevel === 1) {
+            ({ a, b, op } = generateLv1Problem(internalDifficulty, forceOp));
+        } else {
+            ({ a, b, op } = generateLv2Problem(internalDifficulty, forceOp));
+        }
 
-        // Random Operation (50:50)
-        const op = forceOp || (Math.random() > 0.5 ? 'add' : 'sub');
-        setLastOperation(op);
-
-        let equation = "";
-        let a = 0, b = 0;
+        let equation = '';
+        let correctVal = 0;
 
         if (op === 'add') {
-            // A + B = Result
-            // A in [1, Result-1] (if Result > 1)
-            // If Result is 1 (unlikely with level 2+ but possible in lvl1), handle edge 
-            // Level 1 min is 1. If result=1, impossible to have A, B >=1 integers?
-            // Let's assume A, B >= 0? Or strictly > 0.
-            // If result=1 => 1+0? or skip.
-            // Let's ensure result >= 2 for addition if strictly positive.
-            // If result < 2, force specific case or reroll.
-            let effectiveResult = result;
-            if (effectiveResult < 2) effectiveResult = 2;
-
-            a = Math.floor(Math.random() * (effectiveResult - 1)) + 1;
-            b = effectiveResult - a;
             equation = `${a} + ${b} = ?`;
+            correctVal = a + b;
         } else {
-            // A - B = Result
-            // A = Result + B
-            // B random (usually 1-9 is standard for simple mental math, or up to Result size)
-            b = Math.floor(Math.random() * 9) + 1;
-            a = result + b;
             equation = `${a} - ${b} = ?`;
+            correctVal = a - b;
         }
 
         // Generating Options (1 Correct, 2 Wrong)
-        const correctVal = op === 'add' ? (a + b) : (a - b); // Should match 'result' unless adjust logic changed it
         const options: number[] = [correctVal];
 
         while (options.length < 3) {
@@ -131,7 +153,7 @@ export const useMathArcheryLogic = () => {
 
         setQuestionStartTime(Date.now());
         setArrow(null); // Reset Arrow
-    }, [lastOperation]);
+    }, [gameLevel]);
 
     const startGame = useCallback(() => {
         setGameState(prev => ({
