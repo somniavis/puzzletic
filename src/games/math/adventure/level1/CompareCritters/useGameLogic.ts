@@ -40,7 +40,7 @@ export const useCompareCrittersLogic = (engine: ReturnType<typeof useGameEngine>
         else if (operator === '=') isCorrect = leftCount === rightCount;
 
         // Submit to engine. Engine triggers Layout2 effects (sound, particles, shake).
-        engine.submitAnswer(isCorrect);
+        engine.submitAnswer(isCorrect, { scoreMultiplier: 0.5 });
         // Explicitly register event for Layout2 feedback (sound/effects)
         engine.registerEvent({ type: isCorrect ? 'correct' : 'wrong' });
 
