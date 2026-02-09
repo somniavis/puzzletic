@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import type { Character, CharacterMood, CharacterAction } from '../../types/character';
 import type { CharacterSpeciesId } from '../../data/species';
@@ -284,7 +285,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({
         />
 
         {/* FAB Menu Layer */}
-        <div style={{ position: 'relative', width: '100%', height: 0, zIndex: 20 }}>
+        <div style={{ position: 'relative', width: '100%', height: 0, zIndex: 500 }}>
           <EvolutionControls
             evolutionPhase={nurturing.evolutionPhase}
             showGiftBox={showGiftBox}
@@ -411,14 +412,15 @@ export const PetRoom: React.FC<PetRoomProps> = ({
         onClose={() => setShowPremiumModal(false)}
       />
 
-      {/* Loading Overlay (Moved to end for Z-Index Supremacy) */}
-      {ui.isLoading && (
+      {/* Loading Overlay (Moved to Portal for Z-Index Supremacy) */}
+      {ui.isLoading && createPortal(
         <div className="loading-overlay">
           <div className="loading-spinner-container">
             <div className="loading-spinner">🐾</div>
             <div className="loading-text">{t('common.loading')}</div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

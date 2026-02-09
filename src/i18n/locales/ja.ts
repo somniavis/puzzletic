@@ -10,6 +10,7 @@ import frontSubtractionJa from '../../games/math/genius/FrontSubtraction/locales
 import backMultiplicationJa from '../../games/math/genius/BackMultiplication/locales/ja';
 import tenFrameCountJa from '../../games/math/adventure/level2/TenFrameCount/locales/ja';
 import mathPinwheelJa from '../../games/math/adventure/level2/PinwheelPop/locales/ja';
+import compareCrittersJa from '../../games/math/adventure/level1/CompareCritters/locales/ja';
 import deepSeaDiveJa from '../../games/math/adventure/level2/DeepSeaDive/locales/ja';
 import ufoInvasionJa from '../../games/math/adventure/level2/UFOInvasion/locales/ja';
 
@@ -960,6 +961,7 @@ export const ja = {
     games: {
         'math-fishing-count': fishingCountJa,
         'math-round-counting': roundCountingJa,
+        'math-compare-critters': compareCrittersJa,
         'math-number-hive': numberHiveJa,
         'math-fruit-slice': fruitSliceJa,
         'math-number-balance': numberBalanceJa,

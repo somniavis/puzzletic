@@ -22,6 +22,7 @@ const L1_NumberBalance = lazy(() => delayedImport(import('./math/adventure/level
 const L1_FruitSlice = lazy(() => delayedImport(import('./math/adventure/level1/FruitSlice').then(m => ({ default: m.FruitSlice }))));
 const L1_MathArchery = lazy(() => delayedImport(import('./math/adventure/level1/MathArchery').then(m => ({ default: (props: any) => createElement(m.MathArchery, { ...props, level: 1 }) }))));
 const L2_MathArchery = lazy(() => delayedImport(import('./math/adventure/level1/MathArchery').then(m => ({ default: (props: any) => createElement(m.MathArchery, { ...props, level: 2 }) }))));
+const L1_CompareCritters = lazy(() => delayedImport(import('./math/adventure/level1/CompareCritters').then(m => ({ default: m.CompareCritters }))));
 
 // Math Adventure Level 2 Games (mixed exports)
 const L2_TenFrameCount = lazy(() => delayedImport(import('./math/adventure/level2/TenFrameCount').then(m => ({ default: m.TenFrameCount }))));
@@ -99,6 +100,20 @@ export const GAMES: GameManifest[] = [
         component: L1_NumberHive,
         thumbnail: '🐝',
         tagsKey: 'games.tags.sequence'
+    },
+    {
+        id: GameIds.MATH_COMPARE_CRITTERS,
+        title: 'Compare Critters',
+        titleKey: 'games.math-compare-critters.title',
+        subtitle: 'Who has more?',
+        subtitleKey: 'games.math-compare-critters.subtitle',
+        description: 'Compare groups of animals.',
+        descriptionKey: 'games.math-compare-critters.description',
+        category: 'math',
+        level: 1,
+        component: L1_CompareCritters,
+        thumbnail: '🐾',
+        tagsKey: 'games.tags.comparison'
     },
     {
         id: GameIds.MATH_NUMBER_BALANCE,

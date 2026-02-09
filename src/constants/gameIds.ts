@@ -7,6 +7,7 @@ export const GameIds = {
     MATH_FRUIT_SLICE: 'math-fruit-slice',
     MATH_ARCHERY: 'math-archery',
     MATH_ARCHERY_LV1: 'math-archery-lv1',
+    MATH_COMPARE_CRITTERS: 'math-compare-critters',
     MATH_ARCHERY_LV2: 'math-archery-lv2',
 
     // Math Level 2

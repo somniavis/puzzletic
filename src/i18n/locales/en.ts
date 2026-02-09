@@ -1,5 +1,5 @@
 // Global English Locales
-
+// Updated for Compare Critters
 import fishingCountEn from '../../games/math/adventure/level1/FishingCount/locales/en';
 import roundCountingEn from '../../games/math/adventure/level1/RoundCounting/locales/en';
 import numberHiveEn from '../../games/math/adventure/level1/NumberHive/locales/en';
@@ -11,6 +11,7 @@ import frontSubtractionEn from '../../games/math/genius/FrontSubtraction/locales
 import backMultiplicationEn from '../../games/math/genius/BackMultiplication/locales/en';
 import tenFrameCountEn from '../../games/math/adventure/level2/TenFrameCount/locales/en';
 import mathPinwheelEn from '../../games/math/adventure/level2/PinwheelPop/locales/en';
+import compareCrittersEn from '../../games/math/adventure/level1/CompareCritters/locales/en';
 import deepSeaDiveEn from '../../games/math/adventure/level2/DeepSeaDive/locales/en';
 import signalHunterEn from '../../games/brain/level2/SignalHunter/locales/en';
 import colorLinkEn from '../../games/brain/level1/ColorLink/locales/en';
@@ -1006,6 +1007,7 @@ export const en = {
     'math-fruit-slice': fruitSliceEn,
     'math-number-balance': numberBalanceEn,
     'math-archery': mathArcheryEn,
+    'math-compare-critters': compareCrittersEn,
     frontAddition: frontAdditionEn,
     frontSubtraction: frontSubtractionEn,
     backMultiplication: backMultiplicationEn,

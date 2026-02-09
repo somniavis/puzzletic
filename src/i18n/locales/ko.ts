@@ -10,6 +10,7 @@ import frontSubtractionKo from '../../games/math/genius/FrontSubtraction/locales
 import backMultiplicationKo from '../../games/math/genius/BackMultiplication/locales/ko';
 import tenFrameCountKo from '../../games/math/adventure/level2/TenFrameCount/locales/ko';
 import mathPinwheelKo from '../../games/math/adventure/level2/PinwheelPop/locales/ko';
+import compareCrittersKo from '../../games/math/adventure/level1/CompareCritters/locales/ko';
 import deepSeaDiveKo from '../../games/math/adventure/level2/DeepSeaDive/locales/ko';
 import ufoInvasionKo from '../../games/math/adventure/level2/UFOInvasion/locales/ko';
 
@@ -1004,6 +1005,7 @@ export const ko = {
     games: {
         'math-fishing-count': fishingCountKo,
         'math-round-counting': roundCountingKo,
+        'math-compare-critters': compareCrittersKo,
         'math-number-hive': numberHiveKo,
         'math-fruit-slice': fruitSliceKo,
         'math-number-balance': numberBalanceKo,
