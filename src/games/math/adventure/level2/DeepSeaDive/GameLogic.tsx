@@ -1,5 +1,97 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { LEVEL_CONFIGS, ANIMALS, ANIMATION_TIMING } from './constants';
+import { ANIMALS, ANIMATION_TIMING, PROGRESSION_CONFIG } from './constants';
+
+const generateLv1Problem = (internalDifficulty: number) => {
+    let a: number, b: number;
+    let useStage2Logic = false;
+
+    if (internalDifficulty === 1) {
+        useStage2Logic = false;
+    } else if (internalDifficulty === 2) {
+        useStage2Logic = true;
+    } else {
+        // Stage 3: Random Mix (50/50)
+        useStage2Logic = Math.random() < 0.5;
+    }
+
+    if (!useStage2Logic) {
+        // Stage 1 Logic: Minus 1-digit
+        a = Math.floor(Math.random() * 11) + 10; // 10 ~ 20
+        b = Math.floor(Math.random() * 9) + 1; // 1 ~ 9
+    } else {
+        // Stage 2 Logic: Minus 2-digit
+        // Need A >= 11 to have B >= 10 and A - B > 0
+        a = Math.floor(Math.random() * 10) + 11; // 11 ~ 20
+        // B must be between 10 and A-1
+        const maxB = a - 1;
+        b = Math.floor(Math.random() * (maxB - 10 + 1)) + 10;
+    }
+    return { a, b };
+};
+
+const generateLv2Problem = (internalDifficulty: number) => {
+    let a: number, b: number;
+    let currentStageBase = internalDifficulty;
+
+    if (internalDifficulty === 3) {
+        // Stage 3 Mix: 50% Stage 3 (2-digit borrow), 50% Stage 2 (1-digit borrow)
+        currentStageBase = Math.random() < 0.5 ? 3 : 2;
+    }
+
+    if (currentStageBase === 1) {
+        // Stage 1: No Borrowing
+        a = Math.floor(Math.random() * 91) + 10;
+        const unitA = a % 10;
+        let tempB;
+        let attempts = 0;
+        do {
+            attempts++;
+            const unitB = Math.floor(Math.random() * (unitA + 1));
+            const maxTensB = Math.floor((a - unitB - 1) / 10);
+            let tensB = (maxTensB < 0) ? 0 : Math.floor(Math.random() * (maxTensB + 1));
+            tempB = tensB * 10 + unitB;
+            if (tempB === 0) tempB = 1;
+        } while ((tempB >= a || (a % 10) < (tempB % 10)) && attempts < 50);
+        b = tempB;
+        if (b >= a || (a % 10) < (b % 10)) {
+            a = Math.floor(Math.random() * 91) + 10;
+            b = Math.floor(Math.random() * (a % 10 + 1)) + 1;
+            if (b >= a) b = a - 1;
+            if (b === 0) b = 1;
+        }
+    } else if (currentStageBase === 2) {
+        // Stage 2: Borrowing (1-digit subtrahend)
+        do {
+            a = Math.floor(Math.random() * 90) + 11;
+        } while (a % 10 === 9);
+        const unitA = a % 10;
+        const unitB = Math.floor(Math.random() * (9 - unitA)) + (unitA + 1);
+        b = unitB;
+    } else {
+        // Stage 3: Borrowing (2-digit subtrahend)
+        do {
+            a = Math.floor(Math.random() * 81) + 20;
+        } while (a % 10 === 9);
+        const unitA = a % 10;
+        const unitB = Math.floor(Math.random() * (9 - unitA)) + (unitA + 1);
+        const maxTensB = Math.floor((a - unitB - 1) / 10);
+        let actualTensB = (maxTensB < 1) ? 1 : (Math.floor(Math.random() * maxTensB) + 1);
+        b = actualTensB * 10 + unitB;
+        if (b < 10 || b >= a) {
+            do {
+                a = Math.floor(Math.random() * 81) + 20;
+            } while (a % 10 === 9);
+            const fallbackUnitA = a % 10;
+            const fallbackUnitB = Math.floor(Math.random() * (9 - fallbackUnitA)) + (fallbackUnitA + 1);
+            const fallbackMaxTensB = Math.floor((a - fallbackUnitB - 1) / 10);
+            const fallbackTensB = Math.floor(Math.random() * Math.max(1, fallbackMaxTensB)) + 1;
+            b = fallbackTensB * 10 + fallbackUnitB;
+            if (b < 10) b = 10;
+            if (b >= a) b = a - 1;
+        }
+    }
+    return { a, b };
+};
 
 export interface Problem {
     a: number;
@@ -17,10 +109,17 @@ export const useDeepSeaLogic = (levelMode: number = 1) => {
         timeLeft: 60,
         combo: 0,
         bestCombo: 0,
-        difficultyLevel: 1,
+        difficultyLevel: 1, // Lv1: 1=Stage1, 2=Stage2, 3=Stage3. Lv2: 1=Default
         isPlaying: false,
         gameOver: false,
         stats: { correct: 0, wrong: 0 }
+    });
+
+    // Progression State (Lv1 & Lv2)
+    const [progression, setProgression] = useState({
+        consecutiveCorrect: 0,
+        consecutiveWrong: 0,
+        totalCorrectInStage: 0
     });
 
     const [lastEvent, setLastEvent] = useState<{ id: number; type: 'correct' | 'wrong'; isFinal?: boolean } | null>(null);
@@ -39,32 +138,12 @@ export const useDeepSeaLogic = (levelMode: number = 1) => {
     // Logic: Generate Subtraction Problem
     const generateProblem = useCallback((internalDifficulty: number) => {
         // Use the level passed to hook, default to 1 if undefined/unexpected
-        const modeConfig = LEVEL_CONFIGS[levelMode as keyof typeof LEVEL_CONFIGS] || LEVEL_CONFIGS[1];
 
-        // Internal Difficulty Scaling (1-3) can slightly adjust min/borrow chance within the mode bounds
-        // For now, simplify: use the mode config primarily.
-
-        // Generate A (Minuend)
-        const a = Math.floor(Math.random() * (modeConfig.max - modeConfig.min + 1)) + modeConfig.min;
-
-        // Generate B (Subtrahend)
-        // Ensure result > 0
-        let b = Math.floor(Math.random() * (a - 1)) + 1;
-
-        // Adjust for "Borrowing" difficulty logic
-        const wantBorrow = Math.random() < modeConfig.borrowChance;
-        const unitA = a % 10;
-
-        if (wantBorrow && unitA < 9) {
-            // Need unitB > unitA
-            const unitB = Math.floor(Math.random() * (9 - unitA)) + (unitA + 1);
-            // Reconstruct B: B must still be less than A
-            const maxTensB = Math.floor((a - unitB) / 10);
-            if (maxTensB >= 0) {
-                const tensB = Math.floor(Math.random() * (maxTensB + 1));
-                b = tensB * 10 + unitB;
-                if (b === 0) b = unitB; // Avoid 0
-            }
+        let a: number, b: number;
+        if (levelMode === 1) {
+            ({ a, b } = generateLv1Problem(internalDifficulty));
+        } else {
+            ({ a, b } = generateLv2Problem(internalDifficulty));
         }
 
         const answer = a - b;
@@ -125,13 +204,19 @@ export const useDeepSeaLogic = (levelMode: number = 1) => {
             equation: `${a} - ${b} = ?`
         });
 
-        setCurrentAnimal(ANIMALS[Math.floor(Math.random() * ANIMALS.length)]);
+        setCurrentAnimal(prev => {
+            let next;
+            do {
+                next = ANIMALS[Math.floor(Math.random() * ANIMALS.length)];
+            } while (next === prev && ANIMALS.length > 1);
+            return next;
+        });
         setIsDiving(false);
         setDiveTargetIndex(null);
         setLastEvent(null);
         setQuestionStartTime(Date.now());
 
-    }, []);
+    }, [levelMode]);
 
     // Timer
     useEffect(() => {
@@ -160,6 +245,7 @@ export const useDeepSeaLogic = (levelMode: number = 1) => {
             gameOver: false,
             stats: { correct: 0, wrong: 0 }
         });
+        setProgression({ consecutiveCorrect: 0, consecutiveWrong: 0, totalCorrectInStage: 0 }); // Reset Progression
         // Reset Logic State
         setPowerUps({ timeFreeze: 0, extraLife: 0, doubleScore: 0 });
         setTimeFrozen(false);
@@ -168,8 +254,8 @@ export const useDeepSeaLogic = (levelMode: number = 1) => {
         setDiveTargetIndex(null);
         setLastEvent(null);
 
-        generateProblem(gameState.difficultyLevel);
-    }, [generateProblem, gameState.difficultyLevel]);
+        generateProblem(1); // Start with difficulty 1
+    }, [generateProblem]);
 
     const stopTimer = useCallback(() => setGameState(prev => ({ ...prev, isPlaying: false })), []);
 
@@ -193,7 +279,6 @@ export const useDeepSeaLogic = (levelMode: number = 1) => {
                 setLastEvent({ id: Date.now(), type: 'correct' });
                 setGameState(prev => {
                     const newCombo = prev.combo + 1;
-                    const newLevel = Math.min(3, Math.floor(newCombo / 5) + 1);
 
                     // Score Calculation (Matched to MathArchery)
                     const responseTime = Date.now() - questionStartTime;
@@ -204,12 +289,34 @@ export const useDeepSeaLogic = (levelMode: number = 1) => {
                     const scoreBase = baseScore + timeBonus + comboBonus;
                     const finalScore = doubleScoreActive ? scoreBase * 2 : scoreBase;
 
+                    let newDifficulty = prev.difficultyLevel;
+
+                    // Progression Logic (Shared for Lv1 & Lv2)
+                    const newConsecutiveCorrect = progression.consecutiveCorrect + 1;
+                    const newTotalCorrect = progression.totalCorrectInStage + 1;
+
+                    // Update Internal Progression State
+                    setProgression(p => ({
+                        ...p,
+                        consecutiveCorrect: newConsecutiveCorrect,
+                        totalCorrectInStage: newTotalCorrect,
+                        consecutiveWrong: 0
+                    }));
+
+                    // Check Promotion (Shared Logic)
+                    if (prev.difficultyLevel < PROGRESSION_CONFIG.MAX_DIFFICULTY &&
+                        (newConsecutiveCorrect >= PROGRESSION_CONFIG.PROMOTION_STREAK ||
+                            newTotalCorrect >= PROGRESSION_CONFIG.PROMOTION_TOTAL)) {
+                        newDifficulty = prev.difficultyLevel + 1;
+                        setProgression({ consecutiveCorrect: 0, consecutiveWrong: 0, totalCorrectInStage: 0 }); // Reset on promotion
+                    }
+
                     return {
                         ...prev,
                         score: prev.score + finalScore,
                         combo: newCombo,
                         bestCombo: Math.max(prev.bestCombo, newCombo),
-                        difficultyLevel: newLevel,
+                        difficultyLevel: newDifficulty,
                         stats: { ...prev.stats, correct: prev.stats.correct + 1 }
                     };
                 });
@@ -223,7 +330,21 @@ export const useDeepSeaLogic = (levelMode: number = 1) => {
 
                 // Next problem
                 setTimeout(() => {
-                    generateProblem(gameState.difficultyLevel);
+                    // Need to get latest difficulty for next problem
+                    // Recalculate difficulty locally to pass to generateProblem
+                    let nextDiff = gameState.difficultyLevel;
+
+                    // Shared Logic for Next Difficulty Prediction (Lv1 & Lv2)
+                    const newConsecutiveCorrect = progression.consecutiveCorrect + 1;
+                    const newTotalCorrect = progression.totalCorrectInStage + 1;
+                    if (gameState.difficultyLevel < PROGRESSION_CONFIG.MAX_DIFFICULTY &&
+                        (newConsecutiveCorrect >= PROGRESSION_CONFIG.PROMOTION_STREAK ||
+                            newTotalCorrect >= PROGRESSION_CONFIG.PROMOTION_TOTAL)) {
+                        nextDiff = gameState.difficultyLevel + 1;
+                    }
+
+                    generateProblem(nextDiff);
+
                     // Add safety cooldown to prevent ghost clicks on new elements
                     setTimeout(() => {
                         isProcessing.current = false;
@@ -231,13 +352,34 @@ export const useDeepSeaLogic = (levelMode: number = 1) => {
                 }, ANIMATION_TIMING.NEXT_PROBLEM_DELAY);
             } else {
                 setLastEvent({ id: Date.now(), type: 'wrong' });
-                setGameState(prev => ({
-                    ...prev,
-                    lives: prev.lives - 1,
-                    combo: 0,
-                    gameOver: prev.lives - 1 <= 0,
-                    stats: { ...prev.stats, wrong: prev.stats.wrong + 1 }
+
+                // Progression Logic (Wrong) - Shared Lv1 & Lv2
+                setProgression(p => ({
+                    consecutiveCorrect: 0,
+                    consecutiveWrong: p.consecutiveWrong + 1,
+                    totalCorrectInStage: p.totalCorrectInStage
                 }));
+
+                setGameState(prev => {
+                    let newDifficulty = prev.difficultyLevel;
+
+                    // Demotion Logic (Shared Lv1 & Lv2)
+                    const currentWrongStreak = progression.consecutiveWrong + 1;
+
+                    if (prev.difficultyLevel > 1 && currentWrongStreak >= PROGRESSION_CONFIG.DEMOTION_STREAK) {
+                        newDifficulty = prev.difficultyLevel - 1;
+                        setProgression({ consecutiveCorrect: 0, consecutiveWrong: 0, totalCorrectInStage: 0 }); // Reset on demotion
+                    }
+
+                    return {
+                        ...prev,
+                        lives: prev.lives - 1,
+                        combo: 0,
+                        difficultyLevel: newDifficulty,
+                        gameOver: prev.lives - 1 <= 0,
+                        stats: { ...prev.stats, wrong: prev.stats.wrong + 1 }
+                    };
+                });
 
                 // Reset animal if game not over
                 if (gameState.lives > 1) {

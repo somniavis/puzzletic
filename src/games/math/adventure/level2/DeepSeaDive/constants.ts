@@ -14,9 +14,11 @@ export const ANIMALS = [
 ];
 
 
-export const LEVEL_CONFIGS = {
-    1: { min: 2, max: 20, borrowChance: 0.2, description: "Subtraction within 20" },
-    2: { min: 10, max: 100, borrowChance: 0.5, description: "Subtraction within 100" }
+export const PROGRESSION_CONFIG = {
+    PROMOTION_STREAK: 4,
+    PROMOTION_TOTAL: 6,
+    DEMOTION_STREAK: 3,
+    MAX_DIFFICULTY: 3
 };
 
 

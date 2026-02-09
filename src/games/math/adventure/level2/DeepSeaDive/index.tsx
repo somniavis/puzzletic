@@ -45,13 +45,14 @@ export const DeepSeaDive: React.FC<DeepSeaDiveProps> = ({ onExit, level = 1 }) =
         ...gameLogic,
         stats: { correct: stats.correct, wrong: stats.wrong },
         gameState: gameOver ? 'gameover' : (isPlaying ? 'playing' : 'idle'),
+        gameOverReason: gameOver ? (lives <= 0 ? 'lives' : 'time') : null,
         maxLevel: 3,
         onPause: stopTimer,
         onResume: startGame,
         onExit: onExit,
         onRestart: () => window.location.reload(),
         currentProblem: currentProblem
-    }), [gameLogic, stats, gameOver, isPlaying, currentProblem, stopTimer, startGame, onExit]);
+    }), [gameLogic, stats, gameOver, isPlaying, lives, currentProblem, stopTimer, startGame, onExit]);
 
     // Memoize PowerUps config
     const powerUps: PowerUpBtnProps[] = React.useMemo(() => [
@@ -90,11 +91,13 @@ export const DeepSeaDive: React.FC<DeepSeaDiveProps> = ({ onExit, level = 1 }) =
         return `${16.6 + (index * 33.3)}%`;
     };
 
+    const currentGameId = level === 1 ? GameIds.DEEP_SEA_DIVE_LV1 : GameIds.DEEP_SEA_DIVE_LV2;
+
     return (
         <Layout3
-            title={t('games.deep-sea-dive.title')}
+            title={t(level === 1 ? 'games.deep-sea-dive.title-lv1' : 'games.deep-sea-dive.title-lv2')}
             subtitle={t('games.deep-sea-dive.subtitle')}
-            gameId={GameIds.DEEP_SEA_DIVE}
+            gameId={currentGameId}
             engine={engine as any} // Layout3 types might drag
             powerUps={powerUps}
             onExit={onExit}
