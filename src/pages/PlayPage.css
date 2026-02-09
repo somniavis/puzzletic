@@ -207,6 +207,8 @@
     /* Bottom padding for nav */
     scrollbar-width: none;
     /* Firefox */
+    overflow-x: hidden;
+    /* Prevent horizontal scroll */
 }
 
 .hub-content::-webkit-scrollbar {
