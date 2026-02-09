@@ -23,8 +23,9 @@ import { useAuth } from './AuthContext';
 import { evaluateCondition } from '../services/gameTickService';
 import { getAbandonmentStatusUI } from '../services/gameTickService';
 
-import { updateCategoryProgress, parseGameScore, createGameScore, getUnlockThreshold, getProgressionCategory } from '../utils/progression';
-import { GAME_ORDER } from '../constants/gameOrder';
+import { updateCategoryProgress, parseGameScore, createGameScore, getUnlockThreshold, getProgressionCategory, getDynamicGameOrder } from '../utils/progression';
+import { GAMES } from '../games/registry';
+
 import { saveNurturingState, resetNurturingState } from '../services/persistenceService';
 import { syncUserData } from '../services/syncService';
 
@@ -287,13 +288,14 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
 
       let updatedCategoryProgress = currentState.categoryProgress;
       if (isUnlocked && category) {
-        const order = GAME_ORDER[category];
+        const order = getDynamicGameOrder(GAMES, category);
         const currentIndex = order.indexOf(gameId);
         const nextGameId = order[currentIndex + 1];
         if (nextGameId) {
           updatedCategoryProgress = updateCategoryProgress(
             nextGameId,
-            currentState.categoryProgress
+            currentState.categoryProgress,
+            GAMES
           );
         }
       }
@@ -322,11 +324,15 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
   const debugUnlockAllGames = useCallback(() => {
     setState((currentState) => {
       const newCategoryProgress = { ...currentState.categoryProgress };
-      Object.entries(GAME_ORDER).forEach(([category, games]) => {
+      const categories = ['math-adventure', 'math-genius', 'brain-adventure'];
+
+      categories.forEach(category => {
+        const games = getDynamicGameOrder(GAMES, category);
         if (games.length > 0) {
           newCategoryProgress[category] = games[games.length - 1];
         }
       });
+
       console.log('🔓 [DEBUG] All Games Unlocked:', newCategoryProgress);
       alert('✅ All Games Unlocked! (Debug Mode)');
       return { ...currentState, categoryProgress: newCategoryProgress };

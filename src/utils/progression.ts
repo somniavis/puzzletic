@@ -1,9 +1,6 @@
 import type { GameManifest } from '../games/types';
 import type { NurturingPersistentState, GameScoreValue } from '../types/nurturing';
-import { GAME_ORDER, getProgressionCategory } from '../constants/gameOrder';
-
-// Re-export for convenience
-export { getProgressionCategory };
+import { GAMES } from '../games/registry';
 
 /**
  * Hybrid Storage v2 - Category-Based Progression System
@@ -26,6 +23,21 @@ export const ADVENTURE_UNLOCK_THRESHOLD = 3;
 export const GENIUS_UNLOCK_THRESHOLD = 3;
 
 // ==================== Helper Functions ====================
+
+/**
+ * Get category for a game ID dynamically from registry
+ */
+export const getProgressionCategory = (gameId: string): string | null => {
+    const game = GAMES.find(g => g.id === gameId);
+    if (!game) return null;
+
+    if (game.category === 'math') {
+        return game.mode === 'genius' ? 'math-genius' : 'math-adventure';
+    } else if (game.category === 'brain') {
+        return 'brain-adventure';
+    }
+    return null;
+};
 
 /**
  * Parse compact game score value
@@ -75,6 +87,30 @@ export const getUnlockThreshold = (category: string): number => {
     return category.includes('genius') ? GENIUS_UNLOCK_THRESHOLD : ADVENTURE_UNLOCK_THRESHOLD;
 };
 
+/**
+ * Get dynamic game order for a category based on the game registry
+ * Sorts games by level (ascending) to determine progression order
+ */
+export const getDynamicGameOrder = (allGames: GameManifest[], category: string): string[] => {
+    return allGames
+        .filter(g => {
+            // Check if game belongs to this category
+            // 1. Math Adventure: category='math' & mode!='genius'
+            // 2. Math Genius: category='math' & mode='genius'
+            // 3. Brain Adventure: category='brain'
+
+            if (category === 'math-adventure') return g.category === 'math' && g.mode !== 'genius';
+            if (category === 'math-genius') return g.category === 'math' && g.mode === 'genius';
+            if (category === 'brain-adventure') return g.category === 'brain';
+            return false;
+        })
+        .sort((a, b) => {
+            // Primary sort: Level
+            return a.level - b.level;
+        })
+        .map(g => g.id);
+};
+
 // ==================== Core Logic ====================
 
 /**
@@ -88,17 +124,24 @@ export const isGameUnlocked = (
     const targetGame = allGames.find(g => g.id === targetGameId);
     if (!targetGame) return { unlocked: false, reason: 'Game not found' };
 
-    // Get category for this game
-    const category = getProgressionCategory(targetGameId);
+    // Determine category dynamically
+    let category = '';
+    if (targetGame.category === 'math') {
+        category = targetGame.mode === 'genius' ? 'math-genius' : 'math-adventure';
+    } else if (targetGame.category === 'brain') {
+        category = 'brain-adventure';
+    }
+
     if (!category) {
         // Game not in any progression order = always unlocked
         return { unlocked: true };
     }
 
-    const order = GAME_ORDER[category];
+    // Get dynamic order from registry
+    const order = getDynamicGameOrder(allGames, category);
     const targetIndex = order.indexOf(targetGameId);
 
-    // Rule 1: First game in category is always unlocked
+    // Rule 1: First game in category (sorted by difficulty) is always unlocked
     if (targetIndex === 0) return { unlocked: true };
 
     // Check categoryProgress for reached game
@@ -153,12 +196,23 @@ export const isGameUnlocked = (
  */
 export const updateCategoryProgress = (
     gameId: string,
-    currentProgress: Record<string, string> | undefined
+    currentProgress: Record<string, string> | undefined,
+    allGames: GameManifest[]
 ): Record<string, string> | undefined => {
-    const category = getProgressionCategory(gameId);
+    const targetGame = allGames.find(g => g.id === gameId);
+    if (!targetGame) return currentProgress;
+
+    // Determine category
+    let category = '';
+    if (targetGame.category === 'math') {
+        category = targetGame.mode === 'genius' ? 'math-genius' : 'math-adventure';
+    } else if (targetGame.category === 'brain') {
+        category = 'brain-adventure';
+    }
+
     if (!category) return currentProgress;
 
-    const order = GAME_ORDER[category];
+    const order = getDynamicGameOrder(allGames, category);
     const currentIndex = order.indexOf(gameId);
     const existingProgress = currentProgress || {};
     const existingReachedId = existingProgress[category];

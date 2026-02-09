@@ -7,10 +7,27 @@ export interface GameEngineConfig {
     initialLives?: number;
     initialTime?: number;
     maxDifficulty?: number;
+    difficultyThresholds?: {
+        promoteStreak?: number; // Consecutive correct to promote
+        promoteTotal?: number;  // Total correct at current level to promote
+        demoteStreak?: number;  // Consecutive wrong to demote
+    };
 }
 
 export const useGameEngine = (config: GameEngineConfig = {}) => {
-    const { initialLives = 3, initialTime = 60, maxDifficulty = 3 } = config;
+    const {
+        initialLives = 3,
+        initialTime = 60,
+        maxDifficulty = 3,
+        difficultyThresholds = { promoteStreak: 5, promoteTotal: Infinity, demoteStreak: 1 }
+    } = config;
+
+    // Fill defaults for partial config
+    const thresholds = {
+        promoteStreak: difficultyThresholds.promoteStreak ?? 5,
+        promoteTotal: difficultyThresholds.promoteTotal ?? Infinity,
+        demoteStreak: difficultyThresholds.demoteStreak ?? 1
+    };
 
     // State
     const [gameState, setGameState] = useState<GameState>('idle');
@@ -25,6 +42,7 @@ export const useGameEngine = (config: GameEngineConfig = {}) => {
     // Internal counters
     const [consecutiveCorrect, setConsecutiveCorrect] = useState(0);
     const [consecutiveWrong, setConsecutiveWrong] = useState(0);
+    const [levelCorrect, setLevelCorrect] = useState(0); // Total correct at current level
     const [gameOverReason, setGameOverReason] = useState<GameOverReason>(null);
     const [achievements, setAchievements] = useState({
         firstCorrect: false,
@@ -100,7 +118,12 @@ export const useGameEngine = (config: GameEngineConfig = {}) => {
         setScore(0);
         setLives(initialLives);
         setTimeLeft(initialTime);
+        setLives(initialLives);
+        setTimeLeft(initialTime);
         setDifficultyLevel(1);
+        setConsecutiveCorrect(0);
+        setConsecutiveWrong(0);
+        setLevelCorrect(0);
         setCombo(0);
         setBestCombo(0);
         setGameOverReason(null);
@@ -133,15 +156,28 @@ export const useGameEngine = (config: GameEngineConfig = {}) => {
             // Difficulty Adjustment
             // Only count towards progression if difficulty update isn't skipped
             let newConsecutiveCorrect = consecutiveCorrect;
+
             if (!options.skipDifficulty) {
                 newConsecutiveCorrect = consecutiveCorrect + 1;
-                // Match MathArchery: Update every 5 consecutive correct answers
-                if (difficultyLevel < maxDifficulty && newConsecutiveCorrect >= 5) {
+                const newLevelCorrect = levelCorrect + 1;
+
+                // Promotion Check: ANY condition met
+                const shouldPromote =
+                    (newConsecutiveCorrect >= thresholds.promoteStreak) ||
+                    (newLevelCorrect >= thresholds.promoteTotal);
+
+                if (difficultyLevel < maxDifficulty && shouldPromote) {
                     setDifficultyLevel(prev => prev + 1);
                     setConsecutiveCorrect(0);
+                    setLevelCorrect(0);
                 } else {
                     setConsecutiveCorrect(newConsecutiveCorrect);
+                    setLevelCorrect(newLevelCorrect);
                 }
+            } else {
+                // If skipped, do we update counts? Usually NO for strict control.
+                // But keeping 'consecutiveCorrect' same ensures streak is preserved across skipped steps if needed.
+                // Actually, if skipped, we shouldn't increment counts towards progression.
             }
             setConsecutiveWrong(0);
 
@@ -184,9 +220,10 @@ export const useGameEngine = (config: GameEngineConfig = {}) => {
             });
 
             // Difficulty Down
-            if (consecutiveWrong >= 1 && difficultyLevel > 1) {
+            if ((consecutiveWrong + 1) >= thresholds.demoteStreak && difficultyLevel > 1) {
                 setDifficultyLevel(prev => prev - 1);
                 setConsecutiveWrong(0);
+                setLevelCorrect(0); // Reset level progress on demotion
             }
         }
 

@@ -2,7 +2,8 @@ import { useState, useCallback, useEffect, useRef } from 'react';
 import { useGameEngine } from '../../../../layouts/Standard/Layout0/useGameEngine'; // Generic engine
 import { PINWHEEL_POP_CONSTANTS as CONSTS } from './constants';
 
-export type PinwheelProblemType = 'tens_ones_add' | 'tens_tens_add';
+// export type PinwheelProblemType = 'tens_ones_add' | 'tens_tens_add'; // Removed
+
 
 interface PinwheelState {
     innerNumbers: number[]; // [TL, TR, BR, BL] - 4 numbers
@@ -15,7 +16,13 @@ interface PinwheelState {
 export const usePinwheelLogic = () => {
     const engine = useGameEngine({
         initialTime: CONSTS.TIME_LIMIT,
-        initialLives: CONSTS.BASE_LIVES
+        initialLives: CONSTS.BASE_LIVES,
+        maxDifficulty: 10,
+        difficultyThresholds: {
+            promoteStreak: 3,
+            promoteTotal: 4,
+            demoteStreak: 2
+        }
     });
 
     const [pinwheel, setPinwheel] = useState<PinwheelState>({
@@ -30,17 +37,57 @@ export const usePinwheelLogic = () => {
     const [isTimeFrozen, setIsTimeFrozen] = useState(false);
     const [doubleScoreActive, setDoubleScoreActive] = useState(false);
 
-    // Helper: Generate Random Number based on difficulty
-    const generateNumber = (type: PinwheelProblemType): number => {
-        // Tens + Ones (e.g. 20 + 5)
-        if (type === 'tens_ones_add') {
-            return Math.random() > 0.5
-                ? Math.floor(Math.random() * 9 + 1) * 10 // Tens (10, 20..)
-                : Math.floor(Math.random() * 9 + 1);      // Ones (1..9)
+    // Helper: Generate Set of 4 Outer Numbers with Constraints
+    const generatePinwheelSet = useCallback((difficulty: number): number[] => {
+        const stage = difficulty <= 2 ? 1 : difficulty <= 4 ? 2 : 3;
+
+        for (let i = 0; i < 100; i++) {
+            let nums: number[] = [];
+
+            if (stage === 1) {
+                // Stage 1: Easy Mixed
+                // 50% chance for Multiples of 5/10, 50% for Simple No-Carry
+                const useMultiples = Math.random() > 0.5;
+                if (useMultiples) {
+                    nums = Array(4).fill(0).map(() => Math.floor(Math.random() * 19 + 1) * 5); // 5..95
+                } else {
+                    // Simple Numbers (Biased towards smaller)
+                    nums = Array(4).fill(0).map(() => Math.floor(Math.random() * 50 + 1));
+                }
+            } else if (stage === 2) {
+                // Stage 2: No Carry (Any 2-digit allow)
+                nums = Array(4).fill(0).map(() => Math.floor(Math.random() * 90) + 1);
+            } else {
+                // Stage 3: Standard (Existing Logic)
+                const types = [2, 2, 2, 2];
+                const numOneDigits = Math.floor(Math.random() * 3);
+                if (numOneDigits === 1) types[Math.floor(Math.random() * 4)] = 1;
+                else if (numOneDigits === 2) {
+                    if (Math.random() > 0.5) { types[0] = 1; types[2] = 1; }
+                    else { types[1] = 1; types[3] = 1; }
+                }
+                nums = types.map(t => (t === 1 ? Math.floor(Math.random() * 9) + 1 : Math.floor(Math.random() * 90) + 10));
+            }
+
+            // Validation
+            const valid = nums.every((n, idx) => {
+                const next = nums[(idx + 1) % 4];
+                const sum = n + next;
+                if (sum > 100) return false;
+
+                if (stage === 1 || stage === 2) {
+                    // No Carry Check
+                    const unitSum = (n % 10) + (next % 10);
+                    if (unitSum >= 10) return false;
+                }
+
+                return true;
+            });
+
+            if (valid) return nums;
         }
-        // Tens + Tens (e.g. 20 + 30) - Default fallback
-        return Math.floor(Math.random() * 9 + 1) * 10;
-    };
+        return [10, 20, 30, 40]; // Safe fallback
+    }, []);
 
     const generateOptions = (correct: number): number[] => {
         // Position-First Strategy to ensure uniform 33% distribution
@@ -129,18 +176,8 @@ export const usePinwheelLogic = () => {
     };
 
     const generateRound = useCallback((difficulty: number) => {
-        let type: PinwheelProblemType = 'tens_ones_add';
-
-        // Difficulty mapping
-        if (difficulty >= 2) type = 'tens_tens_add';
-
-        // Generate 4 Inner Numbers
-        const inners = [
-            generateNumber(type),
-            generateNumber(type),
-            generateNumber(type),
-            generateNumber(type)
-        ];
+        // Generate 4 Inner Numbers with new constraints
+        const inners = generatePinwheelSet(difficulty);
 
         // Determine correct answer for the FIRST target stage (0)
         // Stage 0: Top (0 & 1)
@@ -207,8 +244,8 @@ export const usePinwheelLogic = () => {
             const isRoundComplete = currentStage === 3;
 
             engine.submitAnswer(true, {
-                skipCombo: !isRoundComplete,
-                skipDifficulty: !isRoundComplete,
+                skipCombo: false, // Enable combo for every hit
+                skipDifficulty: false, // Enable difficulty progression for every hit (3 streak or 4 total)
                 skipFeedback: !isRoundComplete // Skip 'correct' state delay for intermediate wings
             });
             engine.registerEvent({ type: 'correct', isFinal: isRoundComplete });
