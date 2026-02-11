@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { playClearSound, playEatingSound, playButtonSound } from '../../../../utils/sound';
+import { playClearSound, playEatingSound, playJelloClickSound } from '../../../../utils/sound';
 
 interface GameEvent {
     id: number;
@@ -46,7 +46,7 @@ export const useGameEffects = (lastEvent: GameEvent | null | undefined) => {
                     generateParticles('correct', 5, '✨');
                 }
             } else if (lastEvent.type === 'wrong') {
-                playButtonSound(); // Immediate failure feedback
+                playJelloClickSound(); // Standard failure feedback (Jello Sound)
                 setShowShake(true);
                 setTimeout(() => setShowShake(false), 500);
             }
