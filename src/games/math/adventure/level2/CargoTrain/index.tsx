@@ -96,7 +96,7 @@ export default function CargoTrain() {
         }),
         useSensor(TouchSensor, {
             activationConstraint: {
-                delay: 250, // Slight delay to distinguish scroll vs drag
+                delay: 0, // Instant drag
                 tolerance: 5,
             },
         }),
@@ -185,7 +185,7 @@ export default function CargoTrain() {
             color: 'blue' as const,
             onClick: () => gameLogic.activatePowerUp('timeFreeze'),
             status: (gameLogic.isTimeFrozen ? 'active' : 'normal') as 'active' | 'normal' | 'maxed',
-            title: t('powerUps.timeFreeze', 'Freeze'),
+            title: t('games.cargoTrain.powerUps.timeFreeze', 'Freeze'),
             disabledConfig: gameLogic.isTimeFrozen
         },
         {
@@ -194,7 +194,7 @@ export default function CargoTrain() {
             color: 'red' as const,
             onClick: () => gameLogic.activatePowerUp('extraLife'),
             status: (gameLogic.lives >= 3 ? 'maxed' : 'normal') as 'active' | 'normal' | 'maxed',
-            title: t('powerUps.extraLife', 'Life'),
+            title: t('games.cargoTrain.powerUps.extraLife', 'Life'),
             disabledConfig: gameLogic.lives >= 3
         },
         {
@@ -203,7 +203,7 @@ export default function CargoTrain() {
             color: 'yellow' as const,
             onClick: () => gameLogic.activatePowerUp('doubleScore'),
             status: (gameLogic.isDoubleScore ? 'active' : 'normal') as 'active' | 'normal' | 'maxed',
-            title: t('powerUps.doubleScore', 'Double'),
+            title: t('games.cargoTrain.powerUps.doubleScore', 'Double'),
             disabledConfig: gameLogic.isDoubleScore
         }
     ], [t, gameLogic.powerUps, gameLogic.isTimeFrozen, gameLogic.lives, gameLogic.isDoubleScore, gameLogic.activatePowerUp]);
