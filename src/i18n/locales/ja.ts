@@ -13,6 +13,7 @@ import mathPinwheelJa from '../../games/math/adventure/level2/PinwheelPop/locale
 import compareCrittersJa from '../../games/math/adventure/level1/CompareCritters/locales/ja';
 import deepSeaDiveJa from '../../games/math/adventure/level2/DeepSeaDive/locales/ja';
 import ufoInvasionJa from '../../games/math/adventure/level2/UFOInvasion/locales/ja';
+import cargoTrainJa from '../../games/math/adventure/level2/CargoTrain/locales/ja';
 
 import colorLinkJa from '../../games/brain/level1/ColorLink/locales/ja';
 import pairUpTwinJa from '../../games/brain/level1/PairUpTwin/locales/ja';
@@ -984,6 +985,7 @@ export const ja = {
         'maze-hunter': mazeHunterJa,
         'tic-tac-toe': ticTacToeJa,
         omok: omokJa,
+        cargoTrain: cargoTrainJa,
         tags: {
             counting: '数え方',
             sequence: '数の順序',
@@ -1003,6 +1005,7 @@ export const ja = {
             strategy: '戦略',
             memory: '記憶力',
             logic: '論理',
+            comparison: '比較',
         },
         mission: {
             challenge: '挑戦！ ({{current}}/{{total}})',

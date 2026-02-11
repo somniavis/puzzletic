@@ -13,6 +13,7 @@ import mathPinwheelKo from '../../games/math/adventure/level2/PinwheelPop/locale
 import compareCrittersKo from '../../games/math/adventure/level1/CompareCritters/locales/ko';
 import deepSeaDiveKo from '../../games/math/adventure/level2/DeepSeaDive/locales/ko';
 import ufoInvasionKo from '../../games/math/adventure/level2/UFOInvasion/locales/ko';
+import cargoTrainKo from '../../games/math/adventure/level2/CargoTrain/locales/ko';
 
 import colorLinkKo from '../../games/brain/level1/ColorLink/locales/ko.ts';
 import pairUpTwinKo from '../../games/brain/level1/PairUpTwin/locales/ko.ts';
@@ -1028,6 +1029,7 @@ export const ko = {
         'maze-hunter': mazeHunterKo,
         'tic-tac-toe': ticTacToeKo,
         omok: omokKo,
+        cargoTrain: cargoTrainKo,
         tags: {
             counting: '수 세기',
             sequence: '수 순서',
@@ -1047,6 +1049,7 @@ export const ko = {
             strategy: '전략',
             memory: '기억력',
             logic: '논리',
+            comparison: '비교',
         },
         mission: {
             challenge: '성공 도전! ({{current}}/{{total}})',

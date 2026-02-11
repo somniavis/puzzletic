@@ -1,0 +1,500 @@
+.gameContainer {
+    width: calc(100% + 2rem);
+    height: calc(100% + 1rem);
+    margin-left: -1rem;
+    margin-right: -1rem;
+    margin-bottom: -1rem;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    overflow: hidden;
+    border-radius: 1.25rem;
+    z-index: 20;
+    /* Ensure content is above background (sky/ground) */
+}
+
+/* Backgrounds */
+.skyArea {
+    width: 100%;
+    height: 25%;
+    background: linear-gradient(180deg, #87CEEB 0%, #E0F7FA 100%);
+    position: relative;
+    z-index: 1;
+}
+
+.groundArea {
+    width: 100%;
+    height: 75%;
+    /* Sage Green */
+    background: linear-gradient(180deg, #9bcca7 0%, #7db88b 100%);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    /* Track is near top of ground */
+    z-index: 2;
+    border-top: 4px solid #7dad89;
+    /* Soft Sage Edge */
+}
+
+/* --- Distant Scene Background --- */
+.distantScene {
+    position: absolute;
+    /* Horizon Line exactly at 25% (End of Sky, Start of Ground) */
+    top: 25%;
+    left: 0;
+    width: 100%;
+    height: 40px;
+    z-index: 10;
+    pointer-events: none;
+    /* Let clicks pass through */
+    transform: translateY(-90%);
+    /* Shift up so bottom aligns with horizon */
+}
+
+/* 1. Land Base */
+.distantLand {
+    position: absolute;
+    bottom: -12px;
+    /* Move down to vertically center with rail at 0 */
+    left: 20%;
+    width: 110px;
+    /* User Requested: 110px */
+    height: 40px;
+    /* Slightly taller */
+    background: linear-gradient(180deg, #D7CCC8 0%, #BCAAA4 100%);
+    /* Lighter Earth Tone */
+    border-radius: 20px;
+    /* Larger Radius */
+    border: none;
+    /* No Border */
+    z-index: 2;
+    /* Above Rail */
+    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* 2. Rail */
+.distantRail {
+    position: absolute;
+    bottom: 0px;
+    left: 0;
+    width: 100%;
+    height: 0;
+    /* Just a line */
+    border-bottom: 3px dashed #203e2e;
+    /* User Requested Color & Dashed */
+    z-index: 1;
+    /* Below Land */
+}
+
+/* 3. Factory Emojis */
+.distantFactory {
+    position: absolute;
+    bottom: -2px;
+    /* Adjust to sit in middle of land height */
+    left: 20%;
+    font-size: 2.3rem;
+    /* +3px larger (approx) */
+    z-index: 3;
+    /* Top Layer */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 110px;
+    /* Match Land Width */
+    pointer-events: none;
+}
+
+.distantTrain {
+    position: absolute;
+    bottom: -2px;
+    /* On Rail */
+    right: -50px;
+    /* Start off-screen right */
+    font-size: 1.2rem;
+    transform: scaleX(1);
+    /* Face left (Default) */
+    transition: right 2s linear;
+    z-index: 3;
+    /* Keep on top */
+    opacity: 0;
+}
+
+/* Animation Class */
+.animateTrain {
+    opacity: 1;
+    animation: driveToFactory 6s linear forwards;
+}
+
+@keyframes driveToFactory {
+    0% {
+        right: -10%;
+        opacity: 1;
+    }
+
+    70% {
+        right: calc(80% - 6rem);
+        /* Move until engine hits left edge (Island Left = 20%) */
+        opacity: 1;
+    }
+
+    90% {
+        opacity: 1;
+    }
+
+    100% {
+        right: calc(80% - 6rem);
+        /* Stay */
+        opacity: 0;
+        /* Disappear upon arrival */
+    }
+}
+
+/* Track */
+/* Track Wrapper (Invisible Layout Container) */
+.track {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    position: relative;
+    margin-bottom: 0.5rem;
+    /* ~8px gap as requested (5px+) */
+    z-index: 30;
+    /* Aspect ratio height is driven by child TrainSkeleton */
+}
+
+/* The Visual Rail Line */
+.rail {
+    position: absolute;
+    /* Align with absolute bottom of the grid */
+    bottom: 5px;
+    /* Slight offset to align with wheels */
+    /* The grid is 90% wide. To fill the 100% container:
+       Width = 100 / 0.9 = 111.111%
+       Left offset to center = (100% - 111.111%) / 2 = -5.555% */
+    width: 111.2%;
+    left: -5.6%;
+    height: 12px;
+    z-index: 0;
+    background: #5D4037;
+    border-top: 2px solid #3E2723;
+    border-bottom: 2px solid #3E2723;
+    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.2);
+    z-index: 0;
+    /* Behind train */
+}
+
+/* Railway Ties (Stripes) */
+.rail::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: repeating-linear-gradient(90deg,
+            transparent,
+            transparent 40px,
+            #3E2723 40px,
+            #3E2723 50px);
+    opacity: 0.5;
+}
+
+/* Train System - True 2x5 Grid Layout */
+.trainSystem {
+    display: grid;
+    /* 5 Columns, taking up equal fraction */
+    grid-template-columns: repeat(5, 1fr);
+    /* Aspect Ratio 5:2 ensures 2 rows of height equal to column width */
+    aspect-ratio: 5 / 2;
+    /* Determine rows automatically based on aspect ratio */
+    grid-template-rows: 1fr 1fr;
+    gap: 0;
+    justify-content: center;
+    width: 90%;
+    /* 90% width (5% margin on each side) */
+    max-width: 800px;
+    /* Max width constraint */
+    margin: 0 auto;
+    /* Center the grid */
+    position: relative;
+    /* For Rail */
+}
+
+/* Logical Unit Wrapper - ignored by layout */
+.trainUnit {
+    display: contents;
+}
+
+/* Top Row: Content (Boxes, Operators) */
+.unitContent {
+    grid-row: 1;
+    /* Force to Top Row */
+    display: flex;
+    align-items: flex-end;
+    /* Push to bottom to touch row 2 */
+    justify-content: center;
+    /* Horizontally Center */
+    width: 100%;
+    height: 100%;
+    z-index: 5;
+    padding-bottom: 2%;
+    /* Responsive padding */
+    /* border: removed debugging border */
+}
+
+/* Bottom Row: Cars */
+.unitCar {
+    grid-row: 2;
+    /* Force to Bottom Row */
+    display: flex;
+    align-items: flex-end;
+    /* Bottom Alignment requested */
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    /* Maximize font size to fill cell height/width */
+    font-size: clamp(3rem, 15cqw, 7rem);
+    /* Fallback */
+    font-size: clamp(2.5rem, 12vw, 6rem);
+    filter: drop-shadow(0 4px 4px rgba(0, 0, 0, 0.3));
+    z-index: 10;
+    padding-bottom: 0px;
+    /* Sit right at bottom edge */
+    /* border: removed debugging border */
+    /* Remove previous center overrides */
+}
+
+/* Train Connector */
+/* Chain Connector */
+.trainUnit:not(:last-child) .unitCar::after {
+    content: '';
+    position: absolute;
+    right: -2px;
+    /* Pull slightly over to bridge with next car; exact overlap */
+    top: 70%;
+    /* Center vertically */
+    width: 20%;
+    /* Stretch across the gap */
+    height: 6px;
+    background: #555;
+    border-top: 2px solid #333;
+    border-bottom: 2px solid #333;
+    border-radius: 2px;
+    z-index: 5;
+    /* Behind car body if possible, or on top? */
+    transform: translate(50%, -50%);
+    /* Center on the boundary */
+}
+
+/* Specific Styling for Boxes */
+/* Specific Styling for Boxes */
+.cargoBox {
+    width: 90%;
+    /* Relative to cell width */
+    /* Remove height to let aspect-ratio drive it */
+    aspect-ratio: 1/1;
+    max-width: none;
+    max-height: none;
+    min-width: 0;
+    min-height: 0;
+
+    /* Wooden Crate Style */
+    background: #8D6E63;
+    border: 3px solid #4E342E;
+    border-radius: 8px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: clamp(1.5rem, 5cqw, 3rem);
+    container-type: inline-size;
+
+    color: #fff;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.1), 0 4px 0 #3E2723;
+
+    /* Plank Texture */
+    background-image: repeating-linear-gradient(180deg,
+            rgba(0, 0, 0, 0) 0%,
+            rgba(0, 0, 0, 0) 25%,
+            rgba(62, 39, 35, 0.1) 25%,
+            rgba(62, 39, 35, 0.1) 28%);
+}
+
+.emptyZone {
+    background: rgba(0, 0, 0, 0.1);
+    /* Slight darkening */
+    border: 3px solid #6b9c7f;
+    /* User Requested Color */
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    color: #6b9c7f;
+    /* Use same color for text/icon */
+}
+
+.resultBox {
+    width: 90%;
+    /* Remove height to let aspect-ratio drive it */
+    aspect-ratio: 1/1;
+    max-width: none;
+    max-height: none;
+    min-width: 0;
+    min-height: 0;
+    background: #4CAF50;
+    border: 2px solid #2E7D32;
+    border-radius: 15%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: clamp(1.5rem, 5cqw, 3rem);
+    color: white;
+    font-weight: bold;
+    box-shadow: 0 4px 0 #2E7D32;
+}
+
+/* Operators */
+.operator {
+    font-size: clamp(2rem, 8cqw, 5rem);
+    color: white;
+    font-weight: bold;
+    text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.3);
+    /* Improve alignment with boxes */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 90%;
+    aspect-ratio: 1/1;
+    margin: 0;
+}
+
+/* Engine styling (flip) */
+.engineCar {
+    /* font-size removed to inherit from unitCar */
+    transform: scaleX(-1);
+    margin-left: 5px;
+}
+
+
+/* Options Area - Matched to NumberBalance */
+.optionsArea {
+    width: 100%;
+    padding: 1rem;
+    background: linear-gradient(180deg, #eff6ff 0%, #dbeafe 100%);
+    /* Subtle Blue Gradient */
+    border: 2px solid #bfdbfe;
+    /* Slight border definition */
+    backdrop-filter: blur(8px);
+    border-radius: 0.75rem;
+    margin-bottom: 0px;
+    /* margin-top: auto removed to prevent pushing grid to top */
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    min-height: 100px;
+}
+
+/* Option Button - Matched to NumberBalance .number-block */
+/* Option Button - Wooden Crate Style */
+.optionBtn {
+    /* Wooden Crate Style */
+    background: #8D6E63;
+    border: 3px solid #4E342E;
+    border-radius: 8px;
+
+    width: 80px;
+    height: 80px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.1), 0 4px 0 #3E2723;
+
+    position: relative;
+    cursor: grab;
+    user-select: none;
+    touch-action: none;
+    transition: transform 0.1s;
+    font-size: 2rem;
+    font-weight: 800;
+    color: #fff;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    line-height: 1;
+    -webkit-tap-highlight-color: transparent;
+
+    /* Plank Texture */
+    background-image: repeating-linear-gradient(180deg,
+            rgba(0, 0, 0, 0) 0%,
+            rgba(0, 0, 0, 0) 25%,
+            rgba(62, 39, 35, 0.1) 25%,
+            rgba(62, 39, 35, 0.1) 28%);
+}
+
+.optionBtn:active {
+    cursor: grabbing;
+    transform: scale(1.05);
+    /* Proper enlarge effect like NumberBalance */
+}
+
+/* Mobile Responsiveness for Option Buttons */
+@media (max-width: 600px) {
+    .optionBtn {
+        width: 65px;
+        height: 65px;
+        font-size: 1.5rem;
+    }
+
+    .optionsArea {
+        padding: 0.5rem;
+        min-height: 85px;
+        gap: 0.5rem;
+    }
+}
+
+/* Train Animations */
+.movingTrainContainer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* Ensure it overlays perfectly */
+}
+
+/* Animations */
+.departRight {
+    animation: trainDepartRight 2s ease-in forwards;
+}
+
+.arriveLeft {
+    animation: trainArriveLeft 2s ease-out forwards;
+}
+
+@keyframes trainDepartRight {
+    0% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateX(150%);
+        /* Move off-screen right */
+        opacity: 0;
+    }
+}
+
+@keyframes trainArriveLeft {
+    0% {
+        transform: translateX(-150%);
+        /* Start off-screen left */
+        opacity: 0;
+    }
+
+    100% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}

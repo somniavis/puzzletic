@@ -20,6 +20,7 @@ import wildLinkEn from '../../games/brain/level2/WildLink/locales/en';
 import pairUpConnectEn from '../../games/brain/level2/PairUpConnect/locales/en';
 import animalBanquetEn from '../../games/brain/level2/AnimalBanquet/locales/en';
 import ufoInvasionEn from '../../games/math/adventure/level2/UFOInvasion/locales/en';
+import cargoTrainEn from '../../games/math/adventure/level2/CargoTrain/locales/en';
 import mazeEscapeEn from '../../games/brain/level1/MazeEscape/locales/en';
 import mazeHunterEn from '../../games/brain/level2/MazeHunter/locales/en';
 import ticTacToeEn from '../../games/brain/level3/TicTacToe/locales/en';
@@ -1025,6 +1026,7 @@ export const en = {
     'maze-hunter': mazeHunterEn,
     'tic-tac-toe': ticTacToeEn,
     omok: omokEn,
+    cargoTrain: cargoTrainEn,
     tags: {
       counting: 'Counting',
       sequence: 'Sequencing',
@@ -1044,6 +1046,7 @@ export const en = {
       strategy: 'Strategy',
       memory: 'Memory',
       logic: 'Logic',
+      comparison: 'Comparison',
     },
     mission: {
       challenge: 'Challenge! ({{current}}/{{total}})',

@@ -22,7 +22,7 @@ const L1_NumberBalance = lazy(() => delayedImport(import('./math/adventure/level
 const L1_FruitSlice = lazy(() => delayedImport(import('./math/adventure/level1/FruitSlice').then(m => ({ default: m.FruitSlice }))));
 const L1_MathArchery = lazy(() => delayedImport(import('./math/adventure/level1/MathArchery').then(m => ({ default: (props: any) => createElement(m.MathArchery, { ...props, level: 1 }) }))));
 const L2_MathArchery = lazy(() => delayedImport(import('./math/adventure/level1/MathArchery').then(m => ({ default: (props: any) => createElement(m.MathArchery, { ...props, level: 2 }) }))));
-const L1_CompareCritters = lazy(() => delayedImport(import('./math/adventure/level1/CompareCritters').then(m => ({ default: m.CompareCritters }))));
+const L1_CompareCritters = lazy(() => delayedImport(import('./math/adventure/level1/CompareCritters/index').then(m => ({ default: m.CompareCritters }))));
 
 // Math Adventure Level 2 Games (mixed exports)
 const L2_TenFrameCount = lazy(() => delayedImport(import('./math/adventure/level2/TenFrameCount').then(m => ({ default: m.TenFrameCount }))));
@@ -186,6 +186,20 @@ export const GAMES: GameManifest[] = [
         component: L2_TenFrameCount,
         thumbnail: '🧱',
         tagsKey: 'games.tags.numberSense'
+    },
+    {
+        id: GameIds.MATH_CARGO_TRAIN,
+        title: 'Cargo Train',
+        titleKey: 'games.cargoTrain.title',
+        subtitle: 'Make 100!',
+        subtitleKey: 'games.cargoTrain.subtitle',
+        category: 'math',
+        level: 2,
+        component: lazy(() => import('./math/adventure/level2/CargoTrain')),
+        description: 'Load the cargo to match the engine number!',
+        descriptionKey: 'games.cargoTrain.description',
+        tagsKey: 'games.tags.partWhole', // Fits nicely for "part-whole" or "addition"
+        thumbnail: '🚂'
     },
     {
         id: GameIds.PINWHEEL_POP,
