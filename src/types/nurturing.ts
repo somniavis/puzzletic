@@ -230,4 +230,7 @@ export interface NurturingPersistentState {
   // Pet System
   currentPetId?: string; // 현재 보유 중인 펫 ID (24시간 제한)
   petExpiresAt?: number; // 펫 만료 시간 (timestamp)
+
+  // UX State
+  lastPlayedGameId?: string; // Last played game ID for auto-scroll
 }

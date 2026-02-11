@@ -4,6 +4,7 @@ import type { GameManifest } from '../../games/types';
 import { getIconBackground, renderThumbnail } from '../../utils/playPageUtils';
 
 interface AdventureCardProps {
+    id?: string;
     game: GameManifest;
     unlocked: boolean;
     displayReason?: string;
@@ -14,6 +15,7 @@ interface AdventureCardProps {
 }
 
 export const AdventureCard: React.FC<AdventureCardProps> = ({
+    id,
     game,
     unlocked,
     displayReason,
@@ -95,6 +97,7 @@ export const AdventureCard: React.FC<AdventureCardProps> = ({
 
     return (
         <div
+            id={id}
             className={`adventure-card ${game.category === 'brain' ? 'brain-card' : ''} ${(!unlocked || isPremiumLocked) ? 'locked' : ''}`}
             onClick={handleClick}
         >

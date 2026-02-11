@@ -9,7 +9,7 @@ interface DraggableCargoProps {
     disabled?: boolean;
 }
 
-export const DraggableCargo: React.FC<DraggableCargoProps> = ({ id, value, disabled }) => {
+export const DraggableCargo: React.FC<DraggableCargoProps> = React.memo(({ id, value, disabled }) => {
     const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
         id: id,
         data: { value },
@@ -35,4 +35,6 @@ export const DraggableCargo: React.FC<DraggableCargoProps> = ({ id, value, disab
             {value}
         </button>
     );
-};
+});
+
+DraggableCargo.displayName = 'DraggableCargo';

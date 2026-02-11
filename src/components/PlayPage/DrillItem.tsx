@@ -5,6 +5,7 @@ import { PremiumLockOverlay } from '../Premium/PremiumLockOverlay';
 import { GENIUS_UNLOCK_THRESHOLD } from '../../utils/progression';
 
 interface DrillItemProps {
+    id?: string;
     game: GameManifest;
     unlocked: boolean;
     clearCount: number;
@@ -15,6 +16,7 @@ interface DrillItemProps {
 }
 
 export const DrillItem: React.FC<DrillItemProps> = ({
+    id,
     game,
     unlocked,
     clearCount,
@@ -51,6 +53,7 @@ export const DrillItem: React.FC<DrillItemProps> = ({
 
     return (
         <div
+            id={id}
             className={`drill-item ${unlocked ? 'unlocked' : ''} ${isPremiumLocked ? 'locked' : ''}`}
             onClick={handleClick}
             style={{ position: 'relative' }}

@@ -64,6 +64,10 @@ interface NurturingContextValue {
   setCharacterName: (name: string) => void;
   addRewards: (xp: number, gro: number) => void;
 
+  // UX Logic
+  lastPlayedGameId?: string;
+  setLastPlayedGameId: (id: string) => void;
+
   // 행동 (Actions)
   feed: (food: FoodItem) => ActionResult;
   giveMedicine: (medicine: MedicineItem) => ActionResult;
@@ -271,6 +275,14 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     setState((currentState) => ({ ...currentState, gameDifficulty: difficulty }));
   }, [setState]);
 
+  const setLastPlayedGameId = useCallback((id: string) => {
+    setState((currentState) => {
+      // Only update if changed to avoid renders
+      if (currentState.lastPlayedGameId === id) return currentState;
+      return { ...currentState, lastPlayedGameId: id };
+    });
+  }, [setState]);
+
   const recordGameScore = useCallback((gameId: string, score: number, incrementPlayCount: boolean = true, starsEarned: number = 0) => {
     setState(currentState => {
       const scoresMap = currentState.gameScores || {};
@@ -413,6 +425,10 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
 
     isGlobalLoading,
 
+    // UX
+    lastPlayedGameId: state.lastPlayedGameId,
+    setLastPlayedGameId,
+
   }), [
     state,
     condition,
@@ -428,6 +444,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     setCharacterState,
     setCharacterName,
     setGameDifficulty,
+    setLastPlayedGameId,
     recordGameScore,
     toggleSleep,
     debugUnlockAllGames,

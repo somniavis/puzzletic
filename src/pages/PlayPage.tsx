@@ -24,7 +24,7 @@ const PlayPage: React.FC = () => {
     const navigate = useNavigate();
     const { gameId } = useParams();
     const { t } = useTranslation();
-    const { setGameDifficulty, pauseTick, resumeTick, gameScores, categoryProgress, totalGameStars } = useNurturing();
+    const { setGameDifficulty, pauseTick, resumeTick, gameScores, categoryProgress, totalGameStars, lastPlayedGameId, setLastPlayedGameId } = useNurturing();
 
     // -- Custom Hook for State & Logic --
     const {
@@ -49,6 +49,20 @@ const PlayPage: React.FC = () => {
         pauseTick();
         return () => resumeTick();
     }, [pauseTick, resumeTick]);
+
+    // Auto-scroll to last played game on mount or tab change
+    useEffect(() => {
+        // Only scroll if we are in List View (no active gameId) and have a last played game
+        if (!gameId && lastPlayedGameId) {
+            // Small delay to ensure rendering
+            setTimeout(() => {
+                const element = document.getElementById(`game-card-${lastPlayedGameId}`);
+                if (element) {
+                    element.scrollIntoView({ behavior: 'auto', block: 'center' });
+                }
+            }, 100);
+        }
+    }, [lastPlayedGameId, activeTab, mathMode, gameId]); // Added gameId to trigger when returning from game
 
     // -- Handlers --
     const onTabSelect = (category: GameCategory) => {
@@ -81,6 +95,7 @@ const PlayPage: React.FC = () => {
         }
         playButtonSound();
         setGameDifficulty(game.level);
+        setLastPlayedGameId(game.id); // Save as last played
         navigate(`/play/${game.id}`);
     };
 
@@ -173,6 +188,7 @@ const PlayPage: React.FC = () => {
                         return (
                             <AdventureCard
                                 key={game.id}
+                                id={`game-card-${game.id}`} // Assign ID for scroll target
                                 game={game}
                                 unlocked={unlocked}
                                 displayReason={displayReason}
@@ -230,6 +246,7 @@ const PlayPage: React.FC = () => {
                         return (
                             <DrillItem
                                 key={game.id}
+                                id={`game-card-${game.id}`}
                                 game={game}
                                 unlocked={unlocked}
                                 clearCount={clearCount}

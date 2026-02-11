@@ -35,8 +35,8 @@ export default function CargoTrain() {
     // Train Animation State (Game Train)
     const [trainState, setTrainState] = useState<'idle' | 'departing' | 'arriving'>('idle');
 
-    // Filled Cargo State (Visual)
-    const [filledValue, setFilledValue] = useState<number | null>(null);
+    // Filled Cargo State (Visual) - Array for multiple slots
+    const [filledValues, setFilledValues] = useState<(number | null)[]>([null, null]);
 
     // Trigger animations based on score & problem change
     useEffect(() => {
@@ -72,7 +72,7 @@ export default function CargoTrain() {
     useEffect(() => {
         if (currentProblem) {
             // Reset filled value for new problem
-            setFilledValue(null);
+            setFilledValues([null, null]);
 
             // New problem arrived or initial load
             // Only play arrive animation if we are not initial load (or check score)
@@ -106,18 +106,76 @@ export default function CargoTrain() {
     const handleDragEnd = (event: DragEndEvent) => {
         const { active, over } = event;
 
-        if (over && over.id === 'train-gap') {
+        if (over && over.id.toString().startsWith('train-gap')) {
+            // Extract index from "train-gap-0" etc.
+            const parts = over.id.toString().split('-');
+            const index = parseInt(parts[parts.length - 1], 10);
+
             // active.data.current?.value holds the number
             const draggedValue = active.data.current?.value;
-            if (draggedValue !== undefined) {
-                checkAnswer(draggedValue);
-                // Visual Update if correct
-                if (currentProblem && draggedValue === currentProblem.missing) {
-                    setFilledValue(draggedValue);
+
+            if (draggedValue !== undefined && !isNaN(index)) {
+
+                // Update local state temporarily
+                const newFilled = [...filledValues];
+                newFilled[index] = draggedValue;
+                setFilledValues(newFilled);
+
+                // Check Logic
+                if (currentProblem) {
+                    if (currentProblem.type === 'A') {
+                        // Type A: Validate Immediately
+                        // We must pass array [value]
+                        if (currentProblem && draggedValue === currentProblem.missing[0]) {
+                            // Correct visual update already done via state
+                            checkAnswer([draggedValue]);
+                        } else {
+                            // Wrong answer: Reset this slot after short delay or immediately?
+                            // GameLogic handles "wrong" event.
+                            // We should call checkAnswer to trigger logic.
+                            checkAnswer([draggedValue]);
+                            // If wrong, reset visual?
+                            if (draggedValue !== currentProblem.missing[0]) {
+                                setTimeout(() => {
+                                    setFilledValues(prev => {
+                                        const reset = [...prev];
+                                        reset[index] = null;
+                                        return reset;
+                                    });
+                                }, 500);
+                            }
+                        }
+                    } else {
+                        // Type B: Validate only if BOTH are filled
+                        // Check if the OTHER slot is already filled
+
+                        // Note: filledValues state might not be updated yet in this render cycle?
+                        // Actually 'newFilled' has the latest state for this drop.
+
+                        if (newFilled[0] !== null && newFilled[1] !== null) {
+                            // Both filled. Validate.
+                            // We cast to number[] since we checked null
+                            const valuesToCheck = newFilled as number[];
+
+                            // Calculate sum logic is inside GameLogic, but we can pre-check visual reset
+                            const isSumCorrect = (valuesToCheck[0] + valuesToCheck[1]) === currentProblem.target;
+
+                            checkAnswer(valuesToCheck);
+
+                            if (!isSumCorrect) {
+                                // Reset both if wrong
+                                setTimeout(() => {
+                                    setFilledValues([null, null]);
+                                }, 500);
+                            }
+                        }
+                    }
                 }
             }
         }
     };
+
+    // ...
 
     // Standard PowerUps (Freeze, Life, Double)
     const powerUps = useMemo(() => [
@@ -150,6 +208,21 @@ export default function CargoTrain() {
         }
     ], [t, gameLogic.powerUps, gameLogic.isTimeFrozen, gameLogic.lives, gameLogic.isDoubleScore, gameLogic.activatePowerUp]);
 
+
+    const cardBackground = useMemo(() => (
+        <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', position: 'relative' }}>
+            <div className={styles.skyArea} />
+            <DistantScene triggerAnimation={triggerTrain} />
+            <div className={styles.groundArea} />
+        </div>
+    ), [triggerTrain]);
+
+    const instructions = useMemo(() => [
+        { icon: '🚂', title: t('games.cargoTrain.howToPlay.step1.title', 'Step 1'), description: t('games.cargoTrain.howToPlay.step1.desc', 'Check the engine number.') },
+        { icon: '🚃', title: t('games.cargoTrain.howToPlay.step2.title', 'Step 2'), description: t('games.cargoTrain.howToPlay.step2.desc', 'Drag the cargo.') },
+        { icon: '✅', title: t('games.cargoTrain.howToPlay.step3.title', 'Step 3'), description: t('games.cargoTrain.howToPlay.step3.desc', 'Make the total!') }
+    ], [t]);
+
     return (
         <Layout2
             title={t('games.cargoTrain.title', 'Cargo Train')}
@@ -158,18 +231,8 @@ export default function CargoTrain() {
             engine={gameLogic}
             powerUps={powerUps}
             onExit={() => navigate(-1)}
-            cardBackground={
-                <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', position: 'relative' }}>
-                    <div className={styles.skyArea} />
-                    <DistantScene triggerAnimation={triggerTrain} />
-                    <div className={styles.groundArea} />
-                </div>
-            }
-            instructions={[
-                { icon: '🚂', title: t('games.cargoTrain.howToPlay.step1.title', 'Step 1'), description: t('games.cargoTrain.howToPlay.step1.desc', 'Check the engine number.') },
-                { icon: '🚃', title: t('games.cargoTrain.howToPlay.step2.title', 'Step 2'), description: t('games.cargoTrain.howToPlay.step2.desc', 'Drag the cargo.') },
-                { icon: '✅', title: t('games.cargoTrain.howToPlay.step3.title', 'Step 3'), description: t('games.cargoTrain.howToPlay.step3.desc', 'Make the total!') }
-            ]}
+            cardBackground={cardBackground}
+            instructions={instructions}
         >
             <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
                 <div className={styles.gameContainer}>
@@ -180,10 +243,12 @@ export default function CargoTrain() {
                                 <>
                                     {/* Layer 1: Static Rail (Relatively positioned to give track height) */}
                                     <TrainSkeleton
+                                        type={currentProblem.type}
                                         fixedValue={0}
                                         targetValue={0}
-                                        droppableId="rail-layer"
+                                        baseDroppableId="rail-layer"
                                         renderMode="rail"
+                                        filledValues={[]}
                                     />
 
                                     {/* Layer 2: Moving Train (Absolutely positioned on top) */}
@@ -191,11 +256,12 @@ export default function CargoTrain() {
                                         trainState === 'arriving' ? styles.arriveLeft : ''
                                         }`}>
                                         <TrainSkeleton
+                                            type={currentProblem.type}
                                             fixedValue={currentProblem.fixed}
                                             targetValue={currentProblem.target}
-                                            droppableId="train-gap"
+                                            baseDroppableId="train-gap"
                                             renderMode="train"
-                                            filledValue={filledValue}
+                                            filledValues={filledValues}
                                         />
                                     </div>
                                 </>
