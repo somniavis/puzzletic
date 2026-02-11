@@ -236,6 +236,13 @@ export default function CargoTrain() {
             cardBackground={cardBackground}
             instructions={instructions}
         >
+            {/* DEBUG BUTTON */}
+            <button
+                style={{ position: 'absolute', top: '100px', left: 0, zIndex: 9999, background: 'red', color: 'white', padding: '10px' }}
+                onClick={() => gameLogic.checkAnswer([999])}
+            >
+                DEBUG FAIL
+            </button>
             <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
                 <div className={styles.gameContainer}>
                     {/* Game Content sits on top of Background */}
