@@ -31,11 +31,7 @@ export const useGameEffects = (lastEvent: GameEvent | null | undefined) => {
 
     useEffect(() => {
         if (lastEvent) {
-            // console.log('[useGameEffects] Received event:', lastEvent);
-            if (processedEventIds.current.has(lastEvent.id)) {
-                // console.log('[useGameEffects] Event already processed:', lastEvent.id);
-                return;
-            }
+            if (processedEventIds.current.has(lastEvent.id)) return;
             processedEventIds.current.add(lastEvent.id);
 
             if (lastEvent.type === 'correct') {
@@ -50,7 +46,6 @@ export const useGameEffects = (lastEvent: GameEvent | null | undefined) => {
                     generateParticles('correct', 5, '✨');
                 }
             } else if (lastEvent.type === 'wrong') {
-                console.log('[useGameEffects] Triggering wrong sound (JelloClick)');
                 playJelloClickSound(); // Standard failure feedback (Jello Sound)
                 setShowShake(true);
                 setTimeout(() => setShowShake(false), 500);
