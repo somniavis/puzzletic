@@ -1,7 +1,7 @@
 
 import { useMemo, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { playJelloClickSound } from '../../../../../utils/sound';
+
 import { useTranslation } from 'react-i18next';
 import {
     DndContext,
@@ -137,7 +137,6 @@ export default function CargoTrain() {
                             checkAnswer([draggedValue]);
                             // If wrong, reset visual?
                             if (draggedValue !== currentProblem.missing[0]) {
-                                playJelloClickSound(); // Explicit sound feedback for fail
                                 setTimeout(() => {
                                     setFilledValues(prev => {
                                         const reset = [...prev];
@@ -165,7 +164,6 @@ export default function CargoTrain() {
                             checkAnswer(valuesToCheck);
 
                             if (!isSumCorrect) {
-                                playJelloClickSound(); // Explicit sound feedback for fail
                                 // Reset both if wrong
                                 setTimeout(() => {
                                     setFilledValues([null, null]);
