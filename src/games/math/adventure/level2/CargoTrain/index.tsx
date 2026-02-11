@@ -211,7 +211,9 @@ export default function CargoTrain() {
 
     const cardBackground = useMemo(() => (
         <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', position: 'relative' }}>
-            <div className={styles.skyArea} />
+            <div className={styles.skyArea}>
+                <div className={styles.cloud} />
+            </div>
             <DistantScene triggerAnimation={triggerTrain} />
             <div className={styles.groundArea} />
         </div>

@@ -23,6 +23,45 @@
     z-index: 1;
 }
 
+/* Cloud Shape */
+.cloud {
+    position: absolute;
+    top: 25%;
+    right: 5%;
+    width: 60px;
+    height: 20px;
+    background: #ffffff;
+    border-radius: 20px;
+    z-index: 2;
+    animation: floatCloud 20s linear infinite;
+    opacity: 0.9;
+}
+
+.cloud::after {
+    content: '';
+    position: absolute;
+    top: -15px;
+    left: 10px;
+    width: 30px;
+    height: 30px;
+    background: #ffffff;
+    border-radius: 50%;
+}
+
+@keyframes floatCloud {
+    0% {
+        transform: translateX(0);
+    }
+
+    50% {
+        transform: translateX(10px);
+    }
+
+    100% {
+        transform: translateX(0);
+    }
+}
+
 .groundArea {
     width: 100%;
     height: 75%;
