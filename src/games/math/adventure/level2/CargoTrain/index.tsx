@@ -80,8 +80,8 @@ export default function CargoTrain() {
             // But simple check: if we were departing, now we arrive
             setTrainState(prev => prev === 'departing' ? 'arriving' : 'idle');
 
-            // Allow animation to play then reset to idle
-            const timer = setTimeout(() => setTrainState('idle'), 1000);
+            // Allow animation to play then reset to idle (2s duration)
+            const timer = setTimeout(() => setTrainState('idle'), 2000);
             return () => clearTimeout(timer);
         }
     }, [currentProblem]);
