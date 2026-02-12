@@ -149,16 +149,16 @@
 .distantTrain {
     position: absolute;
     bottom: -2px;
-    /* On Rail */
-    right: -50px;
+    left: 110%;
     /* Start off-screen right */
+    white-space: nowrap;
+    /* Prevent wrapping */
     font-size: 1.2rem;
     transform: scaleX(1);
-    /* Face left (Default) */
-    transition: right 2s linear;
+    /* Face left */
     z-index: 3;
-    /* Keep on top */
     opacity: 0;
+    will-change: left, opacity;
 }
 
 /* Animation Class */
@@ -169,13 +169,13 @@
 
 @keyframes driveToFactory {
     0% {
-        right: -10%;
+        left: 110%;
         opacity: 1;
     }
 
     70% {
-        right: calc(80% - 6rem);
-        /* Move until engine hits left edge (Island Left = 20%) */
+        left: 20%;
+        /* Arrives at Island (20%) */
         opacity: 1;
     }
 
@@ -184,10 +184,8 @@
     }
 
     100% {
-        right: calc(80% - 6rem);
-        /* Stay */
+        left: 20%;
         opacity: 0;
-        /* Disappear upon arrival */
     }
 }
 
@@ -198,8 +196,8 @@
     display: flex;
     justify-content: center;
     position: relative;
-    margin-bottom: 0.5rem;
-    /* ~8px gap as requested (5px+) */
+    margin-bottom: 0rem;
+    /* Reduced margin */
     z-index: 30;
     /* Aspect ratio height is driven by child TrainSkeleton */
 }
@@ -432,7 +430,36 @@
     display: flex;
     justify-content: center;
     gap: 1rem;
+    gap: 1rem;
     min-height: 100px;
+}
+
+.instructionText {
+    width: 100%;
+    text-align: center;
+    color: #374151;
+    /* Gray-700 */
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+    animation: gentlePulse 2s infinite ease-in-out;
+    pointer-events: none;
+    z-index: 25;
+}
+
+@keyframes gentlePulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 0.9;
+    }
+
+    50% {
+        transform: scale(1.05);
+        opacity: 1;
+    }
 }
 
 /* Option Button - Matched to NumberBalance .number-block */
