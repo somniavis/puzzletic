@@ -13,7 +13,7 @@ import mathPinwheelJa from '../../games/math/adventure/level2/PinwheelPop/locale
 import compareCrittersJa from '../../games/math/adventure/level1/CompareCritters/locales/ja';
 import deepSeaDiveJa from '../../games/math/adventure/level2/DeepSeaDive/locales/ja';
 import ufoInvasionJa from '../../games/math/adventure/level2/UFOInvasion/locales/ja';
-import cargoTrainJa from '../../games/math/adventure/level2/CargoTrain/locales/ja';
+import cargoTrainJa from '../../games/math/adventure/level2/CargoTrain/locales/ja.ts';
 import rocketLauncherJa from '../../games/math/adventure/level2/RocketLauncher/locales/ja';
 
 import colorLinkJa from '../../games/brain/level1/ColorLink/locales/ja';
