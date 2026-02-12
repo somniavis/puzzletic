@@ -271,6 +271,12 @@ export default function CargoTrain() {
                             )}
                         </div>
 
+                        <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+                            <div className={styles.instructionText}>
+                                {t('games.cargoTrain.instruction')}
+                            </div>
+                        </div>
+
                         <div className={styles.optionsArea}>
                             {currentProblem?.options.map((val, idx) => (
                                 <DraggableCargo

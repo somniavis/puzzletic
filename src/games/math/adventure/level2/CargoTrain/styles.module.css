@@ -250,10 +250,10 @@
     grid-template-rows: 1fr 1fr;
     gap: 0;
     justify-content: center;
-    width: 90%;
-    /* 90% width (5% margin on each side) */
-    max-width: 800px;
-    /* Max width constraint */
+    width: 95%;
+    /* Increased width usage */
+    max-width: 600px;
+    /* User Requested: Stop growing at 600px */
     margin: 0 auto;
     /* Center the grid */
     position: relative;
@@ -439,18 +439,32 @@
     text-align: center;
     position: relative;
     /* Required for z-index */
-    color: #374151;
-    /* Gray-700 */
+    /* Gray-800 for max contrast */
+    color: #1f2937;
     font-size: 1.25rem;
-    font-weight: 700;
-    margin-bottom: 1rem;
-    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
-    animation: gentlePulse 2s infinite ease-in-out;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+
+    /* Add background to ensuring visibility against any backdrop */
+    background-color: rgba(255, 255, 255, 0.85);
+    padding: 0.5rem 1rem;
+    border-radius: 999px;
+    width: auto;
+    /* Fit content */
+    display: inline-block;
+    /* Wrap tight */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+    text-shadow: none;
+    /* Removed text-shadow */
+    animation: none;
+    /* Removed pulse animation to debug visibility */
     pointer-events: none;
     z-index: 40;
-    /* Ensure it's above track (30) */
-    will-change: transform, opacity;
+    will-change: transform;
 }
+
+/* Removed gentlePulse to simplify rendering */
 
 @keyframes gentlePulse {
 
