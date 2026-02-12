@@ -233,6 +233,25 @@
     opacity: 0.9;
 }
 
+/* Moon Decoration - CSS Crescent */
+.moon {
+    position: absolute;
+    top: 5%;
+    left: 5%;
+    width: 4rem;
+    height: 4rem;
+    border-radius: 50%;
+    /* Create Crescent using box-shadow */
+    box-shadow: inset -10px 0px 0 0 #fef08a;
+    /* Yellow-200 inner shadow */
+    transform: rotate(-30deg);
+    filter: drop-shadow(0 0 10px rgba(254, 240, 138, 0.6));
+    /* Outer Glow */
+    z-index: 5;
+    pointer-events: none;
+    opacity: 0.9;
+}
+
 .star {
     position: absolute;
     color: #fef08a;

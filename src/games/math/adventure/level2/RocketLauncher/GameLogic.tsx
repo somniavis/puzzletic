@@ -28,6 +28,7 @@ export const GameLogic: React.FC<GameLogicProps> = ({ controller }) => {
 
     return (
         <div className={styles.container}>
+            <div className={styles.moon} />
             {/* Little Dipper Constellation */}
             <div className={styles.constellation}>
                 <div className={styles.star}>★</div>
