@@ -2,6 +2,7 @@ export default {
     title: '貨物列車',
     subtitle: '荷物を積もう！',
     description: '機関車の数字に合わせて荷物を積んでください！',
+    instruction: '荷物を動かしてね！',
     howToPlay: {
         step1: { title: 'ステップ 1', desc: '機関車の数字を確認しよう。' },
         step2: { title: 'ステップ 2', desc: '貨物をドラッグしよう。' },

@@ -77,7 +77,7 @@ const PetShopContent: React.FC<{ nurturing: any, onPetGacha: () => void }> = ({ 
 
             {/* Bottom: Showcase */}
             {/* Bottom: Showcase */}
-            <div className="food-items-grid" style={{ padding: 0, maxHeight: 'none', marginTop: 0 }}>
+            <div className="food-items-grid" style={{ padding: '0 4px 20px 4px', maxHeight: 'none', marginTop: 0 }}>
                 {PET_ITEMS.filter(pet => !pet.isHidden).map((pet) => {
                     const isCurrent = currentPetId === pet.id || (currentPetId && currentPetId.startsWith('special_pet_')); // Keep highlighted if special variant is active? 
                     // check logic: if we want to highlight the 'special pet' button when a variant is active.

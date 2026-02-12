@@ -2,6 +2,7 @@ export default {
     title: 'Cargo Train',
     subtitle: 'Load the Train!',
     description: 'Load the cargo to match the engine number!',
+    instruction: 'Move the cargo!',
     howToPlay: {
         step1: { title: 'Step 1', desc: 'Check the engine number.' },
         step2: { title: 'Step 2', desc: 'Drag the cargo.' },
