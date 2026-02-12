@@ -243,7 +243,7 @@
 .trainSystem {
     display: grid;
     /* 5 Columns, taking up equal fraction */
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(5, minmax(0, 1fr));
     /* Aspect Ratio 5:2 ensures 2 rows of height equal to column width */
     aspect-ratio: 5 / 2;
     /* Determine rows automatically based on aspect ratio */
@@ -258,6 +258,8 @@
     /* Center the grid */
     position: relative;
     /* For Rail */
+    container-type: inline-size;
+    /* Enable Container Queries */
 }
 
 /* Logical Unit Wrapper - ignored by layout */
@@ -293,9 +295,10 @@
     width: 100%;
     height: 100%;
     /* Maximize font size to fill cell height/width */
-    font-size: clamp(3rem, 15cqw, 7rem);
-    /* Fallback */
-    font-size: clamp(2.5rem, 12vw, 6rem);
+    /* Force font to respect container width */
+    font-size: 15cqw;
+    /* Fallback for older browsers if needed, but cqw is standard now */
+    font-size: clamp(1.5rem, 15cqw, 4rem);
     filter: drop-shadow(0 4px 4px rgba(0, 0, 0, 0.3));
     z-index: 10;
     padding-bottom: 0px;
@@ -446,7 +449,7 @@
     margin-bottom: 0.5rem;
 
     /* Add background to ensuring visibility against any backdrop */
-    background-color: rgba(255, 255, 255, 0.85);
+    background-color: rgba(255, 255, 255, 0.4);
     padding: 0.5rem 1rem;
     border-radius: 999px;
     width: auto;
