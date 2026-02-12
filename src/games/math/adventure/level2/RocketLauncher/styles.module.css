@@ -455,7 +455,9 @@
     position: absolute;
     width: 60%;
     height: 40px;
-    top: 50%;
+    /* top: 50%; -- Removed to align with bottom rocket */
+    bottom: 9.5rem;
+    /* Aligns with Rocket Center (Tank ~8rem + Rocket/2 ~2.75rem - Arm/2 ~1.25rem) */
     z-index: 50;
     display: flex;
     align-items: center;
@@ -928,5 +930,10 @@
         width: 4rem;
         height: 4rem;
         font-size: 2rem;
+    }
+
+    .robotArm {
+        bottom: 7.5rem;
+        /* Adjusted for smaller Mobile Rocket/Tank */
     }
 }
