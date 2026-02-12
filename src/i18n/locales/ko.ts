@@ -14,6 +14,7 @@ import compareCrittersKo from '../../games/math/adventure/level1/CompareCritters
 import deepSeaDiveKo from '../../games/math/adventure/level2/DeepSeaDive/locales/ko';
 import ufoInvasionKo from '../../games/math/adventure/level2/UFOInvasion/locales/ko';
 import cargoTrainKo from '../../games/math/adventure/level2/CargoTrain/locales/ko';
+import rocketLauncherKo from '../../games/math/adventure/level2/RocketLauncher/locales/ko';
 
 import colorLinkKo from '../../games/brain/level1/ColorLink/locales/ko.ts';
 import pairUpTwinKo from '../../games/brain/level1/PairUpTwin/locales/ko.ts';
@@ -1030,6 +1031,7 @@ export const ko = {
         'tic-tac-toe': ticTacToeKo,
         omok: omokKo,
         cargoTrain: cargoTrainKo,
+        rocketLauncher: rocketLauncherKo,
         tags: {
             counting: '수 세기',
             sequence: '수 순서',

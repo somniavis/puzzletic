@@ -1,0 +1,932 @@
+.container {
+    display: flex;
+    /* Use Flexbox for fluid sizing */
+    flex-direction: row;
+    gap: 2rem;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+    max-width: 1200px;
+    /* Limit width on large screens */
+    /* Reduced bottom padding */
+    box-sizing: border-box;
+    overflow: hidden;
+    position: relative;
+}
+
+/* Backgrounds removed to keep original dark theme */
+
+.rocketArea {
+    flex: 1;
+    /* Fluid width: takes available space */
+    min-width: 0;
+    /* Allow shrinking below content size */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    justify-content: flex-end;
+    height: 100%;
+    position: relative;
+    padding-bottom: 0;
+    /* Removed padding to maximize vertical space */
+    padding-left: 1rem;
+    /* Added margin/padding as requested */
+    padding-right: 1rem;
+}
+
+/* Launchpad Background */
+.launchpad {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 6rem;
+    height: 60%;
+    /* Adjusted to 60% per user request */
+    z-index: 0;
+    /* Behind everything */
+    opacity: 0.4;
+    /* Fainter background */
+}
+
+.launchpadLeft {
+    border-left: 4px solid #bae6fd;
+    border-right: 4px solid #bae6fd;
+    background:
+        repeating-linear-gradient(45deg,
+            transparent,
+            transparent 10px,
+            rgba(186, 230, 253, 0.5) 10px,
+            rgba(186, 230, 253, 0.5) 12px),
+        repeating-linear-gradient(-45deg,
+            transparent,
+            transparent 10px,
+            rgba(186, 230, 253, 0.5) 10px,
+            rgba(186, 230, 253, 0.5) 12px);
+}
+
+.launchpadRight {
+    --launchpad-border: #fbcfe8;
+    --launchpad-bg: rgba(251, 207, 232, 0.5);
+    border-left: 4px solid var(--launchpad-border);
+    border-right: 4px solid var(--launchpad-border);
+    background:
+        repeating-linear-gradient(45deg,
+            transparent,
+            transparent 10px,
+            var(--launchpad-bg) 10px,
+            var(--launchpad-bg) 12px),
+        repeating-linear-gradient(-45deg,
+            transparent,
+            transparent 10px,
+            var(--launchpad-bg) 10px,
+            var(--launchpad-bg) 12px);
+}
+
+.rocketWrapper {
+    position: relative;
+    transition: transform 0.3s ease;
+    z-index: 10;
+}
+
+.tankWrapper {
+    position: relative;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    /* ensure tank is centered */
+    align-items: flex-end;
+    /* Tank at bottom */
+}
+
+.rocket {
+    font-size: 5.5rem;
+    /* User requested 5.5rem */
+    /* Reduced to 90% of 6.4rem */
+    /* Big Emoji Rocket */
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+    animation: hover 3s ease-in-out infinite;
+    transform-origin: center center;
+    /* Changed to center for rotation */
+    transform: rotate(-45deg);
+    /* Point North */
+    transition: opacity 0.5s;
+}
+
+.hidden {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none;
+}
+
+.leftRocket {
+    transform: rotate(-5deg);
+    /* Slight tilt */
+}
+
+.rightRocket {
+    transform: rotate(5deg);
+    /* Slight tilt */
+}
+
+/* Fuel Hose Connection */
+.fuelHose {
+    position: absolute;
+    /* Connects tank (center) to rocket */
+    width: 6rem;
+    /* Reduced width for clean look */
+    height: 8rem;
+    /* Enough to reach rocket center */
+    bottom: 6rem;
+    /* Relative to tankWrapper (approx Tank Top) */
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 5;
+    /* Behind rocket wrapper (10) but above launchpad (1) */
+    pointer-events: none;
+    fill: none;
+    stroke: #94a3b8;
+    /* Lighter grey pipe */
+    stroke-width: 8px;
+    stroke-linejoin: round;
+    /* Smooth corners */
+    filter: drop-shadow(2px 2px 2px rgba(0, 0, 0, 0.3));
+}
+
+
+
+/* Animations */
+@keyframes hover {
+
+    0%,
+    100% {
+        transform: translateY(0) rotate(-45deg);
+    }
+
+    50% {
+        transform: translateY(-10px) rotate(-45deg);
+    }
+}
+
+@keyframes launchUp {
+    0% {
+        transform: translateY(0) scale(1) rotate(-45deg);
+        opacity: 1;
+    }
+
+    10% {
+        transform: translateY(10px) scale(0.95) rotate(-45deg);
+        opacity: 1;
+    }
+
+    20% {
+        transform: translateY(-50px) scale(1) rotate(-45deg);
+        opacity: 1;
+    }
+
+    /* Accelerate and vanish */
+    100% {
+        transform: translateY(-150vh) scale(0.1) rotate(-45deg);
+        opacity: 0;
+    }
+}
+
+@keyframes crash {
+
+    0%,
+    100% {
+        transform: rotate(-45deg);
+    }
+
+    25% {
+        transform: rotate(-60deg);
+    }
+
+    75% {
+        transform: rotate(-30deg);
+    }
+}
+
+.launching .rocket {
+    animation: launchUp 3.5s ease-in forwards !important;
+}
+
+.launching .smokeContainer {
+    opacity: 1;
+    transition: opacity 0.5s;
+}
+
+.launching .particle {
+    animation: particleDrop 2.5s ease-out forwards;
+}
+
+.constellation {
+    position: absolute;
+    top: 0;
+    right: 1%;
+    width: 180px;
+    height: 110px;
+    z-index: 5;
+    pointer-events: none;
+    opacity: 0.9;
+}
+
+.star {
+    position: absolute;
+    color: #fef08a;
+    /* Yellow-200 */
+    font-size: 0.6rem;
+    /* Smaller stars */
+    filter: drop-shadow(0 0 4px rgba(254, 240, 138, 0.8));
+    animation: twinkle 4s infinite ease-in-out;
+}
+
+/* Little Dipper / Ursa Minor - User Defined Shape */
+/*
+                               * (7)
+                      * (6)   * (5)
+     * (2)           * (3)
+        * (1)     * (4)
+*/
+
+/* Bowl Bottom Left */
+.star:nth-child(1) {
+    top: 75%;
+    left: 15%;
+    animation-delay: 0s;
+}
+
+/* Bowl Top Left */
+.star:nth-child(2) {
+    top: 55%;
+    left: 5%;
+    animation-delay: 1.5s;
+}
+
+/* Bowl Top Right (Join to Handle) */
+.star:nth-child(3) {
+    top: 55%;
+    left: 45%;
+    animation-delay: 0.5s;
+}
+
+/* Bowl Bottom Right */
+.star:nth-child(4) {
+    top: 75%;
+    left: 55%;
+    animation-delay: 2s;
+}
+
+/* Handle 1 */
+.star:nth-child(5) {
+    top: 40%;
+    left: 60%;
+    animation-delay: 1s;
+}
+
+/* Handle 2 */
+.star:nth-child(6) {
+    top: 30%;
+    left: 75%;
+    animation-delay: 2.5s;
+}
+
+/* Polaris (Handle Tip) */
+.star:nth-child(7) {
+    top: 10%;
+    left: 90%;
+    animation-delay: 0.2s;
+    font-size: 0.9rem;
+    /* Polaris slightly bigger */
+}
+
+@keyframes twinkle {
+
+    0%,
+    100% {
+        opacity: 0.4;
+        transform: scale(0.8);
+    }
+
+    50% {
+        opacity: 1;
+        transform: scale(1.2);
+    }
+}
+
+.cloudContainer {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 2;
+}
+
+/* Particle Smoke Container */
+.smokeContainer {
+    position: absolute;
+    bottom: -1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 6rem;
+    height: 4rem;
+    pointer-events: none;
+    z-index: -1;
+    opacity: 0;
+}
+
+.particle {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 1.2rem;
+    height: 1.2rem;
+    background-color: #ffffff;
+    border-radius: 50%;
+    opacity: 0;
+    transform: translateX(-50%);
+}
+
+/* Tiered Emission Pattern (1 -> 2 -> 3) */
+/* Sequence repeats every 6 particles */
+
+/* 1st Puff (Center) */
+.particle:nth-child(6n+1) {
+    background-color: #cbd5e1;
+    width: 1rem;
+    height: 1rem;
+    margin-left: -0.5rem;
+    /* Center align fix */
+    animation-delay: 0s;
+}
+
+/* 2nd Puff (Left/Right) */
+.particle:nth-child(6n+2) {
+    background-color: #e2e8f0;
+    margin-left: -1.2rem;
+    /* Left */
+    animation-delay: 0.3s;
+}
+
+.particle:nth-child(6n+3) {
+    background-color: #f1f5f9;
+    margin-left: 0.2rem;
+    /* Right */
+    animation-delay: 0.3s;
+}
+
+/* 3rd Puff (Wide Spread) */
+.particle:nth-child(6n+4) {
+    background-color: #cbd5e1;
+    margin-left: -1.8rem;
+    /* Far Left */
+    animation-delay: 0.6s;
+}
+
+.particle:nth-child(6n+5) {
+    background-color: #ffffff;
+    margin-left: -0.5rem;
+    /* Center */
+    animation-delay: 0.6s;
+}
+
+.particle:nth-child(6n+6) {
+    background-color: #e2e8f0;
+    margin-left: 0.8rem;
+    /* Far Right */
+    animation-delay: 0.6s;
+}
+
+/* Wave Delays for Groups of 6 */
+.particle:nth-child(n+7) {
+    animation-delay: 0.8s !important;
+}
+
+.particle:nth-child(n+7):nth-child(6n+2),
+.particle:nth-child(n+7):nth-child(6n+3) {
+    animation-delay: 1.1s !important;
+}
+
+.particle:nth-child(n+7):nth-child(6n+4),
+.particle:nth-child(n+7):nth-child(6n+5),
+.particle:nth-child(n+7):nth-child(6n+6) {
+    animation-delay: 1.4s !important;
+}
+
+.particle:nth-child(n+13) {
+    animation-delay: 1.6s !important;
+}
+
+.particle:nth-child(n+13):nth-child(6n+2),
+.particle:nth-child(n+13):nth-child(6n+3) {
+    animation-delay: 1.9s !important;
+}
+
+.particle:nth-child(n+13):nth-child(6n+4),
+.particle:nth-child(n+13):nth-child(6n+5),
+.particle:nth-child(n+13):nth-child(6n+6) {
+    animation-delay: 2.2s !important;
+}
+
+@keyframes particleDrop {
+    0% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(0) scale(0.5);
+    }
+
+    10% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(10px) scale(1.2);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(80px) scale(2.5);
+    }
+}
+
+/* Robot Arm Base */
+.robotArm {
+    position: absolute;
+    width: 60%;
+    height: 40px;
+    top: 50%;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    pointer-events: none;
+    transition: transform 0.5s;
+}
+
+/* Left Arm Configuration */
+.armLeft {
+    left: 0;
+    transform: translateY(-50%) translateX(-85%);
+    /* Hidden State */
+    flex-direction: row-reverse;
+    --reach-transform: translateY(-50%) translateX(-15%);
+    /* Reach State */
+    --hidden-transform: translateY(-50%) translateX(-85%);
+}
+
+/* Right Arm Configuration */
+.armRight {
+    right: 0;
+    transform: translateY(-50%) translateX(85%);
+    /* Hidden State */
+    flex-direction: row;
+    --reach-transform: translateY(-50%) translateX(15%);
+    /* Reach State */
+    --hidden-transform: translateY(-50%) translateX(85%);
+}
+
+/* Animations using CSS Variables */
+.armSegment {
+    flex: 1;
+    height: 12px;
+    background: linear-gradient(to bottom, #94a3b8, #64748b);
+    border: 2px solid #475569;
+    border-radius: 4px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.claw {
+    width: 3rem;
+    height: 3rem;
+    background: #475569;
+    border-radius: 50%;
+    border: 3px solid #1e293b;
+    position: relative;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2;
+}
+
+/* Pincers */
+.claw::before,
+.claw::after {
+    content: '';
+    position: absolute;
+    width: 10px;
+    height: 25px;
+    background: #cbd5e1;
+    border: 2px solid #64748b;
+    border-radius: 4px;
+    transition: transform 0.3s ease;
+}
+
+/* Left Arm Pincers */
+.armLeft .claw::before {
+    top: -20px;
+    transform: rotate(-30deg);
+    transform-origin: bottom center;
+}
+
+.armLeft .claw::after {
+    bottom: -20px;
+    transform: rotate(30deg);
+    transform-origin: top center;
+}
+
+/* Right Arm Pincers */
+.armRight .claw::before {
+    top: -20px;
+    transform: rotate(30deg);
+    transform-origin: bottom center;
+}
+
+.armRight .claw::after {
+    bottom: -20px;
+    transform: rotate(-30deg);
+    transform-origin: top center;
+}
+
+/* Held Rocket inside Arm */
+.heldRocket {
+    position: absolute;
+    font-size: 3rem;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%) rotate(-45deg);
+    z-index: 1;
+    opacity: 0;
+    /* Hidden by default */
+}
+
+.grabbing {
+    animation: grabMove 2s ease-in-out forwards;
+}
+
+.placing {
+    animation: placeMove 2s ease-in-out forwards;
+}
+
+@keyframes grabMove {
+
+    0%,
+    100% {
+        transform: var(--hidden-transform);
+    }
+
+    25%,
+    60% {
+        transform: var(--reach-transform);
+    }
+}
+
+@keyframes placeMove {
+
+    0%,
+    100% {
+        transform: var(--hidden-transform);
+    }
+
+    25%,
+    60% {
+        transform: var(--reach-transform);
+    }
+}
+
+/* Claw Animation */
+@keyframes clawClose {
+
+    0%,
+    25% {
+        transform: scale(1);
+    }
+
+    45%,
+    100% {
+        transform: scale(0.6);
+    }
+}
+
+@keyframes clawOpen {
+
+    0%,
+    25% {
+        transform: scale(0.6);
+    }
+
+    45%,
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Rocket Visibility Helpers */
+@keyframes showHeldDelay {
+
+    0%,
+    45% {
+        opacity: 0;
+    }
+
+    46%,
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes hideHeldDelay {
+
+    0%,
+    45% {
+        opacity: 1;
+    }
+
+    46%,
+    100% {
+        opacity: 0;
+    }
+}
+
+/* Grabbing Sequence */
+.robotArm.grabbing {
+    animation: grabMove 2s ease-in-out forwards;
+}
+
+.robotArm.grabbing .claw::before,
+.robotArm.grabbing .claw::after {
+    animation: clawClose 2s ease-in-out forwards;
+}
+
+/* Rocket Visibility during Grab */
+.robotArm.grabbing .heldRocket {
+    animation: showHeldDelay 2s steps(1) forwards;
+}
+
+/* Placing Sequence */
+.robotArm.placing {
+    animation: placeMove 2s ease-in-out forwards;
+}
+
+.robotArm.placing .claw::before,
+.robotArm.placing .claw::after {
+    animation: clawOpen 2s ease-in-out forwards;
+}
+
+/* Rocket Visibility during Place */
+.robotArm.placing .heldRocket {
+    animation: hideHeldDelay 2s steps(1) forwards;
+}
+
+/* Real Rocket Handling */
+.beingGrabbed .rocket {
+    animation: vanishOnGrab 2s steps(1) forwards;
+}
+
+@keyframes vanishOnGrab {
+    0% {
+        opacity: 1;
+    }
+
+    45% {
+        opacity: 1;
+    }
+
+    46% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+.beingPlaced .rocket {
+    animation: appearOnPlace 2s steps(1) forwards;
+}
+
+@keyframes appearOnPlace {
+    0% {
+        opacity: 0;
+    }
+
+    45% {
+        opacity: 0;
+    }
+
+    46% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+.crashed .rocket {
+    animation: crash 0.5s ease-in-out;
+    filter: grayscale(1) brightness(0.8);
+}
+
+/* Fuel Tank (Number Display) */
+.fuelTank {
+    margin-top: 1rem;
+    position: relative;
+    background: linear-gradient(to right, #64748b, #94a3b8 20%, #cbd5e1 50%, #94a3b8 80%, #64748b);
+    border: 3px solid #475569;
+    border-radius: 1rem;
+    padding: 1rem;
+    /* Reduced padding from 1.5rem */
+    min-width: 120px;
+    /* Reduced min-width from 140px */
+    text-align: center;
+    box-shadow:
+        inset 0 0 20px rgba(0, 0, 0, 0.3),
+        /* Depth */
+        0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    /* Drop shadow */
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+/* Metallic Rivets */
+.fuelTank::before,
+.fuelTank::after {
+    content: '';
+    position: absolute;
+    width: calc(100% - 12px);
+    /* Span full width minus margins */
+    left: 6px;
+    height: 6px;
+    background: transparent;
+    /* Create dots at ends using linear-gradient */
+    background-image: linear-gradient(to right, #334155 6px, transparent 6px, transparent calc(100% - 6px), #334155 calc(100% - 6px));
+}
+
+.fuelTank::before {
+    top: 6px;
+}
+
+.fuelTank::after {
+    bottom: 6px;
+}
+
+.fuelLabel {
+    font-size: 0.75rem;
+    /* Smaller font */
+    color: #1e293b;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    background: rgba(255, 255, 255, 0.4);
+    padding: 0.1rem 0.5rem;
+    /* Compact padding */
+    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    margin-bottom: 0px;
+    width: auto;
+    /* Fit content */
+    min-width: 60%;
+    box-sizing: border-box;
+}
+
+/* Digital Display Container */
+.fuelDisplay {
+    background: #0f172a;
+    /* Dark screen */
+    border: 2px solid #334155;
+    border-radius: 0.5rem;
+    padding: 0.25rem 0.75rem;
+    /* Reduced inner padding */
+    width: 100%;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box;
+    height: 3.5rem;
+    /* Fixed height for consistency */
+}
+
+.fuelValue {
+    font-size: 3rem;
+    font-weight: 700;
+    color: #ef4444;
+    /* LED Red */
+    font-family: 'Courier New', monospace;
+    /* Digital font style */
+    text-shadow: 0 0 5px rgba(239, 68, 68, 0.6);
+    line-height: 1;
+}
+
+/* Comparison Controls */
+.controlArea {
+    flex: 0 0 auto;
+    /* Fixed width, won't grow or shrink */
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    z-index: 30;
+    padding: 1.5rem;
+    justify-content: center;
+    /* Center buttons inside */
+    height: auto;
+    /* Let it fit content */
+    align-self: flex-end;
+    /* Align to bottom of flex container */
+    margin-bottom: 1rem;
+    /* Space from bottom edge */
+    background-color: rgba(255, 255, 255, 0.1);
+    /* Semi-transparent background */
+    backdrop-filter: blur(4px);
+    /* Glass effect */
+    border-radius: 1.5rem;
+    /* Rounded corners */
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    /* Subtle border */
+}
+
+.compareBtn {
+    width: 5rem;
+    height: 7.5rem;
+    /* Tall Rectangle like Compare Critters */
+    border-radius: 1rem;
+    border: none;
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: black;
+    /* Black symbols */
+    cursor: pointer;
+    transition: transform 0.1s, box-shadow 0.1s;
+    display: flex;
+    /* Centering content */
+    align-items: center;
+    /* Centering content */
+    justify-content: center;
+    /* Centering content */
+}
+
+.compareBtn:active,
+.pressed {
+    transform: translateY(6px);
+    box-shadow: none !important;
+}
+
+.btnGreater {
+    background-color: #2196F3;
+    /* Blue 500 */
+    box-shadow: 0 6px 0 #1565C0, 0 10px 10px rgba(0, 0, 0, 0.2);
+    /* Blue 800 */
+}
+
+.btnEqual {
+    background-color: #FFEB3B;
+    /* Yellow 500 */
+    box-shadow: 0 5px 0 #FBC02D, 0 10px 10px rgba(0, 0, 0, 0.15);
+    /* Yellow 700 */
+}
+
+.btnLess {
+    background-color: #F87171;
+    /* Red-400 */
+    box-shadow: 0 5px 0 #EF4444, 0 10px 10px rgba(0, 0, 0, 0.15);
+    /* Red-500 shadow */
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .container {
+        padding: 1rem 1rem 0 1rem;
+        /* Reduced bottom padding */
+        gap: 1rem;
+    }
+
+    .fuelTank {
+        padding: 0.75rem;
+        min-width: 80px;
+        /* Reduced for small screens */
+    }
+
+    .fuelDisplay {
+        padding: 0.25rem 0.5rem;
+    }
+
+    .rocket {
+        font-size: 4.2rem;
+        /* User requested 4.2rem */
+        /* Reduced to 90% of 4.8rem */
+    }
+
+    .fuelValue {
+        font-size: 2.5rem;
+    }
+
+    .compareBtn {
+        width: 4rem;
+        height: 4rem;
+        font-size: 2rem;
+    }
+}

@@ -26,6 +26,7 @@ const L1_CompareCritters = lazy(() => delayedImport(import('./math/adventure/lev
 
 // Math Adventure Level 2 Games (mixed exports)
 const L2_TenFrameCount = lazy(() => delayedImport(import('./math/adventure/level2/TenFrameCount').then(m => ({ default: m.TenFrameCount }))));
+const L2_RocketLauncher = lazy(() => delayedImport(import('./math/adventure/level2/RocketLauncher'))); // default export for new game
 const L2_PinwheelPop = lazy(() => delayedImport(import('./math/adventure/level2/PinwheelPop').then(m => ({ default: m.MathPinwheel }))));
 
 const L1_DeepSeaDive = lazy(() => delayedImport(import('./math/adventure/level2/DeepSeaDive').then(m => ({ default: (props: any) => createElement(m.DeepSeaDive, { ...props, level: 1 }) }))));
@@ -186,6 +187,20 @@ export const GAMES: GameManifest[] = [
         component: L2_TenFrameCount,
         thumbnail: '🧱',
         tagsKey: 'games.tags.numberSense'
+    },
+    {
+        id: GameIds.MATH_ROCKET_LAUNCHER,
+        title: 'Rocket Launcher',
+        titleKey: 'games.rocketLauncher.title',
+        subtitle: 'Compare Fuel!',
+        subtitleKey: 'games.rocketLauncher.subtitle',
+        category: 'math',
+        level: 2,
+        component: L2_RocketLauncher,
+        description: 'Launch the rocket with more fuel!',
+        descriptionKey: 'games.rocketLauncher.description',
+        tagsKey: 'games.tags.comparison',
+        thumbnail: '🚀'
     },
     {
         id: GameIds.MATH_CARGO_TRAIN,

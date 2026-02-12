@@ -193,6 +193,16 @@ export const useCargoTrainLogic = () => {
         engine.submitAnswer(isCorrect);
 
         if (isCorrect) {
+            // PowerUp Acquisition Logic (Standard: Combo % 3 == 0, 55% Chance)
+            const nextCombo = engine.combo + 1;
+            if (nextCombo > 0 && nextCombo % 3 === 0) {
+                if (Math.random() < 0.55 && engine.setPowerUps) {
+                    const rewards = ['timeFreeze', 'extraLife', 'doubleScore'] as const;
+                    const reward = rewards[Math.floor(Math.random() * rewards.length)];
+                    engine.setPowerUps(prev => ({ ...prev, [reward]: prev[reward] + 1 }));
+                }
+            }
+
             setIsTransitioning(true);
             setTimeout(() => {
                 generateProblem();

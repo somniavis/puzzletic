@@ -18,6 +18,7 @@ export const GameIds = {
     DEEP_SEA_DIVE_LV2: 'deep-sea-dive-lv2',
     MATH_UFO_INVASION: 'math-level2-ufo-invasion',
     MATH_CARGO_TRAIN: 'math-cargo-train',
+    MATH_ROCKET_LAUNCHER: 'math-rocket-launcher',
 
     // Math Genius - Front Addition
     FRONT_ADDITION_LV1: 'front-addition-lv1',

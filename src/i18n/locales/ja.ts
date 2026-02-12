@@ -14,6 +14,7 @@ import compareCrittersJa from '../../games/math/adventure/level1/CompareCritters
 import deepSeaDiveJa from '../../games/math/adventure/level2/DeepSeaDive/locales/ja';
 import ufoInvasionJa from '../../games/math/adventure/level2/UFOInvasion/locales/ja';
 import cargoTrainJa from '../../games/math/adventure/level2/CargoTrain/locales/ja';
+import rocketLauncherJa from '../../games/math/adventure/level2/RocketLauncher/locales/ja';
 
 import colorLinkJa from '../../games/brain/level1/ColorLink/locales/ja';
 import pairUpTwinJa from '../../games/brain/level1/PairUpTwin/locales/ja';
@@ -986,6 +987,7 @@ export const ja = {
         'tic-tac-toe': ticTacToeJa,
         omok: omokJa,
         cargoTrain: cargoTrainJa,
+        rocketLauncher: rocketLauncherJa,
         tags: {
             counting: '数え方',
             sequence: '数の順序',
