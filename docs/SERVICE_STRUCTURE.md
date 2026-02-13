@@ -27,6 +27,23 @@ User management is handled via Firebase Authentication.
 - **Firebase Config**: Initialized in `src/firebase.ts`.
 - **Login/Signup Pages**: precise UI with error handling, integrated directly with Firebase SDK.
 
+### Backend API Authentication Gate (Cloudflare Worker)
+- All `/api/users/:uid*` endpoints require `Authorization: Bearer <Firebase ID Token>`.
+- Worker verifies token signature (Google Secure Token JWK) and core claims (`iss`, `aud`, `exp`, `iat`, `sub`).
+- Authorization rule: `token.sub` must match path `:uid` (`403 UID mismatch` if different).
+- Applies to:
+  - `GET /api/users/:uid`
+  - `POST /api/users/:uid`
+  - `POST /api/users/:uid/purchase`
+  - `POST /api/users/:uid/cancel`
+- Existing abnormal value checks (e.g. XP/GRO delta limits) remain as a secondary guard; token verification is the primary guard.
+
+### Subscription Schema Requirement (D1)
+- Premium APIs require DB columns: `is_premium`, `subscription_end`, `subscription_plan`.
+- If migration is missing, `/purchase` and `/cancel` can fail even when auth/token is valid.
+- Migration file:
+  - `backend/api-grogrojello/migrations/2026-02-13_add_subscription_columns.sql`
+
 ## 3. Directory Structure Updates
 we have organized the codebase to separate "Pages" from "Components".
 

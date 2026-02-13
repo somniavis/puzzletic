@@ -1,6 +1,6 @@
 # 하이브리드 데이터 저장 아키텍처 v2.1
 
-> 마지막 업데이트: 2026-01-21 (Throttled Persistence & Wallet Protection)
+> 마지막 업데이트: 2026-02-13 (Worker Firebase Token Verification)
 
 ## 개요
 
@@ -44,6 +44,28 @@
 | **자동 저장** | localStorage → D1 | 15분 주기. (변경 사항 없으면 Skip) | `NurturingContext.tsx:287-302` |
 | **진화/생성** | localStorage → D1 | 중요 이벤트 발생 시 즉시 업로드. | `NurturingContext.tsx` |
 | **게임 클리어** | **Force-Save (L2)** | **즉시 저장 (Sync)**. 빠른 페이지 이동 시 데이터 유실 방어. | `NurturingContext.tsx:282` |
+
+---
+
+## API 인증 게이트 (2026-02-13)
+
+Cloudflare Worker는 모든 사용자 데이터 API 요청에 대해 Firebase ID Token을 검증합니다.
+
+### 인증 규칙
+- `Authorization: Bearer <Firebase ID Token>` 헤더가 없으면 `401 Unauthorized`
+- 토큰 서명(JWK/RS256) 및 필수 클레임(`iss`, `aud`, `exp`, `iat`, `sub`) 검증 실패 시 `401 Unauthorized`
+- `token.sub !== path :uid` 인 경우 `403 UID mismatch`
+
+### 적용 엔드포인트
+- `GET /api/users/:uid`
+- `POST /api/users/:uid`
+- `POST /api/users/:uid/purchase`
+- `POST /api/users/:uid/cancel`
+
+### 비용/성능 메모
+- 기존 `XP/GRO` 급변 제한은 **값 검증**
+- Firebase ID Token 검증은 **요청 주체 검증**
+- JWK는 `Cache-Control max-age` 기반 캐시를 사용해 검증 오버헤드를 최소화
 
 ---
 
@@ -143,6 +165,7 @@ const gameData = body.game_data || body.gameData;
 | 필드 | 개별 컬럼 | game_data |
 |------|-----------|-----------|
 | `level`, `xp`, `gro` | ✅ (통계용) | ✅ |
+| `is_premium`, `subscription_end`, `subscription_plan` | ✅ (구독/권한용) | ✅ (보조) |
 | `hasCharacter`, `stats` | ❌ | ✅ |
 | `poops`, `bugs` | ❌ | ✅ |
 | `hallOfFame` | ❌ | ✅ |
@@ -150,6 +173,18 @@ const gameData = body.game_data || body.gameData;
 **원칙:**
 - 개별 컬럼 = D1 대시보드/통계 쿼리용
 - `game_data` = 게임 상태 복원의 **유일한 원천**
+
+### 구독 컬럼 정합성 (중요)
+- Worker 구독 로직(`purchase/cancel`)은 아래 컬럼이 DB에 반드시 있어야 동작합니다.
+  - `is_premium` (0/1)
+  - `subscription_end` (만료 timestamp)
+  - `subscription_plan` (`3_months` / `12_months`)
+- 컬럼이 없으면 결제/해지 쿼리가 실패하여 프리미엄 권한이 반영되지 않습니다.
+
+### 운영 반영 체크리스트 (DB Migration)
+1. 운영 D1에 아래 SQL을 실행해 컬럼을 추가합니다.
+2. 파일: `backend/api-grogrojello/migrations/2026-02-13_add_subscription_columns.sql`
+3. 배포 후 `purchase`/`cancel` API를 실제 계정으로 호출해 DB 값이 변경되는지 확인합니다.
 
 ---
 
@@ -388,4 +423,3 @@ if (loaded.minigameStats && !loaded.gameScores) {
 - **효과**:
     - **~98% 데이터 절감** (똥 5개 + 벌레 5개: ~1.7KB → ~32 bytes)
     - 정확한 위치는 게임플레이에 영향 없음 (시각적 요소만)
-

@@ -1,5 +1,22 @@
 # 변경 이력 (Changelog)
 
+## 2026-02-13 (Security Hotfix)
+
+### 🔐 백엔드 인증/인가 강화 (Worker AuthN/AuthZ)
+- **Firebase ID Token 검증 추가**: Cloudflare Worker가 `Authorization: Bearer <token>`을 필수로 검사하고, 토큰 서명/클레임(`iss`, `aud`, `exp`, `iat`, `sub`)을 검증하도록 개선.
+- **UID 위변조 차단**: URL 경로의 `:uid`와 토큰의 `sub`가 다를 경우 `403 UID mismatch`로 즉시 차단.
+- **적용 범위**: `GET /api/users/:uid`, `POST /api/users/:uid`, `POST /api/users/:uid/purchase`, `POST /api/users/:uid/cancel` 전부 인증 게이트 적용.
+- **JWK 캐시 적용**: Google Secure Token JWK를 `Cache-Control max-age` 기준으로 캐싱하여 검증 비용 최소화.
+- **환경변수화**: Worker 설정(`wrangler.jsonc`)에 `FIREBASE_PROJECT_ID`를 명시해 프로젝트 식별값을 코드에서 분리.
+
+### 🧾 구독 스키마 정합성 보강 (Subscription Schema Consistency)
+- `users` 테이블에 구독 컬럼 추가: `is_premium`, `subscription_end`, `subscription_plan`.
+- 운영 DB 반영용 SQL 추가: `backend/api-grogrojello/migrations/2026-02-13_add_subscription_columns.sql`.
+- `purchase/cancel` 엔드포인트를 **UPSERT**로 변경해, 유저 행이 없어도 구독 상태가 누락 없이 저장되도록 보강.
+
+### ⚠️ 보안 메모
+- 기존의 `XP/GRO` 급변 제한(Delta Validation)은 **값 검증**이고, 이번 수정은 **요청 주체 검증(인증/인가)** 입니다.
+- 두 방어선은 상호 보완 관계이며, 인증 게이트가 먼저 통과되어야 값 검증이 의미를 가집니다.
 
 ## 2026-01-27 (Today's Updates)
 

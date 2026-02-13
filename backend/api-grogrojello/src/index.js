@@ -3,6 +3,160 @@
  * Handles sync between Client and D1 Database
  */
 
+const FIREBASE_DEFAULT_PROJECT_ID = 'grogro-jello-4a53a';
+const FIREBASE_JWKS_URL = 'https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com';
+
+let firebaseJwksCache = null;
+let firebaseJwksExpiry = 0;
+
+const base64UrlToUint8Array = (input) => {
+	const base64 = input.replace(/-/g, '+').replace(/_/g, '/');
+	const padded = base64 + '='.repeat((4 - (base64.length % 4)) % 4);
+	const binary = atob(padded);
+	const bytes = new Uint8Array(binary.length);
+	for (let i = 0; i < binary.length; i++) {
+		bytes[i] = binary.charCodeAt(i);
+	}
+	return bytes;
+};
+
+const base64UrlToJson = (input) => {
+	const bytes = base64UrlToUint8Array(input);
+	const text = new TextDecoder().decode(bytes);
+	return JSON.parse(text);
+};
+
+const parseMaxAgeSeconds = (cacheControl) => {
+	if (!cacheControl) return 300;
+	const match = cacheControl.match(/max-age=(\d+)/i);
+	if (!match) return 300;
+	const parsed = Number.parseInt(match[1], 10);
+	return Number.isFinite(parsed) && parsed > 0 ? parsed : 300;
+};
+
+const getFirebaseJwks = async () => {
+	const now = Date.now();
+	if (firebaseJwksCache && now < firebaseJwksExpiry) {
+		return firebaseJwksCache;
+	}
+
+	const response = await fetch(FIREBASE_JWKS_URL, { method: 'GET' });
+	if (!response.ok) {
+		throw new Error(`Failed to fetch Firebase JWKs: ${response.status}`);
+	}
+
+	const jwks = await response.json();
+	const cacheControl = response.headers.get('cache-control');
+	const maxAgeSeconds = parseMaxAgeSeconds(cacheControl);
+
+	firebaseJwksCache = jwks;
+	firebaseJwksExpiry = now + (maxAgeSeconds * 1000);
+	return firebaseJwksCache;
+};
+
+const verifyFirebaseIdToken = async (token, projectId) => {
+	const parts = token.split('.');
+	if (parts.length !== 3) {
+		throw new Error('Malformed JWT');
+	}
+
+	const header = base64UrlToJson(parts[0]);
+	const payload = base64UrlToJson(parts[1]);
+
+	if (header.alg !== 'RS256') {
+		throw new Error('Invalid JWT alg');
+	}
+	if (!header.kid) {
+		throw new Error('Missing JWT kid');
+	}
+
+	const nowSeconds = Math.floor(Date.now() / 1000);
+	const expectedIssuer = `https://securetoken.google.com/${projectId}`;
+
+	if (payload.iss !== expectedIssuer) {
+		throw new Error('Invalid issuer');
+	}
+	if (payload.aud !== projectId) {
+		throw new Error('Invalid audience');
+	}
+	if (!payload.sub || typeof payload.sub !== 'string' || payload.sub.length === 0) {
+		throw new Error('Invalid subject');
+	}
+	if (!payload.exp || payload.exp <= nowSeconds) {
+		throw new Error('Token expired');
+	}
+	if (!payload.iat || payload.iat > nowSeconds) {
+		throw new Error('Invalid iat');
+	}
+	if (payload.auth_time && payload.auth_time > nowSeconds) {
+		throw new Error('Invalid auth_time');
+	}
+
+	const jwks = await getFirebaseJwks();
+	const jwk = Array.isArray(jwks.keys) ? jwks.keys.find((k) => k.kid === header.kid) : null;
+	if (!jwk) {
+		firebaseJwksCache = null;
+		firebaseJwksExpiry = 0;
+		const refreshed = await getFirebaseJwks();
+		const retried = Array.isArray(refreshed.keys) ? refreshed.keys.find((k) => k.kid === header.kid) : null;
+		if (!retried) {
+			throw new Error('Unknown signing key');
+		}
+		const verified = await crypto.subtle.importKey(
+			'jwk',
+			retried,
+			{ name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' },
+			false,
+			['verify']
+		);
+		const data = new TextEncoder().encode(`${parts[0]}.${parts[1]}`);
+		const signature = base64UrlToUint8Array(parts[2]);
+		const ok = await crypto.subtle.verify('RSASSA-PKCS1-v1_5', verified, signature, data);
+		if (!ok) throw new Error('Invalid signature');
+		return payload;
+	}
+
+	const publicKey = await crypto.subtle.importKey(
+		'jwk',
+		jwk,
+		{ name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' },
+		false,
+		['verify']
+	);
+
+	const data = new TextEncoder().encode(`${parts[0]}.${parts[1]}`);
+	const signature = base64UrlToUint8Array(parts[2]);
+	const isValidSignature = await crypto.subtle.verify('RSASSA-PKCS1-v1_5', publicKey, signature, data);
+	if (!isValidSignature) {
+		throw new Error('Invalid signature');
+	}
+
+	return payload;
+};
+
+const authenticateRequest = async (request, env, uidFromPath) => {
+	const authHeader = request.headers.get('Authorization') || '';
+	if (!authHeader.startsWith('Bearer ')) {
+		return { ok: false, status: 401, error: 'Missing or invalid Authorization header' };
+	}
+
+	const token = authHeader.slice('Bearer '.length).trim();
+	if (!token) {
+		return { ok: false, status: 401, error: 'Missing bearer token' };
+	}
+
+	const projectId = env.FIREBASE_PROJECT_ID || FIREBASE_DEFAULT_PROJECT_ID;
+	try {
+		const claims = await verifyFirebaseIdToken(token, projectId);
+		if (claims.sub !== uidFromPath) {
+			return { ok: false, status: 403, error: 'UID mismatch' };
+		}
+		return { ok: true, claims };
+	} catch (err) {
+		return { ok: false, status: 401, error: `Unauthorized: ${err.message}` };
+	}
+};
+
 export default {
 	async fetch(request, env) {
 		const url = new URL(request.url);
@@ -28,6 +182,14 @@ export default {
 			const pathSegments = path.split('/');
 			const uid = pathSegments[3]; // Always the UID
 			if (!uid || uid === 'purchase') return new Response('Missing UID', { status: 400, headers: corsHeaders });
+
+			const authResult = await authenticateRequest(request, env, uid);
+			if (!authResult.ok) {
+				return new Response(JSON.stringify({ error: authResult.error }), {
+					status: authResult.status,
+					headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+				});
+			}
 
 			// GET: Retrieve User Data
 			if (request.method === 'GET') {
@@ -93,12 +255,18 @@ export default {
 							newEnd = currentData.subscription_end + duration;
 						}
 
-						// Update DB
+						// Upsert DB row to guarantee subscription state is persisted
 						await env.DB.prepare(`
-							UPDATE users 
-							SET is_premium = 1, subscription_end = ?, subscription_plan = ? 
-							WHERE uid = ?
-						`).bind(newEnd, planId, uid).run();
+							INSERT INTO users (
+								uid, is_premium, subscription_end, subscription_plan, created_at, last_synced_at
+							)
+							VALUES (?, 1, ?, ?, ?, ?)
+							ON CONFLICT(uid) DO UPDATE SET
+								is_premium = 1,
+								subscription_end = excluded.subscription_end,
+								subscription_plan = excluded.subscription_plan,
+								last_synced_at = excluded.last_synced_at
+						`).bind(uid, newEnd, planId, now, now).run();
 
 						return new Response(JSON.stringify({ success: true, is_premium: 1, subscription_end: newEnd, plan: planId }), {
 							headers: { ...corsHeaders, 'Content-Type': 'application/json' }
@@ -115,11 +283,18 @@ export default {
 				// Cancel Subscription Endpoint
 				if (path.endsWith('/cancel')) {
 					try {
+						const now = Date.now();
 						await env.DB.prepare(`
-							UPDATE users 
-							SET is_premium = 0, subscription_end = 0, subscription_plan = NULL 
-							WHERE uid = ?
-						`).bind(uid).run();
+							INSERT INTO users (
+								uid, is_premium, subscription_end, subscription_plan, created_at, last_synced_at
+							)
+							VALUES (?, 0, 0, NULL, ?, ?)
+							ON CONFLICT(uid) DO UPDATE SET
+								is_premium = 0,
+								subscription_end = 0,
+								subscription_plan = NULL,
+								last_synced_at = excluded.last_synced_at
+						`).bind(uid, now, now).run();
 
 						return new Response(JSON.stringify({ success: true, is_premium: 0 }), {
 							headers: { ...corsHeaders, 'Content-Type': 'application/json' }

@@ -12,6 +12,7 @@ import { convertPendingToPoop } from '../../services/actionService';
 
 export const useNurturingTick = (
     user: User | null,
+    guestId: string | null,
     state: NurturingPersistentState,
     setState: React.Dispatch<React.SetStateAction<NurturingPersistentState>>,
     setCondition: (condition: CharacterCondition) => void
@@ -96,10 +97,11 @@ export const useNurturingTick = (
 
             return newState;
         });
-    }, [setState, setCondition]); // setCondition is stable from useState/hook
+    }, [setState, setCondition, user?.uid, guestId]); // setCondition is stable from useState/hook
 
     useEffect(() => {
-        if (!user || !state.tickConfig.isActive) {
+        const hasIdentity = !!user || !!guestId;
+        if (!hasIdentity || !state.tickConfig.isActive) {
             if (tickIntervalRef.current) {
                 clearInterval(tickIntervalRef.current);
                 tickIntervalRef.current = null;
@@ -117,7 +119,7 @@ export const useNurturingTick = (
                 clearInterval(tickIntervalRef.current);
             }
         };
-    }, [state.tickConfig.isActive, runGameTick, user]);
+    }, [state.tickConfig.isActive, runGameTick, user, guestId]);
 
     const pauseTick = useCallback(() => {
         console.log('⏸️ Pausing tick...');

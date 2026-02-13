@@ -10,6 +10,9 @@ CREATE TABLE users (
   current_land TEXT DEFAULT 'default_ground',
   inventory TEXT DEFAULT '[]',
   game_data TEXT,
+  is_premium INTEGER DEFAULT 0,
+  subscription_end INTEGER DEFAULT 0,
+  subscription_plan TEXT,
   created_at INTEGER,
   last_synced_at INTEGER
 );

@@ -189,7 +189,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
   );
 
   // 2. Game Tick Loop
-  const { pauseTick, resumeTick } = useNurturingTick(user, state, setState, setCondition);
+  const { pauseTick, resumeTick } = useNurturingTick(user, guestId, state, setState, setCondition);
 
   // 3. Actions
   const actions = useNurturingActions(setState, setCondition, stateRef, user?.uid);
