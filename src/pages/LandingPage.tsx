@@ -62,58 +62,59 @@ export const LandingPage: React.FC = () => {
 
     return (
         <div className="landing-container">
-            <div className="landing-content">
-                <div className="landing-jello-preview">
-                    {/* Placeholder or bouncing Jello animation */}
-                    <div className="jello-silhouette" />
+            <div className="landing-main">
+                <div className="forest-corners" aria-hidden="true">
+                    <span className="forest-corner forest-corner--left" />
+                    <span className="forest-corner forest-corner--right" />
                 </div>
 
-                <h1 className="landing-title">{t('landing.title')}</h1>
-                <p className="landing-subtitle">{t('landing.subtitle')}</p>
-
-                {hasActiveSession ? (
-                    <div className="guest-options" style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '40px' }}>
-                        <button
-                            className="cta-button guest-start-button"
-                            onClick={handleStartExperience}
-                            style={{ marginBottom: '0' }}
-                        >
-                            <span className="button-icon">▶️</span>
-                            <span className="button-text">{t('landing.continue_experience')}</span>
-                        </button>
-
-                        <button
-                            className="cta-button"
-                            onClick={handleNewGame}
-                            style={{
-                                background: 'rgba(255, 255, 255, 0.8)',
-                                color: '#666',
-                                border: '1px solid #ddd',
-                                fontSize: '1rem',
-                                padding: '16px'
-                            }}
-                        >
-                            <span className="button-icon">🔄</span>
-                            <span className="button-text">{t('landing.new_game')}</span>
-                        </button>
+                <div className="landing-content">
+                    <div className="landing-jello-preview" aria-hidden="true">
+                        <div className="jello-silhouette" />
                     </div>
-                ) : (
-                    <button
-                        className="cta-button guest-start-button"
-                        onClick={handleStartExperience}
-                    >
-                        <span className="button-icon">✨</span>
-                        <span className="button-text">{t('landing.start_experience')}</span>
-                    </button>
-                )}
 
+                    <div className="landing-copy">
+                        <h1 className="landing-brand">GroGroJello</h1>
+                        <p className="landing-subtitle">{t('landing.subtitle')}</p>
+                    </div>
+
+                    {hasActiveSession ? (
+                        <div className="guest-options">
+                            <button
+                                className="cta-button cta-button--primary"
+                                onClick={handleStartExperience}
+                            >
+                                <span className="button-icon">▶</span>
+                                <span className="button-text">{t('landing.continue_experience')}</span>
+                            </button>
+
+                            <button
+                                className="cta-button cta-button--secondary"
+                                onClick={handleNewGame}
+                            >
+                                <span className="button-icon">↻</span>
+                                <span className="button-text">{t('landing.new_game')}</span>
+                            </button>
+                        </div>
+                    ) : (
+                        <button
+                            className="cta-button cta-button--primary"
+                            onClick={handleStartExperience}
+                        >
+                            <span className="button-icon">✦</span>
+                            <span className="button-text">{t('landing.start_experience')}</span>
+                        </button>
+                    )}
+                </div>
+            </div>
+
+            <div className="auth-dock">
                 <div className="auth-links">
                     <p className="auth-text">{t('landing.auth_prompt')}</p>
                     <div className="auth-buttons">
                         <button onClick={() => navigate('/login')} className="text-link">
                             {t('landing.login')}
                         </button>
-                        <span className="divider">|</span>
                         <button onClick={() => navigate('/signup')} className="text-link">
                             {t('landing.signup')}
                         </button>
