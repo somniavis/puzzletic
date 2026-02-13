@@ -17,6 +17,7 @@ export const LoginPage: React.FC = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [isRedirecting, setIsRedirecting] = useState(false);
+    const [showSignupHint, setShowSignupHint] = useState(false);
     const [errors, setErrors] = useState<{
         email?: string;
         password?: string;
@@ -45,6 +46,7 @@ export const LoginPage: React.FC = () => {
         e.preventDefault();
         playButtonSound();
         setErrors({});
+        setShowSignupHint(false);
 
         try {
             await signInWithEmailAndPassword(auth, email, password);
@@ -54,6 +56,7 @@ export const LoginPage: React.FC = () => {
             console.error('Login failed:', error);
             if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
                 setErrors({ password: t('auth.errors.invalidCredential') });
+                setShowSignupHint(true);
                 return;
             }
 
@@ -162,6 +165,7 @@ export const LoginPage: React.FC = () => {
                                 if (errors.email || errors.general) {
                                     setErrors(prev => ({ ...prev, email: undefined, general: undefined }));
                                 }
+                                setShowSignupHint(false);
                             }}
                             aria-invalid={Boolean(errors.email)}
                             required
@@ -181,11 +185,21 @@ export const LoginPage: React.FC = () => {
                                 if (errors.password || errors.general) {
                                     setErrors(prev => ({ ...prev, password: undefined, general: undefined }));
                                 }
+                                setShowSignupHint(false);
                             }}
                             aria-invalid={Boolean(errors.password)}
                             required
                         />
                         {errors.password && <p className="form-error">{errors.password}</p>}
+                        {showSignupHint && (
+                            <button
+                                type="button"
+                                className="form-inline-link"
+                                onClick={handleGoToSignup}
+                            >
+                                {t('auth.login.signup')}
+                            </button>
+                        )}
                     </div>
 
                     <button type="submit" className="auth-btn auth-btn--primary" disabled={loading} style={{ width: '100%' }}>

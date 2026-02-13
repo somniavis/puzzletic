@@ -3,8 +3,8 @@ import './Auth.css';
 import { playButtonSound } from '../utils/sound';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext'; // Import useAuth
-import { auth } from '../firebase';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { auth, googleProvider } from '../firebase';
+import { createUserWithEmailAndPassword, getRedirectResult, signInWithPopup, signInWithRedirect } from 'firebase/auth';
 import { loadNurturingState, saveNurturingState, getStorageKey } from '../services/persistenceService';
 import { migrateGuestToCloud } from '../services/syncService';
 
@@ -21,12 +21,30 @@ export const SignupPage: React.FC = () => {
         confirmPassword: '',
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isRedirecting, setIsRedirecting] = useState(false);
+    const [showLoginHint, setShowLoginHint] = useState(false);
     const [errors, setErrors] = useState<{
         email?: string;
         password?: string;
         confirmPassword?: string;
         general?: string;
     }>({});
+
+    React.useEffect(() => {
+        const checkRedirect = async () => {
+            try {
+                const result = await getRedirectResult(auth);
+                if (result) {
+                    playButtonSound();
+                    navigate('/home');
+                }
+            } catch (error: any) {
+                console.error('Google Signup (Redirect) failed:', error);
+                setErrors({ general: t('auth.errors.googleFailed') });
+            }
+        };
+        checkRedirect();
+    }, [navigate, t]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -37,6 +55,9 @@ export const SignupPage: React.FC = () => {
         if (errors[name as keyof typeof errors] || errors.general) {
             setErrors(prev => ({ ...prev, [name]: undefined, general: undefined }));
         }
+        if (name === 'email' && showLoginHint) {
+            setShowLoginHint(false);
+        }
     };
 
     const handleSignup = async (e: React.FormEvent) => {
@@ -46,6 +67,7 @@ export const SignupPage: React.FC = () => {
         if (isSubmitting || loading) return;
         setIsSubmitting(true);
         setErrors({});
+        setShowLoginHint(false);
 
         // Validation: Check mismatch
         if (formData.password !== formData.confirmPassword) {
@@ -98,6 +120,7 @@ export const SignupPage: React.FC = () => {
                 setIsSubmitting(false); // Enable retry
                 if (error.code === 'auth/email-already-in-use') {
                     setErrors({ email: t('auth.errors.emailInUse') });
+                    setShowLoginHint(true);
                     return;
                 }
 
@@ -114,6 +137,29 @@ export const SignupPage: React.FC = () => {
                 setErrors({ general: t('auth.errors.registrationFailed') });
             }
         }, 50); // Small delay to allow React render cycle to complete
+    };
+
+    const handleGoogleSignup = async () => {
+        playButtonSound();
+        setErrors({});
+
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+        try {
+            if (isMobile) {
+                setIsRedirecting(true);
+                await signInWithRedirect(auth, googleProvider);
+            } else {
+                await signInWithPopup(auth, googleProvider);
+                navigate('/home');
+            }
+        } catch (error: any) {
+            console.error('Google Signup failed:', error);
+            setIsRedirecting(false);
+            if (error.code !== 'auth/popup-closed-by-user') {
+                setErrors({ general: t('auth.errors.googleFailed') });
+            }
+        }
     };
 
     const handleBackToLogin = () => {
@@ -205,6 +251,15 @@ export const SignupPage: React.FC = () => {
                             required
                         />
                         {errors.email && <p className="form-error">{errors.email}</p>}
+                        {showLoginHint && (
+                            <button
+                                type="button"
+                                className="form-inline-link"
+                                onClick={handleBackToLogin}
+                            >
+                                {t('auth.signup.loginLink')}
+                            </button>
+                        )}
                     </div>
 
                     <div className="form-group">
@@ -243,17 +298,17 @@ export const SignupPage: React.FC = () => {
                     {errors.general && <p className="form-error form-error--general">{errors.general}</p>}
                 </form>
 
-                <div className="auth-divider">
-                    {t('auth.signup.haveAccount')}
-                </div>
+                <div className="auth-divider">{t('auth.login.or')}</div>
 
                 <button
+                    type="button"
                     className="auth-btn"
-                    onClick={handleBackToLogin}
+                    onClick={handleGoogleSignup}
+                    disabled={isRedirecting}
                     style={{
-                        backgroundColor: '#FFD700', /* Stronger Gold */
-                        color: '#4d3e2f',
-                        border: '1px solid #d4961f',
+                        backgroundColor: isRedirecting ? '#f5f5f5' : '#ffffff',
+                        color: isRedirecting ? '#9e9e9e' : '#757575',
+                        border: '1px solid #ddd',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
@@ -261,8 +316,27 @@ export const SignupPage: React.FC = () => {
                         fontSize: '15px',
                         width: '100%',
                         height: '56px',
-                        boxSizing: 'border-box'
+                        boxSizing: 'border-box',
+                        cursor: isRedirecting ? 'not-allowed' : 'pointer'
                     }}
+                >
+                    {isRedirecting ? (
+                        <span>Loading...</span>
+                    ) : (
+                        <>
+                            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" style={{ width: '18px', height: '18px' }} />
+                            {t('auth.login.google')}
+                        </>
+                    )}
+                </button>
+
+                <div className="auth-divider">
+                    {t('auth.signup.haveAccount')}
+                </div>
+
+                <button
+                    className="signup-login-btn"
+                    onClick={handleBackToLogin}
                 >
                     <span style={{ fontSize: '18px' }}>🔑</span>
                     {t('auth.signup.loginLink')}

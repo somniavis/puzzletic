@@ -122,6 +122,55 @@
     text-align: center;
 }
 
+.form-inline-link {
+    margin: 0.1rem 0 0 0.2rem;
+    padding: 0;
+    border: none;
+    background: none;
+    color: #8B4513;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-decoration: underline;
+    cursor: pointer;
+    width: fit-content;
+}
+
+.form-inline-link:hover {
+    color: #6f3410;
+}
+
+.signup-login-btn {
+    min-width: 104px;
+    height: 44px;
+    padding: 0 14px;
+    border-radius: 12px;
+    border: 3px solid #8B4513;
+    background: #fffef8;
+    color: #4d3e2f;
+    font-weight: 800;
+    font-size: 0.96rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-sizing: border-box;
+    margin: 0 auto;
+    cursor: pointer;
+    transition: transform 0.15s ease, filter 0.15s ease, box-shadow 0.15s ease;
+    box-shadow: 0 3px 0 #8B4513;
+}
+
+.signup-login-btn:hover {
+    transform: translateY(1px);
+    filter: brightness(1.04);
+    box-shadow: 0 2px 0 #8B4513;
+}
+
+.signup-login-btn:active {
+    transform: translateY(3px);
+    box-shadow: 0 0 0 #8B4513 !important;
+}
+
 /* Buttons */
 .auth-btn {
     padding: 1rem;
