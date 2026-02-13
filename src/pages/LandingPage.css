@@ -159,16 +159,12 @@
     font-weight: 800;
     letter-spacing: 0.01em;
     cursor: pointer;
-    transition: transform 0.15s ease, filter 0.15s ease;
+    transition: transform 0.15s ease, filter 0.15s ease, box-shadow 0.15s ease;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
     box-sizing: border-box;
-}
-
-.cta-button:active {
-    transform: translateY(3px);
 }
 
 .cta-button--primary {
@@ -185,7 +181,28 @@
 }
 
 .cta-button:hover {
+    transform: translateY(2px);
     filter: brightness(1.06);
+}
+
+.cta-button--primary:hover {
+    box-shadow: 0 2px 0 #2d5a2f;
+}
+
+.cta-button--secondary:hover {
+    box-shadow: 0 2px 0 #b4761f;
+}
+
+.cta-button:active {
+    transform: translateY(4px);
+}
+
+.cta-button--primary:active {
+    box-shadow: 0 0 0 #2d5a2f;
+}
+
+.cta-button--secondary:active {
+    box-shadow: 0 0 0 #b4761f;
 }
 
 .button-icon {
@@ -235,15 +252,19 @@
     font-weight: 800;
     font-size: 0.96rem;
     cursor: pointer;
-    transition: transform 0.15s ease, filter 0.15s ease;
+    transition: transform 0.15s ease, filter 0.15s ease, box-shadow 0.15s ease;
+    box-shadow: 0 3px 0 #8B4513;
 }
 
 .text-link:hover {
+    transform: translateY(1px);
     filter: brightness(1.04);
+    box-shadow: 0 2px 0 #8B4513;
 }
 
 .text-link:active {
-    transform: translateY(2px);
+    transform: translateY(3px);
+    box-shadow: 0 0 0 #8B4513;
 }
 
 @keyframes landing-float {

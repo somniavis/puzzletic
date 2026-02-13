@@ -21,6 +21,12 @@ export const SignupPage: React.FC = () => {
         confirmPassword: '',
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [errors, setErrors] = useState<{
+        email?: string;
+        password?: string;
+        confirmPassword?: string;
+        general?: string;
+    }>({});
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -28,6 +34,9 @@ export const SignupPage: React.FC = () => {
             ...prev,
             [name]: value
         }));
+        if (errors[name as keyof typeof errors] || errors.general) {
+            setErrors(prev => ({ ...prev, [name]: undefined, general: undefined }));
+        }
     };
 
     const handleSignup = async (e: React.FormEvent) => {
@@ -36,10 +45,11 @@ export const SignupPage: React.FC = () => {
 
         if (isSubmitting || loading) return;
         setIsSubmitting(true);
+        setErrors({});
 
         // Validation: Check mismatch
         if (formData.password !== formData.confirmPassword) {
-            alert(t('auth.signup.passwordMismatch'));
+            setErrors({ confirmPassword: t('auth.signup.passwordMismatch') });
             setIsSubmitting(false); // Fix: Reset state so user can try again
             return;
         }
@@ -86,18 +96,22 @@ export const SignupPage: React.FC = () => {
             } catch (error: any) {
                 console.error('Signup failed:', error);
                 setIsSubmitting(false); // Enable retry
-                let errorMessage = t('auth.errors.registrationFailed');
-
-
                 if (error.code === 'auth/email-already-in-use') {
-                    errorMessage = t('auth.errors.emailInUse');
-                } else if (error.code === 'auth/weak-password') {
-                    errorMessage = t('auth.errors.weakPassword');
-                } else if (error.code === 'auth/invalid-email') {
-                    errorMessage = t('auth.errors.invalidEmail');
+                    setErrors({ email: t('auth.errors.emailInUse') });
+                    return;
                 }
 
-                alert(errorMessage);
+                if (error.code === 'auth/weak-password') {
+                    setErrors({ password: t('auth.errors.weakPassword') });
+                    return;
+                }
+
+                if (error.code === 'auth/invalid-email') {
+                    setErrors({ email: t('auth.errors.invalidEmail') });
+                    return;
+                }
+
+                setErrors({ general: t('auth.errors.registrationFailed') });
             }
         }, 50); // Small delay to allow React render cycle to complete
     };
@@ -183,12 +197,14 @@ export const SignupPage: React.FC = () => {
                         <input
                             type="email"
                             name="email"
-                            className="form-input"
+                            className={`form-input ${errors.email ? 'form-input--error' : ''}`}
                             placeholder={t('auth.signup.emailPlaceholder')}
                             value={formData.email}
                             onChange={handleChange}
+                            aria-invalid={Boolean(errors.email)}
                             required
                         />
+                        {errors.email && <p className="form-error">{errors.email}</p>}
                     </div>
 
                     <div className="form-group">
@@ -196,12 +212,14 @@ export const SignupPage: React.FC = () => {
                         <input
                             type="password"
                             name="password"
-                            className="form-input"
+                            className={`form-input ${errors.password ? 'form-input--error' : ''}`}
                             placeholder={t('auth.signup.passwordPlaceholder')}
                             value={formData.password}
                             onChange={handleChange}
+                            aria-invalid={Boolean(errors.password)}
                             required
                         />
+                        {errors.password && <p className="form-error">{errors.password}</p>}
                     </div>
 
                     <div className="form-group">
@@ -209,17 +227,20 @@ export const SignupPage: React.FC = () => {
                         <input
                             type="password"
                             name="confirmPassword"
-                            className="form-input"
+                            className={`form-input ${errors.confirmPassword ? 'form-input--error' : ''}`}
                             placeholder={t('auth.signup.confirmPasswordPlaceholder')}
                             value={formData.confirmPassword}
                             onChange={handleChange}
+                            aria-invalid={Boolean(errors.confirmPassword)}
                             required
                         />
+                        {errors.confirmPassword && <p className="form-error">{errors.confirmPassword}</p>}
                     </div>
 
                     <button type="submit" className="auth-btn auth-btn--primary" disabled={loading || isSubmitting} style={{ width: '100%' }}>
                         {isSubmitting ? t('auth.signing_up') : t('auth.signup.action')}
                     </button>
+                    {errors.general && <p className="form-error form-error--general">{errors.general}</p>}
                 </form>
 
                 <div className="auth-divider">

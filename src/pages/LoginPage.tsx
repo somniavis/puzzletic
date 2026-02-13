@@ -17,6 +17,11 @@ export const LoginPage: React.FC = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [isRedirecting, setIsRedirecting] = useState(false);
+    const [errors, setErrors] = useState<{
+        email?: string;
+        password?: string;
+        general?: string;
+    }>({});
 
     // Handle Redirect Result (for Mobile/Tablet flow)
     React.useEffect(() => {
@@ -30,7 +35,7 @@ export const LoginPage: React.FC = () => {
                 }
             } catch (error: any) {
                 console.error('Google Login (Redirect) failed:', error);
-                alert(t('auth.errors.googleFailed'));
+                setErrors({ general: t('auth.errors.googleFailed') });
             }
         };
         checkRedirect();
@@ -39,6 +44,7 @@ export const LoginPage: React.FC = () => {
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         playButtonSound();
+        setErrors({});
 
         try {
             await signInWithEmailAndPassword(auth, email, password);
@@ -46,15 +52,22 @@ export const LoginPage: React.FC = () => {
             navigate('/home');
         } catch (error: any) {
             console.error('Login failed:', error);
-            let errorMessage = t('auth.errors.default');
-
             if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
-                errorMessage = t('auth.errors.invalidCredential');
-            } else if (error.code === 'auth/too-many-requests') {
-                errorMessage = t('auth.errors.tooManyRequests');
+                setErrors({ password: t('auth.errors.invalidCredential') });
+                return;
             }
 
-            alert(errorMessage);
+            if (error.code === 'auth/invalid-email') {
+                setErrors({ email: t('auth.errors.invalidEmail') });
+                return;
+            }
+
+            if (error.code === 'auth/too-many-requests') {
+                setErrors({ general: t('auth.errors.tooManyRequests') });
+                return;
+            }
+
+            setErrors({ general: t('auth.errors.default') });
         }
     };
 
@@ -80,7 +93,7 @@ export const LoginPage: React.FC = () => {
             console.error('Google Login failed:', error);
             setIsRedirecting(false);
             if (error.code !== 'auth/popup-closed-by-user') {
-                alert(t('auth.errors.googleFailed'));
+                setErrors({ general: t('auth.errors.googleFailed') });
             }
         }
     };
@@ -141,29 +154,44 @@ export const LoginPage: React.FC = () => {
                         <label className="form-label">{t('auth.login.email')}</label>
                         <input
                             type="email"
-                            className="form-input"
+                            className={`form-input ${errors.email ? 'form-input--error' : ''}`}
                             placeholder={t('auth.login.emailPlaceholder')}
                             value={email}
-                            onChange={(e) => setEmail(e.target.value)}
+                            onChange={(e) => {
+                                setEmail(e.target.value);
+                                if (errors.email || errors.general) {
+                                    setErrors(prev => ({ ...prev, email: undefined, general: undefined }));
+                                }
+                            }}
+                            aria-invalid={Boolean(errors.email)}
                             required
                         />
+                        {errors.email && <p className="form-error">{errors.email}</p>}
                     </div>
 
                     <div className="form-group">
                         <label className="form-label">{t('auth.login.password')}</label>
                         <input
                             type="password"
-                            className="form-input"
+                            className={`form-input ${errors.password ? 'form-input--error' : ''}`}
                             placeholder={t('auth.login.passwordPlaceholder')}
                             value={password}
-                            onChange={(e) => setPassword(e.target.value)}
+                            onChange={(e) => {
+                                setPassword(e.target.value);
+                                if (errors.password || errors.general) {
+                                    setErrors(prev => ({ ...prev, password: undefined, general: undefined }));
+                                }
+                            }}
+                            aria-invalid={Boolean(errors.password)}
                             required
                         />
+                        {errors.password && <p className="form-error">{errors.password}</p>}
                     </div>
 
                     <button type="submit" className="auth-btn auth-btn--primary" disabled={loading} style={{ width: '100%' }}>
                         {loading ? t('auth.logging_in') : t('auth.login.action')}
                     </button>
+                    {errors.general && <p className="form-error form-error--general">{errors.general}</p>}
                 </form>
 
                 <div className="auth-divider">{t('auth.login.or')}</div>
