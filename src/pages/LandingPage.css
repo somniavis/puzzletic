@@ -1,73 +1,48 @@
 .landing-container {
+    --landing-auth-btn-min-width: 104px;
+    --landing-auth-btn-gap: 0.65rem;
     min-height: 100dvh;
-    display: flex;
-    flex-direction: column;
+    height: 100dvh;
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) auto;
     position: relative;
     overflow: hidden;
     box-sizing: border-box;
-    background:
-        radial-gradient(circle at 12% 14%, rgba(255, 255, 255, 0.65), transparent 34%),
-        radial-gradient(circle at 86% 20%, rgba(255, 228, 181, 0.65), transparent 38%),
-        linear-gradient(180deg, #87CEEB 0%, #E0F6FF 70%, #d5effd 100%);
+    background: #c7eef5;
 }
 
 .landing-main {
     width: 100%;
     min-height: 0;
-    flex: 1;
     display: flex;
     align-items: center;
     justify-content: center;
     position: relative;
-    padding: 1.5rem 1.25rem 10.5rem;
+    padding: 1.5rem 1.25rem 1.5rem;
     box-sizing: border-box;
+    overflow: hidden;
 }
 
-.forest-corners {
+.nature-bg {
     position: absolute;
     inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
     pointer-events: none;
 }
 
-.forest-corner {
+.corner-frame {
     position: absolute;
-    top: 0;
-    width: min(42vw, 270px);
-    height: min(34vw, 230px);
-}
-
-.forest-corner::before,
-.forest-corner::after {
-    content: '';
-    position: absolute;
-}
-
-.forest-corner::before {
     inset: 0;
-    background:
-        radial-gradient(circle at 14% 92%, #2f7f50 0 24%, transparent 25%),
-        radial-gradient(circle at 36% 94%, #3f955f 0 21%, transparent 22%),
-        radial-gradient(circle at 58% 92%, #2d8450 0 24%, transparent 25%),
-        radial-gradient(circle at 79% 94%, #4aa067 0 21%, transparent 22%);
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    pointer-events: none;
 }
 
-.forest-corner::after {
-    width: 180%;
-    height: 85%;
-    top: -18%;
-    left: -35%;
-    background:
-        radial-gradient(circle at 25% 100%, rgba(58, 121, 78, 0.42), transparent 58%),
-        radial-gradient(circle at 62% 100%, rgba(74, 160, 103, 0.3), transparent 54%);
-}
-
-.forest-corner--left {
-    left: 0;
-}
-
-.forest-corner--right {
-    right: 0;
-    transform: scaleX(-1);
+.shadow-filter {
+    filter: drop-shadow(0 8px 12px rgba(0, 40, 20, 0.3));
 }
 
 .landing-content {
@@ -78,7 +53,7 @@
     align-items: center;
     gap: 1rem;
     position: relative;
-    z-index: 1;
+    z-index: 3;
 }
 
 .landing-jello-preview {
@@ -148,6 +123,11 @@
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
+    align-items: center;
+}
+
+.guest-options .cta-button {
+    width: min(100%, calc(var(--landing-auth-btn-min-width) * 2 + var(--landing-auth-btn-gap)));
 }
 
 .cta-button {
@@ -170,6 +150,7 @@
 .cta-button--primary {
     color: #fff;
     background: linear-gradient(180deg, #4CAF50 0%, #45a049 100%);
+    border-color: #2d5a2f;
     box-shadow: 0 4px 0 #2d5a2f;
 }
 
@@ -197,6 +178,22 @@
     transform: translateY(4px);
 }
 
+.cta-button--start-single {
+    width: min(100%, calc(var(--landing-auth-btn-min-width) * 2 + var(--landing-auth-btn-gap)));
+    color: #4d3e2f;
+    background: linear-gradient(180deg, #FFD700 0%, #FFA500 100%);
+    border-color: #b4761f;
+    box-shadow: 0 4px 0 #b4761f;
+}
+
+.cta-button--start-single:hover {
+    box-shadow: 0 2px 0 #b4761f;
+}
+
+.cta-button--start-single:active {
+    box-shadow: 0 0 0 #b4761f;
+}
+
 .cta-button--primary:active {
     box-shadow: 0 0 0 #2d5a2f;
 }
@@ -213,18 +210,17 @@
 .auth-links {
     max-width: 560px;
     width: 100%;
+    margin: 0 auto;
     padding-top: 0.8rem;
-    border-top: 2px dashed rgba(139, 69, 19, 0.28);
     text-align: center;
 }
 
 .auth-dock {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    position: relative;
+    width: 100%;
     z-index: 3;
     padding: 1rem 1rem calc(1rem + env(safe-area-inset-bottom));
+    border-top: 2px dashed rgba(139, 69, 19, 0.28);
     background: linear-gradient(180deg, rgba(224, 246, 255, 0.2) 0%, rgba(224, 246, 255, 0.85) 18%, rgba(224, 246, 255, 0.96) 100%);
     backdrop-filter: blur(4px);
 }
@@ -239,11 +235,11 @@
 .auth-buttons {
     display: flex;
     justify-content: center;
-    gap: 0.65rem;
+    gap: var(--landing-auth-btn-gap);
 }
 
 .text-link {
-    min-width: 104px;
+    min-width: var(--landing-auth-btn-min-width);
     height: 44px;
     border-radius: 12px;
     border: 3px solid #8B4513;
@@ -282,8 +278,12 @@
 }
 
 @media (max-width: 480px) {
+    .landing-container {
+        --landing-auth-btn-min-width: 96px;
+    }
+
     .landing-main {
-        padding: 1rem 1rem 10rem;
+        padding: 1rem 1rem 1rem;
     }
 
     .landing-brand {
@@ -294,12 +294,4 @@
         font-size: 1rem;
     }
 
-    .text-link {
-        min-width: 96px;
-    }
-
-    .forest-corner {
-        width: min(45vw, 220px);
-        height: min(36vw, 180px);
-    }
 }
