@@ -101,7 +101,7 @@ export const LandingPage: React.FC = () => {
                                 onClick={handleStartExperience}
                             >
                                 <span className="button-icon">▶</span>
-                                <span className="button-text">{t('landing.continue_experience')}</span>
+                                <span className="button-text">continue</span>
                             </button>
 
                             <button
