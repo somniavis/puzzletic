@@ -75,6 +75,13 @@ class SoundManager {
    * iOS/Android에서는 사용자 제스처 후에만 오디오 재생 가능
    */
   private setupTouchUnlock(): void {
+    const removeUnlockListeners = (handler: () => void) => {
+      document.removeEventListener('touchstart', handler);
+      document.removeEventListener('touchend', handler);
+      document.removeEventListener('click', handler);
+      document.removeEventListener('pointerdown', handler);
+    };
+
     const unlockAudio = () => {
       if (this.isUnlocked) return;
 
@@ -86,25 +93,22 @@ class SoundManager {
       silentAudio.play().then(() => {
         this.isUnlocked = true;
         console.log('🔓 Mobile audio context unlocked');
+        removeUnlockListeners(unlockAudio);
 
         // BGM도 함께 시작 시도
         if (this.bgmAudio && isBgmEnabled()) {
           this.playBgm();
         }
       }).catch(() => {
-        // 실패해도 다음 터치에서 재시도
+        // 실패하면 리스너를 유지해서 다음 사용자 제스처에서 재시도
       });
-
-      // 이벤트 리스너 제거
-      document.removeEventListener('touchstart', unlockAudio);
-      document.removeEventListener('touchend', unlockAudio);
-      document.removeEventListener('click', unlockAudio);
     };
 
     // 다양한 이벤트에 리스너 등록
-    document.addEventListener('touchstart', unlockAudio, { once: true });
-    document.addEventListener('touchend', unlockAudio, { once: true });
-    document.addEventListener('click', unlockAudio, { once: true });
+    document.addEventListener('touchstart', unlockAudio);
+    document.addEventListener('touchend', unlockAudio);
+    document.addEventListener('click', unlockAudio);
+    document.addEventListener('pointerdown', unlockAudio);
   }
 
   /**

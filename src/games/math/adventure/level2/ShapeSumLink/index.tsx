@@ -30,6 +30,11 @@ interface DifficultyProgress {
     totalCorrectInLevel: number;
 }
 
+interface PendingRoundAction {
+    regenerate: boolean;
+    nextLevel: DifficultyLevel;
+}
+
 const CENTER_POINT = 50;
 const NODE_RADIUS = 31;
 const NODE_ANGLES = [-90, -30, 30, 90, 150, 210];
@@ -125,7 +130,7 @@ export const ShapeSumLink: React.FC<ShapeSumLinkProps> = ({ onExit }) => {
     const [selectedIndices, setSelectedIndices] = useState<number[]>([]);
     const [isDragging, setIsDragging] = useState(false);
     const [isResolving, setIsResolving] = useState(false);
-    const [pendingNextLevel, setPendingNextLevel] = useState<DifficultyLevel | null>(null);
+    const [pendingRoundAction, setPendingRoundAction] = useState<PendingRoundAction | null>(null);
     const [difficultyProgress, setDifficultyProgress] = useState<DifficultyProgress>({
         level: 1,
         consecutiveCorrect: 0,
@@ -170,24 +175,26 @@ export const ShapeSumLink: React.FC<ShapeSumLinkProps> = ({ onExit }) => {
             setMission(createMission(initialProgress.level));
             setSelectedIndices([]);
             setIsResolving(false);
-            setPendingNextLevel(null);
+            setPendingRoundAction(null);
         }
         prevGameStateRef.current = engine.gameState;
     }, [engine.gameState]);
 
     useEffect(() => {
-        if (!isResolving || pendingNextLevel == null) return;
+        if (!isResolving || pendingRoundAction == null) return;
 
         if (engine.gameState === 'playing') {
-            setMission(createMission(pendingNextLevel));
+            if (pendingRoundAction.regenerate) {
+                setMission(createMission(pendingRoundAction.nextLevel));
+            }
             setSelectedIndices([]);
             setIsResolving(false);
-            setPendingNextLevel(null);
+            setPendingRoundAction(null);
         } else if (engine.gameState === 'gameover' || engine.gameState === 'idle') {
             setIsResolving(false);
-            setPendingNextLevel(null);
+            setPendingRoundAction(null);
         }
-    }, [engine.gameState, isResolving, pendingNextLevel]);
+    }, [engine.gameState, isResolving, pendingRoundAction]);
 
     const handleNodeDown = useCallback((event: React.PointerEvent<HTMLButtonElement>, index: number) => {
         if (!mission || isResolving || engine.gameState !== 'playing') {
@@ -322,7 +329,10 @@ export const ShapeSumLink: React.FC<ShapeSumLinkProps> = ({ onExit }) => {
 
         engine.submitAnswer(isCorrect, { skipDifficulty: true });
         engine.registerEvent({ type: isCorrect ? 'correct' : 'wrong' });
-        setPendingNextLevel(nextProgress.level);
+        setPendingRoundAction({
+            regenerate: isCorrect,
+            nextLevel: nextProgress.level
+        });
     }, [mission, isResolving, engine, difficultyProgress]);
 
     useEffect(() => {
