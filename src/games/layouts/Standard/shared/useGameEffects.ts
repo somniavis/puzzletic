@@ -46,7 +46,7 @@ export const useGameEffects = (lastEvent: GameEvent | null | undefined) => {
                     generateParticles('correct', 5, '✨');
                 }
             } else if (lastEvent.type === 'wrong') {
-                playJelloClickSound(); // Standard failure feedback (Jello Sound)
+                playJelloClickSound(0.8); // Unified wrong feedback
                 setShowShake(true);
                 setTimeout(() => setShowShake(false), 500);
             }
