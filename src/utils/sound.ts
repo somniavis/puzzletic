@@ -147,6 +147,7 @@ class SoundManager {
       });
 
       pool.push(audio);
+
     }
 
     this.audioPool.set(soundUrl, pool);

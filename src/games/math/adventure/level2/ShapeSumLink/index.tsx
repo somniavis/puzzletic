@@ -7,6 +7,7 @@ import './ShapeSumLink.css';
 import type { GameManifest } from '../../../../types';
 import { GameIds } from '../../../../../constants/gameIds';
 import type { PowerUpBtnProps } from '../../../../../components/Game/PowerUpBtn';
+import { playClearSound, playJelloClickSound } from '../../../../../utils/sound';
 
 interface ShapeSumLinkProps {
     onExit: () => void;
@@ -138,6 +139,7 @@ export const ShapeSumLink: React.FC<ShapeSumLinkProps> = ({ onExit }) => {
         totalCorrectInLevel: 0
     });
     const draggingPointerIdRef = useRef<number | null>(null);
+    const sfxPrimedRef = useRef(false);
 
     const engine = useGameEngine({
         initialLives: 3,
@@ -199,6 +201,12 @@ export const ShapeSumLink: React.FC<ShapeSumLinkProps> = ({ onExit }) => {
     const handleNodeDown = useCallback((event: React.PointerEvent<HTMLButtonElement>, index: number) => {
         if (!mission || isResolving || engine.gameState !== 'playing') {
             return;
+        }
+        if (!sfxPrimedRef.current) {
+            // Mobile-safe prewarm so both success/fail sounds are available in this game session.
+            playClearSound(0);
+            playJelloClickSound(0);
+            sfxPrimedRef.current = true;
         }
         draggingPointerIdRef.current = event.pointerId;
         event.currentTarget.setPointerCapture(event.pointerId);
@@ -327,8 +335,14 @@ export const ShapeSumLink: React.FC<ShapeSumLinkProps> = ({ onExit }) => {
             }
         }
 
+        if (isCorrect) {
+            playClearSound();
+        } else {
+            playJelloClickSound(0.55);
+        }
+
         engine.submitAnswer(isCorrect, { skipDifficulty: true });
-        engine.registerEvent({ type: isCorrect ? 'correct' : 'wrong' });
+        engine.registerEvent({ type: isCorrect ? 'correct' : 'wrong', sfx: 'none' } as any);
         setPendingRoundAction({
             regenerate: isCorrect,
             nextLevel: nextProgress.level

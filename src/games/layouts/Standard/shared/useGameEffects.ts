@@ -5,6 +5,7 @@ interface GameEvent {
     id: number;
     type: 'correct' | 'wrong' | 'timeout' | string;
     isFinal?: boolean;
+    sfx?: 'auto' | 'none';
 }
 
 export const useGameEffects = (lastEvent: GameEvent | null | undefined) => {
@@ -33,20 +34,21 @@ export const useGameEffects = (lastEvent: GameEvent | null | undefined) => {
         if (lastEvent) {
             if (processedEventIds.current.has(lastEvent.id)) return;
             processedEventIds.current.add(lastEvent.id);
+            const shouldPlaySfx = lastEvent.sfx !== 'none';
 
             if (lastEvent.type === 'correct') {
                 const isFinal = lastEvent.isFinal !== false;
                 if (isFinal) {
-                    playClearSound();
+                    if (shouldPlaySfx) playClearSound();
                     generateParticles('correct', 20);
                     setShowSuccessFlash(true);
                     setTimeout(() => setShowSuccessFlash(false), 500);
                 } else {
-                    playEatingSound();
+                    if (shouldPlaySfx) playEatingSound();
                     generateParticles('correct', 5, '✨');
                 }
             } else if (lastEvent.type === 'wrong') {
-                playJelloClickSound(0.8); // Unified wrong feedback
+                if (shouldPlaySfx) playJelloClickSound(0.8); // Unified wrong feedback
                 setShowShake(true);
                 setTimeout(() => setShowShake(false), 500);
             }
