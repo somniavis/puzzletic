@@ -28,6 +28,7 @@ Our math games are designed to build foundational number sense and fluency in op
 | `math-number-balance` | **Number Balance** | ➕ Addition | Basic equations, equality (=), and balance. |
 | `math-fruit-slice` | **Fruit Slice** | ➕ Part-Whole | Decomposing numbers (e.g., 5 is 2 and 3). |
 | `pinwheel-pop` | **Pinwheel Pop** | ➕ Addition | Applying addition in a dynamic context. |
+| `shape-sum-link` | **Shape Sum Link** | ➕ Addition | Multi-number addition by linking points into shapes. |
 | `deep-sea-dive` | **Deep Sea Dive** | ➖ Subtraction | Basic subtraction facts. |
 | `math-archery` | **Math Archery** | ⚡ Mixed Ops | Mixed operations (1-10) with visual targeting. |
 | `math-level2-ufo-invasion` | **UFO Invasion** | ⚡ Speed Math | Fast mental calculation under time pressure. |

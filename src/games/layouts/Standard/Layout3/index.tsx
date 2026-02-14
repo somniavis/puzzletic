@@ -120,9 +120,10 @@ export const Layout3: React.FC<Layout3Props> = ({
                             <PowerUpBtn key={idx} {...p} />
                         ))}
                     </div>
-                    <div className="target-display-card">
+                    <div className={`target-display-card ${target.label ? 'with-label' : ''}`}>
                         {target.icon && <span className="target-emoji">{target.icon}</span>}
                         <span className="target-count">{target.value}</span>
+                        {target.label && <span className="target-pill">{target.label}</span>}
                     </div>
                 </div>
 

@@ -15,6 +15,7 @@ import deepSeaDiveJa from '../../games/math/adventure/level2/DeepSeaDive/locales
 import ufoInvasionJa from '../../games/math/adventure/level2/UFOInvasion/locales/ja';
 import cargoTrainJa from '../../games/math/adventure/level2/CargoTrain/locales/ja.ts';
 import rocketLauncherJa from '../../games/math/adventure/level2/RocketLauncher/locales/ja';
+import shapeSumLinkJa from '../../games/math/adventure/level2/ShapeSumLink/locales/ja';
 
 import colorLinkJa from '../../games/brain/level1/ColorLink/locales/ja';
 import pairUpTwinJa from '../../games/brain/level1/PairUpTwin/locales/ja';
@@ -973,6 +974,7 @@ export const ja = {
         backMultiplication: backMultiplicationJa,
         'ten-frame-count': tenFrameCountJa,
         'pinwheel-pop': mathPinwheelJa,
+        'shape-sum-link': shapeSumLinkJa,
         'animal-banquet': animalBanquetJa,
         'deep-sea-dive': deepSeaDiveJa,
         'math-level2-ufo-invasion': ufoInvasionJa,

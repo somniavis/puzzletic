@@ -128,11 +128,6 @@ export const useBackMultiplicationLogicLv4 = (engine: GameLogicEngine) => {
             playButtonSound();
             const nextInput = userInput + val;
             setUserInput(nextInput);
-
-            // Auto-Check if full length reached
-            if (nextInput.length === maxLength) {
-                checkAnswer(nextInput, currentProblem);
-            }
         }
     };
 

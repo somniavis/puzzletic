@@ -22,6 +22,7 @@ import animalBanquetEn from '../../games/brain/level2/AnimalBanquet/locales/en';
 import ufoInvasionEn from '../../games/math/adventure/level2/UFOInvasion/locales/en';
 import cargoTrainEn from '../../games/math/adventure/level2/CargoTrain/locales/en.ts';
 import rocketLauncherEn from '../../games/math/adventure/level2/RocketLauncher/locales/en';
+import shapeSumLinkEn from '../../games/math/adventure/level2/ShapeSumLink/locales/en';
 import mazeEscapeEn from '../../games/brain/level1/MazeEscape/locales/en';
 import mazeHunterEn from '../../games/brain/level2/MazeHunter/locales/en';
 import ticTacToeEn from '../../games/brain/level3/TicTacToe/locales/en';
@@ -1015,6 +1016,7 @@ export const en = {
     backMultiplication: backMultiplicationEn,
     'ten-frame-count': tenFrameCountEn,
     'pinwheel-pop': mathPinwheelEn,
+    'shape-sum-link': shapeSumLinkEn,
     'deep-sea-dive': deepSeaDiveEn,
     'signal-hunter': signalHunterEn,
     'color-link': colorLinkEn,

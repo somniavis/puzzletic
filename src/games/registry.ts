@@ -28,6 +28,7 @@ const L1_CompareCritters = lazy(() => delayedImport(import('./math/adventure/lev
 const L2_TenFrameCount = lazy(() => delayedImport(import('./math/adventure/level2/TenFrameCount').then(m => ({ default: m.TenFrameCount }))));
 const L2_RocketLauncher = lazy(() => delayedImport(import('./math/adventure/level2/RocketLauncher'))); // default export for new game
 const L2_PinwheelPop = lazy(() => delayedImport(import('./math/adventure/level2/PinwheelPop').then(m => ({ default: m.MathPinwheel }))));
+const L2_ShapeSumLink = lazy(() => delayedImport(import('./math/adventure/level2/ShapeSumLink').then(m => ({ default: m.ShapeSumLink }))));
 
 const L1_DeepSeaDive = lazy(() => delayedImport(import('./math/adventure/level2/DeepSeaDive').then(m => ({ default: (props: any) => createElement(m.DeepSeaDive, { ...props, level: 1 }) }))));
 const L2_DeepSeaDive = lazy(() => delayedImport(import('./math/adventure/level2/DeepSeaDive').then(m => ({ default: (props: any) => createElement(m.DeepSeaDive, { ...props, level: 2 }) }))));
@@ -228,6 +229,20 @@ export const GAMES: GameManifest[] = [
         level: 2,
         component: L2_PinwheelPop,
         thumbnail: '🍭',
+        tagsKey: 'games.tags.addition'
+    },
+    {
+        id: GameIds.SHAPE_SUM_LINK,
+        title: 'Shape Sum Link',
+        titleKey: 'games.shape-sum-link.title',
+        subtitle: 'Draw Shapes in the Circle!',
+        subtitleKey: 'games.shape-sum-link.subtitle',
+        description: 'Connect numbers to complete shape-based sum missions.',
+        descriptionKey: 'games.shape-sum-link.description',
+        category: 'math',
+        level: 2,
+        component: L2_ShapeSumLink,
+        thumbnail: '🔺',
         tagsKey: 'games.tags.addition'
     },
     {

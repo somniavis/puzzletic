@@ -15,6 +15,7 @@ import deepSeaDiveKo from '../../games/math/adventure/level2/DeepSeaDive/locales
 import ufoInvasionKo from '../../games/math/adventure/level2/UFOInvasion/locales/ko';
 import cargoTrainKo from '../../games/math/adventure/level2/CargoTrain/locales/ko.ts';
 import rocketLauncherKo from '../../games/math/adventure/level2/RocketLauncher/locales/ko';
+import shapeSumLinkKo from '../../games/math/adventure/level2/ShapeSumLink/locales/ko';
 
 import colorLinkKo from '../../games/brain/level1/ColorLink/locales/ko.ts';
 import pairUpTwinKo from '../../games/brain/level1/PairUpTwin/locales/ko.ts';
@@ -1017,6 +1018,7 @@ export const ko = {
         backMultiplication: backMultiplicationKo,
         'ten-frame-count': tenFrameCountKo,
         'pinwheel-pop': mathPinwheelKo,
+        'shape-sum-link': shapeSumLinkKo,
         'animal-banquet': animalBanquetKo,
         'deep-sea-dive': deepSeaDiveKo,
         'math-level2-ufo-invasion': ufoInvasionKo,
