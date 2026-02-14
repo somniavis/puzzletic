@@ -37,22 +37,19 @@ const HintArrow = ({ type }: { type: 'down' | 'diagonal-right' | 'diagonal-left'
         pointerEvents: 'none'
     };
 
-    let rotation = '0deg';
     if (type === 'diagonal-right') { // ↘
-        rotation = '-45deg';
         Object.assign(style, {
             left: '100%',
             width: '150%',
             top: '50%',
-            transform: `translate(-50%, -20%) rotate(${rotation})`
+            transform: 'translate(-50%, -20%)'
         });
     } else if (type === 'diagonal-left') { // ↙
-        rotation = '45deg';
         Object.assign(style, {
             left: '0%',
             width: '150%',
             top: '50%',
-            transform: `translate(-50%, -20%) rotate(${rotation})`
+            transform: 'translate(-50%, -20%)'
         });
     } else if (type === 'plus') {
         Object.assign(style, {
@@ -77,11 +74,23 @@ const HintArrow = ({ type }: { type: 'down' | 'diagonal-right' | 'diagonal-left'
                     border: '2px solid #ef4444', display: 'flex', alignItems: 'center', justifyContent: 'center',
                     fontSize: '4cqi', boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
                 }}>
-                    {type === 'plus' ? '+' : '×'}
+                    {type === 'plus' ? '+' : 'x'}
                 </div>
-                <div style={{ fontSize: '8cqi', color: '#ef4444', fontWeight: 'bold', textShadow: '0 2px 4px rgba(255,255,255,0.8)' }}>
-                    ↓
-                </div>
+                {type === 'diagonal-right' && (
+                    <div style={{ fontSize: '8cqi', color: '#ef4444', fontWeight: 'bold', textShadow: '0 2px 4px rgba(255,255,255,0.8)' }}>
+                        ↘
+                    </div>
+                )}
+                {type === 'diagonal-left' && (
+                    <div style={{ fontSize: '8cqi', color: '#ef4444', fontWeight: 'bold', textShadow: '0 2px 4px rgba(255,255,255,0.8)' }}>
+                        ↙
+                    </div>
+                )}
+                {(type === 'down' || type === 'plus') && (
+                    <div style={{ fontSize: '8cqi', color: '#ef4444', fontWeight: 'bold', textShadow: '0 2px 4px rgba(255,255,255,0.8)' }}>
+                        ↓
+                    </div>
+                )}
             </div>
         </div>
     );
