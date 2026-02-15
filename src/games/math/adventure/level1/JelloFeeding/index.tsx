@@ -34,6 +34,46 @@ const FOOD_EMOJIS = [
     '🥐', '🥞', '🧀', '🍖', '🍗', '🍔', '🍕', '🌭', '🥪'
 ] as const;
 
+const FOOD_BG_COLORS: Record<(typeof FOOD_EMOJIS)[number], string> = {
+    '🍈': 'rgba(180, 230, 170, 0.15)',
+    '🍉': 'rgba(245, 170, 180, 0.15)',
+    '🍊': 'rgba(255, 199, 130, 0.15)',
+    '🍋': 'rgba(255, 241, 158, 0.15)',
+    '🍋‍🟩': 'rgba(199, 239, 169, 0.15)',
+    '🍌': 'rgba(255, 236, 156, 0.15)',
+    '🍍': 'rgba(255, 221, 138, 0.15)',
+    '🥭': 'rgba(255, 194, 136, 0.15)',
+    '🍎': 'rgba(247, 166, 166, 0.15)',
+    '🍏': 'rgba(196, 233, 180, 0.15)',
+    '🍐': 'rgba(213, 236, 173, 0.15)',
+    '🍑': 'rgba(255, 198, 174, 0.15)',
+    '🍓': 'rgba(248, 169, 178, 0.15)',
+    '🥝': 'rgba(208, 232, 173, 0.15)',
+    '🍅': 'rgba(246, 175, 165, 0.15)',
+    '🥑': 'rgba(202, 230, 170, 0.15)',
+    '🍆': 'rgba(210, 184, 234, 0.15)',
+    '🥔': 'rgba(224, 203, 168, 0.15)',
+    '🥕': 'rgba(255, 203, 143, 0.15)',
+    '🌽': 'rgba(255, 230, 152, 0.15)',
+    '🌶️': 'rgba(246, 169, 158, 0.15)',
+    '🫑': 'rgba(186, 231, 169, 0.15)',
+    '🥒': 'rgba(188, 233, 175, 0.15)',
+    '🥬': 'rgba(191, 234, 170, 0.15)',
+    '🥦': 'rgba(178, 220, 167, 0.15)',
+    '🧅': 'rgba(228, 204, 214, 0.15)',
+    '🌰': 'rgba(215, 192, 166, 0.15)',
+    '🍄‍🟫': 'rgba(214, 190, 166, 0.15)',
+    '🥐': 'rgba(240, 206, 164, 0.15)',
+    '🥞': 'rgba(236, 200, 157, 0.15)',
+    '🧀': 'rgba(255, 227, 154, 0.15)',
+    '🍖': 'rgba(235, 188, 180, 0.15)',
+    '🍗': 'rgba(242, 201, 163, 0.15)',
+    '🍔': 'rgba(238, 198, 154, 0.15)',
+    '🍕': 'rgba(246, 196, 152, 0.15)',
+    '🌭': 'rgba(243, 196, 157, 0.15)',
+    '🥪': 'rgba(235, 205, 164, 0.15)'
+};
+
 const createProblem = (): SubtractionProblem => {
     // 10 이내 뺄셈 개념 학습용
     const total = Math.floor(Math.random() * 8) + 3; // 3..10
@@ -248,6 +288,7 @@ export const JelloFeeding: React.FC<JelloFeedingProps> = ({ onExit }) => {
             <span className={resultStateClass}>{liveResult}</span>
         </span>
     );
+    const foodBgColor = FOOD_BG_COLORS[foodEmoji as (typeof FOOD_EMOJIS)[number]] || 'rgba(255, 255, 255, 0.15)';
 
     return (
         <Layout3
@@ -296,6 +337,7 @@ export const JelloFeeding: React.FC<JelloFeedingProps> = ({ onExit }) => {
                                     onPointerDown={fruit ? (event) => handleFruitPointerDown(event, fruit.id, fruit.fed) : undefined}
                                     disabled={!fruit || fruit.fed || engine.gameState !== 'playing'}
                                     aria-label={fruit ? `fruit-${fruit.id}` : `empty-slot-${slotIndex}`}
+                                    style={fruit && !fruit.fed ? { background: foodBgColor } : undefined}
                                 >
                                     {fruit ? <span className="fruit-emoji">{foodEmoji}</span> : null}
                                 </button>
@@ -345,7 +387,7 @@ export const JelloFeeding: React.FC<JelloFeedingProps> = ({ onExit }) => {
                     {draggingFruitId != null && (
                         <div
                             className="fruit-drag-ghost"
-                            style={{ left: dragPos.x, top: dragPos.y }}
+                            style={{ left: dragPos.x, top: dragPos.y, background: foodBgColor }}
                             aria-hidden="true"
                         >
                             {foodEmoji}
