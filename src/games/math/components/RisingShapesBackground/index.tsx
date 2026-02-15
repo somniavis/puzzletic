@@ -11,6 +11,8 @@ export const RisingShapesBackground = React.memo(() => {
                 <li></li>
                 <li></li>
                 <li></li>
+                <li></li>
+                <li></li>
             </ul>
         </div>
     );

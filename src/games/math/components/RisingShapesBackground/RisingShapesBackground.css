@@ -38,11 +38,18 @@
     height: 20px;
     /* Soft Purple/Blue with transparency */
     background: rgba(167, 139, 250, 0.12);
+    /* Default: triangle */
+    clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
     animation: rising-animate 33s linear infinite;
     /* Slower (was 25s) */
     bottom: -150px;
     will-change: transform;
     /* Optimization */
+}
+
+/* Mixed shapes: even items as squares */
+.rising-circles li:nth-child(even) {
+    clip-path: none;
 }
 
 /* Add color variety to shapes */

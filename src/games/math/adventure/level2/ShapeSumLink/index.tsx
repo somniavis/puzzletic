@@ -8,6 +8,7 @@ import type { GameManifest } from '../../../../types';
 import { GameIds } from '../../../../../constants/gameIds';
 import type { PowerUpBtnProps } from '../../../../../components/Game/PowerUpBtn';
 import { playClearSound, playJelloClickSound } from '../../../../../utils/sound';
+import { RisingShapesBackground } from '../../../components/RisingShapesBackground';
 
 interface ShapeSumLinkProps {
     onExit: () => void;
@@ -471,47 +472,50 @@ export const ShapeSumLink: React.FC<ShapeSumLinkProps> = ({ onExit }) => {
                 label: mission ? `${mission.requiredCount} picks` : 'Ready'
             }}
         >
-            <div className="shape-sum-link-container">
-                <div className="shape-sum-link-board">
-                    <svg className="shape-link-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
-                        <polyline
-                            points={selectedPolyline}
-                            className={`shape-link-line ${isResolving ? 'locked' : ''}`}
-                        />
-                    </svg>
-                    <div className="shape-sum-link-circle">
-                        <svg className="shape-main-circle-svg" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-                            <defs>
-                                <radialGradient id="shapeSumCircleFill" cx="30%" cy="20%" r="78%">
-                                    <stop offset="0%" stopColor="rgba(255,255,255,0.96)" />
-                                    <stop offset="100%" stopColor="rgba(219,234,254,0.86)" />
-                                </radialGradient>
-                            </defs>
-                            <circle cx="50" cy="50" r={NODE_RADIUS} fill="url(#shapeSumCircleFill)" stroke="#bfdbfe" strokeWidth="1.35" />
+            <>
+                <RisingShapesBackground />
+                <div className="shape-sum-link-container" style={{ zIndex: 10, position: 'relative' }}>
+                    <div className="shape-sum-link-board">
+                        <svg className="shape-link-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
+                            <polyline
+                                points={selectedPolyline}
+                                className={`shape-link-line ${isResolving ? 'locked' : ''}`}
+                            />
                         </svg>
-                        <span className="shape-circle-operator">+</span>
+                        <div className="shape-sum-link-circle">
+                            <svg className="shape-main-circle-svg" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+                                <defs>
+                                    <radialGradient id="shapeSumCircleFill" cx="30%" cy="20%" r="78%">
+                                        <stop offset="0%" stopColor="rgba(255,255,255,0.96)" />
+                                        <stop offset="100%" stopColor="rgba(219,234,254,0.86)" />
+                                    </radialGradient>
+                                </defs>
+                                <circle cx="50" cy="50" r={NODE_RADIUS} fill="url(#shapeSumCircleFill)" stroke="#bfdbfe" strokeWidth="1.35" />
+                            </svg>
+                            <span className="shape-circle-operator">+</span>
+                        </div>
+                        {(mission?.numbers ?? []).map((num, idx) => {
+                            const isSelected = selectedIndices.includes(idx);
+                            const nodePoint = NODE_POINTS[idx];
+                            return (
+                                <button
+                                    key={`${num}-${idx}`}
+                                    type="button"
+                                    className={`shape-node-wrap ${isSelected ? 'selected' : ''} ${isResolving ? 'locked' : ''}`}
+                                    style={{ left: `${nodePoint.x}%`, top: `${nodePoint.y}%` }}
+                                    data-node-index={idx}
+                                    onPointerDown={(event) => handleNodeDown(event, idx)}
+                                    onPointerEnter={() => handleNodeEnter(idx)}
+                                    disabled={isResolving}
+                                    aria-label={`Number ${num}`}
+                                >
+                                    <div className="shape-node-card">{num}</div>
+                                </button>
+                            );
+                        })}
                     </div>
-                    {(mission?.numbers ?? []).map((num, idx) => {
-                        const isSelected = selectedIndices.includes(idx);
-                        const nodePoint = NODE_POINTS[idx];
-                        return (
-                            <button
-                                key={`${num}-${idx}`}
-                                type="button"
-                                className={`shape-node-wrap ${isSelected ? 'selected' : ''} ${isResolving ? 'locked' : ''}`}
-                                style={{ left: `${nodePoint.x}%`, top: `${nodePoint.y}%` }}
-                                data-node-index={idx}
-                                onPointerDown={(event) => handleNodeDown(event, idx)}
-                                onPointerEnter={() => handleNodeEnter(idx)}
-                                disabled={isResolving}
-                                aria-label={`Number ${num}`}
-                            >
-                                <div className="shape-node-card">{num}</div>
-                            </button>
-                        );
-                    })}
                 </div>
-            </div>
+            </>
         </Layout3>
     );
 };
