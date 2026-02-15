@@ -29,7 +29,7 @@ interface FruitItem {
 }
 
 const FOOD_EMOJIS = [
-    '🍈', '🍉', '🍊', '🍋', '🍋‍🟩', '🍌', '🍍', '🥭', '🍎', '🍏', '🍐', '🍑', '🍓', '🥝', '🍅',
+    '🍈', '🍉', '🍊', '🍋', '🍌', '🍍', '🥭', '🍎', '🍏', '🍐', '🍑', '🍓', '🥝', '🍅',
     '🥑', '🍆', '🥔', '🥕', '🌽', '🌶️', '🫑', '🥒', '🥬', '🥦', '🧅', '🌰', '🍄‍🟫',
     '🥐', '🥞', '🧀', '🍖', '🍗', '🍔', '🍕', '🌭', '🥪'
 ] as const;
@@ -39,7 +39,6 @@ const FOOD_BG_COLORS: Record<(typeof FOOD_EMOJIS)[number], string> = {
     '🍉': 'rgba(245, 170, 180, 0.15)',
     '🍊': 'rgba(255, 199, 130, 0.15)',
     '🍋': 'rgba(255, 241, 158, 0.15)',
-    '🍋‍🟩': 'rgba(199, 239, 169, 0.15)',
     '🍌': 'rgba(255, 236, 156, 0.15)',
     '🍍': 'rgba(255, 221, 138, 0.15)',
     '🥭': 'rgba(255, 194, 136, 0.15)',
@@ -367,6 +366,7 @@ export const JelloFeeding: React.FC<JelloFeedingProps> = ({ onExit }) => {
                                     character={currentCharacter.char}
                                     speciesId={currentCharacter.id}
                                     size="small"
+                                    responsive
                                     action={isJelloEating ? 'eating' : 'idle'}
                                     mood="happy"
                                     disableAnimation={false}
