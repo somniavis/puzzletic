@@ -269,6 +269,36 @@
     touch-action: none;
 }
 
+.ice-center-hint-column {
+    position: absolute;
+    top: 1px;
+    bottom: 1px;
+    left: calc((var(--center-col) * 10%) + 1px);
+    width: calc(10% - 1px);
+    background: linear-gradient(
+        180deg,
+        rgba(255, 193, 122, 0.05) 0%,
+        rgba(255, 193, 122, 0.17) 35%,
+        rgba(255, 193, 122, 0.2) 60%,
+        rgba(255, 193, 122, 0.08) 100%
+    );
+    pointer-events: none;
+    z-index: 1;
+    animation: ice-center-hint-pulse 1.7s ease-in-out infinite;
+}
+
+@keyframes ice-center-hint-pulse {
+    0% {
+        opacity: 0.22;
+    }
+    50% {
+        opacity: 0.5;
+    }
+    100% {
+        opacity: 0.22;
+    }
+}
+
 .ice-cell {
     box-sizing: border-box;
     border-right: 1px dashed rgba(77, 128, 167, 0.32);

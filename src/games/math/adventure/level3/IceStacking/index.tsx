@@ -83,22 +83,24 @@ const placeBundle = (grid: boolean[][], row: number, startCol: number, width: nu
     return next;
 };
 
-const isStackStable = (grid: boolean[][]): boolean => {
-    // Base center is determined ONLY by row 1 (bottom row) bundle cells.
+const getBaseCenterCols = (grid: boolean[][]): number[] => {
     const row1Cols = Array.from({ length: GRID_COLS }, (_, col) => col).filter((col) => grid[GRID_ROWS - 1][col]);
-    if (row1Cols.length === 0) return false;
+    if (row1Cols.length === 0) return [];
 
     const baseMin = Math.min(...row1Cols);
     const baseMax = Math.max(...row1Cols);
     const baseWidth = baseMax - baseMin + 1;
-
-    // Examples (1-indexed): 3 -> 2, 4 -> 2,3, 5 -> 3, 6 -> 3,4 ...
     const leftCenterOffset = Math.floor((baseWidth - 1) / 2);
     const rightCenterOffset = Math.floor(baseWidth / 2);
-    const centerCols = new Set<number>([
-        baseMin + leftCenterOffset,
-        baseMin + rightCenterOffset
-    ]);
+
+    const centerCols = [baseMin + leftCenterOffset, baseMin + rightCenterOffset];
+    return Array.from(new Set(centerCols));
+};
+
+const isStackStable = (grid: boolean[][]): boolean => {
+    // Base center is determined ONLY by row 1 (bottom row) bundle cells.
+    const centerCols = new Set<number>(getBaseCenterCols(grid));
+    if (centerCols.size === 0) return false;
 
     // Every upper row that has blocks must overlap at least one base-center cell.
     for (let row = 0; row < GRID_ROWS - 1; row += 1) {
@@ -376,6 +378,7 @@ export const IceStacking: React.FC<IceStackingProps> = ({ onExit }) => {
 
     const currentTotal = placedBundles * problem.bundleSize;
     const atTarget = placedBundles === problem.boxCount;
+    const centerHintCols = React.useMemo(() => getBaseCenterCols(gridRef.current), [settledPieces]);
     const resultClass = currentTotal === 0
         ? 'ice-order-result-neutral'
         : atTarget && stackStable
@@ -466,6 +469,14 @@ export const IceStacking: React.FC<IceStackingProps> = ({ onExit }) => {
                             ref={boardRef}
                             className="ice-grid-board"
                         >
+                            {centerHintCols.map((col) => (
+                                <div
+                                    key={`center-hint-${col}`}
+                                    className="ice-center-hint-column"
+                                    style={{ '--center-col': col } as React.CSSProperties}
+                                />
+                            ))}
+
                             {Array.from({ length: GRID_ROWS }).map((_, row) => (
                                 <React.Fragment key={`row-${row}`}>
                                     {Array.from({ length: GRID_COLS }).map((__, col) => {
