@@ -5,6 +5,7 @@ import numberHiveKo from '../../games/math/adventure/level1/NumberHive/locales/k
 import fruitSliceKo from '../../games/math/adventure/level1/FruitSlice/locales/ko';
 import numberBalanceKo from '../../games/math/adventure/level1/NumberBalance/locales/ko';
 import mathArcheryKo from '../../games/math/adventure/level1/MathArchery/locales/ko';
+import jelloFeedingKo from '../../games/math/adventure/level1/JelloFeeding/locales/ko';
 import frontAdditionKo from '../../games/math/genius/FrontAddition/locales/ko';
 import frontSubtractionKo from '../../games/math/genius/FrontSubtraction/locales/ko';
 import backMultiplicationKo from '../../games/math/genius/BackMultiplication/locales/ko';
@@ -1013,6 +1014,7 @@ export const ko = {
         'math-fruit-slice': fruitSliceKo,
         'math-number-balance': numberBalanceKo,
         'math-archery': mathArcheryKo,
+        'jello-feeding': jelloFeedingKo,
         frontAddition: frontAdditionKo,
         frontSubtraction: frontSubtractionKo,
         backMultiplication: backMultiplicationKo,

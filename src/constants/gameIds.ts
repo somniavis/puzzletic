@@ -4,6 +4,7 @@ export const GameIds = {
     MATH_ROUND_COUNTING: 'math-round-counting',
     MATH_NUMBER_HIVE: 'math-number-hive',
     MATH_NUMBER_BALANCE: 'math-number-balance',
+    MATH_JELLO_FEEDING: 'math-jello-feeding',
     MATH_FRUIT_SLICE: 'math-fruit-slice',
     MATH_ARCHERY: 'math-archery',
     MATH_ARCHERY_LV1: 'math-archery-lv1',

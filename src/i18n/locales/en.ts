@@ -6,6 +6,7 @@ import numberHiveEn from '../../games/math/adventure/level1/NumberHive/locales/e
 import fruitSliceEn from '../../games/math/adventure/level1/FruitSlice/locales/en';
 import numberBalanceEn from '../../games/math/adventure/level1/NumberBalance/locales/en';
 import mathArcheryEn from '../../games/math/adventure/level1/MathArchery/locales/en';
+import jelloFeedingEn from '../../games/math/adventure/level1/JelloFeeding/locales/en';
 import frontAdditionEn from '../../games/math/genius/FrontAddition/locales/en';
 import frontSubtractionEn from '../../games/math/genius/FrontSubtraction/locales/en';
 import backMultiplicationEn from '../../games/math/genius/BackMultiplication/locales/en';
@@ -1010,6 +1011,7 @@ export const en = {
     'math-fruit-slice': fruitSliceEn,
     'math-number-balance': numberBalanceEn,
     'math-archery': mathArcheryEn,
+    'jello-feeding': jelloFeedingEn,
     'math-compare-critters': compareCrittersEn,
     frontAddition: frontAdditionEn,
     frontSubtraction: frontSubtractionEn,

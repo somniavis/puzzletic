@@ -19,6 +19,7 @@ const L1_FishingCount = lazy(() => delayedImport(import('./math/adventure/level1
 const L1_RoundCounting = lazy(() => delayedImport(import('./math/adventure/level1/RoundCounting').then(m => ({ default: m.RoundCounting }))));
 const L1_NumberHive = lazy(() => delayedImport(import('./math/adventure/level1/NumberHive').then(m => ({ default: m.NumberHive }))));
 const L1_NumberBalance = lazy(() => delayedImport(import('./math/adventure/level1/NumberBalance').then(m => ({ default: m.NumberBalance }))));
+const L1_JelloFeeding = lazy(() => delayedImport(import('./math/adventure/level1/JelloFeeding').then(m => ({ default: m.JelloFeeding }))));
 const L1_FruitSlice = lazy(() => delayedImport(import('./math/adventure/level1/FruitSlice').then(m => ({ default: m.FruitSlice }))));
 const L1_MathArchery = lazy(() => delayedImport(import('./math/adventure/level1/MathArchery').then(m => ({ default: (props: any) => createElement(m.MathArchery, { ...props, level: 1 }) }))));
 const L2_MathArchery = lazy(() => delayedImport(import('./math/adventure/level1/MathArchery').then(m => ({ default: (props: any) => createElement(m.MathArchery, { ...props, level: 2 }) }))));
@@ -130,6 +131,20 @@ export const GAMES: GameManifest[] = [
         component: L1_NumberBalance,
         thumbnail: '⚖️',
         tagsKey: 'games.tags.addition'
+    },
+    {
+        id: GameIds.MATH_JELLO_FEEDING,
+        title: 'Jello Feeding',
+        titleKey: 'games.jello-feeding.title',
+        subtitle: 'Jello is Hungry!',
+        subtitleKey: 'games.jello-feeding.subtitle',
+        description: 'Feed Jello to understand subtraction as taking away.',
+        descriptionKey: 'games.jello-feeding.description',
+        category: 'math',
+        level: 1,
+        component: L1_JelloFeeding,
+        thumbnail: '🍏',
+        tagsKey: 'games.tags.subtraction'
     },
     {
         id: GameIds.MATH_FRUIT_SLICE,
