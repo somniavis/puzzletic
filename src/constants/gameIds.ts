@@ -21,6 +21,7 @@ export const GameIds = {
     MATH_CARGO_TRAIN: 'math-cargo-train',
     MATH_ROCKET_LAUNCHER: 'math-rocket-launcher',
     SHAPE_SUM_LINK: 'shape-sum-link',
+    MATH_FRUIT_BOX: 'math-fruit-box',
 
     // Math Genius - Front Addition
     FRONT_ADDITION_LV1: 'front-addition-lv1',

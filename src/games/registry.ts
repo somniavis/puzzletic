@@ -30,6 +30,7 @@ const L2_TenFrameCount = lazy(() => delayedImport(import('./math/adventure/level
 const L2_RocketLauncher = lazy(() => delayedImport(import('./math/adventure/level2/RocketLauncher'))); // default export for new game
 const L2_PinwheelPop = lazy(() => delayedImport(import('./math/adventure/level2/PinwheelPop').then(m => ({ default: m.MathPinwheel }))));
 const L2_ShapeSumLink = lazy(() => delayedImport(import('./math/adventure/level2/ShapeSumLink').then(m => ({ default: m.ShapeSumLink }))));
+const L3_FruitBox = lazy(() => delayedImport(import('./math/adventure/level3/FruitBox').then(m => ({ default: m.FruitBox }))));
 
 const L1_DeepSeaDive = lazy(() => delayedImport(import('./math/adventure/level2/DeepSeaDive').then(m => ({ default: (props: any) => createElement(m.DeepSeaDive, { ...props, level: 1 }) }))));
 const L2_DeepSeaDive = lazy(() => delayedImport(import('./math/adventure/level2/DeepSeaDive').then(m => ({ default: (props: any) => createElement(m.DeepSeaDive, { ...props, level: 2 }) }))));
@@ -301,6 +302,21 @@ export const GAMES: GameManifest[] = [
         component: L2_UFOInvasion,
         thumbnail: '🛸',
         tagsKey: 'games.tags.speedMath'
+    },
+    {
+        id: GameIds.MATH_FRUIT_BOX,
+        title: 'Fruit Box',
+        titleKey: 'games.fruit-box.title',
+        subtitle: 'Pack equal bundles!',
+        subtitleKey: 'games.fruit-box.subtitle',
+        description: 'Pack the same fruit bundles into each box.',
+        descriptionKey: 'games.fruit-box.description',
+        category: 'math',
+        level: 3,
+        mode: 'adventure',
+        component: L3_FruitBox,
+        thumbnail: '📦',
+        tagsKey: 'games.tags.multiplication'
     },
     // Front Addition Levels
     {

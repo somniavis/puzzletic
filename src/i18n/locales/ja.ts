@@ -17,6 +17,7 @@ import ufoInvasionJa from '../../games/math/adventure/level2/UFOInvasion/locales
 import cargoTrainJa from '../../games/math/adventure/level2/CargoTrain/locales/ja.ts';
 import rocketLauncherJa from '../../games/math/adventure/level2/RocketLauncher/locales/ja';
 import shapeSumLinkJa from '../../games/math/adventure/level2/ShapeSumLink/locales/ja';
+import fruitBoxJa from '../../games/math/adventure/level3/FruitBox/locales/ja';
 
 import colorLinkJa from '../../games/brain/level1/ColorLink/locales/ja';
 import pairUpTwinJa from '../../games/brain/level1/PairUpTwin/locales/ja';
@@ -977,6 +978,7 @@ export const ja = {
         'ten-frame-count': tenFrameCountJa,
         'pinwheel-pop': mathPinwheelJa,
         'shape-sum-link': shapeSumLinkJa,
+        'fruit-box': fruitBoxJa,
         'animal-banquet': animalBanquetJa,
         'deep-sea-dive': deepSeaDiveJa,
         'math-level2-ufo-invasion': ufoInvasionJa,
@@ -1012,6 +1014,7 @@ export const ja = {
             memory: '記憶力',
             logic: '論理',
             comparison: '比較',
+            multiplication: 'かけ算',
         },
         mission: {
             challenge: '挑戦！ ({{current}}/{{total}})',

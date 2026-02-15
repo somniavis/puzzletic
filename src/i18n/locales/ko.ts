@@ -17,6 +17,7 @@ import ufoInvasionKo from '../../games/math/adventure/level2/UFOInvasion/locales
 import cargoTrainKo from '../../games/math/adventure/level2/CargoTrain/locales/ko.ts';
 import rocketLauncherKo from '../../games/math/adventure/level2/RocketLauncher/locales/ko';
 import shapeSumLinkKo from '../../games/math/adventure/level2/ShapeSumLink/locales/ko';
+import fruitBoxKo from '../../games/math/adventure/level3/FruitBox/locales/ko';
 
 import colorLinkKo from '../../games/brain/level1/ColorLink/locales/ko.ts';
 import pairUpTwinKo from '../../games/brain/level1/PairUpTwin/locales/ko.ts';
@@ -1021,6 +1022,7 @@ export const ko = {
         'ten-frame-count': tenFrameCountKo,
         'pinwheel-pop': mathPinwheelKo,
         'shape-sum-link': shapeSumLinkKo,
+        'fruit-box': fruitBoxKo,
         'animal-banquet': animalBanquetKo,
         'deep-sea-dive': deepSeaDiveKo,
         'math-level2-ufo-invasion': ufoInvasionKo,
@@ -1056,6 +1058,7 @@ export const ko = {
             memory: '기억력',
             logic: '논리',
             comparison: '비교',
+            multiplication: '곱셈',
         },
         mission: {
             challenge: '성공 도전! ({{current}}/{{total}})',
