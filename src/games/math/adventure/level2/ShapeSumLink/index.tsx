@@ -522,7 +522,7 @@ export const ShapeSumLink: React.FC<ShapeSumLinkProps> = ({ onExit }) => {
 
 export const manifest: GameManifest = {
     id: GameIds.SHAPE_SUM_LINK,
-    title: 'Shape Sum Link',
+    title: 'Dot Link',
     titleKey: 'games.shape-sum-link.title',
     subtitle: 'Draw Shapes in the Circle!',
     subtitleKey: 'games.shape-sum-link.subtitle',

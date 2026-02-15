@@ -1,6 +1,6 @@
 const manifest = {
-    title: 'Shape Sum Link',
-    subtitle: '원 안에 도형 그리기!',
+    title: '점 잇기 링크',
+    subtitle: '원 안에 도형을 그려요',
     description: '도형 미션대로 숫자를 연결해 목표 합을 만들어요.',
     howToPlay: {
         step1: {

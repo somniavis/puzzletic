@@ -1,5 +1,5 @@
 const manifest = {
-    title: 'Shape Sum Link',
+    title: 'Dot Link',
     subtitle: 'Draw Shapes in the Circle!',
     description: 'Link numbers in the mission shape to hit the target sum.',
     howToPlay: {

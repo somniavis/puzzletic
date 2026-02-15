@@ -1,5 +1,5 @@
 const manifest = {
-    title: 'Shape Sum Link',
+    title: 'ドットリンク',
     subtitle: '円の中に図形を描こう！',
     description: 'ミッションの図形どおりに数字をつなぎ、目標の合計を作ろう。',
     howToPlay: {

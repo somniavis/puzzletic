@@ -158,7 +158,7 @@ export const GAMES: GameManifest[] = [
         level: 1,
         component: L1_FruitSlice,
         thumbnail: '🍎',
-        tagsKey: 'games.tags.partWhole'
+        tagsKey: 'games.tags.subtraction'
     },
     {
         id: GameIds.DEEP_SEA_DIVE_LV1,
@@ -229,7 +229,7 @@ export const GAMES: GameManifest[] = [
         component: lazy(() => import('./math/adventure/level2/CargoTrain')),
         description: 'Load the cargo to match the engine number!',
         descriptionKey: 'games.cargoTrain.description',
-        tagsKey: 'games.tags.partWhole', // Fits nicely for "part-whole" or "addition"
+        tagsKey: 'games.tags.addition',
         thumbnail: '🚂'
     },
     {
@@ -248,7 +248,7 @@ export const GAMES: GameManifest[] = [
     },
     {
         id: GameIds.SHAPE_SUM_LINK,
-        title: 'Shape Sum Link',
+        title: 'Dot Link',
         titleKey: 'games.shape-sum-link.title',
         subtitle: 'Draw Shapes in the Circle!',
         subtitleKey: 'games.shape-sum-link.subtitle',
