@@ -24,7 +24,6 @@ export const FOOD_CATEGORIES: Record<FoodCategory, { nameKey: string; icon: stri
 export const FOOD_ITEMS: FoodItem[] = [
   // Fruits (Hunger: 0.4x, Happy: 0.4x, Health: 0.1x)
   { id: 'lemon', nameKey: 'food.items.lemon', icon: '🍋', category: 'fruit', effects: { hunger: -2, happiness: 2, health: 1 }, price: 3 },
-  { id: 'lime', nameKey: 'food.items.lime', icon: '🍋‍🟩', category: 'fruit', effects: { hunger: -2, happiness: 2, health: 1 }, price: 3 },
   { id: 'olive', nameKey: 'food.items.olive', icon: '🫒', category: 'fruit', effects: { hunger: -2, happiness: 2, health: 1 }, price: 3 },
   { id: 'cherries', nameKey: 'food.items.cherries', icon: '🍒', category: 'fruit', effects: { hunger: -3, happiness: 3, health: 1 }, price: 4 },
   { id: 'blueberries', nameKey: 'food.items.blueberries', icon: '🫐', category: 'fruit', effects: { hunger: -3, happiness: 3, health: 1 }, price: 4 },
