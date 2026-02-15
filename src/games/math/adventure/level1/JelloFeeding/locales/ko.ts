@@ -1,5 +1,5 @@
 const manifest = {
-    title: 'Jello Feeding',
+    title: '젤로 먹이주기',
     subtitle: '젤로가 배고파요!',
     description: '과일을 젤로에게 드래그해 뺄셈 미션을 해결해요.',
     howToPlay: {

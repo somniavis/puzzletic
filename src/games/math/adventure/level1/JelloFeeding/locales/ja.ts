@@ -1,5 +1,5 @@
 const manifest = {
-    title: 'Jello Feeding',
+    title: 'ジェロにごはん',
     subtitle: 'ジェロがおなかぺこぺこ！',
     description: 'フルーツをジェロにドラッグして引き算ミッションを解こう。',
     howToPlay: {
