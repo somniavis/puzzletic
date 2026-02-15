@@ -23,6 +23,26 @@
     padding-top: 0.45rem;
 }
 
+.jello-target-expression {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+}
+
+.jello-target-result-neutral {
+    color: inherit;
+}
+
+.jello-target-result-wrong {
+    color: #ef9a9a;
+    transition: color 0.15s ease;
+}
+
+.jello-target-result-correct {
+    color: #81c784;
+    transition: color 0.15s ease;
+}
+
 .fruit-board-panel {
     width: min(100%, 560px);
     justify-self: center;

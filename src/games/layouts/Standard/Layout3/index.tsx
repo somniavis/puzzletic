@@ -25,7 +25,7 @@ interface Layout3Props {
     onExit: () => void;
     children: React.ReactNode;
     powerUps: PowerUpBtnProps[];
-    target: { value: number | string; icon?: string; label?: string; };
+    target: { value: React.ReactNode; icon?: string; label?: string; };
     background?: React.ReactNode;
     cardBackground?: React.ReactNode;
     className?: string;

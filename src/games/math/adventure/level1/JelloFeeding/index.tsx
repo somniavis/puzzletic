@@ -69,6 +69,7 @@ export const JelloFeeding: React.FC<JelloFeedingProps> = ({ onExit }) => {
     const jelloTargetRef = useRef<HTMLDivElement>(null);
     const draggingRef = useRef(false);
     const eatingTimerRef = useRef<number | null>(null);
+    const prevGameStateRef = useRef(engine.gameState);
 
     useEffect(() => {
         if (!i18n.exists('games.jello-feeding.title', { lng: 'en' })) {
@@ -86,12 +87,23 @@ export const JelloFeeding: React.FC<JelloFeedingProps> = ({ onExit }) => {
     if (!resourcesReady) return null;
 
     useEffect(() => {
-        if (engine.gameState !== 'playing') return;
-        const next = createProblem();
-        setProblem(next);
-        setFruits(makeFruits(next.total));
-        setFoodEmoji(pickRandomFoodEmoji());
-        setDraggingFruitId(null);
+        const prev = prevGameStateRef.current;
+
+        // Only initialize a fresh round when entering play from start/end states.
+        // Do not regenerate on correct/wrong -> playing transition because each flow
+        // already controls whether to keep or advance the current problem.
+        if (
+            engine.gameState === 'playing' &&
+            (prev === 'idle' || prev === 'gameover')
+        ) {
+            const next = createProblem();
+            setProblem(next);
+            setFruits(makeFruits(next.total));
+            setFoodEmoji(pickRandomFoodEmoji());
+            setDraggingFruitId(null);
+        }
+
+        prevGameStateRef.current = engine.gameState;
     }, [engine.gameState]);
 
     useEffect(() => {
@@ -227,7 +239,15 @@ export const JelloFeeding: React.FC<JelloFeedingProps> = ({ onExit }) => {
     }, [nurturing.speciesId, nurturing.evolutionStage, nurturing.characterName]);
 
     const liveResult = fedCount === 0 ? '?' : String(remainingCount);
-    const targetExpression = `${problem.total} - ${problem.minus} = ${liveResult}`;
+    const resultStateClass = fedCount === 0
+        ? 'jello-target-result-neutral'
+        : (fedCount === problem.minus ? 'jello-target-result-correct' : 'jello-target-result-wrong');
+    const targetExpression = (
+        <span className="jello-target-expression">
+            <span>{problem.total} - {problem.minus} = </span>
+            <span className={resultStateClass}>{liveResult}</span>
+        </span>
+    );
 
     return (
         <Layout3
