@@ -25,6 +25,7 @@ import cargoTrainEn from '../../games/math/adventure/level2/CargoTrain/locales/e
 import rocketLauncherEn from '../../games/math/adventure/level2/RocketLauncher/locales/en';
 import shapeSumLinkEn from '../../games/math/adventure/level2/ShapeSumLink/locales/en';
 import fruitBoxEn from '../../games/math/adventure/level3/FruitBox/locales/en';
+import iceStackingEn from '../../games/math/adventure/level3/IceStacking/locales/en';
 import mazeEscapeEn from '../../games/brain/level1/MazeEscape/locales/en';
 import mazeHunterEn from '../../games/brain/level2/MazeHunter/locales/en';
 import ticTacToeEn from '../../games/brain/level3/TicTacToe/locales/en';
@@ -1021,6 +1022,7 @@ export const en = {
     'pinwheel-pop': mathPinwheelEn,
     'shape-sum-link': shapeSumLinkEn,
     'fruit-box': fruitBoxEn,
+    'ice-stacking': iceStackingEn,
     'deep-sea-dive': deepSeaDiveEn,
     'signal-hunter': signalHunterEn,
     'color-link': colorLinkEn,

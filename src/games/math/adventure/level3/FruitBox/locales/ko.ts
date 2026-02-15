@@ -5,15 +5,15 @@ const ko = {
     howToPlay: {
         step1: {
             title: '주문 확인',
-            description: '먼저 주문 카드를 확인하세요.'
+            description: '주문 카드를 먼저 봐요.'
         },
         step2: {
             title: '묶음 드래그',
-            description: '과일 묶음을 상자로 드래그하세요.'
+            description: '묶음을 상자로 옮겨요.'
         },
         step3: {
             title: '동일하게 맞추기',
-            description: '모든 상자의 묶음 구성이 같아야 합니다.'
+            description: '상자 구성을 모두 같게 맞춰요.'
         }
     },
     formulaHint: '상자를 모두 채워주세요!',

@@ -31,6 +31,7 @@ const L2_RocketLauncher = lazy(() => delayedImport(import('./math/adventure/leve
 const L2_PinwheelPop = lazy(() => delayedImport(import('./math/adventure/level2/PinwheelPop').then(m => ({ default: m.MathPinwheel }))));
 const L2_ShapeSumLink = lazy(() => delayedImport(import('./math/adventure/level2/ShapeSumLink').then(m => ({ default: m.ShapeSumLink }))));
 const L3_FruitBox = lazy(() => delayedImport(import('./math/adventure/level3/FruitBox').then(m => ({ default: m.FruitBox }))));
+const L3_IceStacking = lazy(() => delayedImport(import('./math/adventure/level3/IceStacking').then(m => ({ default: m.IceStacking }))));
 
 const L1_DeepSeaDive = lazy(() => delayedImport(import('./math/adventure/level2/DeepSeaDive').then(m => ({ default: (props: any) => createElement(m.DeepSeaDive, { ...props, level: 1 }) }))));
 const L2_DeepSeaDive = lazy(() => delayedImport(import('./math/adventure/level2/DeepSeaDive').then(m => ({ default: (props: any) => createElement(m.DeepSeaDive, { ...props, level: 2 }) }))));
@@ -316,6 +317,21 @@ export const GAMES: GameManifest[] = [
         mode: 'adventure',
         component: L3_FruitBox,
         thumbnail: '📦',
+        tagsKey: 'games.tags.multiplication'
+    },
+    {
+        id: GameIds.MATH_ICE_STACKING,
+        title: 'Ice Stacking',
+        titleKey: 'games.ice-stacking.title',
+        subtitle: 'Stack the ice blocks!',
+        subtitleKey: 'games.ice-stacking.subtitle',
+        description: 'Place ice bundles into the grid and build a stable stack.',
+        descriptionKey: 'games.ice-stacking.description',
+        category: 'math',
+        level: 3,
+        mode: 'adventure',
+        component: L3_IceStacking,
+        thumbnail: '🧊',
         tagsKey: 'games.tags.multiplication'
     },
     // Front Addition Levels

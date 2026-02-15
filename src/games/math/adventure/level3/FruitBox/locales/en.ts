@@ -5,15 +5,15 @@ const en = {
     howToPlay: {
         step1: {
             title: 'Check Order',
-            description: 'Look at the order card first.'
+            description: 'Check the order card first.'
         },
         step2: {
             title: 'Drag Bundles',
-            description: 'Drag fruit bundles into the boxes.'
+            description: 'Drag bundles into boxes.'
         },
         step3: {
             title: 'Match Equally',
-            description: 'Every box must have the same bundle setup.'
+            description: 'Make all box setups the same.'
         }
     },
     formulaHint: 'Please fill all boxes!',

@@ -18,6 +18,7 @@ import cargoTrainKo from '../../games/math/adventure/level2/CargoTrain/locales/k
 import rocketLauncherKo from '../../games/math/adventure/level2/RocketLauncher/locales/ko';
 import shapeSumLinkKo from '../../games/math/adventure/level2/ShapeSumLink/locales/ko';
 import fruitBoxKo from '../../games/math/adventure/level3/FruitBox/locales/ko';
+import iceStackingKo from '../../games/math/adventure/level3/IceStacking/locales/ko';
 
 import colorLinkKo from '../../games/brain/level1/ColorLink/locales/ko.ts';
 import pairUpTwinKo from '../../games/brain/level1/PairUpTwin/locales/ko.ts';
@@ -1023,6 +1024,7 @@ export const ko = {
         'pinwheel-pop': mathPinwheelKo,
         'shape-sum-link': shapeSumLinkKo,
         'fruit-box': fruitBoxKo,
+        'ice-stacking': iceStackingKo,
         'animal-banquet': animalBanquetKo,
         'deep-sea-dive': deepSeaDiveKo,
         'math-level2-ufo-invasion': ufoInvasionKo,

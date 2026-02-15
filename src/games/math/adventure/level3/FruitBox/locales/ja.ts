@@ -5,15 +5,15 @@ const ja = {
     howToPlay: {
         step1: {
             title: '注文を確認',
-            description: 'まず注文カードを確認します。'
+            description: '先に注文カードを見ます。'
         },
         step2: {
             title: '束をドラッグ',
-            description: 'フルーツの束を箱にドラッグします。'
+            description: '束を箱へ移動します。'
         },
         step3: {
             title: '同じ形にそろえる',
-            description: 'すべての箱の構成を同じにそろえます。'
+            description: '箱の構成を同じにします。'
         }
     },
     formulaHint: 'すべての箱を埋めてください！',
