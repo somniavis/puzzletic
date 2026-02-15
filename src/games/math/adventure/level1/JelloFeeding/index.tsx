@@ -301,7 +301,7 @@ export const JelloFeeding: React.FC<JelloFeedingProps> = ({ onExit }) => {
             onExit={onExit}
             instructions={[
                 {
-                    icon: '🧮',
+                    icon: '🖐️',
                     title: t('games.jello-feeding.howToPlay.step1.title'),
                     description: t('games.jello-feeding.howToPlay.step1.description')
                 },
@@ -372,15 +372,6 @@ export const JelloFeeding: React.FC<JelloFeedingProps> = ({ onExit }) => {
                                     disableAnimation={false}
                                 />
                             </div>
-                            <button
-                                type="button"
-                                className="jello-check-btn"
-                                onClick={handleCheck}
-                                disabled={engine.gameState !== 'playing'}
-                                aria-label="check-answer"
-                            >
-                                ✓
-                            </button>
                         </div>
                     </div>
 
@@ -394,6 +385,15 @@ export const JelloFeeding: React.FC<JelloFeedingProps> = ({ onExit }) => {
                         </div>
                     )}
                 </div>
+                <button
+                    type="button"
+                    className="jello-check-btn"
+                    onClick={handleCheck}
+                    disabled={engine.gameState !== 'playing'}
+                    aria-label="check-answer"
+                >
+                    ✓
+                </button>
             </>
         </Layout3>
     );
