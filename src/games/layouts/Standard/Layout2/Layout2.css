@@ -141,6 +141,25 @@
     overflow: hidden;
 }
 
+/* Old Android tap/focus highlight suppression for interactive game elements */
+.layout2-game-area button,
+.layout2-game-area [role="button"],
+.layout2-game-area [tabindex] {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    touch-action: manipulation;
+}
+
+.layout2-game-area button:focus,
+.layout2-game-area [role="button"]:focus,
+.layout2-game-area [tabindex]:focus,
+.layout2-game-area button:focus-visible,
+.layout2-game-area [role="button"]:focus-visible,
+.layout2-game-area [tabindex]:focus-visible {
+    outline: none;
+    box-shadow: none;
+}
+
 .layout-card-background {
     position: absolute;
     top: 0;
