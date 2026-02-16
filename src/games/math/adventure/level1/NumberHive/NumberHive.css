@@ -41,31 +41,44 @@
     max-height: none;
 }
 
-/* Variable Defaults (Maximize Size with Aspect Ratio Check) */
+/* Variable Defaults (Fallback for older Safari without container query units) */
 .honeycomb-container {
     /* 
-       3x3 Grid Geometry: Width ~ 3.5 Hexes, Height ~ 2.9 Hexes 
-       Width Constraint: 95% / 3.5 = ~27cqi
-       Height Constraint: 95% / 2.9 = ~32cqb
+       Fallback sizing (no cqi/cqb support):
+       keep it simple/robust for older Safari.
     */
-    --hex-w: min(27cqi, 32cqb);
-    /* Width */
+    --hex-gap: clamp(4px, 1.1vmin, 9px);
+    --hex-w: clamp(40px, 14.5vmin, 104px);
     --hex-h: calc(var(--hex-w) * 1.1547);
-    /* Height: W * 2/sqrt(3) for pointy-topped */
-    --hex-gap: 1.5cqmin;
-    /* Uniform gap */
     --row-stagger: calc((var(--hex-w) + var(--hex-gap)) / 2);
-    /* Exact half-width stagger */
 }
 
 /* 4x4 Adjustment */
 .honeycomb-container.grid-4 {
-    /* 
-       4x4 Grid Geometry: Width ~ 4.5 Hexes, Height ~ 3.7 Hexes
-       Width Constraint: 95% / 4.5 = ~21cqi
-       Height Constraint: 95% / 3.7 = ~25cqb
-    */
-    --hex-w: min(21cqi, 25cqb);
+    --hex-w: clamp(32px, 12vmin, 80px);
+    --hex-h: calc(var(--hex-w) * 1.1547);
+}
+
+/* Use container query units when supported (newer browsers) */
+@supports (width: 1cqi) {
+    .honeycomb-container {
+        /* 
+           3x3 Grid Geometry: Width ~ 3.5 Hexes, Height ~ 2.9 Hexes 
+           Width Constraint: 95% / 3.5 = ~27cqi
+           Height Constraint: 95% / 2.9 = ~32cqb
+        */
+        --hex-w: min(27cqi, 32cqb);
+        --hex-gap: 1.5cqmin;
+    }
+
+    .honeycomb-container.grid-4 {
+        /* 
+           4x4 Grid Geometry: Width ~ 4.5 Hexes, Height ~ 3.7 Hexes
+           Width Constraint: 95% / 4.5 = ~21cqi
+           Height Constraint: 95% / 3.7 = ~25cqb
+        */
+        --hex-w: min(21cqi, 25cqb);
+    }
 }
 
 .hex-row {

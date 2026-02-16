@@ -71,6 +71,11 @@ const HP_CONFIG = {
     boss: 3
 };
 
+const createId = () =>
+    (globalThis.crypto && 'randomUUID' in globalThis.crypto && typeof globalThis.crypto.randomUUID === 'function')
+        ? globalThis.crypto.randomUUID()
+        : `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+
 export const useUFOInvasionLogic = (engine: GameEngine) => {
     const [ufos, setUfos] = useState<UFO[]>([]);
     const [rockets, setRockets] = useState<Rocket[]>([]);
@@ -269,7 +274,7 @@ export const useUFOInvasionLogic = (engine: GameEngine) => {
                 const newHp = target.hp - 1;
 
                 currentEffects.push({
-                    id: crypto.randomUUID(),
+                    id: createId(),
                     x: rocket.targetX,
                     y: rocket.targetY,
                     type: newHp <= 0 ? 'explosion' : 'hit',
@@ -343,7 +348,7 @@ export const useUFOInvasionLogic = (engine: GameEngine) => {
         if (elapsedSec >= 60 && !bossExists && Math.random() < 0.002) {
             const initialX = 50;
             currentUfos.push({
-                id: crypto.randomUUID(),
+                id: createId(),
                 x: initialX,
                 y: SPAWN_Y,
                 speed: SPEEDS.boss,
@@ -396,7 +401,7 @@ export const useUFOInvasionLogic = (engine: GameEngine) => {
                 else startX = 70 + Math.random() * 20;
 
                 currentUfos.push({
-                    id: crypto.randomUUID(),
+                    id: createId(),
                     x: startX,
                     y: SPAWN_Y,
                     speed: SPEEDS[type],
@@ -493,7 +498,7 @@ export const useUFOInvasionLogic = (engine: GameEngine) => {
 
             const arrivalTime = gameTimeRef.current + flightTime; // Define arrival time
             const newRocket: Rocket = {
-                id: crypto.randomUUID(),
+                id: createId(),
                 targetId: target.id,
                 startX: 50,
                 startY: 90,
@@ -517,7 +522,7 @@ export const useUFOInvasionLogic = (engine: GameEngine) => {
             engine.registerEvent({ type: 'wrong' });
 
             const newEffect: Effect = {
-                id: crypto.randomUUID(),
+                id: createId(),
                 x: 50,
                 y: 80,
                 type: 'miss',

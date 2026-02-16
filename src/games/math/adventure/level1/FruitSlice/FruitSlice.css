@@ -156,7 +156,8 @@
 
 
 .target-fruit {
-    font-size: clamp(3.2rem, 62cqb, 10rem);
+    /* Fallback for older Safari (no container query units) */
+    font-size: clamp(3.2rem, 24vmin, 7.2rem);
     position: relative;
     transition: transform 0.2s;
     cursor: pointer;
@@ -169,7 +170,8 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: clamp(0.8rem, 18cqb, 1.7rem) clamp(1rem, 10cqi, 2.3rem);
+    /* Fallback for older Safari (no container query units) */
+    padding: clamp(0.75rem, 2.6vmin, 1.35rem) clamp(0.95rem, 3.6vmin, 1.95rem);
     border-radius: 2rem;
     position: relative;
     transition: background-color 0.3s ease;
@@ -199,7 +201,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: clamp(3.2rem, 62cqb, 10rem);
+    /* Fallback for older Safari (no container query units) */
+    font-size: clamp(3.2rem, 24vmin, 7.2rem);
     line-height: 1;
 }
 
@@ -233,7 +236,8 @@
 .knife-rack {
     display: flex;
     align-items: center;
-    gap: clamp(0.35rem, 1.5cqi, 0.9rem);
+    /* Fallback for older Safari (no container query units) */
+    gap: clamp(0.35rem, 1.6vmin, 0.9rem);
     justify-content: center;
     width: 100%;
     height: 100%;
@@ -246,8 +250,9 @@
 
 /* Realistic Knife Styling */
 .number-knife {
-    width: clamp(34px, 16cqi, 58px);
-    height: clamp(78px, 78cqb, 132px);
+    /* Fallback for older Safari (no container query units) */
+    width: clamp(36px, 10vmin, 58px);
+    height: clamp(84px, 24vmin, 132px);
     background: transparent;
     border: none;
     border-radius: 0;
@@ -262,6 +267,30 @@
     /* Shadow handled by parts */
     user-select: none;
     -webkit-user-select: none;
+}
+
+/* Prefer container query units when supported */
+@supports (width: 1cqi) {
+    .target-fruit {
+        font-size: clamp(3.2rem, 62cqb, 10rem);
+    }
+
+    .fruit-target-bg {
+        padding: clamp(0.8rem, 18cqb, 1.7rem) clamp(1rem, 10cqi, 2.3rem);
+    }
+
+    .sliced-inner {
+        font-size: clamp(3.2rem, 62cqb, 10rem);
+    }
+
+    .knife-rack {
+        gap: clamp(0.35rem, 1.5cqi, 0.9rem);
+    }
+
+    .number-knife {
+        width: clamp(34px, 16cqi, 58px);
+        height: clamp(78px, 78cqb, 132px);
+    }
 }
 
 /* Blade */

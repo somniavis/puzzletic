@@ -154,10 +154,8 @@
        - We take the MINIMUM to ensure it fits in the smallest dimension (Containment).
        - Padding safety: Use 90cqi/90cqb to leave breathing room.
     */
-    --available-w: calc(90cqi - 3 * var(--gap));
-    --available-h: calc(90cqb - 3 * var(--gap));
-
-    --blk: min(calc(var(--available-w) / 4), calc(var(--available-h) / 4));
+    /* Fallback for older Safari (no cqi/cqb): viewport-based sizing */
+    --blk: clamp(34px, min(12vw, 9vh), 88px);
 
     /* 
        Center Offsets
@@ -175,6 +173,14 @@
     /* Center the "virtual" grid content */
     align-items: center;
     justify-content: center;
+}
+
+@supports (width: 1cqi) {
+    .pinwheel-wrapper {
+        --available-w: calc(90cqi - 3 * var(--gap));
+        --available-h: calc(90cqb - 3 * var(--gap));
+        --blk: min(calc(var(--available-w) / 4), calc(var(--available-h) / 4));
+    }
 }
 
 .pinwheel-wrapper.finale-spin {
@@ -210,8 +216,8 @@
     font-weight: 900;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
 
-    /* Scale text with container width */
-    font-size: 8cqw;
+    /* Fallback for older Safari (no cqw) */
+    font-size: clamp(1.2rem, 3.2vmin, 2rem);
 }
 
 /* Blocks */
@@ -225,13 +231,23 @@
     box-shadow: 0 4px 0 rgba(0, 0, 0, 0.1);
     transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 
-    /* Scale text with container width */
-    font-size: 8cqw;
+    /* Fallback for older Safari (no cqw) */
+    font-size: clamp(1.4rem, 4vmin, 2.5rem);
 
     /* Dynamic Size, Auto Height, Fixed Aspect Ratio */
     width: var(--blk);
     height: auto;
     aspect-ratio: 1 / 1;
+}
+
+@supports (width: 1cqw) {
+    .center-circle {
+        font-size: 8cqw;
+    }
+
+    .pw-block {
+        font-size: 8cqw;
+    }
 }
 
 /* Inner Blocks - Dark Gray Body (Reverted) */

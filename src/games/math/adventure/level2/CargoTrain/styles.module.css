@@ -294,11 +294,8 @@
     justify-content: center;
     width: 100%;
     height: 100%;
-    /* Maximize font size to fill cell height/width */
-    /* Force font to respect container width */
-    font-size: 15cqw;
-    /* Fallback for older browsers if needed, but cqw is standard now */
-    font-size: clamp(1.5rem, 15cqw, 4rem);
+    /* Fallback for older Safari (no cqw) */
+    font-size: clamp(2.6rem, 13.5vmin, 5rem);
     filter: drop-shadow(0 4px 4px rgba(0, 0, 0, 0.3));
     z-index: 10;
     padding-bottom: 0px;
@@ -312,21 +309,17 @@
 .trainUnit:not(:last-child) .unitCar::after {
     content: '';
     position: absolute;
-    right: -2px;
-    /* Pull slightly over to bridge with next car; exact overlap */
-    top: 70%;
-    /* Center vertically */
-    width: 20%;
-    /* Stretch across the gap */
-    height: 6px;
+    right: -1%;
+    /* Bridge to next car while staying visually centered */
+    top: 66%;
+    width: 30%;
+    height: clamp(4px, 1.2vmin, 8px);
     background: #555;
-    border-top: 2px solid #333;
-    border-bottom: 2px solid #333;
+    border-top: clamp(1px, 0.35vmin, 2px) solid #333;
+    border-bottom: clamp(1px, 0.35vmin, 2px) solid #333;
     border-radius: 2px;
     z-index: 5;
-    /* Behind car body if possible, or on top? */
     transform: translate(50%, -50%);
-    /* Center on the boundary */
 }
 
 /* Specific Styling for Boxes */
@@ -349,7 +342,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: clamp(1.5rem, 5cqw, 3rem);
+    /* Fallback for older Safari (no cqw) */
+    font-size: clamp(2rem, 8vmin, 3.6rem);
     container-type: inline-size;
 
     color: #fff;
@@ -389,7 +383,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: clamp(1.5rem, 5cqw, 3rem);
+    /* Fallback for older Safari (no cqw) */
+    font-size: clamp(2rem, 8vmin, 3.6rem);
     color: white;
     font-weight: bold;
     box-shadow: 0 4px 0 #2E7D32;
@@ -397,7 +392,8 @@
 
 /* Operators */
 .operator {
-    font-size: clamp(2rem, 8cqw, 5rem);
+    /* Fallback for older Safari (no cqw) */
+    font-size: clamp(2.8rem, 11vmin, 5.2rem);
     color: white;
     font-weight: bold;
     text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.3);
@@ -408,6 +404,25 @@
     width: 90%;
     aspect-ratio: 1/1;
     margin: 0;
+}
+
+/* Prefer container query units when supported */
+@supports (width: 1cqw) {
+    .unitCar {
+        font-size: clamp(1.5rem, 15cqw, 4rem);
+    }
+
+    .cargoBox {
+        font-size: clamp(1.5rem, 5cqw, 3rem);
+    }
+
+    .resultBox {
+        font-size: clamp(1.5rem, 5cqw, 3rem);
+    }
+
+    .operator {
+        font-size: clamp(2rem, 8cqw, 5rem);
+    }
 }
 
 /* Engine styling (flip) */
