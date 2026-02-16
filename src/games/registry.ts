@@ -33,6 +33,7 @@ const L2_ShapeSumLink = lazy(() => delayedImport(import('./math/adventure/level2
 const L3_FruitBox = lazy(() => delayedImport(import('./math/adventure/level3/FruitBox').then(m => ({ default: m.FruitBox }))));
 const L3_IceStacking = lazy(() => delayedImport(import('./math/adventure/level3/IceStacking').then(m => ({ default: m.IceStacking }))));
 const L3_ConstellationFinder = lazy(() => delayedImport(import('./math/adventure/level3/ConstellationFinder').then(m => ({ default: m.ConstellationFinder }))));
+const L3_TrollAttack = lazy(() => delayedImport(import('./math/adventure/level3/TrollAttack').then(m => ({ default: m.TrollAttack }))));
 
 const L1_DeepSeaDive = lazy(() => delayedImport(import('./math/adventure/level2/DeepSeaDive').then(m => ({ default: (props: any) => createElement(m.DeepSeaDive, { ...props, level: 1 }) }))));
 const L2_DeepSeaDive = lazy(() => delayedImport(import('./math/adventure/level2/DeepSeaDive').then(m => ({ default: (props: any) => createElement(m.DeepSeaDive, { ...props, level: 2 }) }))));
@@ -348,6 +349,21 @@ export const GAMES: GameManifest[] = [
         mode: 'adventure',
         component: L3_ConstellationFinder,
         thumbnail: '⭐',
+        tagsKey: 'games.tags.multiplication'
+    },
+    {
+        id: GameIds.MATH_TROLL_ATTACK,
+        title: 'Troll Attack',
+        titleKey: 'games.troll-attack.title',
+        subtitle: 'Defend the Castle!',
+        subtitleKey: 'games.troll-attack.subtitle',
+        description: 'Stop the troll with the correct cannonball.',
+        descriptionKey: 'games.troll-attack.description',
+        category: 'math',
+        level: 3,
+        mode: 'adventure',
+        component: L3_TrollAttack,
+        thumbnail: '🧌',
         tagsKey: 'games.tags.multiplication'
     },
     // Front Addition Levels

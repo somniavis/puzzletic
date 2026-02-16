@@ -389,9 +389,9 @@ const SETS: ConstellationSetDef[] = [
         pattern: 'scorpion',
         // Fully rebuilt from reference screenshot (2026-02-16 1.14.15).
         customCoords: [
-            [20, 63], // 0 left tiny
-            [30, 63], // 1 left top-right
-            [25, 67], // 2 left center
+            [12, 55], // 0 left tiny (moved 8 left/up)
+            [21, 56], // 1 left top-right (additional move 4 left/up 4)
+            [29, 62], // 2 left center (moved 4 right/up 5)
             [21, 71], // 3 left lower
             [28, 82], // 4 left bottom
             [42, 83], // 5 bottom mid-left
@@ -771,7 +771,7 @@ export const ConstellationFinder: React.FC<ConstellationFinderProps> = ({ onExit
     const SHOW_DEBUG_CONTROLS = false;
     const engine = useGameEngine({
         initialLives: 3,
-        initialTime: 9999,
+        initialTime: 90,
         maxDifficulty: 3
     });
 
@@ -791,6 +791,32 @@ export const ConstellationFinder: React.FC<ConstellationFinderProps> = ({ onExit
 
     const wrongFlashTimerRef = React.useRef<number | null>(null);
     const prevGameStateRef = React.useRef(engine.gameState);
+    const setOrderBagRef = React.useRef<number[]>([]);
+
+    const refillSetOrderBag = React.useCallback((excludeIndex?: number) => {
+        const bag = Array.from({ length: SETS.length }, (_, idx) => idx);
+        for (let i = bag.length - 1; i > 0; i -= 1) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [bag[i], bag[j]] = [bag[j], bag[i]];
+        }
+        if (typeof excludeIndex === 'number' && bag.length > 1 && bag[0] === excludeIndex) {
+            [bag[0], bag[1]] = [bag[1], bag[0]];
+        }
+        setOrderBagRef.current = bag;
+    }, []);
+
+    const consumeNextRandomSetIndex = React.useCallback((excludeIndex?: number): number => {
+        if (setOrderBagRef.current.length === 0) {
+            refillSetOrderBag(excludeIndex);
+        }
+
+        if (typeof excludeIndex === 'number' && setOrderBagRef.current.length > 1 && setOrderBagRef.current[0] === excludeIndex) {
+            [setOrderBagRef.current[0], setOrderBagRef.current[1]] = [setOrderBagRef.current[1], setOrderBagRef.current[0]];
+        }
+
+        const next = setOrderBagRef.current.shift();
+        return typeof next === 'number' ? next : 0;
+    }, [refillSetOrderBag]);
 
     const clearWrongFlashTimer = React.useCallback(() => {
         if (wrongFlashTimerRef.current != null) {
@@ -863,10 +889,11 @@ export const ConstellationFinder: React.FC<ConstellationFinderProps> = ({ onExit
         const enteredPlaying = engine.gameState === 'playing' && (prev === 'idle' || prev === 'gameover');
         if (enteredPlaying) {
             setDebugRevealTargets(false);
-            resetSet(0);
+            setOrderBagRef.current = [];
+            resetSet(consumeNextRandomSetIndex());
         }
         prevGameStateRef.current = engine.gameState;
-    }, [engine.gameState, resetSet]);
+    }, [engine.gameState, resetSet, consumeNextRandomSetIndex]);
 
     const currentQuestion = session.questions[questionIndex] ?? null;
     const litSet = React.useMemo(() => new Set(litTargetIds), [litTargetIds]);
@@ -905,6 +932,15 @@ export const ConstellationFinder: React.FC<ConstellationFinderProps> = ({ onExit
             return;
         }
 
+        const nextCombo = engine.combo + 1;
+        if (nextCombo > 0 && nextCombo % 3 === 0) {
+            if (Math.random() > 0.45) {
+                const rewardTypes = ['timeFreeze', 'extraLife', 'doubleScore'] as const;
+                const reward = rewardTypes[Math.floor(Math.random() * rewardTypes.length)];
+                engine.setPowerUps((prev) => ({ ...prev, [reward]: prev[reward] + 1 }));
+            }
+        }
+
         setLastSolved(currentQuestion);
         setWrongStarId(null);
         const nextLit = [...litTargetIds, starId];
@@ -918,13 +954,14 @@ export const ConstellationFinder: React.FC<ConstellationFinderProps> = ({ onExit
 
     const onNextSet = React.useCallback(() => {
         if (!setCleared || engine.gameState !== 'playing') return;
-        resetSet((setIndex + 1) % SETS.length);
-    }, [setCleared, engine.gameState, resetSet, setIndex]);
+        resetSet(consumeNextRandomSetIndex(setIndex));
+    }, [setCleared, engine.gameState, resetSet, setIndex, consumeNextRandomSetIndex]);
 
     const onDebugSetChange = React.useCallback((event: React.ChangeEvent<HTMLSelectElement>) => {
         const nextIndex = Number(event.target.value);
         if (Number.isNaN(nextIndex)) return;
         setDebugRevealTargets(true);
+        setOrderBagRef.current = [];
         resetSet(nextIndex);
     }, [resetSet]);
 

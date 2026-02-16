@@ -24,6 +24,7 @@ export const GameIds = {
     MATH_FRUIT_BOX: 'math-fruit-box',
     MATH_ICE_STACKING: 'math-ice-stacking',
     MATH_CONSTELLATION_FINDER: 'math-constellation-finder',
+    MATH_TROLL_ATTACK: 'math-troll-attack',
 
     // Math Genius - Front Addition
     FRONT_ADDITION_LV1: 'front-addition-lv1',

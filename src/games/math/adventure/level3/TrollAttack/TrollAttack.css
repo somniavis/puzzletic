@@ -1,0 +1,604 @@
+.troll-attack-layout2 .layout2-game-area {
+    background:
+        radial-gradient(circle at 18% 30%, rgba(255, 255, 255, 0.05), transparent 24%),
+        radial-gradient(circle at 82% 74%, rgba(255, 255, 255, 0.04), transparent 26%),
+        repeating-linear-gradient(
+            -12deg,
+            rgba(255, 255, 255, 0.03) 0px,
+            rgba(255, 255, 255, 0.03) 5px,
+            rgba(0, 0, 0, 0.02) 5px,
+            rgba(0, 0, 0, 0.02) 10px
+        ),
+        linear-gradient(180deg, #3e8d58 0%, #347749 52%, #2a603a 100%);
+}
+
+.troll-attack-layout2 .layout-card-background {
+    display: none;
+}
+
+.troll-attack-shell {
+    width: 100%;
+    height: 100%;
+    padding: 0.6rem 0.6rem 0;
+    display: grid;
+    grid-template-rows: 1fr auto auto;
+    gap: 0.55rem;
+    position: relative;
+    background: transparent;
+}
+
+.troll-attack-battlefield {
+    border-radius: 1rem;
+    border: 2px solid rgba(93, 140, 92, 0.45);
+    background:
+        radial-gradient(circle at 82% 18%, rgba(255, 255, 255, 0.15), transparent 24%),
+        radial-gradient(circle at 24% 28%, rgba(255, 255, 255, 0.09), transparent 20%),
+        linear-gradient(180deg, #316f48 0%, #2d6442 52%, #245238 100%);
+    box-shadow: inset 0 -8px 28px rgba(0, 0, 0, 0.28);
+    position: relative;
+    overflow: hidden;
+}
+
+.troll-attack-battlefield::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+        radial-gradient(circle, rgba(255, 255, 255, 0.22) 0.8px, transparent 1.2px),
+        radial-gradient(circle, rgba(255, 255, 255, 0.16) 0.8px, transparent 1.2px);
+    background-size: 64px 64px, 48px 48px;
+    background-position: 0 0, 24px 20px;
+    pointer-events: none;
+}
+
+.troll-attack-castle {
+    position: absolute;
+    left: 19.5%;
+    bottom: 10%;
+    font-size: clamp(3.45rem, 14.835vw, 5.3475rem);
+    filter: drop-shadow(0 3px 0 rgba(15, 23, 42, 0.45));
+    z-index: 2;
+}
+
+.troll-attack-castle.under-attack {
+    animation: castle-shake 0.65s ease-in-out 2;
+}
+
+@keyframes castle-shake {
+    0% { transform: translate(0, 0) rotate(0deg); }
+    25% { transform: translate(-1px, 0) rotate(-1deg); }
+    50% { transform: translate(1px, -1px) rotate(1deg); }
+    75% { transform: translate(-1px, 0) rotate(-0.8deg); }
+    100% { transform: translate(0, 0) rotate(0deg); }
+}
+
+.troll-attack-mountain {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    font-size: clamp(3rem, 12.9vw, 4.65rem);
+    filter: drop-shadow(0 3px 0 rgba(15, 23, 42, 0.45));
+    z-index: 2;
+}
+
+.troll-attack-mountain-deco {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    font-size: clamp(2.1rem, 8.2vw, 3.1rem);
+    opacity: 0.92;
+    filter: drop-shadow(0 2px 0 rgba(15, 23, 42, 0.35));
+    z-index: 1;
+    pointer-events: none;
+}
+
+.troll-attack-road {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.troll-tree-cluster {
+    position: absolute;
+    width: 22%;
+    height: 30%;
+    z-index: 1;
+    pointer-events: none;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+.troll-tree-cluster.top-left {
+    left: 5.5%;
+    top: 7.5%;
+    width: 30%;
+    height: 42%;
+}
+
+.troll-tree-cluster.bottom-right {
+    right: 5.5%;
+    bottom: 3.5%;
+    width: 20%;
+    height: 24%;
+}
+
+.troll-tree {
+    position: absolute;
+    line-height: 1;
+    opacity: 0.95;
+}
+
+.troll-tree.size-s {
+    font-size: clamp(1.7rem, 4.9vw, 2.3rem);
+}
+
+.troll-tree.size-m {
+    font-size: clamp(2rem, 5.9vw, 2.8rem);
+}
+
+.troll-tree.size-l {
+    font-size: clamp(2.3rem, 6.7vw, 3.2rem);
+}
+
+/* top-left cluster: wider forest silhouette (not grid-aligned) */
+.troll-tree-cluster.top-left .t1 { left: -4%; top: -6%; }
+.troll-tree-cluster.top-left .t2 { left: 10%; top: -8%; }
+.troll-tree-cluster.top-left .t3 { left: 23%; top: -7%; }
+.troll-tree-cluster.top-left .t4 { left: 36%; top: -6%; }
+.troll-tree-cluster.top-left .t5 { left: 49%; top: -4%; }
+.troll-tree-cluster.top-left .t6 { left: 2%; top: 10%; }
+.troll-tree-cluster.top-left .t7 { left: 17%; top: 11%; }
+.troll-tree-cluster.top-left .t8 { left: 31%; top: 12%; }
+.troll-tree-cluster.top-left .t9 { left: 45%; top: 11%; }
+.troll-tree-cluster.top-left .t10 { left: 8%; top: 25%; }
+.troll-tree-cluster.top-left .t11 { left: 26%; top: 27%; }
+.troll-tree-cluster.top-left .t12 { left: 14%; top: 40%; }
+
+.troll-tree-cluster.bottom-right .t1 { left: 50%; top: 0%; }
+.troll-tree-cluster.bottom-right .t2 { left: 66%; top: 6%; }
+.troll-tree-cluster.bottom-right .t3 { left: 33%; top: 11%; }
+.troll-tree-cluster.bottom-right .t4 { left: 53%; top: 16%; }
+.troll-tree-cluster.bottom-right .t5 { left: 24%; top: 25%; }
+.troll-tree-cluster.bottom-right .t6 { left: 40%; top: 31%; }
+.troll-tree-cluster.bottom-right .t7 { left: 57%; top: 34%; }
+.troll-tree-cluster.bottom-right .t8 { left: 30%; top: 43%; }
+.troll-tree-cluster.bottom-right .t9 { left: 49%; top: 48%; }
+
+.troll-road-base {
+    fill: none;
+    stroke: rgba(85, 56, 33, 0.88);
+    stroke-width: 3.5;
+    stroke-linecap: round;
+}
+
+.troll-road-highlight {
+    fill: none;
+    stroke: rgba(243, 214, 160, 0.55);
+    stroke-width: 1.3;
+    stroke-linecap: round;
+    stroke-dasharray: 1.4 2.1;
+}
+
+.troll-road-secondary {
+    stroke: rgba(96, 63, 38, 0.82);
+    stroke-width: 3;
+}
+
+.troll-road-secondary-highlight {
+    stroke: rgba(241, 214, 163, 0.45);
+    stroke-width: 1.1;
+}
+
+.troll-attack-cannon-zone {
+    position: absolute;
+    left: 14.5%;
+    top: 79%;
+    transform: translate(-50%, -50%);
+    width: clamp(78px, 20vw, 109px);
+    height: clamp(67px, 16vw, 91px);
+    z-index: 4;
+    filter:
+        drop-shadow(0 0 5px rgba(255, 223, 145, 0.14))
+        drop-shadow(0 0 10px rgba(255, 236, 186, 0.08));
+}
+
+.troll-attack-cannon-zone::before {
+    content: '';
+    position: absolute;
+    inset: -8%;
+    border-radius: 999px;
+    background: radial-gradient(circle, rgba(255, 237, 192, 0.14) 0%, rgba(255, 237, 192, 0.06) 42%, rgba(255, 237, 192, 0) 68%);
+    z-index: -1;
+    pointer-events: none;
+}
+
+.troll-attack-cannon-shape {
+    position: absolute;
+    inset: 0;
+    transition: transform 0.12s ease;
+}
+
+.troll-attack-cannon-shape.pressed {
+    transform: scale(0.94);
+}
+
+.troll-cannon-base-block {
+    position: absolute;
+    width: 42%;
+    height: 34%;
+    left: 18%;
+    bottom: 8%;
+    border-radius: 0.35rem 0.6rem 0.2rem 0.2rem;
+    background: #5b5c5f;
+    z-index: 3;
+}
+
+.troll-cannon-barrel {
+    position: absolute;
+    width: 62%;
+    height: 25%;
+    left: 12%;
+    top: 49%;
+    border-radius: 0.7rem;
+    background:
+        linear-gradient(165deg, #4e5056 0%, #2f3137 48%, #22242a 100%);
+    border: 2px solid #15171b;
+    transform: rotate(-35deg);
+    transform-origin: left bottom;
+    box-shadow: inset -6px -6px 10px rgba(255, 255, 255, 0.07);
+    z-index: 1;
+}
+
+.troll-cannon-muzzle {
+    position: absolute;
+    width: 12%;
+    height: 28%;
+    right: 41%;
+    top: 10%;
+    border-radius: 0.35rem;
+    background: #1d1f24;
+    transform: rotate(-36deg);
+    z-index: 1;
+}
+
+.troll-cannon-wheel {
+    position: absolute;
+    width: 31%;
+    aspect-ratio: 1 / 1;
+    left: 12%;
+    bottom: -1%;
+    border-radius: 999px;
+    background: #4a2b17;
+    border: 8px solid #2f1a0f;
+    z-index: 4;
+}
+
+.troll-cannon-wheel::before,
+.troll-cannon-wheel::after {
+    content: '';
+    position: absolute;
+    background: #1d1f24;
+}
+
+.troll-cannon-wheel::before {
+    width: 14%;
+    height: 100%;
+    left: 43%;
+    top: 0;
+}
+
+.troll-cannon-wheel::after {
+    width: 100%;
+    height: 14%;
+    left: 0;
+    top: 43%;
+}
+
+.troll-attack-troll-wrap {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    display: grid;
+    justify-items: center;
+    gap: 0.3rem;
+    z-index: 5;
+}
+
+.troll-attack-troll-hud {
+    min-width: 102px;
+    padding: 0.39rem 0.24rem 0.46rem;
+    border-radius: 0.84rem;
+    border: 1.5px solid rgba(147, 197, 253, 0.45);
+    background: rgba(15, 23, 42, 0.7);
+    display: grid;
+    color: #eff6ff;
+    box-shadow: 0 4px 8px rgba(15, 23, 42, 0.3);
+}
+
+.troll-attack-troll-hud.is-target {
+    border-color: rgba(253, 224, 71, 0.95);
+    box-shadow: 0 4px 10px rgba(250, 204, 21, 0.28);
+}
+
+.troll-hud-xp {
+    font-size: 0.9rem;
+    font-weight: 800;
+    color: #fef08a;
+}
+
+.troll-hud-xp.target-mark {
+    transform: scaleX(-1);
+    display: inline-block;
+}
+
+.troll-hud-bottom {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: 0.04rem;
+    min-height: 1.05rem;
+}
+
+.troll-hud-gauge {
+    height: 100%;
+    border-radius: 999px;
+    overflow: hidden;
+    background: rgba(148, 163, 184, 0.3);
+    width: 74%;
+    position: relative;
+    display: grid;
+    place-items: center;
+    justify-self: center;
+}
+
+.troll-hud-gauge-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #22c55e 0%, #facc15 62%, #f97316 100%);
+    transition: width 0.18s linear;
+}
+
+.troll-hud-problem {
+    font-size: 0.92rem;
+    font-weight: 900;
+    color: #111827;
+    text-align: center;
+    line-height: 1;
+    position: absolute;
+    z-index: 2;
+    text-shadow: none;
+}
+
+.troll-emoji {
+    font-size: clamp(2rem, 8.8vw, 3.2rem);
+    line-height: 1;
+    filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.35));
+}
+
+.troll-emoji.attacking {
+    animation: troll-attack-hit 0.6s ease-in-out 2;
+}
+
+@keyframes troll-attack-hit {
+    0% { transform: translateX(0); }
+    35% { transform: translateX(-2px) rotate(-3deg); }
+    70% { transform: translateX(1px) rotate(2deg); }
+    100% { transform: translateX(0); }
+}
+
+.troll-attack-impact {
+    position: absolute;
+    left: 68%;
+    top: 71%;
+    transform: translate(-50%, -50%);
+    font-size: clamp(0.95rem, 3.6vw, 1.25rem);
+    line-height: 1;
+    z-index: 7;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.35));
+    animation: impact-pop 0.7s ease-in-out 2;
+}
+
+@keyframes impact-pop {
+    0% { opacity: 0.4; transform: translate(-50%, -50%) scale(0.9); }
+    50% { opacity: 1; transform: translate(-50%, -56%) scale(1.06); }
+    100% { opacity: 0.5; transform: translate(-50%, -50%) scale(0.92); }
+}
+
+.troll-reward-badge {
+    position: absolute;
+    left: 89%;
+    top: 65%;
+    transform: translate(-50%, -50%);
+    width: clamp(1.58rem, 6.15vw, 2.13rem);
+    height: clamp(1.58rem, 6.15vw, 2.13rem);
+    border-radius: 0.38rem;
+    border: 1.6px solid rgba(123, 97, 37, 0.85);
+    background: linear-gradient(180deg, rgba(255, 243, 206, 0.95) 0%, rgba(243, 223, 167, 0.95) 100%);
+    box-shadow:
+        0 2px 6px rgba(0, 0, 0, 0.24),
+        inset 0 -1px 0 rgba(99, 73, 24, 0.32);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 7;
+    pointer-events: none;
+}
+
+.troll-reward-badge-emoji {
+    font-size: clamp(1.17rem, 4.27vw, 1.43rem);
+    line-height: 1;
+    filter: drop-shadow(0 1px 2px rgba(15, 23, 42, 0.45));
+}
+
+.troll-emoji.charging {
+    animation: troll-shake 0.16s linear infinite;
+}
+
+@keyframes troll-shake {
+    0% { transform: translateX(-1px); }
+    50% { transform: translateX(1px); }
+    100% { transform: translateX(-1px); }
+}
+
+.troll-shield {
+    position: absolute;
+    left: 50%;
+    top: 66%;
+    transform: translate(-50%, -50%);
+    font-size: clamp(1.55rem, 6.2vw, 2.2rem);
+    filter: drop-shadow(0 2px 6px rgba(59, 130, 246, 0.45));
+    z-index: 8;
+}
+
+.troll-hit {
+    position: absolute;
+    left: 54%;
+    top: 56%;
+    transform: translate(-50%, -50%);
+    font-size: clamp(1.35rem, 5.2vw, 1.9rem);
+    animation: troll-hit-pop 0.45s ease-out;
+}
+
+@keyframes troll-hit-pop {
+    0% { opacity: 0.2; transform: translate(-50%, -50%) scale(0.5); }
+    45% { opacity: 1; transform: translate(-50%, -50%) scale(1.12); }
+    100% { opacity: 0; transform: translate(-50%, -50%) scale(1.28); }
+}
+
+.troll-projectile {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    display: grid;
+    place-items: center;
+    pointer-events: none;
+    z-index: 6;
+}
+
+.projectile-ball {
+    font-size: clamp(1rem, 4vw, 1.45rem);
+    line-height: 1;
+}
+
+.projectile-value {
+    margin-top: -0.15rem;
+    font-size: 0.72rem;
+    font-weight: 900;
+    color: #111827;
+}
+
+.troll-attack-ammo-panel {
+    padding: 0;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+}
+
+.troll-attack-status-line {
+    text-align: center;
+    font-size: 0.82rem;
+    font-weight: 800;
+    color: #e2e8f0;
+    min-height: 1.15rem;
+    display: grid;
+    place-items: center;
+}
+
+.troll-attack-ammo-box {
+    border-radius: 0.85rem;
+    border: 2px solid rgba(125, 65, 34, 0.72);
+    background:
+        linear-gradient(180deg, rgba(168, 103, 64, 0.95) 0%, rgba(118, 65, 37, 0.96) 100%);
+    box-shadow:
+        inset 0 -6px 0 rgba(73, 35, 20, 0.48),
+        0 6px 10px rgba(0, 0, 0, 0.22);
+    padding: 0.45rem;
+}
+
+.troll-attack-ammo-row {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.36rem;
+}
+
+.troll-ammo-btn {
+    border: none;
+    border-radius: 0.65rem;
+    border: 1.5px solid rgba(73, 35, 20, 0.65);
+    background: linear-gradient(180deg, rgba(254, 242, 215, 0.96) 0%, rgba(243, 220, 174, 0.96) 100%);
+    box-shadow: 0 4px 0 rgba(106, 62, 35, 0.65), 0 8px 12px rgba(15, 23, 42, 0.2);
+    color: #0f172a;
+    min-height: 68px;
+    font-weight: 900;
+    display: grid;
+    align-content: center;
+    justify-items: center;
+    gap: 0;
+    position: relative;
+    cursor: grab;
+    touch-action: none;
+    -webkit-tap-highlight-color: transparent;
+    transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+
+.troll-ammo-btn:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 rgba(106, 62, 35, 0.65), 0 4px 8px rgba(15, 23, 42, 0.2);
+    cursor: grabbing;
+}
+
+.troll-ammo-btn.dragging {
+    opacity: 0.24;
+}
+
+.troll-ammo-btn.empty {
+    cursor: default;
+    opacity: 0.5;
+}
+
+.ammo-token {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+}
+
+.ammo-emoji {
+    font-size: 2.7rem;
+    line-height: 1;
+}
+
+.ammo-value-overlay {
+    position: absolute;
+    left: 50%;
+    top: 52%;
+    transform: translate(-50%, -50%);
+    font-size: 0.88rem;
+    font-weight: 900;
+    color: #ffffff;
+    text-shadow:
+        0 1px 0 rgba(15, 23, 42, 0.95),
+        0 -1px 0 rgba(15, 23, 42, 0.95),
+        1px 0 0 rgba(15, 23, 42, 0.95),
+        -1px 0 0 rgba(15, 23, 42, 0.95);
+    text-align: center;
+}
+
+.ammo-value {
+    font-size: 0.95rem;
+    line-height: 1;
+}
+
+.troll-ammo-ghost {
+    position: fixed;
+    z-index: 999;
+    transform: translate(-50%, -50%);
+    border-radius: 0.72rem;
+    background: linear-gradient(180deg, #f8fafc 0%, #dbeafe 100%);
+    box-shadow: 0 6px 16px rgba(15, 23, 42, 0.22);
+    min-width: 68px;
+    min-height: 68px;
+    display: grid;
+    align-content: center;
+    justify-items: center;
+    border: 1.5px solid rgba(73, 35, 20, 0.65);
+    pointer-events: none;
+}
