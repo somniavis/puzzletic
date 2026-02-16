@@ -19,6 +19,7 @@ import rocketLauncherJa from '../../games/math/adventure/level2/RocketLauncher/l
 import shapeSumLinkJa from '../../games/math/adventure/level2/ShapeSumLink/locales/ja';
 import fruitBoxJa from '../../games/math/adventure/level3/FruitBox/locales/ja';
 import iceStackingJa from '../../games/math/adventure/level3/IceStacking/locales/ja';
+import constellationFinderJa from '../../games/math/adventure/level3/ConstellationFinder/locales/ja';
 
 import colorLinkJa from '../../games/brain/level1/ColorLink/locales/ja';
 import pairUpTwinJa from '../../games/brain/level1/PairUpTwin/locales/ja';
@@ -981,6 +982,7 @@ export const ja = {
         'shape-sum-link': shapeSumLinkJa,
         'fruit-box': fruitBoxJa,
         'ice-stacking': iceStackingJa,
+        'constellation-finder': constellationFinderJa,
         'animal-banquet': animalBanquetJa,
         'deep-sea-dive': deepSeaDiveJa,
         'math-level2-ufo-invasion': ufoInvasionJa,

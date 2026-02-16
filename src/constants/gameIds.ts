@@ -23,6 +23,7 @@ export const GameIds = {
     SHAPE_SUM_LINK: 'shape-sum-link',
     MATH_FRUIT_BOX: 'math-fruit-box',
     MATH_ICE_STACKING: 'math-ice-stacking',
+    MATH_CONSTELLATION_FINDER: 'math-constellation-finder',
 
     // Math Genius - Front Addition
     FRONT_ADDITION_LV1: 'front-addition-lv1',

@@ -32,6 +32,7 @@ const L2_PinwheelPop = lazy(() => delayedImport(import('./math/adventure/level2/
 const L2_ShapeSumLink = lazy(() => delayedImport(import('./math/adventure/level2/ShapeSumLink').then(m => ({ default: m.ShapeSumLink }))));
 const L3_FruitBox = lazy(() => delayedImport(import('./math/adventure/level3/FruitBox').then(m => ({ default: m.FruitBox }))));
 const L3_IceStacking = lazy(() => delayedImport(import('./math/adventure/level3/IceStacking').then(m => ({ default: m.IceStacking }))));
+const L3_ConstellationFinder = lazy(() => delayedImport(import('./math/adventure/level3/ConstellationFinder').then(m => ({ default: m.ConstellationFinder }))));
 
 const L1_DeepSeaDive = lazy(() => delayedImport(import('./math/adventure/level2/DeepSeaDive').then(m => ({ default: (props: any) => createElement(m.DeepSeaDive, { ...props, level: 1 }) }))));
 const L2_DeepSeaDive = lazy(() => delayedImport(import('./math/adventure/level2/DeepSeaDive').then(m => ({ default: (props: any) => createElement(m.DeepSeaDive, { ...props, level: 2 }) }))));
@@ -332,6 +333,21 @@ export const GAMES: GameManifest[] = [
         mode: 'adventure',
         component: L3_IceStacking,
         thumbnail: '🧊',
+        tagsKey: 'games.tags.multiplication'
+    },
+    {
+        id: GameIds.MATH_CONSTELLATION_FINDER,
+        title: 'Constellation Finder',
+        titleKey: 'games.constellation-finder.title',
+        subtitle: 'Light up the stars!',
+        subtitleKey: 'games.constellation-finder.subtitle',
+        description: 'Solve multiplication and find the matching stars.',
+        descriptionKey: 'games.constellation-finder.description',
+        category: 'math',
+        level: 3,
+        mode: 'adventure',
+        component: L3_ConstellationFinder,
+        thumbnail: '⭐',
         tagsKey: 'games.tags.multiplication'
     },
     // Front Addition Levels
