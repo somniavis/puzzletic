@@ -46,6 +46,29 @@ export const Layout3: React.FC<Layout3Props> = ({
     cardBackground,
     className
 }) => {
+    const renderTargetValue = React.useCallback((value: React.ReactNode) => {
+        if (typeof value !== 'string' && typeof value !== 'number') return value;
+
+        const text = String(value);
+        const parts = text.split(/([+\-×÷=xX?])/g).filter((part) => part.length > 0);
+
+        return (
+            <>
+                {parts.map((part, idx) => {
+                    const isOperator = /^[+\-×÷=xX?]$/.test(part);
+                    return (
+                        <span
+                            key={`${part}-${idx}`}
+                            className={isOperator ? 'target-token-operator' : 'target-token-number'}
+                        >
+                            {part}
+                        </span>
+                    );
+                })}
+            </>
+        );
+    }, []);
+
     const {
         gameState, score, lives, timeLeft,
         combo, bestCombo,
@@ -122,7 +145,7 @@ export const Layout3: React.FC<Layout3Props> = ({
                     </div>
                     <div className={`target-display-card ${target.label ? 'with-label' : ''}`}>
                         {target.icon && <span className="target-emoji">{target.icon}</span>}
-                        <span className="target-count">{target.value}</span>
+                        <span className="target-count">{renderTargetValue(target.value)}</span>
                         {target.label && <span className="target-pill">{target.label}</span>}
                     </div>
                 </div>

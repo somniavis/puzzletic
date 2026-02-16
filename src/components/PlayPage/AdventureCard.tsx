@@ -99,7 +99,6 @@ export const AdventureCard: React.FC<AdventureCardProps> = ({
         <div
             id={id}
             className={`adventure-card ${game.category === 'brain' ? 'brain-card' : ''} ${(!unlocked || isPremiumLocked) ? 'locked' : ''}`}
-            onClick={handleClick}
         >
             {isPremiumLocked && (
                 // We need to import PremiumLockOverlay. 
@@ -160,7 +159,11 @@ export const AdventureCard: React.FC<AdventureCardProps> = ({
             </div>
 
             <div className="card-actions">
-                <button className="play-quest-btn" style={{ flex: 1 }}>
+                <button
+                    className="play-quest-btn"
+                    style={{ flex: 1 }}
+                    onClick={handleClick}
+                >
                     <i className={`fas ${unlocked ? 'fa-play' : 'fa-lock'}`}></i>
                 </button>
 

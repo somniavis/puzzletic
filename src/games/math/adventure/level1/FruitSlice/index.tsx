@@ -150,29 +150,9 @@ export const FruitSlice: React.FC<FruitSliceProps> = ({ onExit }) => {
         }
     ];
 
-    // Build custom Target text for Layout3
-    const targetLabel = currentProblem ? (
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', width: '100%', justifyContent: 'center' }}>
-            <span className="equation-part" style={{ fontSize: '2.5rem', lineHeight: 1 }}>{currentProblem.fruit.equationA}</span>
-            <span style={{ fontSize: '2rem', margin: '0 0.2rem' }}>-</span>
-            <span className="equation-part" style={{ fontSize: '2.5rem', lineHeight: 1 }}>{currentProblem.fruit.equationResult}</span>
-            <span style={{ fontSize: '2rem', margin: '0 0.2rem' }}>=</span>
-            <div style={{
-                width: '3.5rem',
-                height: '3.5rem',
-                border: '3px dashed #9CA3AF',
-                borderRadius: '0.75rem',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: '#9CA3AF',
-                fontSize: '2rem',
-                fontWeight: 'bold',
-                backgroundColor: 'rgba(255, 255, 255, 0.5)',
-                margin: '0 0.2rem'
-            }}>?</div>
-        </div>
-    ) : null;
+    const targetEquation = currentProblem
+        ? `${currentProblem.fruit.equationA} - ${currentProblem.fruit.equationResult} = ?`
+        : '...';
 
     return (
         <Layout3
@@ -188,10 +168,7 @@ export const FruitSlice: React.FC<FruitSliceProps> = ({ onExit }) => {
             onExit={onExit}
             powerUps={powerUpConfig}
             target={{
-                // Layout3 expects value/icon/label. Using 'value' slot to render complex ReactNode via type coercion or adaptation
-                // Layout3 renders: {target.icon && ...} <span className="target-count">{target.value}</span>
-                // So we pass the complex JSX as 'value'
-                value: targetLabel as any,
+                value: targetEquation,
                 icon: "" // No separate icon needed as it's part of the equation
             }}
         >

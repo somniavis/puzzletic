@@ -18,9 +18,9 @@ export const EvolutionOverlay: React.FC = () => {
 
     return (
         <div className="evolution-overlay-container" style={{
-            position: 'absolute',
+            position: 'fixed',
             inset: 0,
-            zIndex: 50, // Above normal UI, below Modals (100)
+            zIndex: 2147483000, // Keep below loading overlay(2147483647), above all room layers
             pointerEvents: 'none', // Allow clicks to pass through empty areas
             display: 'flex',
             flexDirection: 'column'

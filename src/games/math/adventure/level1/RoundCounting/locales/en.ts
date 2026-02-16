@@ -3,9 +3,9 @@ export default {
     subtitle: 'Catch the Moving Target!',
     description: 'Find the target items! The grid shuffles every time you find one.',
     howToPlay: {
-        step1: { title: 'Check Mission', description: 'How many animals to find?' },
-        step2: { title: 'Spot Them Fast!', description: 'Click all targets quickly!' },
-        step3: { title: 'Grid Shuffles!', description: 'Keep finding as it spins!' }
+        step1: { title: 'How many to find?', description: 'Check the target count first.' },
+        step2: { title: 'Spot quickly', description: 'Tap matching targets fast.' },
+        step3: { title: 'Find them all', description: 'Keep going even after shuffle.' }
     },
     target: 'Find {{count}} {{emoji}}',
     shuffleMessage: 'Shuffling!',

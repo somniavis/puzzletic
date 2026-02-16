@@ -3,9 +3,9 @@ const manifest = {
     subtitle: "정답을 싹둑!",
     description: "물음표에 들어갈 숫자는? 정답 과일을 싹둑 잘라주세요!",
     howToPlay: {
-        step1: { title: '레시피 확인', description: '필요한 과일은?' },
-        step2: { title: '칼 고르기', description: '알맞은 칼 선택!' },
-        step3: { title: '싹둑싹둑!', description: '맛있게 잘라요!' }
+        step1: { title: '몇 개로 자를까?', description: '식을 보고 개수를 정해요' },
+        step2: { title: '칼 선택', description: '정답 숫자 칼 고르기' },
+        step3: { title: '과일 자르기', description: '과일을 잘라 제출' }
     },
     powerups: {
         freeze: "시간 멈춤",

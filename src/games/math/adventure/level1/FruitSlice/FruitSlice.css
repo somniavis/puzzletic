@@ -125,14 +125,14 @@
     width: 100%;
     height: 100%;
     background: transparent;
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-rows: 6fr 4fr;
     align-items: center;
-    justify-content: space-between;
-    /* Pushes content apart, but we use flex:1 on stage */
+    justify-items: center;
     padding: 0;
     max-width: 600px;
     margin: 0 auto;
+    min-height: 0;
     user-select: none;
     -webkit-user-select: none;
     touch-action: none;
@@ -141,34 +141,27 @@
 
 /* Fruit Area - Centered in available space */
 .fruit-stage {
-    flex: 1;
-    /* Takes all available space */
     width: 100%;
+    height: 100%;
+    min-height: 0;
     display: flex;
     align-items: center;
-    /* Vertical Center */
     justify-content: center;
-    /* Horizontal Center */
+    container-type: size;
     position: relative;
-    padding-bottom: 0;
-    /* Remove padding that might offset center */
-    margin-bottom: 2rem;
-    /* Optional gap above knives */
+    padding: 0.95rem 0.2rem 0.25rem;
+    box-sizing: border-box;
 }
 
 
 
 .target-fruit {
-    font-size: clamp(4rem, 24vmin, 12rem);
-    /* Increased responsiveness to screen size */
-    /* Lower min to 4rem for safety */
+    font-size: clamp(3.2rem, 62cqb, 10rem);
     position: relative;
     transition: transform 0.2s;
     cursor: pointer;
     display: inline-block;
-    /* Ensure width wraps content so 50% clip is accurate */
     line-height: 1;
-    /* Minimize vertical gap */
 }
 
 /* Fruit Background Target */
@@ -176,13 +169,11 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: clamp(1rem, 4vmin, 2rem) clamp(1.5rem, 6vmin, 3rem);
-    /* Responsive padding */
+    padding: clamp(0.8rem, 18cqb, 1.7rem) clamp(1rem, 10cqi, 2.3rem);
     border-radius: 2rem;
     position: relative;
     transition: background-color 0.3s ease;
     border: 2px solid transparent;
-    /* Prepare for border color transition */
 }
 
 /* Sliced Wrapper & Inner from previous step */
@@ -208,8 +199,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: clamp(4rem, 24vmin, 12rem);
-    /* Match target-fruit size */
+    font-size: clamp(3.2rem, 62cqb, 10rem);
     line-height: 1;
 }
 
@@ -242,24 +232,22 @@
 /* Knife Rack */
 .knife-rack {
     display: flex;
-    gap: 1rem;
+    align-items: center;
+    gap: clamp(0.35rem, 1.5cqi, 0.9rem);
     justify-content: center;
     width: 100%;
-    padding-bottom: 1.5rem;
-    /* Reduced from 3rem */
-    padding-top: 1rem;
-    flex-wrap: wrap;
-    flex-shrink: 0;
-    /* Prevent shrinking */
+    height: 100%;
+    min-height: 0;
+    padding: 0.35rem 0.2rem 0.85rem;
+    box-sizing: border-box;
+    container-type: size;
+    flex-wrap: nowrap;
 }
 
 /* Realistic Knife Styling */
 .number-knife {
-    width: clamp(40px, 9vmin, 60px);
-    /* Lower min width to 40px */
-    height: clamp(90px, 20vmin, 140px);
-    /* Lower min height to 90px */
-    /* Taller for handle + blade */
+    width: clamp(34px, 16cqi, 58px);
+    height: clamp(78px, 78cqb, 132px);
     background: transparent;
     border: none;
     border-radius: 0;

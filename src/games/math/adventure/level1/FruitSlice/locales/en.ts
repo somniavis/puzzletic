@@ -4,16 +4,16 @@ const manifest = {
     description: "Calculate the missing number and slice the fruit to make a healthy snack.",
     howToPlay: {
         step1: {
-            title: "Check Recipe",
-            description: "What's the math problem?"
+            title: "How many slices?",
+            description: "Decide the number first."
         },
         step2: {
-            title: "Pick Right Knife",
-            description: "Find the answer knife!"
+            title: "Choose Knife",
+            description: "Pick the matching number."
         },
         step3: {
-            title: "Chop Chop!",
-            description: "Slice the fruit!"
+            title: "Slice Fruit",
+            description: "Cut to submit."
         }
     },
     powerups: {

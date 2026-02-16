@@ -88,6 +88,38 @@ export const NumberHive: React.FC<NumberHiveProps> = ({ onExit }) => {
         }
     ];
 
+    const beeDecorations: Array<{
+        top?: string;
+        right?: string;
+        bottom?: string;
+        left?: string;
+        animationDelay: string;
+        fontSize: string;
+        opacity?: number;
+        flipped?: boolean;
+    }> = [
+            { top: '8%', left: '8%', animationDelay: '0s', fontSize: '3rem', opacity: 0.1 },
+            { top: '12%', right: '18%', animationDelay: '1.1s', fontSize: '2.4rem', opacity: 0.09, flipped: true },
+            { top: '18%', left: '32%', animationDelay: '2.6s', fontSize: '1.7rem', opacity: 0.08 },
+            { top: '22%', right: '6%', animationDelay: '3.4s', fontSize: '2.8rem', opacity: 0.1 },
+            { top: '28%', left: '58%', animationDelay: '1.8s', fontSize: '2rem', opacity: 0.07, flipped: true },
+            { top: '34%', left: '14%', animationDelay: '4.2s', fontSize: '2.2rem', opacity: 0.08 },
+            { top: '38%', right: '24%', animationDelay: '2.1s', fontSize: '1.5rem', opacity: 0.07 },
+            { top: '44%', left: '4%', animationDelay: '3.1s', fontSize: '2.6rem', opacity: 0.09, flipped: true },
+            { top: '48%', right: '12%', animationDelay: '0.9s', fontSize: '1.9rem', opacity: 0.08 },
+            { top: '54%', left: '42%', animationDelay: '4.6s', fontSize: '2.9rem', opacity: 0.1 },
+            { top: '60%', right: '34%', animationDelay: '1.5s', fontSize: '1.6rem', opacity: 0.07, flipped: true },
+            { top: '66%', left: '10%', animationDelay: '2.9s', fontSize: '2.3rem', opacity: 0.08 },
+            { top: '70%', right: '6%', animationDelay: '3.8s', fontSize: '2.1rem', opacity: 0.08, flipped: true },
+            { top: '74%', left: '26%', animationDelay: '1.3s', fontSize: '1.8rem', opacity: 0.07 },
+            { top: '78%', right: '22%', animationDelay: '4.1s', fontSize: '2.7rem', opacity: 0.09 },
+            { bottom: '24%', left: '18%', animationDelay: '2.4s', fontSize: '1.6rem', opacity: 0.06 },
+            { bottom: '20%', right: '10%', animationDelay: '0.7s', fontSize: '2.5rem', opacity: 0.09, flipped: true },
+            { bottom: '14%', left: '34%', animationDelay: '3.3s', fontSize: '2rem', opacity: 0.08 },
+            { bottom: '10%', right: '28%', animationDelay: '1.9s', fontSize: '1.4rem', opacity: 0.06, flipped: true },
+            { bottom: '6%', left: '50%', animationDelay: '4.8s', fontSize: '2.8rem', opacity: 0.09 }
+        ];
+
     return (
         <Layout3
             title={t('games.math-number-hive.title')}
@@ -96,7 +128,7 @@ export const NumberHive: React.FC<NumberHiveProps> = ({ onExit }) => {
             engine={layoutEngine as any}
             instructions={[
                 { icon: '🎯', title: t('games.math-number-hive.howToPlay.step1.title'), description: t('games.math-number-hive.howToPlay.step1.description') },
-                { icon: '1️⃣2️⃣3️⃣', title: t('games.math-number-hive.howToPlay.step2.title'), description: t('games.math-number-hive.howToPlay.step2.description') },
+                { icon: '🔢', title: t('games.math-number-hive.howToPlay.step2.title'), description: t('games.math-number-hive.howToPlay.step2.description') },
                 { icon: '🍯', title: t('games.math-number-hive.howToPlay.step3.title'), description: t('games.math-number-hive.howToPlay.step3.description') }
             ]}
             onExit={onExit}
@@ -107,47 +139,48 @@ export const NumberHive: React.FC<NumberHiveProps> = ({ onExit }) => {
             }}
         >
             {/* Game Content: Bees and Grid */}
-            <>
+            <div className="number-hive-container">
                 {/* Bee Background Decors */}
-                <div className="bee-deco" style={{ top: '10%', left: '10%' }}>
-                    <span className="bee-inner">🐝</span>
-                </div>
-                <div className="bee-deco" style={{ bottom: '20%', right: '10%', animationDelay: '1s' }}>
-                    <span className="bee-inner bee-flipped">🐝</span>
-                </div>
-                <div className="bee-deco" style={{ top: '40%', right: '5%', animationDelay: '2s', fontSize: '2rem' }}>
-                    <span className="bee-inner">🐝</span>
-                </div>
-                <div className="bee-deco" style={{ top: '60%', left: '5%', animationDelay: '3s', fontSize: '2.5rem' }}>
-                    <span className="bee-inner bee-flipped">🐝</span>
-                </div>
-                <div className="bee-deco" style={{ bottom: '10%', left: '30%', animationDelay: '1.5s', fontSize: '1.5rem', opacity: 0.05 }}>
-                    <span className="bee-inner">🐝</span>
-                </div>
-                <div className="bee-deco" style={{ top: '15%', right: '30%', animationDelay: '4s', fontSize: '2.2rem' }}>
-                    <span className="bee-inner bee-flipped">🐝</span>
-                </div>
-
-                {currentLevel && (
-                    <div className={`honeycomb-container grid-${currentLevel.gridSize}`}>
-                        {Array.from({ length: Math.ceil(currentLevel.cells.length / currentLevel.gridSize) }).map((_, rowIndex) => (
-                            <div key={rowIndex} className={`hex-row ${rowIndex % 2 !== 0 ? 'even' : 'odd'}`}>
-                                {currentLevel.cells
-                                    .slice(rowIndex * currentLevel.gridSize, (rowIndex + 1) * currentLevel.gridSize)
-                                    .map((cell: any) => (
-                                        <div
-                                            key={cell.id}
-                                            className={`hex-cell ${cell.isRevealed ? 'revealed' : ''} ${shakeId === cell.id ? 'shaking' : ''}`}
-                                            onClick={() => handleCellClick(cell)}
-                                        >
-                                            {cell.value}
-                                        </div>
-                                    ))}
-                            </div>
-                        ))}
+                {beeDecorations.map((bee, idx) => (
+                    <div
+                        key={`bee-${idx}`}
+                        className="bee-deco"
+                        style={{
+                            top: bee.top,
+                            right: bee.right,
+                            bottom: bee.bottom,
+                            left: bee.left,
+                            animationDelay: bee.animationDelay,
+                            fontSize: bee.fontSize,
+                            opacity: bee.opacity
+                        }}
+                    >
+                        <span className={`bee-inner${bee.flipped ? ' bee-flipped' : ''}`}>🐝</span>
                     </div>
-                )}
-            </>
+                ))}
+
+                <div className="hive-grid-area">
+                    {currentLevel && (
+                        <div className={`honeycomb-container grid-${currentLevel.gridSize}`}>
+                            {Array.from({ length: Math.ceil(currentLevel.cells.length / currentLevel.gridSize) }).map((_, rowIndex) => (
+                                <div key={rowIndex} className={`hex-row ${rowIndex % 2 !== 0 ? 'even' : 'odd'}`}>
+                                    {currentLevel.cells
+                                        .slice(rowIndex * currentLevel.gridSize, (rowIndex + 1) * currentLevel.gridSize)
+                                        .map((cell: any) => (
+                                            <div
+                                                key={cell.id}
+                                                className={`hex-cell ${cell.isRevealed ? 'revealed' : ''} ${shakeId === cell.id ? 'shaking' : ''}`}
+                                                onClick={() => handleCellClick(cell)}
+                                            >
+                                                {cell.value}
+                                            </div>
+                                        ))}
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            </div>
         </Layout3>
     );
 };
