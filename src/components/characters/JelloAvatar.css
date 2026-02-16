@@ -45,7 +45,7 @@
 }
 
 /* Idle Float Animation */
-@keyframes float {
+@keyframes jello-idle-float {
     0% {
         transform: translateY(0px);
     }
@@ -60,7 +60,7 @@
 }
 
 .jello-avatar--idle {
-    animation: float 3s ease-in-out infinite;
+    animation: jello-idle-float 3s ease-in-out infinite;
 }
 
 .jello-avatar.no-animation {

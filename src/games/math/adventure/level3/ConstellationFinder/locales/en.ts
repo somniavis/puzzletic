@@ -4,16 +4,16 @@ const en = {
     description: 'Solve 1-digit multiplication and complete each constellation set.',
     howToPlay: {
         step1: {
-            title: 'Read the Mission',
-            description: 'Check the multiplication question on top.'
+            title: 'Check Equation',
+            description: 'Read the top equation and find the answer.'
         },
         step2: {
-            title: 'Tap the Right Star',
-            description: 'Find the star with the correct answer.'
+            title: 'Light the Star',
+            description: 'Tap the star with the correct number.'
         },
         step3: {
-            title: 'Finish the Set',
-            description: 'Light all target stars, then press check.'
+            title: 'Complete the Set',
+            description: 'Light all target stars, then hit check.'
         }
     },
     difficulty: {

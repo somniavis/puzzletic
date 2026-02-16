@@ -975,17 +975,17 @@ export const ConstellationFinder: React.FC<ConstellationFinderProps> = ({ onExit
             onExit={onExit}
             instructions={[
                 {
-                    icon: '🌌',
+                    icon: '🧮',
                     title: t('games.constellation-finder.howToPlay.step1.title'),
                     description: t('games.constellation-finder.howToPlay.step1.description')
                 },
                 {
-                    icon: '🧮',
+                    icon: '⭐',
                     title: t('games.constellation-finder.howToPlay.step2.title'),
                     description: t('games.constellation-finder.howToPlay.step2.description')
                 },
                 {
-                    icon: '✅',
+                    icon: '🌌',
                     title: t('games.constellation-finder.howToPlay.step3.title'),
                     description: t('games.constellation-finder.howToPlay.step3.description')
                 }

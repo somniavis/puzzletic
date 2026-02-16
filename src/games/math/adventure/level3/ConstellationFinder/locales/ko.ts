@@ -4,16 +4,16 @@ const ko = {
     description: '1자리 × 1자리 곱셈을 풀고 별자리 세트를 완성해요.',
     howToPlay: {
         step1: {
-            title: '문제 확인',
-            description: '상단 곱셈 문제를 확인해요.'
+            title: '수식 확인',
+            description: '상단 수식을 보고 답을 계산해요.'
         },
         step2: {
-            title: '정답 별 터치',
-            description: '정답 숫자가 있는 별을 눌러요.'
+            title: '별 밝히기',
+            description: '정답 숫자 별을 빠르게 터치해요.'
         },
         step3: {
-            title: '세트 완성',
-            description: '목표 별을 모두 밝힌 뒤 체크!'
+            title: '별자리 완성',
+            description: '목표 별을 모두 밝히고 체크!'
         }
     },
     difficulty: {

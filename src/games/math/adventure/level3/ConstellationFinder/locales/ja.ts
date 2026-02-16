@@ -4,16 +4,16 @@ const ja = {
     description: '1けた×1けたのかけ算を解いて、星座セットを完成しよう。',
     howToPlay: {
         step1: {
-            title: '問題を確認',
-            description: '上のかけ算問題を見よう。'
+            title: 'しきをチェック',
+            description: '上のしきを見て答えを考えよう。'
         },
         step2: {
-            title: '正解の星をタップ',
-            description: '答えの数字がある星をタップ。'
+            title: '星を光らせる',
+            description: '正解の数字の星をすばやくタップ。'
         },
         step3: {
-            title: 'セット完成',
-            description: '目標の星を全部光らせたらチェック！'
+            title: '星座を完成',
+            description: '目標の星を全部光らせてチェック！'
         }
     },
     difficulty: {
