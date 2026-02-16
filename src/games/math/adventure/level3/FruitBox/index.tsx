@@ -91,6 +91,7 @@ export const FruitBox: React.FC<FruitBoxProps> = ({ onExit }) => {
     const [draggingBundle, setDraggingBundle] = React.useState<number | null>(null);
     const [dragPos, setDragPos] = React.useState({ x: 0, y: 0 });
     const [feedbackText, setFeedbackText] = React.useState('');
+    const [isCheckPressed, setIsCheckPressed] = React.useState(false);
 
     const isDraggingRef = React.useRef(false);
     const draggingBundleRef = React.useRef<number | null>(null);
@@ -259,6 +260,8 @@ export const FruitBox: React.FC<FruitBoxProps> = ({ onExit }) => {
         const allFilled = boxValues.every((v) => v != null);
         if (!allFilled) {
             setFeedbackText(t('games.fruit-box.feedback.fillAll'));
+            engine.submitAnswer(false, { skipDifficulty: true, skipFeedback: true });
+            engine.registerEvent({ type: 'wrong' } as any);
             return;
         }
 
@@ -432,7 +435,11 @@ export const FruitBox: React.FC<FruitBoxProps> = ({ onExit }) => {
 
                 <button
                     type="button"
-                    className="fruit-box-check-btn"
+                    className={`fruit-box-check-btn${isCheckPressed ? ' is-pressed' : ''}`}
+                    onPointerDown={() => setIsCheckPressed(true)}
+                    onPointerUp={() => setIsCheckPressed(false)}
+                    onPointerCancel={() => setIsCheckPressed(false)}
+                    onPointerLeave={() => setIsCheckPressed(false)}
                     onClick={handleCheck}
                 >
                     ✓

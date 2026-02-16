@@ -1,7 +1,7 @@
 const manifest = {
-    title: "さんすうアーチェリー",
-    "title-lv1": "さんすうアーチェリー (Lv.1)",
-    "title-lv2": "さんすうアーチェリー (Lv.2)",
+    title: "スマートアーチャー",
+    "title-lv1": "スマートアーチャー (Lv.1)",
+    "title-lv2": "スマートアーチャー (Lv.2)",
     subtitle: "ねらってうとう！",
     description: "もんだいをといて、せいかいのマトをねらってね。",
     howToPlay: {

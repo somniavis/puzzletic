@@ -1,7 +1,7 @@
 const manifest = {
-    title: "Math Archery",
-    "title-lv1": "Math Archery (Lv.1)",
-    "title-lv2": "Math Archery (Lv.2)",
+    title: "Clever Archer",
+    "title-lv1": "Clever Archer (Lv.1)",
+    "title-lv2": "Clever Archer (Lv.2)",
     subtitle: "Aim & Solve!",
     description: "Solve the equation and shoot the correct target.",
     howToPlay: {

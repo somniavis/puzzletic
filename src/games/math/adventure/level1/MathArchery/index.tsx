@@ -153,7 +153,7 @@ export const MathArchery: React.FC<MathArcheryProps> = ({ level = 1, onExit }) =
             }}
             instructions={[
                 { icon: '🎯', title: t('games.math-archery.howToPlay.step1.title'), description: t('games.math-archery.howToPlay.step1.description') },
-                { icon: '➕', title: t('games.math-archery.howToPlay.step2.title'), description: t('games.math-archery.howToPlay.step2.description') },
+                { icon: '🧮', title: t('games.math-archery.howToPlay.step2.title'), description: t('games.math-archery.howToPlay.step2.description') },
                 { icon: '🏹', title: t('games.math-archery.howToPlay.step3.title'), description: t('games.math-archery.howToPlay.step3.description') }
             ]}
         >
@@ -237,7 +237,7 @@ export const MathArchery: React.FC<MathArcheryProps> = ({ level = 1, onExit }) =
 
 export const manifest: GameManifest = {
     id: GameIds.MATH_ARCHERY,
-    title: 'Math Archery',
+    title: 'Clever Archer',
     titleKey: 'games.math-archery.title',
     subtitle: 'Shoot the answer!',
     subtitleKey: 'games.math-archery.subtitle',

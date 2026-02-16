@@ -386,7 +386,8 @@
     filter: brightness(1.04);
 }
 
-.fruit-box-check-btn:active {
+.fruit-box-check-btn:active,
+.fruit-box-check-btn.is-pressed {
     transform: translateY(4px);
     box-shadow: 0 2px 0 #f59e0b, 0 4px 8px rgba(15, 23, 42, 0.18);
 }

@@ -222,7 +222,7 @@ export default function CargoTrain() {
 
     const instructions = useMemo(() => [
         { icon: '🚂', title: t('games.cargoTrain.howToPlay.step1.title', 'Step 1'), description: t('games.cargoTrain.howToPlay.step1.desc', 'Check the engine number.') },
-        { icon: '🚃', title: t('games.cargoTrain.howToPlay.step2.title', 'Step 2'), description: t('games.cargoTrain.howToPlay.step2.desc', 'Drag the cargo.') },
+        { icon: '📦', title: t('games.cargoTrain.howToPlay.step2.title', 'Step 2'), description: t('games.cargoTrain.howToPlay.step2.desc', 'Drag the cargo.') },
         { icon: '✅', title: t('games.cargoTrain.howToPlay.step3.title', 'Step 3'), description: t('games.cargoTrain.howToPlay.step3.desc', 'Make the total!') }
     ], [t]);
 
