@@ -30,6 +30,9 @@ export const FishingCount: React.FC<FishingCountProps> = ({ onExit }) => {
 
     const [draggedAnimalId, setDraggedAnimalId] = useState<number | null>(null);
     const [netHighlight, setNetHighlight] = useState(false);
+    const movementRef = useRef<Record<number, { x: number; y: number; vx: number; vy: number; faceLeft: boolean }>>({});
+    const rafRef = useRef<number | null>(null);
+    const lastFrameRef = useRef<number>(0);
     const draggingRef = useRef<{ id: number; startX: number; startY: number; currentX: number; currentY: number } | null>(null);
 
     useEffect(() => {
@@ -47,6 +50,89 @@ export const FishingCount: React.FC<FishingCountProps> = ({ onExit }) => {
         }
     }, [targetCount]);
 
+    // Efficient movement loop: keep positions in refs and mutate DOM directly.
+    useEffect(() => {
+        const existingIds = new Set(animals.map(a => a.id));
+        for (const animal of animals) {
+            if (!movementRef.current[animal.id]) {
+                movementRef.current[animal.id] = {
+                    x: animal.x,
+                    y: animal.y,
+                    vx: animal.vx,
+                    vy: animal.vy,
+                    faceLeft: animal.faceLeft
+                };
+            }
+        }
+        Object.keys(movementRef.current).forEach((key) => {
+            const id = Number(key);
+            if (!existingIds.has(id)) {
+                delete movementRef.current[id];
+            }
+        });
+    }, [animals]);
+
+    useEffect(() => {
+        if (!isPlaying) {
+            if (rafRef.current) cancelAnimationFrame(rafRef.current);
+            rafRef.current = null;
+            lastFrameRef.current = 0;
+            return;
+        }
+
+        const tick = (timestamp: number) => {
+            if (!isPlaying) return;
+            if (lastFrameRef.current === 0) {
+                lastFrameRef.current = timestamp;
+            }
+
+            const deltaTime = timestamp - lastFrameRef.current;
+            const timeScale = Math.min(deltaTime / 16.67, 3);
+
+            for (const key of Object.keys(movementRef.current)) {
+                const id = Number(key);
+                if (draggingRef.current?.id === id) continue;
+
+                const item = movementRef.current[id];
+                if (!item) continue;
+
+                item.x += item.vx * timeScale;
+                item.y += item.vy * timeScale;
+
+                if (item.x <= 0 || item.x >= 90) {
+                    item.vx *= -1;
+                    item.x = Math.max(0, Math.min(item.x, 90));
+                    item.faceLeft = item.vx < 0;
+                }
+                if (item.y <= 0 || item.y >= 75) {
+                    item.vy *= -1;
+                    item.y = Math.max(0, Math.min(item.y, 75));
+                }
+
+                const el = document.getElementById(`animal-${id}`);
+                if (!el) continue;
+
+                el.style.left = `${item.x}%`;
+                el.style.top = `${item.y}%`;
+
+                const emojiEl = el.firstElementChild as HTMLElement | null;
+                if (emojiEl) {
+                    emojiEl.style.transform = item.faceLeft ? 'scaleX(1)' : 'scaleX(-1)';
+                }
+            }
+
+            lastFrameRef.current = timestamp;
+            rafRef.current = requestAnimationFrame(tick);
+        };
+
+        rafRef.current = requestAnimationFrame(tick);
+        return () => {
+            if (rafRef.current) cancelAnimationFrame(rafRef.current);
+            rafRef.current = null;
+            lastFrameRef.current = 0;
+        };
+    }, [isPlaying]);
+
     // Layout Engine Adaptor
     const derivedGameState = isGameOver ? 'gameover' : (isPlaying ? 'playing' : 'idle');
 
@@ -60,6 +146,13 @@ export const FishingCount: React.FC<FishingCountProps> = ({ onExit }) => {
         difficultyLevel: 1,
         maxLevel: 1
     };
+
+    const targetInline = (
+        <span className="fishing-target-inline">
+            <span className="fishing-target-inline-emoji">{targetAnimal || '❓'}</span>
+            <span className="fishing-target-inline-number">{Math.max(0, targetCount - caughtCount)}</span>
+        </span>
+    );
 
     // --- Custom Drag Handling ---
     const handleDragStart = (e: React.MouseEvent | React.TouchEvent, id: number) => {
@@ -129,9 +222,21 @@ export const FishingCount: React.FC<FishingCountProps> = ({ onExit }) => {
         }
 
         // Reset
-        const el = document.getElementById(`animal-${draggingRef.current.id}`);
+        const currentId = draggingRef.current.id;
+        const el = document.getElementById(`animal-${currentId}`);
         if (el) {
             el.style.transform = ''; // Clear transform
+        }
+
+        const moveItem = movementRef.current[currentId];
+        if (moveItem && draggingRef.current) {
+            const dx = draggingRef.current.currentX - draggingRef.current.startX;
+            const dy = draggingRef.current.currentY - draggingRef.current.startY;
+            const pondRect = el?.parentElement?.getBoundingClientRect();
+            const width = pondRect?.width || window.innerWidth;
+            const height = pondRect?.height || window.innerHeight;
+            moveItem.x = Math.max(0, Math.min(90, moveItem.x + (dx / width) * 100));
+            moveItem.y = Math.max(0, Math.min(75, moveItem.y + (dy / height) * 100));
         }
 
         setDraggedAnimalId(null);
@@ -148,8 +253,8 @@ export const FishingCount: React.FC<FishingCountProps> = ({ onExit }) => {
             engine={layoutEngine as any} // Cast safely
             powerUps={[]} // No powerups for this Level 1 game yet
             target={{
-                value: Math.max(0, targetCount - caughtCount),
-                icon: targetAnimal
+                value: targetInline,
+                label: t('games.math-fishing-count.ui.catchBadge')
             }}
             instructions={[
                 { icon: '🎯', title: t('games.math-fishing-count.howToPlay.step1.title'), description: t('games.math-fishing-count.howToPlay.step1.description') },
@@ -158,6 +263,7 @@ export const FishingCount: React.FC<FishingCountProps> = ({ onExit }) => {
             ]}
             onExit={onExit}
             cardBackground={<FishingBackground />}
+            className="fishing-count-theme"
         >
             <div
                 className="fishing-count-container"
@@ -201,7 +307,7 @@ export const FishingCount: React.FC<FishingCountProps> = ({ onExit }) => {
                         className={`fishing-net-zone ${netHighlight ? 'highlight' : ''}`}
                     >
                         <div className="net-emoji">🕸️</div>
-                        <div className="net-label">DROP HERE</div>
+                        <div className="net-label">{t('games.math-fishing-count.ui.dropHere')}</div>
                     </div>
                 </div>
             </div>

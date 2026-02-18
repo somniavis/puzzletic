@@ -1,5 +1,5 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
-import { playButtonSound } from '../../../../../utils/sound';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import { playButtonSound, playClearSound, playEatingSound, playJelloClickSound } from '../../../../../utils/sound';
 
 export interface Animal {
     id: number;
@@ -28,7 +28,37 @@ export interface GameState {
 
 const SEA_ANIMALS = ['🐳', '🐋', '🐬', '🦭', '🐟', '🐠', '🐡', '🦈', '🐙', '🪼', '🦀', '🦞', '🦐', '🦑'];
 
+const getSeaAnimalPool = () => {
+    if (typeof navigator === 'undefined') return SEA_ANIMALS;
+
+    const ua = navigator.userAgent || '';
+    const isIOSDevice = /iP(hone|od|ad)/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    if (!isIOSDevice) return SEA_ANIMALS;
+
+    // iPhone 7 and other old iOS Safari versions may not render some recent emoji.
+    const iosVersionMatch = ua.match(/OS (\d+)_/);
+    const iosMajorVersion = iosVersionMatch ? parseInt(iosVersionMatch[1], 10) : null;
+    const isLegacyIOS = iosMajorVersion !== null && iosMajorVersion <= 15;
+    if (!isLegacyIOS) return SEA_ANIMALS;
+
+    return SEA_ANIMALS.map((emoji) => {
+        if (emoji === '🦭') return '🐬';
+        if (emoji === '🪼') return '🐢';
+        return emoji;
+    });
+};
+
+const randInt = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1)) + min;
+
+const getMinDistractorsByTarget = (targetCount: number) => {
+    if (targetCount <= 3) return 2;
+    if (targetCount <= 6) return 3;
+    return 4;
+};
+
 export const useFishingCountLogic = () => {
+    const seaAnimals = useMemo(() => getSeaAnimalPool(), []);
+
     const [gameState, setGameState] = useState<GameState>({
         score: 0,
         timeLeft: 60,
@@ -45,12 +75,11 @@ export const useFishingCountLogic = () => {
     const [caughtCount, setCaughtCount] = useState<number>(0);
     const [animals, setAnimals] = useState<Animal[]>([]);
 
-    const [lastEvent, setLastEvent] = useState<{ type: 'correct' | 'wrong', isFinal?: boolean, id: number } | null>(null);
+    const [lastEvent, setLastEvent] = useState<{ type: 'correct' | 'wrong', isFinal?: boolean, id: number; sfx?: 'auto' | 'none' } | null>(null);
     const [roundStartTime, setRoundStartTime] = useState<number>(0);
 
     // Bounds for the pond (will be updated via resize observer or ref, but for now fixed simple percentage logic)
     const containerRef = useRef<HTMLDivElement>(null);
-    const requestRef = useRef<number>(0);
 
     const generateRound = useCallback(() => {
         // Random target 1-10
@@ -60,34 +89,38 @@ export const useFishingCountLogic = () => {
         setRoundStartTime(Date.now());
 
         // Random animal
-        const target = SEA_ANIMALS[Math.floor(Math.random() * SEA_ANIMALS.length)];
+        const target = seaAnimals[Math.floor(Math.random() * seaAnimals.length)];
         setTargetAnimal(target);
 
         // Generate animals (Targets + Distractors)
         const newAnimals: Animal[] = [];
 
-        // Distractors: 0~7 random, but total (count + dist) <= 15
+        // Keep per-round total stable and avoid too-few distractors on high target counts.
         const maxDistractors = Math.min(7, 15 - count);
-        const distractorCount = Math.floor(Math.random() * (maxDistractors + 1)); // 0 to maxDistractors
-        const totalAnimals = count + distractorCount;
+        const requestedMinDistractors = getMinDistractorsByTarget(count);
+        const minDistractors = Math.min(requestedMinDistractors, maxDistractors);
+        const distractorCount = randInt(minDistractors, maxDistractors);
 
         // Add targets
         for (let i = 0; i < count; i++) {
             newAnimals.push(createAnimal(target));
         }
 
-        // Add distractors
-        let remaining = totalAnimals - count;
-        while (remaining > 0) {
-            const distractor = SEA_ANIMALS[Math.floor(Math.random() * SEA_ANIMALS.length)];
-            if (distractor !== target) {
-                newAnimals.push(createAnimal(distractor));
-                remaining--;
-            }
+        // Add distractors with diversity (at least 2~3 types when possible)
+        const distractorPool = seaAnimals.filter(a => a !== target);
+        const desiredTypeCount = distractorCount >= 5 ? 3 : 2;
+        const actualTypeCount = Math.min(desiredTypeCount, distractorPool.length, distractorCount);
+        const selectedTypes = distractorPool
+            .sort(() => Math.random() - 0.5)
+            .slice(0, actualTypeCount);
+
+        for (let i = 0; i < distractorCount; i++) {
+            const distractor = selectedTypes[i % selectedTypes.length];
+            newAnimals.push(createAnimal(distractor));
         }
 
         setAnimals(newAnimals);
-    }, []);
+    }, [seaAnimals]);
 
     const createAnimal = (type: string): Animal => {
         return {
@@ -117,57 +150,7 @@ export const useFishingCountLogic = () => {
 
     const stopGame = useCallback(() => {
         setGameState(prev => ({ ...prev, isPlaying: false }));
-        if (requestRef.current) cancelAnimationFrame(requestRef.current);
     }, []);
-
-    const lastTimeRef = useRef<number>(0);
-
-    // Game Loop for Movement
-    const updatePositions = useCallback((timestamp: number) => {
-        if (!gameState.isPlaying) return;
-
-        if (lastTimeRef.current === 0) {
-            lastTimeRef.current = timestamp;
-        }
-
-        const deltaTime = timestamp - lastTimeRef.current;
-        const timeScale = deltaTime / 16.67; // Normalize to 60FPS (16.67ms per frame)
-
-        // Cap max timescale to prevent huge jumps if tab was inactive
-        const cappedTimeScale = Math.min(timeScale, 3.0);
-
-        setAnimals(prevAnimals => {
-            return prevAnimals.map(animal => {
-                let newX = animal.x + (animal.vx * cappedTimeScale);
-                let newY = animal.y + (animal.vy * cappedTimeScale);
-
-                // Bounce off walls (0-100%)
-                if (newX <= 0 || newX >= 90) { // Assuming 10% width item roughly
-                    animal.vx *= -1;
-                    newX = Math.max(0, Math.min(newX, 90));
-                }
-                if (newY <= 0 || newY >= 75) { // Avoid net area at very bottom
-                    animal.vy *= -1;
-                    newY = Math.max(0, Math.min(newY, 75));
-                }
-
-                return { ...animal, x: newX, y: newY };
-            });
-        });
-
-        lastTimeRef.current = timestamp;
-        requestRef.current = requestAnimationFrame(updatePositions);
-    }, [gameState.isPlaying]);
-
-    useEffect(() => {
-        if (gameState.isPlaying) {
-            lastTimeRef.current = 0; // Reset time tracking on start/resume
-            requestRef.current = requestAnimationFrame(updatePositions);
-        }
-        return () => {
-            if (requestRef.current) cancelAnimationFrame(requestRef.current);
-        };
-    }, [gameState.isPlaying, updatePositions]);
 
     // Timer
     useEffect(() => {
@@ -200,13 +183,20 @@ export const useFishingCountLogic = () => {
             // Sound is handled by Layout0 (playClearSound -> cleaning sound) via lastEvent
             // playPlopSound(); // Removed as per user request to use only cleaning sound: Use cleaning sound only
 
-            // Trigger Layout0 feedback
             const newCaught = caughtCount + 1;
             setCaughtCount(newCaught);
 
             const isRoundComplete = newCaught >= targetCount;
+            // Play SFX immediately in interaction flow (iOS Safari gesture-safe)
+            if (isRoundComplete) {
+                playClearSound();
+            } else {
+                playEatingSound();
+            }
+
+            // Trigger layout visual feedback (skip shared SFX to avoid duplicate playback)
             // isFinal: true if round complete, false if intermediate
-            setLastEvent({ type: 'correct', isFinal: isRoundComplete, id: Date.now() });
+            setLastEvent({ type: 'correct', isFinal: isRoundComplete, id: Date.now(), sfx: 'none' });
 
             // Remove animal
             setAnimals(prev => prev.filter(a => a.id !== animalId));
@@ -243,7 +233,9 @@ export const useFishingCountLogic = () => {
             }
         } else {
             // Wrong Catch
-            setLastEvent({ type: 'wrong', id: Date.now() });
+            // Play wrong SFX immediately in interaction flow (iOS Safari gesture-safe)
+            playJelloClickSound(0.8);
+            setLastEvent({ type: 'wrong', id: Date.now(), sfx: 'none' });
 
             setGameState(prev => {
                 const newLives = prev.lives - 1;

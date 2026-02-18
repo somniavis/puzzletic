@@ -113,6 +113,12 @@ export const RoundCounting: React.FC<RoundCountingProps> = ({ onExit }) => {
     ];
 
     const targetValue = currentProblem ? (currentProblem.targetCount - foundIds.length) : 0;
+    const targetInline = (
+        <span className="round-target-inline">
+            <span className="round-target-inline-emoji">{currentProblem?.targetEmoji || '❓'}</span>
+            <span className="round-target-inline-number">{targetValue}</span>
+        </span>
+    );
 
     return (
         <Layout3
@@ -122,14 +128,16 @@ export const RoundCounting: React.FC<RoundCountingProps> = ({ onExit }) => {
             engine={layoutEngine as any}
             instructions={[
                 { icon: '🎯', title: t('games.math-round-counting.howToPlay.step1.title'), description: t('games.math-round-counting.howToPlay.step1.description') },
-                { icon: '👀', title: t('games.math-round-counting.howToPlay.step2.title'), description: t('games.math-round-counting.howToPlay.step2.description') },
+                { icon: '👆', title: t('games.math-round-counting.howToPlay.step2.title'), description: t('games.math-round-counting.howToPlay.step2.description') },
                 { icon: '🔄', title: t('games.math-round-counting.howToPlay.step3.title'), description: t('games.math-round-counting.howToPlay.step3.description') }
             ]}
             onExit={onExit}
             powerUps={powerUpConfig}
             target={{
-                value: targetValue,
-                icon: currentProblem?.targetEmoji || '❓'
+                value: targetInline,
+                label: currentProblem
+                    ? t('games.math-round-counting.ui.clinks')
+                    : t('games.math-round-counting.ui.ready')
             }}
             className="round-counting-theme"
         >

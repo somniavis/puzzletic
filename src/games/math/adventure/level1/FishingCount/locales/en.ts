@@ -15,5 +15,9 @@ export default {
             title: "Catch Correctly!",
             description: "Only the right ones!"
         }
+    },
+    ui: {
+        catchBadge: 'Catch!',
+        dropHere: 'Drop here'
     }
 };
