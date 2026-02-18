@@ -788,8 +788,13 @@ export const ConstellationFinder: React.FC<ConstellationFinderProps> = ({ onExit
     const [wrongStarId, setWrongStarId] = React.useState<string | null>(null);
     const [lastSolved, setLastSolved] = React.useState<Question | null>(null);
     const [debugRevealTargets, setDebugRevealTargets] = React.useState(false);
+    const [showSolveHint, setShowSolveHint] = React.useState(false);
+    const [isSolveHintExiting, setIsSolveHintExiting] = React.useState(false);
 
     const wrongFlashTimerRef = React.useRef<number | null>(null);
+    const solveHintTimerRef = React.useRef<number | null>(null);
+    const solveHintExitTimerRef = React.useRef<number | null>(null);
+    const hasShownSolveHintRef = React.useRef(false);
     const prevGameStateRef = React.useRef(engine.gameState);
     const setOrderBagRef = React.useRef<number[]>([]);
 
@@ -822,6 +827,17 @@ export const ConstellationFinder: React.FC<ConstellationFinderProps> = ({ onExit
         if (wrongFlashTimerRef.current != null) {
             window.clearTimeout(wrongFlashTimerRef.current);
             wrongFlashTimerRef.current = null;
+        }
+    }, []);
+
+    const clearSolveHintTimers = React.useCallback(() => {
+        if (solveHintTimerRef.current != null) {
+            window.clearTimeout(solveHintTimerRef.current);
+            solveHintTimerRef.current = null;
+        }
+        if (solveHintExitTimerRef.current != null) {
+            window.clearTimeout(solveHintExitTimerRef.current);
+            solveHintExitTimerRef.current = null;
         }
     }, []);
 
@@ -881,8 +897,9 @@ export const ConstellationFinder: React.FC<ConstellationFinderProps> = ({ onExit
     React.useEffect(() => {
         return () => {
             clearWrongFlashTimer();
+            clearSolveHintTimers();
         };
-    }, [clearWrongFlashTimer]);
+    }, [clearWrongFlashTimer, clearSolveHintTimers]);
 
     React.useEffect(() => {
         const prev = prevGameStateRef.current;
@@ -891,9 +908,36 @@ export const ConstellationFinder: React.FC<ConstellationFinderProps> = ({ onExit
             setDebugRevealTargets(false);
             setOrderBagRef.current = [];
             resetSet(consumeNextRandomSetIndex());
+
+            const isFirstQuestion = engine.score === 0 && engine.stats.correct === 0 && engine.stats.wrong === 0;
+            if (isFirstQuestion && !hasShownSolveHintRef.current) {
+                hasShownSolveHintRef.current = true;
+                setShowSolveHint(true);
+                setIsSolveHintExiting(false);
+                solveHintTimerRef.current = window.setTimeout(() => {
+                    setIsSolveHintExiting(true);
+                    solveHintExitTimerRef.current = window.setTimeout(() => {
+                        setShowSolveHint(false);
+                        setIsSolveHintExiting(false);
+                        solveHintExitTimerRef.current = null;
+                    }, 220);
+                    solveHintTimerRef.current = null;
+                }, 1800);
+            } else {
+                setShowSolveHint(false);
+                setIsSolveHintExiting(false);
+            }
         }
+
+        if (engine.gameState === 'gameover') {
+            clearSolveHintTimers();
+            setShowSolveHint(false);
+            setIsSolveHintExiting(false);
+            hasShownSolveHintRef.current = false;
+        }
+
         prevGameStateRef.current = engine.gameState;
-    }, [engine.gameState, resetSet, consumeNextRandomSetIndex]);
+    }, [engine.gameState, resetSet, consumeNextRandomSetIndex, engine.score, engine.stats.correct, engine.stats.wrong, clearSolveHintTimers]);
 
     const currentQuestion = session.questions[questionIndex] ?? null;
     const litSet = React.useMemo(() => new Set(litTargetIds), [litTargetIds]);
@@ -1028,7 +1072,15 @@ export const ConstellationFinder: React.FC<ConstellationFinderProps> = ({ onExit
                 }
             ]}
             powerUps={powerUps}
-            target={{ value: targetExpression, label: progressText }}
+            target={{
+                value: targetExpression,
+                label: progressText,
+                overlay: setCleared ? (
+                    <div className="constellation-target-overlay">
+                        {t('games.constellation-finder.ui.clearedTitle', { name: setName })}
+                    </div>
+                ) : undefined
+            }}
             cardBackground={<div className="constellation-night-bg" />}
         >
             <div className="constellation-finder-shell">
@@ -1090,17 +1142,18 @@ export const ConstellationFinder: React.FC<ConstellationFinderProps> = ({ onExit
                     })}
                 </div>
 
-                <div className="constellation-guide" aria-live="polite">
-                    {!setCleared ? (
-                        <div className="constellation-guide-title">
-                            {t('games.constellation-finder.ui.solveGuide')}
+                {showSolveHint && (
+                    <div
+                        className={`constellation-hint-box ${
+                            isSolveHintExiting ? 'is-exiting' : ''
+                        }`}
+                        aria-live="polite"
+                    >
+                        <div className="constellation-hint-title">
+                            {t('games.constellation-finder.ui.clickCorrectStarHint')}
                         </div>
-                    ) : (
-                        <div className="constellation-guide-title">
-                            {t('games.constellation-finder.ui.clearedTitle', { name: setName })}
-                        </div>
-                    )}
-                </div>
+                    </div>
+                )}
 
                 {setCleared && (
                     <button type="button" className="constellation-next-btn" onClick={onNextSet}>

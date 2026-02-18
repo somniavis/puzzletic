@@ -5,15 +5,15 @@ const ko = {
     howToPlay: {
         step1: {
             title: '수식 확인',
-            description: '상단 수식을 보고 답을 계산해요.'
+            description: '수식을 계산해요.'
         },
         step2: {
             title: '별 밝히기',
-            description: '정답 숫자 별을 빠르게 터치해요.'
+            description: '정답 별을 터치해요.'
         },
         step3: {
             title: '별자리 완성',
-            description: '목표 별을 모두 밝히고 체크!'
+            description: '모두 밝히고 체크!'
         }
     },
     difficulty: {
@@ -39,6 +39,7 @@ const ko = {
     },
     ui: {
         setLabel: '세트 {{current}}/{{total}}',
+        clickCorrectStarHint: '정답별 클릭!',
         solveGuide: '정답 숫자 별을 찾아요.',
         solveGuideSub: '오답은 생명력 1 감소, 정답은 별 점등!',
         clearedTitle: '{{name}} 완성!',

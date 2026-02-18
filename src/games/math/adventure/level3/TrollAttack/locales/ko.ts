@@ -18,6 +18,7 @@ const ko = {
     },
     ui: {
         dragHint: '폭탄을 대포에 드래그 하세요!',
+        dragOverlayHint: '폭탄을 대포에 드래그 하세요!',
         dropHint: '여기에 놓으면 발사!',
         underHit: '위력이 부족해요! 트롤이 돌진합니다.',
         overHit: '너무 강해요! 트롤이 방패로 막았습니다.',

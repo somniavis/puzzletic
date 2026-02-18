@@ -72,15 +72,15 @@
     border-radius: 1rem;
     border: none;
     background: transparent;
-    padding: 0.65rem;
+    padding: 0;
     overflow: hidden;
 }
 
 .constellation-finder-board {
     position: relative;
-    margin-top: 0.2rem;
+    margin-top: 0;
     width: 100%;
-    height: calc(100% - 5rem);
+    height: 100%;
     min-height: 240px;
     border-radius: 0.9rem;
     background: transparent;
@@ -243,33 +243,75 @@
     100% { transform: translate(-50%, -50%) translateX(0); }
 }
 
-.constellation-guide {
+.constellation-hint-box {
     position: absolute;
     left: 0.65rem;
     right: 0.65rem;
     bottom: 0.55rem;
-    min-height: 3.4rem;
+    min-height: 2.5rem;
     border-radius: 0.8rem;
-    border: 1px solid rgba(148, 163, 184, 0.28);
-    background: rgba(15, 23, 42, 0.45);
-    color: #e2e8f0;
+    background: rgba(255, 255, 255, 0.94);
+    color: #1e3a8a;
     display: flex;
-    flex-direction: column;
+    align-items: center;
     justify-content: center;
     text-align: center;
-    padding: 0.3rem 0.58rem;
-    z-index: 6;
+    padding: 0.3rem 0.65rem;
+    z-index: 25;
+    pointer-events: none;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.18);
+    animation: constellation-hint-fade-in 0.2s ease-out forwards;
 }
 
-.constellation-guide-title {
-    font-size: clamp(0.74rem, 2.8vw, 0.88rem);
+.constellation-hint-box.is-exiting {
+    animation: constellation-hint-fade-out 0.22s ease-in forwards;
+}
+
+@keyframes constellation-hint-fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes constellation-hint-fade-out {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    to {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+}
+
+.constellation-hint-title {
+    font-size: clamp(0.86rem, 2.8vw, 1.02rem);
     font-weight: 800;
 }
 
-.constellation-guide-text {
-    margin-top: 0.15rem;
-    font-size: clamp(0.66rem, 2.4vw, 0.78rem);
-    color: #cbd5e1;
+.constellation-target-overlay {
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    border-radius: 0.75rem;
+    background: #ffffff;
+    color: #1e3a8a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 0 0.5rem;
+    font-size: clamp(0.84rem, 2.7vw, 1rem);
+    font-weight: 800;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.16);
+    animation: constellation-hint-fade-in 0.2s ease-out forwards;
 }
 
 .constellation-next-btn {
@@ -315,15 +357,15 @@
 
 @media (max-width: 480px) {
     .constellation-finder-shell {
-        padding: 0.52rem;
+        padding: 0;
     }
 
     .constellation-finder-board {
-        height: calc(100% - 4.8rem);
+        height: 100%;
         min-height: 210px;
     }
 
-    .constellation-guide {
+    .constellation-hint-box {
         left: 0.52rem;
         right: 0.52rem;
         bottom: 0.45rem;

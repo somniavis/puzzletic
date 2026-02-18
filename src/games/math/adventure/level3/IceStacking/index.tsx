@@ -131,6 +131,8 @@ export const IceStacking: React.FC<IceStackingProps> = ({ onExit }) => {
     const [settledPieces, setSettledPieces] = React.useState<SettledPiece[]>([]);
     const [stackStable, setStackStable] = React.useState<boolean | null>(null);
     const [isCollapsing, setIsCollapsing] = React.useState(false);
+    const [showClickDropHint, setShowClickDropHint] = React.useState(false);
+    const [isClickDropHintExiting, setIsClickDropHintExiting] = React.useState(false);
 
     const boardRef = React.useRef<HTMLDivElement | null>(null);
     const carriageRef = React.useRef<HTMLDivElement | null>(null);
@@ -146,6 +148,9 @@ export const IceStacking: React.FC<IceStackingProps> = ({ onExit }) => {
     const armRafRef = React.useRef<number | null>(null);
     const armLastTsRef = React.useRef(0);
     const snappedArmColRef = React.useRef(0);
+    const hasShownClickDropHintRef = React.useRef(false);
+    const clickDropHintTimerRef = React.useRef<number | null>(null);
+    const clickDropHintExitTimerRef = React.useRef<number | null>(null);
 
     React.useEffect(() => {
         placedBundlesRef.current = placedBundles;
@@ -163,6 +168,14 @@ export const IceStacking: React.FC<IceStackingProps> = ({ onExit }) => {
         if (roundTimerRef.current != null) {
             window.clearTimeout(roundTimerRef.current);
             roundTimerRef.current = null;
+        }
+        if (clickDropHintTimerRef.current != null) {
+            window.clearTimeout(clickDropHintTimerRef.current);
+            clickDropHintTimerRef.current = null;
+        }
+        if (clickDropHintExitTimerRef.current != null) {
+            window.clearTimeout(clickDropHintExitTimerRef.current);
+            clickDropHintExitTimerRef.current = null;
         }
     }, []);
 
@@ -210,13 +223,38 @@ export const IceStacking: React.FC<IceStackingProps> = ({ onExit }) => {
         if (enteredPlaying) {
             clearTimers();
             startNewProblem();
+            const isFirstQuestion = engine.score === 0 && engine.stats.correct === 0 && engine.stats.wrong === 0;
+            if (isFirstQuestion && !hasShownClickDropHintRef.current) {
+                hasShownClickDropHintRef.current = true;
+                setShowClickDropHint(true);
+                setIsClickDropHintExiting(false);
+                clickDropHintTimerRef.current = window.setTimeout(() => {
+                    setIsClickDropHintExiting(true);
+                    clickDropHintExitTimerRef.current = window.setTimeout(() => {
+                        setShowClickDropHint(false);
+                        setIsClickDropHintExiting(false);
+                        clickDropHintExitTimerRef.current = null;
+                    }, 220);
+                    clickDropHintTimerRef.current = null;
+                }, 1800);
+            } else {
+                setShowClickDropHint(false);
+                setIsClickDropHintExiting(false);
+            }
             const wrapper = document.querySelector('.ice-stacking-layout2 .layout2-grid-wrapper');
             if (wrapper instanceof HTMLElement) {
                 wrapper.scrollTop = 0;
             }
         }
         prevGameStateRef.current = engine.gameState;
-    }, [engine.gameState, clearTimers, startNewProblem]);
+    }, [engine.gameState, clearTimers, engine.score, engine.stats.correct, engine.stats.wrong, startNewProblem]);
+
+    React.useEffect(() => {
+        if (engine.gameState !== 'gameover') return;
+        setShowClickDropHint(false);
+        setIsClickDropHintExiting(false);
+        hasShownClickDropHintRef.current = false;
+    }, [engine.gameState]);
 
     React.useEffect(() => {
         return () => clearTimers();
@@ -530,6 +568,12 @@ export const IceStacking: React.FC<IceStackingProps> = ({ onExit }) => {
                         </div>
                     </div>
                 </section>
+
+                {showClickDropHint && (
+                    <div className={`ice-click-drop-hint ${isClickDropHintExiting ? 'is-exiting' : ''}`}>
+                        {t('games.ice-stacking.ui.clickDropHint')}
+                    </div>
+                )}
             </div>
         </Layout2>
     );

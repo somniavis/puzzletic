@@ -20,6 +20,7 @@ const ja = {
         target: '目標',
         bundles: '束',
         bundleCard: '現在の氷の束',
+        clickDropHint: 'タップで落とすよ！',
         dropHint: 'グリッド上で移動してタップで落とす',
         defaultGuide: '倒れないように積んでミッションをクリア！'
     },

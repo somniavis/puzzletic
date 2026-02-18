@@ -20,6 +20,7 @@ const en = {
         target: 'Target',
         bundles: 'Bundles',
         bundleCard: 'Current Ice Bundle',
+        clickDropHint: 'Tap to drop!',
         dropHint: 'Move on the grid and tap to drop',
         defaultGuide: 'Build a stable stack to clear the mission.'
     },

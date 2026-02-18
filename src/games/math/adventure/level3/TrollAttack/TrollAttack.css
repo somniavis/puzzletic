@@ -503,6 +503,7 @@
 }
 
 .troll-attack-ammo-box {
+    position: relative;
     border-radius: 0.85rem;
     border: 2px solid rgba(125, 65, 34, 0.72);
     background:
@@ -511,6 +512,54 @@
         inset 0 -6px 0 rgba(73, 35, 20, 0.48),
         0 6px 10px rgba(0, 0, 0, 0.22);
     padding: 0.45rem;
+}
+
+.troll-ammo-hint-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 9;
+    border-radius: 0.85rem;
+    background: rgba(255, 255, 255, 0.96);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 0.4rem 0.6rem;
+    pointer-events: auto;
+    animation: troll-ammo-hint-fade-in 0.2s ease-out forwards;
+}
+
+.troll-ammo-hint-overlay.is-exiting {
+    animation: troll-ammo-hint-fade-out 0.22s ease-in forwards;
+}
+
+.troll-ammo-hint-text {
+    font-size: 0.96rem;
+    font-weight: 800;
+    color: #1e3a8a;
+    letter-spacing: 0.01em;
+}
+
+@keyframes troll-ammo-hint-fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes troll-ammo-hint-fade-out {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(4px);
+    }
 }
 
 .troll-attack-ammo-row {

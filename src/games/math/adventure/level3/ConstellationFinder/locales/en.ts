@@ -5,15 +5,15 @@ const en = {
     howToPlay: {
         step1: {
             title: 'Check Equation',
-            description: 'Read the top equation and find the answer.'
+            description: 'Solve the equation.'
         },
         step2: {
             title: 'Light the Star',
-            description: 'Tap the star with the correct number.'
+            description: 'Tap the correct star.'
         },
         step3: {
             title: 'Complete the Set',
-            description: 'Light all target stars, then hit check.'
+            description: 'Light all stars, then check.'
         }
     },
     difficulty: {
@@ -39,6 +39,7 @@ const en = {
     },
     ui: {
         setLabel: 'Set {{current}}/{{total}}',
+        clickCorrectStarHint: 'Tap the correct star!',
         solveGuide: 'Find the correct star answer.',
         solveGuideSub: 'Wrong tap costs 1 life. Correct tap lights the star.',
         clearedTitle: '{{name}} complete!',

@@ -20,6 +20,7 @@ const ko = {
         target: '목표',
         bundles: '묶음',
         bundleCard: '현재 얼음 묶음',
+        clickDropHint: '클릭하면 떨어져요!',
         dropHint: '그리드 위에서 이동 후 탭해서 떨어뜨리기',
         defaultGuide: '무너지지 않게 쌓으면 미션 성공!'
     },

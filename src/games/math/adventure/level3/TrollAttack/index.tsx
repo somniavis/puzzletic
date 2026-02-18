@@ -236,6 +236,8 @@ export const TrollAttack: React.FC<TrollAttackProps> = ({ onExit }) => {
     const [shieldTrollId, setShieldTrollId] = React.useState<number | null>(null);
     const [hitTrollId, setHitTrollId] = React.useState<number | null>(null);
     const [manualTargetId, setManualTargetId] = React.useState<number | null>(null);
+    const [showAmmoHintOverlay, setShowAmmoHintOverlay] = React.useState(false);
+    const [isAmmoHintOverlayExiting, setIsAmmoHintOverlayExiting] = React.useState(false);
 
     const prevGameStateRef = React.useRef(engine.gameState);
     const gameStateRef = React.useRef(engine.gameState);
@@ -254,6 +256,9 @@ export const TrollAttack: React.FC<TrollAttackProps> = ({ onExit }) => {
     const registerEventRef = React.useRef(engine.registerEvent);
     const updateLivesRef = React.useRef(engine.updateLives);
     const updateComboRef = React.useRef(engine.updateCombo);
+    const hasShownAmmoHintRef = React.useRef(false);
+    const ammoHintTimerRef = React.useRef<number | null>(null);
+    const ammoHintExitTimerRef = React.useRef<number | null>(null);
 
     React.useEffect(() => {
         gameStateRef.current = engine.gameState;
@@ -279,6 +284,14 @@ export const TrollAttack: React.FC<TrollAttackProps> = ({ onExit }) => {
         if (projectileRafRef.current != null) {
             window.cancelAnimationFrame(projectileRafRef.current);
             projectileRafRef.current = null;
+        }
+        if (ammoHintTimerRef.current != null) {
+            window.clearTimeout(ammoHintTimerRef.current);
+            ammoHintTimerRef.current = null;
+        }
+        if (ammoHintExitTimerRef.current != null) {
+            window.clearTimeout(ammoHintExitTimerRef.current);
+            ammoHintExitTimerRef.current = null;
         }
     }, []);
 
@@ -327,9 +340,32 @@ export const TrollAttack: React.FC<TrollAttackProps> = ({ onExit }) => {
         const enteredPlaying = engine.gameState === 'playing' && (prev === 'idle' || prev === 'gameover');
         if (enteredPlaying) {
             setupGame();
+            const isFirstQuestion = engine.score === 0 && engine.stats.correct === 0 && engine.stats.wrong === 0;
+            if (isFirstQuestion && !hasShownAmmoHintRef.current) {
+                hasShownAmmoHintRef.current = true;
+                setShowAmmoHintOverlay(true);
+                setIsAmmoHintOverlayExiting(false);
+                ammoHintTimerRef.current = window.setTimeout(() => {
+                    setIsAmmoHintOverlayExiting(true);
+                    ammoHintExitTimerRef.current = window.setTimeout(() => {
+                        setShowAmmoHintOverlay(false);
+                        setIsAmmoHintOverlayExiting(false);
+                        ammoHintExitTimerRef.current = null;
+                    }, 220);
+                    ammoHintTimerRef.current = null;
+                }, 1800);
+            } else {
+                setShowAmmoHintOverlay(false);
+                setIsAmmoHintOverlayExiting(false);
+            }
+        }
+        if (engine.gameState === 'gameover') {
+            setShowAmmoHintOverlay(false);
+            setIsAmmoHintOverlayExiting(false);
+            hasShownAmmoHintRef.current = false;
         }
         prevGameStateRef.current = engine.gameState;
-    }, [engine.gameState, setupGame]);
+    }, [engine.gameState, setupGame, engine.score, engine.stats.correct, engine.stats.wrong]);
 
     React.useEffect(() => {
         if (engine.gameState !== 'playing') return;
@@ -811,6 +847,11 @@ export const TrollAttack: React.FC<TrollAttackProps> = ({ onExit }) => {
 
                 <section className="troll-attack-ammo-panel">
                     <div className="troll-attack-ammo-box">
+                        {showAmmoHintOverlay && (
+                            <div className={`troll-ammo-hint-overlay ${isAmmoHintOverlayExiting ? 'is-exiting' : ''}`} aria-hidden="true">
+                                <span className="troll-ammo-hint-text">{t('games.troll-attack.ui.dragOverlayHint')}</span>
+                            </div>
+                        )}
                         <div className="troll-attack-ammo-row">
                             {ammoSlots.map((ammo, idx) => (
                                 <button
@@ -819,7 +860,7 @@ export const TrollAttack: React.FC<TrollAttackProps> = ({ onExit }) => {
                                     className={`troll-ammo-btn ${!ammo ? 'empty' : ''} ${ammo && draggingAmmoId === ammo.id ? 'dragging' : ''}`}
                                     onPointerDown={ammo ? (event) => onAmmoPointerDown(event, ammo.id) : undefined}
                                     onTouchStart={ammo ? (event) => onAmmoTouchStart(event, ammo.id) : undefined}
-                                    disabled={!ammo}
+                                    disabled={!ammo || showAmmoHintOverlay}
                                 >
                                     <span className="ammo-token">
                                         <span className="ammo-emoji">💣</span>
@@ -830,8 +871,6 @@ export const TrollAttack: React.FC<TrollAttackProps> = ({ onExit }) => {
                         </div>
                     </div>
                 </section>
-
-                <div className="troll-attack-status-line">{statusText || t('games.troll-attack.ui.dragHint')}</div>
 
                 {ghostAmmo && (
                     <div className="troll-ammo-ghost" style={{ left: dragPos.x, top: dragPos.y }}>

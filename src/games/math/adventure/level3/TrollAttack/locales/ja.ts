@@ -18,6 +18,7 @@ const ja = {
     },
     ui: {
         dragHint: '爆弾を大砲へドラッグしよう！',
+        dragOverlayHint: '爆弾を大砲へドラッグしよう！',
         dropHint: 'ここに置くと発射！',
         underHit: '威力不足！トロールが突進します。',
         overHit: '強すぎる！トロールに防がれました。',

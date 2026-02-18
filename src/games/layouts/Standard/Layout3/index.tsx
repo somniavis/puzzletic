@@ -25,7 +25,7 @@ interface Layout3Props {
     onExit: () => void;
     children: React.ReactNode;
     powerUps: PowerUpBtnProps[];
-    target: { value: React.ReactNode; icon?: string; label?: string; };
+    target: { value: React.ReactNode; icon?: string; label?: string; overlay?: React.ReactNode; };
     background?: React.ReactNode;
     cardBackground?: React.ReactNode;
     className?: string;
@@ -147,6 +147,11 @@ export const Layout3: React.FC<Layout3Props> = ({
                         {target.icon && <span className="target-emoji">{target.icon}</span>}
                         <span className="target-count">{renderTargetValue(target.value)}</span>
                         {target.label && <span className="target-pill">{target.label}</span>}
+                        {target.overlay && (
+                            <div className="target-overlay-layer" aria-live="polite">
+                                {target.overlay}
+                            </div>
+                        )}
                     </div>
                 </div>
 

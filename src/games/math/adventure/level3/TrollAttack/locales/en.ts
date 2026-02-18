@@ -18,6 +18,7 @@ const en = {
     },
     ui: {
         dragHint: 'Drag a bomb to the cannon!',
+        dragOverlayHint: 'Drag a bomb to the cannon!',
         dropHint: 'Drop here to fire!',
         underHit: 'Too weak! The troll is charging.',
         overHit: 'Too strong! The troll blocked it.',

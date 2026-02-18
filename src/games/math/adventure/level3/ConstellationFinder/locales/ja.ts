@@ -5,15 +5,15 @@ const ja = {
     howToPlay: {
         step1: {
             title: 'しきをチェック',
-            description: '上のしきを見て答えを考えよう。'
+            description: 'しきを計算しよう。'
         },
         step2: {
             title: '星を光らせる',
-            description: '正解の数字の星をすばやくタップ。'
+            description: '正解の星をタップ。'
         },
         step3: {
             title: '星座を完成',
-            description: '目標の星を全部光らせてチェック！'
+            description: '全部光らせてチェック！'
         }
     },
     difficulty: {
@@ -39,6 +39,7 @@ const ja = {
     },
     ui: {
         setLabel: 'セット {{current}}/{{total}}',
+        clickCorrectStarHint: '正解の星をタップ！',
         solveGuide: '正解の数字の星を見つけよう。',
         solveGuideSub: 'ミスでライフ-1、正解で星が光る。',
         clearedTitle: '{{name}} クリア！',
