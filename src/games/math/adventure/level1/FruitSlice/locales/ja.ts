@@ -7,6 +7,9 @@ const manifest = {
         step2: { title: 'ナイフ選択', description: '正しい数字のナイフをえらぶ' },
         step3: { title: 'フルーツカット', description: '切って回答しよう' }
     },
+    ui: {
+        dragSliceHint: 'ナイフを動かして切ろう！'
+    },
     powerups: {
         freeze: "じかんストップ",
         life: "ライフかいふく",

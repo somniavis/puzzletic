@@ -1,5 +1,5 @@
 
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { useTranslation } from 'react-i18next';
@@ -38,6 +38,9 @@ export default function CargoTrain() {
 
     // Filled Cargo State (Visual) - Array for multiple slots
     const [filledValues, setFilledValues] = useState<(number | null)[]>([null, null]);
+    const [showOptionsHint, setShowOptionsHint] = useState(false);
+    const hasShownOptionsHintRef = useRef(false);
+    const optionsHintTimerRef = useRef<number | null>(null);
 
     // Trigger animations based on score & problem change
     useEffect(() => {
@@ -68,6 +71,34 @@ export default function CargoTrain() {
             };
         }
     }, [score]);
+
+    useEffect(() => {
+        if (gameLogic.gameState !== 'playing') {
+            if (optionsHintTimerRef.current) {
+                window.clearTimeout(optionsHintTimerRef.current);
+                optionsHintTimerRef.current = null;
+            }
+            setShowOptionsHint(false);
+            hasShownOptionsHintRef.current = false;
+            return;
+        }
+
+        if (!currentProblem || hasShownOptionsHintRef.current || score !== 0) return;
+
+        hasShownOptionsHintRef.current = true;
+        setShowOptionsHint(true);
+        optionsHintTimerRef.current = window.setTimeout(() => {
+            setShowOptionsHint(false);
+            optionsHintTimerRef.current = null;
+        }, 1800);
+
+        return () => {
+            if (optionsHintTimerRef.current) {
+                window.clearTimeout(optionsHintTimerRef.current);
+                optionsHintTimerRef.current = null;
+            }
+        };
+    }, [gameLogic.gameState, currentProblem, score]);
 
     // When problem changes (after logic timeout), trigger arrival
     useEffect(() => {
@@ -271,13 +302,12 @@ export default function CargoTrain() {
                             )}
                         </div>
 
-                        <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
-                            <div className={styles.instructionText}>
-                                {t('games.cargoTrain.instruction')}
-                            </div>
-                        </div>
-
                         <div className={styles.optionsArea}>
+                            {showOptionsHint && (
+                                <div className={styles.optionsHintOverlay} aria-hidden="true">
+                                    <span className={styles.optionsHintText}>{t('games.cargoTrain.ui.dragDropHint')}</span>
+                                </div>
+                            )}
                             {currentProblem?.options.map((val, idx) => (
                                 <DraggableCargo
                                     key={`${val}-${idx}`}

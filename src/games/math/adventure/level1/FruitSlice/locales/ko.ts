@@ -7,6 +7,9 @@ const manifest = {
         step2: { title: '칼 선택', description: '정답 숫자 칼 고르기' },
         step3: { title: '과일 자르기', description: '과일을 잘라 제출' }
     },
+    ui: {
+        dragSliceHint: '칼을 옮겨 과일을 잘라요!'
+    },
     powerups: {
         freeze: "시간 멈춤",
         life: "생명 추가",

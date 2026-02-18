@@ -13,6 +13,9 @@ const manifest = {
         freeze: "じかんストップ",
         life: "ライフかいふく",
         double: "スコア2ばい"
+    },
+    ui: {
+        pullShootHint: "引いて、放とう！"
     }
 };
 

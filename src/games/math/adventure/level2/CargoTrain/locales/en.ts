@@ -3,6 +3,9 @@ export default {
     subtitle: 'Load the Train!',
     description: 'Load the cargo to match the engine number!',
     instruction: 'Move the cargo!',
+    ui: {
+        dragDropHint: 'Drag cargo into the train!'
+    },
     howToPlay: {
         step1: { title: 'Check Number', desc: 'Look at the engine number.' },
         step2: { title: 'Move Cargo', desc: 'Drag cargo into the slots.' },

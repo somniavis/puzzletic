@@ -55,12 +55,54 @@ export const FruitSlice: React.FC<FruitSliceProps> = ({ onExit }) => {
     const [isSliced, setIsSliced] = useState(false);
     const [isSlicingAction, setIsSlicingAction] = useState(false);
     const [slicingKnifeValue, setSlicingKnifeValue] = useState<number | null>(null);
+    const [showSliceHintOverlay, setShowSliceHintOverlay] = useState(false);
+    const wasPlayingRef = useRef(false);
+    const hasShownSliceHintRef = useRef(false);
+    const sliceHintTimerRef = useRef<number | null>(null);
 
     useEffect(() => {
         setIsSliced(false);
         setIsSlicingAction(false);
         setSlicingKnifeValue(null);
     }, [currentProblem?.id]);
+
+    useEffect(() => {
+        if (gameState.isPlaying && !wasPlayingRef.current) {
+            hasShownSliceHintRef.current = false;
+            setShowSliceHintOverlay(false);
+            if (sliceHintTimerRef.current !== null) {
+                window.clearTimeout(sliceHintTimerRef.current);
+                sliceHintTimerRef.current = null;
+            }
+        }
+        wasPlayingRef.current = gameState.isPlaying;
+    }, [gameState.isPlaying]);
+
+    useEffect(() => {
+        if (!gameState.isPlaying || !currentProblem || hasShownSliceHintRef.current) return;
+
+        const isFirstQuestion =
+            gameState.score === 0 &&
+            gameState.stats.correct === 0 &&
+            gameState.stats.wrong === 0;
+
+        if (!isFirstQuestion) return;
+
+        hasShownSliceHintRef.current = true;
+        setShowSliceHintOverlay(true);
+        sliceHintTimerRef.current = window.setTimeout(() => {
+            setShowSliceHintOverlay(false);
+            sliceHintTimerRef.current = null;
+        }, 1800);
+    }, [gameState.isPlaying, currentProblem, gameState.score, gameState.stats.correct, gameState.stats.wrong]);
+
+    useEffect(() => {
+        return () => {
+            if (sliceHintTimerRef.current !== null) {
+                window.clearTimeout(sliceHintTimerRef.current);
+            }
+        };
+    }, []);
 
     const handlePointerDown = (e: React.PointerEvent, knifeId: number, knifeValue: number) => {
         if (gameState.gameOver || isSliced || isSlicingAction) return;
@@ -177,43 +219,52 @@ export const FruitSlice: React.FC<FruitSliceProps> = ({ onExit }) => {
                 {currentProblem && (
                     <>
                         <div className="fruit-stage">
-                            {isSlicingAction && slicingKnifeValue !== null && (
-                                <div className="number-knife knife-slicing-anim">
-                                    <span className="knife-value">{slicingKnifeValue}</span>
-                                    <div className="number-knife-bolster"></div>
-                                </div>
-                            )}
-
                             <div
-                                ref={fruitRef}
-                                className="fruit-target-bg"
+                                className="fruit-stage-panel"
                                 style={{
                                     backgroundColor: currentFruit ? hexToRgba(currentFruit.color, 0.2) : 'rgba(0,0,0,0.1)',
-                                    borderColor: currentFruit ? hexToRgba(currentFruit.color, 0.4) : 'transparent'
+                                    boxShadow: `0 5px 0 ${currentFruit ? hexToRgba(currentFruit.color, 0.42) : '#93c5fd'}, 0 8px 12px rgba(0, 0, 0, 0.12)`
                                 }}
                             >
-                                {!isSliced ? (
-                                    <div
-                                        className={`target-fruit fruit-enter ${lastEvent?.type === 'wrong' ? 'animate-shake' : ''}`}
-                                        style={{ color: currentFruit?.color }}
-                                    >
-                                        {currentFruit?.emoji}
-                                    </div>
-                                ) : (
-                                    <div className="target-fruit sliced">
-                                        <div style={{ visibility: 'hidden' }}>{currentFruit?.emoji}</div>
-                                        <div className="sliced-wrapper left">
-                                            <div className="sliced-inner" style={{ clipPath: 'polygon(0% 0%, 50% 0%, 50% 100%, 0% 100%)' }}>
-                                                {currentFruit?.emoji}
-                                            </div>
-                                        </div>
-                                        <div className="sliced-wrapper right">
-                                            <div className="sliced-inner" style={{ clipPath: 'polygon(50% 0%, 100% 0%, 100% 100%, 50% 100%)' }}>
-                                                {currentFruit?.emoji}
-                                            </div>
-                                        </div>
+                                {showSliceHintOverlay && (
+                                    <div className="fruit-stage-hint-overlay" aria-hidden="true">
+                                        <span className="fruit-stage-hint-text">{t('games.math-fruit-slice.ui.dragSliceHint')}</span>
                                     </div>
                                 )}
+                                {isSlicingAction && slicingKnifeValue !== null && (
+                                    <div className="number-knife knife-slicing-anim">
+                                        <span className="knife-value">{slicingKnifeValue}</span>
+                                        <div className="number-knife-bolster"></div>
+                                    </div>
+                                )}
+
+                                <div
+                                    ref={fruitRef}
+                                    className="fruit-display-core"
+                                >
+                                    {!isSliced ? (
+                                        <div
+                                            className={`target-fruit fruit-enter ${lastEvent?.type === 'wrong' ? 'animate-shake' : ''}`}
+                                            style={{ color: currentFruit?.color }}
+                                        >
+                                            {currentFruit?.emoji}
+                                        </div>
+                                    ) : (
+                                        <div className="target-fruit sliced">
+                                            <div style={{ visibility: 'hidden' }}>{currentFruit?.emoji}</div>
+                                            <div className="sliced-wrapper left">
+                                                <div className="sliced-inner" style={{ clipPath: 'polygon(0% 0%, 50% 0%, 50% 100%, 0% 100%)' }}>
+                                                    {currentFruit?.emoji}
+                                                </div>
+                                            </div>
+                                            <div className="sliced-wrapper right">
+                                                <div className="sliced-inner" style={{ clipPath: 'polygon(50% 0%, 100% 0%, 100% 100%, 50% 100%)' }}>
+                                                    {currentFruit?.emoji}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         </div>
 

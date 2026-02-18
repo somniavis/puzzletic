@@ -13,6 +13,9 @@ const manifest = {
         freeze: "Time Freeze",
         life: "Extra Life",
         double: "Double Score"
+    },
+    ui: {
+        pullShootHint: "Pull and shoot!"
     }
 };
 

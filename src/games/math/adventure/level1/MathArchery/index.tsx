@@ -36,6 +36,7 @@ export const MathArchery: React.FC<MathArcheryProps> = ({ level = 1, onExit }) =
     const {
         lives, isPlaying, gameOver,
         currentProblem,
+        stats,
         powerUps, timeFrozen, doubleScoreActive,
         startGame, stopTimer, usePowerUp, lastEvent,
         arrow, shootArrow
@@ -59,6 +60,58 @@ export const MathArchery: React.FC<MathArcheryProps> = ({ level = 1, onExit }) =
     // Drag Logic
     const [dragStart, setDragStart] = useState<{ x: number, y: number } | null>(null);
     const [dragCurrent, setDragCurrent] = useState<{ x: number, y: number } | null>(null);
+    const [showPullShootHint, setShowPullShootHint] = useState(false);
+    const [isPullShootHintExiting, setIsPullShootHintExiting] = useState(false);
+    const hasShownPullShootHintRef = React.useRef(false);
+    const pullShootHintTimerRef = React.useRef<number | null>(null);
+    const pullShootHintExitTimerRef = React.useRef<number | null>(null);
+
+    React.useEffect(() => {
+        if (!gameOver) return;
+        if (pullShootHintTimerRef.current) {
+            window.clearTimeout(pullShootHintTimerRef.current);
+            pullShootHintTimerRef.current = null;
+        }
+        if (pullShootHintExitTimerRef.current) {
+            window.clearTimeout(pullShootHintExitTimerRef.current);
+            pullShootHintExitTimerRef.current = null;
+        }
+        setShowPullShootHint(false);
+        setIsPullShootHintExiting(false);
+        hasShownPullShootHintRef.current = false;
+    }, [gameOver]);
+
+    React.useEffect(() => {
+        const isFirstProblem = stats.correct === 0 && stats.wrong === 0;
+        if (!isPlaying || !currentProblem || !isFirstProblem || hasShownPullShootHintRef.current) {
+            return;
+        }
+
+        hasShownPullShootHintRef.current = true;
+        setShowPullShootHint(true);
+        setIsPullShootHintExiting(false);
+
+        pullShootHintTimerRef.current = window.setTimeout(() => {
+            setIsPullShootHintExiting(true);
+            pullShootHintExitTimerRef.current = window.setTimeout(() => {
+                setShowPullShootHint(false);
+                setIsPullShootHintExiting(false);
+                pullShootHintExitTimerRef.current = null;
+            }, 220);
+            pullShootHintTimerRef.current = null;
+        }, 1800);
+
+        return () => {
+            if (pullShootHintTimerRef.current) {
+                window.clearTimeout(pullShootHintTimerRef.current);
+                pullShootHintTimerRef.current = null;
+            }
+            if (pullShootHintExitTimerRef.current) {
+                window.clearTimeout(pullShootHintExitTimerRef.current);
+                pullShootHintExitTimerRef.current = null;
+            }
+        };
+    }, [isPlaying, currentProblem, stats.correct, stats.wrong]);
 
     const handlePointerDown = (e: React.PointerEvent) => {
         if (!isPlaying || gameOver || arrow?.active) return;
@@ -167,6 +220,12 @@ export const MathArchery: React.FC<MathArcheryProps> = ({ level = 1, onExit }) =
                     onPointerCancel={handlePointerUp}
                     onPointerLeave={handlePointerUp}
                 >
+                    {showPullShootHint && (
+                        <div className={`archery-pull-shoot-hint ${isPullShootHintExiting ? 'is-exiting' : ''}`}>
+                            {t('games.math-archery.ui.pullShootHint')}
+                        </div>
+                    )}
+
                     {/* Targets */}
                     {currentProblem && currentProblem.options.map(opt => (
                         <div key={opt.id} className="archery-target" style={{ left: `${opt.x}%`, top: `${opt.y}%` }}>

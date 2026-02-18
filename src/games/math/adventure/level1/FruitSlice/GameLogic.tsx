@@ -6,7 +6,7 @@ export interface FruitItem {
     value: number; // The answer (C)
     equationA: number; // Minuend (A)
     equationResult: number; // Subtrahend (B) - REUSING FIELD NAME to minimize interface change
-    fruitType: 'grape' | 'melon' | 'watermelon' | 'orange' | 'lemon' | 'lime' | 'banana' | 'pineapple' | 'mango' | 'apple' | 'green-apple' | 'pear' | 'peach' | 'cherry' | 'strawberry' | 'blueberry' | 'kiwi' | 'tomato';
+    fruitType: 'grape' | 'melon' | 'watermelon' | 'orange' | 'lemon' | 'banana' | 'pineapple' | 'mango' | 'apple' | 'green-apple' | 'pear' | 'peach' | 'cherry' | 'strawberry' | 'blueberry' | 'kiwi' | 'tomato';
 }
 
 export interface KnifeOption {
@@ -44,7 +44,6 @@ export const FRUITS = [
     { type: 'watermelon', emoji: '🍉', color: '#4ADE80' },
     { type: 'orange', emoji: '🍊', color: '#FB923C' },
     { type: 'lemon', emoji: '🍋', color: '#FACC15' },
-    { type: 'lime', emoji: '🍋‍🟩', color: '#84cc16' },
     { type: 'banana', emoji: '🍌', color: '#fde047' },
     { type: 'pineapple', emoji: '🍍', color: '#fbbf24' },
     { type: 'mango', emoji: '🥭', color: '#f59e0b' },

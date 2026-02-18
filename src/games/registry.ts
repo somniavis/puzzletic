@@ -147,7 +147,7 @@ export const GAMES: GameManifest[] = [
         category: 'math',
         level: 1,
         component: L1_JelloFeeding,
-        thumbnail: '🍏',
+        thumbnail: '🍖',
         tagsKey: 'games.tags.subtraction'
     },
     {

@@ -16,6 +16,9 @@ const manifest = {
             description: "Cut to submit."
         }
     },
+    ui: {
+        dragSliceHint: 'Drag the knife to slice!'
+    },
     powerups: {
         freeze: "Freeze Time",
         life: "Extra Life",

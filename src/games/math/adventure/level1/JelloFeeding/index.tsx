@@ -28,6 +28,13 @@ interface FruitItem {
     fed: boolean;
 }
 
+interface FeedReaction {
+    id: number;
+    x: number;
+    y: number;
+    emoji: string;
+}
+
 const FOOD_EMOJIS = [
     '🍈', '🍉', '🍊', '🍋', '🍌', '🍍', '🥭', '🍎', '🍏', '🍐', '🍑', '🍓', '🥝', '🍅',
     '🥑', '🍆', '🥔', '🥕', '🌽', '🌶️', '🫑', '🥒', '🥬', '🥦', '🧅', '🌰', '🍄‍🟫',
@@ -104,10 +111,18 @@ export const JelloFeeding: React.FC<JelloFeedingProps> = ({ onExit }) => {
     const [dragPos, setDragPos] = useState({ x: 0, y: 0 });
     const [jelloPos, setJelloPos] = useState({ x: 62, y: 45 });
     const [isJelloEating, setIsJelloEating] = useState(false);
+    const [showFoodHintOverlay, setShowFoodHintOverlay] = useState(false);
+    const [feedReactions, setFeedReactions] = useState<FeedReaction[]>([]);
 
     const jelloTargetRef = useRef<HTMLDivElement>(null);
     const draggingRef = useRef(false);
+    const draggingFruitIdRef = useRef<number | null>(null);
     const eatingTimerRef = useRef<number | null>(null);
+    const foodHintTimerRef = useRef<number | null>(null);
+    const reactionTimersRef = useRef<number[]>([]);
+    const fedCountRef = useRef(0);
+    const targetMinusRef = useRef(problem.minus);
+    const jelloPosRef = useRef(jelloPos);
     const prevGameStateRef = useRef(engine.gameState);
 
     useEffect(() => {
@@ -140,41 +155,53 @@ export const JelloFeeding: React.FC<JelloFeedingProps> = ({ onExit }) => {
             setFruits(makeFruits(next.total));
             setFoodEmoji(pickRandomFoodEmoji());
             setDraggingFruitId(null);
+            setShowFoodHintOverlay(true);
+            if (foodHintTimerRef.current !== null) {
+                window.clearTimeout(foodHintTimerRef.current);
+            }
+            foodHintTimerRef.current = window.setTimeout(() => {
+                setShowFoodHintOverlay(false);
+                foodHintTimerRef.current = null;
+            }, 1800);
         }
 
         prevGameStateRef.current = engine.gameState;
     }, [engine.gameState]);
 
     useEffect(() => {
-        const handlePointerMove = (event: PointerEvent) => {
-            if (!draggingRef.current || draggingFruitId == null) return;
-            setDragPos({ x: event.clientX, y: event.clientY });
+        draggingFruitIdRef.current = draggingFruitId;
+    }, [draggingFruitId]);
+
+    useEffect(() => {
+        const handleDragMove = (clientX: number, clientY: number) => {
+            if (!draggingRef.current || draggingFruitIdRef.current == null) return;
+            setDragPos({ x: clientX, y: clientY });
         };
 
-        const handlePointerUp = (event: PointerEvent) => {
-            if (!draggingRef.current || draggingFruitId == null) return;
+        const handleDragEnd = (clientX: number, clientY: number) => {
+            const activeId = draggingFruitIdRef.current;
+            if (!draggingRef.current || activeId == null) return;
             draggingRef.current = false;
 
             const dropZone = jelloTargetRef.current;
             let dropped = false;
             if (dropZone) {
                 const rect = dropZone.getBoundingClientRect();
-                const inside =
-                    event.clientX >= rect.left &&
-                    event.clientX <= rect.right &&
-                    event.clientY >= rect.top &&
-                    event.clientY <= rect.bottom;
-                if (inside) {
-                    dropped = true;
-                }
+                dropped =
+                    clientX >= rect.left &&
+                    clientX <= rect.right &&
+                    clientY >= rect.top &&
+                    clientY <= rect.bottom;
             }
 
             if (dropped) {
+                const nextFedCount = fedCountRef.current + 1;
                 setFruits((prev) => prev.map((fruit) => (
-                    fruit.id === draggingFruitId && !fruit.fed ? { ...fruit, fed: true } : fruit
+                    fruit.id === activeId && !fruit.fed ? { ...fruit, fed: true } : fruit
                 )));
                 playEatingSound();
                 setIsJelloEating(true);
+                spawnFeedReaction(nextFedCount > targetMinusRef.current ? '💔' : '❤️');
                 if (eatingTimerRef.current !== null) {
                     window.clearTimeout(eatingTimerRef.current);
                 }
@@ -184,24 +211,74 @@ export const JelloFeeding: React.FC<JelloFeedingProps> = ({ onExit }) => {
                 }, 420);
             }
 
+            draggingFruitIdRef.current = null;
             setDraggingFruitId(null);
         };
 
-        window.addEventListener('pointermove', handlePointerMove, { passive: true });
-        window.addEventListener('pointerup', handlePointerUp);
-        window.addEventListener('pointercancel', handlePointerUp);
-        return () => {
-            window.removeEventListener('pointermove', handlePointerMove);
-            window.removeEventListener('pointerup', handlePointerUp);
-            window.removeEventListener('pointercancel', handlePointerUp);
+        const onPointerMove = (event: PointerEvent) => {
+            handleDragMove(event.clientX, event.clientY);
         };
-    }, [draggingFruitId]);
+
+        const onPointerUp = (event: PointerEvent) => {
+            handleDragEnd(event.clientX, event.clientY);
+        };
+
+        const onMouseMove = (event: MouseEvent) => {
+            handleDragMove(event.clientX, event.clientY);
+        };
+
+        const onMouseUp = (event: MouseEvent) => {
+            handleDragEnd(event.clientX, event.clientY);
+        };
+
+        const onTouchMove = (event: TouchEvent) => {
+            if (!draggingRef.current || draggingFruitIdRef.current == null) return;
+            const touch = event.touches[0];
+            if (!touch) return;
+            event.preventDefault();
+            handleDragMove(touch.clientX, touch.clientY);
+        };
+
+        const onTouchEnd = (event: TouchEvent) => {
+            const touch = event.changedTouches[0];
+            if (!touch) {
+                draggingRef.current = false;
+                draggingFruitIdRef.current = null;
+                setDraggingFruitId(null);
+                return;
+            }
+            handleDragEnd(touch.clientX, touch.clientY);
+        };
+
+        window.addEventListener('pointermove', onPointerMove, { passive: true });
+        window.addEventListener('pointerup', onPointerUp);
+        window.addEventListener('pointercancel', onPointerUp);
+        window.addEventListener('mousemove', onMouseMove, { passive: true });
+        window.addEventListener('mouseup', onMouseUp);
+        window.addEventListener('touchmove', onTouchMove, { passive: false });
+        window.addEventListener('touchend', onTouchEnd);
+        window.addEventListener('touchcancel', onTouchEnd);
+        return () => {
+            window.removeEventListener('pointermove', onPointerMove);
+            window.removeEventListener('pointerup', onPointerUp);
+            window.removeEventListener('pointercancel', onPointerUp);
+            window.removeEventListener('mousemove', onMouseMove);
+            window.removeEventListener('mouseup', onMouseUp);
+            window.removeEventListener('touchmove', onTouchMove);
+            window.removeEventListener('touchend', onTouchEnd);
+            window.removeEventListener('touchcancel', onTouchEnd);
+        };
+    }, []);
 
     useEffect(() => {
         return () => {
             if (eatingTimerRef.current !== null) {
                 window.clearTimeout(eatingTimerRef.current);
             }
+            if (foodHintTimerRef.current !== null) {
+                window.clearTimeout(foodHintTimerRef.current);
+            }
+            reactionTimersRef.current.forEach((timerId) => window.clearTimeout(timerId));
         };
     }, []);
 
@@ -223,12 +300,25 @@ export const JelloFeeding: React.FC<JelloFeedingProps> = ({ onExit }) => {
     const remainingCount = useMemo(() => problem.total - fedCount, [problem.total, fedCount]);
     const fruitSlots = useMemo(() => Array.from({ length: 10 }, (_, i) => fruits[i] ?? null), [fruits]);
 
+    useEffect(() => {
+        fedCountRef.current = fedCount;
+    }, [fedCount]);
+
+    useEffect(() => {
+        targetMinusRef.current = problem.minus;
+    }, [problem.minus]);
+
+    useEffect(() => {
+        jelloPosRef.current = jelloPos;
+    }, [jelloPos]);
+
     const nextRound = () => {
         const next = createProblem();
         setProblem(next);
         setFruits(makeFruits(next.total));
         setFoodEmoji(pickRandomFoodEmoji());
         setIsJelloEating(false);
+        setFeedReactions([]);
     };
 
     const retrySameProblem = () => {
@@ -236,6 +326,27 @@ export const JelloFeeding: React.FC<JelloFeedingProps> = ({ onExit }) => {
         setFruits((prev) => prev.map((fruit) => ({ ...fruit, fed: false })));
         setDraggingFruitId(null);
         setIsJelloEating(false);
+        setFeedReactions([]);
+    };
+
+    const spawnFeedReaction = (emoji: string) => {
+        const reactionId = Date.now() + Math.random();
+        const nextReaction: FeedReaction = {
+            id: reactionId,
+            // Keep reaction anchored above Jello (not around random nearby spots)
+            x: Math.max(10, Math.min(90, jelloPosRef.current.x)),
+            y: Math.max(10, Math.min(88, jelloPosRef.current.y - 12)),
+            emoji
+        };
+
+        setFeedReactions((prev) => [...prev, nextReaction]);
+
+        const timerId = window.setTimeout(() => {
+            setFeedReactions((prev) => prev.filter((reaction) => reaction.id !== reactionId));
+            reactionTimersRef.current = reactionTimersRef.current.filter((id) => id !== timerId);
+        }, 780);
+
+        reactionTimersRef.current.push(timerId);
     };
 
     const handleCheck = () => {
@@ -254,17 +365,35 @@ export const JelloFeeding: React.FC<JelloFeedingProps> = ({ onExit }) => {
         retrySameProblem();
     };
 
-    const handleFruitPointerDown = (event: React.PointerEvent<HTMLButtonElement>, id: number, fed: boolean) => {
+    const startFruitDrag = (clientX: number, clientY: number, id: number, fed: boolean) => {
         if (engine.gameState !== 'playing' || fed) return;
         draggingRef.current = true;
+        draggingFruitIdRef.current = id;
+        setDraggingFruitId(id);
+        setDragPos({ x: clientX, y: clientY });
+    };
+
+    const handleFruitPointerDown = (event: React.PointerEvent<HTMLButtonElement>, id: number, fed: boolean) => {
+        startFruitDrag(event.clientX, event.clientY, id, fed);
         try {
             event.currentTarget.setPointerCapture(event.pointerId);
         } catch {
             // Some mobile browsers can reject pointer capture in edge cases.
             // Global pointer listeners still keep drag interaction functional.
         }
-        setDraggingFruitId(id);
-        setDragPos({ x: event.clientX, y: event.clientY });
+    };
+
+    const handleFruitTouchStart = (event: React.TouchEvent<HTMLButtonElement>, id: number, fed: boolean) => {
+        if (typeof window !== 'undefined' && 'PointerEvent' in window) return;
+        const touch = event.touches[0];
+        if (!touch) return;
+        event.preventDefault();
+        startFruitDrag(touch.clientX, touch.clientY, id, fed);
+    };
+
+    const handleFruitMouseDown = (event: React.MouseEvent<HTMLButtonElement>, id: number, fed: boolean) => {
+        if (typeof window !== 'undefined' && 'PointerEvent' in window) return;
+        startFruitDrag(event.clientX, event.clientY, id, fed);
     };
 
     const currentCharacter = useMemo(() => {
@@ -324,6 +453,11 @@ export const JelloFeeding: React.FC<JelloFeedingProps> = ({ onExit }) => {
                 <BlobBackground />
                 <div className="jello-feeding-container">
                     <div className="fruit-board-panel">
+                        {showFoodHintOverlay && (
+                            <div className="food-hint-overlay" aria-hidden="true">
+                                <span className="food-hint-text">{t('games.jello-feeding.ui.dragFeedHint')}</span>
+                            </div>
+                        )}
                         <div className="fruit-count-sign" aria-label="start-fruit-count">
                             {problem.total}
                         </div>
@@ -334,9 +468,13 @@ export const JelloFeeding: React.FC<JelloFeedingProps> = ({ onExit }) => {
                                     type="button"
                                     className={`fruit-chip ${!fruit || fruit.fed ? 'fed' : ''}`}
                                     onPointerDown={fruit ? (event) => handleFruitPointerDown(event, fruit.id, fruit.fed) : undefined}
+                                    onTouchStart={fruit ? (event) => handleFruitTouchStart(event, fruit.id, fruit.fed) : undefined}
+                                    onMouseDown={fruit ? (event) => handleFruitMouseDown(event, fruit.id, fruit.fed) : undefined}
                                     disabled={!fruit || fruit.fed || engine.gameState !== 'playing'}
                                     aria-label={fruit ? `fruit-${fruit.id}` : `empty-slot-${slotIndex}`}
-                                    style={fruit && !fruit.fed ? { background: foodBgColor } : undefined}
+                                    style={fruit && !fruit.fed
+                                        ? { background: `linear-gradient(rgba(255, 253, 251, 0.9), rgba(255, 253, 251, 0.9)), ${foodBgColor}` }
+                                        : undefined}
                                 >
                                     {fruit ? <span className="fruit-emoji">{foodEmoji}</span> : null}
                                 </button>
@@ -357,6 +495,16 @@ export const JelloFeeding: React.FC<JelloFeedingProps> = ({ onExit }) => {
                         </div>
 
                         <div className="jello-move-area">
+                            {feedReactions.map((reaction) => (
+                                <div
+                                    key={reaction.id}
+                                    className="feed-reaction"
+                                    style={{ left: `${reaction.x}%`, top: `${reaction.y}%` }}
+                                    aria-hidden="true"
+                                >
+                                    {reaction.emoji}
+                                </div>
+                            ))}
                             <div
                                 ref={jelloTargetRef}
                                 className="jello-target"

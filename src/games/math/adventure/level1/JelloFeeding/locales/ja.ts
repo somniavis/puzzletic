@@ -20,6 +20,9 @@ const manifest = {
         fed: 'あげた数',
         remaining: 'のこり'
     },
+    ui: {
+        dragFeedHint: '食べものをドラッグしてあげよう！'
+    },
     question: '8 - 3 = ?'
 };
 

@@ -3,6 +3,9 @@ export default {
     subtitle: '기차에 짐 싣기!',
     description: '기관차 숫자에 맞게 화물을 실어주세요!',
     instruction: '화물을 옮겨주세요!',
+    ui: {
+        dragDropHint: '화물을 드래그해 넣어요!'
+    },
     howToPlay: {
         step1: { title: '숫자 확인', desc: '엔진 숫자를 먼저 봐요' },
         step2: { title: '화물 옮기기', desc: '칸으로 드래그해요' },

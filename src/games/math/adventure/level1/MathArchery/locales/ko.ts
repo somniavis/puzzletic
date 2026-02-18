@@ -13,6 +13,9 @@ const manifest = {
         freeze: "시간 멈춤",
         life: "생명 추가",
         double: "점수 2배"
+    },
+    ui: {
+        pullShootHint: "당기고, 쏘세요!"
     }
 };
 

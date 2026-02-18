@@ -147,12 +147,56 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    container-type: size;
     position: relative;
-    padding: 0.95rem 0.2rem 0.25rem;
+    padding: 0.95rem 1rem 0.25rem;
     box-sizing: border-box;
 }
 
+.fruit-stage-panel {
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    border-radius: 2.6rem;
+    background: #eef2ff;
+    box-shadow: 0 5px 0 #93c5fd, 0 8px 12px rgba(0, 0, 0, 0.12);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    container-type: size;
+    position: relative;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.fruit-display-core {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(0.75rem, 2.6vmin, 1.35rem) clamp(0.95rem, 3.6vmin, 1.95rem);
+    border-radius: 2rem;
+    position: relative;
+}
+
+.fruit-stage-hint-overlay {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: rgba(255, 255, 255, 0.95);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 40;
+    pointer-events: auto;
+}
+
+.fruit-stage-hint-text {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #1f2937;
+    text-align: center;
+    line-height: 1.2;
+    padding: 0 0.8rem;
+}
 
 
 .target-fruit {
@@ -237,7 +281,7 @@
     display: flex;
     align-items: center;
     /* Fallback for older Safari (no container query units) */
-    gap: clamp(0.35rem, 1.6vmin, 0.9rem);
+    gap: clamp(0.58rem, 2.6vmin, 1.45rem);
     justify-content: center;
     width: 100%;
     height: 100%;
@@ -275,7 +319,7 @@
         font-size: clamp(3.2rem, 62cqb, 10rem);
     }
 
-    .fruit-target-bg {
+    .fruit-display-core {
         padding: clamp(0.8rem, 18cqb, 1.7rem) clamp(1rem, 10cqi, 2.3rem);
     }
 
@@ -284,7 +328,7 @@
     }
 
     .knife-rack {
-        gap: clamp(0.35rem, 1.5cqi, 0.9rem);
+        gap: clamp(0.58rem, 2.45cqi, 1.45rem);
     }
 
     .number-knife {

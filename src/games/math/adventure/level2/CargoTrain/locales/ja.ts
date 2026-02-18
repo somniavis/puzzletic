@@ -3,6 +3,9 @@ export default {
     subtitle: '荷物を積もう！',
     description: '機関車の数字に合わせて荷物を積んでください！',
     instruction: '荷物を動かしてね！',
+    ui: {
+        dragDropHint: '荷物をドラッグして入れよう！'
+    },
     howToPlay: {
         step1: { title: '数字を確認', desc: '機関車の数字を見よう' },
         step2: { title: '貨物を移動', desc: 'スロットへドラッグ' },

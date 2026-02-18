@@ -450,6 +450,9 @@
     gap: 1rem;
     gap: 1rem;
     min-height: 100px;
+    position: relative;
+    overflow: visible;
+    z-index: 60;
 }
 
 .instructionText {
@@ -480,6 +483,26 @@
     pointer-events: none;
     z-index: 40;
     will-change: transform;
+}
+
+.optionsHintOverlay {
+    position: absolute;
+    inset: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.96);
+    pointer-events: auto;
+    touch-action: none;
+}
+
+.optionsHintText {
+    color: #1f2937;
+    font-size: 1.05rem;
+    font-weight: 800;
+    letter-spacing: 0.01em;
+    text-align: center;
 }
 
 /* Removed gentlePulse to simplify rendering */

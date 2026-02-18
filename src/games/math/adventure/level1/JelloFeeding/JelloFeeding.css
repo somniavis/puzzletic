@@ -47,15 +47,16 @@
 .fruit-board-panel {
     width: min(100%, 560px);
     justify-self: center;
-    background: #ecfdf5;
-    border: 2px solid #86efac;
+    background: #f8c9a7;
     border-radius: 1rem;
-    box-shadow: inset 0 -4px 0 #a7f3d0, 0 5px 10px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 7px 0 #e5a77c, 0 10px 14px rgba(0, 0, 0, 0.18);
     padding: 0.6rem 0.65rem;
     display: grid;
     grid-template-columns: auto 1fr;
     align-items: center;
     gap: 0.65rem;
+    position: relative;
+    overflow: hidden;
 }
 
 .fruit-count-sign {
@@ -91,10 +92,30 @@
     gap: 0.45rem;
 }
 
+.food-hint-overlay {
+    position: absolute;
+    inset: 0;
+    border-radius: 1rem;
+    background: rgba(255, 255, 255, 0.96);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 20;
+    pointer-events: auto;
+}
+
+.food-hint-text {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #1f2937;
+    text-align: center;
+    line-height: 1.2;
+}
+
 .fruit-chip {
     border: none;
     border-radius: 0.8rem;
-    background: #ffffff;
+    background: #fffbf8;
     box-shadow: 0 4px 0 #d1d5db;
     min-height: 44px;
     display: flex;
@@ -201,6 +222,33 @@
     border-radius: 0.9rem;
     box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.28);
     overflow: visible;
+}
+
+.feed-reaction {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    font-size: 1.15rem;
+    line-height: 1;
+    z-index: 25;
+    pointer-events: none;
+    animation: feed-reaction-float 0.78s ease-out forwards;
+}
+
+@keyframes feed-reaction-float {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.85);
+    }
+
+    18% {
+        opacity: 1;
+        transform: translate(-50%, -56%) scale(1);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -95%) scale(0.95);
+    }
 }
 
 .jello-target {
