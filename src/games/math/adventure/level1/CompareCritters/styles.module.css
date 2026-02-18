@@ -72,17 +72,20 @@
     grid-template-rows: repeat(var(--rows, 10), 1fr);
     place-items: center;
     overflow: hidden;
+    contain: layout paint style;
 }
 
 .animal {
     user-select: none;
-    animation: bounce 2s infinite ease-in-out;
-    filter: drop-shadow(0px 2px 2px rgba(0, 0, 0, 0.2));
+    animation: bounce 2.3s infinite ease-in-out;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.18);
     line-height: 1;
     display: flex;
     align-items: center;
     justify-content: center;
-    will-change: transform;
+    transform: translate3d(0, 0, 0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
     width: 100%;
     height: 100%;
 
@@ -97,11 +100,19 @@
 
     0%,
     100% {
-        transform: translateY(0);
+        transform: translate3d(0, 0, 0);
     }
 
     50% {
-        transform: translateY(-5px);
+        transform: translate3d(0, -4px, 0);
+    }
+}
+
+/* Legacy mobile: keep animation but lighten GPU/CPU work */
+@media (hover: none) and (pointer: coarse) {
+    .animal {
+        animation-duration: 2.9s;
+        text-shadow: 0 1px 1px rgba(0, 0, 0, 0.12);
     }
 }
 
@@ -119,7 +130,7 @@
 .compareBtn {
     width: 80px;
     height: 120px;
-    font-size: 2.5rem;
+    font-size: 3rem;
     font-weight: 900;
     color: black;
     /* Black symbols as per screenshot */

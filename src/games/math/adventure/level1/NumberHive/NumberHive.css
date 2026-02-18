@@ -9,6 +9,40 @@
     overflow: hidden;
 }
 
+.number-hive-theme .target-display-card.with-label {
+    position: relative;
+    border: 2px solid rgba(245, 158, 11, 0.55);
+    box-shadow: 0 6px 14px -8px rgba(180, 83, 9, 0.4);
+}
+
+.number-hive-theme .target-display-card.with-label .target-pill {
+    color: #7c2d12;
+    background: linear-gradient(180deg, #fef3c7 0%, #fcd34d 100%);
+    border: none;
+}
+
+.number-hive-theme .hive-target-inline {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-58%, -50%);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.28rem;
+    line-height: 1;
+    pointer-events: none;
+}
+
+.number-hive-theme .hive-target-inline-emoji {
+    font-size: 2.2rem;
+}
+
+.number-hive-theme .hive-target-inline-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #0f172a;
+}
+
 /* Removed Header Styles - Now Handling by Layout3.css */
 
 /* Honeycomb Grid */

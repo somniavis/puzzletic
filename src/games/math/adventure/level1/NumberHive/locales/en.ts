@@ -9,13 +9,16 @@ export default {
         },
         step2: {
             title: 'Tap in Order',
-            description: '1, 2, 3... Keep going!'
+            description: 'Tap in sequence.'
         },
         step3: {
-            title: 'Collect Honey!',
+            title: 'Collect Honey',
             description: 'Complete the path!'
         },
     },
     level: 'Level',
     target: 'Find:',
+    ui: {
+        clickBadge: 'Click!'
+    }
 };

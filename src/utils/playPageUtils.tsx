@@ -64,12 +64,17 @@ export const renderThumbnail = (thumbnail: string | React.ReactNode | undefined,
     if (typeof thumbnail === 'string' && thumbnail.startsWith('quad:')) {
         const parts = thumbnail.slice(5).split(',');
         const [tl, tr, bl, br] = parts;
+        const quadTextStyle: React.CSSProperties = {
+            fontSize: '0.7em',
+            color: '#111827',
+            fontWeight: 900
+        };
         return (
             <div style={{ position: 'relative', width: '100%', height: '100%' }}>
-                {tl && <span style={{ position: 'absolute', top: '35%', left: '35%', transform: 'translate(-50%, -50%)', fontSize: '0.7em' }}>{tl}</span>}
-                {tr && <span style={{ position: 'absolute', top: '35%', right: '35%', transform: 'translate(50%, -50%)', fontSize: '0.7em' }}>{tr}</span>}
-                {bl && <span style={{ position: 'absolute', bottom: '35%', left: '35%', transform: 'translate(-50%, 50%)', fontSize: '0.7em' }}>{bl}</span>}
-                {br && <span style={{ position: 'absolute', bottom: '35%', right: '35%', transform: 'translate(50%, 50%)', fontSize: '0.7em' }}>{br}</span>}
+                {tl && <span style={{ ...quadTextStyle, position: 'absolute', top: '35%', left: '35%', transform: 'translate(-50%, -50%)' }}>{tl}</span>}
+                {tr && <span style={{ ...quadTextStyle, position: 'absolute', top: '35%', right: '35%', transform: 'translate(50%, -50%)' }}>{tr}</span>}
+                {bl && <span style={{ ...quadTextStyle, position: 'absolute', bottom: '35%', left: '35%', transform: 'translate(-50%, 50%)' }}>{bl}</span>}
+                {br && <span style={{ ...quadTextStyle, position: 'absolute', bottom: '35%', right: '35%', transform: 'translate(50%, 50%)' }}>{br}</span>}
             </div>
         );
     }

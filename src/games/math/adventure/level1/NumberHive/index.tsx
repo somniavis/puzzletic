@@ -120,6 +120,13 @@ export const NumberHive: React.FC<NumberHiveProps> = ({ onExit }) => {
             { bottom: '6%', left: '50%', animationDelay: '4.8s', fontSize: '2.8rem', opacity: 0.09 }
         ];
 
+    const targetInline = (
+        <span className="hive-target-inline">
+            <span className="hive-target-inline-emoji">🐝</span>
+            <span className="hive-target-inline-number">{currentNumber}</span>
+        </span>
+    );
+
     return (
         <Layout3
             title={t('games.math-number-hive.title')}
@@ -127,16 +134,17 @@ export const NumberHive: React.FC<NumberHiveProps> = ({ onExit }) => {
             gameId={GameIds.MATH_NUMBER_HIVE}
             engine={layoutEngine as any}
             instructions={[
-                { icon: '🎯', title: t('games.math-number-hive.howToPlay.step1.title'), description: t('games.math-number-hive.howToPlay.step1.description') },
+                { icon: '🐝', title: t('games.math-number-hive.howToPlay.step1.title'), description: t('games.math-number-hive.howToPlay.step1.description') },
                 { icon: '🔢', title: t('games.math-number-hive.howToPlay.step2.title'), description: t('games.math-number-hive.howToPlay.step2.description') },
                 { icon: '🍯', title: t('games.math-number-hive.howToPlay.step3.title'), description: t('games.math-number-hive.howToPlay.step3.description') }
             ]}
             onExit={onExit}
             powerUps={powerUpConfig}
             target={{
-                value: currentNumber,
-                icon: "🐝"
+                value: targetInline,
+                label: t('games.math-number-hive.ui.clickBadge')
             }}
+            className="number-hive-theme"
         >
             {/* Game Content: Bees and Grid */}
             <div className="number-hive-container">

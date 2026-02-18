@@ -119,7 +119,7 @@ export const GAMES: GameManifest[] = [
         category: 'math',
         level: 1,
         component: L1_CompareCritters,
-        thumbnail: '🐾',
+        thumbnail: 'quad:>,🐼,🐼,<',
         tagsKey: 'games.tags.comparison'
     },
     {

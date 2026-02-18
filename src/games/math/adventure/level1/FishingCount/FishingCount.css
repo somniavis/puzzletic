@@ -56,6 +56,7 @@
     width: 100%;
     position: relative;
     overflow: hidden;
+    contain: layout paint style;
 }
 
 .pond-animal {
@@ -69,9 +70,12 @@
     cursor: grab;
     user-select: none;
     transition: transform 0.1s;
-    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.14);
     /* Centering transform handled in inline styles for movement */
     -webkit-tap-highlight-color: transparent;
+    transform: translate3d(0, 0, 0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
 }
 
 .pond-animal:active {
@@ -86,6 +90,13 @@
     /* No transition during drag for responsiveness */
     pointer-events: none;
     /* Let events pass through to underlying elements if needed, but we handle moves globally */
+}
+
+/* Legacy mobile: keep animation, reduce rendering cost */
+@media (hover: none) and (pointer: coarse) {
+    .pond-animal {
+        text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+    }
 }
 
 /* Net / Drop Zone */
