@@ -11,6 +11,55 @@
     box-sizing: border-box;
 }
 
+.shape-link-hint-box {
+    position: absolute;
+    left: 1rem;
+    right: 1rem;
+    bottom: clamp(0.45rem, 1.8dvh, 1rem);
+    min-height: 2.45rem;
+    border-radius: 0.8rem;
+    background: rgba(255, 255, 255, 0.94);
+    color: #1e3a8a;
+    font-size: 1.02rem;
+    font-weight: 800;
+    letter-spacing: 0.01em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.18);
+    z-index: 22;
+    pointer-events: none;
+    animation: shape-link-hint-fade-in 0.2s ease-out forwards;
+}
+
+.shape-link-hint-box.is-exiting {
+    animation: shape-link-hint-fade-out 0.22s ease-in forwards;
+}
+
+@keyframes shape-link-hint-fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes shape-link-hint-fade-out {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    to {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+}
+
 .shape-sum-link-board {
     --board-width: min(94vw, 600px);
     --board-height: min(78dvh, calc(100% - 0.5rem), 600px);

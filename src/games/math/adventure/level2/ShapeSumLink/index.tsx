@@ -87,10 +87,11 @@ const shuffle = (arr: number[]): number[] => {
     return copied;
 };
 
-const createMission = (level: DifficultyLevel): Mission => {
+const createMission = (level: DifficultyLevel, excludedTarget?: number): Mission => {
     for (let attempt = 0; attempt < 60; attempt += 1) {
-        const requiredCount: 3 | 4 = level === 3 ? 4 : 3;
-        const shape: MissionShape = requiredCount === 3 ? 'triangle' : 'square';
+        // Keep all levels as 3-point triangle missions.
+        const requiredCount: 3 | 4 = 3;
+        const shape: MissionShape = 'triangle';
         const numbers = shuffle([1, 2, 3, 4, 5, 6, 7, 8, 9]).slice(0, 6);
         const combos = COMBINATIONS_BY_COUNT[requiredCount];
 
@@ -109,10 +110,19 @@ const createMission = (level: DifficultyLevel): Mission => {
         // Difficulty 1: Triangle missions with target <= 10
         if (level === 1) {
             uniqueTargets = uniqueTargets.filter((sum) => sum <= 10);
+        } else if (level === 3) {
+            // Level 3: Keep triangle missions but target range 10~30.
+            uniqueTargets = uniqueTargets.filter((sum) => sum >= 10 && sum <= 30);
         }
 
         if (uniqueTargets.length > 0) {
-            const target = uniqueTargets[Math.floor(Math.random() * uniqueTargets.length)];
+            const targetPool =
+                excludedTarget == null
+                    ? uniqueTargets
+                    : (uniqueTargets.filter((sum) => sum !== excludedTarget).length > 0
+                        ? uniqueTargets.filter((sum) => sum !== excludedTarget)
+                        : uniqueTargets);
+            const target = targetPool[Math.floor(Math.random() * targetPool.length)];
             return { numbers, requiredCount, target, shape };
         }
     }
@@ -141,6 +151,12 @@ export const ShapeSumLink: React.FC<ShapeSumLinkProps> = ({ onExit }) => {
     });
     const draggingPointerIdRef = useRef<number | null>(null);
     const sfxPrimedRef = useRef(false);
+    const lastTargetRef = useRef<number | null>(null);
+    const [showLinkHint, setShowLinkHint] = useState(false);
+    const [isLinkHintExiting, setIsLinkHintExiting] = useState(false);
+    const hasShownLinkHintRef = useRef(false);
+    const linkHintTimerRef = useRef<number | null>(null);
+    const linkHintExitTimerRef = useRef<number | null>(null);
 
     const engine = useGameEngine({
         initialLives: 3,
@@ -175,7 +191,10 @@ export const ShapeSumLink: React.FC<ShapeSumLinkProps> = ({ onExit }) => {
                 totalCorrectInLevel: 0
             };
             setDifficultyProgress(initialProgress);
-            setMission(createMission(initialProgress.level));
+            lastTargetRef.current = null;
+            const initialMission = createMission(initialProgress.level, lastTargetRef.current ?? undefined);
+            setMission(initialMission);
+            lastTargetRef.current = initialMission.target;
             setSelectedIndices([]);
             setIsResolving(false);
             setPendingRoundAction(null);
@@ -184,11 +203,60 @@ export const ShapeSumLink: React.FC<ShapeSumLinkProps> = ({ onExit }) => {
     }, [engine.gameState]);
 
     useEffect(() => {
+        if (engine.gameState === 'idle' || engine.gameState === 'gameover') {
+            if (linkHintTimerRef.current) {
+                window.clearTimeout(linkHintTimerRef.current);
+                linkHintTimerRef.current = null;
+            }
+            if (linkHintExitTimerRef.current) {
+                window.clearTimeout(linkHintExitTimerRef.current);
+                linkHintExitTimerRef.current = null;
+            }
+            setShowLinkHint(false);
+            setIsLinkHintExiting(false);
+            hasShownLinkHintRef.current = false;
+        }
+    }, [engine.gameState]);
+
+    useEffect(() => {
+        if (engine.gameState !== 'playing') return;
+        if (!mission || hasShownLinkHintRef.current) return;
+        if (engine.stats.correct !== 0 || engine.stats.wrong !== 0) return;
+
+        hasShownLinkHintRef.current = true;
+        setShowLinkHint(true);
+        setIsLinkHintExiting(false);
+
+        linkHintTimerRef.current = window.setTimeout(() => {
+            setIsLinkHintExiting(true);
+            linkHintExitTimerRef.current = window.setTimeout(() => {
+                setShowLinkHint(false);
+                setIsLinkHintExiting(false);
+                linkHintExitTimerRef.current = null;
+            }, 220);
+            linkHintTimerRef.current = null;
+        }, 1800);
+
+        return () => {
+            if (linkHintTimerRef.current) {
+                window.clearTimeout(linkHintTimerRef.current);
+                linkHintTimerRef.current = null;
+            }
+            if (linkHintExitTimerRef.current) {
+                window.clearTimeout(linkHintExitTimerRef.current);
+                linkHintExitTimerRef.current = null;
+            }
+        };
+    }, [engine.gameState, engine.stats.correct, engine.stats.wrong, mission]);
+
+    useEffect(() => {
         if (!isResolving || pendingRoundAction == null) return;
 
         if (engine.gameState === 'playing') {
             if (pendingRoundAction.regenerate) {
-                setMission(createMission(pendingRoundAction.nextLevel));
+                const nextMission = createMission(pendingRoundAction.nextLevel, lastTargetRef.current ?? undefined);
+                setMission(nextMission);
+                lastTargetRef.current = nextMission.target;
             }
             setSelectedIndices([]);
             setIsResolving(false);
@@ -514,6 +582,11 @@ export const ShapeSumLink: React.FC<ShapeSumLinkProps> = ({ onExit }) => {
                             );
                         })}
                     </div>
+                    {showLinkHint && (
+                        <div className={`shape-link-hint-box ${isLinkHintExiting ? 'is-exiting' : ''}`}>
+                            {t('games.shape-sum-link.ui.connectThreeHint')}
+                        </div>
+                    )}
                 </div>
             </>
         </Layout3>
@@ -522,9 +595,9 @@ export const ShapeSumLink: React.FC<ShapeSumLinkProps> = ({ onExit }) => {
 
 export const manifest: GameManifest = {
     id: GameIds.SHAPE_SUM_LINK,
-    title: 'Dot Link',
+    title: '3-Dot Link',
     titleKey: 'games.shape-sum-link.title',
-    subtitle: 'Draw Shapes in the Circle!',
+    subtitle: 'Draw a triangle in the circle!',
     subtitleKey: 'games.shape-sum-link.subtitle',
     description: 'Connect numbers to complete shape-based sum missions.',
     descriptionKey: 'games.shape-sum-link.description',

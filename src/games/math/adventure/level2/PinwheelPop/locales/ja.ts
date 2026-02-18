@@ -5,7 +5,7 @@ export default {
     howToPlay: {
         step1: { title: 'ハネを見よう', description: '2つの数字を見て！' },
         step2: { title: 'たし算', description: '合わせるといくつ？' },
-        step3: { title: '直して回そう！', description: 'プロペラ完成！' }
+        step3: { title: '直して回そう！', description: 'ハネ完成！' }
     },
     question: "たしたら？"
 };

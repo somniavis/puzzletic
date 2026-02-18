@@ -73,7 +73,7 @@ export default function CargoTrain() {
     }, [score]);
 
     useEffect(() => {
-        if (gameLogic.gameState !== 'playing') {
+        if (gameLogic.gameState === 'idle' || gameLogic.gameState === 'gameover') {
             if (optionsHintTimerRef.current) {
                 window.clearTimeout(optionsHintTimerRef.current);
                 optionsHintTimerRef.current = null;
@@ -83,6 +83,7 @@ export default function CargoTrain() {
             return;
         }
 
+        if (gameLogic.gameState !== 'playing') return;
         if (!currentProblem || hasShownOptionsHintRef.current || score !== 0) return;
 
         hasShownOptionsHintRef.current = true;

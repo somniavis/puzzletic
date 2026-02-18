@@ -69,10 +69,22 @@
     position: absolute;
     transform: translate(-50%, -50%);
     user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
     cursor: pointer;
     transition: transform 0.2s;
     z-index: 1;
     /* Keep low so it's behind HUD/Options */
+}
+
+.ufo,
+.ufo * {
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
 }
 
 /* Replicate Deep Sea Dive 'happy-swim' */

@@ -252,9 +252,9 @@ export const GAMES: GameManifest[] = [
     },
     {
         id: GameIds.SHAPE_SUM_LINK,
-        title: 'Dot Link',
+        title: '3-Dot Link',
         titleKey: 'games.shape-sum-link.title',
-        subtitle: 'Draw Shapes in the Circle!',
+        subtitle: 'Draw a triangle in the circle!',
         subtitleKey: 'games.shape-sum-link.subtitle',
         description: 'Connect numbers to complete shape-based sum missions.',
         descriptionKey: 'games.shape-sum-link.description',

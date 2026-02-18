@@ -15,5 +15,9 @@ export default {
             title: "Zap It!",
             description: "Fire at the answer!"
         }
+    },
+    ui: {
+        tapUfo: "Tap the UFO",
+        lockedOn: "LOCKED ON"
     }
 };

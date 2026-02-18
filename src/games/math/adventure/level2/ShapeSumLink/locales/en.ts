@@ -1,20 +1,23 @@
 const manifest = {
-    title: 'Dot Link',
-    subtitle: 'Draw Shapes in the Circle!',
+    title: '3-Dot Link',
+    subtitle: 'Draw a triangle in the circle!',
     description: 'Link numbers in the mission shape to hit the target sum.',
     howToPlay: {
         step1: {
-            title: 'Check Mission',
-            description: 'See shape and target'
+            title: 'Check Numbers',
+            description: 'See the target'
         },
         step2: {
-            title: 'Link Points',
-            description: 'Drag number points'
+            title: 'Add 3 Dots',
+            description: 'Drag the number points'
         },
         step3: {
-            title: 'Match Sum',
-            description: 'Same sum = success!'
+            title: 'Complete Triangle',
+            description: 'Match the sum'
         }
+    },
+    ui: {
+        connectThreeHint: 'Link 3 points!'
     },
     question: 'Mission Ready'
 };

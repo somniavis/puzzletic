@@ -137,6 +137,20 @@
     outline: none;
 }
 
+/* Suppress native tap highlight/text selection on PlayPage interactive controls */
+.play-page-container button,
+.play-page-container .adventure-card,
+.play-page-container .drill-item,
+.play-page-container .mode-btn,
+.play-page-container .op-tab,
+.play-page-container .nav-item-hub,
+.play-page-container .header-close-btn {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
 /* --- Header --- */
 .play-header-hub {
     padding: 0.5rem 1rem;

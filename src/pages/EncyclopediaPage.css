@@ -10,6 +10,15 @@
     font-family: inherit;
 }
 
+/* Suppress native tap highlight/text selection on evolution page controls */
+.encyclopedia-page button,
+.encyclopedia-page .evolution-node.unlocked.clickable {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
 /* Match PlayPage.css header */
 .encyclopedia-header {
     display: flex;

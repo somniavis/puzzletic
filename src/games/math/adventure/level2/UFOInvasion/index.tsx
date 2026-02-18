@@ -108,10 +108,10 @@ export default function UFOInvasion({ onExit }: UFOInvasionProps) {
 
     const targetConfig = currentLockedUfo ? {
         value: currentLockedUfo.problem.q,
-        label: 'LOCKED ON'
+        label: t('games.math-level2-ufo-invasion.ui.lockedOn', 'LOCKED ON')
     } : {
         value: '---',
-        label: 'SCANNING...'
+        label: t('games.math-level2-ufo-invasion.ui.tapUfo', 'Tap the UFO')
     };
 
     return (

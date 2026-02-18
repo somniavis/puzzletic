@@ -206,6 +206,34 @@
   -webkit-touch-callout: none;
 }
 
+/* Suppress native tap highlight/text selection for PetRoom interactive controls */
+.pet-room .character-profile,
+.pet-room .action-btn,
+.pet-room .shop-btn-floating,
+.pet-room .fab-menu-item,
+.pet-room .premium-btn-floating,
+.pet-room .evolution-btn,
+.pet-room .toggle-panel-btn,
+.pet-room .show-panel-btn,
+.pet-room .reset-btn {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Suppress native tap highlight/text selection inside shop/menu modals */
+.food-menu button,
+.food-menu .close-btn,
+.food-menu .category-tab,
+.food-menu .food-item,
+.food-menu .gacha-button {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
 /* Game Header */
 .game-header {
   display: flex;

@@ -10,6 +10,15 @@
     font-family: inherit;
 }
 
+/* Suppress native tap highlight/text selection on Profile page controls */
+.profile-page button,
+.profile-page .jello-box-link {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
 .profile-header {
     display: flex;
     align-items: center;

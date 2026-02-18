@@ -549,6 +549,10 @@
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
     line-height: 1;
     -webkit-tap-highlight-color: transparent;
+    -webkit-appearance: none;
+    appearance: none;
+    outline: none !important;
+    box-sizing: border-box;
 
     /* Plank Texture */
     background-image: repeating-linear-gradient(180deg,
@@ -558,10 +562,25 @@
             rgba(62, 39, 35, 0.1) 28%);
 }
 
+.optionBtn:focus,
+.optionBtn:focus-visible {
+    outline: none !important;
+    box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.1), 0 4px 0 #3E2723;
+}
+
+.optionBtn::-moz-focus-inner {
+    border: 0;
+    padding: 0;
+}
+
 .optionBtn:active {
     cursor: grabbing;
+    transform: none;
+    /* Avoid sticky active state on some older mobile browsers */
+}
+
+.optionBtnDragging {
     transform: scale(1.05);
-    /* Proper enlarge effect like NumberBalance */
 }
 
 /* Mobile Responsiveness for Option Buttons */
