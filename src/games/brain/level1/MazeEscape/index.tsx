@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import React, { useMemo, useEffect, useCallback } from 'react';
+import React, { useMemo, useEffect, useCallback, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Layout2 } from '../../../layouts/Standard/Layout2';
 import { useGameEngine } from '../../../layouts/Standard/Layout0/useGameEngine';
@@ -28,6 +28,21 @@ const MazeCell = React.memo(({
     getObstacleEmoji: (t?: string) => string,
     onStart: (r: number, c: number) => void
 }) => {
+    const edgeInsetPct = 8;
+    const edgeInsetStyle: React.CSSProperties = {
+        top: cell.row === 0 ? `${edgeInsetPct}%` : '0%',
+        right: cell.col === levelSize - 1 ? `${edgeInsetPct}%` : '0%',
+        bottom: cell.row === levelSize - 1 ? `${edgeInsetPct}%` : '0%',
+        left: cell.col === 0 ? `${edgeInsetPct}%` : '0%',
+    };
+
+    const obstacleInsetStyle: React.CSSProperties = {
+        paddingTop: cell.row === 0 ? `${edgeInsetPct}%` : undefined,
+        paddingRight: cell.col === levelSize - 1 ? `${edgeInsetPct}%` : undefined,
+        paddingBottom: cell.row === levelSize - 1 ? `${edgeInsetPct}%` : undefined,
+        paddingLeft: cell.col === 0 ? `${edgeInsetPct}%` : undefined,
+    };
+
     return (
         <div
             className={`${styles.cell} ${cell.isPath ? styles.path : ''}`}
@@ -49,7 +64,7 @@ const MazeCell = React.memo(({
 
             {/* Start Node - User's Jello */}
             {cell.isStart && (
-                <div className={styles.startNode} style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div className={styles.startNode} style={{ ...edgeInsetStyle, width: 'auto', height: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <div style={{
                         width: '85%',
                         height: '85%',
@@ -81,6 +96,9 @@ const MazeCell = React.memo(({
                 <div
                     className={styles.endNode}
                     style={{
+                        ...edgeInsetStyle,
+                        width: 'auto',
+                        height: 'auto',
                         // Dynamic Scaling: 3.5rem (size 4) -> 2.5rem (size 9)
                         fontSize: `${Math.max(2.5, 3.5 - (levelSize - 4) * 0.2)}rem`
                     }}
@@ -91,7 +109,7 @@ const MazeCell = React.memo(({
 
             {/* Obstacles */}
             {cell.isObstacle && (
-                <div className={styles.obstacle}>
+                <div className={styles.obstacle} style={obstacleInsetStyle}>
                     {[0, 1, 2].map(i => {
                         const isLarge = i === 2;
 
@@ -102,7 +120,7 @@ const MazeCell = React.memo(({
                         // Cell Width ~= Grid Width / levelSize.
                         // We want Large to be ~64% of Cell, Small to be ~41% of Cell (Reduced by ~8%)
 
-                        const proportion = isLarge ? 0.62 : 0.40;
+                        const proportion = isLarge ? 0.558 : 0.36;
                         const fontSize = `calc((min(90vmin, 500px) / ${levelSize}) * ${proportion})`;
 
                         return (
@@ -150,6 +168,51 @@ export default function MazeEscape() {
     });
 
     const logic = useMazeEscapeLogic(engine);
+    const [showGuideHint, setShowGuideHint] = useState(false);
+    const [isGuideHintExiting, setIsGuideHintExiting] = useState(false);
+    const hasShownGuideHintRef = useRef(false);
+    const guideHintTimerRef = useRef<number | null>(null);
+    const guideHintExitTimerRef = useRef<number | null>(null);
+
+    useEffect(() => {
+        const isFirstQuestion = engine.score === 0 && engine.stats.correct === 0 && engine.stats.wrong === 0;
+        if (engine.gameState !== 'playing') {
+            if (engine.gameState === 'gameover' || engine.gameState === 'idle') {
+                setShowGuideHint(false);
+                setIsGuideHintExiting(false);
+                hasShownGuideHintRef.current = false;
+            }
+            return;
+        }
+        if (!isFirstQuestion || hasShownGuideHintRef.current) return;
+
+        hasShownGuideHintRef.current = true;
+        setShowGuideHint(true);
+        setIsGuideHintExiting(false);
+
+        guideHintTimerRef.current = window.setTimeout(() => {
+            setIsGuideHintExiting(true);
+            guideHintExitTimerRef.current = window.setTimeout(() => {
+                setShowGuideHint(false);
+                setIsGuideHintExiting(false);
+                guideHintExitTimerRef.current = null;
+            }, 220);
+            guideHintTimerRef.current = null;
+        }, 1800);
+    }, [engine.gameState, engine.score, engine.stats.correct, engine.stats.wrong]);
+
+    useEffect(() => {
+        return () => {
+            if (guideHintTimerRef.current != null) {
+                window.clearTimeout(guideHintTimerRef.current);
+                guideHintTimerRef.current = null;
+            }
+            if (guideHintExitTimerRef.current != null) {
+                window.clearTimeout(guideHintExitTimerRef.current);
+                guideHintExitTimerRef.current = null;
+            }
+        };
+    }, []);
 
     // Standard PowerUps
     const powerUps: PowerUpBtnProps[] = useMemo(() => [
@@ -224,6 +287,11 @@ export default function MazeEscape() {
                 onPointerUp={logic.handleEnd}
                 onPointerLeave={logic.handleEnd}
             >
+                {showGuideHint && (
+                    <div className={`${styles.mazeGuideHint} ${isGuideHintExiting ? styles.exiting : ''}`}>
+                        {t('games.maze-escape.ui.guideHint')}
+                    </div>
+                )}
                 <div
                     className={styles.grid}
                     style={{

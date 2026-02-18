@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { useMemo, useEffect } from 'react';
+import { useMemo, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Layout2 } from '../../../layouts/Standard/Layout2';
 import { useGameEngine } from '../../../layouts/Standard/Layout0/useGameEngine';
@@ -50,6 +50,51 @@ export default function AnimalBanquet({ onExit }: AnimalBanquetProps) {
         SPECIES_DATA,
         visibleFoods
     } = useAnimalBanquetLogic(engine);
+    const [showFoodHintOverlay, setShowFoodHintOverlay] = useState(false);
+    const [isFoodHintOverlayExiting, setIsFoodHintOverlayExiting] = useState(false);
+    const hasShownFoodHintOverlayRef = useRef(false);
+    const foodHintOverlayTimerRef = useRef<number | null>(null);
+    const foodHintOverlayExitTimerRef = useRef<number | null>(null);
+
+    useEffect(() => {
+        const isFirstProblem = engine.score === 0 && engine.stats.correct === 0 && engine.stats.wrong === 0;
+        if (engine.gameState !== 'playing') {
+            if (engine.gameState === 'gameover' || engine.gameState === 'idle') {
+                setShowFoodHintOverlay(false);
+                setIsFoodHintOverlayExiting(false);
+                hasShownFoodHintOverlayRef.current = false;
+            }
+            return;
+        }
+        if (!isFirstProblem || hasShownFoodHintOverlayRef.current) return;
+
+        hasShownFoodHintOverlayRef.current = true;
+        setShowFoodHintOverlay(true);
+        setIsFoodHintOverlayExiting(false);
+
+        foodHintOverlayTimerRef.current = window.setTimeout(() => {
+            setIsFoodHintOverlayExiting(true);
+            foodHintOverlayExitTimerRef.current = window.setTimeout(() => {
+                setShowFoodHintOverlay(false);
+                setIsFoodHintOverlayExiting(false);
+                foodHintOverlayExitTimerRef.current = null;
+            }, 220);
+            foodHintOverlayTimerRef.current = null;
+        }, 1800);
+    }, [engine.gameState, engine.score, engine.stats.correct, engine.stats.wrong]);
+
+    useEffect(() => {
+        return () => {
+            if (foodHintOverlayTimerRef.current != null) {
+                window.clearTimeout(foodHintOverlayTimerRef.current);
+                foodHintOverlayTimerRef.current = null;
+            }
+            if (foodHintOverlayExitTimerRef.current != null) {
+                window.clearTimeout(foodHintOverlayExitTimerRef.current);
+                foodHintOverlayExitTimerRef.current = null;
+            }
+        };
+    }, []);
 
     // Standard PowerUps
     const powerUps = useMemo(() => [
@@ -133,6 +178,11 @@ export default function AnimalBanquet({ onExit }: AnimalBanquetProps) {
 
                 {/* Bottom Control Bar: Food Selection */}
                 <div className={styles.foodSelectionBar}>
+                    {showFoodHintOverlay && (
+                        <div className={`${styles.foodHintOverlay} ${isFoodHintOverlayExiting ? styles.exiting : ''}`} aria-hidden="true">
+                            <span className={styles.foodHintText}>{t('games.animal-banquet.ui.foodHint')}</span>
+                        </div>
+                    )}
                     {visibleFoods.map((foodId) => (
                         <button
                             key={foodId}

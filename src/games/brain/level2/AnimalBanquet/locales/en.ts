@@ -2,6 +2,9 @@ export default {
     title: 'Hungry Party',
     subtitle: 'Who needs food?',
     description: 'Remember who you fed! Give the right food to moving animals.',
+    ui: {
+        foodHint: 'One favorite each!'
+    },
     howToPlay: {
         step1: { title: 'Match Food', description: 'What does each love?' },
         step2: { title: 'Feed Right', description: 'Pick from below!' },

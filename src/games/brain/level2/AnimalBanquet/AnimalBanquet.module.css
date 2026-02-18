@@ -5,6 +5,7 @@
     flex-direction: column;
     position: relative;
     overflow: hidden;
+    z-index: 2;
 }
 
 .gameArea {
@@ -16,27 +17,77 @@
     border: 2px dashed rgba(255, 255, 255, 0.2);
     border-radius: 12px;
     margin-bottom: 1rem;
+    z-index: 1;
 }
 
 /* Matching Pinwheel Pop's Option Area */
 .foodSelectionBar {
+    position: relative;
     width: 100%;
     padding: 1rem;
     background: linear-gradient(180deg, #eff6ff 0%, #dbeafe 100%);
-    border-top: 2px solid #bfdbfe;
+    border: 2px solid #bfdbfe;
     backdrop-filter: blur(8px);
-    /* border-radius: 0.75rem; In Pinwheel it has radius, but here it's full width bar? Pinwheel seems to be a box. */
-    border-radius: 1rem;
+    border-radius: 0.75rem;
 
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 0.5rem;
     min-height: 120px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-    z-index: 10;
+    box-shadow: none;
+    z-index: 20;
     padding-left: 1rem;
     padding-right: 1rem;
+}
+
+.foodHintOverlay {
+    position: absolute;
+    inset: 0;
+    z-index: 30;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.96);
+    border-radius: 1rem;
+    pointer-events: auto;
+    animation: food-hint-fade-in 0.2s ease-out forwards;
+}
+
+.foodHintOverlay.exiting {
+    animation: food-hint-fade-out 0.22s ease-in forwards;
+}
+
+.foodHintText {
+    color: #1e3a8a;
+    font-size: 1.05rem;
+    font-weight: 800;
+    letter-spacing: 0.01em;
+    text-align: center;
+    padding: 0 1rem;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+@keyframes food-hint-fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes food-hint-fade-out {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(3px);
+    }
 }
 
 /* Scrollbar Hide */

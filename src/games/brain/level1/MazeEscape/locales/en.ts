@@ -2,6 +2,9 @@ export default {
     title: 'Maze Escape',
     subtitle: 'Find the way!',
     description: 'Help Jello find the way home avoiding obstacles.',
+    ui: {
+        guideHint: 'Guide Jello to the tent!'
+    },
     howToPlay: {
         step1: {
             title: 'Find Camp',

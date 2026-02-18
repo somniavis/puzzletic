@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import styles from './TicTacToe.module.css';
 import { useGameEngine } from '../../../layouts/Standard/Layout0/useGameEngine';
 import { useTranslation } from 'react-i18next';
@@ -25,6 +25,9 @@ export const TicTacToeGame: React.FC<GameLogicProps> = ({ engine }) => {
     const [isPlayerTurn, setIsPlayerTurn] = useState(true);
     const [gameStatus, setGameStatus] = useState<'playing' | 'won' | 'lost' | 'draw' | 'processing'>('playing');
     const [winningLine, setWinningLine] = useState<number[] | null>(null);
+    const [showGuideHint, setShowGuideHint] = useState(false);
+    const [isGuideHintExiting, setIsGuideHintExiting] = useState(false);
+    const hasShownGuideHintRef = useRef(false);
 
     // Engine Helpers
     const { updateScore, updateLives, registerEvent } = engine;
@@ -157,9 +160,51 @@ export const TicTacToeGame: React.FC<GameLogicProps> = ({ engine }) => {
         }
     }, [isPlayerTurn, gameStatus, board, handleGameEnd]);
 
+    useEffect(() => {
+        const isFirstProblem = engine.stats.correct === 0 && engine.stats.wrong === 0;
+
+        if (engine.gameState !== 'playing') {
+            if (engine.gameState === 'idle' || engine.gameState === 'gameover') {
+                setShowGuideHint(false);
+                setIsGuideHintExiting(false);
+                hasShownGuideHintRef.current = false;
+            }
+            return;
+        }
+
+        if (!isFirstProblem || hasShownGuideHintRef.current) return;
+
+        hasShownGuideHintRef.current = true;
+        setShowGuideHint(true);
+        setIsGuideHintExiting(false);
+    }, [engine.gameState, engine.stats.correct, engine.stats.wrong]);
+
+    useEffect(() => {
+        if (!showGuideHint) return;
+
+        setIsGuideHintExiting(false);
+        const hideTimer = window.setTimeout(() => {
+            setIsGuideHintExiting(true);
+        }, 1800);
+        const removeTimer = window.setTimeout(() => {
+            setShowGuideHint(false);
+            setIsGuideHintExiting(false);
+        }, 2020);
+
+        return () => {
+            window.clearTimeout(hideTimer);
+            window.clearTimeout(removeTimer);
+        };
+    }, [showGuideHint]);
+
 
     return (
         <div className={styles.container}>
+            {showGuideHint && (
+                <div className={`${styles.guideHint} ${isGuideHintExiting ? styles.guideHintExiting : ''}`}>
+                    Make 3 in a row
+                </div>
+            )}
             <div className={styles.statusMessage}>
                 {(gameStatus === 'playing' || gameStatus === 'processing') ? (
                     isPlayerTurn ?

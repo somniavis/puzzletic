@@ -2,6 +2,9 @@ export default {
     title: 'ペアさがし',
     subtitle: 'そっくりさんはどこ？',
     description: 'おなじ絵のカードをみつけてね！',
+    ui: {
+        tapMatchHint: '同じ絵のカードをタップしよう！'
+    },
     howToPlay: {
         step1: { title: '覚えよう', description: 'カードをよく見て！' },
         step2: { title: '2枚めくろう', description: '同じ絵かな？' },

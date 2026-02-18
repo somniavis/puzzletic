@@ -41,9 +41,11 @@ export const GameStartScreen: React.FC<StartScreenProps> = ({
                             {instructions.map((inst, index) => (
                                 <div key={index} className="visual-step-card">
                                     <div className="step-number">{index + 1}</div>
-                                    {inst.icon && <span className="visual-step-icon">{inst.icon}</span>}
                                     <div className="visual-step-text-col">
-                                        <span className="visual-step-title">{inst.title}</span>
+                                        <span className="visual-step-title">
+                                            {inst.icon && <span className="visual-step-title-icon">{inst.icon}</span>}
+                                            <span>{inst.title}</span>
+                                        </span>
                                         <span className="visual-step-desc">{inst.description}</span>
                                     </div>
                                 </div>

@@ -230,7 +230,6 @@ export const TrollAttack: React.FC<TrollAttackProps> = ({ onExit }) => {
     const [ammoOptions, setAmmoOptions] = React.useState<AmmoOption[]>([]);
     const [draggingAmmoId, setDraggingAmmoId] = React.useState<number | null>(null);
     const [dragPos, setDragPos] = React.useState({ x: 0, y: 0 });
-    const [statusText, setStatusText] = React.useState('');
     const [projectile, setProjectile] = React.useState<ProjectileVisual | null>(null);
     const [isFirePressed, setIsFirePressed] = React.useState(false);
     const [shieldTrollId, setShieldTrollId] = React.useState<number | null>(null);
@@ -301,7 +300,6 @@ export const TrollAttack: React.FC<TrollAttackProps> = ({ onExit }) => {
         dragPointerIdRef.current = null;
         isDraggingRef.current = false;
         setProjectile(null);
-        setStatusText('');
         setShieldTrollId(null);
         setHitTrollId(null);
         setManualTargetId(null);
@@ -443,7 +441,6 @@ export const TrollAttack: React.FC<TrollAttackProps> = ({ onExit }) => {
                     updateComboRef.current(false);
                     registerEventRef.current({ type: 'wrong' } as any);
                 }
-                setStatusText(t('games.troll-attack.ui.castleHit'));
             }
 
             worldRafRef.current = window.requestAnimationFrame(tick);
@@ -496,7 +493,6 @@ export const TrollAttack: React.FC<TrollAttackProps> = ({ onExit }) => {
 
         if (shotValue === answer) {
             setHitTrollId(targetId);
-            setStatusText(t('games.troll-attack.ui.correctHit'));
             const hitTarget = trollsRef.current.find((troll) => troll.id === targetId) ?? null;
             setTrolls((prev) => {
                 const updated = prev.filter((troll) => troll.id !== targetId);
@@ -525,7 +521,6 @@ export const TrollAttack: React.FC<TrollAttackProps> = ({ onExit }) => {
         }
 
         setShieldTrollId(targetId);
-        setStatusText(shotValue > answer ? t('games.troll-attack.ui.overHit') : t('games.troll-attack.ui.underHit'));
         updateLivesRef.current(false);
         updateComboRef.current(false);
         registerEventRef.current({ type: 'wrong' } as any);

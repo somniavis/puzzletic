@@ -2,6 +2,9 @@ export default {
     title: '배고픈 파티',
     subtitle: '누가 배가 고플까?',
     description: '밥 먹은 친구를 기억해요! 배고픈 친구에게만 먹이를 주세요.',
+    ui: {
+        foodHint: '좋아하는 음식 1개씩!'
+    },
     howToPlay: {
         step1: { title: '음식 매칭', description: '누가 뭘 좋아할까?' },
         step2: { title: '올바르게 먹이기', description: '아래에서 골라요!' },

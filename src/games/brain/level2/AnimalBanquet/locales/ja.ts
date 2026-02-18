@@ -2,6 +2,9 @@ export default {
     title: 'はらぺこパーティ',
     subtitle: 'ごはんがほしいのはだれ？',
     description: 'だれにあげたかおぼえてて！ うごくどうぶつにごはんをあげよう。',
+    ui: {
+        foodHint: '好きなごはん1つずつ！'
+    },
     howToPlay: {
         step1: { title: '食べ物マッチ', description: '誰が何を好きかな？' },
         step2: { title: '正しくあげよう', description: '下から選んでね！' },

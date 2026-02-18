@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect } from 'react';
+import React, { useMemo, useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Layout2 } from '../../../layouts/Standard/Layout2';
@@ -7,6 +7,7 @@ import type { PowerUpBtnProps } from '../../../../components/Game/PowerUpBtn';
 import { usePairUpLogic } from './usePairUpLogic';
 import { PairUpGrid } from './PairUpGrid';
 import { PairUpBackground } from './PairUpBackground';
+import styles from './PairUpTwin.module.css';
 import type { GameManifest } from '../../../types';
 import manifest_en from './locales/en';
 
@@ -77,11 +78,56 @@ const PairUpTwin: React.FC = () => {
 
     // --- Game Logic ---
     const logic = usePairUpLogic(engine, 'twin');
+    const [showTapMatchHint, setShowTapMatchHint] = useState(false);
+    const [isTapMatchHintExiting, setIsTapMatchHintExiting] = useState(false);
+    const hasShownTapMatchHintRef = useRef(false);
+    const tapMatchHintTimerRef = useRef<number | null>(null);
+    const tapMatchHintExitTimerRef = useRef<number | null>(null);
+
+    useEffect(() => {
+        const isFirstProblem = logic.round === 1 && engine.stats.correct === 0 && engine.stats.wrong === 0;
+        if (engine.gameState !== 'playing') {
+            if (engine.gameState === 'gameover' || engine.gameState === 'idle') {
+                setShowTapMatchHint(false);
+                setIsTapMatchHintExiting(false);
+                hasShownTapMatchHintRef.current = false;
+            }
+            return;
+        }
+        if (!isFirstProblem || hasShownTapMatchHintRef.current) return;
+
+        hasShownTapMatchHintRef.current = true;
+        setShowTapMatchHint(true);
+        setIsTapMatchHintExiting(false);
+
+        tapMatchHintTimerRef.current = window.setTimeout(() => {
+            setIsTapMatchHintExiting(true);
+            tapMatchHintExitTimerRef.current = window.setTimeout(() => {
+                setShowTapMatchHint(false);
+                setIsTapMatchHintExiting(false);
+                tapMatchHintExitTimerRef.current = null;
+            }, 220);
+            tapMatchHintTimerRef.current = null;
+        }, 1800);
+    }, [engine.gameState, engine.stats.correct, engine.stats.wrong, logic.round]);
+
+    useEffect(() => {
+        return () => {
+            if (tapMatchHintTimerRef.current != null) {
+                window.clearTimeout(tapMatchHintTimerRef.current);
+                tapMatchHintTimerRef.current = null;
+            }
+            if (tapMatchHintExitTimerRef.current != null) {
+                window.clearTimeout(tapMatchHintExitTimerRef.current);
+                tapMatchHintExitTimerRef.current = null;
+            }
+        };
+    }, []);
 
     // Timer Bar Component (CSS Animation Optimized)
     const timerBar = (
         <div style={{
-            width: '150px',
+            width: '100px',
             height: '8px',
             background: 'rgba(0,0,0,0.1)',
             borderRadius: '99px',
@@ -136,11 +182,18 @@ const PairUpTwin: React.FC = () => {
             subHeaderRight={timerBar}
             cardBackground={<PairUpBackground />}
         >
-            <PairUpGrid
-                cards={logic.cards}
-                config={logic.gridConfig}
-                onCardClick={logic.handleCardClick}
-            />
+            <div className={styles.gameContainer}>
+                {showTapMatchHint && (
+                    <div className={`${styles.tapMatchHint} ${isTapMatchHintExiting ? styles.exiting : ''}`}>
+                        {t('games.pair-up-twin.ui.tapMatchHint')}
+                    </div>
+                )}
+                <PairUpGrid
+                    cards={logic.cards}
+                    config={logic.gridConfig}
+                    onCardClick={logic.handleCardClick}
+                />
+            </div>
         </Layout2>
     );
 };

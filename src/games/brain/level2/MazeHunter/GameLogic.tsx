@@ -374,11 +374,10 @@ export const useMazeHunterLogic = (engine: GameEngine) => {
             const collectedItems = grid.flat().filter(c => c.isPath && c.isItem).length;
 
             if (collectedItems < totalItems) {
-                // Not enough items!
-                // Feedback: Shake or message? For now, just reset path like a failure (or keep path but don't submit?)
-                // Defaulting to reset for strictness, or maybe just do nothing and let user continue?
-                // "One stroke" implies you can't just pause and go back easily without undoing.
-                // Let's reset but maybe play a "locked" sound? For now, plain reset.
+                // Reached end without collecting all tracks -> wrong answer (life -1)
+                engine.submitAnswer(false);
+                engine.registerEvent({ type: 'wrong' });
+
                 setGrid(prev => prev.map(row => row.map(cell => ({
                     ...cell,
                     isPath: false, n: false, s: false, e: false, w: false

@@ -171,6 +171,7 @@ export const useColorLinkLogic = (engine: GameEngineInterface) => {
     // Interaction State
     const [activeCategory, setActiveCategory] = useState<CategoryId | null>(null);
     const [lastPos, setLastPos] = useState<{ r: number, c: number } | null>(null);
+    const [startPos, setStartPos] = useState<{ r: number, c: number } | null>(null);
 
     // Init Level (Procedural)
     useEffect(() => {
@@ -226,6 +227,7 @@ export const useColorLinkLogic = (engine: GameEngineInterface) => {
         setGrid(newGrid);
         setActiveCategory(null);
         setLastPos(null);
+        setStartPos(null);
 
     }, [levelIndex]);
 
@@ -237,6 +239,7 @@ export const useColorLinkLogic = (engine: GameEngineInterface) => {
         if (categoryToUse) {
             setActiveCategory(categoryToUse);
             setLastPos({ r, c });
+            setStartPos({ r, c });
 
             // If starting on a dot, clear previous path of this category
             if (cell.category) { // Start is a Dot
@@ -327,15 +330,23 @@ export const useColorLinkLogic = (engine: GameEngineInterface) => {
     };
 
     const handleEnd = () => {
-        if (activeCategory && lastPos) {
-            // Check if we landed on a dot of the same category
-            const landedOnDot = currentLevel.dots.some(d =>
-                d.category === activeCategory && d.r === lastPos.r && d.c === lastPos.c
+        if (activeCategory && lastPos && startPos) {
+            // Keep path only when this drag connects the two endpoints of the same category.
+            const sameCategoryDots = currentLevel.dots.filter(d => d.category === activeCategory);
+            const hasTwoEndpoints = sameCategoryDots.length === 2;
+            const [dotA, dotB] = sameCategoryDots;
+
+            const startedAtEndpointA = !!dotA && startPos.r === dotA.r && startPos.c === dotA.c;
+            const startedAtEndpointB = !!dotB && startPos.r === dotB.r && startPos.c === dotB.c;
+            const endedAtEndpointA = !!dotA && lastPos.r === dotA.r && lastPos.c === dotA.c;
+            const endedAtEndpointB = !!dotB && lastPos.r === dotB.r && lastPos.c === dotB.c;
+
+            const isValidEndpointConnection = hasTwoEndpoints && (
+                (startedAtEndpointA && endedAtEndpointB) ||
+                (startedAtEndpointB && endedAtEndpointA)
             );
 
-            if (!landedOnDot) {
-                // Incomplete path (Lifted finger on empty cell) -> Erase path
-                // (Standard Color Link behavior: lifting finger resets path unless connected)
+            if (!isValidEndpointConnection) {
                 setGrid(prev => prev.map(row => row.map(cell => {
                     if (cell.path === activeCategory) {
                         return { ...cell, path: undefined, n: undefined, s: undefined, e: undefined, w: undefined };
@@ -343,13 +354,13 @@ export const useColorLinkLogic = (engine: GameEngineInterface) => {
                     return cell;
                 })));
             } else {
-                // Landed on correct dot -> Path Connected
                 checkWin();
             }
         }
 
         setActiveCategory(null);
         setLastPos(null);
+        setStartPos(null);
     };
 
     const checkWin = () => {

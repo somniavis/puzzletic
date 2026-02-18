@@ -336,19 +336,10 @@
     flex-shrink: 0;
 }
 
-.visual-step-icon {
-    font-size: 2.2rem;
-    /* Slightly smaller for list view */
-    line-height: 1;
-    margin-right: 16px;
-    /* Space between icon and text */
-    margin-bottom: 0;
-    /* No bottom margin */
-    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
-    flex-shrink: 0;
-}
-
 .visual-step-title {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
     font-size: 1.25rem;
     /* Larger text for readability */
     font-weight: 800;
@@ -356,6 +347,13 @@
     line-height: 1.2;
     flex: 1;
     /* Take remaining space */
+}
+
+.visual-step-title-icon {
+    font-size: 1.45rem;
+    line-height: 1;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+    flex-shrink: 0;
 }
 
 .visual-step-text-col {

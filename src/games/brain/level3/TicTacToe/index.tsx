@@ -28,7 +28,7 @@ export const TicTacToe: React.FC = () => {
 
     const instructions = [
         {
-            icon: '❌⭕',
+            icon: '🔥❄️',
             title: t('games.tic-tac-toe.instructions.rule1.title'),
             description: t('games.tic-tac-toe.instructions.rule1.desc')
         },

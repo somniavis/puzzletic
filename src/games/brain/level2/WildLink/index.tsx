@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { useMemo, useCallback, useEffect } from 'react';
+import { useMemo, useCallback, useEffect, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Layout2 } from '../../../layouts/Standard/Layout2';
 import { useGameEngine } from '../../../layouts/Standard/Layout0/useGameEngine';
@@ -42,6 +42,51 @@ export default function WildLink({ onExit }: WildLinkProps) {
     });
 
     const logic = useColorLinkLogic(engine);
+    const [showLinkHint, setShowLinkHint] = useState(false);
+    const [isLinkHintExiting, setIsLinkHintExiting] = useState(false);
+    const hasShownLinkHintRef = useRef(false);
+    const linkHintTimerRef = useRef<number | null>(null);
+    const linkHintExitTimerRef = useRef<number | null>(null);
+
+    useEffect(() => {
+        const isFirstQuestion = engine.score === 0 && engine.stats.correct === 0 && engine.stats.wrong === 0;
+        if (engine.gameState !== 'playing') {
+            if (engine.gameState === 'gameover' || engine.gameState === 'idle') {
+                setShowLinkHint(false);
+                setIsLinkHintExiting(false);
+                hasShownLinkHintRef.current = false;
+            }
+            return;
+        }
+        if (!isFirstQuestion || hasShownLinkHintRef.current) return;
+
+        hasShownLinkHintRef.current = true;
+        setShowLinkHint(true);
+        setIsLinkHintExiting(false);
+
+        linkHintTimerRef.current = window.setTimeout(() => {
+            setIsLinkHintExiting(true);
+            linkHintExitTimerRef.current = window.setTimeout(() => {
+                setShowLinkHint(false);
+                setIsLinkHintExiting(false);
+                linkHintExitTimerRef.current = null;
+            }, 220);
+            linkHintTimerRef.current = null;
+        }, 1800);
+    }, [engine.gameState, engine.score, engine.stats.correct, engine.stats.wrong]);
+
+    useEffect(() => {
+        return () => {
+            if (linkHintTimerRef.current != null) {
+                window.clearTimeout(linkHintTimerRef.current);
+                linkHintTimerRef.current = null;
+            }
+            if (linkHintExitTimerRef.current != null) {
+                window.clearTimeout(linkHintExitTimerRef.current);
+                linkHintExitTimerRef.current = null;
+            }
+        };
+    }, []);
 
     // Standard PowerUps (memoized to prevent recreation on every render)
     const powerUps: PowerUpBtnProps[] = useMemo(() => [
@@ -108,6 +153,11 @@ export default function WildLink({ onExit }: WildLinkProps) {
             ]}
         >
             <div className={styles.gameContainer}>
+                {showLinkHint && (
+                    <div className={`${styles.wildLinkHint} ${isLinkHintExiting ? styles.exiting : ''}`}>
+                        {t('games.wild-link.ui.linkHint')}
+                    </div>
+                )}
                 <div
                     className={styles.grid}
                     style={{ gridTemplateColumns: `repeat(${logic.currentLevel.size}, 1fr)` }}

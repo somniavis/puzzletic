@@ -2,6 +2,9 @@ export default {
     title: 'Twin Finder',
     subtitle: 'Find the Lookalike!',
     description: 'Find the matching emoji pairs!',
+    ui: {
+        tapMatchHint: 'Tap matching cards!'
+    },
     howToPlay: {
         step1: { title: 'Remember', description: 'Look at all cards!' },
         step2: { title: 'Flip Two', description: 'Turn over two cards' },

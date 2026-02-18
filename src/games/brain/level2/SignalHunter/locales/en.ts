@@ -16,5 +16,8 @@ export default {
             title: "Tap Now!",
             description: "Hit at the right time!"
         }
+    },
+    ui: {
+        tapTimingHint: "Tap with perfect timing!"
     }
 };

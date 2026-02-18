@@ -1,6 +1,6 @@
 
 
-import { useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Layout2 } from '../../../layouts/Standard/Layout2';
 import { useSignalHunterLogic } from './GameLogic';
@@ -27,6 +27,11 @@ const WaveBackground = () => {
 export const SignalHunter: React.FC<SignalHunterProps> = ({ onExit }) => {
     const { t, i18n } = useTranslation();
     const logic = useSignalHunterLogic();
+    const [showGuideHint, setShowGuideHint] = useState(false);
+    const [isGuideHintExiting, setIsGuideHintExiting] = useState(false);
+    const hasShownGuideHintRef = useRef(false);
+    const guideHintTimerRef = useRef<number | null>(null);
+    const guideHintExitTimerRef = useRef<number | null>(null);
 
     // Load Translations
     useEffect(() => {
@@ -35,6 +40,48 @@ export const SignalHunter: React.FC<SignalHunterProps> = ({ onExit }) => {
             i18n.addResourceBundle(lang, 'translation', newResources[lang as keyof typeof newResources].translation, true, true);
         });
     }, [i18n]);
+
+    useEffect(() => {
+        const isFirstProblem = logic.stats.correct === 0 && logic.stats.wrong === 0;
+
+        if (logic.gameState !== 'playing') {
+            if (logic.gameState === 'idle' || logic.gameState === 'gameover') {
+                setShowGuideHint(false);
+                setIsGuideHintExiting(false);
+                hasShownGuideHintRef.current = false;
+            }
+            return;
+        }
+
+        if (!isFirstProblem || hasShownGuideHintRef.current) return;
+
+        hasShownGuideHintRef.current = true;
+        setShowGuideHint(true);
+        setIsGuideHintExiting(false);
+
+        guideHintTimerRef.current = window.setTimeout(() => {
+            setIsGuideHintExiting(true);
+            guideHintExitTimerRef.current = window.setTimeout(() => {
+                setShowGuideHint(false);
+                setIsGuideHintExiting(false);
+                guideHintExitTimerRef.current = null;
+            }, 220);
+            guideHintTimerRef.current = null;
+        }, 1800);
+    }, [logic.gameState, logic.stats.correct, logic.stats.wrong]);
+
+    useEffect(() => {
+        return () => {
+            if (guideHintTimerRef.current != null) {
+                window.clearTimeout(guideHintTimerRef.current);
+                guideHintTimerRef.current = null;
+            }
+            if (guideHintExitTimerRef.current != null) {
+                window.clearTimeout(guideHintExitTimerRef.current);
+                guideHintExitTimerRef.current = null;
+            }
+        };
+    }, []);
 
     // PowerUp State Mapping (using engine's powerUps)
     const powerUps = [
@@ -85,6 +132,12 @@ export const SignalHunter: React.FC<SignalHunterProps> = ({ onExit }) => {
             className="signal-hunter-game"
         >
             <div className="signal-hunter-container" onPointerDown={logic.handleTap}>
+                {showGuideHint && (
+                    <div className={`signal-hunter-guide-hint ${isGuideHintExiting ? 'is-exiting' : ''}`}>
+                        {t('games.signal-hunter.ui.tapTimingHint')}
+                    </div>
+                )}
+
                 {/* Code Sequence Display */}
                 <div className="code-sequence-bar">
                     {logic.codes.map((emoji: string, idx: number) => {

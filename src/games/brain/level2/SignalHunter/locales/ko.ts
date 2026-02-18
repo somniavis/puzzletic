@@ -6,5 +6,8 @@ export default {
         step1: { title: "목표 확인", description: "뭘 잡을까?" },
         step2: { title: "레이더 보기", description: "바늘이 돌아가요!" },
         step3: { title: "지금 터치!", description: "딱 맞을 때 쳐요!" }
+    },
+    ui: {
+        tapTimingHint: "타이밍에 맞춰 탭!"
     }
 };

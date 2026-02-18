@@ -15,8 +15,8 @@ const getRoundConfig = (r: number) => {
 };
 
 const getPreviewTime = (r: number) => {
-    if (r <= 4) return 3000; // 3s
-    if (r <= 9) return 4000; // 4s
+    if (r <= 4) return 2500; // 2.5s
+    if (r <= 9) return 3500; // 3.5s
     if (r <= 15) return 5000; // 5s
     return 6000;              // 6s
 };

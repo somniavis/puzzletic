@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { useMemo, useCallback, useEffect } from 'react';
+import { useMemo, useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Layout2 } from '../../../layouts/Standard/Layout2/index';
 import { useGameEngine } from '../../../layouts/Standard/Layout0/useGameEngine';
@@ -41,6 +41,51 @@ export default function ColorLink({ onExit }: ColorLinkProps) {
     });
 
     const logic = useColorLinkLogic(engine);
+    const [showConnectHint, setShowConnectHint] = useState(false);
+    const [isConnectHintExiting, setIsConnectHintExiting] = useState(false);
+    const hasShownConnectHintRef = useRef(false);
+    const connectHintTimerRef = useRef<number | null>(null);
+    const connectHintExitTimerRef = useRef<number | null>(null);
+
+    useEffect(() => {
+        const isFirstQuestion = engine.score === 0 && engine.stats.correct === 0 && engine.stats.wrong === 0;
+        if (engine.gameState !== 'playing') {
+            if (engine.gameState === 'gameover') {
+                setShowConnectHint(false);
+                setIsConnectHintExiting(false);
+                hasShownConnectHintRef.current = false;
+            }
+            return;
+        }
+        if (!isFirstQuestion || hasShownConnectHintRef.current) return;
+
+        hasShownConnectHintRef.current = true;
+        setShowConnectHint(true);
+        setIsConnectHintExiting(false);
+
+        connectHintTimerRef.current = window.setTimeout(() => {
+            setIsConnectHintExiting(true);
+            connectHintExitTimerRef.current = window.setTimeout(() => {
+                setShowConnectHint(false);
+                setIsConnectHintExiting(false);
+                connectHintExitTimerRef.current = null;
+            }, 220);
+            connectHintTimerRef.current = null;
+        }, 1800);
+    }, [engine.gameState, engine.score, engine.stats.correct, engine.stats.wrong]);
+
+    useEffect(() => {
+        return () => {
+            if (connectHintTimerRef.current != null) {
+                window.clearTimeout(connectHintTimerRef.current);
+                connectHintTimerRef.current = null;
+            }
+            if (connectHintExitTimerRef.current != null) {
+                window.clearTimeout(connectHintExitTimerRef.current);
+                connectHintExitTimerRef.current = null;
+            }
+        };
+    }, []);
 
     // Standard PowerUps (memoized to prevent recreation on every render)
     const powerUps: PowerUpBtnProps[] = useMemo(() => [
@@ -111,6 +156,11 @@ export default function ColorLink({ onExit }: ColorLinkProps) {
                 onPointerUp={logic.handleEnd} // Global release
                 onPointerLeave={logic.handleEnd} // Leave game area = release
             >
+                {showConnectHint && (
+                    <div className={`${styles.connectHintBox} ${isConnectHintExiting ? styles.exiting : ''}`}>
+                        {t('games.color-link.ui.connectHint')}
+                    </div>
+                )}
                 <div
                     className={styles.grid}
                     style={{ gridTemplateColumns: `repeat(${logic.currentLevel.size}, 1fr)` }}

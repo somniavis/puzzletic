@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Layout1 } from '../../../layouts/Standard/Layout1';
 import { useGameEngine } from '../../../layouts/Standard/Layout0/useGameEngine';
@@ -23,8 +23,18 @@ export const OmokGame: React.FC<OmokGameProps> = ({ onExit, gameId }) => {
     const instructions = useMemo(() => [
         {
             icon: '⚫⚪',
-            title: t('games.omok.instruction.rule1.title', 'Connect 5'),
-            description: t('games.omok.instruction.rule1.desc', 'Connect 5 stones to win.')
+            title: t('games.omok.howToPlay.step1.title', 'Place a Stone'),
+            description: t('games.omok.howToPlay.step1.description', 'Tap an intersection to place your stone.')
+        },
+        {
+            icon: '🛡️',
+            title: t('games.omok.howToPlay.step2.title', 'Block the AI'),
+            description: t('games.omok.howToPlay.step2.description', "Stop AI's line before it reaches 5.")
+        },
+        {
+            icon: '🏆',
+            title: t('games.omok.howToPlay.step3.title', 'Make 5 in a Row'),
+            description: t('games.omok.howToPlay.step3.description', 'Connect 5 stones first to win.')
         }
     ], [t]);
 
@@ -46,6 +56,7 @@ export const OmokGame: React.FC<OmokGameProps> = ({ onExit, gameId }) => {
 
 // Inner component to access engine
 const OmokBoardWrapper = ({ engine }: { engine: any }) => {
+    const { t } = useTranslation();
     const { updateScore, updateLives, registerEvent } = engine;
     const {
         board,
@@ -57,6 +68,9 @@ const OmokBoardWrapper = ({ engine }: { engine: any }) => {
         resetBoard,
         winner
     } = useOmokGame({ onGameOver: () => { } }); // No-op for internal callback, we use useEffect now
+    const [showGuideHint, setShowGuideHint] = useState(false);
+    const [isGuideHintExiting, setIsGuideHintExiting] = useState(false);
+    const hasShownGuideHintRef = useRef(false);
 
     // Handle Game Over Side Effects
     React.useEffect(() => {
@@ -82,6 +96,43 @@ const OmokBoardWrapper = ({ engine }: { engine: any }) => {
         return () => clearTimeout(timer);
     }, [winner, playerSide, updateScore, updateLives, registerEvent, resetBoard]);
 
+    React.useEffect(() => {
+        const isFirstProblem = engine.stats.correct === 0 && engine.stats.wrong === 0;
+
+        if (engine.gameState !== 'playing') {
+            if (engine.gameState === 'idle' || engine.gameState === 'gameover') {
+                setShowGuideHint(false);
+                setIsGuideHintExiting(false);
+                hasShownGuideHintRef.current = false;
+            }
+            return;
+        }
+
+        if (!isFirstProblem || hasShownGuideHintRef.current) return;
+
+        hasShownGuideHintRef.current = true;
+        setShowGuideHint(true);
+        setIsGuideHintExiting(false);
+    }, [engine.gameState, engine.stats.correct, engine.stats.wrong]);
+
+    React.useEffect(() => {
+        if (!showGuideHint) return;
+
+        setIsGuideHintExiting(false);
+        const hideTimer = window.setTimeout(() => {
+            setIsGuideHintExiting(true);
+        }, 1800);
+        const removeTimer = window.setTimeout(() => {
+            setShowGuideHint(false);
+            setIsGuideHintExiting(false);
+        }, 2020);
+
+        return () => {
+            window.clearTimeout(hideTimer);
+            window.clearTimeout(removeTimer);
+        };
+    }, [showGuideHint]);
+
     // Hoshi points for 15x15 (3, 7, 11) -> indices (3, 7, 11)
     // Pre-calculated for performance
     const isHoshi = (r: number, c: number) => {
@@ -90,18 +141,23 @@ const OmokBoardWrapper = ({ engine }: { engine: any }) => {
 
     return (
         <div className={styles.boardContainer}>
+            {showGuideHint && (
+                <div className={`${styles.omokGuideHint} ${isGuideHintExiting ? styles.omokGuideHintExiting : ''}`}>
+                    {t('games.omok.ui.guideHint', 'AI보다 먼저 5알을 연결해요!')}
+                </div>
+            )}
             {/* Status Message */}
             <div className={styles.statusMessage}>
                 {isAiThinking ? (
                     <>
-                        AI Thinking...
+                        {t('games.omok.status.aiTurn', 'AI is thinking...')}
                         <span className={styles.statusIcon}>
                             <div className={`${styles.statusStone} ${playerSide === 'black' ? styles.white : styles.black}`} />
                         </span>
                     </>
                 ) : (
                     <>
-                        Your Turn
+                        {t('games.omok.status.playerTurn', 'Your Turn')}
                         <span className={styles.statusIcon}>
                             <div className={`${styles.statusStone} ${playerSide === 'black' ? styles.black : styles.white}`} />
                         </span>
