@@ -17,6 +17,9 @@ const ko = {
         }
     },
     formulaHint: '상자를 모두 채워주세요!',
+    ui: {
+        dragToBoxHint: '과일을 상자로 드래그!'
+    },
     feedback: {
         fillAll: '모든 상자를 먼저 채워주세요.',
         retry: '같은 주문을 다시 맞춰보세요.'

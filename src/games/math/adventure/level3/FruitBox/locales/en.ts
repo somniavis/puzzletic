@@ -17,6 +17,9 @@ const en = {
         }
     },
     formulaHint: 'Please fill all boxes!',
+    ui: {
+        dragToBoxHint: 'Drag fruits to the boxes!'
+    },
     feedback: {
         fillAll: 'Fill all boxes first.',
         retry: 'Try the same order again.'

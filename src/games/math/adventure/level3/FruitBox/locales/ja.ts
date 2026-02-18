@@ -17,6 +17,9 @@ const ja = {
         }
     },
     formulaHint: 'すべての箱を埋めてください！',
+    ui: {
+        dragToBoxHint: 'フルーツを箱へドラッグ！'
+    },
     feedback: {
         fillAll: 'まずすべての箱を埋めてください。',
         retry: '同じ注文をもう一度やってみましょう。'

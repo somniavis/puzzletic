@@ -154,6 +154,12 @@
     width: 100%;
     min-width: 0;
     overflow: hidden;
+    isolation: isolate;
+    clip-path: inset(0 round 1.25rem);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    -webkit-mask-image: -webkit-radial-gradient(white, black);
+    mask-image: radial-gradient(white, black);
 }
 
 /* Old Android tap/focus highlight suppression for interactive game elements */
@@ -183,6 +189,10 @@
     height: 100%;
     z-index: 0;
     pointer-events: none;
+    border-radius: inherit;
+    overflow: hidden;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
 }
 
 /* Layout2 Specific Sub-Header (PowerUps ONLY) */

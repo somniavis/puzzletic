@@ -92,6 +92,7 @@ export const FruitBox: React.FC<FruitBoxProps> = ({ onExit }) => {
     const [dragPos, setDragPos] = React.useState({ x: 0, y: 0 });
     const [feedbackText, setFeedbackText] = React.useState('');
     const [isCheckPressed, setIsCheckPressed] = React.useState(false);
+    const [showBundleHintOverlay, setShowBundleHintOverlay] = React.useState(false);
 
     const isDraggingRef = React.useRef(false);
     const draggingBundleRef = React.useRef<number | null>(null);
@@ -103,6 +104,7 @@ export const FruitBox: React.FC<FruitBoxProps> = ({ onExit }) => {
     const lastProblemRef = React.useRef<Problem>(problem);
     const perBoxRef = React.useRef(problem.perBox);
     const dropZoneRef = React.useRef<HTMLElement | null>(null);
+    const hasShownBundleHintRef = React.useRef(false);
 
     React.useEffect(() => {
         boxValuesRef.current = boxValues;
@@ -153,9 +155,25 @@ export const FruitBox: React.FC<FruitBoxProps> = ({ onExit }) => {
         if (enteredPlaying) {
             clearTimers();
             startNewProblem();
+
+            const isFirstQuestion =
+                engine.score === 0 &&
+                engine.stats.correct === 0 &&
+                engine.stats.wrong === 0;
+
+            if (isFirstQuestion && !hasShownBundleHintRef.current) {
+                hasShownBundleHintRef.current = true;
+                setShowBundleHintOverlay(true);
+                const timer = window.setTimeout(() => {
+                    setShowBundleHintOverlay(false);
+                }, 1800);
+                timersRef.current.push(timer);
+            } else {
+                setShowBundleHintOverlay(false);
+            }
         }
         prevGameStateRef.current = engine.gameState;
-    }, [engine.gameState, startNewProblem, clearTimers]);
+    }, [engine.gameState, startNewProblem, clearTimers, engine.score, engine.stats.correct, engine.stats.wrong]);
 
     React.useEffect(() => {
         return () => clearTimers();
@@ -180,23 +198,22 @@ export const FruitBox: React.FC<FruitBoxProps> = ({ onExit }) => {
     const bundleCols = Math.max(1, bundleRows === 1 ? sourceBundles.length : bundleMaxPerRow);
 
     React.useEffect(() => {
-        const handlePointerMove = (event: PointerEvent) => {
+        const handleDragMove = (clientX: number, clientY: number) => {
             if (!isDraggingRef.current || draggingBundleRef.current == null) return;
-            if (draggingPointerIdRef.current !== null && event.pointerId !== draggingPointerIdRef.current) return;
-            const nextPos = { x: event.clientX, y: event.clientY };
+            const nextPos = { x: clientX, y: clientY };
             dragPosRef.current = nextPos;
             setDragPos(nextPos);
         };
 
-        const handlePointerUp = (event: PointerEvent) => {
+        const handleDragEnd = (clientX: number, clientY: number) => {
             const activeBundleId = draggingBundleRef.current;
             if (!isDraggingRef.current || activeBundleId == null) return;
-            if (draggingPointerIdRef.current !== null && event.pointerId !== draggingPointerIdRef.current) return;
+
             isDraggingRef.current = false;
             draggingPointerIdRef.current = null;
 
-            const pointerX = event.clientX || dragPosRef.current.x;
-            const pointerY = event.clientY || dragPosRef.current.y;
+            const pointerX = clientX || dragPosRef.current.x;
+            const pointerY = clientY || dragPosRef.current.y;
 
             const target = document.elementFromPoint(pointerX, pointerY);
             let boxEl = target instanceof Element ? target.closest('[data-box-index]') : null;
@@ -226,13 +243,61 @@ export const FruitBox: React.FC<FruitBoxProps> = ({ onExit }) => {
             setDraggingBundle(null);
         };
 
+        const handlePointerMove = (event: PointerEvent) => {
+            if (draggingPointerIdRef.current !== null && event.pointerId !== draggingPointerIdRef.current) return;
+            handleDragMove(event.clientX, event.clientY);
+        };
+
+        const handlePointerUp = (event: PointerEvent) => {
+            if (draggingPointerIdRef.current !== null && event.pointerId !== draggingPointerIdRef.current) return;
+            handleDragEnd(event.clientX, event.clientY);
+        };
+
+        const handleMouseMove = (event: MouseEvent) => {
+            handleDragMove(event.clientX, event.clientY);
+        };
+
+        const handleMouseUp = (event: MouseEvent) => {
+            handleDragEnd(event.clientX, event.clientY);
+        };
+
+        const handleTouchMove = (event: TouchEvent) => {
+            if (!isDraggingRef.current || draggingBundleRef.current == null) return;
+            const touch = event.touches[0];
+            if (!touch) return;
+            event.preventDefault();
+            handleDragMove(touch.clientX, touch.clientY);
+        };
+
+        const handleTouchEnd = (event: TouchEvent) => {
+            const touch = event.changedTouches[0];
+            if (!touch) {
+                isDraggingRef.current = false;
+                draggingPointerIdRef.current = null;
+                draggingBundleRef.current = null;
+                setDraggingBundle(null);
+                return;
+            }
+            handleDragEnd(touch.clientX, touch.clientY);
+        };
+
         window.addEventListener('pointermove', handlePointerMove, { passive: true });
         window.addEventListener('pointerup', handlePointerUp);
         window.addEventListener('pointercancel', handlePointerUp);
+        window.addEventListener('mousemove', handleMouseMove, { passive: true });
+        window.addEventListener('mouseup', handleMouseUp);
+        window.addEventListener('touchmove', handleTouchMove, { passive: false });
+        window.addEventListener('touchend', handleTouchEnd);
+        window.addEventListener('touchcancel', handleTouchEnd);
         return () => {
             window.removeEventListener('pointermove', handlePointerMove);
             window.removeEventListener('pointerup', handlePointerUp);
             window.removeEventListener('pointercancel', handlePointerUp);
+            window.removeEventListener('mousemove', handleMouseMove);
+            window.removeEventListener('mouseup', handleMouseUp);
+            window.removeEventListener('touchmove', handleTouchMove);
+            window.removeEventListener('touchend', handleTouchEnd);
+            window.removeEventListener('touchcancel', handleTouchEnd);
         };
     }, []);
 
@@ -254,12 +319,39 @@ export const FruitBox: React.FC<FruitBoxProps> = ({ onExit }) => {
         setFeedbackText('');
     };
 
+    const onBundleTouchStart = (event: React.TouchEvent<HTMLButtonElement>, bundleId: number) => {
+        if (engine.gameState !== 'playing') return;
+        const touch = event.touches[0];
+        if (!touch) return;
+        event.preventDefault();
+        isDraggingRef.current = true;
+        draggingPointerIdRef.current = null;
+        draggingBundleRef.current = bundleId;
+        setDraggingBundle(bundleId);
+        const startPos = { x: touch.clientX, y: touch.clientY };
+        dragPosRef.current = startPos;
+        setDragPos(startPos);
+        setFeedbackText('');
+    };
+
+    const onBundleMouseDown = (event: React.MouseEvent<HTMLButtonElement>, bundleId: number) => {
+        if (engine.gameState !== 'playing') return;
+        event.preventDefault();
+        isDraggingRef.current = true;
+        draggingPointerIdRef.current = null;
+        draggingBundleRef.current = bundleId;
+        setDraggingBundle(bundleId);
+        const startPos = { x: event.clientX, y: event.clientY };
+        dragPosRef.current = startPos;
+        setDragPos(startPos);
+        setFeedbackText('');
+    };
+
     const handleCheck = () => {
         if (engine.gameState !== 'playing') return;
 
         const allFilled = boxValues.every((v) => v != null);
         if (!allFilled) {
-            setFeedbackText(t('games.fruit-box.feedback.fillAll'));
             engine.submitAnswer(false, { skipDifficulty: true, skipFeedback: true });
             engine.registerEvent({ type: 'wrong' } as any);
             return;
@@ -358,6 +450,11 @@ export const FruitBox: React.FC<FruitBoxProps> = ({ onExit }) => {
                         } as React.CSSProperties}
                         aria-label="bundle tray"
                     >
+                        {showBundleHintOverlay && (
+                            <div className="bundle-hint-overlay" aria-hidden="true">
+                                <span className="bundle-hint-text">{t('games.fruit-box.ui.dragToBoxHint')}</span>
+                            </div>
+                        )}
                         {sourceBundles.length > 0 ? (
                             sourceBundles.map((bundleId) => (
                                 <button
@@ -365,7 +462,8 @@ export const FruitBox: React.FC<FruitBoxProps> = ({ onExit }) => {
                                     type="button"
                                     className="source-bundle"
                                     onPointerDown={(event) => onBundleDown(event, bundleId)}
-                                    style={{ background: foodBgColor }}
+                                    onTouchStart={(event) => onBundleTouchStart(event, bundleId)}
+                                    onMouseDown={(event) => onBundleMouseDown(event, bundleId)}
                                 >
                                     <span className="bundle-fruits" aria-hidden="true">
                                         {Array.from({ length: problem.perBox }).map((_, idx) => (
@@ -427,7 +525,6 @@ export const FruitBox: React.FC<FruitBoxProps> = ({ onExit }) => {
                     </section>
 
                     <section className="fruit-box-formula-area" aria-live="polite">
-                        <p className="formula-hint">{t('games.fruit-box.formulaHint')}</p>
                         {feedbackText ? <p className="formula-feedback">{feedbackText}</p> : null}
                     </section>
 
