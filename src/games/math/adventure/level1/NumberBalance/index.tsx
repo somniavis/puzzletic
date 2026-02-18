@@ -55,9 +55,51 @@ export const NumberBalance: React.FC<NumberBalanceProps> = ({ onExit }) => {
 
     // --- Drag and Drop Logic ---
     const [draggingId, setDraggingId] = useState<number | null>(null);
+    const [showOptionsHint, setShowOptionsHint] = useState(false);
     const draggingRef = useRef<{ item: NumberItem; el: HTMLElement; startX: number; startY: number; rect: DOMRect } | null>(null);
     const dropZoneRef = useRef<HTMLDivElement>(null);
     const ghostRef = useRef<HTMLDivElement | null>(null);
+    const wasPlayingRef = useRef(false);
+    const hasShownHintRef = useRef(false);
+    const hintTimerRef = useRef<number | null>(null);
+
+    useEffect(() => {
+        if (engine.isPlaying && !wasPlayingRef.current) {
+            hasShownHintRef.current = false;
+            setShowOptionsHint(false);
+            if (hintTimerRef.current) {
+                window.clearTimeout(hintTimerRef.current);
+                hintTimerRef.current = null;
+            }
+        }
+        wasPlayingRef.current = engine.isPlaying;
+    }, [engine.isPlaying]);
+
+    useEffect(() => {
+        if (!engine.isPlaying || !currentProblem || hasShownHintRef.current) return;
+
+        const isFirstQuestion =
+            engine.score === 0 &&
+            engine.stats.correct === 0 &&
+            engine.stats.wrong === 0;
+
+        if (!isFirstQuestion) return;
+
+        hasShownHintRef.current = true;
+        setShowOptionsHint(true);
+        hintTimerRef.current = window.setTimeout(() => {
+            setShowOptionsHint(false);
+            hintTimerRef.current = null;
+        }, 1800);
+    }, [engine.isPlaying, currentProblem, engine.score, engine.stats.correct, engine.stats.wrong]);
+
+    useEffect(() => {
+        return () => {
+            if (hintTimerRef.current) {
+                window.clearTimeout(hintTimerRef.current);
+            }
+        };
+    }, []);
 
     const onGlobalPointerMove = (e: PointerEvent) => {
         if (!draggingRef.current || !ghostRef.current) return;
@@ -211,6 +253,11 @@ export const NumberBalance: React.FC<NumberBalanceProps> = ({ onExit }) => {
                         </div>
 
                         <div className="options-area">
+                            {showOptionsHint && (
+                                <div className="options-hint-overlay" aria-hidden="true">
+                                    <span className="options-hint-text">{t('games.math-number-balance.ui.dragDropHint')}</span>
+                                </div>
+                            )}
                             {availableOptions.map(item => (
                                 <div
                                     key={`${item.id}-${currentProblem ? currentProblem.targetValue : 'void'}`}

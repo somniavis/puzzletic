@@ -7,6 +7,9 @@ export default {
         step2: { title: '두 개 더하기', description: '숫자 두 개 합쳐서' },
         step3: { title: '균형 맞추기!', description: '수평을 만들어요!' }
     },
+    ui: {
+        dragDropHint: '저울로 드래그앤드롭!'
+    },
     powerups: {
         freeze: "시간 멈춤 - 잠시 멈춰서 생각해요!",
         life: "생명 추가 - 한 번 더 기회가 있어요!",

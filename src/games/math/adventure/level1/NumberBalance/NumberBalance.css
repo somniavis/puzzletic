@@ -298,6 +298,27 @@
     justify-content: center;
     gap: 1rem;
     min-height: 100px;
+    position: relative;
+    overflow: hidden;
+}
+
+.options-hint-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.96);
+    z-index: 20;
+    pointer-events: auto;
+}
+
+.options-hint-text {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #1f2937;
+    text-align: center;
+    letter-spacing: 0.01em;
 }
 
 .drop-zone-highlight {

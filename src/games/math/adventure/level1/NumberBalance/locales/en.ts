@@ -7,6 +7,9 @@ export default {
         step2: { title: "Add Two", description: "Drag two numbers" },
         step3: { title: "Balance!", description: "Make both sides equal!" }
     },
+    ui: {
+        dragDropHint: 'Drag & drop to the scale!'
+    },
     powerups: {
         freeze: "Time Freeze - Stop the timer temporarily!",
         life: "Extra Life - Get one more chance!",

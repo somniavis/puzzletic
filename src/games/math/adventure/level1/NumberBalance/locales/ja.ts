@@ -7,6 +7,9 @@ export default {
         step2: { title: '２つ足そう', description: '数字を足して' },
         step3: { title: 'バランス！', description: 'つりあわせよう！' }
     },
+    ui: {
+        dragDropHint: 'はかりへドラッグ&ドロップ！'
+    },
     powerups: {
         freeze: "じかんストップ - すこし止まってかんがえよう！",
         life: "ライフかいふく - もういちどチャンス！",
