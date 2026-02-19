@@ -322,7 +322,13 @@ export const FrontAdditionGame: React.FC<{ onExit: () => void, gameId?: string }
                             }}>
                                 {/* Row 1: Problem Top */}
                                 <Tile val={null} />
-                                <Tile val={currentProblem.row1_hundreds} highlight={is3Digit && currentStep === 1} />
+                                <Tile
+                                    val={currentProblem.row1_hundreds}
+                                    highlight={is3Digit && currentStep === 1}
+                                    showArrow={isLv3 && is3Digit && currentStep === 1}
+                                    arrowType="down"
+                                    arrowPlacement="bottom"
+                                />
                                 <Tile
                                     val={currentProblem.row1_tens}
                                     highlight={(is3Digit && currentStep === 2) || (!is3Digit && currentStep === 1)}

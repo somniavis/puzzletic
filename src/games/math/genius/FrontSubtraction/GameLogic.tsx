@@ -51,6 +51,9 @@ export const useGameLogic = (engine: ReturnType<typeof useGameEngine>, gameId?: 
 
     const [feedback, setFeedback] = useState<'correct' | 'wrong' | null>(null);
     const [prevGameState, setPrevGameState] = useState(gameState);
+    const [lv1GeneratedCount, setLv1GeneratedCount] = useState(0);
+    const [lv2GeneratedCount, setLv2GeneratedCount] = useState(0);
+    const [lv3GeneratedCount, setLv3GeneratedCount] = useState(0);
 
     const generateProblem = useCallback(() => {
         let a = 0, b = 0;
@@ -83,32 +86,119 @@ export const useGameLogic = (engine: ReturnType<typeof useGameEngine>, gameId?: 
 
         } else if (gameId === 'front-subtraction-lv3') {
             // Level 3: 3-digit - 2-digit
-            const { uA, uB } = getWeightedUnits();
+            const stage = lv3GeneratedCount;
             const hA = Math.floor(Math.random() * 9) + 1;
-            const tA = Math.floor(Math.random() * 10);
-            const tB = Math.floor(Math.random() * 9) + 1;
+            let tA: number, tB: number, uA: number, uB: number;
+
+            if (stage === 0) {
+                // 1st: H direct, T direct, U direct
+                tB = Math.floor(Math.random() * 8) + 1; // 1-8
+                tA = Math.floor(Math.random() * (9 - tB)) + (tB + 1); // (tB+1)-9
+                uB = Math.floor(Math.random() * 10); // 0-9
+                uA = Math.floor(Math.random() * (10 - uB)) + uB; // uB-9
+            } else if (stage < 3) {
+                // 2nd-3rd: H direct, T direct, U borrow
+                tB = Math.floor(Math.random() * 8) + 1; // 1-8
+                tA = Math.floor(Math.random() * (9 - tB)) + (tB + 1); // (tB+1)-9
+                uB = Math.floor(Math.random() * 9) + 1; // 1-9
+                uA = Math.floor(Math.random() * uB); // 0-(uB-1)
+            } else if (stage < 5) {
+                // 4th-5th: H direct, T borrow, U direct
+                tB = Math.floor(Math.random() * 9) + 1; // 1-9
+                tA = Math.floor(Math.random() * tB); // 0-(tB-1)
+                uB = Math.floor(Math.random() * 10); // 0-9
+                uA = Math.floor(Math.random() * (10 - uB)) + uB; // uB-9
+            } else if (stage < 7) {
+                // 6th-7th: H direct, T borrow, U borrow
+                tB = Math.floor(Math.random() * 9) + 1; // 1-9
+                tA = Math.floor(Math.random() * tB); // 0-(tB-1)
+                uB = Math.floor(Math.random() * 9) + 1; // 1-9
+                uA = Math.floor(Math.random() * uB); // 0-(uB-1)
+            } else {
+                // 8th+: random (with T non-zero diff rule maintained)
+                tB = Math.floor(Math.random() * 9) + 1; // 1-9
+                tA = Math.floor(Math.random() * 10); // 0-9
+                while (tA === tB) {
+                    tA = Math.floor(Math.random() * 10);
+                }
+                uA = Math.floor(Math.random() * 10); // 0-9
+                uB = Math.floor(Math.random() * 10); // 0-9
+            }
+
             a = hA * 100 + tA * 10 + uA;
             b = tB * 10 + uB;
             is3Digit = true;
 
         } else if (gameId === 'front-subtraction-lv2') {
             // Level 2: 2-digit - 2-digit
-            const { uA, uB, wantBorrow } = getWeightedUnits();
-            let tA, tB;
-            if (wantBorrow) { // Need tA > tB
-                tB = Math.floor(Math.random() * 8) + 1; // 1-8
-                tA = Math.floor(Math.random() * (9 - tB)) + tB + 1; // tB+1 to 9
-            } else { // Need tA >= tB
-                tB = Math.floor(Math.random() * 9) + 1;
-                tA = Math.floor(Math.random() * (10 - tB)) + tB; // tB to 9
-            }
-            a = tA * 10 + uA;
-            b = tB * 10 + uB;
+            const stage = lv2GeneratedCount;
+            do {
+                let tA, tB, uA, uB;
+
+                if (stage < 2) {
+                    // 1st-2nd problems:
+                    // - Tens: direct subtraction (tA > tB)
+                    // - Units: direct subtraction (uA >= uB)
+                    tB = Math.floor(Math.random() * 8) + 1; // 1-8
+                    tA = Math.floor(Math.random() * (9 - tB)) + (tB + 1); // (tB+1)-9
+                    uB = Math.floor(Math.random() * 10); // 0-9
+                    uA = Math.floor(Math.random() * (10 - uB)) + uB; // uB-9
+                } else if (stage < 4) {
+                    // 3rd-4th problems:
+                    // - Tens: direct subtraction, tens result within 30 (0 < tA - tB <= 3)
+                    // - Units: borrow case (uA < uB)
+                    tB = Math.floor(Math.random() * 8) + 1; // 1-8
+                    const minTA = tB + 1;
+                    const maxTA = Math.min(9, tB + 3);
+                    tA = Math.floor(Math.random() * (maxTA - minTA + 1)) + minTA; // (tB+1)-maxTA
+                    uB = Math.floor(Math.random() * 9) + 1; // 1-9
+                    uA = Math.floor(Math.random() * uB); // 0-(uB-1)
+                } else {
+                    // 5th+ problems: fully random (valid 2-digit - 2-digit range)
+                    tB = Math.floor(Math.random() * 8) + 1; // 1-8
+                    tA = Math.floor(Math.random() * (9 - tB)) + (tB + 1); // (tB+1)-9
+                    uA = Math.floor(Math.random() * 10);
+                    uB = Math.floor(Math.random() * 10);
+                }
+
+                a = tA * 10 + uA;
+                b = tB * 10 + uB;
+            } while (a === b);
 
         } else {
             // Level 1: 2-digit - 1-digit
-            const { uA, uB } = getWeightedUnits();
-            const tA = Math.floor(Math.random() * 9) + 1;
+            const stage = lv1GeneratedCount;
+            let tA: number;
+            let uA: number;
+            let uB: number;
+
+            if (stage === 0) {
+                // First problem:
+                // - Units: directly subtractable (uA >= uB)
+                tA = Math.floor(Math.random() * 9) + 1;
+                uB = Math.floor(Math.random() * 10); // 0-9
+                uA = Math.floor(Math.random() * (10 - uB)) + uB; // uB-9
+            } else if (stage === 1) {
+                // Second problem:
+                // - Tens digit fixed to 1
+                // - Units: borrow case (uA < uB)
+                tA = 1;
+                uB = Math.floor(Math.random() * 9) + 1; // 1-9
+                uA = Math.floor(Math.random() * uB); // 0-(uB-1)
+            } else if (stage === 2) {
+                // Third problem:
+                // - Tens digit fixed to 2
+                // - Units: borrow case (uA < uB)
+                tA = 2;
+                uB = Math.floor(Math.random() * 9) + 1; // 1-9
+                uA = Math.floor(Math.random() * uB); // 0-(uB-1)
+            } else {
+                // From fourth problem: fully random
+                tA = Math.floor(Math.random() * 9) + 1;
+                uA = Math.floor(Math.random() * 10);
+                uB = Math.floor(Math.random() * 10);
+            }
+
             a = tA * 10 + uA;
             b = uB;
         }
@@ -231,18 +321,34 @@ export const useGameLogic = (engine: ReturnType<typeof useGameEngine>, gameId?: 
         setCompletedSteps({ step1: null, step2: null, step3: null, step4: null, step5: null });
         setCurrentStep(1);
         setFeedback(null);
-    }, [gameId]);
+        if (!gameId || gameId === 'front-subtraction-lv1') {
+            setLv1GeneratedCount(prev => prev + 1);
+        } else if (gameId === 'front-subtraction-lv2') {
+            setLv2GeneratedCount(prev => prev + 1);
+        } else if (gameId === 'front-subtraction-lv3') {
+            setLv3GeneratedCount(prev => prev + 1);
+        }
+    }, [gameId, lv1GeneratedCount, lv2GeneratedCount, lv3GeneratedCount]);
 
     // Reset state
     useEffect(() => {
-        if (gameState === 'idle') {
+        if (gameState === 'idle' || gameState === 'gameover') {
             setCurrentProblem(null);
             setUserInput('');
             setCompletedSteps({ step1: null, step2: null, step3: null, step4: null, step5: null });
             setCurrentStep(1);
             setFeedback(null);
+            setLv1GeneratedCount(0);
+            setLv2GeneratedCount(0);
+            setLv3GeneratedCount(0);
         }
     }, [gameState]);
+
+    useEffect(() => {
+        setLv1GeneratedCount(0);
+        setLv2GeneratedCount(0);
+        setLv3GeneratedCount(0);
+    }, [gameId]);
 
     // Handle Game Start
     useEffect(() => {
