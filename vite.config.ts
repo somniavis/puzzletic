@@ -11,30 +11,9 @@ export default defineConfig({
     },
   },
   build: {
-    rollupOptions: {
-      output: {
-        manualChunks(id) {
-          // Third-party vendors
-          if (id.includes('node_modules')) {
-            if (id.includes('firebase')) return 'vendor-firebase';
-            if (id.includes('react') || id.includes('scheduler')) return 'vendor-react';
-            if (id.includes('i18next')) return 'vendor-i18n';
-            if (id.includes('@dnd-kit')) return 'vendor-dnd';
-            if (id.includes('lucide-react')) return 'vendor-lucide';
-            return 'vendor-misc';
-          }
-
-          // App-level split points to avoid a single oversized app chunk
-          if (id.includes('/src/games/math/genius/')) return 'games-math-genius';
-          if (id.includes('/src/games/math/adventure/')) return 'games-math-adventure';
-          if (id.includes('/src/games/')) return 'games-other';
-          if (id.includes('/src/contexts/')) return 'app-contexts';
-          if (id.includes('/src/pages/')) return 'app-pages';
-
-          return undefined;
-        },
-      }
-    },
+    // Use Vite/Rollup default chunking for stability.
+    // The previous custom manualChunks introduced fragile vendor split behavior
+    // that can cause runtime init-order issues in production.
     chunkSizeWarningLimit: 700,
   }
 })
