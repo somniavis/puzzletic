@@ -91,24 +91,9 @@ const HintArrow = ({ type }: { type: 'down' | 'diagonal' | 'diagonal-long' | 'pl
             <div style={{
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '2px',
                 animation: 'floatGuide 1.5s ease-in-out infinite', lineHeight: 1,
-                transform: (type === 'diagonal' || type === 'diagonal-long') ? 'rotate(-45deg)' : 'none',
-                position: 'relative',
-                width: type === 'diagonal-long' ? '24cqi' : 'auto',
-                justifyContent: type === 'diagonal-long' ? 'space-between' : 'center'
+                transform: type === 'diagonal' ? 'rotate(-45deg)' : 'none',
+                position: 'relative'
             }}>
-                {type === 'diagonal-long' && (
-                    <div style={{
-                        position: 'absolute',
-                        left: '50%',
-                        top: '50%',
-                        transform: 'translate(-50%, -50%)',
-                        width: '16cqi',
-                        height: '0.8cqi',
-                        background: '#ef4444',
-                        borderRadius: '999px',
-                        boxShadow: '0 1px 2px rgba(255,255,255,0.8)'
-                    }} />
-                )}
                 <div style={{
                     width: '7cqi', height: '7cqi', borderRadius: '50%', background: 'white', border: '2px solid #ef4444',
                     display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '4cqi', boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
@@ -116,7 +101,7 @@ const HintArrow = ({ type }: { type: 'down' | 'diagonal' | 'diagonal-long' | 'pl
                     {type === 'plus' ? '+' : '×'}
                 </div>
                 <div style={{ fontSize: '8cqi', color: '#ef4444', fontWeight: 'bold', textShadow: '0 2px 4px rgba(255,255,255,0.8)' }}>
-                    {(type === 'diagonal' || type === 'diagonal-long') ? '↘' : '↓'}
+                    {type === 'diagonal' ? '↘' : '↓'}
                 </div>
             </div>
         </div>
