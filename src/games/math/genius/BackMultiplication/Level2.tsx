@@ -47,9 +47,9 @@ const HintArrow = ({ type }: { type: 'down' | 'diagonal' | 'plus' }) => {
 
     if (type === 'diagonal') {
         Object.assign(style, {
-            left: '-135%',
+            left: '-165%',
             width: '280%',
-            top: '-10%',
+            top: '-28%',
             transform: 'none'
         });
     } else if (type === 'plus') {

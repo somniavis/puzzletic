@@ -41,19 +41,39 @@ export const useBackMultiplicationLogicLv2 = (engine: ReturnType<typeof useGameE
 
     const [feedback, setFeedback] = useState<'correct' | 'wrong' | null>(null);
     const [prevGameState, setPrevGameState] = useState(gameState);
+    const [generatedCount, setGeneratedCount] = useState(0);
 
-    // Padding helper: 6 -> '06', 0 -> '00', 12 -> '12'
-    // Modified: User requested NO leading zeros if < 10. e.g. 6 -> '6', 0 -> '0'.
+    // For Lv2 step inputs, do not require a leading zero.
+    // e.g. 0 -> "0", 5 -> "5", 12 -> "12"
     const toExpectationStr = (num: number): string => {
-        return num.toString().padStart(2, '0');
+        return num.toString();
     };
 
     const generateProblem = useCallback(() => {
         // Level 1: 2-digit x 1-digit
         // Avoid trivial cases check? Maybe (x1, x0 usually too simple, but x0 is instructive)
         // Let's generate range [10, 99] x [2, 9] to make it meaningful.
-        const a = Math.floor(Math.random() * 90) + 10; // 10-99
-        const b = Math.floor(Math.random() * 8) + 2;   // 2-9
+        let a = 0;
+        let b = 0;
+
+        if (generatedCount < 3) {
+            // First 3 problems: avoid carry when adding Tens column in partial-sum stage.
+            // tensCarry = tensDigit(step1) + unitsDigit(step2) >= 10
+            do {
+                a = Math.floor(Math.random() * 90) + 10; // 10-99
+                b = Math.floor(Math.random() * 8) + 2;   // 2-9
+                const tA = Math.floor(a / 10);
+                const uA = a % 10;
+                const s1 = uA * b;
+                const s2 = tA * b;
+                const tensCarry = Math.floor(s1 / 10) + (s2 % 10) >= 10;
+                if (!tensCarry) break;
+            } while (true);
+        } else {
+            // 4th+ problems: fully random
+            a = Math.floor(Math.random() * 90) + 10; // 10-99
+            b = Math.floor(Math.random() * 8) + 2;   // 2-9
+        }
 
         const tA = Math.floor(a / 10);
         const uA = a % 10;
@@ -88,18 +108,20 @@ export const useBackMultiplicationLogicLv2 = (engine: ReturnType<typeof useGameE
         setCompletedSteps({ step1: null, step2: null, step3: null });
         setCurrentStep(1);
         setFeedback(null);
-    }, []);
+        setGeneratedCount(prev => prev + 1);
+    }, [generatedCount]);
 
     // ... (useEffect reset and start logic unchanged, skipping for brevity) ...
 
     // Reset state
     useEffect(() => {
-        if (gameState === 'idle') {
+        if (gameState === 'idle' || gameState === 'gameover') {
             setCurrentProblem(null);
             setUserInput('');
             setCompletedSteps({ step1: null, step2: null, step3: null });
             setCurrentStep(1);
             setFeedback(null);
+            setGeneratedCount(0);
         }
     }, [gameState]);
 

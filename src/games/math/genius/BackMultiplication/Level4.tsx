@@ -97,7 +97,7 @@ const HintArrow = ({ type }: { type: 'down' | 'diagonal-right' | 'diagonal-left'
 };
 
 interface TileProps {
-    val: string | number | null;
+    val: React.ReactNode | null;
     type?: 'static' | 'input';
     active?: boolean;
     isFeedback?: boolean;
@@ -174,10 +174,15 @@ export const BackMultiplicationGameLv4: React.FC<{ onExit: () => void, gameId?: 
     const step5Disp = currentStep === 5 ? userInput : (completedSteps[5] || '');
 
     // Tile Generation
-    const step1Tiles = useMemo(() => fillSlots(currentStep >= 1 ? step1Disp : null, 2, 2), [step1Disp, currentStep]);
-    const step2Tiles = useMemo(() => fillSlots(currentStep >= 2 ? step2Disp : null, 2, 2), [step2Disp, currentStep]);
-    const step3Tiles = useMemo(() => fillSlots(currentStep >= 3 ? step3Disp : null, 2, 2), [step3Disp, currentStep]);
-    const step4Tiles = useMemo(() => fillSlots(currentStep >= 4 ? step4Disp : null, 2, 2), [step4Disp, currentStep]);
+    const step1Len = currentProblem?.step1_target.length || 2;
+    const step2Len = currentProblem?.step2_target.length || 2;
+    const step3Len = currentProblem?.step3_target.length || 2;
+    const step4Len = currentProblem?.step4_target.length || 2;
+
+    const step1Tiles = useMemo(() => fillSlots(currentStep >= 1 ? step1Disp : null, step1Len, 2), [step1Disp, currentStep, step1Len]);
+    const step2Tiles = useMemo(() => fillSlots(currentStep >= 2 ? step2Disp : null, step2Len, 2), [step2Disp, currentStep, step2Len]);
+    const step3Tiles = useMemo(() => fillSlots(currentStep >= 3 ? step3Disp : null, step3Len, 2), [step3Disp, currentStep, step3Len]);
+    const step4Tiles = useMemo(() => fillSlots(currentStep >= 4 ? step4Disp : null, step4Len, 2), [step4Disp, currentStep, step4Len]);
     // Step 5: Variable length
     const totalLen = currentProblem?.step5_target.length || 4;
     const step5Tiles = useMemo(() => fillSlots(currentStep >= 5 ? step5Disp : null, totalLen, 4), [step5Disp, currentStep, totalLen]);
@@ -187,6 +192,18 @@ export const BackMultiplicationGameLv4: React.FC<{ onExit: () => void, gameId?: 
     const n1_u = currentProblem ? currentProblem.num1 % 10 : null;
     const n2_t = currentProblem ? Math.floor(currentProblem.num2 / 10) : null;
     const n2_u = currentProblem ? currentProblem.num2 % 10 : null;
+
+    const withGhostLeadingZero = (tiles: Array<string | null>, visibleLen: number, raw: string) => {
+        if (visibleLen !== 1 || raw !== '0') return tiles;
+        const result = [...tiles] as Array<React.ReactNode | null>;
+        result[0] = <span style={{ opacity: 0.35 }}>0</span>;
+        return result;
+    };
+
+    const step1RenderTiles = withGhostLeadingZero(step1Tiles, step1Len, step1Disp);
+    const step2RenderTiles = withGhostLeadingZero(step2Tiles, step2Len, step2Disp);
+    const step3RenderTiles = withGhostLeadingZero(step3Tiles, step3Len, step3Disp);
+    const step4RenderTiles = withGhostLeadingZero(step4Tiles, step4Len, step4Disp);
 
     return (
         <Layout2
@@ -247,21 +264,21 @@ export const BackMultiplicationGameLv4: React.FC<{ onExit: () => void, gameId?: 
                                 <div style={{ gridColumn: '1/-1', height: '4px', background: '#cbd5e1', borderRadius: '2px', alignSelf: 'center', width: '100%' }} />
 
                                 {/* Row 3: Step 2 & 1 [S2][S2][S1][S1] */}
-                                <Tile val={step2Tiles[0]} type={currentStep === 2 ? 'input' : 'static'} active={currentStep === 2} isFeedback={!!feedback} feedbackStatus={feedback} />
-                                <Tile val={step2Tiles[1]} type={currentStep === 2 ? 'input' : 'static'} active={currentStep === 2} isFeedback={!!feedback} feedbackStatus={feedback} />
-                                <Tile val={step1Tiles[0]} type={currentStep === 1 ? 'input' : 'static'} active={currentStep === 1} isFeedback={!!feedback} feedbackStatus={feedback} />
-                                <Tile val={step1Tiles[1]} type={currentStep === 1 ? 'input' : 'static'} active={currentStep === 1} isFeedback={!!feedback} feedbackStatus={feedback} />
+                                <Tile val={step2RenderTiles[0]} type={currentStep === 2 ? 'input' : 'static'} active={currentStep === 2} isFeedback={!!feedback} feedbackStatus={feedback} />
+                                <Tile val={step2RenderTiles[1]} type={currentStep === 2 ? 'input' : 'static'} active={currentStep === 2} isFeedback={!!feedback} feedbackStatus={feedback} />
+                                <Tile val={step1RenderTiles[0]} type={currentStep === 1 ? 'input' : 'static'} active={currentStep === 1} isFeedback={!!feedback} feedbackStatus={feedback} />
+                                <Tile val={step1RenderTiles[1]} type={currentStep === 1 ? 'input' : 'static'} active={currentStep === 1} isFeedback={!!feedback} feedbackStatus={feedback} />
 
                                 {/* Row 4: Step 3 (Outer Cross) [ ][S3][S3][ ] */}
                                 <Tile val={null} showArrow={currentStep === 5} arrowType="plus" /> {/* Plus Hint for Step 5 */}
-                                <Tile val={step3Tiles[0]} type={currentStep === 3 ? 'input' : 'static'} active={currentStep === 3} isFeedback={!!feedback} feedbackStatus={feedback} />
-                                <Tile val={step3Tiles[1]} type={currentStep === 3 ? 'input' : 'static'} active={currentStep === 3} isFeedback={!!feedback} feedbackStatus={feedback} />
+                                <Tile val={step3RenderTiles[0]} type={currentStep === 3 ? 'input' : 'static'} active={currentStep === 3} isFeedback={!!feedback} feedbackStatus={feedback} />
+                                <Tile val={step3RenderTiles[1]} type={currentStep === 3 ? 'input' : 'static'} active={currentStep === 3} isFeedback={!!feedback} feedbackStatus={feedback} />
                                 <Tile val={null} />
 
                                 {/* Row 5: Step 4 (Inner Cross) [ ][S4][S4][ ] */}
                                 <Tile val={null} />
-                                <Tile val={step4Tiles[0]} type={currentStep === 4 ? 'input' : 'static'} active={currentStep === 4} isFeedback={!!feedback} feedbackStatus={feedback} />
-                                <Tile val={step4Tiles[1]} type={currentStep === 4 ? 'input' : 'static'} active={currentStep === 4} isFeedback={!!feedback} feedbackStatus={feedback} />
+                                <Tile val={step4RenderTiles[0]} type={currentStep === 4 ? 'input' : 'static'} active={currentStep === 4} isFeedback={!!feedback} feedbackStatus={feedback} />
+                                <Tile val={step4RenderTiles[1]} type={currentStep === 4 ? 'input' : 'static'} active={currentStep === 4} isFeedback={!!feedback} feedbackStatus={feedback} />
                                 <Tile val={null} />
 
                                 {/* Sep 2 */}

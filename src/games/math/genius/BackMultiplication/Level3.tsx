@@ -25,19 +25,90 @@ const HintArrow = ({ type }: { type: 'down' | 'diagonal' | 'diagonal-long' | 'pl
         display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 20, pointerEvents: 'none'
     };
     if (type === 'diagonal') {
-        Object.assign(style, { left: '-135%', width: '280%', top: '-10%', transform: 'none' });
+        Object.assign(style, { left: '-165%', width: '280%', top: '-28%', transform: 'none' });
     } else if (type === 'diagonal-long') {
-        Object.assign(style, { left: '-235%', width: '380%', top: '-10%', transform: 'none' });
+        Object.assign(style, { left: '-300%', width: '460%', top: '-62%', transform: 'none' });
     } else if (type === 'plus') {
         Object.assign(style, { left: '-10%', width: '100%', top: '40%', transform: 'none' });
     }
+
+    if (type === 'diagonal-long') {
+        return (
+            <div style={style}>
+                <div style={{
+                    position: 'relative',
+                    width: '30cqi',
+                    height: '14cqi',
+                    animation: 'floatGuide 1.5s ease-in-out infinite'
+                }}>
+                    <div style={{
+                        position: 'absolute',
+                        left: '-0.4cqi',
+                        top: '4.5cqi',
+                        width: '7cqi',
+                        height: '7cqi',
+                        borderRadius: '50%',
+                        background: 'white',
+                        border: '2px solid #ef4444',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: '4cqi',
+                        boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                    }}>
+                        ×
+                    </div>
+
+                    <svg
+                        viewBox="0 0 300 140"
+                        style={{
+                            position: 'absolute',
+                            left: 0,
+                            top: 0,
+                            width: '100%',
+                            height: '100%',
+                            overflow: 'visible'
+                        }}
+                    >
+                        <line
+                            x1="58"
+                            y1="42"
+                            x2="270"
+                            y2="124"
+                            stroke="#ef4444"
+                            strokeWidth="8"
+                            strokeLinecap="round"
+                        />
+                        <polygon points="270,124 242,122 258,98" fill="#ef4444" />
+                    </svg>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div style={style}>
             <div style={{
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '2px',
                 animation: 'floatGuide 1.5s ease-in-out infinite', lineHeight: 1,
-                transform: (type === 'diagonal' || type === 'diagonal-long') ? 'rotate(-45deg)' : 'none'
+                transform: (type === 'diagonal' || type === 'diagonal-long') ? 'rotate(-45deg)' : 'none',
+                position: 'relative',
+                width: type === 'diagonal-long' ? '24cqi' : 'auto',
+                justifyContent: type === 'diagonal-long' ? 'space-between' : 'center'
             }}>
+                {type === 'diagonal-long' && (
+                    <div style={{
+                        position: 'absolute',
+                        left: '50%',
+                        top: '50%',
+                        transform: 'translate(-50%, -50%)',
+                        width: '16cqi',
+                        height: '0.8cqi',
+                        background: '#ef4444',
+                        borderRadius: '999px',
+                        boxShadow: '0 1px 2px rgba(255,255,255,0.8)'
+                    }} />
+                )}
                 <div style={{
                     width: '7cqi', height: '7cqi', borderRadius: '50%', background: 'white', border: '2px solid #ef4444',
                     display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '4cqi', boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
@@ -102,10 +173,14 @@ export const BackMultiplicationGameLv3: React.FC<{ onExit: () => void, gameId?: 
     const step3Disp = currentStep >= 3 ? (currentStep === 3 ? userInput : (completedSteps.step3 || '')) : null;
     const step4Disp = currentStep >= 4 ? (currentStep === 4 ? userInput : (completedSteps.step4 || '')) : null;
 
-    // Step Tiles (All 2 digits for partial steps)
-    const step1Tiles = useMemo(() => fillSlots(step1Disp, 2, 2), [step1Disp]);
-    const step2Tiles = useMemo(() => fillSlots(step2Disp, 2, 2), [step2Disp]);
-    const step3Tiles = useMemo(() => fillSlots(step3Disp, 2, 2), [step3Disp]);
+    // Step Tiles (partial steps can be 1 or 2 digits)
+    const step1Digits = useMemo(() => currentProblem?.step1_str.length || 1, [currentProblem]);
+    const step2Digits = useMemo(() => currentProblem?.step2_str.length || 1, [currentProblem]);
+    const step3Digits = useMemo(() => currentProblem?.step3_str.length || 1, [currentProblem]);
+
+    const step1Tiles = useMemo(() => fillSlots(step1Disp, step1Digits, 2), [step1Disp, step1Digits]);
+    const step2Tiles = useMemo(() => fillSlots(step2Disp, step2Digits, 2), [step2Disp, step2Digits]);
+    const step3Tiles = useMemo(() => fillSlots(step3Disp, step3Digits, 2), [step3Disp, step3Digits]);
 
     // Total (Step 4)
     const step4Tiles = useMemo(() => fillSlots(step4Disp, totalStepDigits, 4), [step4Disp, totalStepDigits]);
@@ -180,7 +255,36 @@ export const BackMultiplicationGameLv3: React.FC<{ onExit: () => void, gameId?: 
                                 <Tile val={null} />
 
                                 {/* Sep 2 */}
-                                <div style={{ gridColumn: '1 / -1', height: '4px', background: '#cbd5e1', borderRadius: '2px', alignSelf: 'center', width: '100%', opacity: currentStep === 4 ? 1 : 0, transition: 'opacity 0.3s' }} />
+                                <div style={{
+                                    gridColumn: '1 / -1',
+                                    height: '4px',
+                                    background: '#cbd5e1',
+                                    borderRadius: '2px',
+                                    alignSelf: 'center',
+                                    width: '100%',
+                                    opacity: currentStep === 4 ? 1 : 0,
+                                    transition: 'opacity 0.3s',
+                                    position: 'relative'
+                                }}>
+                                    {currentStep === 4 && (
+                                        <div style={{
+                                            position: 'absolute',
+                                            top: '-24px',
+                                            left: '1.5%',
+                                            transform: 'translateX(-50%)',
+                                            fontSize: '8cqi',
+                                            color: '#ef4444',
+                                            fontWeight: 'bold',
+                                            textShadow: '0 2px 4px rgba(255,255,255,0.8)',
+                                            animation: 'floatGuide 1.5s ease-in-out infinite',
+                                            lineHeight: 1,
+                                            zIndex: 120,
+                                            pointerEvents: 'none'
+                                        }}>
+                                            ↓
+                                        </div>
+                                    )}
+                                </div>
 
                                 {/* Step 4: Total (Cols 1,2,3,4) */}
                                 <Tile val={step4Tiles[0]} type={currentStep === 4 ? 'input' : 'static'} active={currentStep === 4} isFeedback={!!feedback} feedbackStatus={feedback} />
