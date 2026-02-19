@@ -3,6 +3,7 @@ import { onAuthStateChanged, signOut as firebaseSignOut } from 'firebase/auth';
 import { ref, set, onValue } from 'firebase/database';
 import type { User } from 'firebase/auth';
 import { auth, database } from '../firebase';
+import { fetchUserData } from '../services/syncService';
 
 interface AuthContextType {
     user: User | null;
@@ -55,14 +56,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         const initPremiumSession = async () => {
             try {
-                const { fetchUserData } = await import('../services/syncService');
                 const result = await fetchUserData(user);
 
                 if (!result.success || !result.data) return;
 
-                const { is_premium, subscription_end } = result.data;
-                const isPremium = is_premium === 1 ||
-                    (subscription_end != null && subscription_end > Date.now());
+                const { subscription_end } = result.data;
+                const premiumRaw = (result.data as { is_premium?: unknown }).is_premium;
+                const premiumFlag =
+                    premiumRaw === 1 ||
+                    premiumRaw === true ||
+                    premiumRaw === '1';
+
+                const premiumExpiry =
+                    typeof subscription_end === 'string'
+                        ? Number(subscription_end)
+                        : subscription_end;
+
+                const isPremium =
+                    premiumFlag ||
+                    (typeof premiumExpiry === 'number' &&
+                        Number.isFinite(premiumExpiry) &&
+                        premiumExpiry > Date.now());
 
                 if (!isPremium) return;
 
@@ -82,8 +96,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                         firebaseSignOut(auth); // Silent logout
                     }
                 });
-            } catch {
-                // Silently fail - don't block user experience
+            } catch (error) {
+                // Keep UX non-blocking, but expose diagnostics for session guard issues.
+                console.warn('[SessionGuard] Failed to initialize premium session protection:', error);
             }
         };
 

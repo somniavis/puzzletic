@@ -20,7 +20,7 @@ import {
     saveFailSafeLastSeenStage,
     getFailSafeLastSeenStage
 } from '../../services/persistenceService';
-import { syncUserData, fetchUserData, purchaseSubscription } from '../../services/syncService';
+import { syncUserData, fetchUserData, purchaseSubscription, cancelSubscription as cancelSubscriptionApi } from '../../services/syncService';
 import { useDebounce } from '../../hooks/useDebounce';
 import { getProgressionCategory, getUnlockThreshold, createGameScore } from '../../utils/progression';
 
@@ -460,8 +460,7 @@ export const useNurturingSync = (user: User | null, guestId: string | null = nul
         if (!user) return false;
 
         try {
-            const { cancelSubscription: cancelApi } = await import('../../services/syncService');
-            const result = await cancelApi(user);
+            const result = await cancelSubscriptionApi(user);
 
             if (result.success) {
                 setSubscription({
