@@ -932,8 +932,8 @@ export const en = {
       later: 'Maybe Later',
     },
     login: {
-      title: 'Join us',
-      subtitle: 'Log in to sync your data.',
+      title: 'Log In',
+      subtitle: 'Your cute Jello is waiting!',
       email: 'Email',
       emailPlaceholder: 'Enter your email',
       password: 'Password',
@@ -945,7 +945,7 @@ export const en = {
     },
     signup: {
       title: 'Sign Up',
-      subtitle: 'Create an account to join Jello!',
+      subtitle: 'Save your precious moments with Jello.',
       emailLabel: 'Email',
       emailPlaceholder: 'Enter your email',
       passwordLabel: 'Password',

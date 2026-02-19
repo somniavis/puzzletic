@@ -890,8 +890,8 @@ export const ja = {
             later: '後で',
         },
         login: {
-            title: 'Join us',
-            subtitle: 'ログインしてデータを同期しましょう。',
+            title: 'ログイン',
+            subtitle: 'かわいいジェロが待ってるよ！',
             email: 'メールアドレス',
             emailPlaceholder: 'メールアドレスを入力',
             password: 'パスワード',
@@ -903,7 +903,7 @@ export const ja = {
         },
         signup: {
             title: '新規登録',
-            subtitle: 'アカウントを作成して始めましょう！',
+            subtitle: 'ジェロとの大切な時間を記録しよう。',
             emailLabel: 'メールアドレス',
             emailPlaceholder: 'メールアドレスを入力',
             passwordLabel: 'パスワード',

@@ -934,8 +934,8 @@ export const ko = {
             later: '다음에 할게요',
         },
         login: {
-            title: 'Join us',
-            subtitle: '계정에 로그인하여 데이터를 동기화하세요.',
+            title: '로그인',
+            subtitle: '귀여운 젤로가 기다리고있어요!',
             email: '이메일',
             emailPlaceholder: '이메일을 입력하세요',
             password: '비밀번호',
@@ -947,7 +947,7 @@ export const ko = {
         },
         signup: {
             title: '회원가입',
-            subtitle: '계정을 만들고 젤로와 함께하세요!',
+            subtitle: '젤로와의 소중한 시간을 기록하세요.',
             emailLabel: '이메일',
             emailPlaceholder: '이메일을 입력하세요',
             passwordLabel: '비밀번호',

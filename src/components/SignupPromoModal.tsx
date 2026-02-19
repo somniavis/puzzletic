@@ -16,7 +16,7 @@ export const SignupPromoModal: React.FC<SignupPromoModalProps> = ({ onClose, onS
     const handleAction = () => {
         playButtonSound();
         onSignup();
-        navigate('/login', { state: { from: '/room' } });
+        navigate('/signup', { state: { from: '/room' } });
     };
 
     return (

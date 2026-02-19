@@ -12,6 +12,7 @@ export const ProfilePage: React.FC = () => {
     const { user } = useAuth();
     const { pauseTick, resumeTick, gro, xp, addRewards, maxStats, subscription, purchasePlan, cancelSubscription, debugUnlockAllGames, debugAddStars } = useNurturing();
     const isPremium = subscription.isPremium;
+    const isGuest = !user;
 
     // Pause ticks when entering Profile page, resume when leaving
     useEffect(() => {
@@ -54,7 +55,15 @@ export const ProfilePage: React.FC = () => {
                 <section className="profile-section">
 
                     {/* Account Status Card (Designed like Subscription Buttons) */}
-                    <div className={`account-status-card ${isPremium ? 'premium-active' : ''}`}>
+                    <div
+                        className={`account-status-card ${isPremium ? 'premium-active' : ''}`}
+                        onClick={() => {
+                            if (isGuest) {
+                                navigate('/signup', { state: { from: '/profile' } });
+                            }
+                        }}
+                        style={{ cursor: isGuest ? 'pointer' : 'default' }}
+                    >
                         <span className={`status-badge ${isPremium ? 'premium' : 'free'}`}>
                             {isPremium ? t('profile.status.premium') : t('profile.status.free')}
                         </span>
