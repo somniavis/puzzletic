@@ -16,7 +16,16 @@ const resources = {
   },
 };
 
-const savedLanguage = localStorage.getItem('language');
+const safeStorageGet = (key: string): string | null => {
+  try {
+    return localStorage.getItem(key);
+  } catch (error) {
+    console.warn('[i18n] localStorage.getItem failed:', error);
+    return null;
+  }
+};
+
+const savedLanguage = safeStorageGet('language');
 const browserLanguage = navigator.language.startsWith('ko')
   ? 'ko'
   : navigator.language.startsWith('ja')

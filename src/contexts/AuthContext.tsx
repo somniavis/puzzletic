@@ -16,34 +16,66 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+const safeStorageGet = (key: string): string | null => {
+    try {
+        return localStorage.getItem(key);
+    } catch (error) {
+        console.warn('[Auth] localStorage.getItem failed:', error);
+        return null;
+    }
+};
+
+const safeStorageSet = (key: string, value: string) => {
+    try {
+        localStorage.setItem(key, value);
+    } catch (error) {
+        console.warn('[Auth] localStorage.setItem failed:', error);
+    }
+};
+
+const safeStorageRemove = (key: string) => {
+    try {
+        localStorage.removeItem(key);
+    } catch (error) {
+        console.warn('[Auth] localStorage.removeItem failed:', error);
+    }
+};
+
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
 
     // Initialize isGuest synchronously from localStorage to persist session on refresh
     const [isGuest, setIsGuest] = useState(() => {
-        return localStorage.getItem('puzzleletic_is_guest_active') === 'true';
+        return safeStorageGet('puzzleletic_is_guest_active') === 'true';
     });
 
     // Initialize Guest ID synchronously to prevent race conditions in NurturingContext
     const [guestId, setGuestId] = useState<string | null>(() => {
-        return localStorage.getItem('puzzleletic_guest_id');
+        return safeStorageGet('puzzleletic_guest_id');
     });
 
     // Removed redundant useEffect for guestId loading
     // useEffect(() => { ... }, []);
 
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-            setUser(currentUser);
-            if (currentUser) {
-                // If logged in, we are NOT a guest. Clear guest flag.
-                setIsGuest(false);
-                localStorage.removeItem('puzzleletic_is_guest_active');
+        const unsubscribe = onAuthStateChanged(
+            auth,
+            (currentUser) => {
+                setUser(currentUser);
+                if (currentUser) {
+                    // If logged in, we are NOT a guest. Clear guest flag.
+                    setIsGuest(false);
+                    safeStorageRemove('puzzleletic_is_guest_active');
+                }
+                // If no user, isGuest state persists from localStorage initialization
+                setLoading(false);
+            },
+            (error) => {
+                console.error('[Auth] onAuthStateChanged error:', error);
+                setLoading(false);
             }
-            // If no user, isGuest state persists from localStorage initialization
-            setLoading(false);
-        });
+        );
 
         return () => unsubscribe();
     }, []);
@@ -108,25 +140,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }, [user?.uid]);
 
     const loginAsGuest = () => {
-        let id = localStorage.getItem('puzzleletic_guest_id');
+        let id = safeStorageGet('puzzleletic_guest_id');
         if (!id) {
             id = `guest_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-            localStorage.setItem('puzzleletic_guest_id', id);
+            safeStorageSet('puzzleletic_guest_id', id);
         }
         setGuestId(id);
         setIsGuest(true);
-        localStorage.setItem('puzzleletic_is_guest_active', 'true');
+        safeStorageSet('puzzleletic_is_guest_active', 'true');
     };
 
     const logout = async () => {
         await firebaseSignOut(auth);
         setIsGuest(false); // Reset guest state on logout
-        localStorage.removeItem('puzzleletic_is_guest_active');
+        safeStorageRemove('puzzleletic_is_guest_active');
     };
 
     return (
         <AuthContext.Provider value={{ user, loading, logout, isGuest, guestId, loginAsGuest }}>
-            {!loading && children}
+            {loading ? (
+                <div style={{ minHeight: '100dvh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f8fafc', color: '#334155' }}>
+                    Loading...
+                </div>
+            ) : children}
         </AuthContext.Provider>
     );
 };
