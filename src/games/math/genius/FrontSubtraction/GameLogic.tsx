@@ -54,34 +54,41 @@ export const useGameLogic = (engine: ReturnType<typeof useGameEngine>, gameId?: 
     const [lv1GeneratedCount, setLv1GeneratedCount] = useState(0);
     const [lv2GeneratedCount, setLv2GeneratedCount] = useState(0);
     const [lv3GeneratedCount, setLv3GeneratedCount] = useState(0);
+    const [lv4GeneratedCount, setLv4GeneratedCount] = useState(0);
 
     const generateProblem = useCallback(() => {
         let a = 0, b = 0;
         let is3Digit = false;
 
-        // Weighted Unit Generation Helper: 80% Borrow (uA < uB), 20% Normal (uA >= uB)
-        const getWeightedUnits = () => {
-            const wantBorrow = Math.random() < 0.8;
-            let uA, uB;
-            if (wantBorrow) {
-                // Borrow Case: uA < uB. uB must be >= 1.
-                uB = Math.floor(Math.random() * 9) + 1; // 1-9
-                uA = Math.floor(Math.random() * uB);    // 0 to uB-1
-            } else {
-                // Normal Case: uA >= uB.
-                uB = Math.floor(Math.random() * 10); // 0-9
-                uA = Math.floor(Math.random() * (10 - uB)) + uB; // uB to 9
-            }
-            return { uA, uB, wantBorrow };
-        };
-
         if (gameId === 'front-subtraction-lv4') {
             // Level 4: 3-digit - 3-digit
-            const { uA, uB } = getWeightedUnits();
-            const prefixA = Math.floor(Math.random() * 90) + 10;
-            const prefixB = Math.floor(Math.random() * (prefixA - 10)) + 10;
-            a = prefixA * 10 + uA;
-            b = prefixB * 10 + uB;
+            const stage = lv4GeneratedCount;
+            do {
+                a = Math.floor(Math.random() * 900) + 100;
+                b = Math.floor(Math.random() * 900) + 100;
+
+                const hA = Math.floor(a / 100);
+                const tA = Math.floor((a % 100) / 10);
+                const uA = a % 10;
+                const hB = Math.floor(b / 100);
+                const tB = Math.floor((b % 100) / 10);
+                const uB = b % 10;
+
+                // Keep subtraction flow stable for Lv4: A should be greater.
+                if (a <= b) continue;
+
+                // tens step must not be zero (previous Lv4 rule)
+                if (tA === tB) continue;
+
+                const stageValid =
+                    (stage === 0 && hA >= hB && tA > tB && uA >= uB) || // direct/direct/direct
+                    (stage === 1 && hA >= hB && tA > tB && uA < uB) ||  // direct/direct/borrow
+                    (stage === 2 && hA >= hB && tA < tB && uA >= uB) || // direct/borrow/direct
+                    (stage === 3 && hA >= hB && tA < tB && uA < uB) ||  // direct/borrow/borrow
+                    (stage >= 4);                                       // 5th+ random
+
+                if (stageValid) break;
+            } while (true);
             is3Digit = true;
 
         } else if (gameId === 'front-subtraction-lv3') {
@@ -327,8 +334,10 @@ export const useGameLogic = (engine: ReturnType<typeof useGameEngine>, gameId?: 
             setLv2GeneratedCount(prev => prev + 1);
         } else if (gameId === 'front-subtraction-lv3') {
             setLv3GeneratedCount(prev => prev + 1);
+        } else if (gameId === 'front-subtraction-lv4') {
+            setLv4GeneratedCount(prev => prev + 1);
         }
-    }, [gameId, lv1GeneratedCount, lv2GeneratedCount, lv3GeneratedCount]);
+    }, [gameId, lv1GeneratedCount, lv2GeneratedCount, lv3GeneratedCount, lv4GeneratedCount]);
 
     // Reset state
     useEffect(() => {
@@ -341,6 +350,7 @@ export const useGameLogic = (engine: ReturnType<typeof useGameEngine>, gameId?: 
             setLv1GeneratedCount(0);
             setLv2GeneratedCount(0);
             setLv3GeneratedCount(0);
+            setLv4GeneratedCount(0);
         }
     }, [gameState]);
 
@@ -348,6 +358,7 @@ export const useGameLogic = (engine: ReturnType<typeof useGameEngine>, gameId?: 
         setLv1GeneratedCount(0);
         setLv2GeneratedCount(0);
         setLv3GeneratedCount(0);
+        setLv4GeneratedCount(0);
     }, [gameId]);
 
     // Handle Game Start

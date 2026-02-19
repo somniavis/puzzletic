@@ -64,6 +64,8 @@ class SoundManager {
   private preloadComplete: Set<string> = new Set();
   private isUnlocked: boolean = false; // 모바일 오디오 컨텍스트 활성화 여부
   private bgmAudio: HTMLAudioElement | null = null; // 배경음 전용 인스턴스
+  private unlockInProgress: boolean = false;
+  private silentUnlockAudio: HTMLAudioElement | null = null;
 
   constructor() {
     // 모바일에서 첫 터치 시 오디오 컨텍스트 활성화
@@ -83,15 +85,21 @@ class SoundManager {
     };
 
     const unlockAudio = () => {
-      if (this.isUnlocked) return;
+      if (this.isUnlocked || this.unlockInProgress) return;
+      this.unlockInProgress = true;
 
-      // 무음 오디오를 재생하여 오디오 컨텍스트 활성화
-      const silentAudio = new Audio();
-      silentAudio.src = 'data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAADhADAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMD//////////////////////////////////////////////////////////////////8AAAAATGF2YzU4LjEzAAAAAAAAAAAAAAAAJAAAAAAAAAAAA4TnXXFTAAAAAAAAAAAAAAAAAAAA//sQZAAP8AAAaQAAAAgAAA0gAAABAAABpAAAACAAADSAAAAETEFNRTMuMTAwVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV//sQZDQP8AAAaQAAAAgAAA0gAAABAAABpAAAACAAADSAAAAEVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV';
-      silentAudio.volume = 0;
-      silentAudio.loop = true; // 세션 유지를 위해 무음 루프 재생
-      silentAudio.play().then(() => {
+      // 무음 오디오는 1회 생성 후 재사용 (WebMediaPlayer 누적 방지)
+      if (!this.silentUnlockAudio) {
+        this.silentUnlockAudio = new Audio();
+        this.silentUnlockAudio.src = 'data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAADhADAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMD//////////////////////////////////////////////////////////////////8AAAAATGF2YzU4LjEzAAAAAAAAAAAAAAAAJAAAAAAAAAAAA4TnXXFTAAAAAAAAAAAAAAAAAAAA//sQZAAP8AAAaQAAAAgAAA0gAAABAAABpAAAACAAADSAAAAETEFNRTMuMTAwVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV//sQZDQP8AAAaQAAAAgAAA0gAAABAAABpAAAACAAADSAAAAEVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV';
+        this.silentUnlockAudio.volume = 0;
+        this.silentUnlockAudio.preload = 'auto';
+      }
+
+      this.silentUnlockAudio.currentTime = 0;
+      this.silentUnlockAudio.play().then(() => {
         this.isUnlocked = true;
+        this.unlockInProgress = false;
         console.log('🔓 Mobile audio context unlocked');
         removeUnlockListeners(unlockAudio);
 
@@ -99,8 +107,17 @@ class SoundManager {
         if (this.bgmAudio && isBgmEnabled()) {
           this.playBgm();
         }
+
+        // Unlock 완료 후 무음 오디오 해제
+        if (this.silentUnlockAudio) {
+          this.silentUnlockAudio.pause();
+          this.silentUnlockAudio.src = '';
+          this.silentUnlockAudio.load();
+          this.silentUnlockAudio = null;
+        }
       }).catch(() => {
         // 실패하면 리스너를 유지해서 다음 사용자 제스처에서 재시도
+        this.unlockInProgress = false;
       });
     };
 

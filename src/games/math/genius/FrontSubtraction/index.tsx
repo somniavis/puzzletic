@@ -412,8 +412,22 @@ export const FrontSubtractionGame: React.FC<{ onExit: () => void, gameId?: strin
     const isLv1 = !gameId || gameId === GameIds.FRONT_SUBTRACTION_LV1;
     const isLv2 = gameId === GameIds.FRONT_SUBTRACTION_LV2;
     const isLv3 = gameId === GameIds.FRONT_SUBTRACTION_LV3;
+    const isLv4 = gameId === GameIds.FRONT_SUBTRACTION_LV4;
     const showLv3HundredsGuideTop = isLv3 && is3Digit && is4Step && currentStep === 4;
     const showLv3HundredsGuideBottom = isLv3 && is3Digit && !is4Step && currentStep === 5;
+    const isLv4Pattern3Or4 =
+        isLv4 &&
+        is3Digit &&
+        !is4Step &&
+        !!currentProblem?.step2_is_negative; // patterns 3/4 share T borrow in 5-step mode
+    const showLv4Pattern3HundredsGuideTopStep4 = isLv4Pattern3Or4 && currentStep === 4;
+    const showLv4Pattern3HundredsGuideStep5 = isLv4Pattern3Or4 && currentStep === 5;
+    const showLv4DirectAllHundredsGuideTop =
+        isLv4 &&
+        is3Digit &&
+        is4Step &&
+        currentStep === 4 &&
+        !currentProblem?.step2_is_negative;
 
     return (
         <Layout2
@@ -515,7 +529,7 @@ export const FrontSubtractionGame: React.FC<{ onExit: () => void, gameId?: strin
                                             active={currentStep === 1}
                                             isFeedback={!!feedback}
                                             feedbackStatus={feedback}
-                                            showArrow={showLv3HundredsGuideTop}
+                                            showArrow={showLv3HundredsGuideTop || showLv4DirectAllHundredsGuideTop || showLv4Pattern3HundredsGuideTopStep4}
                                             arrowType="down"
                                             arrowPlacement="bottom"
                                             showOperator={false}
@@ -594,7 +608,7 @@ export const FrontSubtractionGame: React.FC<{ onExit: () => void, gameId?: strin
                                         active={currentStep === 4}
                                         isFeedback={!!feedback}
                                         feedbackStatus={feedback}
-                                        showArrow={showLv3HundredsGuideBottom}
+                                        showArrow={showLv3HundredsGuideBottom || showLv4Pattern3HundredsGuideStep5}
                                         arrowType="down"
                                         arrowPlacement="bottom"
                                         showOperator={false}
