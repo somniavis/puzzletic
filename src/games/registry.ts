@@ -38,6 +38,7 @@ const L3_TrollAttack = lazy(() => delayedImport(import('./math/adventure/level3/
 const L1_DeepSeaDive = lazy(() => delayedImport(import('./math/adventure/level2/DeepSeaDive').then(m => ({ default: (props: any) => createElement(m.DeepSeaDive, { ...props, level: 1 }) }))));
 const L2_DeepSeaDive = lazy(() => delayedImport(import('./math/adventure/level2/DeepSeaDive').then(m => ({ default: (props: any) => createElement(m.DeepSeaDive, { ...props, level: 2 }) }))));
 const L2_UFOInvasion = lazy(() => delayedImport(import('./math/adventure/level2/UFOInvasion'))); // default export
+const L2_LockOpening = lazy(() => delayedImport(import('./math/adventure/level2/LockOpening').then(m => ({ default: m.LockOpening }))));
 
 // Math Genius Games (calculation drills)
 const L2_FrontAddition = lazy(() => delayedImport(import('./math/genius/FrontAddition').then(m => ({ default: m.FrontAdditionGame }))));
@@ -177,6 +178,21 @@ export const GAMES: GameManifest[] = [
         component: L1_DeepSeaDive,
         thumbnail: '🤿',
         tagsKey: 'games.tags.subtraction'
+    },
+    {
+        id: GameIds.MATH_LOCK_OPENING,
+        title: '자물쇠 열기',
+        titleKey: 'games.math-lock-opening.title',
+        subtitle: '+/- 유창성 종합',
+        subtitleKey: 'games.math-lock-opening.subtitle',
+        description: '두 숫자를 선택해 목표 숫자를 만드는 게임',
+        descriptionKey: 'games.math-lock-opening.description',
+        category: 'math',
+        level: 2,
+        mode: 'adventure',
+        component: L2_LockOpening,
+        thumbnail: '🔐',
+        tagsKey: 'games.tags.mixedOps'
     },
     {
         id: GameIds.MATH_ARCHERY_LV1,

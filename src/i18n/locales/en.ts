@@ -1041,6 +1041,28 @@ export const en = {
     omok: omokEn,
     cargoTrain: cargoTrainEn,
     rocketLauncher: rocketLauncherEn,
+    'math-lock-opening': {
+      title: 'Lock Opening',
+      subtitle: 'Find the passcode!',
+      description: 'Choose two numbers to make the target number.',
+      ui: {
+        pickTwo: 'Pick two numbers'
+      },
+      howToPlay: {
+        step1: {
+          title: 'Check +/- Target',
+          description: 'Check the target number!'
+        },
+        step2: {
+          title: 'Pick Two Numbers',
+          description: 'Find the two passcode numbers!'
+        },
+        step3: {
+          title: 'Unlock!',
+          description: 'Success! The lock is open!'
+        }
+      }
+    },
     tags: {
       counting: 'Counting',
       sequence: 'Sequencing',

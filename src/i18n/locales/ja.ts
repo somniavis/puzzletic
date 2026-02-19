@@ -1000,6 +1000,28 @@ export const ja = {
         omok: omokJa,
         cargoTrain: cargoTrainJa,
         rocketLauncher: rocketLauncherJa,
+        'math-lock-opening': {
+            title: 'ロックオープン',
+            subtitle: 'パスコードを見つけよう！',
+            description: '2つの数字を選んで目標の数字を作ろう。',
+            ui: {
+                pickTwo: '数字を2つ選んでください',
+            },
+            howToPlay: {
+                step1: {
+                    title: '+/- 目標を確認',
+                    description: '目標の数字を確認しよう！',
+                },
+                step2: {
+                    title: '数字を2つ選択',
+                    description: '2つのパスコード数字を見つけよう！',
+                },
+                step3: {
+                    title: '鍵を開けよう！',
+                    description: '鍵開け成功！',
+                },
+            },
+        },
         tags: {
             counting: '数え方',
             sequence: '数の順序',
