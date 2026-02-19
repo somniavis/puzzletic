@@ -118,7 +118,7 @@ export const BackMultiplicationGame: React.FC<{ onExit: () => void, gameId?: str
                                 <Tile val={totalTiles[1]} type="input" active={true} isFeedback={!!feedback} feedbackStatus={feedback} />
                             </div>
                         </div>
-                        <div style={{ flex: '0 0 auto', width: '100%', background: 'transparent', zIndex: 10, padding: '10px 10px 0 10px', marginBottom: '-12px' }}>
+                        <div style={{ flex: '0 0 auto', width: '100%', background: 'transparent', position: 'relative', zIndex: 40, padding: 0 }}>
                             <Keypad onInput={handleInput} disabled={!!feedback && feedback !== 'correct'} />
                         </div>
                     </>

@@ -190,7 +190,7 @@ export const BackMultiplicationGameLv3: React.FC<{ onExit: () => void, gameId?: 
 
                             </div>
                         </div>
-                        <div style={{ flex: '0 0 auto', width: '100%', background: 'transparent', zIndex: 10, padding: '10px 10px 0 10px', marginBottom: '-12px' }}>
+                        <div style={{ flex: '0 0 auto', width: '100%', background: 'transparent', position: 'relative', zIndex: 40, padding: 0 }}>
                             <Keypad onInput={handleInput} disabled={!!feedback && feedback !== 'correct'} />
                         </div>
                     </>

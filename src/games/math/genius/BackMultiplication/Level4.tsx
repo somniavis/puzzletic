@@ -277,7 +277,7 @@ export const BackMultiplicationGameLv4: React.FC<{ onExit: () => void, gameId?: 
                                 <Tile val={step5Tiles[3]} type={currentStep === 5 ? 'input' : 'static'} active={currentStep === 5} isFeedback={!!feedback} feedbackStatus={feedback} />
                             </div>
                         </div>
-                        <div style={{ flex: '0 0 auto', width: '100%', background: 'transparent', zIndex: 10, padding: '10px 10px 0 10px', marginBottom: '-12px' }}>
+                        <div style={{ flex: '0 0 auto', width: '100%', background: 'transparent', position: 'relative', zIndex: 40, padding: 0 }}>
                             <Keypad onInput={handleInput} disabled={!!feedback && feedback !== 'correct'} />
                         </div>
                     </>
