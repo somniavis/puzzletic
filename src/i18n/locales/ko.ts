@@ -19,6 +19,7 @@ import rocketLauncherKo from '../../games/math/adventure/level2/RocketLauncher/l
 import shapeSumLinkKo from '../../games/math/adventure/level2/ShapeSumLink/locales/ko';
 import fruitBoxKo from '../../games/math/adventure/level3/FruitBox/locales/ko';
 import iceStackingKo from '../../games/math/adventure/level3/IceStacking/locales/ko';
+import floorTilerKo from '../../games/math/adventure/level3/FloorTiler/locales/ko';
 import constellationFinderKo from '../../games/math/adventure/level3/ConstellationFinder/locales/ko';
 import trollAttackKo from '../../games/math/adventure/level3/TrollAttack/locales/ko';
 
@@ -1027,6 +1028,7 @@ export const ko = {
         'shape-sum-link': shapeSumLinkKo,
         'fruit-box': fruitBoxKo,
         'ice-stacking': iceStackingKo,
+        'floor-tiler': floorTilerKo,
         'constellation-finder': constellationFinderKo,
         'troll-attack': trollAttackKo,
         'animal-banquet': animalBanquetKo,

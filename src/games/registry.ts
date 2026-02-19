@@ -32,6 +32,7 @@ const L2_PinwheelPop = lazy(() => delayedImport(import('./math/adventure/level2/
 const L2_ShapeSumLink = lazy(() => delayedImport(import('./math/adventure/level2/ShapeSumLink').then(m => ({ default: m.ShapeSumLink }))));
 const L3_FruitBox = lazy(() => delayedImport(import('./math/adventure/level3/FruitBox').then(m => ({ default: m.FruitBox }))));
 const L3_IceStacking = lazy(() => delayedImport(import('./math/adventure/level3/IceStacking').then(m => ({ default: m.IceStacking }))));
+const L3_FloorTiler = lazy(() => delayedImport(import('./math/adventure/level3/FloorTiler').then(m => ({ default: m.FloorTiler }))));
 const L3_ConstellationFinder = lazy(() => delayedImport(import('./math/adventure/level3/ConstellationFinder').then(m => ({ default: m.ConstellationFinder }))));
 const L3_TrollAttack = lazy(() => delayedImport(import('./math/adventure/level3/TrollAttack').then(m => ({ default: m.TrollAttack }))));
 
@@ -350,6 +351,21 @@ export const GAMES: GameManifest[] = [
         mode: 'adventure',
         component: L3_IceStacking,
         thumbnail: '🧊',
+        tagsKey: 'games.tags.multiplication'
+    },
+    {
+        id: GameIds.MATH_FLOOR_TILER,
+        title: 'Floor Tiler',
+        titleKey: 'games.floor-tiler.title',
+        subtitle: 'Complete the floor!',
+        subtitleKey: 'games.floor-tiler.subtitle',
+        description: 'Fill the room using area.',
+        descriptionKey: 'games.floor-tiler.description',
+        category: 'math',
+        level: 3,
+        mode: 'adventure',
+        component: L3_FloorTiler,
+        thumbnail: '🧱',
         tagsKey: 'games.tags.multiplication'
     },
     {

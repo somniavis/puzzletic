@@ -24,6 +24,7 @@ export const GameIds = {
     SHAPE_SUM_LINK: 'shape-sum-link',
     MATH_FRUIT_BOX: 'math-fruit-box',
     MATH_ICE_STACKING: 'math-ice-stacking',
+    MATH_FLOOR_TILER: 'math-floor-tiler',
     MATH_CONSTELLATION_FINDER: 'math-constellation-finder',
     MATH_TROLL_ATTACK: 'math-troll-attack',
 

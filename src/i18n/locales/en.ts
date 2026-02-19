@@ -26,6 +26,7 @@ import rocketLauncherEn from '../../games/math/adventure/level2/RocketLauncher/l
 import shapeSumLinkEn from '../../games/math/adventure/level2/ShapeSumLink/locales/en';
 import fruitBoxEn from '../../games/math/adventure/level3/FruitBox/locales/en';
 import iceStackingEn from '../../games/math/adventure/level3/IceStacking/locales/en';
+import floorTilerEn from '../../games/math/adventure/level3/FloorTiler/locales/en';
 import constellationFinderEn from '../../games/math/adventure/level3/ConstellationFinder/locales/en';
 import trollAttackEn from '../../games/math/adventure/level3/TrollAttack/locales/en';
 import mazeEscapeEn from '../../games/brain/level1/MazeEscape/locales/en';
@@ -1025,6 +1026,7 @@ export const en = {
     'shape-sum-link': shapeSumLinkEn,
     'fruit-box': fruitBoxEn,
     'ice-stacking': iceStackingEn,
+    'floor-tiler': floorTilerEn,
     'constellation-finder': constellationFinderEn,
     'troll-attack': trollAttackEn,
     'deep-sea-dive': deepSeaDiveEn,
