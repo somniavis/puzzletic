@@ -22,6 +22,7 @@ import iceStackingJa from '../../games/math/adventure/level3/IceStacking/locales
 import floorTilerJa from '../../games/math/adventure/level3/FloorTiler/locales/ja';
 import constellationFinderJa from '../../games/math/adventure/level3/ConstellationFinder/locales/ja';
 import trollAttackJa from '../../games/math/adventure/level3/TrollAttack/locales/ja';
+import blockTowerJa from '../../games/brain/level2/BlockTower/locales/ja';
 
 import colorLinkJa from '../../games/brain/level1/ColorLink/locales/ja';
 import pairUpTwinJa from '../../games/brain/level1/PairUpTwin/locales/ja';
@@ -997,6 +998,7 @@ export const ja = {
         'wild-link': wildLinkJa,
         'pair-up-connect': pairUpConnectJa,
         'signal-hunter': signalHunterJa,
+        'block-tower': blockTowerJa,
         'maze-hunter': mazeHunterJa,
         'tic-tac-toe': ticTacToeJa,
         omok: omokJa,

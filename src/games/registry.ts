@@ -60,6 +60,7 @@ const L2_AnimalBanquet = lazy(() => delayedImport(import('./brain/level2/AnimalB
 const L2_PairUpConnect = lazy(() => delayedImport(import('./brain/level2/PairUpConnect'))); // default export
 const L2_MazeHunter = lazy(() => delayedImport(import('./brain/level2/MazeHunter'))); // default export
 const L2_SignalHunter = lazy(() => delayedImport(import('./brain/level2/SignalHunter').then(m => ({ default: m.SignalHunter })))); // named export
+const L2_BlockTower = lazy(() => delayedImport(import('./brain/level2/BlockTower').then(m => ({ default: m.BlockTower })))); // named export
 
 // Brain Level 3
 const L3_TicTacToe = lazy(() => delayedImport(import('./brain/level3/TicTacToe'))); // default export
@@ -365,7 +366,7 @@ export const GAMES: GameManifest[] = [
         level: 3,
         mode: 'adventure',
         component: L3_FloorTiler,
-        thumbnail: '🧱',
+        thumbnail: 'quad:🟧,🟨,🟩,🟦',
         tagsKey: 'games.tags.multiplication'
     },
     {
@@ -666,6 +667,20 @@ export const GAMES: GameManifest[] = [
         component: L2_SignalHunter,
         thumbnail: '📡',
         tagsKey: 'games.tags.concentration'
+    },
+    {
+        id: GameIds.BRAIN_BLOCK_TOWER,
+        title: 'Block Tower',
+        titleKey: 'games.block-tower.title',
+        subtitle: 'Stack carefully and don’t topple!',
+        subtitleKey: 'games.block-tower.subtitle',
+        description: 'Drop equal blocks onto the grid and build a stable tower.',
+        descriptionKey: 'games.block-tower.description',
+        category: 'brain',
+        level: 2,
+        component: L2_BlockTower,
+        thumbnail: '🧊',
+        tagsKey: 'games.tags.spatial'
     },
 
     // [Brain Level 3]

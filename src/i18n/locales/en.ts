@@ -29,6 +29,7 @@ import iceStackingEn from '../../games/math/adventure/level3/IceStacking/locales
 import floorTilerEn from '../../games/math/adventure/level3/FloorTiler/locales/en';
 import constellationFinderEn from '../../games/math/adventure/level3/ConstellationFinder/locales/en';
 import trollAttackEn from '../../games/math/adventure/level3/TrollAttack/locales/en';
+import blockTowerEn from '../../games/brain/level2/BlockTower/locales/en';
 import mazeEscapeEn from '../../games/brain/level1/MazeEscape/locales/en';
 import mazeHunterEn from '../../games/brain/level2/MazeHunter/locales/en';
 import ticTacToeEn from '../../games/brain/level3/TicTacToe/locales/en';
@@ -1031,6 +1032,7 @@ export const en = {
     'troll-attack': trollAttackEn,
     'deep-sea-dive': deepSeaDiveEn,
     'signal-hunter': signalHunterEn,
+    'block-tower': blockTowerEn,
     'color-link': colorLinkEn,
     'pair-up-twin': pairUpTwinEn,
     'wild-link': wildLinkEn,

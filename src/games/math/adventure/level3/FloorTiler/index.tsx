@@ -637,6 +637,6 @@ export const manifest: GameManifest = {
     level: 3,
     mode: 'adventure',
     component: FloorTiler,
-    thumbnail: '🧱',
+    thumbnail: 'quad:🟧,🟨,🟩,🟦',
     tagsKey: 'games.tags.multiplication'
 };

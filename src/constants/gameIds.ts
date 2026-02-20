@@ -57,6 +57,7 @@ export const GameIds = {
     PAIR_UP_CONNECT: 'pair-up-connect',
     MAZE_HUNTER: 'maze-hunter',
     SIGNAL_HUNTER: 'signal-hunter',
+    BRAIN_BLOCK_TOWER: 'brain-block-tower',
 
     // Brain Level 3
     TIC_TAC_TOE: 'tic-tac-toe',
