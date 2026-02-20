@@ -14,6 +14,7 @@ interface Problem {
     bundleSize: number;
     symbol: string;
     color: string;
+    kind: 'block' | 'hazard';
 }
 
 interface SettledPiece {
@@ -29,16 +30,31 @@ const GRID_ROWS = 10;
 const GRID_COLS = 10;
 const FALL_STEP_MS = 55;
 const ARM_SPEED_COLS_PER_SEC = 2.8;
+const NEXT_PREVIEW_CELL_PX = 30;
 
 const createEmptyGrid = (): boolean[][] =>
     Array.from({ length: GRID_ROWS }, () => Array(GRID_COLS).fill(false));
 
 const BLOCK_SYMBOLS = ['🟥', '🟧', '🟨', '🟩', '🟦'] as const;
 const BLOCK_COLORS = ['#ef4444', '#fb923c', '#facc15', '#22c55e', '#3b82f6'] as const;
+const HAZARD_SYMBOLS = ['💣', '🧨'] as const;
+const HAZARD_COLOR = '#facc15';
 const MIN_BUNDLE_SIZE = 1;
 const MAX_BUNDLE_SIZE = 5;
+const HAZARD_SPAWN_CHANCE = 0.14;
 
 const createProblem = (prev?: Problem): Problem => {
+    const shouldSpawnHazard = Math.random() < HAZARD_SPAWN_CHANCE && prev?.kind !== 'hazard';
+    if (shouldSpawnHazard) {
+        const hazard = HAZARD_SYMBOLS[Math.floor(Math.random() * HAZARD_SYMBOLS.length)];
+        return {
+            bundleSize: 1,
+            symbol: hazard,
+            color: HAZARD_COLOR,
+            kind: 'hazard'
+        };
+    }
+
     const prevSize = prev?.bundleSize ?? -1;
     let nextSize = MIN_BUNDLE_SIZE + Math.floor(Math.random() * MAX_BUNDLE_SIZE);
     if (nextSize === prevSize) {
@@ -47,7 +63,8 @@ const createProblem = (prev?: Problem): Problem => {
     return {
         bundleSize: nextSize,
         symbol: BLOCK_SYMBOLS[nextSize - 1],
-        color: BLOCK_COLORS[nextSize - 1]
+        color: BLOCK_COLORS[nextSize - 1],
+        kind: 'block'
     };
 };
 
@@ -201,6 +218,13 @@ const getPredictedBalanceStatus = (grid: boolean[][], startCol: number, bundleSi
     return getBalanceStatus(simulatedGrid);
 };
 
+const getArmSpeedMultiplierByHeight = (towerHeight: number): number => {
+    if (towerHeight <= 4) return 1;
+    if (towerHeight <= 6) return 1.25;
+    if (towerHeight <= 8) return 1.25 * 1.25;
+    return 1.25 * 1.25 * 1.25;
+};
+
 export const BlockTower: React.FC<BlockTowerProps> = ({ onExit }) => {
     const { t } = useTranslation();
 
@@ -221,6 +245,7 @@ export const BlockTower: React.FC<BlockTowerProps> = ({ onExit }) => {
     const [showClickDropHint, setShowClickDropHint] = React.useState(false);
     const [isClickDropHintExiting, setIsClickDropHintExiting] = React.useState(false);
     const [gridCellHeightPx, setGridCellHeightPx] = React.useState(0);
+    const isActiveRoundState = engine.gameState === 'playing' || engine.gameState === 'correct';
 
     const boardRef = React.useRef<HTMLDivElement | null>(null);
     const carriageRef = React.useRef<HTMLDivElement | null>(null);
@@ -317,7 +342,7 @@ export const BlockTower: React.FC<BlockTowerProps> = ({ onExit }) => {
                 setShowClickDropHint(false);
                 setIsClickDropHintExiting(false);
             }
-            const wrapper = document.querySelector('.ice-stacking-layout2 .layout2-grid-wrapper');
+            const wrapper = document.querySelector('.block-stacking-layout2 .layout2-grid-wrapper');
             if (wrapper instanceof HTMLElement) {
                 wrapper.scrollTop = 0;
             }
@@ -342,8 +367,8 @@ export const BlockTower: React.FC<BlockTowerProps> = ({ onExit }) => {
 
         const updateCellSize = () => {
             const rect = board.getBoundingClientRect();
-            const next = rect.height > 0 ? rect.height / GRID_ROWS : 0;
-            setGridCellHeightPx(next);
+            const nextH = rect.height > 0 ? rect.height / GRID_ROWS : 0;
+            setGridCellHeightPx(nextH);
         };
 
         updateCellSize();
@@ -367,6 +392,16 @@ export const BlockTower: React.FC<BlockTowerProps> = ({ onExit }) => {
         snappedArmColRef.current = snappedArmCol;
     }, [snappedArmCol]);
 
+    const towerHeight = React.useMemo(() => {
+        const { totalBlocks, topMostRow } = getTowerMetrics(gridRef.current);
+        if (totalBlocks === 0) return 0;
+        return GRID_ROWS - topMostRow;
+    }, [settledPieces]);
+    const armSpeedMultiplier = React.useMemo(
+        () => getArmSpeedMultiplierByHeight(towerHeight),
+        [towerHeight]
+    );
+
     const triggerCollapseFail = React.useCallback(() => {
         setActivePiece(null);
         setIsDropping(false);
@@ -385,7 +420,7 @@ export const BlockTower: React.FC<BlockTowerProps> = ({ onExit }) => {
     }, [engine, resetBoard]);
 
     React.useEffect(() => {
-        if (engine.gameState !== 'playing' || isDropping || isCollapsing || isRoundClearing) {
+        if (!isActiveRoundState || isDropping || isCollapsing || isRoundClearing) {
             if (armRafRef.current != null) {
                 cancelAnimationFrame(armRafRef.current);
                 armRafRef.current = null;
@@ -408,7 +443,7 @@ export const BlockTower: React.FC<BlockTowerProps> = ({ onExit }) => {
             const dtSec = Math.min(0.05, (ts - armLastTsRef.current) / 1000);
             armLastTsRef.current = ts;
 
-            let next = armColRef.current + armDirRef.current * ARM_SPEED_COLS_PER_SEC * dtSec;
+            let next = armColRef.current + armDirRef.current * ARM_SPEED_COLS_PER_SEC * armSpeedMultiplier * dtSec;
             if (next <= 0) {
                 next = 0;
                 armDirRef.current = 1;
@@ -430,7 +465,7 @@ export const BlockTower: React.FC<BlockTowerProps> = ({ onExit }) => {
                 armRafRef.current = null;
             }
         };
-    }, [engine.gameState, isDropping, isCollapsing, isRoundClearing, problem.bundleSize]);
+    }, [isActiveRoundState, isDropping, isCollapsing, isRoundClearing, problem.bundleSize, armSpeedMultiplier]);
 
     const computeDropStartCol = React.useCallback((bundleSize: number): number => {
         let startCol = clamp(snappedArmColRef.current, 0, GRID_COLS - bundleSize);
@@ -446,6 +481,30 @@ export const BlockTower: React.FC<BlockTowerProps> = ({ onExit }) => {
     }, []);
 
     const finalizeLanding = React.useCallback((landingRow: number, startCol: number, currentProblem: Problem): boolean => {
+        if (currentProblem.kind === 'hazard') {
+            setActivePiece(null);
+            setIsDropping(false);
+
+            // Hazard rule: if dropped onto existing stack, the tower collapses.
+            const touchedStack = landingRow < GRID_ROWS - 1;
+            if (touchedStack) {
+                triggerCollapseFail();
+                return false;
+            }
+
+            // Safe drop on empty ground: consume turn and continue.
+            engine.submitAnswer(true, { skipDifficulty: true, skipFeedback: true });
+            engine.registerEvent({ type: 'correct', isFinal: false } as any);
+
+            const upcoming = nextProblemRef.current;
+            setProblem(upcoming);
+            problemRef.current = upcoming;
+            const generatedNext = createProblem(upcoming);
+            setNextProblem(generatedNext);
+            nextProblemRef.current = generatedNext;
+            return true;
+        }
+
         // Rule: each row can contain only one placed bundle.
         if (gridRef.current[landingRow].some(Boolean)) {
             triggerCollapseFail();
@@ -516,7 +575,7 @@ export const BlockTower: React.FC<BlockTowerProps> = ({ onExit }) => {
     }, [finalizeLanding]);
 
     const dropBundle = React.useCallback(() => {
-        if (engine.gameState !== 'playing' || isDropping || isCollapsing || isRoundClearing) return;
+        if (!isActiveRoundState || isDropping || isCollapsing || isRoundClearing) return;
 
         const currentProblem = problemRef.current;
         const startCol = computeDropStartCol(currentProblem.bundleSize);
@@ -529,12 +588,16 @@ export const BlockTower: React.FC<BlockTowerProps> = ({ onExit }) => {
 
         setIsDropping(true);
         runFallAnimation(landingRow, startCol, currentProblem);
-    }, [computeDropStartCol, engine.gameState, isCollapsing, isDropping, isRoundClearing, runFallAnimation, triggerCollapseFail]);
+    }, [computeDropStartCol, isActiveRoundState, isCollapsing, isDropping, isRoundClearing, runFallAnimation, triggerCollapseFail]);
 
     const centerHintCols = React.useMemo(() => getBaseCenterCols(gridRef.current), [settledPieces]);
     const balanceStatus = React.useMemo(
-        () => getPredictedBalanceStatus(gridRef.current, snappedArmCol, problem.bundleSize),
-        [settledPieces, snappedArmCol, problem.bundleSize]
+        () => (
+            problem.kind === 'hazard'
+                ? 'normal'
+                : getPredictedBalanceStatus(gridRef.current, snappedArmCol, problem.bundleSize)
+        ),
+        [settledPieces, snappedArmCol, problem.bundleSize, problem.kind]
     );
 
     return (
@@ -545,7 +608,7 @@ export const BlockTower: React.FC<BlockTowerProps> = ({ onExit }) => {
             gameId={GameIds.BRAIN_BLOCK_TOWER}
             engine={engine}
             onExit={onExit}
-            className="ice-stacking-layout2"
+            className="block-stacking-layout2"
             powerUps={[]}
             instructions={[
                 {
@@ -566,53 +629,56 @@ export const BlockTower: React.FC<BlockTowerProps> = ({ onExit }) => {
             ]}
             cardBackground={<BlobBackground colors={{ blob1: '#e0f2fe', blob2: '#f0f9ff', blob3: '#bae6fd', blob4: '#7dd3fc' }} />}
         >
-            <div className="ice-stacking-shell">
-                <section className="ice-order-card" aria-label="order card">
-                    <div className="ice-order-row">
-                        <div className="ice-balance-panel" aria-label={t('games.block-tower.ui.balanceStatus')}>
-                            <div className="ice-panel-title">{t('games.block-tower.ui.balanceStatus')}</div>
-                            <div className="ice-balance-dots">
+            <div className="block-stacking-shell">
+                <section className="block-order-card" aria-label="order card">
+                    <div className="block-order-row">
+                        <div className="block-balance-panel" aria-label={t('games.block-tower.ui.balanceStatus')}>
+                            <div className="block-panel-title">{t('games.block-tower.ui.balanceStatus')}</div>
+                            <div className="block-balance-dots">
                                 <span
-                                    className={`ice-balance-dot is-good ${balanceStatus === 'good' ? 'is-active' : ''}`}
+                                    className={`block-balance-dot is-good ${balanceStatus === 'good' ? 'is-active' : ''}`}
                                     title={t('games.block-tower.ui.good')}
                                 />
                                 <span
-                                    className={`ice-balance-dot is-normal ${balanceStatus === 'normal' ? 'is-active' : ''}`}
+                                    className={`block-balance-dot is-normal ${balanceStatus === 'normal' ? 'is-active' : ''}`}
                                     title={t('games.block-tower.ui.normal')}
                                 />
                                 <span
-                                    className={`ice-balance-dot is-risk ${balanceStatus === 'risk' ? 'is-active' : ''}`}
+                                    className={`block-balance-dot is-risk ${balanceStatus === 'risk' ? 'is-active' : ''}`}
                                     title={t('games.block-tower.ui.risk')}
                                 />
                             </div>
                         </div>
 
-                        <div className="ice-next-panel" aria-label={t('games.block-tower.ui.nextBlock')}>
-                            <div className="ice-panel-title">{t('games.block-tower.ui.nextBlock')}</div>
+                        <div className="block-next-panel" aria-label={t('games.block-tower.ui.nextBlock')}>
+                            <div className="block-panel-title">{t('games.block-tower.ui.nextBlock')}</div>
                             <div
-                                className="ice-next-piece"
+                                className="block-next-piece"
                                 style={{
                                     '--piece-color': nextProblem.color,
                                     '--next-cols': nextProblem.bundleSize,
-                                    '--next-width': `${(nextProblem.bundleSize / MAX_BUNDLE_SIZE) * 100}%`
+                                    '--next-width-px': `${nextProblem.bundleSize * NEXT_PREVIEW_CELL_PX}px`,
+                                    '--next-width-fallback': `${nextProblem.bundleSize * 10}%`
                                 } as React.CSSProperties}
                             >
                                 {Array.from({ length: nextProblem.bundleSize }).map((_, idx) => (
-                                    <span key={idx} className="ice-next-cube" />
+                                    <span key={idx} className={`block-next-cube ${nextProblem.kind === 'hazard' ? 'is-hazard' : ''}`}>
+                                        {nextProblem.kind === 'hazard' ? nextProblem.symbol : null}
+                                    </span>
                                 ))}
                             </div>
                         </div>
                     </div>
                 </section>
 
-                <section className="ice-grid-panel" aria-label="stack grid" onPointerDown={dropBundle}>
-                    <div className="ice-bundle-launcher">
-                        <div className="ice-y-spacer" aria-hidden="true" />
-                        <div className="ice-arm-lane" aria-hidden="true">
-                            <div className="ice-robot-rail" />
+                <section className="block-grid-panel" aria-label="stack grid" onPointerDown={dropBundle}>
+                    <div className="block-bundle-launcher">
+                        <div className="block-y-spacer" aria-hidden="true" />
+                        <div className="block-arm-lane" aria-hidden="true">
+                            <div className="block-robot-rail" />
                             <div
                                 ref={carriageRef}
-                                className="ice-carriage"
+                                className="block-carriage"
                                 style={{
                                     '--arm-col': armCol,
                                     '--bundle-size': problem.bundleSize,
@@ -621,20 +687,22 @@ export const BlockTower: React.FC<BlockTowerProps> = ({ onExit }) => {
                                     '--piece-color': problem.color
                                 } as React.CSSProperties}
                             >
-                                <div className="ice-robot-arm">
-                                    <div className="ice-robot-head" />
-                                    <div className="ice-robot-line" />
+                                <div className="block-robot-arm">
+                                    <div className="block-robot-head" />
+                                    <div className="block-robot-line" />
                                 </div>
-                                <div className="ice-source-piece ice-source-bundle-flat">
+                                <div className="block-source-piece block-source-bundle-flat">
                                     {Array.from({ length: problem.bundleSize }).map((_, idx) => (
-                                        <span key={idx} className="ice-cube ice-source-cube" aria-hidden="true" />
+                                        <span key={idx} className={`block-cube block-source-cube ${problem.kind === 'hazard' ? 'is-hazard' : ''}`}>
+                                            {problem.kind === 'hazard' ? problem.symbol : null}
+                                        </span>
                                     ))}
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div className="ice-grid-frame">
-                        <div className="ice-y-axis" aria-hidden="true">
+                    <div className="block-grid-frame">
+                        <div className="block-y-axis" aria-hidden="true">
                             {Array.from({ length: GRID_ROWS }).map((_, idx) => (
                                 <span key={idx}>{GRID_ROWS - idx}</span>
                             ))}
@@ -642,12 +710,12 @@ export const BlockTower: React.FC<BlockTowerProps> = ({ onExit }) => {
 
                         <div
                             ref={boardRef}
-                            className="ice-grid-board"
+                            className="block-grid-board"
                         >
                             {centerHintCols.map((col) => (
                                 <div
                                     key={`center-hint-${col}`}
-                                    className="ice-center-hint-column"
+                                    className="block-center-hint-column"
                                     style={{ '--center-col': col } as React.CSSProperties}
                                 />
                             ))}
@@ -664,7 +732,7 @@ export const BlockTower: React.FC<BlockTowerProps> = ({ onExit }) => {
                                         return (
                                             <div
                                                 key={`cell-${row}-${col}`}
-                                                className={`ice-cell${inGhost ? ' ghost' : ''}`}
+                                                className={`block-cell${inGhost ? ' ghost' : ''}`}
                                             />
                                         );
                                     })}
@@ -674,7 +742,7 @@ export const BlockTower: React.FC<BlockTowerProps> = ({ onExit }) => {
                             {settledPieces.map((piece, idx) => (
                                 <div
                                     key={piece.id}
-                                    className={`ice-settled-piece${isCollapsing ? ' collapsing' : ''}`}
+                                    className={`block-settled-piece${isCollapsing ? ' collapsing' : ''}`}
                                     style={{
                                         '--piece-col': piece.startCol,
                                         '--piece-row': piece.row,
@@ -684,14 +752,14 @@ export const BlockTower: React.FC<BlockTowerProps> = ({ onExit }) => {
                                     } as React.CSSProperties}
                                 >
                                     {Array.from({ length: piece.size }).map((_, idx) => (
-                                        <span key={idx} className="ice-cube">{piece.symbol}</span>
+                                        <span key={idx} className="block-cube">{piece.symbol}</span>
                                     ))}
                                 </div>
                             ))}
 
                             {activePiece && (
                                 <div
-                                    className="ice-falling-piece"
+                                    className="block-falling-piece"
                                     style={{
                                         '--piece-col': activePiece.startCol,
                                         '--piece-row': activePiece.row,
@@ -700,7 +768,7 @@ export const BlockTower: React.FC<BlockTowerProps> = ({ onExit }) => {
                                     } as React.CSSProperties}
                                 >
                                     {Array.from({ length: activePiece.size }).map((_, idx) => (
-                                        <span key={idx} className="ice-cube">{activePiece.symbol}</span>
+                                        <span key={idx} className="block-cube">{activePiece.symbol}</span>
                                     ))}
                                 </div>
                             )}
@@ -709,7 +777,7 @@ export const BlockTower: React.FC<BlockTowerProps> = ({ onExit }) => {
                 </section>
 
                 {showClickDropHint && (
-                    <div className={`ice-click-drop-hint ${isClickDropHintExiting ? 'is-exiting' : ''}`}>
+                    <div className={`block-click-drop-hint ${isClickDropHintExiting ? 'is-exiting' : ''}`}>
                         {t('games.block-tower.ui.clickDropHint')}
                     </div>
                 )}

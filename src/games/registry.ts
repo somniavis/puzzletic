@@ -679,7 +679,7 @@ export const GAMES: GameManifest[] = [
         category: 'brain',
         level: 2,
         component: L2_BlockTower,
-        thumbnail: '🧊',
+        thumbnail: '🏗️',
         tagsKey: 'games.tags.spatial'
     },
 
