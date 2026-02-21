@@ -115,6 +115,7 @@ export const JelloFeeding: React.FC<JelloFeedingProps> = ({ onExit }) => {
     const [feedReactions, setFeedReactions] = useState<FeedReaction[]>([]);
 
     const jelloTargetRef = useRef<HTMLDivElement>(null);
+    const dragLayerRef = useRef<HTMLDivElement>(null);
     const draggingRef = useRef(false);
     const draggingFruitIdRef = useRef<number | null>(null);
     const dragPosRef = useRef({ x: 0, y: 0 });
@@ -177,10 +178,18 @@ export const JelloFeeding: React.FC<JelloFeedingProps> = ({ onExit }) => {
         const handleDragMove = (clientX: number, clientY: number) => {
             if (!draggingRef.current || draggingFruitIdRef.current == null) return;
             dragPosRef.current = { x: clientX, y: clientY };
-            setDragPos({ x: clientX, y: clientY });
+            const dragLayerRect = dragLayerRef.current?.getBoundingClientRect();
+            if (dragLayerRect) {
+                setDragPos({
+                    x: clientX - dragLayerRect.left,
+                    y: clientY - dragLayerRect.top
+                });
+            } else {
+                setDragPos({ x: clientX, y: clientY });
+            }
         };
 
-        const handleDragEnd = (clientX: number, clientY: number) => {
+        const handleDragEnd = (clientX?: number, clientY?: number) => {
             const activeId = draggingFruitIdRef.current;
             if (!draggingRef.current || activeId == null) return;
             draggingRef.current = false;
@@ -196,8 +205,10 @@ export const JelloFeeding: React.FC<JelloFeedingProps> = ({ onExit }) => {
                 const radius = Math.min(rect.width, rect.height) / 2 + 14;
                 // Use a small sample cluster around the final drag point to absorb
                 // device-specific touch coordinate drift (observed on some Androids).
-                const baseX = Number.isFinite(clientX) ? clientX : dragPosRef.current.x;
-                const baseY = Number.isFinite(clientY) ? clientY : dragPosRef.current.y;
+                // Use tracked drag position as the primary source.
+                // On some newer Android devices, touchend/pointerup coordinates can drift.
+                const baseX = dragPosRef.current.x;
+                const baseY = dragPosRef.current.y;
                 const samplePoints: Array<{ x: number; y: number }> = [
                     { x: baseX, y: baseY },
                     { x: baseX - 12, y: baseY - 12 },
@@ -205,6 +216,15 @@ export const JelloFeeding: React.FC<JelloFeedingProps> = ({ onExit }) => {
                     { x: baseX - 12, y: baseY + 12 },
                     { x: baseX + 12, y: baseY + 12 }
                 ];
+
+                // Keep event-end coordinates only as secondary fallback samples.
+                if (Number.isFinite(clientX) && Number.isFinite(clientY)) {
+                    samplePoints.push(
+                        { x: clientX as number, y: clientY as number },
+                        { x: (clientX as number) - 10, y: (clientY as number) - 10 },
+                        { x: (clientX as number) + 10, y: (clientY as number) + 10 }
+                    );
+                }
 
                 dropped = samplePoints.some(({ x, y }) => {
                     const dx = x - cx;
@@ -275,7 +295,8 @@ export const JelloFeeding: React.FC<JelloFeedingProps> = ({ onExit }) => {
                 setDraggingFruitId(null);
                 return;
             }
-            handleDragEnd(touch.clientX, touch.clientY);
+            // Prefer last tracked drag position for reliability on Android.
+            handleDragEnd();
         };
 
         window.addEventListener('pointermove', onPointerMove, { passive: true });
@@ -400,7 +421,15 @@ export const JelloFeeding: React.FC<JelloFeedingProps> = ({ onExit }) => {
         draggingFruitIdRef.current = id;
         dragPosRef.current = { x: clientX, y: clientY };
         setDraggingFruitId(id);
-        setDragPos({ x: clientX, y: clientY });
+        const dragLayerRect = dragLayerRef.current?.getBoundingClientRect();
+        if (dragLayerRect) {
+            setDragPos({
+                x: clientX - dragLayerRect.left,
+                y: clientY - dragLayerRect.top
+            });
+        } else {
+            setDragPos({ x: clientX, y: clientY });
+        }
     };
 
     const handleFruitPointerDown = (event: React.PointerEvent<HTMLButtonElement>, id: number, fed: boolean) => {
@@ -481,7 +510,7 @@ export const JelloFeeding: React.FC<JelloFeedingProps> = ({ onExit }) => {
         >
             <>
                 <BlobBackground />
-                <div className="jello-feeding-container">
+                <div ref={dragLayerRef} className="jello-feeding-container">
                     <div className="fruit-board-panel">
                         {showFoodHintOverlay && (
                             <div className="food-hint-overlay" aria-hidden="true">
