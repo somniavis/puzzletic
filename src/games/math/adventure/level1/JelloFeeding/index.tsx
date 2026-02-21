@@ -187,11 +187,12 @@ export const JelloFeeding: React.FC<JelloFeedingProps> = ({ onExit }) => {
             let dropped = false;
             if (dropZone) {
                 const rect = dropZone.getBoundingClientRect();
-                dropped =
-                    clientX >= rect.left &&
-                    clientX <= rect.right &&
-                    clientY >= rect.top &&
-                    clientY <= rect.bottom;
+                const cx = rect.left + rect.width / 2;
+                const cy = rect.top + rect.height / 2;
+                const radius = Math.min(rect.width, rect.height) / 2;
+                const dx = clientX - cx;
+                const dy = clientY - cy;
+                dropped = (dx * dx + dy * dy) <= (radius * radius);
             }
 
             if (dropped) {
@@ -367,6 +368,7 @@ export const JelloFeeding: React.FC<JelloFeedingProps> = ({ onExit }) => {
 
     const startFruitDrag = (clientX: number, clientY: number, id: number, fed: boolean) => {
         if (engine.gameState !== 'playing' || fed) return;
+        if (draggingRef.current) return;
         draggingRef.current = true;
         draggingFruitIdRef.current = id;
         setDraggingFruitId(id);
@@ -374,6 +376,7 @@ export const JelloFeeding: React.FC<JelloFeedingProps> = ({ onExit }) => {
     };
 
     const handleFruitPointerDown = (event: React.PointerEvent<HTMLButtonElement>, id: number, fed: boolean) => {
+        event.preventDefault();
         startFruitDrag(event.clientX, event.clientY, id, fed);
         try {
             event.currentTarget.setPointerCapture(event.pointerId);
@@ -384,7 +387,6 @@ export const JelloFeeding: React.FC<JelloFeedingProps> = ({ onExit }) => {
     };
 
     const handleFruitTouchStart = (event: React.TouchEvent<HTMLButtonElement>, id: number, fed: boolean) => {
-        if (typeof window !== 'undefined' && 'PointerEvent' in window) return;
         const touch = event.touches[0];
         if (!touch) return;
         event.preventDefault();

@@ -28,9 +28,9 @@ interface SettledPiece {
 
 const GRID_ROWS = 10;
 const GRID_COLS = 10;
-const FALL_STEP_MS = 55;
 const ARM_SPEED_COLS_PER_SEC = 2.8;
 const NEXT_PREVIEW_CELL_PX = 30;
+const FALL_MS_PER_ROW = 70;
 
 const createEmptyGrid = (): boolean[][] =>
     Array.from({ length: GRID_ROWS }, () => Array(GRID_COLS).fill(false));
@@ -238,7 +238,7 @@ export const BlockTower: React.FC<BlockTowerProps> = ({ onExit }) => {
     const [nextProblem, setNextProblem] = React.useState<Problem>(() => createProblem());
     const [armCol, setArmCol] = React.useState(0);
     const [isDropping, setIsDropping] = React.useState(false);
-    const [activePiece, setActivePiece] = React.useState<{ row: number; startCol: number; size: number; symbol: string; color: string } | null>(null);
+    const [activePiece, setActivePiece] = React.useState<{ row: number; startCol: number; size: number; symbol: string; color: string; fallMs: number } | null>(null);
     const [settledPieces, setSettledPieces] = React.useState<SettledPiece[]>([]);
     const [isCollapsing, setIsCollapsing] = React.useState(false);
     const [isRoundClearing, setIsRoundClearing] = React.useState(false);
@@ -557,21 +557,33 @@ export const BlockTower: React.FC<BlockTowerProps> = ({ onExit }) => {
     }, [engine, startNewProblem, triggerCollapseFail]);
 
     const runFallAnimation = React.useCallback((landingRow: number, startCol: number, currentProblem: Problem) => {
-        let animatedRow = -1;
-        setActivePiece({ row: animatedRow, startCol, size: currentProblem.bundleSize, symbol: currentProblem.symbol, color: currentProblem.color });
+        const fallMs = Math.max(160, (landingRow + 1) * FALL_MS_PER_ROW);
 
-        const tick = () => {
-            if (animatedRow < landingRow) {
-                animatedRow += 1;
-                setActivePiece({ row: animatedRow, startCol, size: currentProblem.bundleSize, symbol: currentProblem.symbol, color: currentProblem.color });
-                fallTimerRef.current = window.setTimeout(tick, FALL_STEP_MS);
-                return;
-            }
+        // Place piece at spawn row first, then transition to landing row.
+        setActivePiece({
+            row: -1,
+            startCol,
+            size: currentProblem.bundleSize,
+            symbol: currentProblem.symbol,
+            color: currentProblem.color,
+            fallMs
+        });
+
+        requestAnimationFrame(() => {
+            setActivePiece({
+                row: landingRow,
+                startCol,
+                size: currentProblem.bundleSize,
+                symbol: currentProblem.symbol,
+                color: currentProblem.color,
+                fallMs
+            });
+        });
+
+        fallTimerRef.current = window.setTimeout(() => {
             fallTimerRef.current = null;
             finalizeLanding(landingRow, startCol, currentProblem);
-        };
-
-        tick();
+        }, fallMs + 24);
     }, [finalizeLanding]);
 
     const dropBundle = React.useCallback(() => {
@@ -764,7 +776,8 @@ export const BlockTower: React.FC<BlockTowerProps> = ({ onExit }) => {
                                         '--piece-col': activePiece.startCol,
                                         '--piece-row': activePiece.row,
                                         '--piece-size': activePiece.size,
-                                        '--piece-color': activePiece.color
+                                        '--piece-color': activePiece.color,
+                                        '--fall-duration-ms': `${activePiece.fallMs}ms`
                                     } as React.CSSProperties}
                                 >
                                     {Array.from({ length: activePiece.size }).map((_, idx) => (

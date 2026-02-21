@@ -33,6 +33,7 @@ const L2_ShapeSumLink = lazy(() => delayedImport(import('./math/adventure/level2
 const L3_FruitBox = lazy(() => delayedImport(import('./math/adventure/level3/FruitBox').then(m => ({ default: m.FruitBox }))));
 const L3_IceStacking = lazy(() => delayedImport(import('./math/adventure/level3/IceStacking').then(m => ({ default: m.IceStacking }))));
 const L3_FloorTiler = lazy(() => delayedImport(import('./math/adventure/level3/FloorTiler').then(m => ({ default: m.FloorTiler }))));
+const L3_BeginnerWizard = lazy(() => delayedImport(import('./math/adventure/level3/BeginnerWizard').then(m => ({ default: m.BeginnerWizard }))));
 const L3_ConstellationFinder = lazy(() => delayedImport(import('./math/adventure/level3/ConstellationFinder').then(m => ({ default: m.ConstellationFinder }))));
 const L3_TrollAttack = lazy(() => delayedImport(import('./math/adventure/level3/TrollAttack').then(m => ({ default: m.TrollAttack }))));
 
@@ -368,6 +369,21 @@ export const GAMES: GameManifest[] = [
         component: L3_FloorTiler,
         thumbnail: 'quad:🟧,🟨,🟩,🟦',
         tagsKey: 'games.tags.multiplication'
+    },
+    {
+        id: GameIds.MATH_BEGINNER_WIZARD,
+        title: '초보마법사',
+        titleKey: 'games.beginner-wizard.title',
+        subtitle: '마법으로 동물 가족을 지켜요!',
+        subtitleKey: 'games.beginner-wizard.subtitle',
+        description: '목표 숫자에 맞춰 보호/삭제 마법을 선택하세요.',
+        descriptionKey: 'games.beginner-wizard.description',
+        category: 'math',
+        level: 3,
+        mode: 'adventure',
+        component: L3_BeginnerWizard,
+        thumbnail: '🧙',
+        tagsKey: 'games.tags.mixedOps'
     },
     {
         id: GameIds.MATH_CONSTELLATION_FINDER,

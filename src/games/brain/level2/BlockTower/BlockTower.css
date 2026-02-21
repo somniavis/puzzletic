@@ -125,7 +125,7 @@
 .block-next-cube.is-hazard {
     display: grid;
     place-items: center;
-    font-size: clamp(27px, 4.7vh, 39px);
+    font-size: 24px;
     line-height: 1;
     background: transparent;
     border-right: none;
@@ -453,6 +453,7 @@
     border: 1px solid rgba(65, 125, 168, 0.75);
     pointer-events: none;
     z-index: 3;
+    transition: top var(--fall-duration-ms, 0ms) linear;
 }
 
 .block-settled-piece {
