@@ -117,6 +117,7 @@ export const JelloFeeding: React.FC<JelloFeedingProps> = ({ onExit }) => {
     const jelloTargetRef = useRef<HTMLDivElement>(null);
     const draggingRef = useRef(false);
     const draggingFruitIdRef = useRef<number | null>(null);
+    const dragPosRef = useRef({ x: 0, y: 0 });
     const eatingTimerRef = useRef<number | null>(null);
     const foodHintTimerRef = useRef<number | null>(null);
     const reactionTimersRef = useRef<number[]>([]);
@@ -175,6 +176,7 @@ export const JelloFeeding: React.FC<JelloFeedingProps> = ({ onExit }) => {
     useEffect(() => {
         const handleDragMove = (clientX: number, clientY: number) => {
             if (!draggingRef.current || draggingFruitIdRef.current == null) return;
+            dragPosRef.current = { x: clientX, y: clientY };
             setDragPos({ x: clientX, y: clientY });
         };
 
@@ -189,10 +191,34 @@ export const JelloFeeding: React.FC<JelloFeedingProps> = ({ onExit }) => {
                 const rect = dropZone.getBoundingClientRect();
                 const cx = rect.left + rect.width / 2;
                 const cy = rect.top + rect.height / 2;
-                const radius = Math.min(rect.width, rect.height) / 2;
-                const dx = clientX - cx;
-                const dy = clientY - cy;
-                dropped = (dx * dx + dy * dy) <= (radius * radius);
+                // Some Android browsers report touch-end coordinates with small drift.
+                // Keep circular hit-test, but add a small tolerance.
+                const radius = Math.min(rect.width, rect.height) / 2 + 14;
+                // Use a small sample cluster around the final drag point to absorb
+                // device-specific touch coordinate drift (observed on some Androids).
+                const baseX = Number.isFinite(clientX) ? clientX : dragPosRef.current.x;
+                const baseY = Number.isFinite(clientY) ? clientY : dragPosRef.current.y;
+                const samplePoints: Array<{ x: number; y: number }> = [
+                    { x: baseX, y: baseY },
+                    { x: baseX - 12, y: baseY - 12 },
+                    { x: baseX + 12, y: baseY - 12 },
+                    { x: baseX - 12, y: baseY + 12 },
+                    { x: baseX + 12, y: baseY + 12 }
+                ];
+
+                dropped = samplePoints.some(({ x, y }) => {
+                    const dx = x - cx;
+                    const dy = y - cy;
+                    return (dx * dx + dy * dy) <= (radius * radius);
+                });
+
+                // Fallback: trust actual DOM hit at sampled points (robust on mobile WebView).
+                if (!dropped && typeof document !== 'undefined') {
+                    dropped = samplePoints.some(({ x, y }) => {
+                        const hit = document.elementFromPoint(x, y);
+                        return !!(hit && (hit === dropZone || dropZone.contains(hit)));
+                    });
+                }
             }
 
             if (dropped) {
@@ -213,6 +239,7 @@ export const JelloFeeding: React.FC<JelloFeedingProps> = ({ onExit }) => {
             }
 
             draggingFruitIdRef.current = null;
+            dragPosRef.current = { x: 0, y: 0 };
             setDraggingFruitId(null);
         };
 
@@ -371,6 +398,7 @@ export const JelloFeeding: React.FC<JelloFeedingProps> = ({ onExit }) => {
         if (draggingRef.current) return;
         draggingRef.current = true;
         draggingFruitIdRef.current = id;
+        dragPosRef.current = { x: clientX, y: clientY };
         setDraggingFruitId(id);
         setDragPos({ x: clientX, y: clientY });
     };
