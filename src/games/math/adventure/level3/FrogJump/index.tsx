@@ -32,15 +32,15 @@ const RIPPLE_DURATION_MS = 1700;
 const randInt = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1)) + min;
 
 const createProblem = (excludeKey?: string): FrogProblem => {
-    let a = randInt(2, 9);
-    let b = randInt(1, 9);
+    let a = randInt(1, 9);
+    let b = randInt(2, 9);
     let key = `${a}x${b}`;
 
     if (excludeKey) {
         let guard = 0;
         while (key === excludeKey && guard < 20) {
-            a = randInt(2, 9);
-            b = randInt(1, 9);
+            a = randInt(1, 9);
+            b = randInt(2, 9);
             key = `${a}x${b}`;
             guard += 1;
         }
@@ -51,7 +51,7 @@ const createProblem = (excludeKey?: string): FrogProblem => {
     const jumpCount = b;  // frog must jump b times to reach answer
 
     const maxAbove = 9 - jumpCount;
-    const aboveCount = maxAbove <= 0 ? 0 : randInt(1, Math.min(2, maxAbove));
+    const aboveCount = maxAbove <= 0 ? 0 : randInt(0, Math.min(3, maxAbove));
     const count = jumpCount + aboveCount + 1; // +1 for 0 tick, max 10 major ticks
     const ticks = Array.from({ length: count }, (_, idx) => idx * step);
 
@@ -73,6 +73,7 @@ export const FrogJump: React.FC<FrogJumpProps> = ({ onExit }) => {
     const [isResolving, setIsResolving] = React.useState(false);
     const [hopTick, setHopTick] = React.useState(0);
     const [ripples, setRipples] = React.useState<JumpRipple[]>([]);
+    const [railHeightPx, setRailHeightPx] = React.useState(0);
 
     const prevGameStateRef = React.useRef(engine.gameState);
     const jumpTimerRef = React.useRef<number | null>(null);
@@ -81,6 +82,7 @@ export const FrogJump: React.FC<FrogJumpProps> = ({ onExit }) => {
     const rippleTimersRef = React.useRef<number[]>([]);
     const rippleIdRef = React.useRef(0);
     const prevProblemKeyRef = React.useRef<string | null>(null);
+    const railRef = React.useRef<HTMLDivElement | null>(null);
 
     const clearTimer = React.useCallback((ref: React.MutableRefObject<number | null>) => {
         if (ref.current != null) {
@@ -122,6 +124,23 @@ export const FrogJump: React.FC<FrogJumpProps> = ({ onExit }) => {
             rippleTimersRef.current = [];
         };
     }, [clearTimer]);
+
+    React.useEffect(() => {
+        const target = railRef.current;
+        if (!target) return;
+
+        const updateHeight = () => {
+            setRailHeightPx(target.clientHeight);
+        };
+        updateHeight();
+
+        const observer = new ResizeObserver(updateHeight);
+        observer.observe(target);
+
+        return () => {
+            observer.disconnect();
+        };
+    }, [problem]);
 
     React.useEffect(() => {
         if (!problem) return;
@@ -201,6 +220,16 @@ export const FrogJump: React.FC<FrogJumpProps> = ({ onExit }) => {
     const tickCount = problem?.ticks.length ?? 1;
     const stepPercent = tickCount > 1 ? 100 / (tickCount - 1) : 0;
     const yPercentForIndex = React.useCallback((index: number) => index * stepPercent, [stepPercent]);
+    const tickGapPx = React.useMemo(() => {
+        if (tickCount <= 1 || railHeightPx <= 0) return 0;
+        return Math.max(0, (railHeightPx - 16) / (tickCount - 1));
+    }, [railHeightPx, tickCount]);
+    const buttonHeightPx = React.useMemo(() => (
+        Math.max(26.4, Math.min(48, tickGapPx * 0.78))
+    ), [tickGapPx]);
+    const buttonFontPx = React.useMemo(() => (
+        Math.max(11.8, Math.min(18.5, buttonHeightPx * 0.42))
+    ), [buttonHeightPx]);
 
     const frogBottom = React.useMemo(() => {
         const ratio = yPercentForIndex(frogIndex) / 100;
@@ -293,7 +322,19 @@ export const FrogJump: React.FC<FrogJumpProps> = ({ onExit }) => {
                         </div>
 
                         <div className="frog-jump-right">
-                            <div className="frog-jump-rail" key={`${problem.a}x${problem.b}-${problem.ticks.length}`}>
+                            <div
+                                className="frog-jump-rail"
+                                key={`${problem.a}x${problem.b}-${problem.ticks.length}`}
+                                ref={railRef}
+                                style={
+                                    {
+                                        '--major-count': Math.max(1, problem.ticks.length - 1),
+                                        '--tick-gap': `calc((100% - 1rem) / ${Math.max(1, problem.ticks.length - 1)})`,
+                                        '--btn-height': `${buttonHeightPx}px`,
+                                        '--btn-font-size': `${buttonFontPx}px`
+                                    } as React.CSSProperties
+                                }
+                            >
                                 {problem.ticks.map((_, idx) => {
                                     if (idx >= problem.ticks.length - 1) return null;
                                     const base = yPercentForIndex(idx);

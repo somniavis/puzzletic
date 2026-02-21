@@ -52,6 +52,11 @@
     --problem-width: clamp(6.72rem, 16.8vw, 8.68rem);
 }
 
+.frog-jump-right {
+    overflow: visible;
+    z-index: 3;
+}
+
 .frog-jump-problem-sign {
     position: absolute;
     left: var(--problem-left);
@@ -189,9 +194,13 @@
 .frog-jump-rail {
     position: absolute;
     right: 0;
-    top: 0.5rem;
-    bottom: 0.5rem;
+    top: calc(0.5rem + var(--btn-height, 1.65rem) * 0.22);
+    bottom: calc(0.5rem + var(--btn-height, 1.65rem) * 0.22);
     left: 0;
+    --major-count: 9;
+    --tick-gap: calc((100% - 1rem) / var(--major-count));
+    overflow: visible;
+    z-index: 3;
 }
 
 .frog-jump-rail::before {
@@ -214,6 +223,7 @@
     grid-template-columns: 24px auto;
     align-items: center;
     gap: 0.18rem;
+    z-index: 4;
 }
 
 .frog-jump-big-tick {
@@ -241,15 +251,15 @@
 
 .frog-jump-btn {
     justify-self: start;
-    min-width: clamp(3.75rem, 11vh, 4.875rem);
-    height: min(clamp(1.65rem, 6.6vh, 2.145rem), calc(var(--tick-gap) * 0.72));
+    min-width: 3.75rem;
+    height: var(--btn-height, 1.65rem);
     padding: 0 clamp(0.62rem, 1.9vh, 0.81rem);
     border: 2px solid rgba(59, 130, 246, 0.4);
     border-radius: 0.62rem;
     background: linear-gradient(180deg, #ffffff, #dbeafe);
     box-shadow: 0 3px 0 #93c5fd;
     color: #1e3a8a;
-    font-size: min(clamp(0.74rem, 2.8vh, 0.96rem), calc(var(--tick-gap) * 0.42));
+    font-size: var(--btn-font-size, 0.74rem);
     font-weight: 900;
     letter-spacing: 0.01em;
     cursor: pointer;
@@ -257,6 +267,7 @@
     appearance: none;
     -webkit-appearance: none;
     -webkit-tap-highlight-color: transparent;
+    transition: transform 90ms ease, box-shadow 90ms ease, filter 90ms ease;
 }
 
 .frog-jump-btn:focus,
@@ -274,6 +285,16 @@
     background: linear-gradient(180deg, #67e8f9, #22d3ee);
     box-shadow: 0 3px 0 #0891b2;
     color: #083344;
+}
+
+.frog-jump-btn:active:not(:disabled) {
+    transform: translateY(2px) scale(0.99);
+    box-shadow: 0 1px 0 #93c5fd;
+    filter: brightness(0.98);
+}
+
+.frog-jump-btn.is-selected:active:not(:disabled) {
+    box-shadow: 0 1px 0 #0891b2;
 }
 
 .frog-jump-btn-zero {
@@ -358,6 +379,6 @@
     }
 
     .frog-jump-btn {
-        min-width: clamp(3.75rem, 10vh, 4.875rem);
+        min-width: 3.75rem;
     }
 }
