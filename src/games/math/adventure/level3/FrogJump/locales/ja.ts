@@ -4,16 +4,16 @@ const ja = {
     description: '目盛りの正しい数を選んでカエルをジャンプさせよう。',
     howToPlay: {
         step1: {
-            title: '問題を見る',
-            description: 'カエルの上にあるかけ算を確認します。'
+            title: '目盛りをチェック！',
+            description: 'ジャンプする距離を考えます。'
         },
         step2: {
-            title: '目盛りを選ぶ',
-            description: '縦の数直線から正しい数をタップします。'
+            title: '数字ボタンをタップ',
+            description: '答えを見つけて選びます。'
         },
         step3: {
-            title: 'ジャンプして判定',
-            description: 'カエルが1段ずつ跳んで、到着後に正誤判定します。'
+            title: 'ジャンプで到着！',
+            description: '正しい目盛りに着いたらクリア！'
         }
     }
 } as const;

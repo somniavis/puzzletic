@@ -4,16 +4,16 @@ const en = {
     description: 'Pick the correct tick value and make the frog hop up.',
     howToPlay: {
         step1: {
-            title: 'Read the Problem',
-            description: 'Check the multiplication shown above the frog.'
+            title: 'Check the marks!',
+            description: 'Figure out the jump distance.'
         },
         step2: {
-            title: 'Tap a Tick',
-            description: 'Choose the correct number on the vertical line.'
+            title: 'Tap a number button',
+            description: 'Find and choose the answer.'
         },
         step3: {
-            title: 'Hop and Check',
-            description: 'The frog hops one step at a time, then answer is checked.'
+            title: 'Jump and land!',
+            description: 'Reach the correct mark to clear it.'
         }
     }
 } as const;

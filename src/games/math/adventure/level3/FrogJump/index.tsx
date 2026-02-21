@@ -51,7 +51,21 @@ const createProblem = (excludeKey?: string): FrogProblem => {
     const jumpCount = b;  // frog must jump b times to reach answer
 
     const maxAbove = 9 - jumpCount;
-    const aboveCount = maxAbove <= 0 ? 0 : randInt(0, Math.min(3, maxAbove));
+    let aboveMin = 0;
+    let aboveMax = 3;
+    if (b >= 2 && b <= 5) {
+        aboveMin = 2;
+        aboveMax = 4;
+    } else if (b >= 7 && b <= 9) {
+        aboveMin = 0;
+        aboveMax = 3;
+    } else {
+        // b === 6
+        aboveMin = 2;
+        aboveMax = 4;
+    }
+    const boundedMax = Math.min(aboveMax, maxAbove);
+    const aboveCount = maxAbove <= 0 ? 0 : randInt(Math.min(aboveMin, boundedMax), boundedMax);
     const count = jumpCount + aboveCount + 1; // +1 for 0 tick, max 10 major ticks
     const ticks = Array.from({ length: count }, (_, idx) => idx * step);
 
@@ -269,12 +283,12 @@ export const FrogJump: React.FC<FrogJumpProps> = ({ onExit }) => {
 
     const instructions = React.useMemo(() => ([
         {
-            icon: '🧮',
+            icon: '📏',
             title: t('games.frog-jump.howToPlay.step1.title'),
             description: t('games.frog-jump.howToPlay.step1.description')
         },
         {
-            icon: '🔢',
+            icon: '👆',
             title: t('games.frog-jump.howToPlay.step2.title'),
             description: t('games.frog-jump.howToPlay.step2.description')
         },
