@@ -1,22 +1,24 @@
 export default {
     title: 'Beginner Wizard',
-    subtitle: 'Protect the animal family with magic!',
+    subtitle: 'Cast the 0 or 1 spell!',
     description: 'Choose protect/remove magic to match the target.',
     ui: {
-        targetLabel: 'Target'
+        targetLabel: 'Target',
+        protectHint: '🛡️ keep all',
+        removeHint: '🕳️ vanish all'
     },
     howToPlay: {
         step1: {
-            title: 'Check the target',
-            description: 'Look at the number in the top target box.'
+            title: 'Two spells',
+            description: 'Practice both spells.'
         },
         step2: {
-            title: 'Choose magic',
-            description: 'Pick protect (x1) or remove (x0) magic.'
+            title: 'x1: Protect spell',
+            description: 'Keeps the animals as they are.'
         },
         step3: {
-            title: 'Watch them move',
-            description: 'The animal family moves by your spell.'
+            title: 'x0: Remove spell',
+            description: 'Sends the animals into the black hole.'
         }
     }
 } as const;

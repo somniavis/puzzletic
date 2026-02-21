@@ -3,6 +3,8 @@
 }
 
 .beginner-wizard-layout .layout3-sub-header .target-count {
+    /* Fallback for older iOS Safari that does not support cqi */
+    font-size: clamp(2rem, 6vw, 3.7rem);
     font-size: clamp(2rem, 6.2cqi, 3.7rem);
     color: #0f172a;
     width: 100%;
@@ -10,6 +12,17 @@
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+.beginner-wizard-target-animal {
+    font-size: 0.92em;
+    line-height: 1;
+    margin-right: 0.22em;
+}
+
+.beginner-wizard-target-number {
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
 }
 
 .beginner-wizard-layout .layout3-grid-wrapper {
@@ -32,106 +45,235 @@
 }
 
 .beginner-wizard-cloud-rows {
+    --cloud-size: var(--cloud-size-px, 62px);
     position: absolute;
-    left: 0;
+    left: -8%;
     right: 0;
     top: 38%;
     z-index: 3;
+    height: calc(var(--cloud-size) * 2.1);
 }
 
 .beginner-wizard-cloud-row {
+    position: absolute;
+    left: 0;
+    top: 0;
     display: flex;
-    width: 100%;
-    justify-content: center;
-    gap: clamp(0.02rem, 0.14cqi, 0.08rem);
-    line-height: 0.9;
-    padding: 0;
+    width: max-content;
+    line-height: 1;
     box-sizing: border-box;
 }
 
-.beginner-wizard-cloud-row + .beginner-wizard-cloud-row {
-    margin-top: clamp(-0.38rem, -0.9cqi, -0.2rem);
-}
-
 .beginner-wizard-cloud-emoji {
-    font-size: clamp(1.15rem, 2.8cqi, 1.9rem);
+    display: inline-block;
+    font-size: var(--cloud-size);
+    line-height: var(--cloud-size);
+    height: var(--cloud-size);
+    opacity: 0.97;
     filter: drop-shadow(0 1px 0 rgba(148, 163, 184, 0.35));
 }
 
+.beginner-wizard-cloud-emoji + .beginner-wizard-cloud-emoji {
+    margin-left: calc(var(--cloud-size) * -0.33);
+}
+
 .beginner-wizard-family {
+    --cloud-size: var(--cloud-size-px, 62px);
     position: absolute;
     left: 6%;
-    top: 31%;
+    top: calc(31% + (var(--cloud-size) * 0.05));
     width: 60%;
-    height: clamp(4.8rem, 12cqi, 8rem);
-    transition: transform 0.9s cubic-bezier(0.22, 0.61, 0.36, 1), opacity 0.35s ease;
+    height: calc(var(--cloud-size) * 1.95);
+    transform: translate3d(0, 0, 0);
+    will-change: transform, opacity;
+    transition: opacity 0.35s ease;
     z-index: 5;
 }
 
-.beginner-wizard-family.is-protect-moving {
-    transform: translateX(62%);
+.beginner-wizard-family.is-walking {
+    animation: wizard-family-walk var(--family-travel-ms, 7600ms) linear forwards;
 }
 
 .beginner-wizard-family.is-removing {
-    transform: scale(0.78);
-    opacity: 0;
+    pointer-events: none;
 }
 
 .beginner-wizard-animal {
     position: absolute;
-    transform: translate(-50%, -50%);
-    font-size: clamp(1rem, 2.8cqi, 1.8rem);
+    transform: translate(-50%, -50%) scaleX(-1);
+    font-size: calc(var(--cloud-size) * 0.72);
     line-height: 1;
+    opacity: 1;
     filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.25));
 }
 
 .beginner-wizard-animal.is-leader {
-    font-size: clamp(1.55rem, 4.6cqi, 2.8rem);
+    font-size: calc(var(--cloud-size) * 1.42);
+    z-index: 2;
 }
 
-.beginner-wizard-poof {
+.beginner-wizard-family.is-walking .beginner-wizard-animal {
+    animation: wizard-animal-wiggle 1.7s ease-in-out infinite;
+}
+
+.beginner-wizard-family.is-walking .beginner-wizard-animal:nth-child(2n) {
+    animation-duration: 1.95s;
+    animation-delay: -0.35s;
+}
+
+.beginner-wizard-family.is-walking .beginner-wizard-animal:nth-child(3n) {
+    animation-duration: 1.55s;
+    animation-delay: -0.18s;
+}
+
+.beginner-wizard-family.is-removing .beginner-wizard-animal {
+    animation: wizard-animal-suck 1.1s cubic-bezier(0.2, 0.6, 0.2, 1) forwards;
+}
+
+.beginner-wizard-family.is-removing .beginner-wizard-animal.is-leader {
+    animation-duration: 1.22s;
+}
+
+.beginner-wizard-family.is-removing .beginner-wizard-animal:nth-child(2n) {
+    animation-delay: 0.08s;
+}
+
+.beginner-wizard-family.is-removing .beginner-wizard-animal:nth-child(3n) {
+    animation-delay: 0.14s;
+}
+
+.beginner-wizard-protect-aura {
     position: absolute;
-    left: 58%;
-    top: 45%;
+    left: 50%;
+    top: 50%;
+    width: 82%;
+    height: 78%;
     transform: translate(-50%, -50%);
-    font-size: clamp(1.8rem, 5.2cqi, 3rem);
-    animation: wizard-poof 0.65s ease-out forwards;
+    pointer-events: none;
+    z-index: 7;
+}
+
+.beginner-wizard-protect-aura .spark {
+    position: absolute;
+    font-size: calc(var(--cloud-size) * 0.34);
+    line-height: 1;
+    opacity: 0.1;
+    animation: wizard-spark-twinkle 0.38s ease-in-out 2;
+}
+
+.beginner-wizard-protect-aura .s1 { left: 5%; top: 4%; animation-delay: 0.00s; }
+.beginner-wizard-protect-aura .s2 { left: 16%; top: 2%; animation-delay: 0.07s; }
+.beginner-wizard-protect-aura .s3 { left: 29%; top: 3%; animation-delay: 0.14s; }
+.beginner-wizard-protect-aura .s4 { left: 41%; top: 1%; animation-delay: 0.21s; }
+.beginner-wizard-protect-aura .s5 { left: 54%; top: 2%; animation-delay: 0.28s; }
+.beginner-wizard-protect-aura .s6 { left: 67%; top: 3%; animation-delay: 0.35s; }
+.beginner-wizard-protect-aura .s7 { left: 80%; top: 4%; animation-delay: 0.42s; }
+.beginner-wizard-protect-aura .s8 { left: 3%; top: 56%; animation-delay: 0.17s; }
+.beginner-wizard-protect-aura .s9 { left: 82%; top: 56%; animation-delay: 0.24s; }
+.beginner-wizard-protect-aura .s10 { left: 5%; top: 88%; animation-delay: 0.05s; }
+.beginner-wizard-protect-aura .s11 { left: 18%; top: 90%; animation-delay: 0.12s; }
+.beginner-wizard-protect-aura .s12 { left: 33%; top: 91%; animation-delay: 0.19s; }
+.beginner-wizard-protect-aura .s13 { left: 49%; top: 90%; animation-delay: 0.26s; }
+.beginner-wizard-protect-aura .s14 { left: 66%; top: 89%; animation-delay: 0.33s; }
+
+.beginner-wizard-portal {
+    position: absolute;
+    left: 50%;
+    top: 18%;
+    transform: translate(-50%, -50%);
+    width: calc(var(--cloud-size-px, 62px) * 1.14);
+    height: calc(var(--cloud-size-px, 62px) * 1.14);
+    border-radius: 50%;
+    background:
+        radial-gradient(circle at center, rgba(15, 23, 42, 0.95) 0 22%, rgba(67, 56, 202, 0.85) 34%, rgba(56, 189, 248, 0.62) 56%, rgba(56, 189, 248, 0) 72%);
+    box-shadow: 0 0 0.55rem rgba(67, 56, 202, 0.45), 0 0 1.25rem rgba(56, 189, 248, 0.38);
+    animation: wizard-portal-pulse 1.95s ease-out forwards;
+    z-index: 12;
+}
+
+.beginner-wizard-portal::before {
+    content: '';
+    position: absolute;
+    inset: -16%;
+    border-radius: 50%;
+    border: 2px solid rgba(125, 211, 252, 0.75);
+    animation: wizard-portal-ring 1.8s ease-out forwards;
 }
 
 .beginner-wizard-mage-row {
     display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    min-height: 5rem;
-    padding-left: 4%;
-    z-index: 6;
+    justify-content: center;
+    align-items: flex-end;
+    min-height: 0;
+    width: calc((100% - 0.75rem) / 3);
+    margin-right: auto;
+    padding-left: 0;
+    margin-bottom: -0.2rem;
+    z-index: 12;
+    pointer-events: none;
 }
 
 .beginner-wizard-mage {
-    font-size: clamp(2rem, 5.4cqi, 3.2rem);
+    /* Fallback for older iOS Safari (no cqi support) */
+    font-size: clamp(4.4rem, 12vw, 7.04rem);
+    font-size: clamp(4.4rem, 11.9cqi, 7.04rem);
     line-height: 1;
+    transform-origin: 62% 78%;
+}
+
+.beginner-wizard-mage.is-casting {
+    animation: wizard-mage-cast 0.24s ease-out;
 }
 
 .beginner-wizard-spell-pad {
     width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 0.75rem;
+    z-index: 10;
+}
+
+.beginner-wizard-count-panel,
+.beginner-wizard-spell-panel {
     background: #cfd4db;
-    border-radius: 1.5rem;
-    padding: 0.65rem;
+    border-radius: 1.35rem;
+    padding: 0.6rem;
+    box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.55), 0 0.5rem 0 rgba(0, 0, 0, 0.14);
+}
+
+.beginner-wizard-count-box {
+    border-radius: 1.05rem;
+    background: #ffffff;
+    color: #0f172a;
+    font-size: clamp(1.9rem, 5.8cqi, 3.2rem);
+    font-weight: 900;
+    line-height: 1;
+    /* Fallback for older iOS Safari (no cqi support) */
+    min-height: clamp(4rem, 10.5vw, 5.4rem);
+    min-height: clamp(4rem, 11cqi, 5.4rem);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: none;
+    font-variant-numeric: tabular-nums;
+}
+
+.beginner-wizard-spell-buttons {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 0.75rem;
-    box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.55), 0 0.5rem 0 rgba(0, 0, 0, 0.14);
-    z-index: 10;
+    gap: 0.6rem;
 }
 
 .spell-btn {
     border: 0;
     border-radius: 1.15rem;
+    /* Fallback for older iOS Safari (no cqi support) */
+    min-height: clamp(4rem, 10.5vw, 5.4rem);
     min-height: clamp(4rem, 11cqi, 5.4rem);
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0.4rem;
+    gap: 0;
     font-weight: 800;
     cursor: pointer;
     transition: transform 0.12s ease, filter 0.2s ease, box-shadow 0.2s ease;
@@ -142,13 +284,13 @@
 }
 
 .spell-btn.protect {
-    background: #1698f3;
+    background: #f2d93d;
     color: #0b1120;
 }
 
 .spell-btn.remove {
-    background: #eee04c;
-    color: #0b1120;
+    background: #f28b9a;
+    color: #ffffff;
 }
 
 .spell-btn.is-active {
@@ -189,10 +331,108 @@
     }
 }
 
+@keyframes wizard-animal-suck {
+    0% {
+        opacity: 1;
+        transform: translate(-50%, -50%) translate(0px, 0px) scaleX(-1) scale(1) rotate(0deg);
+        filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.25));
+    }
+    65% {
+        opacity: 0.92;
+        transform:
+            translate(-50%, -50%)
+            translate(calc(var(--suck-dx-px, 0px) * 0.82), calc(var(--suck-dy-px, -36px) * 0.82))
+            scaleX(-1)
+            scale(0.38)
+            rotate(-18deg);
+        filter: blur(0.4px) drop-shadow(0 0 0 rgba(0, 0, 0, 0));
+    }
+    100% {
+        opacity: 0;
+        transform:
+            translate(-50%, -50%)
+            translate(var(--suck-dx-px, 0px), var(--suck-dy-px, -36px))
+            scaleX(-1)
+            scale(0.12)
+            rotate(-34deg);
+        filter: blur(1.1px) drop-shadow(0 0 0 rgba(0, 0, 0, 0));
+    }
+}
+
+@keyframes wizard-portal-pulse {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.62) rotate(0deg);
+    }
+    35% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1.06) rotate(18deg);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.7) rotate(42deg);
+    }
+}
+
+@keyframes wizard-portal-ring {
+    0% {
+        opacity: 0.9;
+        transform: scale(0.68);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(1.38);
+    }
+}
+
+@keyframes wizard-spark-twinkle {
+    0%, 100% {
+        opacity: 0.1;
+        transform: scale(0.85);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.08);
+    }
+}
+
 @keyframes wizard-shake {
     0% { transform: translateX(0); }
     25% { transform: translateX(-3px); }
     50% { transform: translateX(3px); }
     75% { transform: translateX(-2px); }
     100% { transform: translateX(0); }
+}
+
+@keyframes wizard-family-walk {
+    0% {
+        transform: translateX(-34%);
+    }
+    100% {
+        transform: translateX(132%);
+    }
+}
+
+@keyframes wizard-animal-wiggle {
+    0% {
+        transform: translate(-50%, -50%) scaleX(-1) translate(-1px, 1px) rotate(-1.2deg);
+    }
+    50% {
+        transform: translate(-50%, -50%) scaleX(-1) translate(1px, -2px) rotate(1.1deg);
+    }
+    100% {
+        transform: translate(-50%, -50%) scaleX(-1) translate(-1px, 1px) rotate(-1.2deg);
+    }
+}
+
+@keyframes wizard-mage-cast {
+    0% {
+        transform: rotate(0deg) translateX(0);
+    }
+    40% {
+        transform: rotate(-12deg) translateX(-2px);
+    }
+    100% {
+        transform: rotate(0deg) translateX(0);
+    }
 }

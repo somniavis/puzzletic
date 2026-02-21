@@ -1,22 +1,24 @@
 export default {
     title: '초보마법사',
-    subtitle: '마법으로 동물 가족을 지켜요!',
+    subtitle: '0 또는 1 주문을 외워요!',
     description: '목표 숫자에 맞춰 보호/삭제 마법을 선택하세요.',
     ui: {
-        targetLabel: '목표'
+        targetLabel: '목표',
+        protectHint: '🛡️ 모두 유지',
+        removeHint: '🕳️ 모두 사라짐'
     },
     howToPlay: {
         step1: {
-            title: '목표 숫자 확인',
-            description: '상단 목표 박스의 숫자를 확인하세요.'
+            title: '두 가지 스펠',
+            description: '두 주문을 연습해보아요.'
         },
         step2: {
-            title: '마법 선택',
-            description: '보호(x1) 또는 삭제(x0) 마법을 고르세요.'
+            title: 'x1: 보호마법',
+            description: '동물들을 그대로 지켜요.'
         },
         step3: {
-            title: '동물 가족 이동',
-            description: '선택한 마법에 따라 동물 가족이 이동해요.'
+            title: 'x0: 삭제마법',
+            description: '동물들을 블랙홀로 보내요.'
         }
     }
 } as const;
