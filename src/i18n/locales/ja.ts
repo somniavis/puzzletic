@@ -20,6 +20,7 @@ import shapeSumLinkJa from '../../games/math/adventure/level2/ShapeSumLink/local
 import fruitBoxJa from '../../games/math/adventure/level3/FruitBox/locales/ja';
 import iceStackingJa from '../../games/math/adventure/level3/IceStacking/locales/ja';
 import floorTilerJa from '../../games/math/adventure/level3/FloorTiler/locales/ja';
+import frogJumpJa from '../../games/math/adventure/level3/FrogJump/locales/ja';
 import beginnerWizardJa from '../../games/math/adventure/level3/BeginnerWizard/locales/ja';
 import constellationFinderJa from '../../games/math/adventure/level3/ConstellationFinder/locales/ja';
 import trollAttackJa from '../../games/math/adventure/level3/TrollAttack/locales/ja';
@@ -987,6 +988,7 @@ export const ja = {
         'fruit-box': fruitBoxJa,
         'ice-stacking': iceStackingJa,
         'floor-tiler': floorTilerJa,
+        'frog-jump': frogJumpJa,
         'beginner-wizard': beginnerWizardJa,
         'constellation-finder': constellationFinderJa,
         'troll-attack': trollAttackJa,

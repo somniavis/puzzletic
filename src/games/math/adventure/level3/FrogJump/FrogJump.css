@@ -1,0 +1,358 @@
+.frog-jump-card-bg {
+    width: 100%;
+    height: 100%;
+    background:
+        radial-gradient(circle at 16% 22%, rgba(255, 255, 255, 0.42) 0%, rgba(255, 255, 255, 0.06) 28%, rgba(255, 255, 255, 0) 44%),
+        radial-gradient(circle at 84% 76%, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0.04) 32%, rgba(255, 255, 255, 0) 50%),
+        radial-gradient(ellipse at 25% 78%, rgba(74, 222, 128, 0.18) 0%, rgba(74, 222, 128, 0) 34%),
+        radial-gradient(ellipse at 75% 18%, rgba(45, 212, 191, 0.16) 0%, rgba(45, 212, 191, 0) 36%),
+        linear-gradient(180deg, #bbf7d0 0%, #93e6d8 35%, #76d6f7 100%);
+}
+
+.frog-jump-shell {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+    padding: 0.6rem;
+    box-sizing: border-box;
+}
+
+.frog-jump-stage {
+    position: relative;
+    width: min(100%, 600px);
+    height: 100%;
+    border-radius: 1rem;
+    padding: 0.8rem 0.6rem;
+    box-sizing: border-box;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    backdrop-filter: none;
+    display: grid;
+    grid-template-columns: 66% 34%;
+    gap: 0.35rem;
+    overflow: hidden;
+}
+
+.frog-jump-stage::before {
+    content: none;
+}
+
+.frog-jump-left,
+.frog-jump-right {
+    position: relative;
+    height: 100%;
+    z-index: 1;
+}
+
+.frog-jump-left {
+    --problem-left: clamp(0.2rem, 1.8vw, 0.9rem);
+    --problem-width: clamp(6.72rem, 16.8vw, 8.68rem);
+}
+
+.frog-jump-problem-sign {
+    position: absolute;
+    left: var(--problem-left);
+    top: 50%;
+    transform: translateY(-50%);
+    width: var(--problem-width);
+    text-align: center;
+    font-size: clamp(1.43rem, 3.5vw, 1.93rem);
+    font-weight: 900;
+    color: #fff;
+    padding: 0.42rem 1.05rem;
+    border-radius: 1.19rem;
+    background: #792e2e;
+    box-shadow: 0 6px 0 #3e1b1b, 0 8px 17px rgba(0, 0, 0, 0.2);
+    z-index: 3;
+    animation: frogSignFloat 5.6s ease-in-out infinite;
+}
+
+.frog-jump-lotus-leaf {
+    position: absolute;
+    left: calc(var(--problem-left) + var(--problem-width) * 0.5);
+    top: 58%;
+    width: clamp(8.2rem, 21vw, 11rem);
+    height: clamp(4.4rem, 11vw, 5.8rem);
+    transform: translate(-50%, -50%) rotate(-8deg);
+    border-radius: 52% 48% 58% 42% / 60% 44% 56% 40%;
+    background:
+        radial-gradient(70% 60% at 34% 74%, rgba(187, 247, 208, 0.9) 0%, rgba(187, 247, 208, 0) 42%),
+        linear-gradient(145deg, #22c55e 0%, #16a34a 58%, #15803d 100%);
+    box-shadow:
+        inset 0 -2px 0 rgba(20, 83, 45, 0.28),
+        0 7px 12px rgba(21, 128, 61, 0.24);
+    z-index: 2;
+    pointer-events: none;
+    animation: frogLeafFloat 6.1s ease-in-out infinite;
+}
+
+.frog-jump-lotus-leaf::after {
+    content: '';
+    position: absolute;
+    right: 7%;
+    top: 43%;
+    width: 22%;
+    height: 30%;
+    transform: translate(0, -50%) rotate(16deg);
+    border-radius: 999px;
+    background: rgba(56, 189, 105, 0.9);
+    box-shadow: inset 0 0 0 1px rgba(20, 83, 45, 0.12);
+}
+
+.frog-jump-problem-sign::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: -0.59rem;
+    transform: translateX(-50%);
+    width: 1.4rem;
+    height: 0.73rem;
+    border-radius: 0 0 0.7rem 0.7rem;
+    background: #792e2e;
+    box-shadow: 0 4px 0 #3e1b1b;
+}
+
+.frog-jump-frog {
+    position: absolute;
+    width: clamp(2.2rem, 5.6vw, 2.9rem);
+    height: clamp(2.2rem, 5.6vw, 2.9rem);
+    left: calc(100% - 0.95rem);
+    transform: translate(-50%, 50%);
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    filter: drop-shadow(0 3px 0 rgba(15, 23, 42, 0.22));
+}
+
+.frog-jump-frog-head {
+    position: relative;
+    z-index: 3;
+    font-size: clamp(1.8rem, 4.6vw, 2.4rem);
+    transform: translateY(-14%);
+}
+
+.frog-jump-ripple {
+    position: absolute;
+    left: calc(100% - 0.95rem);
+    width: 1.35rem;
+    height: 1.35rem;
+    border-radius: 50%;
+    border: 2px solid rgba(14, 116, 144, 0.45);
+    background: rgba(255, 255, 255, 0.12);
+    transform: translate(-50%, 50%);
+    pointer-events: none;
+    z-index: 4;
+    box-shadow: 0 0 0 1px rgba(125, 211, 252, 0.3);
+    animation: pondRippleTrail 1700ms ease-out forwards;
+}
+
+.frog-jump-frog::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 52%;
+    transform: translateX(-50%);
+    width: 62%;
+    height: 42%;
+    border-radius: 48% 48% 44% 44%;
+    background:
+        radial-gradient(circle at 50% 35%, rgba(187, 247, 208, 0.85) 0%, rgba(187, 247, 208, 0) 45%),
+        linear-gradient(180deg, #4ade80 0%, #22c55e 72%, #16a34a 100%);
+    box-shadow:
+        inset 0 -1px 0 rgba(6, 95, 70, 0.35),
+        0 2px 0 rgba(6, 95, 70, 0.2);
+    z-index: 1;
+}
+
+.frog-jump-frog::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 72%;
+    transform: translateX(-50%);
+    width: 72%;
+    height: 28%;
+    background:
+        radial-gradient(85% 95% at 20% 65%, #4ade80 0%, #22c55e 58%, transparent 59%),
+        radial-gradient(85% 95% at 80% 65%, #4ade80 0%, #22c55e 58%, transparent 59%);
+    z-index: 0;
+}
+
+.frog-jump-frog.is-hopping {
+    animation: frogHopArc 260ms ease-out;
+}
+
+.frog-jump-rail {
+    position: absolute;
+    right: 0;
+    top: 0.5rem;
+    bottom: 0.5rem;
+    left: 0;
+}
+
+.frog-jump-rail::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 10px;
+    width: 3px;
+    border-radius: 999px;
+    background: linear-gradient(180deg, #334155, #1e293b);
+}
+
+.frog-jump-big-row {
+    position: absolute;
+    left: 0;
+    right: 0;
+    transform: translateY(50%);
+    display: grid;
+    grid-template-columns: 24px auto;
+    align-items: center;
+    gap: 0.18rem;
+}
+
+.frog-jump-big-tick {
+    width: 21px;
+    height: 3px;
+    margin-left: 3px;
+    border-radius: 999px;
+    background: #1e293b;
+}
+
+.frog-jump-small-tick {
+    position: absolute;
+    left: 12px;
+    width: 12px;
+    height: 2px;
+    border-radius: 999px;
+    background: rgba(51, 65, 85, 0.75);
+    transform: translateY(50%);
+}
+
+.frog-jump-btn {
+    justify-self: start;
+    min-width: clamp(3.75rem, 11vh, 4.875rem);
+    height: min(clamp(1.65rem, 6.6vh, 2.145rem), calc(var(--tick-gap) * 0.72));
+    padding: 0 clamp(0.62rem, 1.9vh, 0.81rem);
+    border: 2px solid rgba(59, 130, 246, 0.4);
+    border-radius: 0.62rem;
+    background: linear-gradient(180deg, #ffffff, #dbeafe);
+    box-shadow: 0 3px 0 #93c5fd;
+    color: #1e3a8a;
+    font-size: min(clamp(0.74rem, 2.8vh, 0.96rem), calc(var(--tick-gap) * 0.42));
+    font-weight: 900;
+    letter-spacing: 0.01em;
+    cursor: pointer;
+    outline: none;
+    appearance: none;
+    -webkit-appearance: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.frog-jump-btn:focus,
+.frog-jump-btn:focus-visible {
+    outline: none;
+}
+
+.frog-jump-btn:disabled {
+    opacity: 0.56;
+    cursor: default;
+}
+
+.frog-jump-btn.is-selected {
+    border-color: rgba(8, 145, 178, 0.75);
+    background: linear-gradient(180deg, #67e8f9, #22d3ee);
+    box-shadow: 0 3px 0 #0891b2;
+    color: #083344;
+}
+
+.frog-jump-btn-zero {
+    border-color: rgba(148, 163, 184, 0.5);
+    background: linear-gradient(180deg, #f8fafc, #e2e8f0);
+    box-shadow: 0 3px 0 #cbd5e1;
+    color: #64748b;
+}
+
+.frog-jump-btn-zero:disabled {
+    opacity: 1;
+    cursor: default;
+}
+
+@keyframes frogHopArc {
+    0% {
+        transform: translate(-50%, 50%) scale(1);
+    }
+    42% {
+        transform: translate(-24%, -16%) scale(1);
+    }
+    70% {
+        transform: translate(-50%, 50%) scale(1);
+    }
+    100% {
+        transform: translate(-50%, 50%) scale(1);
+    }
+}
+
+@keyframes pondRippleTrail {
+    0% {
+        opacity: 0.78;
+        width: 1.15rem;
+        height: 1.15rem;
+    }
+    55% {
+        opacity: 0.42;
+        width: 2.9rem;
+        height: 2.9rem;
+    }
+    100% {
+        opacity: 0;
+        width: 3.8rem;
+        height: 3.8rem;
+        border-color: rgba(14, 116, 144, 0.16);
+        box-shadow: 0 0 0 1px rgba(125, 211, 252, 0.12);
+    }
+}
+
+@keyframes frogSignFloat {
+    0% {
+        transform: translateY(-50%);
+    }
+    50% {
+        transform: translateY(calc(-50% - 0.28rem));
+    }
+    100% {
+        transform: translateY(-50%);
+    }
+}
+
+@keyframes frogLeafFloat {
+    0% {
+        transform: translate(-50%, -50%) rotate(-8deg);
+    }
+    50% {
+        transform: translate(-50%, calc(-50% - 0.24rem)) rotate(-6.5deg);
+    }
+    100% {
+        transform: translate(-50%, -50%) rotate(-8deg);
+    }
+}
+
+@media (max-width: 640px) {
+    .frog-jump-stage {
+        grid-template-columns: 64% 36%;
+        padding: 0.6rem 0.4rem;
+    }
+
+    .frog-jump-big-row {
+        grid-template-columns: 23px auto;
+    }
+
+    .frog-jump-btn {
+        min-width: clamp(3.75rem, 10vh, 4.875rem);
+    }
+}

@@ -20,6 +20,7 @@ import shapeSumLinkKo from '../../games/math/adventure/level2/ShapeSumLink/local
 import fruitBoxKo from '../../games/math/adventure/level3/FruitBox/locales/ko';
 import iceStackingKo from '../../games/math/adventure/level3/IceStacking/locales/ko';
 import floorTilerKo from '../../games/math/adventure/level3/FloorTiler/locales/ko';
+import frogJumpKo from '../../games/math/adventure/level3/FrogJump/locales/ko';
 import beginnerWizardKo from '../../games/math/adventure/level3/BeginnerWizard/locales/ko';
 import constellationFinderKo from '../../games/math/adventure/level3/ConstellationFinder/locales/ko';
 import trollAttackKo from '../../games/math/adventure/level3/TrollAttack/locales/ko';
@@ -1031,6 +1032,7 @@ export const ko = {
         'fruit-box': fruitBoxKo,
         'ice-stacking': iceStackingKo,
         'floor-tiler': floorTilerKo,
+        'frog-jump': frogJumpKo,
         'beginner-wizard': beginnerWizardKo,
         'constellation-finder': constellationFinderKo,
         'troll-attack': trollAttackKo,
