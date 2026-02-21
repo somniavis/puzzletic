@@ -297,13 +297,18 @@ export const FrogJump: React.FC<FrogJumpProps> = ({ onExit }) => {
                                 {problem.ticks.map((_, idx) => {
                                     if (idx >= problem.ticks.length - 1) return null;
                                     const base = yPercentForIndex(idx);
-                                    return [0.25, 0.5, 0.75].map((ratio) => (
-                                        <span
-                                            key={`s-${idx}-${ratio}`}
-                                            className="frog-jump-small-tick"
-                                            style={{ bottom: `${base + ratio * (100 / (problem.ticks.length - 1))}%` }}
-                                        />
-                                    ));
+                                    const minorTickCount = Math.max(0, problem.a - 1);
+                                    return Array.from({ length: minorTickCount }, (_, minorIdx) => {
+                                        const ratio = (minorIdx + 1) / problem.a;
+                                        const isMiddleTick = problem.a % 2 === 0 && ratio === 0.5;
+                                        return (
+                                            <span
+                                                key={`s-${idx}-${minorIdx}`}
+                                                className={`frog-jump-small-tick ${isMiddleTick ? 'is-middle' : ''}`}
+                                                style={{ bottom: `${base + ratio * (100 / (problem.ticks.length - 1))}%` }}
+                                            />
+                                        );
+                                    });
                                 })}
 
                                 {problem.ticks.map((value, idx) => (

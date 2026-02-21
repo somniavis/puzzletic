@@ -226,12 +226,17 @@
 
 .frog-jump-small-tick {
     position: absolute;
-    left: 12px;
-    width: 12px;
-    height: 2px;
+    left: 13px;
+    width: 8px;
+    height: 1.5px;
     border-radius: 999px;
-    background: rgba(51, 65, 85, 0.75);
+    background: rgba(51, 65, 85, 0.42);
     transform: translateY(50%);
+}
+
+.frog-jump-small-tick.is-middle {
+    width: 10px;
+    background: rgba(51, 65, 85, 0.52);
 }
 
 .frog-jump-btn {
