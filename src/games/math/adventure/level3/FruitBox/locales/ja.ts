@@ -18,6 +18,8 @@ const ja = {
     },
     formulaHint: 'すべての箱を埋めてください！',
     ui: {
+        orderGroupsUnit: '組',
+        orderEachUnit: '個ずつ',
         dragToBoxHint: 'フルーツを箱へドラッグ！'
     },
     feedback: {

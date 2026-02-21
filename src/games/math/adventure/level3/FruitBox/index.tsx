@@ -76,7 +76,7 @@ const createProblem = (prevProblem?: Problem): Problem => {
 };
 
 export const FruitBox: React.FC<FruitBoxProps> = ({ onExit }) => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
 
     const engine = useGameEngine({
         initialLives: 3,
@@ -392,6 +392,7 @@ export const FruitBox: React.FC<FruitBoxProps> = ({ onExit }) => {
         liveTotal === 0
             ? 'order-result-neutral'
             : (liveTotal === targetTotal ? 'order-result-correct' : 'order-result-wrong');
+    const isEachFirstOrder = i18n.language.startsWith('ko') || i18n.language.startsWith('ja');
 
     return (
         <Layout2
@@ -425,18 +426,32 @@ export const FruitBox: React.FC<FruitBoxProps> = ({ onExit }) => {
                 <div className="fruit-box-board">
                     <section className="fruit-box-order-card" aria-label="order card">
                         <div className="order-row">
-                            <span className="order-badge">
-                                <span className="order-icon">{fruitEmoji}</span>
-                                <span className="order-num">{problem.perBox}</span>
-                            </span>
-                            <span className="order-operator">×</span>
-                            <span className="order-badge">
-                                <span className="order-icon">{BOX_ICON}</span>
-                                <span className="order-num">{problem.boxCount}</span>
-                            </span>
+                            {isEachFirstOrder ? (
+                                <>
+                                    <span className="order-text-part">
+                                        {fruitEmoji} {problem.perBox}
+                                        {t('games.fruit-box.ui.orderEachUnit')}
+                                    </span>
+                                    <span className="order-text-part">
+                                        {BOX_ICON} {problem.boxCount}
+                                        {t('games.fruit-box.ui.orderGroupsUnit')}
+                                    </span>
+                                </>
+                            ) : (
+                                <>
+                                    <span className="order-text-part">
+                                        {BOX_ICON} {problem.boxCount}
+                                        {t('games.fruit-box.ui.orderGroupsUnit')}
+                                    </span>
+                                    <span className="order-text-part">
+                                        {fruitEmoji} {problem.perBox}
+                                        {t('games.fruit-box.ui.orderEachUnit')}
+                                    </span>
+                                </>
+                            )}
                             <span className="order-equals">=</span>
                             <span className={`order-result ${resultStateClass}`}>
-                                {liveTotal}
+                                {liveTotal === 0 ? '?' : liveTotal}
                             </span>
                         </div>
                     </section>

@@ -16,6 +16,7 @@
     grid-template-rows: auto auto 1fr auto;
     gap: 0.6rem;
     position: relative;
+    min-width: 0;
 }
 
 .fruit-box-order-card {
@@ -64,11 +65,13 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0.55rem;
+    gap: clamp(0.25rem, 1.6vw, 0.55rem);
+    width: 100%;
+    min-width: 0;
 }
 
 .order-badge {
-    min-width: 96px;
+    min-width: clamp(70px, 20vw, 96px);
     height: var(--order-badge-h);
     min-height: var(--order-badge-h);
     text-align: center;
@@ -84,12 +87,38 @@
     justify-content: center;
     gap: 0.3rem;
     line-height: 1;
+    flex: 0 1 auto;
+    max-width: 38%;
 }
 
 .order-operator {
     color: #9a3412;
     font-size: clamp(1.1rem, 4vw, 1.4rem);
     font-weight: 900;
+}
+
+.order-groups-text {
+    color: #7c2d12;
+    font-size: clamp(0.9rem, 3.2vw, 1.15rem);
+    font-weight: 800;
+    white-space: normal;
+    text-align: center;
+    line-height: 1.05;
+    min-width: 0;
+    flex: 0 1 auto;
+}
+
+.order-text-part {
+    color: #7c2d12;
+    font-size: clamp(1.02rem, 3.3vw, 1.28rem);
+    font-weight: 900;
+    line-height: 1.05;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.12rem;
+    min-width: 0;
+    flex: 0 1 auto;
 }
 
 .order-equals {
@@ -105,7 +134,7 @@
 }
 
 .order-result {
-    min-width: 54px;
+    min-width: clamp(42px, 10vw, 54px);
     height: var(--order-badge-h);
     min-height: var(--order-badge-h);
     text-align: center;
@@ -118,6 +147,7 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    flex: 0 0 auto;
 }
 
 .order-result-neutral {

@@ -18,6 +18,8 @@ const ko = {
     },
     formulaHint: '상자를 모두 채워주세요!',
     ui: {
+        orderGroupsUnit: '묶음',
+        orderEachUnit: '개씩',
         dragToBoxHint: '과일을 상자로 드래그!'
     },
     feedback: {

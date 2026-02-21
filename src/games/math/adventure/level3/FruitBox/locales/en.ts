@@ -18,6 +18,8 @@ const en = {
     },
     formulaHint: 'Please fill all boxes!',
     ui: {
+        orderGroupsUnit: ' groups',
+        orderEachUnit: ' each',
         dragToBoxHint: 'Drag fruits to the boxes!'
     },
     feedback: {
