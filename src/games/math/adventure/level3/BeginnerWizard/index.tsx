@@ -48,6 +48,9 @@ const ANIMAL_EMOJIS = [
     '🐂', '🐃', '🐖', '🐐', '🐪', '🐫', '🦒', '🐘', '🦣', '🦏',
     '🦛', '🐀', '🐿️', '🦫', '🦔', '🦨'
 ] as const;
+const SKY_EMOJIS = ['☀️', '⛅', '🌧️', '🌨️', '⛈️'] as const;
+
+const pickSkyEmoji = () => SKY_EMOJIS[Math.floor(Math.random() * SKY_EMOJIS.length)];
 
 const createProblem = (): RoundProblem => {
     const animalEmoji = ANIMAL_EMOJIS[Math.floor(Math.random() * ANIMAL_EMOJIS.length)];
@@ -64,18 +67,22 @@ export const BeginnerWizard: React.FC<BeginnerWizardProps> = ({ onExit }) => {
         maxDifficulty: 3
     });
     const [problem, setProblem] = React.useState<RoundProblem>(() => createProblem());
+    const [skyEmoji, setSkyEmoji] = React.useState<string>(() => pickSkyEmoji());
     const [activeSpell, setActiveSpell] = React.useState<SpellType | null>(null);
     const [isResolving, setIsResolving] = React.useState(false);
     const [resolveType, setResolveType] = React.useState<ResolveType>('none');
     const [removeSuckActive, setRemoveSuckActive] = React.useState(false);
     const [protectAuraActive, setProtectAuraActive] = React.useState(false);
     const [isMageCasting, setIsMageCasting] = React.useState(false);
+    const [showSpellPadHint, setShowSpellPadHint] = React.useState(false);
     const prevGameStateRef = React.useRef(engine.gameState);
     const resolveTimerRef = React.useRef<number | null>(null);
     const roundExpireTimerRef = React.useRef<number | null>(null);
     const removeSuckStartTimerRef = React.useRef<number | null>(null);
     const protectAuraTimerRef = React.useRef<number | null>(null);
     const mageCastTimerRef = React.useRef<number | null>(null);
+    const hasShownSpellPadHintRef = React.useRef(false);
+    const spellPadHintTimerRef = React.useRef<number | null>(null);
     const stageRef = React.useRef<HTMLDivElement | null>(null);
     const familyRef = React.useRef<HTMLDivElement | null>(null);
     const [cloudCount, setCloudCount] = React.useState(12);
@@ -100,8 +107,53 @@ export const BeginnerWizard: React.FC<BeginnerWizardProps> = ({ onExit }) => {
             if (mageCastTimerRef.current != null) {
                 window.clearTimeout(mageCastTimerRef.current);
             }
+            if (spellPadHintTimerRef.current != null) {
+                window.clearTimeout(spellPadHintTimerRef.current);
+            }
         };
     }, []);
+
+    React.useEffect(() => {
+        if (engine.gameState !== 'gameover') return;
+        if (spellPadHintTimerRef.current != null) {
+            window.clearTimeout(spellPadHintTimerRef.current);
+            spellPadHintTimerRef.current = null;
+        }
+        setShowSpellPadHint(false);
+        hasShownSpellPadHintRef.current = false;
+    }, [engine.gameState]);
+
+    React.useEffect(() => {
+        const isFirstProblem = engine.score === 0 && engine.combo === 0;
+        if (
+            engine.gameState !== 'playing' ||
+            isResolving ||
+            !isFirstProblem ||
+            hasShownSpellPadHintRef.current
+        ) {
+            return;
+        }
+
+        hasShownSpellPadHintRef.current = true;
+        setShowSpellPadHint(true);
+    }, [engine.combo, engine.gameState, engine.score, isResolving]);
+
+    React.useEffect(() => {
+        if (!showSpellPadHint) return;
+        if (spellPadHintTimerRef.current != null) {
+            window.clearTimeout(spellPadHintTimerRef.current);
+        }
+        spellPadHintTimerRef.current = window.setTimeout(() => {
+            setShowSpellPadHint(false);
+            spellPadHintTimerRef.current = null;
+        }, 1800);
+        return () => {
+            if (spellPadHintTimerRef.current != null) {
+                window.clearTimeout(spellPadHintTimerRef.current);
+                spellPadHintTimerRef.current = null;
+            }
+        };
+    }, [showSpellPadHint]);
 
     React.useEffect(() => {
         if (engine.gameState !== 'playing') return;
@@ -138,6 +190,7 @@ export const BeginnerWizard: React.FC<BeginnerWizardProps> = ({ onExit }) => {
         const enteredPlaying = engine.gameState === 'playing' && (prev === 'idle' || prev === 'gameover');
         if (enteredPlaying) {
             setProblem(createProblem());
+            setSkyEmoji(pickSkyEmoji());
             setActiveSpell(null);
             setIsResolving(false);
             setResolveType('none');
@@ -210,6 +263,7 @@ export const BeginnerWizard: React.FC<BeginnerWizardProps> = ({ onExit }) => {
             resolveTimerRef.current = window.setTimeout(() => {
                 if (engine.gameState !== 'playing') return;
                 setProblem(createProblem());
+                setSkyEmoji(pickSkyEmoji());
                 setActiveSpell(null);
                 setIsResolving(false);
                 setResolveType('none');
@@ -316,6 +370,13 @@ export const BeginnerWizard: React.FC<BeginnerWizardProps> = ({ onExit }) => {
     const showRemoveMotion = isResolving && activeSpell === 'remove' && resolveType === 'correct';
     const showProtectMotion = isResolving && activeSpell === 'protect' && resolveType === 'correct' && protectAuraActive;
     const isFamilyWalking = engine.gameState === 'playing' && !isResolving;
+    const weatherToneClass = React.useMemo(() => {
+        if (skyEmoji === '⛈️') return 'weather-storm';
+        if (skyEmoji === '🌨️') return 'weather-snow';
+        if (skyEmoji === '🌧️') return 'weather-rain';
+        if (skyEmoji === '⛅') return 'weather-cloudy';
+        return 'weather-sunny';
+    }, [skyEmoji]);
     const frozenOffset = React.useMemo(() => parseTransformOffset(frozenFamilyTransform), [frozenFamilyTransform]);
     const familyLeftPx = stageSize.width * 0.06;
     const familyTopPx = stageSize.height * 0.31 + cloudSizePx * 0.05;
@@ -387,7 +448,7 @@ export const BeginnerWizard: React.FC<BeginnerWizardProps> = ({ onExit }) => {
                 ),
                 label: targetValue === 0 ? t('games.beginner-wizard.ui.removeHint') : t('games.beginner-wizard.ui.protectHint')
             }}
-            className="beginner-wizard-layout"
+            className={`beginner-wizard-layout ${weatherToneClass}`}
         >
             <div
                 ref={stageRef}
@@ -410,6 +471,7 @@ export const BeginnerWizard: React.FC<BeginnerWizardProps> = ({ onExit }) => {
                         </div>
                     ))}
                 </div>
+                <span className="beginner-wizard-sky-cloud" aria-hidden>{skyEmoji}</span>
 
                 <div
                     ref={familyRef}
@@ -480,6 +542,13 @@ export const BeginnerWizard: React.FC<BeginnerWizardProps> = ({ onExit }) => {
                         <div className="beginner-wizard-count-box">{problem.animalCount}</div>
                     </div>
                     <div className="beginner-wizard-spell-panel">
+                        {showSpellPadHint && (
+                            <div className="beginner-wizard-spell-hint-overlay" aria-hidden="true">
+                                <span className="beginner-wizard-spell-hint-text">
+                                    {t('games.beginner-wizard.ui.tapSpellHint', '주문을 탭해!')}
+                                </span>
+                            </div>
+                        )}
                         <div className="beginner-wizard-spell-buttons">
                         <button
                             type="button"

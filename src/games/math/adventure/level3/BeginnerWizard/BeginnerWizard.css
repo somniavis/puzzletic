@@ -1,5 +1,6 @@
 .beginner-wizard-layout .layout3-game-area {
     background: #38a6e8;
+    transition: background 220ms ease;
 }
 
 .beginner-wizard-layout .layout3-sub-header .target-count {
@@ -44,6 +45,36 @@
     align-items: end;
 }
 
+.beginner-wizard-layout.weather-sunny .layout3-game-area {
+    background:
+        linear-gradient(180deg, rgba(255, 244, 173, 0.24) 0%, rgba(255, 244, 173, 0.04) 42%),
+        #48afea;
+}
+
+.beginner-wizard-layout.weather-cloudy .layout3-game-area {
+    background:
+        linear-gradient(180deg, rgba(203, 213, 225, 0.22) 0%, rgba(203, 213, 225, 0.05) 44%),
+        #43a3dc;
+}
+
+.beginner-wizard-layout.weather-rain .layout3-game-area {
+    background:
+        linear-gradient(180deg, rgba(103, 232, 249, 0.16) 0%, rgba(103, 232, 249, 0.03) 44%),
+        #3a95cc;
+}
+
+.beginner-wizard-layout.weather-snow .layout3-game-area {
+    background:
+        linear-gradient(180deg, rgba(241, 245, 249, 0.24) 0%, rgba(241, 245, 249, 0.06) 44%),
+        #409ed6;
+}
+
+.beginner-wizard-layout.weather-storm .layout3-game-area {
+    background:
+        linear-gradient(180deg, rgba(51, 65, 85, 0.22) 0%, rgba(51, 65, 85, 0.06) 44%),
+        #327daa;
+}
+
 .beginner-wizard-cloud-rows {
     --cloud-size: var(--cloud-size-px, 62px);
     position: absolute;
@@ -75,6 +106,22 @@
 
 .beginner-wizard-cloud-emoji + .beginner-wizard-cloud-emoji {
     margin-left: calc(var(--cloud-size) * -0.33);
+}
+
+.beginner-wizard-sky-cloud {
+    position: absolute;
+    right: clamp(0.8rem, 2.8cqi, 1.5rem);
+    top: clamp(1.1rem, 3.1cqi, 1.8rem);
+    /* Fallback first for old iOS Safari */
+    font-size: clamp(3.24rem, 8.64vw, 5.04rem);
+    font-size: clamp(3.24rem, 8.64cqi, 5.04rem);
+    line-height: 1;
+    opacity: 1;
+    z-index: 4;
+    pointer-events: none;
+    filter: drop-shadow(0 2px 3px rgba(15, 23, 42, 0.15));
+    animation: wizard-sky-cloud-float 3.2s ease-in-out infinite;
+    transform: translateZ(0);
 }
 
 .beginner-wizard-family {
@@ -233,12 +280,36 @@
     z-index: 10;
 }
 
+.beginner-wizard-spell-hint-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.96);
+    z-index: 25;
+    pointer-events: auto;
+    border-radius: 1.35rem;
+}
+
+.beginner-wizard-spell-hint-text {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #1f2937;
+    text-align: center;
+    letter-spacing: 0.01em;
+}
+
 .beginner-wizard-count-panel,
 .beginner-wizard-spell-panel {
     background: #cfd4db;
     border-radius: 1.35rem;
     padding: 0.6rem;
     box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.55), 0 0.5rem 0 rgba(0, 0, 0, 0.14);
+}
+
+.beginner-wizard-spell-panel {
+    position: relative;
 }
 
 .beginner-wizard-count-box {
@@ -434,5 +505,25 @@
     }
     100% {
         transform: rotate(0deg) translateX(0);
+    }
+}
+
+@keyframes wizard-sky-cloud-float {
+    0% {
+        transform: translateY(0px) rotate(0deg);
+    }
+    50% {
+        transform: translateY(-7px) rotate(-2deg);
+    }
+    100% {
+        transform: translateY(0px) rotate(0deg);
+    }
+}
+
+/* Old iOS safeguard: reduce emoji layer effects to avoid missing cloud/animal glyph rendering */
+@supports not (width: 1cqi) {
+    .beginner-wizard-sky-cloud {
+        animation: none;
+        filter: none;
     }
 }

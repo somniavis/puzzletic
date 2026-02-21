@@ -5,7 +5,8 @@ export default {
     ui: {
         targetLabel: 'Target',
         protectHint: '🛡️ keep all',
-        removeHint: '🕳️ vanish all'
+        removeHint: '🕳️ vanish all',
+        tapSpellHint: 'Tap the spell!'
     },
     howToPlay: {
         step1: {

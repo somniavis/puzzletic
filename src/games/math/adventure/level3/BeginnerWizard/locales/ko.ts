@@ -5,7 +5,8 @@ export default {
     ui: {
         targetLabel: '목표',
         protectHint: '🛡️ 모두 유지',
-        removeHint: '🕳️ 모두 사라짐'
+        removeHint: '🕳️ 모두 사라짐',
+        tapSpellHint: '주문을 탭해!'
     },
     howToPlay: {
         step1: {

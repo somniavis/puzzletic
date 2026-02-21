@@ -5,7 +5,8 @@ export default {
     ui: {
         targetLabel: '目標',
         protectHint: '🛡️ ぜんぶ残る',
-        removeHint: '🕳️ ぜんぶ消える'
+        removeHint: '🕳️ ぜんぶ消える',
+        tapSpellHint: '呪文をタップ！'
     },
     howToPlay: {
         step1: {
