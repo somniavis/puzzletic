@@ -49,8 +49,10 @@ const ANIMAL_EMOJIS = [
     '🦛', '🐀', '🐿️', '🦫', '🦔', '🦨'
 ] as const;
 const SKY_EMOJIS = ['☀️', '⛅', '🌧️', '🌨️', '⛈️'] as const;
+const WIZARD_EMOJIS = ['🧙🏻‍♂️', '🧙🏼‍♂️', '🧙🏽‍♂️', '🧙🏾‍♂️', '🧙🏿‍♂️'] as const;
 
 const pickSkyEmoji = () => SKY_EMOJIS[Math.floor(Math.random() * SKY_EMOJIS.length)];
+const pickWizardEmoji = () => WIZARD_EMOJIS[Math.floor(Math.random() * WIZARD_EMOJIS.length)];
 
 const createProblem = (): RoundProblem => {
     const animalEmoji = ANIMAL_EMOJIS[Math.floor(Math.random() * ANIMAL_EMOJIS.length)];
@@ -68,6 +70,7 @@ export const BeginnerWizard: React.FC<BeginnerWizardProps> = ({ onExit }) => {
     });
     const [problem, setProblem] = React.useState<RoundProblem>(() => createProblem());
     const [skyEmoji, setSkyEmoji] = React.useState<string>(() => pickSkyEmoji());
+    const [mageEmoji, setMageEmoji] = React.useState<string>(() => pickWizardEmoji());
     const [activeSpell, setActiveSpell] = React.useState<SpellType | null>(null);
     const [isResolving, setIsResolving] = React.useState(false);
     const [resolveType, setResolveType] = React.useState<ResolveType>('none');
@@ -191,6 +194,7 @@ export const BeginnerWizard: React.FC<BeginnerWizardProps> = ({ onExit }) => {
         if (enteredPlaying) {
             setProblem(createProblem());
             setSkyEmoji(pickSkyEmoji());
+            setMageEmoji(pickWizardEmoji());
             setActiveSpell(null);
             setIsResolving(false);
             setResolveType('none');
@@ -534,7 +538,7 @@ export const BeginnerWizard: React.FC<BeginnerWizardProps> = ({ onExit }) => {
                 {showRemoveMotion && <span className="beginner-wizard-portal" aria-hidden />}
 
                 <div className="beginner-wizard-mage-row">
-                    <span className={`beginner-wizard-mage ${isMageCasting ? 'is-casting' : ''}`}>🧙🏾‍♂️</span>
+                    <span className={`beginner-wizard-mage ${isMageCasting ? 'is-casting' : ''}`}>{mageEmoji}</span>
                 </div>
 
                 <div className="beginner-wizard-spell-pad">
@@ -586,6 +590,6 @@ export const manifest: GameManifest = {
     level: 3,
     mode: 'adventure',
     component: BeginnerWizard,
-    thumbnail: '🧙',
+    thumbnail: '🧙🏿‍♂️',
     tagsKey: 'games.tags.mixedOps'
 };

@@ -83,11 +83,12 @@ export const FrogJump: React.FC<FrogJumpProps> = ({ onExit }) => {
 
     const [problem, setProblem] = React.useState<FrogProblem | null>(null);
     const [frogIndex, setFrogIndex] = React.useState(0);
-    const [selectedValue, setSelectedValue] = React.useState<number | null>(null);
+    const [selectedPick, setSelectedPick] = React.useState<{ problemKey: string; value: number } | null>(null);
     const [isResolving, setIsResolving] = React.useState(false);
     const [hopTick, setHopTick] = React.useState(0);
     const [ripples, setRipples] = React.useState<JumpRipple[]>([]);
     const [railHeightPx, setRailHeightPx] = React.useState(0);
+    const [roundId, setRoundId] = React.useState(0);
 
     const prevGameStateRef = React.useRef(engine.gameState);
     const jumpTimerRef = React.useRef<number | null>(null);
@@ -109,7 +110,7 @@ export const FrogJump: React.FC<FrogJumpProps> = ({ onExit }) => {
         rippleTimersRef.current.forEach((timerId) => window.clearTimeout(timerId));
         rippleTimersRef.current = [];
         setFrogIndex(0);
-        setSelectedValue(null);
+        setSelectedPick(null);
         setIsResolving(false);
         setRipples([]);
     }, []);
@@ -117,8 +118,9 @@ export const FrogJump: React.FC<FrogJumpProps> = ({ onExit }) => {
     const generateNext = React.useCallback(() => {
         const next = createProblem(prevProblemKeyRef.current ?? undefined);
         prevProblemKeyRef.current = `${next.a}x${next.b}`;
-        setProblem(next);
         resetRoundUi();
+        setRoundId((prev) => prev + 1);
+        setProblem(next);
     }, [resetRoundUi]);
 
     React.useEffect(() => {
@@ -156,9 +158,9 @@ export const FrogJump: React.FC<FrogJumpProps> = ({ onExit }) => {
         };
     }, [problem]);
 
-    React.useEffect(() => {
+    React.useLayoutEffect(() => {
         if (!problem) return;
-        setSelectedValue(null);
+        setSelectedPick(null);
         const active = document.activeElement;
         if (active instanceof HTMLElement) {
             active.blur();
@@ -193,7 +195,8 @@ export const FrogJump: React.FC<FrogJumpProps> = ({ onExit }) => {
         if (!problem || engine.gameState !== 'playing' || isResolving) return;
         if (targetIndex <= 0) return;
 
-        setSelectedValue(value);
+        const currentProblemKey = `${roundId}`;
+        setSelectedPick({ problemKey: currentProblemKey, value });
         setIsResolving(true);
 
         clearTimer(jumpTimerRef);
@@ -229,9 +232,10 @@ export const FrogJump: React.FC<FrogJumpProps> = ({ onExit }) => {
         };
 
         hop();
-    }, [clearTimer, engine.gameState, isResolving, problem, submitCorrect, submitWrong]);
+    }, [clearTimer, engine.gameState, isResolving, problem, roundId, submitCorrect, submitWrong]);
 
     const tickCount = problem?.ticks.length ?? 1;
+    const currentProblemKey = React.useMemo(() => `${roundId}`, [roundId]);
     const stepPercent = tickCount > 1 ? 100 / (tickCount - 1) : 0;
     const yPercentForIndex = React.useCallback((index: number) => index * stepPercent, [stepPercent]);
     const tickGapPx = React.useMemo(() => {
@@ -315,6 +319,8 @@ export const FrogJump: React.FC<FrogJumpProps> = ({ onExit }) => {
                 <div className="frog-jump-shell">
                     <div className="frog-jump-stage">
                         <div className="frog-jump-left">
+                            <span className="frog-jump-fish frog-jump-fish-a" aria-hidden>🐠</span>
+                            <span className="frog-jump-fish frog-jump-fish-b" aria-hidden>🐟</span>
                             <span className="frog-jump-lotus-leaf" aria-hidden="true" />
                             <div className="frog-jump-problem-sign">
                                 {problem.a}×{problem.b}
@@ -338,7 +344,7 @@ export const FrogJump: React.FC<FrogJumpProps> = ({ onExit }) => {
                         <div className="frog-jump-right">
                             <div
                                 className="frog-jump-rail"
-                                key={`${problem.a}x${problem.b}-${problem.ticks.length}`}
+                                key={`${roundId}-${problem.a}x${problem.b}-${problem.ticks.length}`}
                                 ref={railRef}
                                 style={
                                     {
@@ -379,8 +385,22 @@ export const FrogJump: React.FC<FrogJumpProps> = ({ onExit }) => {
                                             </button>
                                         ) : (
                                             <button
-                                                className={`frog-jump-btn ${selectedValue === value ? 'is-selected' : ''}`}
+                                                key={`${roundId}-${value}-${idx}`}
+                                                className={`frog-jump-btn ${
+                                                    selectedPick?.problemKey === currentProblemKey && selectedPick.value === value
+                                                        ? 'is-selected'
+                                                        : ''
+                                                }`}
                                                 onClick={() => handlePickValue(value, idx)}
+                                                onPointerUp={(e) => {
+                                                    e.currentTarget.blur();
+                                                }}
+                                                onTouchEnd={(e) => {
+                                                    e.currentTarget.blur();
+                                                }}
+                                                onTouchCancel={(e) => {
+                                                    e.currentTarget.blur();
+                                                }}
                                                 disabled={engine.gameState !== 'playing' || isResolving}
                                             >
                                                 {value}

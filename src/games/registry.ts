@@ -398,7 +398,7 @@ export const GAMES: GameManifest[] = [
         level: 3,
         mode: 'adventure',
         component: L3_BeginnerWizard,
-        thumbnail: '🧙',
+        thumbnail: '🧙🏿‍♂️',
         tagsKey: 'games.tags.mixedOps'
     },
     {
