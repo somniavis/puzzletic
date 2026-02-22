@@ -1,6 +1,6 @@
 export default {
     title: 'Beginner Wizard',
-    subtitle: 'Cast the 0 or 1 spell!',
+    subtitle: 'Master 0s and 1s!',
     description: 'Choose protect/remove magic to match the target.',
     ui: {
         targetLabel: 'Target',

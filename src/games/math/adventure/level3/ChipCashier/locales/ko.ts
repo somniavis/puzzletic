@@ -1,6 +1,6 @@
 const ko = {
     title: '코인 캐셔',
-    subtitle: '5단·10단 칩 계산!',
+    subtitle: '5단 · 10단 마스터',
     description: '칩 묶음을 골라 목표 수를 맞추세요.',
     ui: {
         customerRequest: '총 {{target}}코인 주세요!',

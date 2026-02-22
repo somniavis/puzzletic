@@ -357,7 +357,7 @@ export const manifest: GameManifest = {
     id: GameIds.MATH_CHIP_CASHIER,
     title: '코인 캐셔',
     titleKey: 'games.chip-cashier.title',
-    subtitle: '5단·10단 칩 계산!',
+    subtitle: '5단 · 10단 마스터',
     subtitleKey: 'games.chip-cashier.subtitle',
     description: '칩 묶음을 골라 목표 수를 맞추세요.',
     descriptionKey: 'games.chip-cashier.description',

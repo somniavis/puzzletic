@@ -582,7 +582,7 @@ export const manifest: GameManifest = {
     id: GameIds.MATH_BEGINNER_WIZARD,
     title: '초보마법사',
     titleKey: 'games.beginner-wizard.title',
-    subtitle: '0 또는 1 주문을 외워요!',
+    subtitle: '0단 · 1단 마스터',
     subtitleKey: 'games.beginner-wizard.subtitle',
     description: '목표 숫자에 맞춰 보호/삭제 마법을 선택하세요.',
     descriptionKey: 'games.beginner-wizard.description',

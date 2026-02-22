@@ -388,10 +388,25 @@ export const GAMES: GameManifest[] = [
         tagsKey: 'games.tags.multiplication'
     },
     {
+        id: GameIds.MATH_BEGINNER_WIZARD,
+        title: '초보마법사',
+        titleKey: 'games.beginner-wizard.title',
+        subtitle: '0단 · 1단 마스터',
+        subtitleKey: 'games.beginner-wizard.subtitle',
+        description: '목표 숫자에 맞춰 보호/삭제 마법을 선택하세요.',
+        descriptionKey: 'games.beginner-wizard.description',
+        category: 'math',
+        level: 3,
+        mode: 'adventure',
+        component: L3_BeginnerWizard,
+        thumbnail: '🧙🏿‍♂️',
+        tagsKey: 'games.tags.multiplication'
+    },
+    {
         id: GameIds.MATH_CHIP_CASHIER,
         title: '코인 캐셔',
         titleKey: 'games.chip-cashier.title',
-        subtitle: '5단·10단 칩 계산!',
+        subtitle: '5단 · 10단 마스터',
         subtitleKey: 'games.chip-cashier.subtitle',
         description: '칩 묶음을 골라 목표 수를 맞추세요.',
         descriptionKey: 'games.chip-cashier.description',
@@ -401,21 +416,6 @@ export const GAMES: GameManifest[] = [
         component: L3_ChipCashier,
         thumbnail: '🪙',
         tagsKey: 'games.tags.multiplication'
-    },
-    {
-        id: GameIds.MATH_BEGINNER_WIZARD,
-        title: '초보마법사',
-        titleKey: 'games.beginner-wizard.title',
-        subtitle: '마법으로 동물 가족을 지켜요!',
-        subtitleKey: 'games.beginner-wizard.subtitle',
-        description: '목표 숫자에 맞춰 보호/삭제 마법을 선택하세요.',
-        descriptionKey: 'games.beginner-wizard.description',
-        category: 'math',
-        level: 3,
-        mode: 'adventure',
-        component: L3_BeginnerWizard,
-        thumbnail: '🧙🏿‍♂️',
-        tagsKey: 'games.tags.mixedOps'
     },
     {
         id: GameIds.MATH_CONSTELLATION_FINDER,

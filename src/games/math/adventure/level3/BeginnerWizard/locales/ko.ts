@@ -1,6 +1,6 @@
 export default {
     title: '초보마법사',
-    subtitle: '0 또는 1 주문을 외워요!',
+    subtitle: '0단 · 1단 마스터',
     description: '목표 숫자에 맞춰 보호/삭제 마법을 선택하세요.',
     ui: {
         targetLabel: '목표',

@@ -1,6 +1,6 @@
 export default {
     title: '見習い魔法使い',
-    subtitle: '0か1の呪文を唱えよう！',
+    subtitle: '0の段・1の段をマスター！',
     description: '目標に合わせて保護/削除魔法を選ぼう。',
     ui: {
         targetLabel: '目標',
