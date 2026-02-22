@@ -34,6 +34,7 @@ const L3_FruitBox = lazy(() => delayedImport(import('./math/adventure/level3/Fru
 const L3_IceStacking = lazy(() => delayedImport(import('./math/adventure/level3/IceStacking').then(m => ({ default: m.IceStacking }))));
 const L3_FloorTiler = lazy(() => delayedImport(import('./math/adventure/level3/FloorTiler').then(m => ({ default: m.FloorTiler }))));
 const L3_FrogJump = lazy(() => delayedImport(import('./math/adventure/level3/FrogJump').then(m => ({ default: m.FrogJump }))));
+const L3_ChipCashier = lazy(() => delayedImport(import('./math/adventure/level3/ChipCashier').then(m => ({ default: m.ChipCashier }))));
 const L3_BeginnerWizard = lazy(() => delayedImport(import('./math/adventure/level3/BeginnerWizard').then(m => ({ default: m.BeginnerWizard }))));
 const L3_ConstellationFinder = lazy(() => delayedImport(import('./math/adventure/level3/ConstellationFinder').then(m => ({ default: m.ConstellationFinder }))));
 const L3_TrollAttack = lazy(() => delayedImport(import('./math/adventure/level3/TrollAttack').then(m => ({ default: m.TrollAttack }))));
@@ -384,6 +385,21 @@ export const GAMES: GameManifest[] = [
         mode: 'adventure',
         component: L3_FrogJump,
         thumbnail: '🐸',
+        tagsKey: 'games.tags.multiplication'
+    },
+    {
+        id: GameIds.MATH_CHIP_CASHIER,
+        title: '코인 캐셔',
+        titleKey: 'games.chip-cashier.title',
+        subtitle: '5단·10단 칩 계산!',
+        subtitleKey: 'games.chip-cashier.subtitle',
+        description: '칩 묶음을 골라 목표 수를 맞추세요.',
+        descriptionKey: 'games.chip-cashier.description',
+        category: 'math',
+        level: 3,
+        mode: 'adventure',
+        component: L3_ChipCashier,
+        thumbnail: '🪙',
         tagsKey: 'games.tags.multiplication'
     },
     {

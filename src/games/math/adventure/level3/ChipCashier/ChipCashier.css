@@ -1,0 +1,711 @@
+.chip-cashier-layout2 .layout2-grid-wrapper {
+    align-items: stretch;
+    justify-content: stretch;
+    padding: 0.7rem 0.75rem 0.8rem;
+}
+
+.chip-cashier-card-bg {
+    width: 100%;
+    height: 100%;
+    background:
+        radial-gradient(120% 95% at 0% 0%, rgba(255, 255, 255, 0.42), transparent 56%),
+        radial-gradient(95% 85% at 100% 100%, rgba(207, 235, 255, 0.35), transparent 64%),
+        linear-gradient(160deg, #eaf7ff 0%, #eef9ff 52%, #f3fbff 100%);
+}
+
+.chip-cashier-shell {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    z-index: 8;
+    display: grid;
+    grid-template-rows: 22% 48% 30%;
+    gap: 0.56rem;
+    gap: clamp(0.3rem, 1.2cqh, 0.72rem);
+    min-height: 0;
+    container-type: size;
+    overflow: visible;
+    --chip-panel-shadow-y: 4px;
+    --chip-panel-shadow-y: clamp(2px, 0.8cqh, 5px);
+    --chip-person-size: clamp(3.4rem, 8vw, 5.8rem);
+}
+
+.chip-top-panel,
+.chip-middle-panel,
+.chip-bottom-panel {
+    min-height: 0;
+    height: 100%;
+    max-height: 100%;
+    overflow: visible;
+    box-sizing: border-box;
+    contain: layout paint;
+    isolation: isolate;
+}
+
+.chip-top-panel {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: clamp(0.25rem, 1.05cqh, 0.6rem);
+    padding:
+        clamp(0.04rem, 0.25cqh, 0.12rem)
+        0
+        var(--chip-panel-shadow-y);
+    position: relative;
+    z-index: 30;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: clamp(8px, 1.5cqh, 12px);
+}
+
+.chip-speech-bubble {
+    position: relative;
+    border-radius: clamp(10px, 1.8cqh, 14px);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(241, 245, 249, 0.95));
+    border: clamp(1px, 0.28cqh, 2px) solid rgba(148, 163, 184, 0.35);
+    box-shadow: 0 clamp(2px, 0.8cqh, 5px) 0 rgba(148, 163, 184, 0.28);
+    padding: clamp(0.28rem, 1.1cqh, 0.52rem) clamp(0.36rem, 1.3cqh, 0.72rem);
+    display: grid;
+    align-content: center;
+    gap: clamp(0.04rem, 0.2cqh, 0.14rem);
+}
+
+.chip-speech-bubble::after {
+    content: '';
+    position: absolute;
+    right: -0.95rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-top: 0.72rem solid transparent;
+    border-bottom: 0.72rem solid transparent;
+    border-left: 1.02rem solid rgba(148, 163, 184, 0.42);
+    z-index: 0;
+}
+
+.chip-speech-bubble::before {
+    content: '';
+    position: absolute;
+    right: -0.78rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-top: 0.6rem solid transparent;
+    border-bottom: 0.6rem solid transparent;
+    border-left: 0.86rem solid #ffffff;
+    filter: drop-shadow(0 4px 0 rgba(148, 163, 184, 0.34));
+    z-index: 1;
+}
+
+.chip-speech-title {
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: #64748b;
+    letter-spacing: 0.04em;
+}
+
+.chip-speech-value {
+    font-size: clamp(0.96rem, 2.8cqh, 1.5rem);
+    line-height: 1.22;
+    font-weight: 900;
+    color: #0f172a;
+    padding-left: clamp(0.12rem, 0.5cqh, 0.3rem);
+}
+
+.chip-customer {
+    border: none;
+    background: transparent;
+    box-shadow: none;
+    display: grid;
+    place-items: center;
+    width: 100%;
+    font-size: var(--chip-person-size);
+    align-self: center;
+    justify-self: center;
+    margin-bottom: 0;
+    line-height: 1;
+    max-height: none;
+    overflow: visible;
+    position: relative;
+    padding-top: clamp(0.16rem, 0.6cqh, 0.34rem);
+    padding-bottom: clamp(0.34rem, 1.15cqh, 0.54rem);
+}
+
+.chip-customer::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    transform: translateX(-50%);
+    width: 80%;
+    height: clamp(0.34rem, 1.15cqh, 0.54rem);
+    border-radius: clamp(0.22rem, 0.72cqh, 0.34rem);
+    background: linear-gradient(180deg, #64748b, #334155);
+    box-shadow: 0 1px 0 rgba(15, 23, 42, 0.32);
+}
+
+.chip-customer.is-reacting {
+    animation: chip-customer-react 0.44s ease;
+}
+
+@keyframes chip-customer-react {
+    0% { transform: scale(1); }
+    42% { transform: scale(1.14); }
+    100% { transform: scale(1); }
+}
+
+.chip-middle-panel {
+    display: grid;
+    grid-template-columns: 1fr 3fr;
+    gap: clamp(0.24rem, 1.05cqh, 0.58rem);
+    padding:
+        clamp(0.02rem, 0.18cqh, 0.08rem)
+        0
+        var(--chip-panel-shadow-y);
+    position: relative;
+    z-index: 9;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: clamp(8px, 1.5cqh, 12px);
+}
+
+.chip-preview-panel,
+.chip-drop-panel,
+.chip-buttons-panel {
+    border-radius: clamp(10px, 1.8cqh, 14px);
+    border: clamp(1px, 0.28cqh, 2px) solid rgba(148, 163, 184, 0.35);
+    box-shadow: 0 var(--chip-panel-shadow-y) 0 rgba(6, 95, 70, 0.42);
+    height: 100%;
+    box-sizing: border-box;
+}
+
+.chip-preview-panel {
+    background: linear-gradient(180deg, rgba(13, 148, 102, 0.9), rgba(6, 120, 86, 0.92));
+    padding: clamp(0.22rem, 0.9cqh, 0.42rem);
+    display: grid;
+    grid-template-rows: minmax(0, 1fr);
+}
+
+.chip-preview-card {
+    position: relative;
+    border-radius: clamp(8px, 1.2cqh, 10px);
+    border: 1.5px solid rgba(16, 185, 129, 0.5);
+    background: rgba(255, 255, 255, 0.14);
+    display: grid;
+    place-items: center;
+    padding: clamp(0.14rem, 0.5cqh, 0.25rem);
+}
+
+.chip-preview-sign {
+    position: absolute;
+    top: clamp(0.14rem, 0.55cqh, 0.26rem);
+    left: 50%;
+    transform: translateX(-50%);
+    min-width: clamp(3.8rem, 9.6cqh, 5.2rem);
+    height: clamp(1.36rem, 3.8cqh, 1.82rem);
+    border-radius: 999px;
+    border: 1.5px solid rgba(6, 95, 70, 0.5);
+    background: linear-gradient(180deg, #ffffff, #f1f5f9);
+    color: #0f766e;
+    font-size: clamp(0.74rem, 1.52cqh, 0.96rem);
+    font-weight: 900;
+    line-height: 1;
+    text-transform: lowercase;
+    display: grid;
+    place-items: center;
+    box-shadow: 0 2px 0 rgba(6, 95, 70, 0.35);
+    z-index: 2;
+}
+
+.chip-preview-grid {
+    width: min(100%, clamp(70px, 16cqh, 102px));
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: repeat(5, minmax(0, 1fr));
+    gap: clamp(0.04rem, 0.14cqh, 0.1rem);
+}
+
+.chip-preview-token {
+    width: clamp(2.4rem, min(11.5cqh, 22cqw), 6.2rem);
+    aspect-ratio: 1 / 1;
+    border-radius: 999px;
+    border: 1.5px solid rgba(255, 255, 255, 0.78);
+    background:
+        radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0) 0 44%, rgba(255, 255, 255, 0.88) 45% 57%, rgba(255, 255, 255, 0) 58%),
+        conic-gradient(from 0deg,
+            #1d4ed8 0deg 20deg, #ffffff 20deg 38deg,
+            #1d4ed8 38deg 68deg, #ffffff 68deg 86deg,
+            #1d4ed8 86deg 116deg, #ffffff 116deg 134deg,
+            #1d4ed8 134deg 164deg, #ffffff 164deg 182deg,
+            #1d4ed8 182deg 212deg, #ffffff 212deg 230deg,
+            #1d4ed8 230deg 260deg, #ffffff 260deg 278deg,
+            #1d4ed8 278deg 308deg, #ffffff 308deg 326deg,
+            #1d4ed8 326deg 360deg),
+        radial-gradient(circle at 34% 28%, #bfdbfe 0%, #3b82f6 58%, #1e3a8a 100%);
+    box-shadow:
+        inset 0 0.5px 1px rgba(255, 255, 255, 0.45),
+        inset 0 -1px 1px rgba(0, 0, 0, 0.18),
+        0 1px 0 rgba(30, 58, 138, 0.45);
+    display: grid;
+    place-items: center;
+}
+
+.chip-preview-token-wrap {
+    display: grid;
+    place-items: center;
+}
+
+.chip-preview-token.is-ten {
+    border: 1.5px solid rgba(120, 53, 15, 0.75);
+    background:
+        radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0) 0 44%, rgba(255, 255, 255, 0.78) 45% 57%, rgba(255, 255, 255, 0) 58%),
+        conic-gradient(from 0deg,
+            #f59e0b 0deg 20deg, #fff7ed 20deg 38deg,
+            #f59e0b 38deg 68deg, #fff7ed 68deg 86deg,
+            #f59e0b 86deg 116deg, #fff7ed 116deg 134deg,
+            #f59e0b 134deg 164deg, #fff7ed 164deg 182deg,
+            #f59e0b 182deg 212deg, #fff7ed 212deg 230deg,
+            #f59e0b 230deg 260deg, #fff7ed 260deg 278deg,
+            #f59e0b 278deg 308deg, #fff7ed 308deg 326deg,
+            #f59e0b 326deg 360deg),
+        radial-gradient(circle at 34% 28%, #fde68a 0%, #f59e0b 60%, #b45309 100%);
+    box-shadow:
+        inset 0 0.5px 1px rgba(255, 255, 255, 0.42),
+        inset 0 -1px 1px rgba(0, 0, 0, 0.16),
+        0 1px 0 rgba(146, 64, 14, 0.45);
+}
+
+.chip-preview-token-core {
+    width: 62%;
+    aspect-ratio: 1 / 1;
+    border-radius: 999px;
+    background: #3b82f6;
+    color: #ffffff;
+    font-size: clamp(1rem, 3.1cqh, 1.7rem);
+    font-weight: 900;
+    display: grid;
+    place-items: center;
+    box-shadow:
+        inset 0 0.5px 0.8px rgba(255, 255, 255, 0.35),
+        inset 0 -0.8px 0.8px rgba(0, 0, 0, 0.2);
+}
+
+.chip-preview-token.is-ten .chip-preview-token-core {
+    background: #facc15;
+    color: #7c2d12;
+}
+
+.chip-preview-dot {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    border-radius: 999px;
+    position: relative;
+    background: rgba(191, 219, 254, 0.1);
+    border: 1px solid rgba(191, 219, 254, 0.2);
+    transform: scale(0.7);
+    transform-origin: center;
+}
+
+.chip-preview-dot.is-filled {
+    border: 1px solid rgba(255, 255, 255, 0.78);
+    background:
+        radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0) 0 44%, rgba(255, 255, 255, 0.88) 45% 57%, rgba(255, 255, 255, 0) 58%),
+        conic-gradient(from 0deg,
+            #1d4ed8 0deg 20deg, #ffffff 20deg 38deg,
+            #1d4ed8 38deg 68deg, #ffffff 68deg 86deg,
+            #1d4ed8 86deg 116deg, #ffffff 116deg 134deg,
+            #1d4ed8 134deg 164deg, #ffffff 164deg 182deg,
+            #1d4ed8 182deg 212deg, #ffffff 212deg 230deg,
+            #1d4ed8 230deg 260deg, #ffffff 260deg 278deg,
+            #1d4ed8 278deg 308deg, #ffffff 308deg 326deg,
+            #1d4ed8 326deg 360deg),
+        radial-gradient(circle at 34% 28%, #bfdbfe 0%, #3b82f6 58%, #1e3a8a 100%);
+    box-shadow:
+        inset 0 0.5px 1px rgba(255, 255, 255, 0.45),
+        inset 0 -1px 1px rgba(0, 0, 0, 0.18),
+        0 1px 0 rgba(30, 58, 138, 0.45);
+}
+
+.chip-preview-dot.is-filled::after {
+    content: '';
+    position: absolute;
+    inset: 26%;
+    border-radius: 999px;
+    background: #3b82f6;
+    box-shadow: inset 0 0.5px 0.8px rgba(255, 255, 255, 0.35), inset 0 -0.8px 0.8px rgba(0, 0, 0, 0.2);
+}
+
+.chip-bundle {
+    width: min(100%, clamp(70px, 16cqh, 96px));
+    height: min(100%, clamp(42px, 10cqh, 56px));
+    display: grid;
+    grid-template-columns: repeat(var(--bundle-cols), 1fr);
+    grid-template-rows: repeat(var(--bundle-rows), 1fr);
+    gap: clamp(0.08rem, 0.25cqh, 0.14rem);
+}
+
+.chip-bundle.is-stacked-mode {
+    width: min(100%, 90px);
+    height: min(100%, 68px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+}
+
+.chip-bundle.is-compact {
+    width: clamp(56px, 12.2cqh, 76px);
+    height: clamp(32px, 7.5cqh, 44px);
+    gap: clamp(0.06rem, 0.22cqh, 0.12rem);
+}
+
+.chip-dot {
+    border-radius: 999px;
+    background: radial-gradient(circle at 34% 32%, #fde68a 0%, #f59e0b 45%, #b45309 100%);
+    box-shadow: inset 0 1px 1.5px rgba(255, 255, 255, 0.55), 0 1px 1.5px rgba(17, 24, 39, 0.2);
+}
+
+.chip-bundle.is-stacked-mode .chip-dot {
+    width: clamp(2rem, 5cqi, 2.45rem);
+    height: clamp(0.4rem, 1.2cqi, 0.52rem);
+    margin-top: -0.15rem;
+    margin-bottom: -0.15rem;
+    background: linear-gradient(180deg, #fde68a 0%, #f59e0b 60%, #b45309 100%);
+    box-shadow:
+        inset 0 0.5px 0.8px rgba(255, 255, 255, 0.6),
+        0 1.2px 0 rgba(120, 53, 15, 0.34);
+}
+
+.chip-bundle.is-stacked-mode .chip-dot:first-child {
+    margin-top: 0;
+}
+
+.chip-drop-panel {
+    position: relative;
+    background: linear-gradient(180deg, rgba(13, 148, 102, 0.9), rgba(6, 120, 86, 0.92));
+    padding: clamp(0.22rem, 0.9cqh, 0.42rem);
+    overflow: hidden;
+    display: grid;
+    align-content: start;
+}
+
+.chip-falling-bundle {
+    position: absolute;
+    bottom: 0.42rem;
+    left: calc(0.66rem + (100% - 1.32rem) * (var(--fall-col, 0) / 4));
+    transform: translateX(-50%);
+    z-index: 5;
+    animation: chip-rise-up 0.24s ease-out forwards;
+}
+
+@keyframes chip-rise-up {
+    from {
+        transform: translateX(-50%) translateY(4px) scale(0.95);
+        opacity: 0.95;
+    }
+    to {
+        transform: translateX(-50%) translateY(-138px) scale(1);
+        opacity: 1;
+    }
+}
+
+.chip-drop-field {
+    height: 100%;
+    border-radius: clamp(8px, 1.2cqh, 10px);
+    border: 1.5px dashed rgba(236, 253, 245, 0.28);
+    background: rgba(255, 255, 255, 0.04);
+    padding: clamp(0.22rem, 0.9cqh, 0.42rem);
+    display: grid;
+    align-content: start;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: clamp(0.12rem, 0.55cqh, 0.3rem);
+    overflow: hidden;
+    box-sizing: border-box;
+    min-height: 0;
+}
+
+.chip-dropped-bundle {
+    padding: 0;
+    display: grid;
+    place-items: center;
+    animation: chip-bundle-pop 0.16s ease-out;
+}
+
+@keyframes chip-bundle-pop {
+    0% { transform: scale(0.72); opacity: 0.25; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.chip-bottom-panel {
+    --chip-bottom-shadow-space: calc(var(--chip-panel-shadow-y) + 2px);
+    display: grid;
+    grid-template-columns: 1fr 3fr;
+    gap: clamp(0.24rem, 1.05cqh, 0.58rem);
+    padding:
+        clamp(0.04rem, 0.22cqh, 0.08rem)
+        0
+        var(--chip-bottom-shadow-space);
+    position: relative;
+    z-index: 9;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: clamp(8px, 1.5cqh, 12px);
+    align-items: start;
+    overflow: hidden;
+}
+
+.chip-bottom-panel > .chip-cashier-panel,
+.chip-bottom-panel > .chip-buttons-panel {
+    position: relative;
+    z-index: 31;
+    height: calc(100% - var(--chip-bottom-shadow-space));
+    align-self: start;
+}
+
+.chip-cashier-panel {
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 0;
+    padding: 0;
+}
+
+.chip-cashier-emoji {
+    font-size: var(--chip-person-size);
+    line-height: 1;
+    margin-bottom: clamp(-0.06rem, -0.12cqh, -0.02rem);
+    transform-origin: 50% 86%;
+}
+
+.chip-cashier-emoji.is-casting {
+    animation: chip-cashier-cast 0.26s ease-out;
+}
+
+@keyframes chip-cashier-cast {
+    0% {
+        transform: rotate(0deg) translateY(0);
+    }
+    38% {
+        transform: rotate(10deg) translateY(-1px);
+    }
+    100% {
+        transform: rotate(0deg) translateY(0);
+    }
+}
+
+.chip-cashier-desk {
+    height: clamp(0.34rem, 1.15cqh, 0.54rem);
+    width: 62%;
+    border-radius: clamp(0.22rem, 0.72cqh, 0.34rem);
+    background: linear-gradient(180deg, #64748b, #334155);
+    box-shadow: 0 1px 0 rgba(15, 23, 42, 0.32);
+}
+
+.chip-buttons-panel {
+    background: linear-gradient(180deg, rgba(245, 248, 255, 0.95), rgba(223, 235, 246, 0.92));
+    padding: clamp(0.22rem, 0.95cqh, 0.42rem) clamp(0.36rem, 1.35cqh, 0.64rem);
+    display: grid;
+    grid-template-rows: minmax(0, 1fr);
+    gap: 0;
+}
+
+.chip-buttons-grid {
+    height: 100%;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-template-rows: repeat(2, minmax(0, 1fr));
+    gap: clamp(0.24rem, 0.95cqh, 0.42rem);
+    align-content: center;
+    min-height: 0;
+}
+
+.chip-answer-btn {
+    min-height: 0;
+    height: 92%;
+    justify-self: stretch;
+    align-self: center;
+    display: grid;
+    place-items: center;
+    text-align: center;
+    line-height: 1;
+    padding: 0;
+    border: 0;
+    border-radius: clamp(0.4rem, 1.25cqh, 0.66rem);
+    background: #d8b4fe;
+    color: #4c1d95;
+    font-weight: 900;
+    font-size: clamp(0.9rem, 3.8cqh, 1.8rem);
+    box-shadow: 0 2px 0 rgba(109, 40, 217, 0.35);
+    cursor: pointer;
+    transition: transform 0.09s ease, filter 0.14s ease;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.chip-answer-btn:active {
+    transform: translateY(1px);
+    box-shadow: 0 1px 0 rgba(109, 40, 217, 0.35);
+}
+
+.chip-answer-btn.is-selected {
+    background: #c084fc;
+    color: #3b0764;
+}
+
+.chip-answer-btn:disabled {
+    cursor: default;
+    opacity: 0.72;
+}
+
+@supports not (height: 1cqh) {
+    .chip-top-panel,
+    .chip-middle-panel,
+    .chip-bottom-panel {
+        contain: none;
+    }
+
+    .chip-cashier-shell {
+        grid-template-rows: 22% 48% 30%;
+        gap: 0.56rem;
+        --chip-panel-shadow-y: 4px;
+        container-type: normal;
+    }
+
+    .chip-top-panel {
+        gap: 0.6rem;
+        padding: 0.08rem 0 4px;
+        border-radius: 12px;
+    }
+
+    .chip-middle-panel {
+        gap: 0.58rem;
+        padding: 0.04rem 0 4px;
+        border-radius: 12px;
+    }
+
+    .chip-bottom-panel {
+        gap: 0.58rem;
+        padding: 0.08rem 0 4px;
+        border-radius: 12px;
+    }
+
+    .chip-speech-bubble {
+        border-radius: 14px;
+        border-width: 2px;
+        box-shadow: 0 5px 0 rgba(148, 163, 184, 0.28);
+        padding: 0.52rem 0.72rem;
+        gap: 0.14rem;
+    }
+
+    .chip-speech-value {
+        font-size: 1.18rem;
+    }
+
+    .chip-preview-panel,
+    .chip-drop-panel,
+    .chip-buttons-panel {
+        border-radius: 14px;
+        border-width: 2px;
+        box-shadow: 0 4px 0 rgba(6, 95, 70, 0.42);
+    }
+
+    .chip-preview-panel {
+        padding: 0.42rem;
+        gap: 0.38rem;
+    }
+
+    .chip-preview-card {
+        border-radius: 10px;
+        padding: 0.25rem;
+    }
+
+    .chip-preview-sign {
+        min-width: 4.4rem;
+        height: 1.72rem;
+        font-size: 0.9rem;
+        top: 0.24rem;
+    }
+
+    .chip-preview-grid {
+        width: min(100%, 86px);
+        gap: 0.08rem;
+    }
+
+    .chip-preview-token {
+        width: clamp(2.4rem, calc(9vw + 1.8vh), 6rem);
+    }
+
+    .chip-preview-token-core {
+        font-size: clamp(1rem, calc(0.85rem + 1.5vh), 1.75rem);
+    }
+
+    .chip-bundle {
+        width: min(100%, 96px);
+        height: min(100%, 56px);
+        gap: 0.14rem;
+    }
+
+    .chip-bundle.is-compact {
+        width: 74px;
+        height: 44px;
+        gap: 0.12rem;
+    }
+
+    .chip-bundle.is-stacked-mode .chip-dot {
+        width: 2.2rem;
+        height: 0.46rem;
+    }
+
+    .chip-drop-panel {
+        padding: 0.42rem;
+    }
+
+    .chip-drop-field {
+        border-radius: 10px;
+        padding: 0.42rem;
+        gap: 0.3rem;
+    }
+
+    .chip-cashier-panel {
+        padding: 0;
+    }
+
+    .chip-cashier-emoji {
+        margin-bottom: -0.05rem;
+    }
+
+    .chip-cashier-desk {
+        height: 0.44rem;
+        width: 62%;
+        border-radius: 0.3rem;
+    }
+
+    .chip-buttons-panel {
+        padding: 0.52rem 0.64rem;
+    }
+
+    .chip-buttons-grid {
+        gap: 0.4rem;
+    }
+
+    .chip-answer-btn {
+        border-radius: 0.66rem;
+        font-size: 1.05rem;
+    }
+}
+
+@media (max-height: 760px) {
+    .chip-cashier-shell {
+        gap: 0.36rem;
+    }
+
+    .chip-answer-btn {
+        font-size: 0.9rem;
+    }
+
+    .chip-falling-bundle {
+        animation-duration: 0.2s;
+    }
+}

@@ -28,6 +28,7 @@ import fruitBoxEn from '../../games/math/adventure/level3/FruitBox/locales/en';
 import iceStackingEn from '../../games/math/adventure/level3/IceStacking/locales/en';
 import floorTilerEn from '../../games/math/adventure/level3/FloorTiler/locales/en';
 import frogJumpEn from '../../games/math/adventure/level3/FrogJump/locales/en';
+import chipCashierEn from '../../games/math/adventure/level3/ChipCashier/locales/en';
 import beginnerWizardEn from '../../games/math/adventure/level3/BeginnerWizard/locales/en';
 import constellationFinderEn from '../../games/math/adventure/level3/ConstellationFinder/locales/en';
 import trollAttackEn from '../../games/math/adventure/level3/TrollAttack/locales/en';
@@ -1031,6 +1032,7 @@ export const en = {
     'ice-stacking': iceStackingEn,
     'floor-tiler': floorTilerEn,
     'frog-jump': frogJumpEn,
+    'chip-cashier': chipCashierEn,
     'beginner-wizard': beginnerWizardEn,
     'constellation-finder': constellationFinderEn,
     'troll-attack': trollAttackEn,
