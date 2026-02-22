@@ -26,6 +26,7 @@ import beginnerWizardKo from '../../games/math/adventure/level3/BeginnerWizard/l
 import constellationFinderKo from '../../games/math/adventure/level3/ConstellationFinder/locales/ko';
 import trollAttackKo from '../../games/math/adventure/level3/TrollAttack/locales/ko';
 import blockTowerKo from '../../games/brain/level2/BlockTower/locales/ko';
+import sharpshooterKo from '../../games/brain/level2/Sharpshooter/locales/ko';
 
 import colorLinkKo from '../../games/brain/level1/ColorLink/locales/ko.ts';
 import pairUpTwinKo from '../../games/brain/level1/PairUpTwin/locales/ko.ts';
@@ -1049,6 +1050,7 @@ export const ko = {
         'pair-up-connect': pairUpConnectKo,
         'signal-hunter': signalHunterKo,
         'block-tower': blockTowerKo,
+        sharpshooter: sharpshooterKo,
         'maze-hunter': mazeHunterKo,
         'tic-tac-toe': ticTacToeKo,
         omok: omokKo,

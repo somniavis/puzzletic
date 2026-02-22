@@ -33,6 +33,7 @@ import beginnerWizardEn from '../../games/math/adventure/level3/BeginnerWizard/l
 import constellationFinderEn from '../../games/math/adventure/level3/ConstellationFinder/locales/en';
 import trollAttackEn from '../../games/math/adventure/level3/TrollAttack/locales/en';
 import blockTowerEn from '../../games/brain/level2/BlockTower/locales/en';
+import sharpshooterEn from '../../games/brain/level2/Sharpshooter/locales/en';
 import mazeEscapeEn from '../../games/brain/level1/MazeEscape/locales/en';
 import mazeHunterEn from '../../games/brain/level2/MazeHunter/locales/en';
 import ticTacToeEn from '../../games/brain/level3/TicTacToe/locales/en';
@@ -1039,6 +1040,7 @@ export const en = {
     'deep-sea-dive': deepSeaDiveEn,
     'signal-hunter': signalHunterEn,
     'block-tower': blockTowerEn,
+    sharpshooter: sharpshooterEn,
     'color-link': colorLinkEn,
     'pair-up-twin': pairUpTwinEn,
     'wild-link': wildLinkEn,

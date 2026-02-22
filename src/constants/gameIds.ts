@@ -61,6 +61,7 @@ export const GameIds = {
     MAZE_HUNTER: 'maze-hunter',
     SIGNAL_HUNTER: 'signal-hunter',
     BRAIN_BLOCK_TOWER: 'brain-block-tower',
+    BRAIN_SHARPSHOOTER: 'brain-sharpshooter',
 
     // Brain Level 3
     TIC_TAC_TOE: 'tic-tac-toe',

@@ -64,6 +64,7 @@ const L2_PairUpConnect = lazy(() => delayedImport(import('./brain/level2/PairUpC
 const L2_MazeHunter = lazy(() => delayedImport(import('./brain/level2/MazeHunter'))); // default export
 const L2_SignalHunter = lazy(() => delayedImport(import('./brain/level2/SignalHunter').then(m => ({ default: m.SignalHunter })))); // named export
 const L2_BlockTower = lazy(() => delayedImport(import('./brain/level2/BlockTower').then(m => ({ default: m.BlockTower })))); // named export
+const L2_Sharpshooter = lazy(() => delayedImport(import('./brain/level2/Sharpshooter').then(m => ({ default: m.Sharpshooter })))); // named export
 
 // Brain Level 3
 const L3_TicTacToe = lazy(() => delayedImport(import('./brain/level3/TicTacToe'))); // default export
@@ -729,6 +730,20 @@ export const GAMES: GameManifest[] = [
         component: L2_BlockTower,
         thumbnail: '🏗️',
         tagsKey: 'games.tags.spatial'
+    },
+    {
+        id: GameIds.BRAIN_SHARPSHOOTER,
+        title: 'Master Archer',
+        titleKey: 'games.sharpshooter.title',
+        subtitle: '정답을 맞혀라!',
+        subtitleKey: 'games.sharpshooter.subtitle',
+        description: '문제를 풀고 정답 과녁을 향해 활을 쏘세요.',
+        descriptionKey: 'games.sharpshooter.description',
+        category: 'brain',
+        level: 2,
+        component: L2_Sharpshooter,
+        thumbnail: '🏹',
+        tagsKey: 'games.tags.concentration'
     },
 
     // [Brain Level 3]

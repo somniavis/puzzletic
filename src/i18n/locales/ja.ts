@@ -26,6 +26,7 @@ import beginnerWizardJa from '../../games/math/adventure/level3/BeginnerWizard/l
 import constellationFinderJa from '../../games/math/adventure/level3/ConstellationFinder/locales/ja';
 import trollAttackJa from '../../games/math/adventure/level3/TrollAttack/locales/ja';
 import blockTowerJa from '../../games/brain/level2/BlockTower/locales/ja';
+import sharpshooterJa from '../../games/brain/level2/Sharpshooter/locales/ja';
 
 import colorLinkJa from '../../games/brain/level1/ColorLink/locales/ja';
 import pairUpTwinJa from '../../games/brain/level1/PairUpTwin/locales/ja';
@@ -1005,6 +1006,7 @@ export const ja = {
         'pair-up-connect': pairUpConnectJa,
         'signal-hunter': signalHunterJa,
         'block-tower': blockTowerJa,
+        sharpshooter: sharpshooterJa,
         'maze-hunter': mazeHunterJa,
         'tic-tac-toe': ticTacToeJa,
         omok: omokJa,
