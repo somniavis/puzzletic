@@ -228,14 +228,19 @@ export const Sharpshooter: React.FC<SharpshooterProps> = ({ onExit }) => {
 
                     {/* Targets */}
                     <div className="archery-target-rail" />
-                    {currentProblem && currentProblem.options.map(opt => (
-                        <div key={opt.id} className="archery-target-wrap" style={{ left: `calc(${opt.x}% + ${targetOffsetX}%)`, top: `${opt.y}%` }}>
-                            <div className="archery-target-connector" />
-                            <div className="archery-target">
-                                <span className="archery-target-text">{opt.symbol}</span>
+                    <div
+                        className="archery-targets-group"
+                        style={{ transform: `translate3d(${targetOffsetX}%, 0, 0)` }}
+                    >
+                        {currentProblem && currentProblem.options.map(opt => (
+                            <div key={opt.id} className="archery-target-wrap" style={{ left: `${opt.x}%`, top: `${opt.y}%` }}>
+                                <div className="archery-target-connector" />
+                                <div className="archery-target">
+                                    <span className="archery-target-text">{opt.symbol}</span>
+                                </div>
                             </div>
-                        </div>
-                    ))}
+                        ))}
+                    </div>
 
                     {/* Flying Arrow */}
                     {arrow && arrow.active && (

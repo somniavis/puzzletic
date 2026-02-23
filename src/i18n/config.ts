@@ -49,6 +49,9 @@ const resources = {
   ja: {
     translation: ja,
   },
+  'ja-JP': {
+    translation: ja,
+  },
 };
 
 const safeStorageGet = (key: string): string | null => {
@@ -64,7 +67,7 @@ const savedLanguage = safeStorageGet('language');
 const browserLanguage = navigator.language.startsWith('ko')
   ? 'ko'
   : navigator.language.startsWith('ja')
-    ? 'ja'
+    ? 'ja-JP'
     : navigator.language.startsWith('es')
       ? 'es-ES'
       : navigator.language.startsWith('pt')

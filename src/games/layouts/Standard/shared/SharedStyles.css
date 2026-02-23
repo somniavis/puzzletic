@@ -6,12 +6,16 @@
     flex-direction: row;
     justify-content: center;
     align-items: center;
+    width: 100%;
     padding: 5rem 0 1rem;
     gap: 1rem;
 }
 
 .game-over-icon {
     font-size: 3.5rem;
+    width: 3.5rem;
+    min-width: 3.5rem;
+    text-align: center;
     line-height: 1;
     animation: bounce 1s infinite;
 }
@@ -21,6 +25,10 @@
     font-weight: 800;
     color: #1e293b;
     margin: 0;
+    line-height: 1.1;
+    max-width: min(70vw, 18rem);
+    overflow-wrap: anywhere;
+    text-wrap: balance;
 }
 
 /* Split Result Cards Layout */

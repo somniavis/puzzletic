@@ -226,37 +226,31 @@ export const useMathArcheryLogic = (gameLevel: number = 1) => {
         }
     }, [gameState.isPlaying, gameState.gameOver, timeFrozen]);
 
-    // Internal Game Loop for Physics
-    const requestRef = useRef<number | null>(null);
-
-    const updatePhysics = useCallback(() => {
-        setArrow(prev => {
-            if (!prev || !prev.active) return prev;
-
-            // Move arrow
-            const newX = prev.x + prev.vx;
-            const newY = prev.y + prev.vy; // Should handle aspect ratio? % logic is simpler but tricky for speed.
-            // Assuming vy is negative (moving up)
-
-            // Boundary Check (Off screen)
-            if (newX < -10 || newX > 110 || newY < -10 || newY > 110) {
-                // Missed everything
-                return { ...prev, active: false }; // Handled by separate check? 
-                // We should detect "Miss" -> handled in effect monitoring arrow
-            }
-
-            return { ...prev, x: newX, y: newY };
-        });
-
-        requestRef.current = requestAnimationFrame(updatePhysics);
-    }, []);
-
+    // Arrow physics loop: run only while arrow is active.
     useEffect(() => {
-        if (gameState.isPlaying && !gameState.gameOver) {
-            requestRef.current = requestAnimationFrame(updatePhysics);
-        }
-        return () => cancelAnimationFrame(requestRef.current!);
-    }, [gameState.isPlaying, gameState.gameOver, updatePhysics]);
+        if (!gameState.isPlaying || gameState.gameOver || !arrow?.active) return;
+
+        let rafId = 0;
+        const step = () => {
+            setArrow(prev => {
+                if (!prev || !prev.active) return prev;
+
+                const newX = prev.x + prev.vx;
+                const newY = prev.y + prev.vy;
+
+                if (newX < -10 || newX > 110 || newY < -10 || newY > 110) {
+                    return { ...prev, active: false };
+                }
+
+                return { ...prev, x: newX, y: newY };
+            });
+
+            rafId = requestAnimationFrame(step);
+        };
+
+        rafId = requestAnimationFrame(step);
+        return () => cancelAnimationFrame(rafId);
+    }, [gameState.isPlaying, gameState.gameOver, arrow?.active]);
 
     // Target horizontal motion (left -> right). If it disappears, round fails.
     useEffect(() => {

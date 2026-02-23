@@ -82,6 +82,15 @@
     position: absolute;
     transform: translate(-50%, -50%);
     z-index: 10;
+    will-change: transform;
+}
+
+.archery-targets-group {
+    position: absolute;
+    inset: 0;
+    will-change: transform;
+    transform: translate3d(0, 0, 0);
+    z-index: 10;
 }
 
 .archery-target-connector {
@@ -153,6 +162,7 @@
     transform-origin: center center;
     pointer-events: none;
     z-index: 15;
+    will-change: transform;
 }
 
 .arrow-projectile::before {
