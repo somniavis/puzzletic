@@ -309,6 +309,21 @@ export const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose }) =
             </button>
 
             <button
+              className={`food-item ${i18n.language === 'id-ID' ? 'food-item--selected' : ''}`}
+              onClick={() => handleLanguageSelect('id-ID')}
+            >
+              <span className="food-item-icon language-flag">🇮🇩</span>
+              <div className="language-info">
+                <span className="food-item-name">Bahasa Indonesia</span>
+              </div>
+              {i18n.language === 'id-ID' && (
+                <div className="food-item-effects">
+                  <span className="effect effect--selected">✓ {t('settings.language.selected')}</span>
+                </div>
+              )}
+            </button>
+
+            <button
               className={`food-item ${i18n.language === 'ko' ? 'food-item--selected' : ''}`}
               onClick={() => handleLanguageSelect('ko')}
             >

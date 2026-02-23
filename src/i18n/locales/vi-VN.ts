@@ -156,79 +156,6 @@ const levelSuffixVi: Record<'l1' | 'l2' | 'l3', string[]> = {
   l3: ['!!!', ' luôn!', ' thật đấy!'],
 };
 
-const toddlerToneStemsVi: Record<string, Record<string, string>> = {
-  joy: {
-    affectionate: 'vui ghê',
-    playful: 'chơi nè',
-    calm: 'êm quá',
-    shy: 'ngại nè',
-    grumpy: 'hứ',
-    energetic: 'đi thôi',
-  },
-  love: {
-    affectionate: 'thương ghê',
-    playful: 'ôm nè',
-    calm: 'yên tâm nè',
-    shy: 'tim đập nè',
-    grumpy: 'dỗi nè',
-    energetic: 'yêu quá',
-  },
-  playful: {
-    affectionate: 'thích nè',
-    playful: 'vui nè',
-    calm: 'chậm thôi',
-    shy: 'hehe',
-    grumpy: 'đừng chọc',
-    energetic: 'nhanh lên',
-  },
-  neutral: {
-    affectionate: 'ở đây nha',
-    playful: 'làm gì ta',
-    calm: 'từ từ',
-    shy: 'hơi ngại',
-    grumpy: 'hông thích',
-    energetic: 'muốn chạy',
-  },
-  sleepy: {
-    affectionate: 'buồn ngủ',
-    playful: 'chơi tí',
-    calm: 'nghỉ nha',
-    shy: 'ngáp nè',
-    grumpy: 'im im',
-    energetic: 'hết pin',
-  },
-  sick: {
-    affectionate: 'mệt nè',
-    playful: 'khó chịu',
-    calm: 'nghỉ chút',
-    shy: 'đau đau',
-    grumpy: 'ôi đau',
-    energetic: 'yếu rồi',
-  },
-  worried: {
-    affectionate: 'lo quá',
-    playful: 'sao vậy',
-    calm: 'bình tĩnh',
-    shy: 'sợ nè',
-    grumpy: 'căng ghê',
-    energetic: 'nguy rồi',
-  },
-  angry: {
-    affectionate: 'giận nè',
-    playful: 'hông vui',
-    calm: 'dừng nha',
-    shy: 'bực nè',
-    grumpy: 'hừ',
-    energetic: 'tức quá',
-  },
-};
-
-const toddlerSuffixVi: Record<'l1' | 'l2' | 'l3', string[]> = {
-  l1: ['~', ' nha', ' nè'],
-  l2: ['~~', ' á', ' nha'],
-  l3: ['!!!', ' luôn á', ' thiệt đó'],
-};
-
 const buildEmotionTextVi = () => {
   const result: any = {};
   for (const [mood, moodValue] of Object.entries(emotionEmojiVi)) {
@@ -238,24 +165,6 @@ const buildEmotionTextVi = () => {
       for (const [tone, emojis] of Object.entries(levelValue as Record<string, string[]>)) {
         const stem = moodToneStemsVi[mood]?.[tone] || 'Mình ổn mà';
         const suffixes = levelSuffixVi[level as 'l1' | 'l2' | 'l3'] || levelSuffixVi.l1;
-        result[mood][level][tone] = emojis.map((emoji, idx) => `${emoji} ${stem}${suffixes[idx % suffixes.length]}`);
-      }
-    }
-  }
-  return result;
-};
-
-const emotionTextVi = buildEmotionTextVi();
-
-const buildEmotionToddlerVi = () => {
-  const result: any = {};
-  for (const [mood, moodValue] of Object.entries(emotionEmojiVi)) {
-    result[mood] = {};
-    for (const [level, levelValue] of Object.entries(moodValue)) {
-      result[mood][level] = {};
-      for (const [tone, emojis] of Object.entries(levelValue as Record<string, string[]>)) {
-        const stem = toddlerToneStemsVi[mood]?.[tone] || 'ừm...';
-        const suffixes = toddlerSuffixVi[level as 'l1' | 'l2' | 'l3'] || toddlerSuffixVi.l1;
         result[mood][level][tone] = emojis.map(
           (emoji, idx) => `${emoji} ${stem}${suffixes[idx % suffixes.length]}`
         );
@@ -265,7 +174,8 @@ const buildEmotionToddlerVi = () => {
   return result;
 };
 
-const emotionToddlerVi = buildEmotionToddlerVi();
+const emotionTextVi = buildEmotionTextVi();
+
 
 export const viVN = {
   profile: {
@@ -843,7 +753,793 @@ export const viVN = {
   emotions: {
     ...emotionTextVi,
     emoji: emotionEmojiVi,
-    toddler: emotionToddlerVi,
+        toddler: {
+          "joy": {
+                "l1": {
+                      "affectionate": [
+                            "😊 vui quá~",
+                            "🍼 vui quá nha~",
+                            "✨ vui quá nè~"
+                      ],
+                      "playful": [
+                            "😆 chơi vui~",
+                            "🎶 chơi vui nha~",
+                            "😁 chơi vui nè~"
+                      ],
+                      "calm": [
+                            "😌 êm ghê~",
+                            "🎵 êm ghê nha~",
+                            "👌 êm ghê nè~"
+                      ],
+                      "shy": [
+                            "☺️ ngại quá~",
+                            "😳 ngại quá nha~",
+                            "😚 ngại quá nè~"
+                      ],
+                      "grumpy": [
+                            "😒 hừm~",
+                            "😏 hừm nha~",
+                            "🙄 hừm nè~"
+                      ],
+                      "energetic": [
+                            "✨ đi thôi~",
+                            "👍 đi thôi nha~",
+                            "😲 đi thôi nè~"
+                      ]
+                },
+                "l2": {
+                      "affectionate": [
+                            "🥰 vui quá!",
+                            "🌈 vui quá nha!",
+                            "🎈 vui quá nè!"
+                      ],
+                      "playful": [
+                            "🏃 chơi vui!",
+                            "⚽️ chơi vui nha!",
+                            "🦖 chơi vui nè!"
+                      ],
+                      "calm": [
+                            "☕️ êm ghê!",
+                            "🍀 êm ghê nha!",
+                            "🍃 êm ghê nè!"
+                      ],
+                      "shy": [
+                            "😽 ngại quá!",
+                            "🌸 ngại quá nha!",
+                            "🙈 ngại quá nè!"
+                      ],
+                      "grumpy": [
+                            "😑 hừm!",
+                            "😼 hừm nha!",
+                            "😮 hừm nè!"
+                      ],
+                      "energetic": [
+                            "🏆 đi thôi!",
+                            "💪 đi thôi nha!",
+                            "🚀 đi thôi nè!"
+                      ]
+                },
+                "l3": {
+                      "affectionate": [
+                            "❤️ vui quá!!",
+                            "💖 vui quá luôn!",
+                            "🌟 vui quá quá!"
+                      ],
+                      "playful": [
+                            "💡 chơi vui!!",
+                            "👑 chơi vui luôn!",
+                            "😂 chơi vui quá!"
+                      ],
+                      "calm": [
+                            "🙏 êm ghê!!",
+                            "🙇 êm ghê luôn!",
+                            "👏 êm ghê quá!"
+                      ],
+                      "shy": [
+                            "🍅 ngại quá!!",
+                            "🎁 ngại quá luôn!",
+                            "🦄 ngại quá quá!"
+                      ],
+                      "grumpy": [
+                            "🆗 hừm!!",
+                            "💬 hừm luôn!",
+                            "😤 hừm quá!"
+                      ],
+                      "energetic": [
+                            "🔥 đi thôi!!",
+                            "🌍 đi thôi luôn!",
+                            "📢 đi thôi quá!"
+                      ]
+                }
+          },
+          "love": {
+                "l1": {
+                      "affectionate": [
+                            "😘 thương lắm~",
+                            "🐣 thương lắm nha~",
+                            "👋 thương lắm nè~"
+                      ],
+                      "playful": [
+                            "🎣 ôm~",
+                            "💎 ôm nha~",
+                            "👉 ôm nè~"
+                      ],
+                      "calm": [
+                            "🌤️ an tâm rồi~",
+                            "👤 an tâm rồi nha~",
+                            "🛡️ an tâm rồi nè~"
+                      ],
+                      "shy": [
+                            "😺 tim đập nhanh~",
+                            "🧣 tim đập nhanh nha~",
+                            "😊 tim đập nhanh nè~"
+                      ],
+                      "grumpy": [
+                            "😕 dỗi rồi~",
+                            "✋ dỗi rồi nha~",
+                            "😤 dỗi rồi nè~"
+                      ],
+                      "energetic": [
+                            "💘 yêu quá~",
+                            "🤜🤛 yêu quá nha~",
+                            "👍 yêu quá nè~"
+                      ]
+                },
+                "l2": {
+                      "affectionate": [
+                            "🤗 thương lắm!",
+                            "🌞 thương lắm nha!",
+                            "💋 thương lắm nè!"
+                      ],
+                      "playful": [
+                            "👐 ôm!",
+                            "🐨 ôm nha!",
+                            "🏹 ôm nè!"
+                      ],
+                      "calm": [
+                            "💎 an tâm rồi!",
+                            "🌲 an tâm rồi nha!",
+                            "🤝 an tâm rồi nè!"
+                      ],
+                      "shy": [
+                            "☺️ tim đập nhanh!",
+                            "💌 tim đập nhanh nha!",
+                            "💓 tim đập nhanh nè!"
+                      ],
+                      "grumpy": [
+                            "😳 dỗi rồi!",
+                            "⏱️ dỗi rồi nha!",
+                            "😒 dỗi rồi nè!"
+                      ],
+                      "energetic": [
+                            "⚡️ yêu quá!",
+                            "🤖 yêu quá nha!",
+                            "♾️ yêu quá nè!"
+                      ]
+                },
+                "l3": {
+                      "affectionate": [
+                            "🏡 thương lắm!!",
+                            "👫 thương lắm luôn!",
+                            "💝 thương lắm quá!"
+                      ],
+                      "playful": [
+                            "👮 ôm!!",
+                            "🎖️ ôm luôn!",
+                            "🫡 ôm quá!"
+                      ],
+                      "calm": [
+                            "💐 an tâm rồi!!",
+                            "🧶 an tâm rồi luôn!",
+                            "✨ an tâm rồi quá!"
+                      ],
+                      "shy": [
+                            "🫂 tim đập nhanh!!",
+                            "😻 tim đập nhanh luôn!",
+                            "🍀 tim đập nhanh quá!"
+                      ],
+                      "grumpy": [
+                            "😎 dỗi rồi!!",
+                            "😠 dỗi rồi luôn!",
+                            "🐕 dỗi rồi quá!"
+                      ],
+                      "energetic": [
+                            "👯 yêu quá!!",
+                            "🚀 yêu quá luôn!",
+                            "🎉 yêu quá quá!"
+                      ]
+                }
+          },
+          "playful": {
+                "l1": {
+                      "affectionate": [
+                            "😋 thích quá~",
+                            "🍓 thích quá nha~",
+                            "🍭 thích quá nè~"
+                      ],
+                      "playful": [
+                            "🐊 vui ghê~",
+                            "🍔 vui ghê nha~",
+                            "😛 vui ghê nè~"
+                      ],
+                      "calm": [
+                            "🥄 chậm thôi~",
+                            "🍵 chậm thôi nha~",
+                            "🥗 chậm thôi nè~"
+                      ],
+                      "shy": [
+                            "🐹 hehe~",
+                            "🍪 hehe nha~",
+                            "🐿️ hehe nè~"
+                      ],
+                      "grumpy": [
+                            "😐 đừng chọc~",
+                            "🦴 đừng chọc nha~",
+                            "😑 đừng chọc nè~"
+                      ],
+                      "energetic": [
+                            "🍡 nhanh lên~",
+                            "🍚 nhanh lên nha~",
+                            "🥕 nhanh lên nè~"
+                      ]
+                },
+                "l2": {
+                      "affectionate": [
+                            "🎡 thích quá!",
+                            "🤣 thích quá nha!",
+                            "😆 thích quá nè!"
+                      ],
+                      "playful": [
+                            "🔫 vui ghê!",
+                            "⚔️ vui ghê nha!",
+                            "🛡️ vui ghê nè!"
+                      ],
+                      "calm": [
+                            "🧐 chậm thôi!",
+                            "🎲 chậm thôi nha!",
+                            "😏 chậm thôi nè!"
+                      ],
+                      "shy": [
+                            "🫣 hehe!",
+                            "👉👈 hehe nha!",
+                            "👻 hehe nè!"
+                      ],
+                      "grumpy": [
+                            "🛑 đừng chọc!",
+                            "😩 đừng chọc nha!",
+                            "👋 đừng chọc nè!"
+                      ],
+                      "energetic": [
+                            "🐇 nhanh lên!",
+                            "🌀 nhanh lên nha!",
+                            "💨 nhanh lên nè!"
+                      ]
+                },
+                "l3": {
+                      "affectionate": [
+                            "🎪 thích quá!!",
+                            "🎈 thích quá luôn!",
+                            "😵 thích quá quá!"
+                      ],
+                      "playful": [
+                            "🎆 vui ghê!!",
+                            "🎺 vui ghê luôn!",
+                            "🦸 vui ghê quá!"
+                      ],
+                      "calm": [
+                            "🥺 chậm thôi!!",
+                            "😲 chậm thôi luôn!",
+                            "👏 chậm thôi quá!"
+                      ],
+                      "shy": [
+                            "🤭 hehe!!",
+                            "✨ hehe luôn!",
+                            "🤩 hehe quá!"
+                      ],
+                      "grumpy": [
+                            "🙀 đừng chọc!!",
+                            "😼 đừng chọc luôn!",
+                            "👀 đừng chọc quá!"
+                      ],
+                      "energetic": [
+                            "📈 nhanh lên!!",
+                            "🚄 nhanh lên luôn!",
+                            "🏎️ nhanh lên quá!"
+                      ]
+                }
+          },
+          "neutral": {
+                "l1": {
+                      "affectionate": [
+                            "🧸 ở với mình~",
+                            "🥺 ở với mình nha~",
+                            "💧 ở với mình nè~"
+                      ],
+                      "playful": [
+                            "🤔 làm gì ta~",
+                            "😈 làm gì ta nha~",
+                            "💬 làm gì ta nè~"
+                      ],
+                      "calm": [
+                            "🤫 bình tĩnh~",
+                            "😶 bình tĩnh nha~",
+                            "🕊️ bình tĩnh nè~"
+                      ],
+                      "shy": [
+                            "👀 hơi ngại~",
+                            "😐 hơi ngại nha~",
+                            "🐜 hơi ngại nè~"
+                      ],
+                      "grumpy": [
+                            "😩 chán quá~",
+                            "🌬️ chán quá nha~",
+                            "😑 chán quá nè~"
+                      ],
+                      "energetic": [
+                            "🤸 muốn chạy~",
+                            "🚪 muốn chạy nha~",
+                            "💣 muốn chạy nè~"
+                      ]
+                },
+                "l2": {
+                      "affectionate": [
+                            "🔭 ở với mình!",
+                            "👣 ở với mình nha!",
+                            "🐕 ở với mình nè!"
+                      ],
+                      "playful": [
+                            "⚡️ làm gì ta!",
+                            "👆 làm gì ta nha!",
+                            "📢 làm gì ta nè!"
+                      ],
+                      "calm": [
+                            "💭 bình tĩnh!",
+                            "🧘 bình tĩnh nha!",
+                            "🍵 bình tĩnh nè!"
+                      ],
+                      "shy": [
+                            "👉👈 hơi ngại!",
+                            "🍃 hơi ngại nha!",
+                            "🔇 hơi ngại nè!"
+                      ],
+                      "grumpy": [
+                            "🌵 chán quá!",
+                            "🛌 chán quá nha!",
+                            "😤 chán quá nè!"
+                      ],
+                      "energetic": [
+                            "🐜 muốn chạy!",
+                            "💨 muốn chạy nha!",
+                            "📢 muốn chạy nè!"
+                      ]
+                },
+                "l3": {
+                      "affectionate": [
+                            "😿 ở với mình!!",
+                            "🍂 ở với mình luôn!",
+                            "😭 ở với mình quá!"
+                      ],
+                      "playful": [
+                            "🤪 làm gì ta!!",
+                            "😈 làm gì ta luôn!",
+                            "🖌️ làm gì ta quá!"
+                      ],
+                      "calm": [
+                            "🌑 bình tĩnh!!",
+                            "🤐 bình tĩnh luôn!",
+                            "😶 bình tĩnh quá!"
+                      ],
+                      "shy": [
+                            "🤧 hơi ngại!!",
+                            "😨 hơi ngại luôn!",
+                            "🌃 hơi ngại quá!"
+                      ],
+                      "grumpy": [
+                            "✋ chán quá!!",
+                            "🙉 chán quá luôn!",
+                            "👎 chán quá quá!"
+                      ],
+                      "energetic": [
+                            "🌋 muốn chạy!!",
+                            "🏃 muốn chạy luôn!",
+                            "😫 muốn chạy quá!"
+                      ]
+                }
+          },
+          "sleepy": {
+                "l1": {
+                      "affectionate": [
+                            "🥱 buồn ngủ~",
+                            "🎶 buồn ngủ nha~",
+                            "🧸 buồn ngủ nè~"
+                      ],
+                      "playful": [
+                            "🥴 chơi thêm chút~",
+                            "🙅 chơi thêm chút nha~",
+                            "😪 chơi thêm chút nè~"
+                      ],
+                      "calm": [
+                            "🫢 đi ngủ~",
+                            "🛀 đi ngủ nha~",
+                            "🍵 đi ngủ nè~"
+                      ],
+                      "shy": [
+                            "😵 ngáp rồi~",
+                            "🛌 ngáp rồi nha~",
+                            "🤤 ngáp rồi nè~"
+                      ],
+                      "grumpy": [
+                            "💡 im lặng đi~",
+                            "🚫 im lặng đi nha~",
+                            "💤 im lặng đi nè~"
+                      ],
+                      "energetic": [
+                            "🚲 hết pin rồi~",
+                            "🔋 hết pin rồi nha~",
+                            "😵 hết pin rồi nè~"
+                      ]
+                },
+                "l2": {
+                      "affectionate": [
+                            "🌈 buồn ngủ!",
+                            "🐑 buồn ngủ nha!",
+                            "💤 buồn ngủ nè!"
+                      ],
+                      "playful": [
+                            "😴 chơi thêm chút!",
+                            "🤥 chơi thêm chút nha!",
+                            "💬 chơi thêm chút nè!"
+                      ],
+                      "calm": [
+                            "🛌 đi ngủ!",
+                            "🌙 đi ngủ nha!",
+                            "🤫 đi ngủ nè!"
+                      ],
+                      "shy": [
+                            "🛌 ngáp rồi!",
+                            "😪 ngáp rồi nha!",
+                            "🌛 ngáp rồi nè!"
+                      ],
+                      "grumpy": [
+                            "👿 im lặng đi!",
+                            "🐕 im lặng đi nha!",
+                            "✋ im lặng đi nè!"
+                      ],
+                      "energetic": [
+                            "🔌 hết pin rồi!",
+                            "📴 hết pin rồi nha!",
+                            "🪫 hết pin rồi nè!"
+                      ]
+                },
+                "l3": {
+                      "affectionate": [
+                            "🌠 buồn ngủ!!",
+                            "💜 buồn ngủ luôn!",
+                            "😴 buồn ngủ quá!"
+                      ],
+                      "playful": [
+                            "💤 chơi thêm chút!!",
+                            "🐴 chơi thêm chút luôn!",
+                            "🛌 chơi thêm chút quá!"
+                      ],
+                      "calm": [
+                            "🌑 đi ngủ!!",
+                            "😶 đi ngủ luôn!",
+                            "🔇 đi ngủ quá!"
+                      ],
+                      "shy": [
+                            "👶 ngáp rồi!!",
+                            "🌙 ngáp rồi luôn!",
+                            "🫧 ngáp rồi quá!"
+                      ],
+                      "grumpy": [
+                            "😑 im lặng đi!!",
+                            "💢 im lặng đi luôn!",
+                            "💤 im lặng đi quá!"
+                      ],
+                      "energetic": [
+                            "🪫 hết pin rồi!!",
+                            "☠️ hết pin rồi luôn!",
+                            "😵 hết pin rồi quá!"
+                      ]
+                }
+          },
+          "sick": {
+                "l1": {
+                      "affectionate": [
+                            "🤕 đau quá~",
+                            "🩹 đau quá nha~",
+                            "🤒 đau quá nè~"
+                      ],
+                      "playful": [
+                            "😖 mệt ghê~",
+                            "🤥 mệt ghê nha~",
+                            "💥 mệt ghê nè~"
+                      ],
+                      "calm": [
+                            "🌡️ nghỉ ngơi~",
+                            "💫 nghỉ ngơi nha~",
+                            "🛌 nghỉ ngơi nè~"
+                      ],
+                      "shy": [
+                            "😣 khó chịu quá~",
+                            "😢 khó chịu quá nha~",
+                            "🤧 khó chịu quá nè~"
+                      ],
+                      "grumpy": [
+                            "🤦 đừng làm phiền~",
+                            "💢 đừng làm phiền nha~",
+                            "😔 đừng làm phiền nè~"
+                      ],
+                      "energetic": [
+                            "😵 không còn sức~",
+                            "📉 không còn sức nha~",
+                            "🥴 không còn sức nè~"
+                      ]
+                },
+                "l2": {
+                      "affectionate": [
+                            "😭 đau quá!",
+                            "🆘 đau quá nha!",
+                            "💦 đau quá nè!"
+                      ],
+                      "playful": [
+                            "🦆 mệt ghê!",
+                            "📢 mệt ghê nha!",
+                            "🌀 mệt ghê nè!"
+                      ],
+                      "calm": [
+                            "🏥 nghỉ ngơi!",
+                            "🔥 nghỉ ngơi nha!",
+                            "💊 nghỉ ngơi nè!"
+                      ],
+                      "shy": [
+                            "😓 khó chịu quá!",
+                            "😨 khó chịu quá nha!",
+                            "🚑 khó chịu quá nè!"
+                      ],
+                      "grumpy": [
+                            "💊 đừng làm phiền!",
+                            "😤 đừng làm phiền nha!",
+                            "😣 đừng làm phiền nè!"
+                      ],
+                      "energetic": [
+                            "🛌 không còn sức!",
+                            "🏳️ không còn sức nha!",
+                            "📉 không còn sức nè!"
+                      ]
+                },
+                "l3": {
+                      "affectionate": [
+                            "😿 đau quá!!",
+                            "👋 đau quá luôn!",
+                            "🛌 đau quá quá!"
+                      ],
+                      "playful": [
+                            "😵 mệt ghê!!",
+                            "🎮 mệt ghê luôn!",
+                            "❌ mệt ghê quá!"
+                      ],
+                      "calm": [
+                            "📉 nghỉ ngơi!!",
+                            "🌫️ nghỉ ngơi luôn!",
+                            "🏥 nghỉ ngơi quá!"
+                      ],
+                      "shy": [
+                            "🧎 khó chịu quá!!",
+                            "😶 khó chịu quá luôn!",
+                            "🏥 khó chịu quá quá!"
+                      ],
+                      "grumpy": [
+                            "👿 đừng làm phiền!!",
+                            "🤐 đừng làm phiền luôn!",
+                            "😫 đừng làm phiền quá!"
+                      ],
+                      "energetic": [
+                            "⏹️ không còn sức!!",
+                            "⏸️ không còn sức luôn!"
+                      ]
+                }
+          },
+          "worried": {
+                "l1": {
+                      "affectionate": [
+                            "😟 lo quá~",
+                            "😥 lo quá nha~",
+                            "⚠️ lo quá nè~"
+                      ],
+                      "playful": [
+                            "😲 sao đây~",
+                            "💦 sao đây nha~",
+                            "😳 sao đây nè~"
+                      ],
+                      "calm": [
+                            "🔍 bình tĩnh nào~",
+                            "⁉️ bình tĩnh nào nha~",
+                            "🛡️ bình tĩnh nào nè~"
+                      ],
+                      "shy": [
+                            "😖 sợ quá~",
+                            "👣 sợ quá nha~",
+                            "😢 sợ quá nè~"
+                      ],
+                      "grumpy": [
+                            "😒 khó chịu quá~",
+                            "😠 khó chịu quá nha~",
+                            "☁️ khó chịu quá nè~"
+                      ],
+                      "energetic": [
+                            "🚨 nguy rồi~",
+                            "☢️ nguy rồi nha~",
+                            "🚧 nguy rồi nè~"
+                      ]
+                },
+                "l2": {
+                      "affectionate": [
+                            "😨 lo quá!",
+                            "🛡️ lo quá nha!",
+                            "🥶 lo quá nè!"
+                      ],
+                      "playful": [
+                            "🏃 sao đây!",
+                            "📢 sao đây nha!",
+                            "😱 sao đây nè!"
+                      ],
+                      "calm": [
+                            "✋ bình tĩnh nào!",
+                            "⛔️ bình tĩnh nào nha!",
+                            "↩️ bình tĩnh nào nè!"
+                      ],
+                      "shy": [
+                            "🫨 sợ quá!",
+                            "📦 sợ quá nha!",
+                            "🙈 sợ quá nè!"
+                      ],
+                      "grumpy": [
+                            "😫 khó chịu quá!",
+                            "😤 khó chịu quá nha!",
+                            "🦁 khó chịu quá nè!"
+                      ],
+                      "energetic": [
+                            "🫢 nguy rồi!",
+                            "🆘 nguy rồi nha!",
+                            "🌪️ nguy rồi nè!"
+                      ]
+                },
+                "l3": {
+                      "affectionate": [
+                            "😭 lo quá!!",
+                            "💔 lo quá luôn!",
+                            "🧟 lo quá quá!"
+                      ],
+                      "playful": [
+                            "😭 sao đây!!",
+                            "🚑 sao đây luôn!",
+                            "🤱 sao đây quá!"
+                      ],
+                      "calm": [
+                            "📉 bình tĩnh nào!!",
+                            "🧩 bình tĩnh nào luôn!",
+                            "❌ bình tĩnh nào quá!"
+                      ],
+                      "shy": [
+                            "🥀 sợ quá!!",
+                            "💦 sợ quá luôn!",
+                            "😱 sợ quá quá!"
+                      ],
+                      "grumpy": [
+                            "🚮 khó chịu quá!!",
+                            "😫 khó chịu quá luôn!",
+                            "🤬 khó chịu quá quá!"
+                      ],
+                      "energetic": [
+                            "🤯 nguy rồi!!",
+                            "🧱 nguy rồi luôn!",
+                            "🆘 nguy rồi quá!"
+                      ]
+                }
+          },
+          "angry": {
+                "l1": {
+                      "affectionate": [
+                            "😤 giận rồi~",
+                            "😞 giận rồi nha~",
+                            "😒 giận rồi nè~"
+                      ],
+                      "playful": [
+                            "👊 không vui đâu~",
+                            "🥊 không vui đâu nha~",
+                            "⚔️ không vui đâu nè~"
+                      ],
+                      "calm": [
+                            "😔 dừng lại~",
+                            "✋ dừng lại nha~",
+                            "😐 dừng lại nè~"
+                      ],
+                      "shy": [
+                            "🥺 bực quá~",
+                            "😢 bực quá nha~",
+                            "😿 bực quá nè~"
+                      ],
+                      "grumpy": [
+                            "👉 hứ~",
+                            "🤫 hứ nha~",
+                            "🌩️ hứ nè~"
+                      ],
+                      "energetic": [
+                            "😡 tức quá~",
+                            "🥋 tức quá nha~",
+                            "🦁 tức quá nè~"
+                      ]
+                },
+                "l2": {
+                      "affectionate": [
+                            "😠 giận rồi!",
+                            "🙅 giận rồi nha!",
+                            "🤥 giận rồi nè!"
+                      ],
+                      "playful": [
+                            "💣 không vui đâu!",
+                            "🐊 không vui đâu nha!",
+                            "🦖 không vui đâu nè!"
+                      ],
+                      "calm": [
+                            "⚠️ dừng lại!",
+                            "🚫 dừng lại nha!",
+                            "🛑 dừng lại nè!"
+                      ],
+                      "shy": [
+                            "😭 bực quá!",
+                            "👋 bực quá nha!",
+                            "😣 bực quá nè!"
+                      ],
+                      "grumpy": [
+                            "👿 hứ!",
+                            "🙈 hứ nha!",
+                            "🗯️ hứ nè!"
+                      ],
+                      "energetic": [
+                            "👺 tức quá!",
+                            "💢 tức quá nha!",
+                            "🥊 tức quá nè!"
+                      ]
+                },
+                "l3": {
+                      "affectionate": [
+                            "😤 giận rồi!!",
+                            "🙈 giận rồi luôn!",
+                            "💢 giận rồi quá!"
+                      ],
+                      "playful": [
+                            "🚂 không vui đâu!!",
+                            "🌪️ không vui đâu luôn!",
+                            "😈 không vui đâu quá!"
+                      ],
+                      "calm": [
+                            "😑 dừng lại!!",
+                            "🛑 dừng lại luôn!",
+                            "🔚 dừng lại quá!"
+                      ],
+                      "shy": [
+                            "🌊 bực quá!!",
+                            "😭 bực quá luôn!",
+                            "👶 bực quá quá!"
+                      ],
+                      "grumpy": [
+                            "🌋 hứ!!",
+                            "💨 hứ luôn!",
+                            "😫 hứ quá!"
+                      ],
+                      "energetic": [
+                            "🔥 tức quá!!",
+                            "🔨 tức quá luôn!",
+                            "🤬 tức quá quá!"
+                      ]
+                }
+          }
+    },
+
+
   },
   abandonment: {
     danger: 'Cần được chăm sóc!',
