@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { playButtonSound } from '../../utils/sound';
 import './GiftBox.css';
 
@@ -7,6 +8,7 @@ interface GiftBoxProps {
 }
 
 export const GiftBox: React.FC<GiftBoxProps> = ({ onOpen }) => {
+    const { t } = useTranslation();
     const [isOpening, setIsOpening] = useState(false);
     const [taps, setTaps] = useState(0);
     const isOpeningLock = useRef(false);
@@ -76,7 +78,11 @@ export const GiftBox: React.FC<GiftBoxProps> = ({ onOpen }) => {
                 </div>
             )}
 
-            {!isOpening && <div className="gift-hint">Tap! {taps}/{MAX_TAPS}</div>}
+            {!isOpening && (
+                <div className="gift-hint">
+                    {t('giftBox.tapHint', { current: taps, max: MAX_TAPS })}
+                </div>
+            )}
         </div>
     );
 };

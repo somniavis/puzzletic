@@ -12,14 +12,26 @@ const resources = {
   en: {
     translation: en,
   },
+  'en-US': {
+    translation: en,
+  },
   'en-UK': {
     translation: enUK,
+  },
+  es: {
+    translation: esES,
   },
   'es-ES': {
     translation: esES,
   },
+  pt: {
+    translation: ptPT,
+  },
   'pt-PT': {
     translation: ptPT,
+  },
+  vi: {
+    translation: viVN,
   },
   'vi-VN': {
     translation: viVN,

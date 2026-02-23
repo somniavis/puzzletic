@@ -1,6 +1,8 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 export const PremiumLockOverlay: React.FC = () => {
+    const { t } = useTranslation();
 
     return (
         <div style={{
@@ -36,7 +38,7 @@ export const PremiumLockOverlay: React.FC = () => {
                 boxShadow: '0 2px 8px rgba(255, 215, 0, 0.4)',
                 border: '1px solid rgba(255, 255, 255, 0.3)'
             }}>
-                Premium
+                {t('common.premium')}
             </div>
         </div>
     );

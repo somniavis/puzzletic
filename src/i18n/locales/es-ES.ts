@@ -461,6 +461,11 @@ export const esES = {
     menu: {
       title: 'Tienda',
     },
+    status: {
+      active: 'Activo',
+      owned: 'Comprado',
+      free: 'Gratis',
+    },
     categories: {
       ground: 'Terreno',
       house: 'Casa',
@@ -1006,8 +1011,8 @@ export const esES = {
       level: 'Nivel',
     },
     modes: {
-      adventure: 'ADVENTURE',
-      genius: 'GENIUS',
+      adventure: 'AVENTURA',
+      genius: 'GENIO',
     },
     sections: {
       funMath: {
@@ -1107,6 +1112,14 @@ export const esES = {
       silver: '🥇 ¡Oro en {{count}} partidas!',
       gold: '¡Increíble! ¡Dominado! 🎉',
     },
+  },
+  giftBox: {
+    nicknameTitle: 'Encantado de conocerte!',
+    nicknamePlaceholder: 'Escribe tu apodo',
+    saveError: 'No se pudo guardar el apodo. Intentalo de nuevo.',
+    startButton: 'Comenzar! *',
+    saving: 'Guardando...',
+    tapHint: 'Toca! {{current}}/{{max}}',
   },
   train: {
     reward: {

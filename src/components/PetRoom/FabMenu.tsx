@@ -86,7 +86,7 @@ export const FabMenu: React.FC<FabMenuProps> = React.memo(({
                             title={t('profile.upgradePrompt')}
                         >
                             <span className="action-icon">🎁</span>
-                            <span className="premium-label">{t('common.premium')}</span>
+                            <span className="premium-label">{t('common.upgrade_btn_text')}</span>
                         </button>
                     )}
                 </>

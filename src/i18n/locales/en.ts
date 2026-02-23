@@ -461,6 +461,11 @@ export const en = {
     menu: {
       title: 'Shop',
     },
+    status: {
+      active: 'Active',
+      owned: 'Owned',
+      free: 'Free',
+    },
     categories: {
       ground: 'Land',
       house: 'House',
@@ -1107,6 +1112,14 @@ export const en = {
       silver: '🥇 Gold in {{count}} plays!',
       gold: 'Awesome! Mastered! 🎉',
     },
+  },
+  giftBox: {
+    nicknameTitle: 'Nice to meet you!',
+    nicknamePlaceholder: 'Enter your nickname',
+    saveError: 'Could not save nickname. Please try again.',
+    startButton: 'Start! ✨',
+    saving: 'Saving...',
+    tapHint: 'Tap! {{current}}/{{max}}',
   },
   train: {
     reward: {

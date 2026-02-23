@@ -57,7 +57,7 @@ export const ptPT = {
     cancelConfirmMessage: 'Perderá imediatamente todos os benefícios Premium.\nTem a certeza de que quer cancelar?',
     cancelSuccess: 'Subscrição cancelada.',
     upgradePrompt: 'Atualizar para Premium',
-    premiumTitle: 'UPGRADE TO PREMIUM',
+    premiumTitle: 'Atualizar para Premium',
     premiumSubtitle: 'Desbloqueia o premium <highlight>para si</highlight> + oferece acesso gratuito a <highlight>um amigo que precisa</highlight>.',
     subscription: {
       quarterly: {
@@ -460,6 +460,11 @@ export const ptPT = {
   shop: {
     menu: {
       title: 'Loja',
+    },
+    status: {
+      active: 'Ativo',
+      owned: 'Comprado',
+      free: 'Gratis',
     },
     categories: {
       ground: 'Terreno',
@@ -1006,8 +1011,8 @@ export const ptPT = {
       level: 'Nível',
     },
     modes: {
-      adventure: 'ADVENTURE',
-      genius: 'GENIUS',
+      adventure: 'AVENTURA',
+      genius: 'GENIO',
     },
     sections: {
       funMath: {
@@ -1107,6 +1112,14 @@ export const ptPT = {
       silver: '🥇 Ouro em {{count}} jogadas!',
       gold: 'Incrível! Dominado! 🎉',
     },
+  },
+  giftBox: {
+    nicknameTitle: 'Muito prazer!',
+    nicknamePlaceholder: 'Escreve o teu apelido',
+    saveError: 'Nao foi possivel guardar o apelido. Tenta novamente.',
+    startButton: 'Comecar! *',
+    saving: 'A guardar...',
+    tapHint: 'Toque! {{current}}/{{max}}',
   },
   train: {
     reward: {

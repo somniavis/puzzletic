@@ -44,7 +44,7 @@ import omokJa from '../../games/brain/level3/Omok/locales/ja';
 
 export const ja = {
     profile: {
-        title: 'My Jello',
+        title: 'マイジェロ',
         home: 'ホーム',
         signedInAs: 'ログイン中',
         guestUser: 'ゲスト',
@@ -55,8 +55,8 @@ export const ja = {
             freeLabel: '🌱 無料プラン',
         },
         upgradePrompt: 'プレミアムにアップグレード',
-        premiumTitle: 'UPGRADE TO PREMIUM',
-        premiumSubtitle: 'Unlocks premium <highlight>for you</highlight> + gives free access to <highlight>a friend in need</highlight>.',
+        premiumTitle: 'プレミアムにアップグレード',
+        premiumSubtitle: '<highlight>あなた</highlight>がプレミアムになると、<highlight>支援が必要な友だち1人</highlight>にも無料アクセスが提供されます。',
         subscription: {
             quarterly: {
                 title: '3ヶ月払い',
@@ -462,6 +462,11 @@ export const ja = {
     shop: {
         menu: {
             title: 'ショップ',
+        },
+        status: {
+            active: '使用中',
+            owned: '所持',
+            free: '無料',
         },
         categories: {
             ground: '背景',
@@ -1066,6 +1071,14 @@ export const ja = {
             silver: '🥇 金メダルまであと{{count}}回！',
             gold: 'すごい！マスターしました！🎉',
         },
+    },
+    giftBox: {
+        nicknameTitle: 'はじめまして！',
+        nicknamePlaceholder: 'ジェロの名前を入力してね',
+        saveError: '名前を保存できませんでした。もう一度お試しください。',
+        startButton: 'スタート! ✨',
+        saving: '保存中...',
+        tapHint: 'タップ! {{current}}/{{max}}',
     },
     train: {
         reward: {

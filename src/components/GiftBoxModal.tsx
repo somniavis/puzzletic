@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { updateProfile } from 'firebase/auth';
 import { playButtonSound } from '../utils/sound';
+import { useTranslation } from 'react-i18next';
 import '../pages/Auth.css'; // Reuse auth styles for modal
 
 interface GiftBoxModalProps {
@@ -10,6 +11,7 @@ interface GiftBoxModalProps {
 
 export const GiftBoxModal: React.FC<GiftBoxModalProps> = ({ onComplete }) => {
     const { user, isGuest } = useAuth();
+    const { t } = useTranslation();
     // Removed 'step' state as we go directly to input
     const [nickname, setNickname] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -32,7 +34,7 @@ export const GiftBoxModal: React.FC<GiftBoxModalProps> = ({ onComplete }) => {
         } catch (error) {
             console.error('Failed to update profile:', error);
             setIsSubmitting(false); // Only reset on error, otherwise we are done/closing
-            alert('Could not save nickname. Please try again.');
+            alert(t('giftBox.saveError'));
         }
     };
 
@@ -57,7 +59,7 @@ export const GiftBoxModal: React.FC<GiftBoxModalProps> = ({ onComplete }) => {
             }}>
                 <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                     <div style={{ textAlign: 'center' }}>
-                        <h2 style={{ fontSize: '1.4rem', color: '#4d3e2f', margin: 0 }}>Nice to meet you!</h2>
+                        <h2 style={{ fontSize: '1.4rem', color: '#4d3e2f', margin: 0 }}>{t('giftBox.nicknameTitle')}</h2>
                         {/* Text removed per user request */}
                     </div>
 
@@ -65,7 +67,7 @@ export const GiftBoxModal: React.FC<GiftBoxModalProps> = ({ onComplete }) => {
                         <input
                             type="text"
                             className="form-input"
-                            placeholder="Enter your nickname"
+                            placeholder={t('giftBox.nicknamePlaceholder')}
                             value={nickname}
                             onChange={(e) => setNickname(e.target.value)}
                             required
@@ -81,7 +83,7 @@ export const GiftBoxModal: React.FC<GiftBoxModalProps> = ({ onComplete }) => {
                         disabled={isSubmitting}
                         style={{ opacity: isSubmitting ? 0.7 : 1, cursor: isSubmitting ? 'not-allowed' : 'pointer' }}
                     >
-                        {isSubmitting ? 'Saving...' : 'Start! ✨'}
+                        {isSubmitting ? t('giftBox.saving') : t('giftBox.startButton')}
                     </button>
                 </form>
             </div>

@@ -44,7 +44,7 @@ import omokKo from '../../games/brain/level3/Omok/locales/ko';
 
 export const ko = {
     profile: {
-        title: 'My Jello',
+        title: '마이 젤로',
         home: '홈으로',
         signedInAs: '로그인 계정',
         guestUser: '게스트 유저',
@@ -59,8 +59,8 @@ export const ko = {
         cancelConfirmMessage: '취소하면 즉시 무료 플랜으로 전환되며,\n프리미엄 혜택(XP 3배 등)을 잃게 됩니다.',
         cancelSuccess: '구독이 취소되었습니다.',
         upgradePrompt: '프리미엄 업그레이드',
-        premiumTitle: 'UPGRADE TO PREMIUM',
-        premiumSubtitle: 'Unlocks premium <highlight>for you</highlight> + gives free access to <highlight>a friend in need</highlight>.',
+        premiumTitle: '프리미엄 업그레이드',
+        premiumSubtitle: '<highlight>나</highlight>를 위한 프리미엄과 <highlight>도움이 필요한 친구 1명</highlight>의 무료 이용권이 함께 제공됩니다.',
         subscription: {
             quarterly: {
                 title: '3개월 결제',
@@ -462,6 +462,11 @@ export const ko = {
     shop: {
         menu: {
             title: '상점',
+        },
+        status: {
+            active: '사용 중',
+            owned: '보유',
+            free: '무료',
         },
         categories: {
             ground: '배경',
@@ -1111,10 +1116,18 @@ export const ko = {
             gold: '최고에요! 마스터하셨군요! 🎉',
         },
     },
+    giftBox: {
+        nicknameTitle: '만나서 반가워요!',
+        nicknamePlaceholder: '젤로 이름을 입력해주세요',
+        saveError: '이름을 저장하지 못했어요. 다시 시도해주세요.',
+        startButton: '시작! ✨',
+        saving: '저장 중...',
+        tapHint: '탭! {{current}}/{{max}}',
+    },
     train: {
         reward: {
             glo: 'GLO',
-            dud: '꽭!',
+            dud: '꽝!',
             confirm: '확인',
         },
     },

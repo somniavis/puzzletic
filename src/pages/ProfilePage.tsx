@@ -45,7 +45,7 @@ export const ProfilePage: React.FC = () => {
         <div className="profile-page">
             <header className="profile-header">
                 <h1>👤 {t('profile.title')}</h1>
-                <button className="close-button" onClick={() => navigate('/home')} aria-label="Close">
+                <button className="close-button" onClick={() => navigate('/home')} aria-label={t('common.close')}>
                     ✕
                 </button>
             </header>

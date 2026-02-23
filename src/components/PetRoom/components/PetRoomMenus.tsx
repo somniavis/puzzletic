@@ -94,13 +94,13 @@ const PetShopContent: React.FC<{ nurturing: any, onPetGacha: () => void }> = ({ 
                             style={effectiveIsCurrent ? { borderColor: '#FFD700', backgroundColor: '#FFF9E6', cursor: 'default' } : { cursor: 'default' }}
                         >
                             <span className="food-item-icon" style={{ fontSize: '2.5rem' }}>{pet.icon}</span>
-                            <span className="food-item-name">{t(pet.nameKey)}</span>
-                            <div className="food-item-effects">
-                                {isCurrent && (
-                                    <span className="food-item-price">✅ Active</span>
-                                )}
-                            </div>
-                        </button>
+                                <span className="food-item-name">{t(pet.nameKey)}</span>
+                                <div className="food-item-effects">
+                                    {isCurrent && (
+                                        <span className="food-item-price">✅ {t('shop.status.active')}</span>
+                                    )}
+                                </div>
+                            </button>
                     );
                 })}
             </div>
@@ -216,7 +216,7 @@ export const PetRoomMenus: React.FC<PetRoomMenusProps> = ({
                                 <span className="effect">{t(tool.descriptionKey)}</span>
                             </div>
                             <div className="food-item-price">
-                                {tool.price > 0 ? `💰 ${tool.price}` : 'Free'}
+                                {tool.price > 0 ? `💰 ${tool.price}` : t('shop.status.free')}
                             </div>
                         </button>
                     ))}
@@ -282,9 +282,9 @@ export const PetRoomMenus: React.FC<PetRoomMenusProps> = ({
                                             {nurturing.inventory.includes(item.id) || (item.category === 'house' && item.id === 'tent') ? (
                                                 (item.category === 'ground' && nurturing.currentLand === item.id) ||
                                                     (item.category === 'house' && nurturing.currentHouseId === item.id) ? (
-                                                    <span className="food-item-price">✅ Owned</span>
+                                                    <span className="food-item-price">✅ {t('shop.status.owned')}</span>
                                                 ) : (
-                                                    <span className="food-item-price">Owned</span>
+                                                    <span className="food-item-price">{t('shop.status.owned')}</span>
                                                 )
                                             ) : (
                                                 <span className="food-item-price">💰 {item.price}</span>
@@ -306,4 +306,3 @@ export const PetRoomMenus: React.FC<PetRoomMenusProps> = ({
         </>
     );
 };
-

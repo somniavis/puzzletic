@@ -69,7 +69,7 @@ export const EncyclopediaPage: React.FC = () => {
                     <div className="star-display" style={{ marginRight: '12px', display: 'flex', alignItems: 'center', background: 'rgba(255,255,255,0.2)', padding: '4px 12px', borderRadius: '16px', fontWeight: 'bold', color: '#FFD700', fontSize: '1rem', textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>
                         <span>⭐ {totalGameStars || 0}</span>
                     </div>
-                    <button className="close-button" onClick={() => navigate('/profile')} aria-label="Back">
+                    <button className="close-button" onClick={() => navigate('/profile')} aria-label={t('common.close')}>
                         ←
                     </button>
                 </div>

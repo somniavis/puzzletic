@@ -136,7 +136,7 @@ export const LoginPage: React.FC = () => {
                                 navigate('/');
                             }
                         }}
-                        aria-label="Back"
+                        aria-label={t('common.close')}
                         style={{
                             width: '42px',
                             height: '42px',
