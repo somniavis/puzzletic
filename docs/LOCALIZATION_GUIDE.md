@@ -2,6 +2,16 @@
 
 This document provides a comprehensive guide to the internationalization (i18n) architecture of Puzzleletic. It explains how to add new languages, localize new games, and maintain the system.
 
+## Related Operational Checklist
+
+For practical rollout work (batch order, quality gates, validation commands, and common pitfalls), use:
+
+- `docs/LOCALE_EXPANSION_CHECKPOINTS.md`
+
+Recommended usage:
+- Use this document (`LOCALIZATION_GUIDE.md`) for architecture and implementation rules.
+- Use `LOCALE_EXPANSION_CHECKPOINTS.md` as the execution playbook when adding a new language.
+
 ## 1. Architecture Overview
 
 Puzzleletic uses `react-i18next` for localization. The system is designed to handle both global application text (menus, auth, settings) and game-specific content.

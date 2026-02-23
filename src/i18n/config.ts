@@ -2,6 +2,9 @@ import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import { en } from './locales/en';
 import { enUK } from './locales/en-UK';
+import { esES } from './locales/es-ES';
+import { ptPT } from './locales/pt-PT';
+import { viVN } from './locales/vi-VN';
 import { ko } from './locales/ko';
 import { ja } from './locales/ja';
 
@@ -11,6 +14,15 @@ const resources = {
   },
   'en-UK': {
     translation: enUK,
+  },
+  'es-ES': {
+    translation: esES,
+  },
+  'pt-PT': {
+    translation: ptPT,
+  },
+  'vi-VN': {
+    translation: viVN,
   },
   ko: {
     translation: ko,
@@ -34,6 +46,12 @@ const browserLanguage = navigator.language.startsWith('ko')
   ? 'ko'
   : navigator.language.startsWith('ja')
     ? 'ja'
+    : navigator.language.startsWith('es')
+      ? 'es-ES'
+      : navigator.language.startsWith('pt')
+        ? 'pt-PT'
+        : navigator.language.startsWith('vi')
+          ? 'vi-VN'
     : navigator.language.startsWith('en-GB')
       ? 'en-UK'
     : 'en';

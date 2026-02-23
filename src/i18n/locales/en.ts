@@ -1014,6 +1014,9 @@ export const en = {
         title: 'Fun math',
         desc: 'Gamified math missions',
       },
+      training: {
+        desc: 'Training modules',
+      },
       genius: {
         title: 'Genius Calc',
         desc: "The 'Secret' Calculation of Geniuses",

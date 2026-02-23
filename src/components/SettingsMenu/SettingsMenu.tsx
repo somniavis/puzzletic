@@ -264,6 +264,51 @@ export const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose }) =
             </button>
 
             <button
+              className={`food-item ${i18n.language === 'es-ES' ? 'food-item--selected' : ''}`}
+              onClick={() => handleLanguageSelect('es-ES')}
+            >
+              <span className="food-item-icon language-flag">🇪🇸</span>
+              <div className="language-info">
+                <span className="food-item-name">Español</span>
+              </div>
+              {i18n.language === 'es-ES' && (
+                <div className="food-item-effects">
+                  <span className="effect effect--selected">✓ {t('settings.language.selected')}</span>
+                </div>
+              )}
+            </button>
+
+            <button
+              className={`food-item ${i18n.language === 'pt-PT' ? 'food-item--selected' : ''}`}
+              onClick={() => handleLanguageSelect('pt-PT')}
+            >
+              <span className="food-item-icon language-flag">🇵🇹</span>
+              <div className="language-info">
+                <span className="food-item-name">Português (PT)</span>
+              </div>
+              {i18n.language === 'pt-PT' && (
+                <div className="food-item-effects">
+                  <span className="effect effect--selected">✓ {t('settings.language.selected')}</span>
+                </div>
+              )}
+            </button>
+
+            <button
+              className={`food-item ${i18n.language === 'vi-VN' ? 'food-item--selected' : ''}`}
+              onClick={() => handleLanguageSelect('vi-VN')}
+            >
+              <span className="food-item-icon language-flag">🇻🇳</span>
+              <div className="language-info">
+                <span className="food-item-name">Tiếng Việt</span>
+              </div>
+              {i18n.language === 'vi-VN' && (
+                <div className="food-item-effects">
+                  <span className="effect effect--selected">✓ {t('settings.language.selected')}</span>
+                </div>
+              )}
+            </button>
+
+            <button
               className={`food-item ${i18n.language === 'ko' ? 'food-item--selected' : ''}`}
               onClick={() => handleLanguageSelect('ko')}
             >

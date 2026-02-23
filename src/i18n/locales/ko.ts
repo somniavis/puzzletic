@@ -1016,6 +1016,9 @@ export const ko = {
                 title: '펀매쓰',
                 desc: '재미있는 수학 모험',
             },
+            training: {
+                desc: '트레이닝 모듈',
+            },
             genius: {
                 title: '지니어스 연산',
                 desc: "천재들의 '비밀' 계산법",

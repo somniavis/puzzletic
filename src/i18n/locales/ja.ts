@@ -972,6 +972,9 @@ export const ja = {
                 title: 'ファンマス',
                 desc: '楽しい算数アドベンチャー',
             },
+            training: {
+                desc: 'トレーニングモジュール',
+            },
             genius: {
                 title: 'ジーニアス計算',
                 desc: "天才たちの「秘密」の計算",

@@ -110,7 +110,7 @@ const PlayPage: React.FC = () => {
         <header className="play-header-hub">
             <div className="header-brand">
                 <div className="brand-icon"><i className="fas fa-gamepad"></i></div>
-                <h1 className="brand-title">Play & Learn</h1>
+                <h1 className="brand-title">{t('play.title')}</h1>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <div className="star-display" style={{ display: 'flex', alignItems: 'center', background: 'rgba(0,0,0,0.2)', padding: '4px 12px', borderRadius: '16px', fontWeight: 'bold', color: '#FFD700', fontSize: '1rem' }}>
@@ -166,7 +166,7 @@ const PlayPage: React.FC = () => {
                     {activeTab === 'math' ? t('play.sections.funMath.title') : t(`play.categories.${activeTab}`)}
                 </h2>
                 <p className="section-desc">
-                    {activeTab === 'math' ? t('play.sections.funMath.desc') : 'Training modules'}
+                    {activeTab === 'math' ? t('play.sections.funMath.desc') : t('play.sections.training.desc')}
                 </p>
             </div>
 

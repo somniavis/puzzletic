@@ -1,96 +1,96 @@
 // Global English Locales
 // Updated for Compare Critters
-import fishingCountEn from '../../games/math/adventure/level1/FishingCount/locales/en-UK';
-import roundCountingEn from '../../games/math/adventure/level1/RoundCounting/locales/en-UK';
-import numberHiveEn from '../../games/math/adventure/level1/NumberHive/locales/en-UK';
-import fruitSliceEn from '../../games/math/adventure/level1/FruitSlice/locales/en-UK';
-import numberBalanceEn from '../../games/math/adventure/level1/NumberBalance/locales/en-UK';
-import mathArcheryEn from '../../games/math/adventure/level1/MathArchery/locales/en-UK';
-import jelloFeedingEn from '../../games/math/adventure/level1/JelloFeeding/locales/en-UK';
-import frontAdditionEn from '../../games/math/genius/FrontAddition/locales/en-UK';
-import frontSubtractionEn from '../../games/math/genius/FrontSubtraction/locales/en-UK';
-import backMultiplicationEn from '../../games/math/genius/BackMultiplication/locales/en-UK';
-import tenFrameCountEn from '../../games/math/adventure/level2/TenFrameCount/locales/en-UK';
-import mathPinwheelEn from '../../games/math/adventure/level2/PinwheelPop/locales/en-UK';
-import compareCrittersEn from '../../games/math/adventure/level1/CompareCritters/locales/en-UK';
-import deepSeaDiveEn from '../../games/math/adventure/level2/DeepSeaDive/locales/en-UK';
-import signalHunterEn from '../../games/brain/level2/SignalHunter/locales/en-UK';
-import lockOpeningEn from '../../games/math/adventure/level2/LockOpening/locales/en-UK';
-import colorLinkEn from '../../games/brain/level1/ColorLink/locales/en-UK';
-import pairUpTwinEn from '../../games/brain/level1/PairUpTwin/locales/en-UK';
-import wildLinkEn from '../../games/brain/level2/WildLink/locales/en-UK';
-import pairUpConnectEn from '../../games/brain/level2/PairUpConnect/locales/en-UK';
-import animalBanquetEn from '../../games/brain/level2/AnimalBanquet/locales/en-UK';
-import ufoInvasionEn from '../../games/math/adventure/level2/UFOInvasion/locales/en-UK';
-import cargoTrainEn from '../../games/math/adventure/level2/CargoTrain/locales/en-UK.ts';
-import rocketLauncherEn from '../../games/math/adventure/level2/RocketLauncher/locales/en-UK';
-import shapeSumLinkEn from '../../games/math/adventure/level2/ShapeSumLink/locales/en-UK';
-import fruitBoxEn from '../../games/math/adventure/level3/FruitBox/locales/en-UK';
-import iceStackingEn from '../../games/math/adventure/level3/IceStacking/locales/en-UK';
-import floorTilerEn from '../../games/math/adventure/level3/FloorTiler/locales/en-UK';
-import frogJumpEn from '../../games/math/adventure/level3/FrogJump/locales/en-UK';
-import chipCashierEn from '../../games/math/adventure/level3/ChipCashier/locales/en-UK';
-import beginnerWizardEn from '../../games/math/adventure/level3/BeginnerWizard/locales/en-UK';
-import constellationFinderEn from '../../games/math/adventure/level3/ConstellationFinder/locales/en-UK';
-import trollAttackEn from '../../games/math/adventure/level3/TrollAttack/locales/en-UK';
-import blockTowerEn from '../../games/brain/level2/BlockTower/locales/en-UK';
-import sharpshooterEn from '../../games/brain/level2/Sharpshooter/locales/en-UK';
-import mazeEscapeEn from '../../games/brain/level1/MazeEscape/locales/en-UK';
-import mazeHunterEn from '../../games/brain/level2/MazeHunter/locales/en-UK';
-import ticTacToeEn from '../../games/brain/level3/TicTacToe/locales/en-UK';
-import omokEn from '../../games/brain/level3/Omok/locales/en-UK';
+import fishingCountVi from '../../games/math/adventure/level1/FishingCount/locales/vi-VN';
+import roundCountingVi from '../../games/math/adventure/level1/RoundCounting/locales/vi-VN';
+import numberHiveVi from '../../games/math/adventure/level1/NumberHive/locales/vi-VN';
+import fruitSliceVi from '../../games/math/adventure/level1/FruitSlice/locales/vi-VN';
+import numberBalanceVi from '../../games/math/adventure/level1/NumberBalance/locales/vi-VN';
+import mathArcheryVi from '../../games/math/adventure/level1/MathArchery/locales/vi-VN';
+import jelloFeedingVi from '../../games/math/adventure/level1/JelloFeeding/locales/vi-VN';
+import frontAdditionVi from '../../games/math/genius/FrontAddition/locales/vi-VN';
+import frontSubtractionVi from '../../games/math/genius/FrontSubtraction/locales/vi-VN';
+import backMultiplicationVi from '../../games/math/genius/BackMultiplication/locales/vi-VN';
+import tenFrameCountVi from '../../games/math/adventure/level2/TenFrameCount/locales/vi-VN';
+import mathPinwheelVi from '../../games/math/adventure/level2/PinwheelPop/locales/vi-VN';
+import compareCrittersVi from '../../games/math/adventure/level1/CompareCritters/locales/vi-VN';
+import deepSeaDiveVi from '../../games/math/adventure/level2/DeepSeaDive/locales/vi-VN';
+import signalHunterVi from '../../games/brain/level2/SignalHunter/locales/vi-VN';
+import lockOpeningVi from '../../games/math/adventure/level2/LockOpening/locales/vi-VN';
+import colorLinkVi from '../../games/brain/level1/ColorLink/locales/vi-VN';
+import pairUpTwinVi from '../../games/brain/level1/PairUpTwin/locales/vi-VN';
+import wildLinkVi from '../../games/brain/level2/WildLink/locales/vi-VN';
+import pairUpConnectVi from '../../games/brain/level2/PairUpConnect/locales/vi-VN';
+import animalBanquetVi from '../../games/brain/level2/AnimalBanquet/locales/vi-VN';
+import ufoInvasionVi from '../../games/math/adventure/level2/UFOInvasion/locales/vi-VN';
+import cargoTrainVi from '../../games/math/adventure/level2/CargoTrain/locales/vi-VN.ts';
+import rocketLauncherVi from '../../games/math/adventure/level2/RocketLauncher/locales/vi-VN';
+import shapeSumLinkVi from '../../games/math/adventure/level2/ShapeSumLink/locales/vi-VN';
+import fruitBoxVi from '../../games/math/adventure/level3/FruitBox/locales/vi-VN';
+import iceStackingVi from '../../games/math/adventure/level3/IceStacking/locales/vi-VN';
+import floorTilerVi from '../../games/math/adventure/level3/FloorTiler/locales/vi-VN';
+import frogJumpVi from '../../games/math/adventure/level3/FrogJump/locales/vi-VN';
+import chipCashierVi from '../../games/math/adventure/level3/ChipCashier/locales/vi-VN';
+import beginnerWizardVi from '../../games/math/adventure/level3/BeginnerWizard/locales/vi-VN';
+import constellationFinderVi from '../../games/math/adventure/level3/ConstellationFinder/locales/vi-VN';
+import trollAttackVi from '../../games/math/adventure/level3/TrollAttack/locales/vi-VN';
+import blockTowerVi from '../../games/brain/level2/BlockTower/locales/vi-VN';
+import sharpshooterVi from '../../games/brain/level2/Sharpshooter/locales/vi-VN';
+import mazeEscapeVi from '../../games/brain/level1/MazeEscape/locales/vi-VN';
+import mazeHunterVi from '../../games/brain/level2/MazeHunter/locales/vi-VN';
+import ticTacToeVi from '../../games/brain/level3/TicTacToe/locales/vi-VN';
+import omokVi from '../../games/brain/level3/Omok/locales/vi-VN';
 
-export const enUK = {
+export const viVN = {
   profile: {
-    title: 'My Jello',
-    home: 'Home',
-    signedInAs: 'Signed in as',
-    guestUser: 'Guest User',
+    title: 'Jello của tôi',
+    home: 'Trang chủ',
+    signedInAs: 'Đăng nhập với',
+    guestUser: 'Khách',
     status: {
       premium: '👑 PREMIUM',
-      free: 'TRIAL',
-      premiumLabel: '✨ Premium Member',
-      freeLabel: '🌱 Free Plan',
+      free: 'DÙNG THỬ',
+      premiumLabel: '✨ Thành viên Premium',
+      freeLabel: '🌱 Gói miễn phí',
     },
-    cancelSubscription: 'Cancel Subscription',
-    cancelConfirmTitle: 'Cancel Subscription?',
-    cancelConfirmMessage: 'You will lose all Premium benefits immediately.\nAre you sure you want to cancel?',
-    cancelSuccess: 'Subscription cancelled.',
-    upgradePrompt: 'Upgrade to Premium',
-    premiumTitle: 'UPGRADE TO PREMIUM',
-    premiumSubtitle: 'Unlocks premium <highlight>for you</highlight> + gives free access to <highlight>a friend in need</highlight>.',
+    cancelSubscription: 'Huỷ đăng ký',
+    cancelConfirmTitle: 'Huỷ đăng ký gói?',
+    cancelConfirmMessage: 'Bạn sẽ mất ngay tất cả quyền lợi Premium.\nBạn chắc chắn muốn huỷ chứ?',
+    cancelSuccess: 'Đã huỷ đăng ký.',
+    upgradePrompt: 'Nâng cấp lên Premium',
+    premiumTitle: 'NÂNG CẤP PREMIUM',
+    premiumSubtitle: 'Mở khóa Premium <highlight>cho bạn</highlight> + tặng quyền truy cập miễn phí cho <highlight>một người bạn cần giúp đỡ</highlight>.',
     subscription: {
       quarterly: {
-        title: 'Billed quarterly',
-        desc: 'Now $3.99',
+        title: 'Thanh toán theo quý',
+        desc: 'Hiện tại $3.99',
       },
       yearly: {
-        title: 'Billed annually',
-        desc: 'Total $12.00',
-        badge: 'Best Value',
+        title: 'Thanh toán theo năm',
+        desc: 'Tổng $12.00',
+        badge: 'Tiết kiệm nhất',
       },
-      unit: '/ month',
+      unit: '/ tháng',
       currency: 'USD',
     },
-    cancelPolicy: 'All plans can be cancelled anytime.',
+    cancelPolicy: 'Có thể huỷ mọi gói bất cứ lúc nào.',
     premiumActive: {
-      title: 'You are a Premium Member!',
-      desc: 'Thank you for your support.',
+      title: 'Bạn đang là thành viên Premium!',
+      desc: 'Cảm ơn bạn đã ủng hộ.',
     },
-    myJelloBox: 'My Jello Box',
+    myJelloBox: 'Bộ sưu tập Jello',
   },
   landing: {
-    title: 'Raise Your Jello',
-    subtitle: 'Grow with your cute friend',
-    start_experience: 'Start Experience Now',
-    auth_prompt: 'Already have an account?',
-    login: 'Log In',
-    signup: 'Sign Up',
-    back_to_home: 'Back to Home',
-    continue_experience: 'Continue Journey',
-    new_game: 'Start Fresh',
+    title: 'Nuôi dưỡng Jello',
+    subtitle: 'Lớn lên cùng người bạn đáng yêu',
+    start_experience: 'Bắt đầu ngay',
+    auth_prompt: 'Đã có tài khoản?',
+    login: 'Đăng nhập',
+    signup: 'Đăng ký',
+    back_to_home: 'Về trang chủ',
+    continue_experience: 'Tiếp tục hành trình',
+    new_game: 'Bắt đầu mới',
     auth: {
-      duplicateLoginAlert: 'You have been logged in on another device. This session will be closed.',
+      duplicateLoginAlert: 'Tài khoản đã đăng nhập ở thiết bị khác. Phiên hiện tại sẽ bị đóng.',
     },
   },
 
@@ -107,7 +107,7 @@ export const enUK = {
       affection: 'Affection',
     },
     tags: {
-      defense: 'Defence',
+      defense: 'Defense',
       honey_wood: 'Honey/Wood',
       attack: 'Attack',
       fire_flame: 'Fire/Flame',
@@ -146,7 +146,7 @@ export const enUK = {
       yellowJello_stage2_name: 'Twiglo',
       yellowJello_stage2_desc: 'A small twig has grown on its head. It attracts insects with the sweet sap flowing from the branch.',
       yellowJello_stage3_name: 'Vinegel',
-      yellowJello_stage3_desc: 'Wrapped in tough vines, it has high defence. It immobilises enemies with sticky honey from between the vines.',
+      yellowJello_stage3_desc: 'Wrapped in tough vines, it has high defense. It immobilizes enemies with sticky honey from between the vines.',
       yellowJello_stage4_name: 'Honeybloom',
       yellowJello_stage4_desc: 'Flowers have bloomed on its body, and it has sprouted limbs. It travels with its best friend, a honeybee, sharing honey to restore stamina.',
       yellowJello_stage5_name: 'Arboros',
@@ -154,7 +154,7 @@ export const enUK = {
 
       // Red Jello
       redJello_stage1_name: 'Red Jello',
-      redJello_stage1_desc: 'A jelly that feels hot to the touch. When angry, its red colour deepens and the surroundings get hotter.',
+      redJello_stage1_desc: 'A jelly that feels hot to the touch. When angry, its red color deepens and the surroundings get hotter.',
       redJello_stage2_name: 'Devilet',
       redJello_stage2_desc: 'Cute red horns have sprouted on its head. It loves pricking things with its horns, and sparks fly when it gets mad.',
       redJello_stage3_name: 'Impgel',
@@ -182,7 +182,7 @@ export const enUK = {
       blueJello_stage2_name: 'Fingel',
       blueJello_stage2_desc: 'A sleek shark fin has appeared on its head. It is very fast underwater and escapes instantly in danger.',
       blueJello_stage3_name: 'Coralin',
-      blueJello_stage3_desc: 'Colourful coral decorations have appeared on its body. It can breathe underwater and has a body hard enough to withstand water pressure.',
+      blueJello_stage3_desc: 'Colorful coral decorations have appeared on its body. It can breathe underwater and has a body hard enough to withstand water pressure.',
       blueJello_stage4_name: 'Hydro',
       blueJello_stage4_desc: 'It has fin wings and shoots "Water Cannons" from its mouth. It enjoys meditating at the bottom of deep water.',
       blueJello_stage5_name: 'Oceanos',
@@ -256,45 +256,45 @@ export const enUK = {
     },
   },
   common: {
-    startGame: 'Start Game',
-    start: 'Start',
-    cancel: 'Cancel',
+    startGame: 'Bắt đầu trò chơi',
+    start: 'Bắt đầu',
+    cancel: 'Huỷ',
     premium: 'Premium',
-    upgrade_btn_text: 'UPGRADE',
+    upgrade_btn_text: 'NÂNG CẤP',
     modal: {
-      title: 'One for you,\none for a friend in need.',
-      desc: 'Your subscription unlocks Premium for <bold>YOU</bold> + gives free access to a <bold>friend in need</bold>.',
-      benefit1: 'Unlock All Jello Evolutions & Games',
-      benefit2: 'Learn 3x-8x Faster with XP Boost',
-      benefit3: 'Shared premium experience for two',
+      title: 'Một cho bạn,\nmột cho người bạn cần giúp đỡ.',
+      desc: 'Đăng ký của bạn mở khóa Premium cho <bold>BẠN</bold> + tặng quyền truy cập miễn phí cho <bold>một người bạn cần giúp đỡ</bold>.',
+      benefit1: 'Mở khóa toàn bộ tiến hóa Jello và trò chơi',
+      benefit2: 'Học nhanh hơn 3x-8x với tăng XP',
+      benefit3: 'Trải nghiệm premium chia sẻ cho hai người',
     },
-    loading: 'Loading...',
-    confirm: 'Confirm',
-    close: 'Close',
+    loading: 'Đang tải...',
+    confirm: 'Xác nhận',
+    close: 'Đóng',
     menu: 'Menu',
-    score: 'Score',
-    lives: 'Lives',
+    score: 'Điểm',
+    lives: 'Mạng',
     combo: 'Combo',
-    bestCombo: 'Best Combo',
-    difficulty: 'Difficulty',
-    time: 'Time',
-    accuracy: 'Accuracy',
-    stageClear: 'Stage Clear!',
-    gameOver: 'Game Over!',
-    finalScore: 'Final Score',
-    bestScore: 'Best Score',
-    previousBest: 'Prev Best',
-    newRecord: 'NEW RECORD!',
-    playAgain: 'Play Again',
-    download: 'Result',
-    howToPlay: 'How to Play',
-    results: 'Final Results',
+    bestCombo: 'Combo cao nhất',
+    difficulty: 'Độ khó',
+    time: 'Thời gian',
+    accuracy: 'Độ chính xác',
+    stageClear: 'Qua màn!',
+    gameOver: 'Kết thúc!',
+    finalScore: 'Điểm cuối',
+    bestScore: 'Điểm cao nhất',
+    previousBest: 'Kỷ lục trước',
+    newRecord: 'KỶ LỤC MỚI!',
+    playAgain: 'Chơi lại',
+    download: 'Kết quả',
+    howToPlay: 'Cách chơi',
+    results: 'Kết quả cuối',
     earnedXp: 'XP',
     earnedGro: 'Gro',
     earnedStar: 'Star',
-    yes: 'Yes',
-    no: 'No',
-    goHome: 'Go Home',
+    yes: 'Có',
+    no: 'Không',
+    goHome: 'Về trang chủ',
   },
   evolution: {
     title: 'EVOLUTION!',
@@ -542,43 +542,43 @@ export const enUK = {
     rare: 'Rare',
   },
   actions: {
-    feed: 'Feed',
-    medicine: 'Medicine',
-    play: 'Play',
-    clean: 'Clean',
-    camera: 'Camera',
-    settings: 'Settings',
-    evolve: 'Evolve',
-    graduate: 'Graduate',
-    cancel: 'Cancel',
-    confirm: 'Confirm',
-    close: 'Close',
+    feed: 'Cho ăn',
+    medicine: 'Thuốc',
+    play: 'Chơi',
+    clean: 'Dọn dẹp',
+    camera: 'Máy ảnh',
+    settings: 'Cài đặt',
+    evolve: 'Tiến hóa',
+    graduate: 'Tốt nghiệp',
+    cancel: 'Huỷ',
+    confirm: 'Xác nhận',
+    close: 'Đóng',
   },
   camera: {
-    title: 'Snapshot!',
-    save: 'Save',
-    copyLink: 'Copy Link',
-    capturing: 'Capturing...',
+    title: 'Chụp ảnh!',
+    save: 'Lưu',
+    copyLink: 'Sao chép liên kết',
+    capturing: 'Đang chụp...',
   },
   share: {
-    linkCopied: 'Link Copied!',
-    copyFailed: 'Failed to Copy',
+    linkCopied: 'Đã sao chép liên kết!',
+    copyFailed: 'Sao chép thất bại',
     invite: {
-      title: 'This is the Jello I\'m raising! 🥰',
-      desc: 'Want to raise one together?',
+      title: 'Đây là Jello mình đang nuôi! 🥰',
+      desc: 'Bạn muốn nuôi cùng không?',
     },
-    cta: 'Play Now!',
+    cta: 'Chơi ngay!',
     error: {
-      invalid: 'Invalid share link',
-      missing: 'No data found',
+      invalid: 'Liên kết chia sẻ không hợp lệ',
+      missing: 'Không tìm thấy dữ liệu',
     },
   },
   sleep: {
     confirm: {
-      sleepTitle: 'Go to Sleep',
-      sleepMessage: 'Do you want to put Jello to sleep? 💤\n(Sleeps for 30 minutes)',
-      wakeTitle: 'Wake Up',
-      wakeMessage: 'Do you want to wake up Jello? 🌅',
+      sleepTitle: 'Đi ngủ',
+      sleepMessage: 'Bạn muốn cho Jello đi ngủ chứ? 💤\n(Ngủ trong 30 phút)',
+      wakeTitle: 'Thức dậy',
+      wakeMessage: 'Bạn muốn đánh thức Jello chứ? 🌅',
     },
   },
   cleanMenu: {
@@ -903,107 +903,107 @@ export const enUK = {
     },
   },
   abandonment: {
-    danger: 'Needs attention!',
-    critical: 'Critical condition!',
-    leaving: 'Leaving soon!',
-    abandoned: 'R.I.P. Jello has passed away...',
+    danger: 'Cần được chăm sóc!',
+    critical: 'Tình trạng nguy cấp!',
+    leaving: 'Sắp rời đi!',
+    abandoned: 'R.I.P. Jello đã rời xa bạn...',
   },
   settings: {
-    title: 'Settings',
+    title: 'Cài đặt',
     sound: {
-      title: 'Sound',
-      description: 'Adjust sound settings',
-      bgm: 'Background Music',
-      sfx: 'Sound Effects',
+      title: 'Âm thanh',
+      description: 'Điều chỉnh âm thanh',
+      bgm: 'Nhạc nền',
+      sfx: 'Hiệu ứng âm thanh',
       on: 'ON',
       off: 'OFF',
     },
     language: {
-      title: 'Language',
-      description: 'Select language',
-      selected: 'Selected',
+      title: 'Ngôn ngữ',
+      description: 'Chọn ngôn ngữ',
+      selected: 'Đã chọn',
     },
     admin: {
       title: 'Admin',
-      gallery: 'Gallery',
-      stats: 'Stats',
+      gallery: 'Thư viện',
+      stats: 'Thống kê',
     },
-    cloudSave: 'Cloud Save',
-    logout: 'Logout',
+    cloudSave: 'Lưu đám mây',
+    logout: 'Đăng xuất',
     saveStatus: {
-      idle: 'Cloud Save',
-      saving: 'Saving...',
-      success: 'Saved!',
-      error: 'Failed',
-      cooldown: 'Wait {{time}}s',
+      idle: 'Lưu đám mây',
+      saving: 'Đang lưu...',
+      success: 'Đã lưu!',
+      error: 'Thất bại',
+      cooldown: 'Đợi {{time}} giây',
     },
   },
   encyclopedia: {
-    title: 'My Jello Box',
-    home: 'Home',
-    species: 'Species',
-    stage: 'Stage {{stage}}',
-    hidden: 'HIDDEN',
+    title: 'Bộ sưu tập Jello',
+    home: 'Trang chủ',
+    species: 'Loài',
+    stage: 'Giai đoạn {{stage}}',
+    hidden: 'CHƯA MỞ',
     legendary: {
-      title: 'Legendary Evolution',
-      prefix: 'You need',
-      suffix: 'to unlock this form!',
+      title: 'Tiến hóa huyền thoại',
+      prefix: 'Bạn cần',
+      suffix: 'để mở khóa dạng này!',
     },
   },
   auth: {
     promo: {
-      title: 'Save your Jello!',
-      desc: 'To evolve to Stage 2, you need to save your progress. <highlight>Sign up now</highlight> to keep your Jello safe forever!',
-      later: 'Maybe Later',
+      title: 'Lưu Jello của bạn!',
+      desc: 'Để tiến hóa lên giai đoạn 2, bạn cần lưu tiến trình. <highlight>Đăng ký ngay</highlight> để giữ Jello của bạn an toàn mãi mãi!',
+      later: 'Để sau',
     },
     login: {
-      title: 'Log In',
-      subtitle: 'Your cute Jello is waiting!',
+      title: 'Đăng nhập',
+      subtitle: 'Jello đáng yêu của bạn đang chờ!',
       email: 'Email',
-      emailPlaceholder: 'Enter your email',
-      password: 'Password',
-      passwordPlaceholder: 'Enter your password',
+      emailPlaceholder: 'Nhập email',
+      password: 'Mật khẩu',
+      passwordPlaceholder: 'Nhập mật khẩu',
       or: 'OR',
-      google: 'Continue with Google',
-      signup: 'Sign up with Email',
-      action: 'Log In', // Explicit action key
+      google: 'Tiếp tục với Google',
+      signup: 'Đăng ký bằng email',
+      action: 'Đăng nhập',
     },
     signup: {
-      title: 'Sign Up',
-      subtitle: 'Save your precious moments with Jello.',
+      title: 'Đăng ký',
+      subtitle: 'Lưu lại những khoảnh khắc quý giá cùng Jello.',
       emailLabel: 'Email',
-      emailPlaceholder: 'Enter your email',
-      passwordLabel: 'Password',
-      passwordPlaceholder: 'Enter password (6+ chars)',
-      confirmPasswordLabel: 'Confirm Password',
-      confirmPasswordPlaceholder: 'Re-enter password',
-      haveAccount: 'Already have an account?',
-      loginLink: 'Log In',
-      passwordMismatch: 'Passwords do not match.',
-      success: 'Sign up successful!',
-      action: 'Sign Up', // Explicit action key
+      emailPlaceholder: 'Nhập email',
+      passwordLabel: 'Mật khẩu',
+      passwordPlaceholder: 'Nhập mật khẩu (từ 6 ký tự)',
+      confirmPasswordLabel: 'Xác nhận mật khẩu',
+      confirmPasswordPlaceholder: 'Nhập lại mật khẩu',
+      haveAccount: 'Đã có tài khoản?',
+      loginLink: 'Đăng nhập',
+      passwordMismatch: 'Mật khẩu không khớp.',
+      success: 'Đăng ký thành công!',
+      action: 'Đăng ký',
     },
     errors: {
-      default: 'Login failed.',
-      invalidCredential: 'Invalid email or password.',
-      tooManyRequests: 'Too many attempts. Please try again later.',
-      googleFailed: 'Google login failed.',
-      registrationFailed: 'Registration failed.',
-      emailInUse: 'Email is already in use.',
-      weakPassword: 'Password should be at least 6 characters.',
-      invalidEmail: 'Invalid email format.',
+      default: 'Đăng nhập thất bại.',
+      invalidCredential: 'Email hoặc mật khẩu không đúng.',
+      tooManyRequests: 'Thử quá nhiều lần. Vui lòng thử lại sau.',
+      googleFailed: 'Đăng nhập Google thất bại.',
+      registrationFailed: 'Đăng ký thất bại.',
+      emailInUse: 'Email đã được sử dụng.',
+      weakPassword: 'Mật khẩu phải có ít nhất 6 ký tự.',
+      invalidEmail: 'Định dạng email không hợp lệ.',
     },
-    logging_in: 'Logging in...',
-    signing_up: 'Signing up...',
+    logging_in: 'Đang đăng nhập...',
+    signing_up: 'Đang đăng ký...',
   },
   play: {
-    title: 'Play & Learn',
-    home: 'Home',
+    title: 'Chơi & Học',
+    home: 'Trang chủ',
     controls: {
-      title: "Let's play!",
-      expand: 'Expand',
-      collapse: 'Collapse',
-      level: 'Level',
+      title: 'Cùng chơi nào!',
+      expand: 'Mở rộng',
+      collapse: 'Thu gọn',
+      level: 'Cấp độ',
     },
     modes: {
       adventure: 'ADVENTURE',
@@ -1011,101 +1011,101 @@ export const enUK = {
     },
     sections: {
       funMath: {
-        title: 'Fun maths',
-        desc: 'Gamified maths missions',
+        title: 'Toán vui',
+        desc: 'Nhiệm vụ toán học dạng game',
       },
       training: {
-        desc: 'Training modules',
+        desc: 'Mô-đun luyện tập',
       },
       genius: {
-        title: 'Genius Calc',
-        desc: "The 'Secret' Calculation of Geniuses",
+        title: 'Tính toán thiên tài',
+        desc: "Bí quyết tính nhanh của thiên tài",
       },
     },
     categories: {
-      brain: 'BRAIN',
-      math: 'MATHS',
-      science: 'SCIENCE',
-      sw: 'SW',
+      brain: 'TƯ DUY',
+      math: 'TOÁN',
+      science: 'KHOA HỌC',
+      sw: 'LẬP TRÌNH',
     },
     game: {
-      playNow: 'Play Now',
-      noGames: 'More games coming soon!',
+      playNow: 'Chơi ngay',
+      noGames: 'Sắp có thêm trò chơi!',
       unlock: {
-        reason: 'Complete mastery of {{game}} to unlock',
+        reason: 'Hoàn thành thuần thục {{game}} để mở khóa',
       },
     },
   },
   games: {
-    'math-fishing-count': fishingCountEn,
-    'math-round-counting': roundCountingEn,
-    'math-number-hive': numberHiveEn,
-    'math-fruit-slice': fruitSliceEn,
-    'math-number-balance': numberBalanceEn,
-    'math-archery': mathArcheryEn,
-    'jello-feeding': jelloFeedingEn,
-    'math-compare-critters': compareCrittersEn,
-    frontAddition: frontAdditionEn,
-    frontSubtraction: frontSubtractionEn,
-    backMultiplication: backMultiplicationEn,
-    'ten-frame-count': tenFrameCountEn,
-    'pinwheel-pop': mathPinwheelEn,
-    'shape-sum-link': shapeSumLinkEn,
-    'fruit-box': fruitBoxEn,
-    'ice-stacking': iceStackingEn,
-    'floor-tiler': floorTilerEn,
-    'frog-jump': frogJumpEn,
-    'chip-cashier': chipCashierEn,
-    'beginner-wizard': beginnerWizardEn,
-    'constellation-finder': constellationFinderEn,
-    'troll-attack': trollAttackEn,
-    'deep-sea-dive': deepSeaDiveEn,
-    'signal-hunter': signalHunterEn,
-    'block-tower': blockTowerEn,
-    sharpshooter: sharpshooterEn,
-    'color-link': colorLinkEn,
-    'pair-up-twin': pairUpTwinEn,
-    'wild-link': wildLinkEn,
-    'pair-up-connect': pairUpConnectEn,
-    'animal-banquet': animalBanquetEn,
-    'math-level2-ufo-invasion': ufoInvasionEn,
-    'maze-escape': mazeEscapeEn,
-    'maze-hunter': mazeHunterEn,
-    'tic-tac-toe': ticTacToeEn,
-    omok: omokEn,
-    cargoTrain: cargoTrainEn,
-    rocketLauncher: rocketLauncherEn,
-    'math-lock-opening': lockOpeningEn,
+    'math-fishing-count': fishingCountVi,
+    'math-round-counting': roundCountingVi,
+    'math-number-hive': numberHiveVi,
+    'math-fruit-slice': fruitSliceVi,
+    'math-number-balance': numberBalanceVi,
+    'math-archery': mathArcheryVi,
+    'jello-feeding': jelloFeedingVi,
+    'math-compare-critters': compareCrittersVi,
+    frontAddition: frontAdditionVi,
+    frontSubtraction: frontSubtractionVi,
+    backMultiplication: backMultiplicationVi,
+    'ten-frame-count': tenFrameCountVi,
+    'pinwheel-pop': mathPinwheelVi,
+    'shape-sum-link': shapeSumLinkVi,
+    'fruit-box': fruitBoxVi,
+    'ice-stacking': iceStackingVi,
+    'floor-tiler': floorTilerVi,
+    'frog-jump': frogJumpVi,
+    'chip-cashier': chipCashierVi,
+    'beginner-wizard': beginnerWizardVi,
+    'constellation-finder': constellationFinderVi,
+    'troll-attack': trollAttackVi,
+    'deep-sea-dive': deepSeaDiveVi,
+    'signal-hunter': signalHunterVi,
+    'block-tower': blockTowerVi,
+    sharpshooter: sharpshooterVi,
+    'color-link': colorLinkVi,
+    'pair-up-twin': pairUpTwinVi,
+    'wild-link': wildLinkVi,
+    'pair-up-connect': pairUpConnectVi,
+    'animal-banquet': animalBanquetVi,
+    'math-level2-ufo-invasion': ufoInvasionVi,
+    'maze-escape': mazeEscapeVi,
+    'maze-hunter': mazeHunterVi,
+    'tic-tac-toe': ticTacToeVi,
+    omok: omokVi,
+    cargoTrain: cargoTrainVi,
+    rocketLauncher: rocketLauncherVi,
+    'math-lock-opening': lockOpeningVi,
     tags: {
-      counting: 'Counting',
-      sequence: 'Sequencing',
-      numberSense: 'Number Sense',
-      addition: 'Addition',
-      subtraction: 'Subtraction',
-      partWhole: 'Number Composition',
-      mixedOps: 'Mixed Operations',
-      speedMath: 'Speed Maths',
-      mentalMath: 'Mental Maths',
-      spatial: 'Spatial Reasoning',
-      observation: 'Observation',
-      categorization: 'Categorisation',
-      workingMemory: 'Working Memory',
-      association: 'Association',
-      concentration: 'Concentration',
-      strategy: 'Strategy',
-      memory: 'Memory',
+      counting: 'Đếm số',
+      sequence: 'Thứ tự',
+      numberSense: 'Cảm nhận số',
+      addition: 'Cộng',
+      subtraction: 'Trừ',
+      partWhole: 'Cấu tạo số',
+      mixedOps: 'Phép tính hỗn hợp',
+      speedMath: 'Toán nhanh',
+      mentalMath: 'Tính nhẩm',
+      spatial: 'Tư duy không gian',
+      observation: 'Quan sát',
+      categorization: 'Phân loại',
+      workingMemory: 'Trí nhớ làm việc',
+      association: 'Liên kết',
+      concentration: 'Tập trung',
+      strategy: 'Chiến lược',
+      memory: 'Ghi nhớ',
       logic: 'Logic',
-      comparison: 'Comparison',
-      multiplication: 'Multiplication',
+      comparison: 'So sánh',
+      multiplication: 'Nhân',
     },
     mission: {
-      challenge: 'Challenge! ({{current}}/{{total}})',
-      challenge10: 'Challenge! ({{current}}/{{total}})',
+      challenge: 'Thử thách! ({{current}}/{{total}})',
+      challenge10: 'Thử thách! ({{current}}/{{total}})',
     },
     medal: {
-      bronze: '🥈 Silver in {{count}} plays!',
-      silver: '🥇 Gold in {{count}} plays!',
-      gold: 'Awesome! Mastered! 🎉',
+      bronze: '🥈 Đạt Bạc sau {{count}} lần chơi!',
+      silver: '🥇 Đạt Vàng sau {{count}} lần chơi!',
+      gold: 'Tuyệt vời! Đã làm chủ! 🎉',
     },
   },
   train: {
@@ -1117,4 +1117,4 @@ export const enUK = {
   },
 } as const;
 
-export type TranslationKeys = typeof enUK;
+export type TranslationKeys = typeof viVN;
