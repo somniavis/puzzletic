@@ -1089,4 +1089,100 @@ export const ja = {
     },
 } as const;
 
+const toddlerToneStemsJa: Record<string, Record<string, string>> = {
+    joy: {
+        affectionate: 'うれしい',
+        playful: 'あそぶ',
+        calm: 'ほっとする',
+        shy: 'てれる',
+        grumpy: 'むすっ',
+        energetic: 'いくよ',
+    },
+    love: {
+        affectionate: 'だいすき',
+        playful: 'ぎゅー',
+        calm: 'あんしん',
+        shy: 'どきどき',
+        grumpy: 'すねる',
+        energetic: 'だいすきー',
+    },
+    playful: {
+        affectionate: 'たのしい',
+        playful: 'わーい',
+        calm: 'ゆっくり',
+        shy: 'えへへ',
+        grumpy: 'やだもん',
+        energetic: 'はやく',
+    },
+    neutral: {
+        affectionate: 'そばにいて',
+        playful: 'なにする',
+        calm: 'のんびり',
+        shy: 'ちょっとこわい',
+        grumpy: 'きぶんじゃない',
+        energetic: 'うごきたい',
+    },
+    sleepy: {
+        affectionate: 'ねむい',
+        playful: 'もうすこし',
+        calm: 'ねるね',
+        shy: 'ふわぁ',
+        grumpy: 'しずかに',
+        energetic: 'でんちない',
+    },
+    sick: {
+        affectionate: 'つらい',
+        playful: 'しんどい',
+        calm: 'やすむ',
+        shy: 'いたい',
+        grumpy: 'やだやだ',
+        energetic: 'ちからでない',
+    },
+    worried: {
+        affectionate: 'しんぱい',
+        playful: 'どうしよう',
+        calm: 'おちつく',
+        shy: 'こわい',
+        grumpy: 'いやだ',
+        energetic: 'たいへん',
+    },
+    angry: {
+        affectionate: 'おこった',
+        playful: 'ぷんぷん',
+        calm: 'やめて',
+        shy: 'むぅ',
+        grumpy: 'やだ',
+        energetic: 'ほんきだよ',
+    },
+};
+
+const toddlerSuffixJa: Record<'l1' | 'l2' | 'l3', string[]> = {
+    l1: ['〜', ' だよ', ' なの'],
+    l2: ['〜〜', ' だよ！', ' なの！'],
+    l3: ['！！！', ' だもん！', ' なんだから！'],
+};
+
+const buildEmotionToddlerJa = (emojiSource: any) => {
+    const result: any = {};
+    for (const [mood, moodValue] of Object.entries(emojiSource || {})) {
+        result[mood] = {};
+        for (const [level, levelValue] of Object.entries(moodValue as Record<string, any>)) {
+            result[mood][level] = {};
+            for (const [tone, emojis] of Object.entries(levelValue as Record<string, string[]>)) {
+                const stem = toddlerToneStemsJa[mood]?.[tone] || 'えへ';
+                const suffixes =
+                    toddlerSuffixJa[level as 'l1' | 'l2' | 'l3'] || toddlerSuffixJa.l1;
+                result[mood][level][tone] = (emojis || []).map(
+                    (emoji: string, idx: number) =>
+                        `${emoji} ${stem}${suffixes[idx % suffixes.length]}`
+                );
+            }
+        }
+    }
+    return result;
+};
+
+// Stage 3 uses emotions.toddler. Add JA toddler lines derived from emoji set.
+(ja as any).emotions.toddler = buildEmotionToddlerJa((ja as any).emotions.emoji);
+
 export default ja;

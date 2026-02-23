@@ -1,6 +1,6 @@
 # Locale Expansion Checkpoints
 
-This document captures the step-by-step checkpoints used while adding `es-ES` so the same flow can be reused for future language expansion (e.g. `pt-PT`).
+This document captures the step-by-step checkpoints used while adding and stabilizing new locales (`es-ES`, `pt-PT`, `vi-VN`, `en-UK`) so the same flow can be reused for future language expansion.
 
 ## Goal
 
@@ -18,6 +18,7 @@ This document captures the step-by-step checkpoints used while adding `es-ES` so
 4. Build validation
 5. Residual English and quality sweep
 6. Device/UX sensitive text verification (short labels, badges, tutorial lines)
+7. Runtime locale-code alias verification (`xx` vs `xx-YY`)
 
 ## Step 0: Pre-check
 
@@ -48,12 +49,31 @@ Update:
   - import new locale
   - add it to `resources`
   - include language detection mapping if needed
+  - add language-code aliases when needed:
+    - e.g. `vi` -> `vi-VN`, `pt` -> `pt-PT`, `es` -> `es-ES`, `en-US` -> `en`
 - `src/components/SettingsMenu/SettingsMenu.tsx`
   - add language option button/label
 
 Checkpoint:
 - Language appears in settings.
 - Language switch works and persists.
+- Locale-code variant still resolves translated strings in runtime overlays/components.
+
+Example alias pattern:
+
+```ts
+const resources = {
+  en: { translation: en },
+  'en-US': { translation: en },
+  'en-UK': { translation: enUK },
+  es: { translation: esES },
+  'es-ES': { translation: esES },
+  pt: { translation: ptPT },
+  'pt-PT': { translation: ptPT },
+  vi: { translation: viVN },
+  'vi-VN': { translation: viVN },
+};
+```
 
 ## Step 3: System Text Translation (High Priority)
 
@@ -93,6 +113,8 @@ Use these checks each batch:
   - `rg -n "�" src/i18n/locales/<lang>.ts src/games/**/locales/<lang>.ts`
 - Find exact-structure drift:
   - compare key structure against `en` when suspicious.
+- Find high-risk hardcoded labels in UI pages/components:
+  - `rg -n "\"[A-Za-z].*\"|'[A-Za-z].*'" src/pages src/components | rg -v "className|style|import|http|\\.css|console|id|type|aria|fa-|<|>|\\btrue\\b|\\bfalse\\b"`
 
 ## Step 6: Build Validation (Required)
 
@@ -116,6 +138,20 @@ Specific hot spots:
 - Emotion/onomatopoeia lines
 - Shop item labels and flavor text
 - Badge/target/timer short UI text
+- Premium lock overlays and locked badges (Play list)
+- Profile/My Jello areas (subscription labels, expiry/cancel prompts)
+
+### Emotion Data Policy (Important)
+
+- Keep mode separation explicit:
+  - `emotions`: growth-stage text output (`emoji + short phrase`)
+  - `emotions.emoji`: emoji-only output
+  - `emotions.toddler`: emoji-only output
+- Do not collapse all emotion modes into emoji-only for mature stages.
+- If rebuilding emotion lines programmatically, ensure:
+  - key structure parity with `en`
+  - natural tone in target language (not literal translation)
+  - no placeholder/key drift
 
 ## Step 8: Known Pitfalls and Preventive Rules
 
@@ -134,6 +170,14 @@ Specific hot spots:
 4. Oversized text in UI
 - Pitfall: long localized text breaks compact UI areas.
 - Rule: keep badges/buttons concise and test visually.
+
+5. Locale code mismatch at runtime
+- Pitfall: UI shows fallback English because app language is `vi`, but resources only define `vi-VN`.
+- Rule: add resource aliases in `i18n/config.ts` for major code variants.
+
+6. Overlay text bypassing locale review
+- Pitfall: lock/premium overlays keep English while main pages are translated.
+- Rule: include overlay/badge components in every locale QA pass.
 
 ## Step 9: Completion Report Format
 
@@ -162,3 +206,5 @@ npm run build
 - Build passes.
 - No encoding artifacts.
 - No obvious residual English in user-facing strings.
+- Overlay/lock/premium badges also localized.
+- Emotion output follows mode policy (`text` vs `emoji-only`) correctly.

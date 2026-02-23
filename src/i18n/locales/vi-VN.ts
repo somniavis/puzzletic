@@ -156,6 +156,79 @@ const levelSuffixVi: Record<'l1' | 'l2' | 'l3', string[]> = {
   l3: ['!!!', ' luôn!', ' thật đấy!'],
 };
 
+const toddlerToneStemsVi: Record<string, Record<string, string>> = {
+  joy: {
+    affectionate: 'vui ghê',
+    playful: 'chơi nè',
+    calm: 'êm quá',
+    shy: 'ngại nè',
+    grumpy: 'hứ',
+    energetic: 'đi thôi',
+  },
+  love: {
+    affectionate: 'thương ghê',
+    playful: 'ôm nè',
+    calm: 'yên tâm nè',
+    shy: 'tim đập nè',
+    grumpy: 'dỗi nè',
+    energetic: 'yêu quá',
+  },
+  playful: {
+    affectionate: 'thích nè',
+    playful: 'vui nè',
+    calm: 'chậm thôi',
+    shy: 'hehe',
+    grumpy: 'đừng chọc',
+    energetic: 'nhanh lên',
+  },
+  neutral: {
+    affectionate: 'ở đây nha',
+    playful: 'làm gì ta',
+    calm: 'từ từ',
+    shy: 'hơi ngại',
+    grumpy: 'hông thích',
+    energetic: 'muốn chạy',
+  },
+  sleepy: {
+    affectionate: 'buồn ngủ',
+    playful: 'chơi tí',
+    calm: 'nghỉ nha',
+    shy: 'ngáp nè',
+    grumpy: 'im im',
+    energetic: 'hết pin',
+  },
+  sick: {
+    affectionate: 'mệt nè',
+    playful: 'khó chịu',
+    calm: 'nghỉ chút',
+    shy: 'đau đau',
+    grumpy: 'ôi đau',
+    energetic: 'yếu rồi',
+  },
+  worried: {
+    affectionate: 'lo quá',
+    playful: 'sao vậy',
+    calm: 'bình tĩnh',
+    shy: 'sợ nè',
+    grumpy: 'căng ghê',
+    energetic: 'nguy rồi',
+  },
+  angry: {
+    affectionate: 'giận nè',
+    playful: 'hông vui',
+    calm: 'dừng nha',
+    shy: 'bực nè',
+    grumpy: 'hừ',
+    energetic: 'tức quá',
+  },
+};
+
+const toddlerSuffixVi: Record<'l1' | 'l2' | 'l3', string[]> = {
+  l1: ['~', ' nha', ' nè'],
+  l2: ['~~', ' á', ' nha'],
+  l3: ['!!!', ' luôn á', ' thiệt đó'],
+};
+
 const buildEmotionTextVi = () => {
   const result: any = {};
   for (const [mood, moodValue] of Object.entries(emotionEmojiVi)) {
@@ -173,6 +246,26 @@ const buildEmotionTextVi = () => {
 };
 
 const emotionTextVi = buildEmotionTextVi();
+
+const buildEmotionToddlerVi = () => {
+  const result: any = {};
+  for (const [mood, moodValue] of Object.entries(emotionEmojiVi)) {
+    result[mood] = {};
+    for (const [level, levelValue] of Object.entries(moodValue)) {
+      result[mood][level] = {};
+      for (const [tone, emojis] of Object.entries(levelValue as Record<string, string[]>)) {
+        const stem = toddlerToneStemsVi[mood]?.[tone] || 'ừm...';
+        const suffixes = toddlerSuffixVi[level as 'l1' | 'l2' | 'l3'] || toddlerSuffixVi.l1;
+        result[mood][level][tone] = emojis.map(
+          (emoji, idx) => `${emoji} ${stem}${suffixes[idx % suffixes.length]}`
+        );
+      }
+    }
+  }
+  return result;
+};
+
+const emotionToddlerVi = buildEmotionToddlerVi();
 
 export const viVN = {
   profile: {
@@ -750,7 +843,7 @@ export const viVN = {
   emotions: {
     ...emotionTextVi,
     emoji: emotionEmojiVi,
-    toddler: emotionEmojiVi,
+    toddler: emotionToddlerVi,
   },
   abandonment: {
     danger: 'Cần được chăm sóc!',

@@ -866,48 +866,7 @@ export const ko = {
                 l3: { affectionate: ['😤', '🙈', '💢'], playful: ['🚂', '🌪️', '😈'], calm: ['😑', '🛑', '🔚'], shy: ['🌊', '😭', '👶'], grumpy: ['🌋', '💨', '😫'], energetic: ['🔥', '🔨', '🤬'] },
             },
         },
-        toddler: {
-            joy: {
-                l1: { affectionate: ['😊 Hehe', '🍼 Yay!', '✨'], playful: ['😆 Yee-haw!', '🎶 La-la!', '😁 Hee!'], calm: ['😌 Hmm~', '🎵 Hum~', '👌 Good!'], shy: ['☺️ Hehe..', '😳 Oh..', '😚 Chu!'], grumpy: ['😒 Hmph.', '😏 Heh.', '🙄 Not bad.'], energetic: ['✨ Wow!', '👍 Ooh!', '😲 Whoa!'] },
-                l2: { affectionate: ['🥰 Happy!', '🌈 Yay!', '🎈 Kya!'], playful: ['🏃 Run!', '⚽️ Play!', '🦖 Rawr!'], calm: ['☕️ Nice.', '🍀 Good.', '🍃 Ahh~'], shy: ['😽 Thanks..', '🌸 Hehe..', '🙈 Shy..'], grumpy: ['😑 Okay.', '😼 Heh.', '😮 Oh.'], energetic: ['🏆 Best!', '💪 Power!', '🚀 Go!'] },
-                l3: { affectionate: ['❤️ Love!', '💖 Yay!!', '🌟 Star!'], playful: ['💡 Aha!', '👑 King!', '😂 Haha!'], calm: ['🙏 Thanks.', '🙇 Bow.', '👏 Clap!'], shy: ['🍅 Blush..', '🎁 Thanks..', '🦄 Dream..'], grumpy: ['🆗 Okay.', '💬 Thanks.', '😤 Hmph!'], energetic: ['🔥 Fire!', '🌍 World!', '📢 Shout!'] },
-            },
-            love: {
-                l1: { affectionate: ['😘 Chu!', '🐣 Cute!', '👋 Pat-pat'], playful: ['🎣 Gotcha!', '💎 Mine!', '👉 Yap!'], calm: ['🌤️ Phew.', '👤 Good.', '🛡️ Safe.'], shy: ['😺 Nuzzle..', '🧣 Warm..', '😊 Hehe..'], grumpy: ['😕 What?', '✋ Move.', '😤 Hmph.'], energetic: ['💘 Heart!', '🤜🤛 Bro!', '👍 Nice!'] },
-                l2: { affectionate: ['🤗 Hug!', '🌞 Warm~', '💋 Smooch!'], playful: ['👐 Tickle!', '🐨 Stuck!', '🏹 Mine!'], calm: ['💎 Jem.', '🌲 Stay.', '🤝 Trust.'], shy: ['☺️ Shy..', '💌 Like..', '💓 Thump..'], grumpy: ['😳 Warm..', '⏱️ Brief.', '😒 Hmm..'], energetic: ['⚡️ Power!', '🤖 Unite!', '♾️ 4ever!'] },
-                l3: { affectionate: ['🏡 4ever!', '👫 Friend!', '💝 Love!'], playful: ['👮 Stop!', '🎖️ Best!', '🫡 Sir!'], calm: ['💐 Thanks.', '🧶 Fate.', '✨ Bless.'], shy: ['🫂 Hug..', '😻 Luv u..', '🍀 Happy..'], grumpy: ['😎 Okay.', '😠 Not like..', '🐕 Stay.'], energetic: ['👯 Combo!', '🚀 Space!', '🎉 Yeah!!'] },
-            },
-            playful: {
-                l1: { affectionate: ['😋 Yum!', '🍓 Berry!', '🍭 Sweet'], playful: ['🐊 Chomp!', '🍔 Nom-nom', '😛 Blep!'], calm: ['🥄 Eat.', '🍵 Sip.', '🥗 Yum.'], shy: ['🐹 Nibble..', '🍪 Yum..', '🐿️ Chew..'], grumpy: ['😐 Okay.', '🦴 Chomp.', '😑 Hmph.'], energetic: ['🍡 Gulp!', '🍚 More!', '🥕 Cronch'] },
-                l2: { affectionate: ['🎡 Fun!', '🤣 Tickle~', '😆 Haha'], playful: ['🔫 Pew-pew!', '⚔️ Attack!', '🛡️ Dodge!'], calm: ['🧐 Hmm.', '🎲 Fun.', '😏 Huhu.'], shy: ['🫣 Peek!', '👉👈 Umm..', '👻 Boo!'], grumpy: ['🛑 Stop.', '😩 Ugh.', '👋 Shoo.'], energetic: ['🐇 Jump!', '🌀 Roll!', '💨 Zoom!'] },
-                l3: { affectionate: ['🎪 Party!', '🎈 Fly!', '😵 Spin!'], playful: ['🎆 Bang!', '🎺 Toot!', '🦸 Super!'], calm: ['🥺 Aww.', '😲 Wow.', '👏 Clap!'], shy: ['🤭 Tee-hee.', '✨ Sparkle..', '🤩 Ooh..'], grumpy: ['🙀 Ack!', '😼 Hmm?', '👀 Oh.'], energetic: ['📈 Up!', '🚄 Go!', '🏎️ Fast!'] },
-            },
-            neutral: {
-                l1: { affectionate: ['🧸 Bored..', '🥺 Play..', '💧 Sob'], playful: ['🤔 Hmm?', '😈 Hehe?', '💬 Bored..'], calm: ['🤫 Shh.', '😶 ...', '🕊️ Peace.'], shy: ['👀 Glance', '😐 ...', '🐜 Umm..'], grumpy: ['😩 Boring.', '🌬️ Sigh..', '😑 Dul.'], energetic: ['🤸 Itch!', '🚪 Go!', '💣 Boom!'] },
-                l2: { affectionate: ['🔭 Look..', '👣 Gone?', '🐕 Wait.'], playful: ['⚡️ Zap!', '👆 Poke.', '📢 Hey!'], calm: ['💭 Think.', '🧘 Zen.', '🍵 Tea.'], shy: ['👉👈 Fidget', '🍃 Alone..', '🔇 Quiet..'], grumpy: ['🌵 Don\'t.', '🛌 Leave.', '😤 Tsh.'], energetic: ['🐜 Itchy!', '💨 Ugh!', '📢 Aah!'] },
-                l3: { affectionate: ['😿 Forgot?', '🍂 Lonely..', '😭 Sob'], playful: ['🤪 Mess!', '😈 Grr!', '🖌️ Prank.'], calm: ['🌑 Lone.', '🤐 Zip.', '😶 Blank.'], shy: ['🤧 Sniff', '😨 Scared..', '🌃 Dark..'], grumpy: ['✋ Away!', '🙉 Loud.', '👎 Bad.'], energetic: ['🌋 Mad!', '🏃 Run!', '😫 Argh!'] },
-            },
-            sleepy: {
-                l1: { affectionate: ['🥱 Yawn..', '🎶 Lullaby', '🧸 Hug zZ'], playful: ['🥴 Play..', '🙅 No sleep', '😪 Nod..'], calm: ['🫢 Yawn.', '🛀 Tired.', '🍵 Rest.'], shy: ['😵 Drowsy..', '🛌 Sleep?', '🤤 Drool..'], grumpy: ['💡 Off.', '🚫 Shh.', '💤 Zzz'], energetic: ['🚲 Awake..', '🔋 zZ', '😵 Faint..'] },
-                l2: { affectionate: ['🌈 Dream..', '🐑 Cozy..', '💤 Zzz..'], playful: ['😴 Snore!', '🤥 Phew..', '💬 Murnble..'], calm: ['🛌 Sleep.', '🌙 Deep.', '🤫 Shh.'], shy: ['🛌 Huddle', '😪 Zzz', '🌛 Night..'], grumpy: ['👿 Don\'t.', '🐕 Grr.', '✋ Away.'], energetic: ['🔌 Charge!', '📴 Off.', '🪫 Low.'] },
-                l3: { affectionate: ['🌠 Night..', '💜 Love..', '😴 zZz'], playful: ['💤 Krr..', '🐴 Prr..', '🛌 Thud!'], calm: ['🌑 ...', '😶 ...', '🔇 ...'], shy: ['👶 Zzz..', '🌙 ...', '🫧 zZ..'], grumpy: ['😑 ...', '💢 Don\'t..', '💤 ...'], energetic: ['🪫 ...', '☠️ Dead.', '😵 ...'] },
-            },
-            sick: {
-                l1: { affectionate: ['🤕 Ouch..', '🩹 Help..', '🤒 Sick..'], playful: ['😖 Ugh!', '🤥 Fine?', '💥 Ouch!'], calm: ['🌡️ Sick.', '💫 Dizzy.', '🛌 Rest.'], shy: ['😣 Groan..', '😢 Hurt..', '🤧 Sniff..'], grumpy: ['🤦 Oh.', '💢 Pain.', '😔 Sad.'], energetic: ['😵 Why?', '📉 Weak..', '🥴 Stumble'] },
-                l2: { affectionate: ['😭 Hurt..', '🆘 Help..', '💦 Sob'], playful: ['🦆 Quack!', '📢 Help!', '🌀 Spin'], calm: ['🏥 Bad.', '🔥 Hot.', '💊 Pill..'], shy: ['😓 Sweat', '😨 Fear..', '🚑 Help..'], grumpy: ['💊 Pill!', '😤 Body..', '😣 Ugh..'], energetic: ['🛌 Can\'t..', '🏳️ Lose..', '📉 Thud.'] },
-                l3: { affectionate: ['😿 Pain..', '👋 Bye..', '🛌 Rest..'], playful: ['😵 Dead.', '🎮 Over.', '❌ ...'], calm: ['📉 Limit.', '🌫️ Blur.', '🏥 ...'], shy: ['🧎 Thud', '😶 ...', '🏥 Save..'], grumpy: ['👿 See ya..', '🤐 ...', '😫 Argh!'], energetic: ['⏹️ ...', '⏸️ Pause.'] },
-            },
-            worried: {
-                l1: { affectionate: ['😟 Okay?', '😥 Worry..', '⚠️ Care'], playful: ['😲 Huh?', '💦 Oh no!', '😳 Eh?'], calm: ['🔍 Check.', '⁉️ Problem.', '🛡️ Safe.'], shy: ['😖 Ugh..', '👣 Fidget..', '😢 Sob..'], grumpy: ['😒 What?', '😠 Bad.', '☁️ Ominous.'], energetic: ['🚨 Alert!', '☢️ Danger!', '🚧 Watch!'] },
-                l2: { affectionate: ['😨 Scared..', '🛡️ Protect..', '🥶 Shake..'], playful: ['🏃 Run!', '📢 Trouble!', '😱 Ack!'], calm: ['✋ Careful.', '⛔️ Danger.', '↩️ Avoid.'], shy: ['🫨 Shake', '📦 Hide..', '🙈 Can\'t look'], grumpy: ['😫 Annoy.', '😤 Move.', '🦁 Grr.'], energetic: ['🫢 Ah!', '🆘 Help!', '🌪️ Crash!'] },
-                l3: { affectionate: ['😭 No go..', '💔 Lonely..', '🧟 Scary..'], playful: ['😭 Waa!', '🚑 Help!', '🤱 Mama!'], calm: ['📉 Bad.', '🧩 Hard.', '❌ No.'], shy: ['🥀 Thud', '💦 Tears', '😱 No way..'], grumpy: ['🚮 Mess!', '😫 Ruin.', '🤬 Argh!'], energetic: ['🤯 What!', '🧱 Crash!', '🆘 Help!!'] },
-            },
-            angry: {
-                l1: { affectionate: ['😤 Hmph!', '😞 Mean!', '😒 Pout'], playful: ['👊 Hah!', '🥊 Pow!', '⚔️ Attack!'], calm: ['😔 Disappoint.', '✋ Stop.', '😐 Unpleasant.'], shy: ['🥺 Sob', '😢 Mean..', '😿 Hate..'], grumpy: ['👉 Go.', '🤫 Shh.', '🌩️ Scold.'], energetic: ['😡 Mad!', '🥋 Fight!', '🦁 Raah!'] },
-                l2: { affectionate: ['😠 Hate!', '🙅 No play!', '🤥 Liar!'], playful: ['💣 Boom!', '🐊 Bite!', '🦖 Rawr!'], calm: ['⚠️ Warn.', '🚫 No.', '🛑 Stop.'], shy: ['😭 Sob', '👋 Go!', '😣 No!'], grumpy: ['👿 Scold?', '🙈 Don\'t look.', '🗯️ No.'], energetic: ['👺 Rage!!', '💢 Angry!', '🥊 Come on!'] },
-                l3: { affectionate: ['😤 Hmph!', '🙈 Hate!', '💢 Hmph!!'], playful: ['🚂 Choo!', '🌪️ Mess!', '😈 Grr!'], calm: ['😑 Over.', '🛑 Stop.', '🔚 End.'], shy: ['🌊 Waa!', '😭 Waa!!', '👶 Waa!'], grumpy: ['🌋 Mad.', '💨 Gone.', '😫 Ugh!'], energetic: ['🔥 Fury!', '🔨 Smash!', '🤬 Rage!'] },
-            },
-        },
+        toddler: {},
     },
     abandonment: {
         danger: '관심이 필요해요!',
@@ -1132,5 +1091,101 @@ export const ko = {
         },
     },
 } as const;
+
+const toddlerToneStemsKo: Record<string, Record<string, string>> = {
+    joy: {
+        affectionate: '좋아',
+        playful: '신나',
+        calm: '편해',
+        shy: '부끄러',
+        grumpy: '흥',
+        energetic: '가자',
+    },
+    love: {
+        affectionate: '좋아해',
+        playful: '안아줘',
+        calm: '안심이야',
+        shy: '두근두근',
+        grumpy: '삐졌어',
+        energetic: '완전 좋아',
+    },
+    playful: {
+        affectionate: '재밌어',
+        playful: '놀자',
+        calm: '천천히',
+        shy: '헤헤',
+        grumpy: '싫어',
+        energetic: '빨리',
+    },
+    neutral: {
+        affectionate: '같이 있어',
+        playful: '뭐하지',
+        calm: '느긋해',
+        shy: '조금 무서워',
+        grumpy: '맘에 안 들어',
+        energetic: '움직이고 싶어',
+    },
+    sleepy: {
+        affectionate: '졸려',
+        playful: '조금만 더',
+        calm: '잘래',
+        shy: '하암',
+        grumpy: '조용히 해',
+        energetic: '배터리 없어',
+    },
+    sick: {
+        affectionate: '아파',
+        playful: '힘들어',
+        calm: '쉴래',
+        shy: '찡긋 아파',
+        grumpy: '아야',
+        energetic: '힘이 없어',
+    },
+    worried: {
+        affectionate: '걱정돼',
+        playful: '어쩌지',
+        calm: '진정해',
+        shy: '무서워',
+        grumpy: '짜증나',
+        energetic: '큰일이야',
+    },
+    angry: {
+        affectionate: '화났어',
+        playful: '삐졌어',
+        calm: '그만해',
+        shy: '으으',
+        grumpy: '싫다',
+        energetic: '진짜 화났어',
+    },
+};
+
+const toddlerSuffixKo: Record<'l1' | 'l2' | 'l3', string[]> = {
+    l1: ['~', '!', '야'],
+    l2: ['~~', '!!', '라구!'],
+    l3: ['!!!', ' 진짜!', ' 거야!'],
+};
+
+const buildEmotionToddlerKo = (emojiSource: any) => {
+    const result: any = {};
+    for (const [mood, moodValue] of Object.entries(emojiSource || {})) {
+        result[mood] = {};
+        for (const [level, levelValue] of Object.entries(moodValue as Record<string, any>)) {
+            result[mood][level] = {};
+            for (const [tone, emojis] of Object.entries(levelValue as Record<string, string[]>)) {
+                const stem = toddlerToneStemsKo[mood]?.[tone] || '응';
+                const suffixes =
+                    toddlerSuffixKo[level as 'l1' | 'l2' | 'l3'] || toddlerSuffixKo.l1;
+                result[mood][level][tone] = (emojis || []).map(
+                    (emoji: string, idx: number) =>
+                        `${emoji} ${stem}${suffixes[idx % suffixes.length]}`
+                );
+            }
+        }
+    }
+    return result;
+};
+
+// Stage 3 uses emotions.toddler. Force Korean toddler lines to avoid English leftovers.
+(ko as any).emotions.toddler = buildEmotionToddlerKo((ko as any).emotions.emoji);
 
 export default ko;

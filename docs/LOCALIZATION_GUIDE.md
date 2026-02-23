@@ -38,6 +38,7 @@ src/
 - **Game Scope**: Each game manages its own translations in its folder. These are **imported and merged** into the global locale file to ensure strict type safety and centralized management.
 - **Persistence**: Language preference is saved in `localStorage` ('language') to persist across sessions.
 - **Detection**: The app automatically detects the browser language if no user preference is saved.
+- **Alias Safety**: Runtime language code may differ from selected locale tag (e.g. `vi` vs `vi-VN`), so `config.ts` should include alias resources where needed.
 
 ---
 
@@ -85,6 +86,14 @@ src/
     ```typescript
     const browserLanguage = navigator.language.startsWith('ja') ? 'ja' : ...
     ```
+
+4.  **Add Alias Codes (Recommended)**:
+    - Register common short/full-code pairs in `resources`:
+      - `vi` + `vi-VN`
+      - `pt` + `pt-PT`
+      - `es` + `es-ES`
+      - `en-US` + `en`
+    - This prevents fallback-English leaks in overlays/badges.
 
 4.  **Update Settings Menu**:
     - Open `src/components/SettingsMenu/SettingsMenu.tsx`.
@@ -160,6 +169,12 @@ To maintain a consistent user experience, please adhere to the following transla
 - **Style**:
     - Concise labels.
     - Enthusiastic punctuation (!).
+
+### Emotion Output Modes (Cross-locale Rule)
+- `emotions`: growth-stage lines should be `emoji + short text`.
+- `emotions.emoji`: emoji-only.
+- `emotions.toddler`: emoji-only.
+- Keep this policy consistent across all locales.
 
 ---
 

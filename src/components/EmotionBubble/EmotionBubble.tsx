@@ -46,34 +46,35 @@ export const EmotionBubble: React.FC<EmotionBubbleProps> = ({
     let msg: string | null = null;
 
     if (personality) {
-      // New: Personality-based message with stage progression
-      let rootKey = 'emotions';
-      // Stage 1: Emoji only
-      if (stage === 1) rootKey = 'emotions.emoji';
-      // Stage 2-3: Toddler speech (Babbling)
-      else if (stage && stage <= 3) rootKey = 'emotions.toddler';
-      // Stage 4-5: Standard speech (Default)
+      // Stage root fallback chain:
+      // 1-2: emoji
+      // 3: toddler -> emoji -> default
+      // 4-5: default
+      const rootKeys =
+        stage && stage <= 2
+          ? ['emotions.emoji']
+          : stage === 3
+            ? ['emotions.toddler', 'emotions.emoji', 'emotions']
+            : ['emotions'];
 
-      const key = `${rootKey}.${category}.l${level}.${personality}`;
-      const translated = t(key, { returnObjects: true }) as string | string[];
+      for (const rootKey of rootKeys) {
+        const key = `${rootKey}.${category}.l${level}.${personality}`;
+        const translated = t(key, { returnObjects: true }) as string | string[];
 
-      if (Array.isArray(translated) && translated.length > 0) {
-        msg = translated[Math.floor(Math.random() * translated.length)];
-      } else if (typeof translated === 'string' && !translated.startsWith('emotions.')) {
-        msg = translated; // Single string value
+        if (Array.isArray(translated) && translated.length > 0) {
+          msg = translated[Math.floor(Math.random() * translated.length)];
+          break;
+        }
+        if (typeof translated === 'string' && !translated.startsWith('emotions.')) {
+          msg = translated;
+          break;
+        }
       }
     }
 
-    // Fallback: Legacy message key
-    // For Stage 1 (Emoji), we don't want fallback text unless it's emoji-compatible or handled elsewhere
-    // But currently legacy messages are strings. For Stage 1 we might want to suppress legacy fallback or ensure it's emoji.
-    // However, the prompt says "Stage 1... using only emojis". 
-    // If we rely on translation files, we should be good. 
-    // If msg is null (translation missing), it falls back here.
-    if (!msg && expr && (!stage || stage > 1)) {
-      // Only use legacy fallback for stage > 1 to avoid mixed text for infants
-      // Or we can just let it be if we trust our translations cover everything.
-      // Let's keep it safe: if stage is 1, don't use legacy fallback which might be text.
+    // Legacy fallback:
+    // suppress text fallback for stage 1-2 (emoji stage) so non-emoji text does not leak.
+    if (!msg && expr && (!stage || stage >= 3)) {
       msg = t(expr.messageKey);
     }
 
