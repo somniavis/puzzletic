@@ -53,7 +53,7 @@ const PairUpTwin: React.FC = () => {
             color: 'blue' as const,
             onClick: () => engine.activatePowerUp('timeFreeze'),
             status: engine.isTimeFrozen ? 'active' : 'normal',
-            title: 'Time Freeze',
+            title: t('games.pair-up-twin.powerups.timeFreeze'),
             disabledConfig: engine.isTimeFrozen || engine.powerUps.timeFreeze <= 0
         },
         {
@@ -62,7 +62,7 @@ const PairUpTwin: React.FC = () => {
             color: 'red' as const,
             onClick: () => engine.activatePowerUp('extraLife'),
             status: engine.lives >= 3 ? 'maxed' : 'normal',
-            title: 'Extra Life',
+            title: t('games.pair-up-twin.powerups.extraLife'),
             disabledConfig: engine.lives >= 3 || engine.powerUps.extraLife <= 0
         },
         {
@@ -71,10 +71,10 @@ const PairUpTwin: React.FC = () => {
             color: 'yellow' as const,
             onClick: () => engine.activatePowerUp('doubleScore'),
             status: engine.isDoubleScore ? 'active' : 'normal',
-            title: 'Double Score',
+            title: t('games.pair-up-twin.powerups.doubleScore'),
             disabledConfig: engine.isDoubleScore || engine.powerUps.doubleScore <= 0
         }
-    ], [engine.powerUps, engine.isTimeFrozen, engine.isDoubleScore, engine.activatePowerUp, engine.lives]);
+    ], [engine.powerUps, engine.isTimeFrozen, engine.isDoubleScore, engine.activatePowerUp, engine.lives, t]);
 
     // --- Game Logic ---
     const logic = usePairUpLogic(engine, 'twin');

@@ -16,6 +16,11 @@ export default {
         subtitle: '3桁 + 3桁',
     },
     description: '左から数字を足してみましょう！より速く計算できます。',
+    powerups: {
+        timeFreeze: '時間停止',
+        extraLife: 'ライフ追加',
+        doubleScore: 'スコア2倍',
+    },
     howToPlay: {
         title: '遊び方',
         step1: {

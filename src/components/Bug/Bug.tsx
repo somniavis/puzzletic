@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { Bug as BugType } from '../../types/nurturing';
 import './Bug.css';
 
@@ -8,6 +9,7 @@ interface BugProps {
 }
 
 export const Bug: React.FC<BugProps> = ({ bug, onClick }) => {
+  const { t } = useTranslation();
   const [isBeingSwatted, setIsBeingSwatted] = useState(false);
 
   const getBugEmoji = (type: BugType['type']): string => {
@@ -63,7 +65,7 @@ export const Bug: React.FC<BugProps> = ({ bug, onClick }) => {
           bottom: `${bug.y}%`,
         }}
         onClick={handleClick}
-        title="클릭해서 잡기"
+        title={t('nurturingPanel.interactions.catchBug')}
       >
         <span
           className={`bug-emoji bug-${bug.type}`}

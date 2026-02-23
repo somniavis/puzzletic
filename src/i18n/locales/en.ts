@@ -15,6 +15,7 @@ import mathPinwheelEn from '../../games/math/adventure/level2/PinwheelPop/locale
 import compareCrittersEn from '../../games/math/adventure/level1/CompareCritters/locales/en';
 import deepSeaDiveEn from '../../games/math/adventure/level2/DeepSeaDive/locales/en';
 import signalHunterEn from '../../games/brain/level2/SignalHunter/locales/en';
+import lockOpeningEn from '../../games/math/adventure/level2/LockOpening/locales/en';
 import colorLinkEn from '../../games/brain/level1/ColorLink/locales/en';
 import pairUpTwinEn from '../../games/brain/level1/PairUpTwin/locales/en';
 import wildLinkEn from '../../games/brain/level2/WildLink/locales/en';
@@ -278,6 +279,7 @@ export const en = {
     difficulty: 'Difficulty',
     time: 'Time',
     accuracy: 'Accuracy',
+    stageClear: 'Stage Clear!',
     gameOver: 'Game Over!',
     finalScore: 'Final Score',
     bestScore: 'Best Score',
@@ -289,6 +291,7 @@ export const en = {
     results: 'Final Results',
     earnedXp: 'XP',
     earnedGro: 'Gro',
+    earnedStar: 'Star',
     yes: 'Yes',
     no: 'No',
     goHome: 'Go Home',
@@ -437,6 +440,22 @@ export const en = {
       pill: 'Pill',
       syringe: 'Vaccine',
     },
+  },
+  nurturingPanel: {
+    stats: {
+      fullness: 'Fullness',
+      health: 'Health',
+      happiness: 'Happiness',
+    },
+    alerts: {
+      hungry: '🍖 I am hungry! Please feed me',
+      sick: '💊 I feel sick! I need medicine',
+    },
+    interactions: {
+      catchBug: 'Click to catch',
+      cleanPoop: 'Click to clean',
+    },
+    studyCount: 'Study {{count}} times',
   },
   shop: {
     menu: {
@@ -1053,28 +1072,7 @@ export const en = {
     omok: omokEn,
     cargoTrain: cargoTrainEn,
     rocketLauncher: rocketLauncherEn,
-    'math-lock-opening': {
-      title: 'Lock Opening',
-      subtitle: 'Find the passcode!',
-      description: 'Choose two numbers to make the target number.',
-      ui: {
-        pickTwo: 'Pick two numbers'
-      },
-      howToPlay: {
-        step1: {
-          title: 'Check +/- Target',
-          description: 'Check the target number!'
-        },
-        step2: {
-          title: 'Pick Two Numbers',
-          description: 'Find the two passcode numbers!'
-        },
-        step3: {
-          title: 'Unlock!',
-          description: 'Success! The lock is open!'
-        }
-      }
-    },
+    'math-lock-opening': lockOpeningEn,
     tags: {
       counting: 'Counting',
       sequence: 'Sequencing',

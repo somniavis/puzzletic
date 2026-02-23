@@ -17,6 +17,11 @@ export default {
         desc: '크로스 곱셈법으로 풀어보세요.'
     },
     description: '뒤에서부터 차근차근 곱해요! 암산 천재가 되는 지름길!',
+    powerups: {
+        timeFreeze: '시간 정지',
+        extraLife: '추가 생명',
+        doubleScore: '점수 2배',
+    },
     howToPlay: {
         step1: { title: '일의 자리' },
         step2: { title: '십의 자리' },

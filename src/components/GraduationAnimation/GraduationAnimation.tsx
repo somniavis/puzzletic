@@ -37,7 +37,7 @@ export const GraduationAnimation: React.FC<GraduationAnimationProps> = ({
     return (
         <div className="graduation-overlay" style={{ opacity }}>
             <div className="graduation-content">
-                <div className="graduation-title">{t('graduation.title', 'Goodbye, Jello!')}</div>
+                <div className="graduation-title">{t('graduation.title')}</div>
 
                 <div className="graduation-avatar-container">
                     <div className="graduation-spotlight" />
@@ -55,11 +55,11 @@ export const GraduationAnimation: React.FC<GraduationAnimationProps> = ({
                 </div>
 
                 <div className="graduation-message">
-                    {t('graduation.message', 'Your Jello has grown up and is ready to see the world!')}
+                    {t('graduation.message')}
                 </div>
 
                 <button className="graduation-button" onClick={onComplete}>
-                    {t('graduation.action', 'See you again!')}
+                    {t('graduation.action')}
                 </button>
             </div>
         </div>

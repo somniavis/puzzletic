@@ -19,5 +19,10 @@ export default {
     ui: {
         tapUfo: "Tap the UFO",
         lockedOn: "LOCKED ON"
+    },
+    powerups: {
+        timeFreeze: "Time Freeze",
+        extraLife: "Extra Life",
+        doubleScore: "Double Score"
     }
 };

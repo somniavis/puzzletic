@@ -17,6 +17,11 @@ export default {
         desc: 'Solve using the cross-link method.'
     },
     description: 'Calculate from the back using partial products!',
+    powerups: {
+        timeFreeze: 'Time Freeze',
+        extraLife: 'Extra Life',
+        doubleScore: 'Double Score',
+    },
     howToPlay: {
         step1: { title: 'Units' },
         step2: { title: 'Tens' },

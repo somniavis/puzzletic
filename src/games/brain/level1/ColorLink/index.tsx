@@ -95,7 +95,7 @@ export default function ColorLink({ onExit }: ColorLinkProps) {
             color: 'blue' as const,
             onClick: () => logic.activatePowerUp('timeFreeze'),
             status: logic.isTimeFrozen ? 'active' : 'normal',
-            title: 'Time Freeze',
+            title: t('games.color-link.powerups.timeFreeze'),
             disabledConfig: logic.isTimeFrozen || logic.powerUps.timeFreeze <= 0
         },
         {
@@ -104,7 +104,7 @@ export default function ColorLink({ onExit }: ColorLinkProps) {
             color: 'red' as const,
             onClick: () => logic.activatePowerUp('extraLife'),
             status: engine.lives >= 3 ? 'maxed' : 'normal',
-            title: 'Extra Life',
+            title: t('games.color-link.powerups.extraLife'),
             disabledConfig: engine.lives >= 3 || logic.powerUps.extraLife <= 0
         },
         {
@@ -113,10 +113,10 @@ export default function ColorLink({ onExit }: ColorLinkProps) {
             color: 'yellow' as const,
             onClick: () => logic.activatePowerUp('doubleScore'),
             status: logic.isDoubleScore ? 'active' : 'normal',
-            title: 'Double Score',
+            title: t('games.color-link.powerups.doubleScore'),
             disabledConfig: logic.isDoubleScore || logic.powerUps.doubleScore <= 0
         }
-    ], [logic.powerUps, logic.isTimeFrozen, logic.isDoubleScore, logic.activatePowerUp, engine.lives]);
+    ], [logic.powerUps, logic.isTimeFrozen, logic.isDoubleScore, logic.activatePowerUp, engine.lives, t]);
 
     const handlePointerMove = useCallback((e: React.PointerEvent) => {
         // Get element under the pointer (works for both mouse and touch)

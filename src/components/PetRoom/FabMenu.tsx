@@ -36,7 +36,7 @@ export const FabMenu: React.FC<FabMenuProps> = React.memo(({
                     setIsFabOpen(!isFabOpen);
                 }}
                 disabled={showGiftBox}
-                title={isFabOpen ? t('common.close', 'Close') : t('common.menu', 'Menu')}
+                title={isFabOpen ? t('common.close') : t('common.menu')}
             >
                 <span
                     className="action-icon"
@@ -58,7 +58,7 @@ export const FabMenu: React.FC<FabMenuProps> = React.memo(({
                         className="fab-menu-item"
                         onClick={toggleShopMenu}
                         disabled={isActionInProgress || showGiftBox}
-                        title={t('shop.menu.title', 'Shop')}
+                        title={t('shop.menu.title')}
                     >
                         <span className="action-icon">🛖</span>
                     </button>
@@ -68,7 +68,7 @@ export const FabMenu: React.FC<FabMenuProps> = React.memo(({
                         className="fab-menu-item"
                         onClick={handleCameraClick}
                         disabled={isActionInProgress || showGiftBox}
-                        title={t('actions.camera', 'Camera')}
+                        title={t('actions.camera')}
                     >
                         <span className="action-icon">📷</span>
                     </button>
@@ -83,7 +83,7 @@ export const FabMenu: React.FC<FabMenuProps> = React.memo(({
                                 onPremiumClick();
                             }}
                             disabled={isActionInProgress}
-                            title={t('profile.upgradePrompt', 'Upgrade to Premium')}
+                            title={t('profile.upgradePrompt')}
                         >
                             <span className="action-icon">🎁</span>
                             <span className="premium-label">{t('common.premium')}</span>
@@ -94,4 +94,3 @@ export const FabMenu: React.FC<FabMenuProps> = React.memo(({
         </div>
     );
 });
-

@@ -260,7 +260,7 @@ export const FrogJump: React.FC<FrogJumpProps> = ({ onExit }) => {
             count: engine.powerUps.timeFreeze,
             color: 'blue' as const,
             icon: '❄️',
-            title: 'Freeze',
+            title: t('games.frog-jump.powerups.timeFreeze'),
             onClick: () => engine.activatePowerUp('timeFreeze'),
             disabledConfig: engine.isTimeFrozen,
             status: engine.isTimeFrozen ? 'active' as const : 'normal' as const
@@ -269,7 +269,7 @@ export const FrogJump: React.FC<FrogJumpProps> = ({ onExit }) => {
             count: engine.powerUps.extraLife,
             color: 'red' as const,
             icon: '❤️',
-            title: 'Life',
+            title: t('games.frog-jump.powerups.extraLife'),
             onClick: () => engine.activatePowerUp('extraLife'),
             disabledConfig: engine.lives >= 3,
             status: engine.lives >= 3 ? 'maxed' as const : 'normal' as const
@@ -278,12 +278,12 @@ export const FrogJump: React.FC<FrogJumpProps> = ({ onExit }) => {
             count: engine.powerUps.doubleScore,
             color: 'yellow' as const,
             icon: '⚡',
-            title: 'Double',
+            title: t('games.frog-jump.powerups.doubleScore'),
             onClick: () => engine.activatePowerUp('doubleScore'),
             disabledConfig: engine.isDoubleScore,
             status: engine.isDoubleScore ? 'active' as const : 'normal' as const
         }
-    ]), [engine]);
+    ]), [engine, t]);
 
     const instructions = React.useMemo(() => ([
         {

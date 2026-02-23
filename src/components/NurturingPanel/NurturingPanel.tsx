@@ -4,28 +4,30 @@
  */
 
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNurturing } from '../../contexts/NurturingContext';
 import NurturingStat from '../NurturingStat/NurturingStat';
 import './NurturingPanel.css';
 
 export const NurturingPanel: React.FC = () => {
+  const { t } = useTranslation();
   const { stats, condition, totalCurrencyEarned, studyCount } = useNurturing();
 
   return (
     <div className="nurturing-panel">
       <div className="nurturing-stats-grid">
         <NurturingStat
-          label="포만감"
+          label={t('nurturingPanel.stats.fullness')}
           value={stats.fullness}
           icon="🍖"
         />
         <NurturingStat
-          label="건강"
+          label={t('nurturingPanel.stats.health')}
           value={stats.health}
           icon="❤️"
         />
         <NurturingStat
-          label="행복도"
+          label={t('nurturingPanel.stats.happiness')}
           value={stats.happiness}
           icon="😊"
         />
@@ -35,10 +37,10 @@ export const NurturingPanel: React.FC = () => {
       {condition.needsAttention && (
         <div className="condition-alerts">
           {condition.isHungry && (
-            <div className="alert alert-hungry">🍖 배고파요! 음식을 주세요</div>
+            <div className="alert alert-hungry">{t('nurturingPanel.alerts.hungry')}</div>
           )}
           {condition.isSick && (
-            <div className="alert alert-sick">💊 아파요! 약이 필요해요</div>
+            <div className="alert alert-sick">{t('nurturingPanel.alerts.sick')}</div>
           )}
         </div>
       )}
@@ -51,7 +53,7 @@ export const NurturingPanel: React.FC = () => {
         </div>
         <div className="study-count">
           <span className="study-icon">📚</span>
-          <span className="study-value">학습 {studyCount}회</span>
+          <span className="study-value">{t('nurturingPanel.studyCount', { count: studyCount })}</span>
         </div>
       </div>
     </div>

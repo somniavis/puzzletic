@@ -26,10 +26,10 @@ export const SharePage: React.FC = () => {
             if (decoded) {
                 setSharedData(decoded);
             } else {
-                setError(t('share.error.invalid', 'Invalid share link'));
+                setError(t('share.error.invalid'));
             }
         } else {
-            setError(t('share.error.missing', 'No data found'));
+            setError(t('share.error.missing'));
         }
     }, [searchParams, t]);
 
@@ -38,7 +38,7 @@ export const SharePage: React.FC = () => {
             <div className="share-error-container">
                 <h2>😢 {error}</h2>
                 <button className="action-btn" onClick={() => navigate('/')}>
-                    {t('common.goHome', 'Go Home')}
+                    {t('common.goHome')}
                 </button>
             </div>
         );
@@ -59,9 +59,9 @@ export const SharePage: React.FC = () => {
         console.error('Failed to reconstruct character:', err);
         return (
             <div className="share-error-container">
-                <h2>😢 {t('share.error.invalid', 'Invalid share data')}</h2>
+                <h2>😢 {t('share.error.invalid')}</h2>
                 <button className="action-btn" onClick={() => navigate('/')}>
-                    {t('common.goHome', 'Go Home')}
+                    {t('common.goHome')}
                 </button>
             </div>
         );
@@ -109,15 +109,15 @@ export const SharePage: React.FC = () => {
                 {/* Text Group - Vertically Centered */}
                 <div className="share-text-group">
                     <p className="share-title">
-                        {t('share.invite.title', 'This is the Jello I\'m raising! 🥰')}
+                        {t('share.invite.title')}
                     </p>
                     <p className="share-desc">
-                        {t('share.invite.desc', 'Want to raise one together?')}
+                        {t('share.invite.desc')}
                     </p>
                 </div>
 
                 <button className="share-action-btn">
-                    {t('share.cta', 'Play Now!')}
+                    {t('share.cta')}
                 </button>
             </div>
         </div>

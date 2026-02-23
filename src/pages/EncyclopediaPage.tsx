@@ -60,7 +60,6 @@ export const EncyclopediaPage: React.FC = () => {
 
     const modalCharacter = getModalCharacter();
     const modalSpecies = modalCharacter ? CHARACTER_SPECIES[selectedJello!.speciesId] : null;
-    const evolutionData = modalSpecies?.evolutions.find(e => e.stage === selectedJello?.stage);
 
     return (
         <div className="encyclopedia-page">
@@ -93,7 +92,7 @@ export const EncyclopediaPage: React.FC = () => {
                                             color: theme.text
                                         }}
                                     >
-                                        {t(`character.species.${species.id}`, { defaultValue: species.name }).replace(' ', '\n')}
+                                        {t(`character.species.${species.id}`).replace(' ', '\n')}
                                     </span>
                                 </div>
 
@@ -154,7 +153,7 @@ export const EncyclopediaPage: React.FC = () => {
 
                                 <div className="modal-jello-info">
                                     <h2 className="modal-species-name">
-                                        {t(`character.evolutions.${selectedJello.speciesId}_stage${selectedJello.stage}_name`, { defaultValue: evolutionData?.name })}
+                                        {t(`character.evolutions.${selectedJello.speciesId}_stage${selectedJello.stage}_name`)}
                                     </h2>
                                     <div className="modal-stage-badge">
                                         {modalSpecies?.tags?.flatMap(tagKey =>
@@ -166,7 +165,7 @@ export const EncyclopediaPage: React.FC = () => {
                                         ))}
                                     </div>
                                     <p className="modal-description">
-                                        {t(`character.evolutions.${selectedJello.speciesId}_stage${selectedJello.stage}_desc`, { defaultValue: evolutionData?.description })}
+                                        {t(`character.evolutions.${selectedJello.speciesId}_stage${selectedJello.stage}_desc`)}
                                     </p>
                                 </div>
                             </div>

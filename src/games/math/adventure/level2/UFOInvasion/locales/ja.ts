@@ -10,5 +10,10 @@ export default {
     ui: {
         tapUfo: 'UFOをタップしてね',
         lockedOn: 'ロックオン'
+    },
+    powerups: {
+        timeFreeze: 'じかんストップ',
+        extraLife: 'ライフかいふく',
+        doubleScore: 'スコア2ばい'
     }
 };

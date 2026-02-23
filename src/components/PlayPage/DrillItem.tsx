@@ -99,7 +99,7 @@ export const DrillItem: React.FC<DrillItemProps> = ({
                     >
                         {(() => {
                             if (clearCount === 0) return game.subtitleKey ? t(game.subtitleKey, game.subtitle || 'Start Drill') : (game.subtitle || 'Start Drill');
-                            if (!isMastered) return t('games.mission.challenge10', { current: clearCount, total: GENIUS_UNLOCK_THRESHOLD, defaultValue: `Challenge! (${clearCount}/${GENIUS_UNLOCK_THRESHOLD})` });
+                            if (!isMastered) return t('games.mission.challenge10', { current: clearCount, total: GENIUS_UNLOCK_THRESHOLD });
                             return game.subtitleKey ? t(game.subtitleKey, game.subtitle || 'Mastered') : (game.subtitle || 'Mastered');
                         })()}
                     </span>

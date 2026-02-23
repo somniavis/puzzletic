@@ -9,7 +9,7 @@ const LoadingSpinner = () => {
     return (
         <div className="loading-spinner-container" style={{ margin: '2rem 0' }}>
             <div className="loading-spinner">🐾</div>
-            <div className="loading-text">{t('camera.capturing', 'Capturing...')}</div>
+            <div className="loading-text">{t('camera.capturing')}</div>
         </div>
     );
 };
@@ -62,13 +62,13 @@ export const CameraModal: React.FC<CameraModalProps> = ({
             try {
                 const successful = document.execCommand('copy');
                 if (successful) {
-                    setCopyFeedback(t('share.linkCopied', 'Link Copied!'));
+                    setCopyFeedback(t('share.linkCopied'));
                 } else {
                     throw new Error('Fallback copy failed');
                 }
             } catch (err) {
                 console.error('Fallback: Oops, unable to copy', err);
-                setCopyFeedback(t('share.copyFailed', 'Failed to Copy'));
+                setCopyFeedback(t('share.copyFailed'));
             }
 
             document.body.removeChild(textArea);
@@ -78,7 +78,7 @@ export const CameraModal: React.FC<CameraModalProps> = ({
         if (navigator.clipboard && navigator.clipboard.writeText) {
             try {
                 await navigator.clipboard.writeText(shareUrl);
-                setCopyFeedback(t('share.linkCopied', 'Link Copied!'));
+                setCopyFeedback(t('share.linkCopied'));
                 setTimeout(() => setCopyFeedback(null), 2000);
             } catch (err) {
                 console.warn('Clipboard API failed, trying fallback:', err);
@@ -117,7 +117,7 @@ export const CameraModal: React.FC<CameraModalProps> = ({
                 onClick={(e) => e.stopPropagation()}
             >
                 <div className="food-menu-header">
-                    <h3>{t('camera.title', 'Snapshot!')}</h3>
+                    <h3>{t('camera.title')}</h3>
                     <button
                         className="close-btn"
                         onClick={handleClose}
@@ -188,7 +188,7 @@ export const CameraModal: React.FC<CameraModalProps> = ({
                             onClick={handleDownload}
                         >
                             <span className="action-icon" style={{ fontSize: '1.4rem', filter: 'none' }}>💾</span>
-                            <span className="action-label" style={{ color: '#fff', fontSize: '0.9rem', fontWeight: 'bold' }}>{t('camera.save', 'Save')}</span>
+                            <span className="action-label" style={{ color: '#fff', fontSize: '0.9rem', fontWeight: 'bold' }}>{t('camera.save')}</span>
                         </button>
 
                         {/* Copy Link Button */}
@@ -213,7 +213,7 @@ export const CameraModal: React.FC<CameraModalProps> = ({
                         >
                             <span className="action-icon" style={{ fontSize: '1.4rem', filter: 'none' }}>🔗</span>
                             <span className="action-label" style={{ color: copyFeedback ? '#333' : '#fff', fontSize: '0.9rem', fontWeight: 'bold' }}>
-                                {copyFeedback || t('camera.copyLink', 'Copy Link')}
+                                {copyFeedback || t('camera.copyLink')}
                             </span>
                         </button>
                     </div>

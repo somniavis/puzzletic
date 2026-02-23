@@ -282,9 +282,9 @@ export const FrontAdditionGame: React.FC<{ onExit: () => void, gameId?: string }
                 { icon: '✅', title: t('games.frontAddition.howToPlay.step3.title'), description: t('games.frontAddition.howToPlay.step3.description') }
             ]}
             powerUps={[
-                { count: engine.powerUps.timeFreeze, color: 'blue', icon: '❄️', title: 'Freeze', onClick: () => engine.activatePowerUp('timeFreeze'), disabledConfig: engine.isTimeFrozen, status: engine.isTimeFrozen ? 'active' : 'normal' },
-                { count: engine.powerUps.extraLife, color: 'red', icon: '❤️', title: 'Life', onClick: () => engine.activatePowerUp('extraLife'), disabledConfig: engine.lives >= 3, status: engine.lives >= 3 ? 'maxed' : 'normal' },
-                { count: engine.powerUps.doubleScore, color: 'yellow', icon: '⚡', title: 'Double', onClick: () => engine.activatePowerUp('doubleScore'), disabledConfig: engine.isDoubleScore, status: engine.isDoubleScore ? 'active' : 'normal' }
+                { count: engine.powerUps.timeFreeze, color: 'blue', icon: '❄️', title: t('games.frontAddition.powerups.timeFreeze'), onClick: () => engine.activatePowerUp('timeFreeze'), disabledConfig: engine.isTimeFrozen, status: engine.isTimeFrozen ? 'active' : 'normal' },
+                { count: engine.powerUps.extraLife, color: 'red', icon: '❤️', title: t('games.frontAddition.powerups.extraLife'), onClick: () => engine.activatePowerUp('extraLife'), disabledConfig: engine.lives >= 3, status: engine.lives >= 3 ? 'maxed' : 'normal' },
+                { count: engine.powerUps.doubleScore, color: 'yellow', icon: '⚡', title: t('games.frontAddition.powerups.doubleScore'), onClick: () => engine.activatePowerUp('doubleScore'), disabledConfig: engine.isDoubleScore, status: engine.isDoubleScore ? 'active' : 'normal' }
             ]}
         >
             <div style={{

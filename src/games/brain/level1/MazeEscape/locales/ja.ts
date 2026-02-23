@@ -5,6 +5,11 @@ export default {
     ui: {
         guideHint: 'ジェロをテントへ！'
     },
+    powerups: {
+        timeFreeze: '時間停止',
+        extraLife: 'ライフ追加',
+        doubleScore: 'スコア2倍',
+    },
     howToPlay: {
         step1: { title: 'キャンプ発見', description: 'ジェロの家を探せ！' },
         step2: { title: '道を描こう', description: 'テントまでつなごう' },

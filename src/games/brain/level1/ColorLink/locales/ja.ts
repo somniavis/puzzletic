@@ -5,6 +5,11 @@ export default {
     ui: {
         connectHint: '同じ色の点をつないでね！'
     },
+    powerups: {
+        timeFreeze: '時間停止',
+        extraLife: 'ライフ追加',
+        doubleScore: 'スコア2倍',
+    },
     howToPlay: {
         step1: { title: '色合わせ', description: '同じ色を見つけて！' },
         step2: { title: '線を引こう', description: '同じ色をつなごう。' },

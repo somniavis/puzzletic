@@ -8,6 +8,11 @@ export default {
         removeHint: '🕳️ vanish all',
         tapSpellHint: 'Tap the spell!'
     },
+    powerups: {
+        timeFreeze: 'Time Freeze',
+        extraLife: 'Extra Life',
+        doubleScore: 'Double Score',
+    },
     howToPlay: {
         step1: {
             title: 'Two spells',

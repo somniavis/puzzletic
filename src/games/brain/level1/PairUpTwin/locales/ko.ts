@@ -5,6 +5,11 @@ export default {
     ui: {
         tapMatchHint: '같은 그림 카드를 탭해요!'
     },
+    powerups: {
+        timeFreeze: '시간 정지',
+        extraLife: '추가 생명',
+        doubleScore: '점수 2배',
+    },
     howToPlay: {
         step1: { title: '기억하기', description: '카드를 잘 봐요!' },
         step2: { title: '두 장 뒤집기', description: '똑같은 그림일까?' },

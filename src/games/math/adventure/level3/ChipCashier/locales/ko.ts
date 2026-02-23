@@ -2,6 +2,11 @@ const ko = {
     title: '코인 캐셔',
     subtitle: '5단 · 10단 마스터',
     description: '칩 묶음을 골라 목표 수를 맞추세요.',
+    powerups: {
+        timeFreeze: '시간 멈춤',
+        extraLife: '생명 추가',
+        doubleScore: '점수 2배'
+    },
     ui: {
         customerRequest: '총 {{target}}코인 주세요!',
         coinLabel: '코인',

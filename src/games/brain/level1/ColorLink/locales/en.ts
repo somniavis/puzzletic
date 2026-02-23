@@ -5,6 +5,11 @@ export default {
     ui: {
         connectHint: 'Connect matching color dots!'
     },
+    powerups: {
+        timeFreeze: 'Time Freeze',
+        extraLife: 'Extra Life',
+        doubleScore: 'Double Score',
+    },
     howToPlay: {
         step1: { title: 'Match Colors', description: 'Link each color pair' },
         step2: { title: 'Draw Lines', description: 'Connect matching colors.' },

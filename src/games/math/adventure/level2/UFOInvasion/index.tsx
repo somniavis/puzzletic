@@ -83,7 +83,7 @@ export default function UFOInvasion({ onExit }: UFOInvasionProps) {
             color: 'blue' as const,
             onClick: () => activatePowerUp('timeFreeze'),
             status: isTimeFrozen ? 'active' : 'normal',
-            title: 'Time Freeze',
+            title: t('games.math-level2-ufo-invasion.powerups.timeFreeze'),
             disabledConfig: isTimeFrozen || logicPowerUps.timeFreeze <= 0
         },
         {
@@ -92,7 +92,7 @@ export default function UFOInvasion({ onExit }: UFOInvasionProps) {
             color: 'red' as const,
             onClick: () => activatePowerUp('extraLife'),
             status: engine.lives >= 3 ? 'maxed' : 'normal',
-            title: 'Extra Life',
+            title: t('games.math-level2-ufo-invasion.powerups.extraLife'),
             disabledConfig: engine.lives >= 3 || logicPowerUps.extraLife <= 0
         },
         {
@@ -101,17 +101,17 @@ export default function UFOInvasion({ onExit }: UFOInvasionProps) {
             color: 'yellow' as const,
             onClick: () => activatePowerUp('doubleScore'),
             status: isDoubleScore ? 'active' : 'normal',
-            title: 'Double Score',
+            title: t('games.math-level2-ufo-invasion.powerups.doubleScore'),
             disabledConfig: isDoubleScore || logicPowerUps.doubleScore <= 0
         }
     ];
 
     const targetConfig = currentLockedUfo ? {
         value: currentLockedUfo.problem.q,
-        label: t('games.math-level2-ufo-invasion.ui.lockedOn', 'LOCKED ON')
+        label: t('games.math-level2-ufo-invasion.ui.lockedOn')
     } : {
         value: '---',
-        label: t('games.math-level2-ufo-invasion.ui.tapUfo', 'Tap the UFO')
+        label: t('games.math-level2-ufo-invasion.ui.tapUfo')
     };
 
     return (

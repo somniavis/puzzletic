@@ -16,6 +16,11 @@ export default {
         subtitle: '세 자리 + 세 자리',
     },
     description: '왼쪽부터 숫자를 더해보세요! 더 빠르게 계산할 수 있어요.',
+    powerups: {
+        timeFreeze: '시간 정지',
+        extraLife: '추가 생명',
+        doubleScore: '점수 2배',
+    },
     howToPlay: {
         title: '게임 방법',
         step1: {

@@ -149,9 +149,9 @@ export const Sharpshooter: React.FC<SharpshooterProps> = ({ onExit }) => {
     };
 
     const powerUpConfig: PowerUpBtnProps[] = [
-        { count: powerUps.timeFreeze, color: "blue", icon: "❄️", title: "Freeze", onClick: () => usePowerUp('timeFreeze'), disabledConfig: timeFrozen, status: (timeFrozen ? 'active' : 'normal') },
-        { count: powerUps.extraLife, color: "red", icon: "❤️", title: "Life", onClick: () => usePowerUp('extraLife'), disabledConfig: lives >= 3, status: (lives >= 3 ? 'maxed' : 'normal') },
-        { count: powerUps.doubleScore, color: "yellow", icon: "⚡", title: "Double", onClick: () => usePowerUp('doubleScore'), disabledConfig: doubleScoreActive, status: (doubleScoreActive ? 'active' : 'normal') }
+        { count: powerUps.timeFreeze, color: "blue", icon: "❄️", title: t('games.sharpshooter.powerups.freeze'), onClick: () => usePowerUp('timeFreeze'), disabledConfig: timeFrozen, status: (timeFrozen ? 'active' : 'normal') },
+        { count: powerUps.extraLife, color: "red", icon: "❤️", title: t('games.sharpshooter.powerups.life'), onClick: () => usePowerUp('extraLife'), disabledConfig: lives >= 3, status: (lives >= 3 ? 'maxed' : 'normal') },
+        { count: powerUps.doubleScore, color: "yellow", icon: "⚡", title: t('games.sharpshooter.powerups.double'), onClick: () => usePowerUp('doubleScore'), disabledConfig: doubleScoreActive, status: (doubleScoreActive ? 'active' : 'normal') }
     ];
 
     const layoutEngine = {

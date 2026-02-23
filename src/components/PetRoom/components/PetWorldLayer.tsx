@@ -127,7 +127,7 @@ export const PetWorldLayer: React.FC<PetWorldLayerProps> = ({
                         {t('abandonment.abandoned')}
                     </div>
                     <button className="reset-btn" onClick={nurturing.resetGame}>
-                        {t('game.reset', 'Reset Game')}
+                        {t('game.reset')}
                     </button>
                 </div>
             )}

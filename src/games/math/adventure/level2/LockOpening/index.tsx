@@ -246,7 +246,7 @@ export const LockOpening: React.FC<LockOpeningProps> = ({ onExit }) => {
                     count: engine.powerUps.timeFreeze,
                     color: 'blue',
                     icon: '❄️',
-                    title: 'Freeze',
+                    title: t('games.math-lock-opening.powerups.timeFreeze'),
                     onClick: () => engine.activatePowerUp('timeFreeze'),
                     disabledConfig: engine.isTimeFrozen,
                     status: engine.isTimeFrozen ? 'active' : 'normal'
@@ -255,7 +255,7 @@ export const LockOpening: React.FC<LockOpeningProps> = ({ onExit }) => {
                     count: engine.powerUps.extraLife,
                     color: 'red',
                     icon: '❤️',
-                    title: 'Life',
+                    title: t('games.math-lock-opening.powerups.extraLife'),
                     onClick: () => engine.activatePowerUp('extraLife'),
                     disabledConfig: engine.lives >= 3,
                     status: engine.lives >= 3 ? 'maxed' : 'normal'
@@ -264,7 +264,7 @@ export const LockOpening: React.FC<LockOpeningProps> = ({ onExit }) => {
                     count: engine.powerUps.doubleScore,
                     color: 'yellow',
                     icon: '⚡',
-                    title: 'Double',
+                    title: t('games.math-lock-opening.powerups.doubleScore'),
                     onClick: () => engine.activatePowerUp('doubleScore'),
                     disabledConfig: engine.isDoubleScore,
                     status: engine.isDoubleScore ? 'active' : 'normal'

@@ -8,6 +8,11 @@ export default {
         removeHint: '🕳️ 모두 사라짐',
         tapSpellHint: '주문을 탭해!'
     },
+    powerups: {
+        timeFreeze: '시간 정지',
+        extraLife: '추가 생명',
+        doubleScore: '점수 2배',
+    },
     howToPlay: {
         step1: {
             title: '두 가지 스펠',

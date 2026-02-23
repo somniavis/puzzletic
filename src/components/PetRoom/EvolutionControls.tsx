@@ -41,10 +41,10 @@ export const EvolutionControls: React.FC<EvolutionControlsProps> = ({
                         triggerEvolution();
                     }}
                     disabled={isActionInProgress}
-                    title={t('actions.evolve', 'Evolve')}
+                    title={t('actions.evolve')}
                 >
                     <span className="action-icon">💫</span>
-                    <span className="btn-text">{t('actions.evolve', 'Evolution')}</span>
+                    <span className="btn-text">{t('actions.evolve')}</span>
                 </button>
             )}
 
@@ -57,10 +57,10 @@ export const EvolutionControls: React.FC<EvolutionControlsProps> = ({
                         triggerGraduation();
                     }}
                     disabled={isActionInProgress}
-                    title={t('actions.graduate', 'Graduate')}
+                    title={t('actions.graduate')}
                 >
                     <span className="action-icon">🎓</span>
-                    <span className="btn-text">{t('actions.graduate', 'Graduation')}</span>
+                    <span className="btn-text">{t('actions.graduate')}</span>
                 </button>
             )}
         </div>

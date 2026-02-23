@@ -2,6 +2,11 @@ const ja = {
     title: 'コインキャッシャー',
     subtitle: '5の段・10の段をマスター！',
     description: 'チップ束の数を選んで目標数を作ろう。',
+    powerups: {
+        timeFreeze: 'じかんストップ',
+        extraLife: 'ライフかいふく',
+        doubleScore: 'スコア2ばい'
+    },
     ui: {
         customerRequest: '合計{{target}}コインにしてください！',
         coinLabel: 'コイン',

@@ -2,6 +2,11 @@ const ko = {
     title: '개구리 점프',
     subtitle: '점프,점프,점프!',
     description: '눈금의 정답 숫자를 골라 개구리를 점프시켜요.',
+    powerups: {
+        timeFreeze: '시간 정지',
+        extraLife: '추가 생명',
+        doubleScore: '점수 2배',
+    },
     howToPlay: {
         step1: {
             title: '눈금 확인!',

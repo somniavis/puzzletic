@@ -14,6 +14,7 @@ import mathPinwheelKo from '../../games/math/adventure/level2/PinwheelPop/locale
 import compareCrittersKo from '../../games/math/adventure/level1/CompareCritters/locales/ko';
 import deepSeaDiveKo from '../../games/math/adventure/level2/DeepSeaDive/locales/ko';
 import ufoInvasionKo from '../../games/math/adventure/level2/UFOInvasion/locales/ko';
+import lockOpeningKo from '../../games/math/adventure/level2/LockOpening/locales/ko';
 import cargoTrainKo from '../../games/math/adventure/level2/CargoTrain/locales/ko.ts';
 import rocketLauncherKo from '../../games/math/adventure/level2/RocketLauncher/locales/ko';
 import shapeSumLinkKo from '../../games/math/adventure/level2/ShapeSumLink/locales/ko';
@@ -280,6 +281,7 @@ export const ko = {
         difficulty: '난이도',
         time: '시간',
         accuracy: '정확도',
+        stageClear: '스테이지 클리어!',
         gameOver: '게임 오버!',
         finalScore: '최종 점수',
         bestScore: '최고 점수',
@@ -291,6 +293,7 @@ export const ko = {
         results: '게임 결과',
         earnedXp: 'XP',
         earnedGro: 'Gro',
+        earnedStar: '스타',
         yes: '예',
         no: '아니오',
         goHome: '홈으로 가기',
@@ -439,6 +442,22 @@ export const ko = {
             pill: '알약',
             syringe: '예방주사',
         },
+    },
+    nurturingPanel: {
+        stats: {
+            fullness: '포만감',
+            health: '건강',
+            happiness: '행복도',
+        },
+        alerts: {
+            hungry: '🍖 배고파요! 음식을 주세요',
+            sick: '💊 아파요! 약이 필요해요',
+        },
+        interactions: {
+            catchBug: '클릭해서 잡기',
+            cleanPoop: '클릭해서 치우기',
+        },
+        studyCount: '학습 {{count}}회',
     },
     shop: {
         menu: {
@@ -1056,28 +1075,7 @@ export const ko = {
         omok: omokKo,
         cargoTrain: cargoTrainKo,
         rocketLauncher: rocketLauncherKo,
-        'math-lock-opening': {
-            title: '자물쇠 열기',
-            subtitle: '비밀번호를 찾아요!',
-            description: '두 숫자를 선택해 목표 숫자를 만드세요.',
-            ui: {
-                pickTwo: '숫자 두 개를 선택하세요',
-            },
-            howToPlay: {
-                step1: {
-                    title: '+/- 목표 확인',
-                    description: '목표 숫자를 확인해요!',
-                },
-                step2: {
-                    title: '숫자 두 개 선택',
-                    description: '두 개의 비밀번호를 찾아요!',
-                },
-                step3: {
-                    title: '자물쇠 열기!',
-                    description: '자물쇠 열기 성공!',
-                },
-            },
-        },
+        'math-lock-opening': lockOpeningKo,
         tags: {
             counting: '수 세기',
             sequence: '수 순서',

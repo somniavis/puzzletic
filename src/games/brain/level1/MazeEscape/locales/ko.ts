@@ -5,6 +5,11 @@ export default {
     ui: {
         guideHint: '젤로를 텐트로!'
     },
+    powerups: {
+        timeFreeze: '시간 정지',
+        extraLife: '추가 생명',
+        doubleScore: '점수 2배',
+    },
     howToPlay: {
         step1: { title: '캠프 찾기', description: '젤로의 집을 찾아요!' },
         step2: { title: '길 그리기', description: '텐트까지 이어요' },

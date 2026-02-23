@@ -419,7 +419,7 @@ export const BeginnerWizard: React.FC<BeginnerWizardProps> = ({ onExit }) => {
                     count: engine.powerUps.timeFreeze,
                     color: 'blue',
                     icon: '❄️',
-                    title: 'Freeze',
+                    title: t('games.beginner-wizard.powerups.timeFreeze'),
                     onClick: () => engine.activatePowerUp('timeFreeze'),
                     disabledConfig: engine.isTimeFrozen,
                     status: engine.isTimeFrozen ? 'active' : 'normal'
@@ -428,7 +428,7 @@ export const BeginnerWizard: React.FC<BeginnerWizardProps> = ({ onExit }) => {
                     count: engine.powerUps.extraLife,
                     color: 'red',
                     icon: '❤️',
-                    title: 'Life',
+                    title: t('games.beginner-wizard.powerups.extraLife'),
                     onClick: () => engine.activatePowerUp('extraLife'),
                     disabledConfig: engine.lives >= 3,
                     status: engine.lives >= 3 ? 'maxed' : 'normal'
@@ -437,7 +437,7 @@ export const BeginnerWizard: React.FC<BeginnerWizardProps> = ({ onExit }) => {
                     count: engine.powerUps.doubleScore,
                     color: 'yellow',
                     icon: '⚡',
-                    title: 'Double',
+                    title: t('games.beginner-wizard.powerups.doubleScore'),
                     onClick: () => engine.activatePowerUp('doubleScore'),
                     disabledConfig: engine.isDoubleScore,
                     status: engine.isDoubleScore ? 'active' : 'normal'
@@ -549,7 +549,7 @@ export const BeginnerWizard: React.FC<BeginnerWizardProps> = ({ onExit }) => {
                         {showSpellPadHint && (
                             <div className="beginner-wizard-spell-hint-overlay" aria-hidden="true">
                                 <span className="beginner-wizard-spell-hint-text">
-                                    {t('games.beginner-wizard.ui.tapSpellHint', '주문을 탭해!')}
+                                    {t('games.beginner-wizard.ui.tapSpellHint')}
                                 </span>
                             </div>
                         )}

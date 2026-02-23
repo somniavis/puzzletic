@@ -141,7 +141,7 @@ export const PremiumPurchaseModal: React.FC<PremiumPurchaseModalProps> = ({ isOp
                         fontWeight: 800,
                         whiteSpace: 'pre-line' // Allow newlines in title
                     }}>
-                        {t('common.modal.title', 'Unlock Premium!')}
+                        {t('common.modal.title')}
                     </h2>
 
                     <p style={{
@@ -152,7 +152,6 @@ export const PremiumPurchaseModal: React.FC<PremiumPurchaseModalProps> = ({ isOp
                     }}>
                         <Trans
                             i18nKey="common.modal.desc"
-                            defaults="This game is available for <bold>Premium Users only</bold>.<br/>Start growing <bold>3x faster</bold> now! 🚀"
                             components={{ bold: <b />, br: <br /> }}
                         />
                     </p>
@@ -167,13 +166,13 @@ export const PremiumPurchaseModal: React.FC<PremiumPurchaseModalProps> = ({ isOp
                         width: '100%'
                     }}>
                         <div style={{ padding: '8px 0', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-                            ✅ <b>{t('common.modal.benefit1', 'Unlock ALL 20+ Games')}</b>
+                            ✅ <b>{t('common.modal.benefit1')}</b>
                         </div>
                         <div style={{ padding: '8px 0', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-                            ✅ <b>{t('common.modal.benefit2', 'Earn 3x-8x More XP')}</b>
+                            ✅ <b>{t('common.modal.benefit2')}</b>
                         </div>
                         <div style={{ padding: '8px 0' }}>
-                            ✅ <b>{t('common.modal.benefit3', 'Exclusive Jello Evolutions')}</b>
+                            ✅ <b>{t('common.modal.benefit3')}</b>
                         </div>
                     </div>
                 </div>
@@ -230,7 +229,7 @@ export const PremiumPurchaseModal: React.FC<PremiumPurchaseModalProps> = ({ isOp
                             e.currentTarget.style.boxShadow = '0 6px 0 #b4761f, 0 8px 20px rgba(255, 165, 0, 0.7)'; // Release to hover state
                         }}
                     >
-                        {t('common.upgrade_btn_text', 'UPGRADE')} ✨
+                        {t('common.upgrade_btn_text')} ✨
                     </button>
                 </div>
             </div>

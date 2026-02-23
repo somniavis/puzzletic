@@ -92,7 +92,7 @@ export const SignupPromoModal: React.FC<SignupPromoModalProps> = ({ onClose, onS
                     marginBottom: '0.5rem',
                     lineHeight: 1.3
                 }}>
-                    {t('auth.promo.title', 'Save your Jello!')}
+                    {t('auth.promo.title')}
                 </h2>
 
                 <p style={{
@@ -103,7 +103,6 @@ export const SignupPromoModal: React.FC<SignupPromoModalProps> = ({ onClose, onS
                 }}>
                     <Trans
                         i18nKey="auth.promo.desc"
-                        defaults="To evolve to Stage 2, you need to save your progress. <highlight>Sign up now</highlight> to keep your Jello safe forever!"
                         components={{
                             highlight: <span style={{
                                 backgroundColor: '#FFFACD', // LemonChiffon

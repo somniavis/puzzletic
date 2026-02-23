@@ -226,7 +226,7 @@ export const PetRoomMenus: React.FC<PetRoomMenusProps> = ({
             {/* Shop Menu Submenu */}
             {showShopMenu && (
                 <MenuModal
-                    title={t('shop.menu.title', 'Shop')}
+                    title={t('shop.menu.title')}
                     onClose={() => setShowShopMenu(false)}
                     variant="custom"
                     headerContent={
@@ -306,5 +306,4 @@ export const PetRoomMenus: React.FC<PetRoomMenusProps> = ({
         </>
     );
 };
-
 

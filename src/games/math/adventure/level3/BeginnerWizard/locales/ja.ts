@@ -8,6 +8,11 @@ export default {
         removeHint: '🕳️ ぜんぶ消える',
         tapSpellHint: '呪文をタップ！'
     },
+    powerups: {
+        timeFreeze: '時間停止',
+        extraLife: 'ライフ追加',
+        doubleScore: 'スコア2倍',
+    },
     howToPlay: {
         step1: {
             title: '2つの呪文',

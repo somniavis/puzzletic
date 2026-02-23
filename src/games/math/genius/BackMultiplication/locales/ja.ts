@@ -17,6 +17,11 @@ export default {
         desc: 'クロス掛け算で解いてみましょう。'
     },
     description: '後ろから順番に計算しよう！暗算の達人への近道！',
+    powerups: {
+        timeFreeze: '時間停止',
+        extraLife: 'ライフ追加',
+        doubleScore: 'スコア2倍',
+    },
     howToPlay: {
         step1: { title: '一の位' },
         step2: { title: '十の位' },

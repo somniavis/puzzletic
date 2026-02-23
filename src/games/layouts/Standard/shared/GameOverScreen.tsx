@@ -54,24 +54,24 @@ export const GameOverScreen: React.FC<GameOverProps> = ({
         <div className="overlay-screen start-screen-layout">
             <div className="game-over-header-compact">
                 <div className="game-over-icon">{gameOverReason === 'cleared' ? '🏆' : '🏁'}</div>
-                <h1 className="game-over-title">{gameOverReason === 'cleared' ? (t('common.stageClear') || 'Stage Clear!') : (t('common.gameOver') || 'Game Over!')}</h1>
+                <h1 className="game-over-title">{gameOverReason === 'cleared' ? t('common.stageClear') : t('common.gameOver')}</h1>
             </div>
             <div ref={gameOverRef} className="start-content-scroll custom-scrollbar" style={{ marginTop: '0.5rem' }}>
                 <div className="result-cards-container">
                     <div className="result-card main-stats">
                         <div className="score-display-wrapper">
                             <div className="score-display-large">
-                                <span className="score-label">{isNewRecord ? (t('common.newRecord') || 'NEW RECORD!') : (t('common.finalScore') || 'FINAL SCORE')}</span>
+                                <span className="score-label">{isNewRecord ? t('common.newRecord') : t('common.finalScore')}</span>
                                 <span className={`score-value-huge ${isNewRecord ? 'record-pulse' : ''}`}>{score}</span>
                             </div>
                             <div className="score-display-sub">
-                                <span className="sub-score-label">{isNewRecord ? (t('common.previousBest') || 'PREV BEST') : (t('common.bestScore') || 'BEST SCORE')}</span>
+                                <span className="sub-score-label">{isNewRecord ? t('common.previousBest') : t('common.bestScore')}</span>
                                 <span className="sub-score-value">{isNewRecord ? prevBest : highScore}</span>
                             </div>
                         </div>
                         <div className="sub-stats-row">
                             <div className="sub-stat-item">
-                                <span className="sub-stat-label">{t('common.bestCombo') || 'BEST STREAK'}</span>
+                                <span className="sub-stat-label">{t('common.bestCombo')}</span>
                                 <span className="sub-stat-value text-orange"><Flame size={18} /> {bestCombo}</span>
                             </div>
                             <div className="sub-stat-item">
@@ -86,12 +86,12 @@ export const GameOverScreen: React.FC<GameOverProps> = ({
                         </div>
                     </div>
                     <div className="rewards-grid-split">
-                        <div className="reward-card-split xp"><span className="reward-icon">✨</span><span className="reward-amount text-purple">+{earnedXp}</span><span className="reward-label text-purple">XP</span></div>
-                        <div className="reward-card-split gro"><span className="reward-icon">💰</span><span className="reward-amount text-green">+{earnedGro}</span><span className="reward-label text-green">GRO</span></div>
+                        <div className="reward-card-split xp"><span className="reward-icon">✨</span><span className="reward-amount text-purple">+{earnedXp}</span><span className="reward-label text-purple">{t('common.earnedXp')}</span></div>
+                        <div className="reward-card-split gro"><span className="reward-icon">💰</span><span className="reward-amount text-green">+{earnedGro}</span><span className="reward-label text-green">{t('common.earnedGro')}</span></div>
                         <div className="reward-card-split star" style={{ opacity: (rewardResult?.starsEarned || 0) > 0 ? 1 : 0.4 }}>
                             <span className="reward-icon">⭐</span>
                             <span className="reward-amount text-yellow">+{rewardResult?.starsEarned || 0}</span>
-                            <span className="reward-label text-yellow">STAR</span>
+                            <span className="reward-label text-yellow">{t('common.earnedStar')}</span>
                         </div>
                     </div>
                 </div>

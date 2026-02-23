@@ -16,6 +16,11 @@ export default {
         subtitle: '3-digit + 3-digit',
     },
     description: 'Add numbers from left to right! It\'s a faster way to calculate.',
+    powerups: {
+        timeFreeze: 'Time Freeze',
+        extraLife: 'Extra Life',
+        doubleScore: 'Double Score',
+    },
     howToPlay: {
         title: 'How to Play',
         step1: {

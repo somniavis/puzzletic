@@ -10,5 +10,10 @@ export default {
     ui: {
         tapUfo: 'UFO를 탭하세요',
         lockedOn: '조준 완료'
+    },
+    powerups: {
+        timeFreeze: '시간 멈춤',
+        extraLife: '생명 추가',
+        doubleScore: '점수 2배'
     }
 };

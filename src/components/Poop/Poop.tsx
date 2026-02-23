@@ -4,6 +4,7 @@
  */
 
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { Poop as PoopType } from '../../types/nurturing';
 import './Poop.css';
 
@@ -13,6 +14,7 @@ interface PoopProps {
 }
 
 export const Poop: React.FC<PoopProps> = ({ poop, onClick }) => {
+  const { t } = useTranslation();
   const [isBeingCleaned, setIsBeingCleaned] = useState(false);
 
   const handleClick = (e: React.MouseEvent) => {
@@ -51,7 +53,7 @@ export const Poop: React.FC<PoopProps> = ({ poop, onClick }) => {
           top: `${poop.y}%`,
         }}
         onClick={handleClick}
-        title="클릭해서 치우기"
+        title={t('nurturingPanel.interactions.cleanPoop')}
       >
         💩
       </div>

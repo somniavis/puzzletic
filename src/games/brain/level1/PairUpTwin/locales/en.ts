@@ -5,6 +5,11 @@ export default {
     ui: {
         tapMatchHint: 'Tap matching cards!'
     },
+    powerups: {
+        timeFreeze: 'Time Freeze',
+        extraLife: 'Extra Life',
+        doubleScore: 'Double Score',
+    },
     howToPlay: {
         step1: { title: 'Remember', description: 'Look at all cards!' },
         step2: { title: 'Flip Two', description: 'Turn over two cards' },

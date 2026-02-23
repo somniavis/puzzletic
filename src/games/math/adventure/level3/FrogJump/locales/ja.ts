@@ -2,6 +2,11 @@ const ja = {
     title: 'カエルジャンプ',
     subtitle: 'ジャンプ、ジャンプ、ジャンプ！',
     description: '目盛りの正しい数を選んでカエルをジャンプさせよう。',
+    powerups: {
+        timeFreeze: '時間停止',
+        extraLife: 'ライフ追加',
+        doubleScore: 'スコア2倍',
+    },
     howToPlay: {
         step1: {
             title: '目盛りをチェック！',

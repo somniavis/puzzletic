@@ -14,6 +14,7 @@ import mathPinwheelJa from '../../games/math/adventure/level2/PinwheelPop/locale
 import compareCrittersJa from '../../games/math/adventure/level1/CompareCritters/locales/ja';
 import deepSeaDiveJa from '../../games/math/adventure/level2/DeepSeaDive/locales/ja';
 import ufoInvasionJa from '../../games/math/adventure/level2/UFOInvasion/locales/ja';
+import lockOpeningJa from '../../games/math/adventure/level2/LockOpening/locales/ja';
 import cargoTrainJa from '../../games/math/adventure/level2/CargoTrain/locales/ja.ts';
 import rocketLauncherJa from '../../games/math/adventure/level2/RocketLauncher/locales/ja';
 import shapeSumLinkJa from '../../games/math/adventure/level2/ShapeSumLink/locales/ja';
@@ -280,6 +281,7 @@ export const ja = {
         difficulty: '難易度',
         time: 'タイム',
         accuracy: '正確さ',
+        stageClear: 'ステージクリア！',
         gameOver: 'ゲームオーバー！',
         finalScore: '最終スコア',
         bestScore: '自己ベスト',
@@ -291,6 +293,7 @@ export const ja = {
         results: '結果発表',
         earnedXp: 'XP',
         earnedGro: 'Gro',
+        earnedStar: 'スター',
         yes: 'はい',
         no: 'いいえ',
         goHome: 'ホームへ',
@@ -439,6 +442,22 @@ export const ja = {
             pill: '薬',
             syringe: '注射',
         },
+    },
+    nurturingPanel: {
+        stats: {
+            fullness: '満腹度',
+            health: '健康',
+            happiness: '幸福度',
+        },
+        alerts: {
+            hungry: '🍖 おなかすいた！ごはんちょうだい',
+            sick: '💊 具合が悪いよ！薬が必要です',
+        },
+        interactions: {
+            catchBug: 'クリックして捕まえる',
+            cleanPoop: 'クリックして片付ける',
+        },
+        studyCount: '学習 {{count}}回',
     },
     shop: {
         menu: {
@@ -1012,28 +1031,7 @@ export const ja = {
         omok: omokJa,
         cargoTrain: cargoTrainJa,
         rocketLauncher: rocketLauncherJa,
-        'math-lock-opening': {
-            title: 'ロックオープン',
-            subtitle: 'パスコードを見つけよう！',
-            description: '2つの数字を選んで目標の数字を作ろう。',
-            ui: {
-                pickTwo: '数字を2つ選んでください',
-            },
-            howToPlay: {
-                step1: {
-                    title: '+/- 目標を確認',
-                    description: '目標の数字を確認しよう！',
-                },
-                step2: {
-                    title: '数字を2つ選択',
-                    description: '2つのパスコード数字を見つけよう！',
-                },
-                step3: {
-                    title: '鍵を開けよう！',
-                    description: '鍵開け成功！',
-                },
-            },
-        },
+        'math-lock-opening': lockOpeningJa,
         tags: {
             counting: '数え方',
             sequence: '数の順序',

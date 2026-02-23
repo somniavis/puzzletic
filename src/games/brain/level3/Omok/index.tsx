@@ -23,27 +23,27 @@ export const OmokGame: React.FC<OmokGameProps> = ({ onExit, gameId }) => {
     const instructions = useMemo(() => [
         {
             icon: '⚫⚪',
-            title: t('games.omok.howToPlay.step1.title', 'Place a Stone'),
-            description: t('games.omok.howToPlay.step1.description', 'Tap an intersection to place your stone.')
+            title: t('games.omok.howToPlay.step1.title'),
+            description: t('games.omok.howToPlay.step1.description')
         },
         {
             icon: '🛡️',
-            title: t('games.omok.howToPlay.step2.title', 'Block the AI'),
-            description: t('games.omok.howToPlay.step2.description', "Stop AI's line before it reaches 5.")
+            title: t('games.omok.howToPlay.step2.title'),
+            description: t('games.omok.howToPlay.step2.description')
         },
         {
             icon: '🏆',
-            title: t('games.omok.howToPlay.step3.title', 'Make 5 in a Row'),
-            description: t('games.omok.howToPlay.step3.description', 'Connect 5 stones first to win.')
+            title: t('games.omok.howToPlay.step3.title'),
+            description: t('games.omok.howToPlay.step3.description')
         }
     ], [t]);
 
     return (
         <Layout1
             gameId={gameId}
-            title={t('games.omok.title', 'Omok')}
-            subtitle={t('games.omok.subtitle', 'Five in a Row')}
-            description={t('games.omok.description', 'Connect 5 stones in a row.')}
+            title={t('games.omok.title')}
+            subtitle={t('games.omok.subtitle')}
+            description={t('games.omok.description')}
             instructions={instructions}
             onExit={onExit}
             engine={engine}
@@ -143,21 +143,21 @@ const OmokBoardWrapper = ({ engine }: { engine: any }) => {
         <div className={styles.boardContainer}>
             {showGuideHint && (
                 <div className={`${styles.omokGuideHint} ${isGuideHintExiting ? styles.omokGuideHintExiting : ''}`}>
-                    {t('games.omok.ui.guideHint', 'AI보다 먼저 5알을 연결해요!')}
+                    {t('games.omok.ui.guideHint')}
                 </div>
             )}
             {/* Status Message */}
             <div className={styles.statusMessage}>
                 {isAiThinking ? (
                     <>
-                        {t('games.omok.status.aiTurn', 'AI is thinking...')}
+                        {t('games.omok.status.aiTurn')}
                         <span className={styles.statusIcon}>
                             <div className={`${styles.statusStone} ${playerSide === 'black' ? styles.white : styles.black}`} />
                         </span>
                     </>
                 ) : (
                     <>
-                        {t('games.omok.status.playerTurn', 'Your Turn')}
+                        {t('games.omok.status.playerTurn')}
                         <span className={styles.statusIcon}>
                             <div className={`${styles.statusStone} ${playerSide === 'black' ? styles.black : styles.white}`} />
                         </span>

@@ -186,9 +186,9 @@ export const BackMultiplicationGameLv3: React.FC<{ onExit: () => void, gameId?: 
                 { icon: '✅', title: t('games.backMultiplication.howToPlay.step4.title'), description: t('games.backMultiplication.hint.step4') }
             ]}
             powerUps={[
-                { count: engine.powerUps.timeFreeze, color: 'blue', icon: '❄️', title: 'Freeze', onClick: () => engine.activatePowerUp('timeFreeze'), disabledConfig: engine.isTimeFrozen, status: engine.isTimeFrozen ? 'active' : 'normal' },
-                { count: engine.powerUps.extraLife, color: 'red', icon: '❤️', title: 'Life', onClick: () => engine.activatePowerUp('extraLife'), disabledConfig: engine.lives >= 3, status: engine.lives >= 3 ? 'maxed' : 'normal' },
-                { count: engine.powerUps.doubleScore, color: 'yellow', icon: '⚡', title: 'Double', onClick: () => engine.activatePowerUp('doubleScore'), disabledConfig: engine.isDoubleScore, status: engine.isDoubleScore ? 'active' : 'normal' }
+                { count: engine.powerUps.timeFreeze, color: 'blue', icon: '❄️', title: t('games.backMultiplication.powerups.timeFreeze'), onClick: () => engine.activatePowerUp('timeFreeze'), disabledConfig: engine.isTimeFrozen, status: engine.isTimeFrozen ? 'active' : 'normal' },
+                { count: engine.powerUps.extraLife, color: 'red', icon: '❤️', title: t('games.backMultiplication.powerups.extraLife'), onClick: () => engine.activatePowerUp('extraLife'), disabledConfig: engine.lives >= 3, status: engine.lives >= 3 ? 'maxed' : 'normal' },
+                { count: engine.powerUps.doubleScore, color: 'yellow', icon: '⚡', title: t('games.backMultiplication.powerups.doubleScore'), onClick: () => engine.activatePowerUp('doubleScore'), disabledConfig: engine.isDoubleScore, status: engine.isDoubleScore ? 'active' : 'normal' }
             ]}
         >
             <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', position: 'relative' }}>

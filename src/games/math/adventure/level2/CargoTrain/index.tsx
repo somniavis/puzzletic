@@ -218,7 +218,7 @@ export default function CargoTrain() {
             color: 'blue' as const,
             onClick: () => gameLogic.activatePowerUp('timeFreeze'),
             status: (gameLogic.isTimeFrozen ? 'active' : 'normal') as 'active' | 'normal' | 'maxed',
-            title: t('games.cargoTrain.powerUps.timeFreeze', 'Freeze'),
+            title: t('games.cargoTrain.powerUps.timeFreeze'),
             disabledConfig: gameLogic.isTimeFrozen
         },
         {
@@ -227,7 +227,7 @@ export default function CargoTrain() {
             color: 'red' as const,
             onClick: () => gameLogic.activatePowerUp('extraLife'),
             status: (gameLogic.lives >= 3 ? 'maxed' : 'normal') as 'active' | 'normal' | 'maxed',
-            title: t('games.cargoTrain.powerUps.extraLife', 'Life'),
+            title: t('games.cargoTrain.powerUps.extraLife'),
             disabledConfig: gameLogic.lives >= 3
         },
         {
@@ -236,7 +236,7 @@ export default function CargoTrain() {
             color: 'yellow' as const,
             onClick: () => gameLogic.activatePowerUp('doubleScore'),
             status: (gameLogic.isDoubleScore ? 'active' : 'normal') as 'active' | 'normal' | 'maxed',
-            title: t('games.cargoTrain.powerUps.doubleScore', 'Double'),
+            title: t('games.cargoTrain.powerUps.doubleScore'),
             disabledConfig: gameLogic.isDoubleScore
         }
     ], [t, gameLogic.powerUps, gameLogic.isTimeFrozen, gameLogic.lives, gameLogic.isDoubleScore, gameLogic.activatePowerUp]);
@@ -253,15 +253,15 @@ export default function CargoTrain() {
     ), [triggerTrain]);
 
     const instructions = useMemo(() => [
-        { icon: '🚂', title: t('games.cargoTrain.howToPlay.step1.title', 'Step 1'), description: t('games.cargoTrain.howToPlay.step1.desc', 'Check the engine number.') },
-        { icon: '📦', title: t('games.cargoTrain.howToPlay.step2.title', 'Step 2'), description: t('games.cargoTrain.howToPlay.step2.desc', 'Drag the cargo.') },
-        { icon: '✅', title: t('games.cargoTrain.howToPlay.step3.title', 'Step 3'), description: t('games.cargoTrain.howToPlay.step3.desc', 'Make the total!') }
+        { icon: '🚂', title: t('games.cargoTrain.howToPlay.step1.title'), description: t('games.cargoTrain.howToPlay.step1.desc') },
+        { icon: '📦', title: t('games.cargoTrain.howToPlay.step2.title'), description: t('games.cargoTrain.howToPlay.step2.desc') },
+        { icon: '✅', title: t('games.cargoTrain.howToPlay.step3.title'), description: t('games.cargoTrain.howToPlay.step3.desc') }
     ], [t]);
 
     return (
         <Layout2
-            title={t('games.cargoTrain.title', 'Cargo Train')}
-            subtitle={t('games.cargoTrain.subtitle', 'Make 100!')}
+            title={t('games.cargoTrain.title')}
+            subtitle={t('games.cargoTrain.subtitle')}
             gameId={GAME_ID}
             engine={gameLogic}
             powerUps={powerUps}

@@ -5,6 +5,11 @@ export default {
     ui: {
         guideHint: 'Guide Jello to the tent!'
     },
+    powerups: {
+        timeFreeze: 'Time Freeze',
+        extraLife: 'Extra Life',
+        doubleScore: 'Double Score',
+    },
     howToPlay: {
         step1: {
             title: 'Find Camp',

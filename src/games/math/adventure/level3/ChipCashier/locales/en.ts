@@ -2,6 +2,11 @@ const en = {
     title: 'Coin Cashier',
     subtitle: 'Master 5s and 10s!',
     description: 'Choose bundle counts to match the target chips.',
+    powerups: {
+        timeFreeze: 'Freeze',
+        extraLife: 'Life',
+        doubleScore: 'Double'
+    },
     ui: {
         customerRequest: 'Please make {{target}} coins total!',
         coinLabel: 'coin',
