@@ -1,0 +1,17 @@
+export default {
+    title: "Deep Dive",
+    "title-lv1": "Deep Dive (Lv.1)",
+    "title-lv2": "Deep Dive (Lv.2)",
+    subtitle: "Dive Deeper!",
+    description: "Solve subtraction problems to help the sea animals dive.",
+    howToPlay: {
+        step1: { title: "Dive Mission", description: "How deep today?" },
+        step2: { title: "Find Depth", description: "Solve the maths!" },
+        step3: { title: "Go Down!", description: "Reach that depth!" }
+    },
+    powerups: {
+        timeFreeze: "Freeze Time",
+        extraLife: "Extra Life",
+        doubleScore: "x2 Score"
+    }
+};
