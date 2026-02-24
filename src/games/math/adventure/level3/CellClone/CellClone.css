@@ -110,6 +110,7 @@
     transform: scale(var(--cluster-scale, 1));
     transform-origin: center;
     will-change: transform;
+    backface-visibility: hidden;
 }
 
 .cell-clone-core.is-drop-target {
@@ -164,37 +165,34 @@
     width: clamp(2rem, 6.2vw, 2.85rem);
     height: clamp(2rem, 6.2vw, 2.85rem);
     border-radius: 50%;
-    transform: translate(-50%, -50%) translate(var(--x), var(--y));
+    transform: translate3d(-50%, -50%, 0) translate3d(var(--x), var(--y), 0);
     background:
         radial-gradient(circle at 36% 30%, rgba(255, 255, 255, 0.95) 0 24%, rgba(255, 255, 255, 0) 44%),
         radial-gradient(circle at 60% 62%, #ffffff 0%, #eef2f7 74%, #dbe4ef 100%);
     box-shadow:
-        inset 0 -0.2rem 0.45rem rgba(148, 163, 184, 0.24),
-        0 0.3rem 0.65rem rgba(59, 130, 246, 0.18);
+        inset 0 -0.15rem 0.35rem rgba(148, 163, 184, 0.2),
+        0 0.24rem 0.52rem rgba(59, 130, 246, 0.14);
     animation: cell-clone-jelly 1700ms ease-in-out infinite;
     animation-delay: var(--delay);
-    will-change: transform, filter;
+    will-change: transform;
+    backface-visibility: hidden;
 }
 
 @keyframes cell-clone-jelly {
     0% {
-        transform: translate(-50%, -50%) translate(var(--x), var(--y)) scale(1, 1);
-        filter: saturate(0.96);
+        transform: translate3d(-50%, -50%, 0) translate3d(var(--x), var(--y), 0) scale(1, 1);
     }
     30% {
-        transform: translate(-50%, -50%) translate(var(--x), calc(var(--y) - 1.5px)) scale(1.06, 0.95);
-        filter: saturate(1.02);
+        transform: translate3d(-50%, -50%, 0) translate3d(var(--x), calc(var(--y) - 1.5px), 0) scale(1.06, 0.95);
     }
     52% {
-        transform: translate(-50%, -50%) translate(var(--x), calc(var(--y) + 1px)) scale(0.95, 1.06);
-        filter: saturate(1);
+        transform: translate3d(-50%, -50%, 0) translate3d(var(--x), calc(var(--y) + 1px), 0) scale(0.95, 1.06);
     }
     76% {
-        transform: translate(-50%, -50%) translate(var(--x), calc(var(--y) - 0.5px)) scale(1.02, 0.98);
+        transform: translate3d(-50%, -50%, 0) translate3d(var(--x), calc(var(--y) - 0.5px), 0) scale(1.02, 0.98);
     }
     100% {
-        transform: translate(-50%, -50%) translate(var(--x), var(--y)) scale(1, 1);
-        filter: saturate(0.96);
+        transform: translate3d(-50%, -50%, 0) translate3d(var(--x), var(--y), 0) scale(1, 1);
     }
 }
 
@@ -451,26 +449,21 @@
 @keyframes cell-clone-burst {
     0% {
         transform: scale(0.88, 1.02) rotate(0deg);
-        filter: brightness(1) saturate(1);
     }
     24% {
         transform: scale(1.16, 0.9) rotate(-1deg);
-        filter: brightness(1.08) saturate(1.08);
     }
     46% {
         transform: scale(0.94, 1.12) rotate(1deg);
-        filter: brightness(1.12) saturate(1.12);
     }
     66% {
         transform: scale(1.1, 0.95) rotate(-0.5deg);
     }
     84% {
         transform: scale(0.97, 1.04) rotate(0.3deg);
-        filter: brightness(1.05) saturate(1.05);
     }
     100% {
         transform: scale(1, 1) rotate(0deg);
-        filter: brightness(1) saturate(1);
     }
 }
 

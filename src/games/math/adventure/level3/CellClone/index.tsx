@@ -468,12 +468,12 @@ export const CellClone: React.FC<CellCloneProps> = ({ onExit }) => {
                                         className="cell-clone-cell"
                                         style={
                                             {
-                                                '--x': `${x}px`,
-                                                '--y': `${y}px`,
-                                                '--delay': `${idx * 110}ms`
-                                            } as React.CSSProperties
-                                        }
-                                    />
+                                            '--x': `${x}px`,
+                                            '--y': `${y}px`,
+                                            '--delay': `${(idx % 12) * 70}ms`
+                                        } as React.CSSProperties
+                                    }
+                                />
                                 ))}
                             </div>
                         </div>
