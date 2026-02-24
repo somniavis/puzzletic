@@ -27,6 +27,7 @@
     width: 100%;
     display: flex;
     justify-content: center;
+    gap: clamp(0.45rem, 1.4vw, 0.85rem);
     margin-bottom: clamp(0.2rem, 0.8vh, 0.35rem);
 }
 
@@ -73,6 +74,10 @@
 
 .cell-clone-target-dot.is-purple {
     background: #9333ea;
+}
+
+.cell-clone-target-dot.is-neutral {
+    background: #94a3b8;
 }
 
 .cell-clone-target-value {

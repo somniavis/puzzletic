@@ -21,6 +21,10 @@ type RoundTarget = {
     multiplier: 2 | 4;
     result: number;
 };
+type ProducedResult = {
+    color: ReagentColor;
+    result: number;
+};
 type RoundPlan = {
     baseCount: number;
     targetColor: ReagentColor;
@@ -108,7 +112,9 @@ export const CellClone: React.FC<CellCloneProps> = ({ onExit }) => {
     const [cellCount, setCellCount] = React.useState<number>(() => randomCellCount());
     const [reagentOptions, setReagentOptions] = React.useState<ReagentOption[]>([]);
     const [roundTarget, setRoundTarget] = React.useState<RoundTarget | null>(null);
+    const [producedResult, setProducedResult] = React.useState<ProducedResult | null>(null);
     const [cellColor, setCellColor] = React.useState<CellTone>('neutral');
+    const [isRoundReady, setIsRoundReady] = React.useState(false);
     const [dragState, setDragState] = React.useState<DragState>(null);
     const [isDropTargetActive, setIsDropTargetActive] = React.useState(false);
     const [isCellBursting, setIsCellBursting] = React.useState(false);
@@ -206,13 +212,16 @@ export const CellClone: React.FC<CellCloneProps> = ({ onExit }) => {
             multiplier: nextPlan.targetMultiplier,
             result: nextPlan.baseCount * nextPlan.targetMultiplier
         });
+        setProducedResult(null);
         setIsCellBursting(false);
         setIsResolving(false);
+        setIsRoundReady(true);
     }, [clearRoundTimeouts]);
 
     React.useEffect(() => {
         const prev = prevGameStateRef.current;
         if (engine.gameState === 'playing' && (prev === 'idle' || prev === 'gameover')) {
+            setIsRoundReady(false);
             prepareRound();
 
             const isFirstQuestion =
@@ -237,6 +246,9 @@ export const CellClone: React.FC<CellCloneProps> = ({ onExit }) => {
             } else {
                 hideDragHintOverlay(false);
             }
+        }
+        if (engine.gameState === 'idle' || engine.gameState === 'gameover') {
+            setIsRoundReady(false);
         }
         prevGameStateRef.current = engine.gameState;
     }, [
@@ -291,6 +303,10 @@ export const CellClone: React.FC<CellCloneProps> = ({ onExit }) => {
 
                 setCellColor(currentDragOption.color);
                 setCellCount(nextCount);
+                setProducedResult({
+                    color: currentDragOption.color,
+                    result: nextCount
+                });
                 setIsCellBursting(true);
                 burstTimeoutRef.current = window.setTimeout(() => {
                     if (roundTokenRef.current !== currentRoundToken || engine.gameState !== 'playing') return;
@@ -299,8 +315,18 @@ export const CellClone: React.FC<CellCloneProps> = ({ onExit }) => {
                     resolveTimeoutRef.current = window.setTimeout(() => {
                         if (roundTokenRef.current !== currentRoundToken || engine.gameState !== 'playing') return;
 
+                        if (isCorrect) {
+                            const nextCombo = engine.combo + 1;
+                            if (nextCombo % 3 === 0 && Math.random() > 0.45) {
+                                const rewardTypes: Array<'timeFreeze' | 'extraLife' | 'doubleScore'> = ['timeFreeze', 'extraLife', 'doubleScore'];
+                                const reward = rewardTypes[Math.floor(Math.random() * rewardTypes.length)];
+                                engine.setPowerUps((prev) => ({ ...prev, [reward]: prev[reward] + 1 }));
+                            }
+                        }
+
                         engine.submitAnswer(isCorrect);
                         engine.registerEvent({ type: isCorrect ? 'correct' : 'wrong' });
+                        setProducedResult(null);
 
                         resolveTimeoutRef.current = window.setTimeout(() => {
                             if (roundTokenRef.current !== currentRoundToken || engine.gameState !== 'playing') return;
@@ -415,33 +441,39 @@ export const CellClone: React.FC<CellCloneProps> = ({ onExit }) => {
                             <span className={`cell-clone-target-dot is-${roundTarget.color}`} />
                             <span className="cell-clone-target-value">{roundTarget.result}</span>
                         </div>
+                        <div className="cell-clone-target-badge">
+                            <span className={`cell-clone-target-dot ${producedResult ? `is-${producedResult.color}` : 'is-neutral'}`} />
+                            <span className="cell-clone-target-value">{producedResult ? producedResult.result : '—'}</span>
+                        </div>
                     </div>
                 )}
                 <div className="cell-clone-main">
-                    <div
-                        ref={coreRef}
-                        className={`cell-clone-core ${isDropTargetActive ? 'is-drop-target' : ''} ${isCellBursting ? 'is-bursting' : ''} is-${cellColor}`}
-                        aria-label={t('games.cell-clone.description')}
-                    >
+                    {isRoundReady && (
                         <div
-                            className="cell-clone-cluster"
-                            style={{ '--cluster-scale': clusterScale } as React.CSSProperties}
+                            ref={coreRef}
+                            className={`cell-clone-core ${isDropTargetActive ? 'is-drop-target' : ''} ${isCellBursting ? 'is-bursting' : ''} is-${cellColor}`}
+                            aria-label={t('games.cell-clone.description')}
                         >
-                            {cellPositions.map(([x, y], idx) => (
-                                <div
-                                    key={`cell-${idx}`}
-                                    className="cell-clone-cell"
-                                    style={
-                                        {
-                                            '--x': `${x}px`,
-                                            '--y': `${y}px`,
-                                            '--delay': `${idx * 110}ms`
-                                        } as React.CSSProperties
-                                    }
-                                />
-                            ))}
+                            <div
+                                className="cell-clone-cluster"
+                                style={{ '--cluster-scale': clusterScale } as React.CSSProperties}
+                            >
+                                {cellPositions.map(([x, y], idx) => (
+                                    <div
+                                        key={`cell-${idx}`}
+                                        className="cell-clone-cell"
+                                        style={
+                                            {
+                                                '--x': `${x}px`,
+                                                '--y': `${y}px`,
+                                                '--delay': `${idx * 110}ms`
+                                            } as React.CSSProperties
+                                        }
+                                    />
+                                ))}
+                            </div>
                         </div>
-                    </div>
+                    )}
                 </div>
                 <div className="cell-clone-reagents-tray">
                     {showDragHintOverlay && (
