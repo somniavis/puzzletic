@@ -56,11 +56,11 @@
 }
 
 .cell-clone-target-dot.is-red {
-    background: #dc2626;
+    background: #ef4444;
 }
 
 .cell-clone-target-dot.is-yellow {
-    background: #d97706;
+    background: #facc15;
 }
 
 .cell-clone-target-dot.is-green {
@@ -68,7 +68,7 @@
 }
 
 .cell-clone-target-dot.is-orange {
-    background: #ea580c;
+    background: #f97316;
 }
 
 .cell-clone-target-dot.is-purple {
@@ -339,11 +339,11 @@
 }
 
 .cell-clone-reagent-btn.is-red {
-    background: #fecaca;
+    background: #fee2e2;
 }
 
 .cell-clone-reagent-btn.is-yellow {
-    background: #fef3c7;
+    background: #fef08a;
 }
 
 .cell-clone-reagent-btn.is-green {
@@ -351,7 +351,7 @@
 }
 
 .cell-clone-reagent-btn.is-orange {
-    background: #fed7aa;
+    background: #fdba74;
 }
 
 .cell-clone-reagent-btn.is-purple {
@@ -363,11 +363,11 @@
 }
 
 .cell-clone-reagent-btn.is-red .cell-clone-reagent-color {
-    background: #dc2626;
+    background: #ef4444;
 }
 
 .cell-clone-reagent-btn.is-yellow .cell-clone-reagent-color {
-    background: #d97706;
+    background: #facc15;
 }
 
 .cell-clone-reagent-btn.is-green .cell-clone-reagent-color {
@@ -375,7 +375,7 @@
 }
 
 .cell-clone-reagent-btn.is-orange .cell-clone-reagent-color {
-    background: #ea580c;
+    background: #f97316;
 }
 
 .cell-clone-reagent-btn.is-purple .cell-clone-reagent-color {
@@ -405,11 +405,11 @@
 }
 
 .cell-clone-drag-preview.is-red {
-    background: #fecaca;
+    background: #fee2e2;
 }
 
 .cell-clone-drag-preview.is-yellow {
-    background: #fef3c7;
+    background: #fef08a;
 }
 
 .cell-clone-drag-preview.is-green {
@@ -417,7 +417,7 @@
 }
 
 .cell-clone-drag-preview.is-orange {
-    background: #fed7aa;
+    background: #fdba74;
 }
 
 .cell-clone-drag-preview.is-purple {
