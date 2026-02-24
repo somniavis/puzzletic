@@ -4,7 +4,6 @@ import type { GameManifest } from '../../../../types';
 import { Layout2 } from '../../../../layouts/Standard/Layout2';
 import { useGameEngine } from '../../../../layouts/Standard/Layout0/useGameEngine';
 import { GameIds } from '../../../../../constants/gameIds';
-import { playClearSound, playJelloClickSound } from '../../../../../utils/sound';
 import './CellClone.css';
 
 interface CellCloneProps {
@@ -323,13 +322,10 @@ export const CellClone: React.FC<CellCloneProps> = ({ onExit }) => {
                                 const reward = rewardTypes[Math.floor(Math.random() * rewardTypes.length)];
                                 engine.setPowerUps((prev) => ({ ...prev, [reward]: prev[reward] + 1 }));
                             }
-                            playClearSound();
-                        } else {
-                            playJelloClickSound(0.8);
                         }
 
                         engine.submitAnswer(isCorrect);
-                        engine.registerEvent({ type: isCorrect ? 'correct' : 'wrong', sfx: 'none' } as any);
+                        engine.registerEvent({ type: isCorrect ? 'correct' : 'wrong' });
                         setProducedResult(null);
 
                         resolveTimeoutRef.current = window.setTimeout(() => {
