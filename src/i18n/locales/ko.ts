@@ -23,6 +23,7 @@ import iceStackingKo from '../../games/math/adventure/level3/IceStacking/locales
 import floorTilerKo from '../../games/math/adventure/level3/FloorTiler/locales/ko';
 import frogJumpKo from '../../games/math/adventure/level3/FrogJump/locales/ko';
 import chipCashierKo from '../../games/math/adventure/level3/ChipCashier/locales/ko';
+import cellCloneKo from '../../games/math/adventure/level3/CellClone/locales/ko';
 import beginnerWizardKo from '../../games/math/adventure/level3/BeginnerWizard/locales/ko';
 import constellationFinderKo from '../../games/math/adventure/level3/ConstellationFinder/locales/ko';
 import trollAttackKo from '../../games/math/adventure/level3/TrollAttack/locales/ko';
@@ -1063,6 +1064,7 @@ const koBase = {
         'floor-tiler': floorTilerKo,
         'frog-jump': frogJumpKo,
         'chip-cashier': chipCashierKo,
+        'cell-clone': cellCloneKo,
         'beginner-wizard': beginnerWizardKo,
         'constellation-finder': constellationFinderKo,
         'troll-attack': trollAttackKo,

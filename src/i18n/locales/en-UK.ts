@@ -30,6 +30,7 @@ import iceStackingEn from '../../games/math/adventure/level3/IceStacking/locales
 import floorTilerEn from '../../games/math/adventure/level3/FloorTiler/locales/en-UK';
 import frogJumpEn from '../../games/math/adventure/level3/FrogJump/locales/en-UK';
 import chipCashierEn from '../../games/math/adventure/level3/ChipCashier/locales/en-UK';
+import cellCloneEn from '../../games/math/adventure/level3/CellClone/locales/en-UK';
 import beginnerWizardEn from '../../games/math/adventure/level3/BeginnerWizard/locales/en-UK';
 import constellationFinderEn from '../../games/math/adventure/level3/ConstellationFinder/locales/en-UK';
 import trollAttackEn from '../../games/math/adventure/level3/TrollAttack/locales/en-UK';
@@ -1061,6 +1062,7 @@ export const enUK = {
     'floor-tiler': floorTilerEn,
     'frog-jump': frogJumpEn,
     'chip-cashier': chipCashierEn,
+    'cell-clone': cellCloneEn,
     'beginner-wizard': beginnerWizardEn,
     'constellation-finder': constellationFinderEn,
     'troll-attack': trollAttackEn,

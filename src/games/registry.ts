@@ -35,6 +35,7 @@ const L3_IceStacking = lazy(() => delayedImport(import('./math/adventure/level3/
 const L3_FloorTiler = lazy(() => delayedImport(import('./math/adventure/level3/FloorTiler').then(m => ({ default: m.FloorTiler }))));
 const L3_FrogJump = lazy(() => delayedImport(import('./math/adventure/level3/FrogJump').then(m => ({ default: m.FrogJump }))));
 const L3_ChipCashier = lazy(() => delayedImport(import('./math/adventure/level3/ChipCashier').then(m => ({ default: m.ChipCashier }))));
+const L3_CellClone = lazy(() => delayedImport(import('./math/adventure/level3/CellClone').then(m => ({ default: m.CellClone }))));
 const L3_BeginnerWizard = lazy(() => delayedImport(import('./math/adventure/level3/BeginnerWizard').then(m => ({ default: m.BeginnerWizard }))));
 const L3_ConstellationFinder = lazy(() => delayedImport(import('./math/adventure/level3/ConstellationFinder').then(m => ({ default: m.ConstellationFinder }))));
 const L3_TrollAttack = lazy(() => delayedImport(import('./math/adventure/level3/TrollAttack').then(m => ({ default: m.TrollAttack }))));
@@ -416,6 +417,21 @@ export const GAMES: GameManifest[] = [
         mode: 'adventure',
         component: L3_ChipCashier,
         thumbnail: '🪙',
+        tagsKey: 'games.tags.multiplication'
+    },
+    {
+        id: GameIds.MATH_CELL_CLONE,
+        title: '세포복제',
+        titleKey: 'games.cell-clone.title',
+        subtitle: '2단 · 4단 마스터',
+        subtitleKey: 'games.cell-clone.subtitle',
+        description: '2단과 4단을 연습하는 게임입니다.',
+        descriptionKey: 'games.cell-clone.description',
+        category: 'math',
+        level: 3,
+        mode: 'adventure',
+        component: L3_CellClone,
+        thumbnail: '🧫',
         tagsKey: 'games.tags.multiplication'
     },
     {

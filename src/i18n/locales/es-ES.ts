@@ -30,6 +30,7 @@ import iceStackingEn from '../../games/math/adventure/level3/IceStacking/locales
 import floorTilerEn from '../../games/math/adventure/level3/FloorTiler/locales/es-ES';
 import frogJumpEn from '../../games/math/adventure/level3/FrogJump/locales/es-ES';
 import chipCashierEn from '../../games/math/adventure/level3/ChipCashier/locales/es-ES';
+import cellCloneEn from '../../games/math/adventure/level3/CellClone/locales/es-ES';
 import beginnerWizardEn from '../../games/math/adventure/level3/BeginnerWizard/locales/es-ES';
 import constellationFinderEn from '../../games/math/adventure/level3/ConstellationFinder/locales/es-ES';
 import trollAttackEn from '../../games/math/adventure/level3/TrollAttack/locales/es-ES';
@@ -867,7 +868,7 @@ export const esES = {
     toddler: {
       joy: {
         l1: { affectionate: ['😊 Jeje', '🍼 ¡Yuju!', '✨'], playful: ['😆 ¡Yuju!', '🎶 La-la!', '😁 Ji!'], calm: ['😌 Mmm~', '🎵 Hum~', '👌 ¡Bien!'], shy: ['☺️ Jeje..', '😳 Oh..', '😚 ¡Muac!'], grumpy: ['😒 Uff.', '😏 Je.', '🙄 No está mal.'], energetic: ['✨ ¡Guau!', '👍 ¡Oh!', '😲 ¡Guau!'] },
-        l2: { affectionate: ['🥰 ¡Feliz!', '🌈 ¡Yuju!', '🎈 ¡Kya!'], playful: ['🏃 ¡Corre!', '⚽️ ¡Juega!', '🦖 ¡�Rugido!!'], calm: ['☕️ Bien.', '🍀 Guay.', '🍃 Ahh~'], shy: ['😽 Gracias..', '🌸 Jeje..', '🙈 Vergüenza..'], grumpy: ['😑 Vale.', '😼 Je.', '😮 Oh.'], energetic: ['🏆 ¡Top!', '💪 ¡Fuerza!', '🚀 ¡Vamos!'] },
+        l2: { affectionate: ['🥰 ¡Feliz!', '🌈 ¡Yuju!', '🎈 ¡Kya!'], playful: ['🏃 ¡Corre!', '⚽️ ¡Juega!', '🦖 ¡�Rugido!!'], calm: ['☕️ Bien.', '🍀 Guay.', '🍃 Ahh~'], shy: ['😽 Gracias..', '🌸 Jeje..', '🙈 Vergüenza..'], grumpy: ['😑 Vale.', '😼 Je.', '😮 Oh.'], energetic: ['🏆 ¡Top!', '💪 ¡Fuerza!', '🚀 ¡Vamos!'] },
         l3: { affectionate: ['❤️ ¡Amor!', '💖 ¡Yuju!!', '🌟 ¡Estrella!'], playful: ['💡 ¡Ajá!', '👑 ¡Rey!', '😂 ¡Jaja!'], calm: ['🙏 Gracias.', '🙇 Reverencia.', '👏 ¡Palmas!'], shy: ['🍅 Rojo..', '🎁 Gracias..', '🦄 Sueño..'], grumpy: ['🆗 Vale.', '💬 Gracias.', '😤 Uff!'], energetic: ['🔥 ¡Fuego!', '🌍 ¡Mundo!', '📢 ¡Grita!'] },
       },
       love: {
@@ -902,7 +903,7 @@ export const esES = {
       },
       angry: {
         l1: { affectionate: ['😤 Uff!', '😞 Malo!', '😒 Morro'], playful: ['👊 ¡Ja!', '🥊 ¡Pum!', '⚔️ ¡Ataque!'], calm: ['😔 Decepción.', '✋ Para.', '😐 Feo.'], shy: ['🥺 Snif', '😢 Malo..', '😿 Odio..'], grumpy: ['👉 Vete.', '🤫 Shh.', '🌩️ Regaño.'], energetic: ['😡 ¡Enfado!', '🥋 ¡Pelea!', '🦁 ¡Raah!'] },
-        l2: { affectionate: ['😠 ¡Odio!', '🙅 ¡No juego!', '🤥 ¡Mentira!'], playful: ['💣 ¡Pum!', '🐊 ¡Muerde!', '🦖 ¡�Rugido!!'], calm: ['⚠️ Aviso.', '🚫 No.', '🛑 Para.'], shy: ['😭 Snif', '👋 ¡Vete!', '😣 ¡No!'], grumpy: ['👿 ¿Regaño?', '🙈 No mirar.', '🗯️ No.'], energetic: ['👺 ¡Rabia!!', '💢 ¡Enfado!', '🥊 ¡Vamos!'] },
+        l2: { affectionate: ['😠 ¡Odio!', '🙅 ¡No juego!', '🤥 ¡Mentira!'], playful: ['💣 ¡Pum!', '🐊 ¡Muerde!', '🦖 ¡�Rugido!!'], calm: ['⚠️ Aviso.', '🚫 No.', '🛑 Para.'], shy: ['😭 Snif', '👋 ¡Vete!', '😣 ¡No!'], grumpy: ['👿 ¿Regaño?', '🙈 No mirar.', '🗯️ No.'], energetic: ['👺 ¡Rabia!!', '💢 ¡Enfado!', '🥊 ¡Vamos!'] },
         l3: { affectionate: ['😤 Uff!', '🙈 ¡Odio!', '💢 Uff!!'], playful: ['🚂 ¡Chuu!', '🌪️ ¡Lío!', '😈 ¡Grrr!'], calm: ['😑 Fin.', '🛑 Para.', '🔚 Termina.'], shy: ['🌊 Waa!', '😭 Waa!!', '👶 Waa!'], grumpy: ['🌋 Enfado.', '💨 Fuera.', '😫 Uff!'], energetic: ['🔥 ¡Furia!', '🔨 ¡Golpe!', '🤬 ¡Rabia!'] },
       },
     },
@@ -1061,6 +1062,7 @@ export const esES = {
     'floor-tiler': floorTilerEn,
     'frog-jump': frogJumpEn,
     'chip-cashier': chipCashierEn,
+    'cell-clone': cellCloneEn,
     'beginner-wizard': beginnerWizardEn,
     'constellation-finder': constellationFinderEn,
     'troll-attack': trollAttackEn,

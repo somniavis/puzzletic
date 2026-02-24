@@ -30,6 +30,7 @@ import iceStackingPt from '../../games/math/adventure/level3/IceStacking/locales
 import floorTilerPt from '../../games/math/adventure/level3/FloorTiler/locales/pt-PT';
 import frogJumpPt from '../../games/math/adventure/level3/FrogJump/locales/pt-PT';
 import chipCashierPt from '../../games/math/adventure/level3/ChipCashier/locales/pt-PT';
+import cellClonePt from '../../games/math/adventure/level3/CellClone/locales/pt-PT';
 import beginnerWizardPt from '../../games/math/adventure/level3/BeginnerWizard/locales/pt-PT';
 import constellationFinderPt from '../../games/math/adventure/level3/ConstellationFinder/locales/pt-PT';
 import trollAttackPt from '../../games/math/adventure/level3/TrollAttack/locales/pt-PT';
@@ -1061,6 +1062,7 @@ export const ptPT = {
     'floor-tiler': floorTilerPt,
     'frog-jump': frogJumpPt,
     'chip-cashier': chipCashierPt,
+    'cell-clone': cellClonePt,
     'beginner-wizard': beginnerWizardPt,
     'constellation-finder': constellationFinderPt,
     'troll-attack': trollAttackPt,
