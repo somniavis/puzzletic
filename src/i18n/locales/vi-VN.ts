@@ -432,7 +432,18 @@ export const viVN = {
     earnedStar: 'Star',
     yes: 'Có',
     no: 'Không',
+    confirm_reset: 'Bạn có chắc muốn bắt đầu trò chơi mới không? Dữ liệu hiện tại sẽ bị mất.',
     goHome: 'Về trang chủ',
+    errorBoundary: {
+      updateTitle: 'Đã có bản cập nhật mới!',
+      updateDesc: 'Vui lòng tải lại để dùng phiên bản mới nhất.',
+      refreshButton: 'Tải lại',
+      tempErrorTitle: 'Đã xảy ra lỗi tạm thời.',
+      tempErrorRetry: 'Thử lại',
+      globalErrorTitle: 'Đã xảy ra lỗi.',
+      globalErrorDesc: 'Xin lỗi, đã có sự cố khi chạy ứng dụng.',
+      errorDetailsTitle: 'Chi tiết lỗi',
+    },
   },
   evolution: {
     title: 'TIẾN HÓA!',

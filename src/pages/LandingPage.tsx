@@ -47,7 +47,7 @@ export const LandingPage: React.FC = () => {
     };
 
     const handleNewGame = () => {
-        if (window.confirm(t('common.confirm_reset') || 'Are you sure you want to start a new game? Existing data will be lost.')) {
+        if (window.confirm(t('common.confirm_reset'))) {
             // 1. Clear old data
             if (guestId) {
                 localStorage.removeItem(getStorageKey(guestId));

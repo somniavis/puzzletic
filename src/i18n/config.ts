@@ -6,6 +6,7 @@ import { esES } from './locales/es-ES';
 import { ptPT } from './locales/pt-PT';
 import { viVN } from './locales/vi-VN';
 import { idID } from './locales/id-ID';
+import { frFR } from './locales/fr-FR';
 import { ko } from './locales/ko';
 import { ja } from './locales/ja';
 
@@ -43,6 +44,12 @@ const resources = {
   'id-ID': {
     translation: idID,
   },
+  fr: {
+    translation: frFR,
+  },
+  'fr-FR': {
+    translation: frFR,
+  },
   ko: {
     translation: ko,
   },
@@ -76,6 +83,8 @@ const browserLanguage = navigator.language.startsWith('ko')
           ? 'vi-VN'
           : navigator.language.startsWith('id')
             ? 'id-ID'
+            : navigator.language.startsWith('fr')
+              ? 'fr-FR'
     : navigator.language.startsWith('en-GB')
       ? 'en-UK'
     : 'en';

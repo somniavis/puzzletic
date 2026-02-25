@@ -1,5 +1,6 @@
 import { Component } from 'react';
 import type { ErrorInfo, ReactNode } from 'react';
+import i18n from '../../i18n/config';
 
 interface Props {
     children: ReactNode;
@@ -53,9 +54,11 @@ export class GameErrorBoundary extends Component<Props, State> {
                         gap: '1.5rem'
                     }}>
                         <div style={{ fontSize: '3rem' }}>✨</div>
-                        <h2 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 800 }}>새로운 업데이트가 있어요!</h2>
+                        <h2 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 800 }}>
+                            {i18n.t('common.errorBoundary.updateTitle')}
+                        </h2>
                         <p style={{ margin: 0, fontSize: '1rem', color: '#64748b' }}>
-                            최신 버전의 게임을 불러오기 위해<br />새로고침이 필요합니다.
+                            {i18n.t('common.errorBoundary.updateDesc')}
                         </p>
                         <button
                             onClick={this.handleReload}
@@ -71,7 +74,7 @@ export class GameErrorBoundary extends Component<Props, State> {
                                 boxShadow: '0 4px 6px -1px rgba(37, 99, 235, 0.3)'
                             }}
                         >
-                            🔄 새로고침
+                            🔄 {i18n.t('common.errorBoundary.refreshButton')}
                         </button>
                     </div>
                 );
@@ -88,7 +91,7 @@ export class GameErrorBoundary extends Component<Props, State> {
                     textAlign: 'center',
                     color: '#ef4444'
                 }}>
-                    <h3>일시적인 오류가 발생했습니다.</h3>
+                    <h3>{i18n.t('common.errorBoundary.tempErrorTitle')}</h3>
                     <button
                         onClick={() => this.setState({ hasError: false })}
                         style={{
@@ -100,11 +103,13 @@ export class GameErrorBoundary extends Component<Props, State> {
                             cursor: 'pointer'
                         }}
                     >
-                        다시 시도
+                        {i18n.t('common.errorBoundary.tempErrorRetry')}
                     </button>
                     {/* Debug: Show actual error */}
                     <details style={{ marginTop: '2rem', maxWidth: '80%', overflow: 'auto', textAlign: 'left', background: '#f1f5f9', padding: '1rem', borderRadius: '0.5rem' }}>
-                        <summary style={{ cursor: 'pointer', color: '#64748b' }}>Error Details</summary>
+                        <summary style={{ cursor: 'pointer', color: '#64748b' }}>
+                            {i18n.t('common.errorBoundary.errorDetailsTitle')}
+                        </summary>
                         <pre style={{ fontSize: '0.75rem', marginTop: '0.5rem', whiteSpace: 'pre-wrap' }}>
                             {this.state.error?.toString()}
                             <br />

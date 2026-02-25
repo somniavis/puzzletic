@@ -295,7 +295,18 @@ export const idID = {
     earnedStar: 'Star',
     yes: 'Ya',
     no: 'Tidak',
+    confirm_reset: 'Yakin ingin memulai game baru? Data yang ada akan hilang.',
     goHome: 'Ke Beranda',
+    errorBoundary: {
+      updateTitle: 'Pembaruan baru tersedia!',
+      updateDesc: 'Muat ulang untuk menggunakan versi terbaru.',
+      refreshButton: 'Muat ulang',
+      tempErrorTitle: 'Terjadi kesalahan sementara.',
+      tempErrorRetry: 'Coba lagi',
+      globalErrorTitle: 'Terjadi kesalahan.',
+      globalErrorDesc: 'Maaf, terjadi masalah saat menjalankan aplikasi.',
+      errorDetailsTitle: 'Detail kesalahan',
+    },
   },
   evolution: {
     title: 'EVOLUSI!',

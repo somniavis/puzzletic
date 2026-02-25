@@ -295,7 +295,18 @@ export const esES = {
     earnedStar: 'Estrella',
     yes: 'Sí',
     no: 'No',
+    confirm_reset: '¿Seguro que quieres iniciar un juego nuevo? Se perderán los datos existentes.',
     goHome: 'Ir al inicio',
+    errorBoundary: {
+      updateTitle: '¡Hay una nueva actualización disponible!',
+      updateDesc: 'Actualiza la página para cargar la versión más reciente.',
+      refreshButton: 'Actualizar',
+      tempErrorTitle: 'Se ha producido un error temporal.',
+      tempErrorRetry: 'Reintentar',
+      globalErrorTitle: 'Se produjo un error.',
+      globalErrorDesc: 'Lo sentimos, ocurrió un problema al ejecutar la app.',
+      errorDetailsTitle: 'Detalles del error',
+    },
   },
   evolution: {
     title: '¡EVOLUCIÓN!',

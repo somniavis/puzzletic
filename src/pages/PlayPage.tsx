@@ -200,7 +200,7 @@ const PlayPage: React.FC = () => {
                         );
                     })
                 ) : (
-                    <div style={{ textAlign: 'center', padding: '2rem', color: '#9ca3af' }}>🚧 Coming Soon 🚧</div>
+                    <div style={{ textAlign: 'center', padding: '2rem', color: '#9ca3af' }}>🚧 {t('play.game.noGames')} 🚧</div>
                 )}
             </div>
         </div>
@@ -259,7 +259,7 @@ const PlayPage: React.FC = () => {
                     })
                 ) : (
                     <div style={{ padding: '2rem', textAlign: 'center', color: '#94a3b8' }}>
-                        Coming Soon...<br /><span style={{ fontSize: '0.8rem' }}>No drills available for this operator yet.</span>
+                        {t('play.game.noGames')}
                     </div>
                 )}
             </div >

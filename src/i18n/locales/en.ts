@@ -295,7 +295,18 @@ export const en = {
     earnedStar: 'Star',
     yes: 'Yes',
     no: 'No',
+    confirm_reset: 'Are you sure you want to start a new game? Existing data will be lost.',
     goHome: 'Go Home',
+    errorBoundary: {
+      updateTitle: 'A new update is available!',
+      updateDesc: 'Please refresh to load the latest version.',
+      refreshButton: 'Refresh',
+      tempErrorTitle: 'A temporary error occurred.',
+      tempErrorRetry: 'Try again',
+      globalErrorTitle: 'Something went wrong.',
+      globalErrorDesc: 'Sorry, an error occurred while running the app.',
+      errorDetailsTitle: 'Error details',
+    },
   },
   evolution: {
     title: 'EVOLUTION!',

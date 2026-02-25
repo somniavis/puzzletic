@@ -297,7 +297,18 @@ const koBase = {
         earnedStar: '스타',
         yes: '예',
         no: '아니오',
+        confirm_reset: '새 게임을 시작하시겠어요? 기존 데이터는 삭제됩니다.',
         goHome: '홈으로 가기',
+        errorBoundary: {
+            updateTitle: '새로운 업데이트가 있어요!',
+            updateDesc: '최신 버전을 불러오기 위해 새로고침해 주세요.',
+            refreshButton: '새로고침',
+            tempErrorTitle: '일시적인 오류가 발생했습니다.',
+            tempErrorRetry: '다시 시도',
+            globalErrorTitle: '오류가 발생했습니다',
+            globalErrorDesc: '앱을 실행하는 도중 문제가 생겼습니다.',
+            errorDetailsTitle: '오류 상세 정보',
+        },
     },
     evolution: {
         title: '진화!',

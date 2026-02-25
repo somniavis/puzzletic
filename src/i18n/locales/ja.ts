@@ -297,7 +297,18 @@ const jaBase = {
         earnedStar: 'スター',
         yes: 'はい',
         no: 'いいえ',
+        confirm_reset: '新しいゲームを始めますか？既存データは削除されます。',
         goHome: 'ホームへ',
+        errorBoundary: {
+            updateTitle: '新しいアップデートがあります！',
+            updateDesc: '最新バージョンを読み込むために再読み込みしてください。',
+            refreshButton: '再読み込み',
+            tempErrorTitle: '一時的なエラーが発生しました。',
+            tempErrorRetry: '再試行',
+            globalErrorTitle: 'エラーが発生しました',
+            globalErrorDesc: 'アプリの実行中に問題が発生しました。',
+            errorDetailsTitle: 'エラー詳細',
+        },
     },
     evolution: {
         title: '進化！',
