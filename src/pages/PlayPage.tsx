@@ -159,50 +159,115 @@ const PlayPage: React.FC = () => {
 
     // -- Sub-Renderers --
 
+    const renderMathAdventureByLevel = () => {
+        const levelGroups = [1, 2, 3]
+            .map((level) => ({
+                level,
+                games: adventureGames.filter((game) => game.level === level),
+            }))
+            .filter((group) => group.games.length > 0);
+
+        if (levelGroups.length === 0) {
+            return <div style={{ textAlign: 'center', padding: '2rem', color: '#9ca3af' }}>🚧 {t('play.game.noGames')} 🚧</div>;
+        }
+
+        return (
+            <div className="funmath-level-groups">
+                {levelGroups.map(({ level, games }, index) => {
+                    const nextLevel = levelGroups[index + 1]?.level;
+                    return (
+                    <React.Fragment key={level}>
+                        <section className={`funmath-level-section level-${level}`}>
+                            <div className="funmath-level-header">
+                                <p className="funmath-level-eyebrow">{t('play.sections.funMath.title')}</p>
+                                <h3 className="funmath-level-title">{t('play.controls.level')} {level}</h3>
+                            </div>
+                            <div className="game-list">
+                                {games.map(game => {
+                                    const scoreValue = gameScores?.[game.id];
+                                    const { clearCount } = parseGameScore(scoreValue);
+                                    const { unlocked, reason, requiredGame } = isGameUnlocked(game.id, GAMES, { gameScores, categoryProgress });
+
+                                    let displayReason = reason;
+                                    if (requiredGame) {
+                                        const requiredGameTitle = requiredGame.titleKey ? t(requiredGame.titleKey) : requiredGame.title;
+                                        displayReason = t('play.game.unlock.reason', { game: requiredGameTitle });
+                                    }
+
+                                    const isMastered = clearCount >= ADVENTURE_UNLOCK_THRESHOLD;
+
+                                    return (
+                                        <AdventureCard
+                                            key={game.id}
+                                            id={`game-card-${game.id}`}
+                                            game={game}
+                                            unlocked={unlocked}
+                                            displayReason={displayReason}
+                                            clearCount={clearCount}
+                                            isMastered={isMastered}
+                                            onPlay={handlePlayClick}
+                                            isPremiumLocked={!isPremium && isPremiumGame(game)}
+                                        />
+                                    );
+                                })}
+                            </div>
+                        </section>
+                        {index < levelGroups.length - 1 && (
+                            <div
+                                className={`funmath-level-transition from-${level} to-${nextLevel}`}
+                                aria-hidden="true"
+                            />
+                        )}
+                    </React.Fragment>
+                    );
+                })}
+            </div>
+        );
+    };
+
     const renderAdventureSection = () => (
         <div className="section-container">
-            <div className="section-header">
-                <h2 className="section-title">
-                    {activeTab === 'math' ? t('play.sections.funMath.title') : t(`play.categories.${activeTab}`)}
-                </h2>
-                <p className="section-desc">
-                    {activeTab === 'math' ? t('play.sections.funMath.desc') : t('play.sections.training.desc')}
-                </p>
-            </div>
+            {activeTab === 'math' ? renderMathAdventureByLevel() : (
+                <>
+                    <div className="section-header">
+                        <h2 className="section-title">{t(`play.categories.${activeTab}`)}</h2>
+                        <p className="section-desc">{t('play.sections.training.desc')}</p>
+                    </div>
+                <div className="game-list">
+                    {adventureGames.length > 0 ? (
+                        adventureGames.map(game => {
+                            const scoreValue = gameScores?.[game.id];
+                            const { clearCount } = parseGameScore(scoreValue);
+                            const { unlocked, reason, requiredGame } = isGameUnlocked(game.id, GAMES, { gameScores, categoryProgress });
 
-            <div className="game-list">
-                {adventureGames.length > 0 ? (
-                    adventureGames.map(game => {
-                        const scoreValue = gameScores?.[game.id];
-                        const { clearCount } = parseGameScore(scoreValue);
-                        const { unlocked, reason, requiredGame } = isGameUnlocked(game.id, GAMES, { gameScores, categoryProgress });
+                            let displayReason = reason;
+                            if (requiredGame) {
+                                const requiredGameTitle = requiredGame.titleKey ? t(requiredGame.titleKey) : requiredGame.title;
+                                displayReason = t('play.game.unlock.reason', { game: requiredGameTitle });
+                            }
 
-                        let displayReason = reason;
-                        if (requiredGame) {
-                            const requiredGameTitle = requiredGame.titleKey ? t(requiredGame.titleKey) : requiredGame.title;
-                            displayReason = t('play.game.unlock.reason', { game: requiredGameTitle });
-                        }
+                            const isMastered = clearCount >= ADVENTURE_UNLOCK_THRESHOLD;
 
-                        const isMastered = clearCount >= ADVENTURE_UNLOCK_THRESHOLD; // Adventure mastery threshold
-
-                        return (
-                            <AdventureCard
-                                key={game.id}
-                                id={`game-card-${game.id}`} // Assign ID for scroll target
-                                game={game}
-                                unlocked={unlocked}
-                                displayReason={displayReason}
-                                clearCount={clearCount}
-                                isMastered={isMastered}
-                                onPlay={handlePlayClick}
-                                isPremiumLocked={!isPremium && isPremiumGame(game)}
-                            />
-                        );
-                    })
-                ) : (
-                    <div style={{ textAlign: 'center', padding: '2rem', color: '#9ca3af' }}>🚧 {t('play.game.noGames')} 🚧</div>
-                )}
-            </div>
+                            return (
+                                <AdventureCard
+                                    key={game.id}
+                                    id={`game-card-${game.id}`}
+                                    game={game}
+                                    unlocked={unlocked}
+                                    displayReason={displayReason}
+                                    clearCount={clearCount}
+                                    isMastered={isMastered}
+                                    onPlay={handlePlayClick}
+                                    isPremiumLocked={!isPremium && isPremiumGame(game)}
+                                />
+                            );
+                        })
+                    ) : (
+                        <div style={{ textAlign: 'center', padding: '2rem', color: '#9ca3af' }}>🚧 {t('play.game.noGames')} 🚧</div>
+                    )}
+                </div>
+                </>
+            )}
         </div>
     );
 
@@ -293,7 +358,7 @@ const PlayPage: React.FC = () => {
 
             {activeTab === 'math' && renderMathModeSwitcher()}
 
-            <div className="hub-content">
+            <div className={`hub-content ${activeTab === 'math' && mathMode === 'adventure' ? 'hub-content-math-adventure' : ''}`}>
                 {activeTab === 'math' ? (
                     mathMode === 'adventure' ? renderAdventureSection() : renderGeniusSection()
                 ) : (

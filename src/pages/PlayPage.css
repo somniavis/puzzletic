@@ -225,6 +225,10 @@
     /* Prevent horizontal scroll */
 }
 
+.hub-content.hub-content-math-adventure {
+    padding-top: 0;
+}
+
 .hub-content::-webkit-scrollbar {
     display: none;
     /* Chrome/Safari */
@@ -237,6 +241,7 @@
     padding: 0.75rem 1.5rem;
     display: flex;
     justify-content: center;
+    background: transparent;
 }
 
 .mode-switcher-pill {
@@ -319,6 +324,111 @@
     line-height: 1.25rem;
     font-weight: 500;
     margin-top: 0.25rem;
+}
+
+/* --- Math Adventure by Level --- */
+.funmath-level-groups {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.funmath-level-section {
+    margin-left: -1.5rem;
+    margin-right: -1.5rem;
+    padding: 1.4rem 1.5rem 1.1rem;
+}
+
+.funmath-level-section.level-1 {
+    background: #87CEEB;
+    padding-top: 0.7rem;
+}
+
+.funmath-level-section.level-2 {
+    background: #d5f0d8;
+}
+
+.funmath-level-section.level-3 {
+    background: #ffe0bd;
+}
+
+.funmath-level-header {
+    margin-bottom: 0.85rem;
+    padding: 0.2rem 0.125rem 0.35rem 0.25rem;
+    animation: fadeIn 0.5s ease-out both;
+}
+
+.funmath-level-section.level-1 .funmath-level-header {
+    animation-delay: 0s;
+}
+
+.funmath-level-section.level-2 .funmath-level-header {
+    animation-delay: 0.08s;
+}
+
+.funmath-level-section.level-3 .funmath-level-header {
+    animation-delay: 0.16s;
+}
+
+.funmath-level-eyebrow {
+    margin: 0;
+    font-size: 0.72rem;
+    line-height: 1rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(61, 46, 31, 0.72);
+}
+
+.funmath-level-title {
+    margin: 0.1rem 0 0;
+    font-size: 1.2rem;
+    line-height: 1.35rem;
+    font-weight: 900;
+    color: #3d2e1f;
+}
+
+.funmath-level-transition {
+    margin-left: -1.5rem;
+    margin-right: -1.5rem;
+    height: 3.2rem;
+    margin-top: -1px;
+    margin-bottom: -1px;
+    pointer-events: none;
+}
+
+.funmath-level-transition.from-1.to-2 {
+    background: linear-gradient(
+        180deg,
+        #87CEEB 0%,
+        #a8dbdf 35%,
+        #c1e7d8 65%,
+        #d5f0d8 100%
+    );
+}
+
+.funmath-level-transition.from-2.to-3 {
+    background: linear-gradient(
+        180deg,
+        #d5f0d8 0%,
+        #e5efd2 35%,
+        #f4e9c7 65%,
+        #ffe0bd 100%
+    );
+}
+
+.funmath-level-transition.from-1.to-3 {
+    background: linear-gradient(
+        180deg,
+        #87CEEB 0%,
+        #b1dede 35%,
+        #e1e3ca 65%,
+        #ffe0bd 100%
+    );
+}
+
+.funmath-level-section .game-list .adventure-card:last-child {
+    margin-bottom: 0;
 }
 
 .adventure-card {
