@@ -31,6 +31,7 @@ import floorTilerEn from '../../games/math/adventure/level3/FloorTiler/locales/i
 import frogJumpEn from '../../games/math/adventure/level3/FrogJump/locales/id-ID';
 import chipCashierEn from '../../games/math/adventure/level3/ChipCashier/locales/id-ID';
 import cellCloneEn from '../../games/math/adventure/level3/CellClone/locales/id-ID';
+import tenFramePopLocale from '../../games/math/adventure/level3/TenFramePop/locales/id-ID';
 import beginnerWizardEn from '../../games/math/adventure/level3/BeginnerWizard/locales/id-ID';
 import constellationFinderEn from '../../games/math/adventure/level3/ConstellationFinder/locales/id-ID';
 import trollAttackEn from '../../games/math/adventure/level3/TrollAttack/locales/id-ID';
@@ -1028,7 +1029,7 @@ export const idID = {
     },
     sections: {
       funMath: {
-        title: 'Matematika Seru',
+        title: 'Main Matematika Seru',
         desc: 'Misi matematika bergaya game',
       },
       training: {
@@ -1074,6 +1075,7 @@ export const idID = {
     'frog-jump': frogJumpEn,
     'chip-cashier': chipCashierEn,
     'cell-clone': cellCloneEn,
+        'ten-frame-pop': tenFramePopLocale,
     'beginner-wizard': beginnerWizardEn,
     'constellation-finder': constellationFinderEn,
     'troll-attack': trollAttackEn,

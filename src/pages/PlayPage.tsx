@@ -1,4 +1,4 @@
-import React, { useEffect, Suspense } from 'react';
+import React, { useEffect, Suspense, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import './PlayPage.css';
@@ -41,8 +41,22 @@ const PlayPage: React.FC = () => {
 
     const { isPremium } = usePremiumStatus();
     const [isPremiumModalOpen, setIsPremiumModalOpen] = React.useState(false);
+    const [activeAdventureLevel, setActiveAdventureLevel] = React.useState<number>(1);
+    const hubContentRef = React.useRef<HTMLDivElement | null>(null);
 
     const activeGame = gameId ? getGameById(gameId) : null;
+    const mathAdventureLevelGroups = useMemo(() => {
+        return [1, 2, 3]
+            .map((level) => ({
+                level,
+                games: adventureGames.filter((game) => game.level === level),
+            }))
+            .filter((group) => group.games.length > 0);
+    }, [adventureGames]);
+    const mathAdventureLevelSignature = useMemo(
+        () => mathAdventureLevelGroups.map((group) => `${group.level}:${group.games.length}`).join('|'),
+        [mathAdventureLevelGroups]
+    );
 
     // -- Effects --
     useEffect(() => {
@@ -55,14 +69,79 @@ const PlayPage: React.FC = () => {
         // Only scroll if we are in List View (no active gameId) and have a last played game
         if (!gameId && lastPlayedGameId) {
             // Small delay to ensure rendering
-            setTimeout(() => {
+            const timeoutId = window.setTimeout(() => {
                 const element = document.getElementById(`game-card-${lastPlayedGameId}`);
                 if (element) {
                     element.scrollIntoView({ behavior: 'auto', block: 'center' });
                 }
             }, 100);
+
+            return () => window.clearTimeout(timeoutId);
         }
     }, [lastPlayedGameId, activeTab, mathMode, gameId]); // Added gameId to trigger when returning from game
+
+    // Sync math mode switcher background with current adventure level section while scrolling.
+    useEffect(() => {
+        if (activeTab !== 'math' || mathMode !== 'adventure') return;
+
+        const container = hubContentRef.current;
+        if (!container) return;
+        if (!mathAdventureLevelGroups.length) return;
+        const switcher = document.querySelector<HTMLElement>('.mode-switcher-container');
+        if (!switcher) return;
+
+        const headerNodes = Array.from(
+            container.querySelectorAll<HTMLElement>('.funmath-level-header')
+        );
+        if (!headerNodes.length) return;
+        const headerAnchors = headerNodes
+            .map((header) => {
+                const section = header.closest<HTMLElement>('.funmath-level-section[data-level]');
+                return {
+                    level: Number(section?.dataset.level),
+                    header,
+                };
+            })
+            .filter((item) => item.level >= 1 && item.level <= 3)
+            .sort((a, b) => a.level - b.level);
+        if (!headerAnchors.length) return;
+
+        const syncLevelFromScroll = () => {
+            const switcherBottom = switcher.getBoundingClientRect().bottom;
+            let level = headerAnchors[0].level;
+            for (const item of headerAnchors) {
+                // Switch background when the "Fun Math" header reaches the switcher's baseline.
+                if (item.header.getBoundingClientRect().top <= switcherBottom) level = item.level;
+                else break;
+            }
+
+            if (level >= 1 && level <= 3) {
+                setActiveAdventureLevel((prev) => (prev === level ? prev : level));
+            }
+        };
+
+        syncLevelFromScroll();
+
+        let ticking = false;
+        const onScroll = () => {
+            if (ticking) return;
+            ticking = true;
+            requestAnimationFrame(() => {
+                syncLevelFromScroll();
+                ticking = false;
+            });
+        };
+
+        const onResize = () => syncLevelFromScroll();
+
+        container.addEventListener('scroll', onScroll, { passive: true });
+        window.addEventListener('resize', onResize);
+
+        return () => {
+            container.removeEventListener('scroll', onScroll);
+            window.removeEventListener('resize', onResize);
+        };
+    }, [activeTab, mathMode, mathAdventureLevelSignature]);
 
     // -- Handlers --
     const onTabSelect = (category: GameCategory) => {
@@ -80,7 +159,7 @@ const PlayPage: React.FC = () => {
         navigate('/home');
     };
 
-    const handlePlayClick = (game: GameManifest, isLocked: boolean, reason?: string) => {
+    const handlePlayClick = (game: GameManifest, isLocked: boolean, _reason?: string) => {
         // 1. Check Premium Lock
         const premiumLocked = !isPremium && isPremiumGame(game);
         if (premiumLocked) {
@@ -90,7 +169,6 @@ const PlayPage: React.FC = () => {
         }
 
         if (isLocked) {
-            console.log('Game Locked:', reason);
             return;
         }
         playButtonSound();
@@ -139,7 +217,9 @@ const PlayPage: React.FC = () => {
     );
 
     const renderMathModeSwitcher = () => (
-        <div className="mode-switcher-container">
+        <div
+            className={`mode-switcher-container ${mathMode === 'adventure' ? `switch-bg-level-${activeAdventureLevel}` : ''}`}
+        >
             <div className="mode-switcher-pill">
                 <button
                     className={`mode-btn ${mathMode === 'adventure' ? 'active' : ''}`}
@@ -160,24 +240,17 @@ const PlayPage: React.FC = () => {
     // -- Sub-Renderers --
 
     const renderMathAdventureByLevel = () => {
-        const levelGroups = [1, 2, 3]
-            .map((level) => ({
-                level,
-                games: adventureGames.filter((game) => game.level === level),
-            }))
-            .filter((group) => group.games.length > 0);
-
-        if (levelGroups.length === 0) {
+        if (mathAdventureLevelGroups.length === 0) {
             return <div style={{ textAlign: 'center', padding: '2rem', color: '#9ca3af' }}>🚧 {t('play.game.noGames')} 🚧</div>;
         }
 
         return (
             <div className="funmath-level-groups">
-                {levelGroups.map(({ level, games }, index) => {
-                    const nextLevel = levelGroups[index + 1]?.level;
+                {mathAdventureLevelGroups.map(({ level, games }, index) => {
+                    const nextLevel = mathAdventureLevelGroups[index + 1]?.level;
                     return (
                     <React.Fragment key={level}>
-                        <section className={`funmath-level-section level-${level}`}>
+                        <section className={`funmath-level-section level-${level}`} data-level={level}>
                             <div className="funmath-level-header">
                                 <p className="funmath-level-eyebrow">{t('play.sections.funMath.title')}</p>
                                 <h3 className="funmath-level-title">{t('play.controls.level')} {level}</h3>
@@ -212,9 +285,10 @@ const PlayPage: React.FC = () => {
                                 })}
                             </div>
                         </section>
-                        {index < levelGroups.length - 1 && (
+                        {index < mathAdventureLevelGroups.length - 1 && (
                             <div
                                 className={`funmath-level-transition from-${level} to-${nextLevel}`}
+                                data-to-level={nextLevel}
                                 aria-hidden="true"
                             />
                         )}
@@ -358,7 +432,10 @@ const PlayPage: React.FC = () => {
 
             {activeTab === 'math' && renderMathModeSwitcher()}
 
-            <div className={`hub-content ${activeTab === 'math' && mathMode === 'adventure' ? 'hub-content-math-adventure' : ''}`}>
+            <div
+                ref={hubContentRef}
+                className={`hub-content ${activeTab === 'math' && mathMode === 'adventure' ? 'hub-content-math-adventure' : ''}`}
+            >
                 {activeTab === 'math' ? (
                     mathMode === 'adventure' ? renderAdventureSection() : renderGeniusSection()
                 ) : (

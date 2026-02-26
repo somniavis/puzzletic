@@ -28,6 +28,7 @@ export const GameIds = {
     MATH_FROG_JUMP: 'math-frog-jump',
     MATH_CHIP_CASHIER: 'math-chip-cashier',
     MATH_CELL_CLONE: 'math-cell-clone',
+    MATH_TEN_FRAME_POP: 'math-ten-frame-pop',
     MATH_BEGINNER_WIZARD: 'math-beginner-wizard',
     MATH_CONSTELLATION_FINDER: 'math-constellation-finder',
     MATH_TROLL_ATTACK: 'math-troll-attack',

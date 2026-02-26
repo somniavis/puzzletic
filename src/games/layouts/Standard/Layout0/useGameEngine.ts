@@ -52,13 +52,15 @@ export const useGameEngine = (config: GameEngineConfig = {}) => {
     });
 
     const timerRef = useRef<number | undefined>(undefined);
+    const eventSeqRef = useRef(0);
     const [deadline, setDeadline] = useState<number | null>(null);
     const [questionStartTime, setQuestionStartTime] = useState<number>(0);
     const [isTimeFrozen, setIsTimeFrozen] = useState(false);
     const [lastEvent, setLastEvent] = useState<{ id: number; type: 'correct' | 'wrong'; isFinal?: boolean } | null>(null);
 
     const registerEvent = useCallback((event: { type: 'correct' | 'wrong'; isFinal?: boolean }) => {
-        setLastEvent({ ...event, id: Date.now() });
+        eventSeqRef.current += 1;
+        setLastEvent({ ...event, id: eventSeqRef.current });
     }, []);
 
     const updateScore = useCallback((amount: number) => setScore(prev => prev + amount), []);

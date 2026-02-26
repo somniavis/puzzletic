@@ -31,6 +31,7 @@ import floorTilerVi from '../../games/math/adventure/level3/FloorTiler/locales/v
 import frogJumpVi from '../../games/math/adventure/level3/FrogJump/locales/vi-VN';
 import chipCashierVi from '../../games/math/adventure/level3/ChipCashier/locales/vi-VN';
 import cellCloneVi from '../../games/math/adventure/level3/CellClone/locales/vi-VN';
+import tenFramePopLocale from '../../games/math/adventure/level3/TenFramePop/locales/vi-VN';
 import beginnerWizardVi from '../../games/math/adventure/level3/BeginnerWizard/locales/vi-VN';
 import constellationFinderVi from '../../games/math/adventure/level3/ConstellationFinder/locales/vi-VN';
 import trollAttackVi from '../../games/math/adventure/level3/TrollAttack/locales/vi-VN';
@@ -1662,7 +1663,7 @@ export const viVN = {
     },
     sections: {
       funMath: {
-        title: 'Toán vui',
+        title: 'Toán vui nhộn',
         desc: 'Nhiệm vụ toán học dạng game',
       },
       training: {
@@ -1709,6 +1710,7 @@ export const viVN = {
     'frog-jump': frogJumpVi,
     'chip-cashier': chipCashierVi,
     'cell-clone': cellCloneVi,
+        'ten-frame-pop': tenFramePopLocale,
     'beginner-wizard': beginnerWizardVi,
     'constellation-finder': constellationFinderVi,
     'troll-attack': trollAttackVi,

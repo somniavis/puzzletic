@@ -158,11 +158,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     return (
         <AuthContext.Provider value={{ user, loading, logout, isGuest, guestId, loginAsGuest }}>
-            {loading ? (
-                <div style={{ minHeight: '100dvh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f8fafc', color: '#334155' }}>
-                    Loading...
-                </div>
-            ) : children}
+            {children}
         </AuthContext.Provider>
     );
 };

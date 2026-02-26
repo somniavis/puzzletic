@@ -31,6 +31,7 @@ import floorTilerPt from '../../games/math/adventure/level3/FloorTiler/locales/p
 import frogJumpPt from '../../games/math/adventure/level3/FrogJump/locales/pt-PT';
 import chipCashierPt from '../../games/math/adventure/level3/ChipCashier/locales/pt-PT';
 import cellClonePt from '../../games/math/adventure/level3/CellClone/locales/pt-PT';
+import tenFramePopLocale from '../../games/math/adventure/level3/TenFramePop/locales/pt-PT';
 import beginnerWizardPt from '../../games/math/adventure/level3/BeginnerWizard/locales/pt-PT';
 import constellationFinderPt from '../../games/math/adventure/level3/ConstellationFinder/locales/pt-PT';
 import trollAttackPt from '../../games/math/adventure/level3/TrollAttack/locales/pt-PT';
@@ -1028,7 +1029,7 @@ export const ptPT = {
     },
     sections: {
       funMath: {
-        title: 'Matemática divertida',
+        title: 'Jogo divertido de matemática',
         desc: 'Missões de matemática em formato de jogo',
       },
       training: {
@@ -1074,6 +1075,7 @@ export const ptPT = {
     'frog-jump': frogJumpPt,
     'chip-cashier': chipCashierPt,
     'cell-clone': cellClonePt,
+        'ten-frame-pop': tenFramePopLocale,
     'beginner-wizard': beginnerWizardPt,
     'constellation-finder': constellationFinderPt,
     'troll-attack': trollAttackPt,

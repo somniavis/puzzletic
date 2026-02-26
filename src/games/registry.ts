@@ -36,6 +36,7 @@ const L3_FloorTiler = lazy(() => delayedImport(import('./math/adventure/level3/F
 const L3_FrogJump = lazy(() => delayedImport(import('./math/adventure/level3/FrogJump').then(m => ({ default: m.FrogJump }))));
 const L3_ChipCashier = lazy(() => delayedImport(import('./math/adventure/level3/ChipCashier').then(m => ({ default: m.ChipCashier }))));
 const L3_CellClone = lazy(() => delayedImport(import('./math/adventure/level3/CellClone').then(m => ({ default: m.CellClone }))));
+const L3_TenFramePop = lazy(() => delayedImport(import('./math/adventure/level3/TenFramePop').then(m => ({ default: m.TenFramePop }))));
 const L3_BeginnerWizard = lazy(() => delayedImport(import('./math/adventure/level3/BeginnerWizard').then(m => ({ default: m.BeginnerWizard }))));
 const L3_ConstellationFinder = lazy(() => delayedImport(import('./math/adventure/level3/ConstellationFinder').then(m => ({ default: m.ConstellationFinder }))));
 const L3_TrollAttack = lazy(() => delayedImport(import('./math/adventure/level3/TrollAttack').then(m => ({ default: m.TrollAttack }))));
@@ -432,6 +433,21 @@ export const GAMES: GameManifest[] = [
         mode: 'adventure',
         component: L3_CellClone,
         thumbnail: '🧫',
+        tagsKey: 'games.tags.multiplication'
+    },
+    {
+        id: GameIds.MATH_TEN_FRAME_POP,
+        title: '10-frame pop',
+        titleKey: 'games.ten-frame-pop.title',
+        subtitle: 'Master 9s!',
+        subtitleKey: 'games.ten-frame-pop.subtitle',
+        description: 'Pop the last bubbles and solve 9-times fast.',
+        descriptionKey: 'games.ten-frame-pop.description',
+        category: 'math',
+        level: 3,
+        mode: 'adventure',
+        component: L3_TenFramePop,
+        thumbnail: '🫧',
         tagsKey: 'games.tags.multiplication'
     },
     {

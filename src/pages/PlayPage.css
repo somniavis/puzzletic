@@ -242,6 +242,19 @@
     display: flex;
     justify-content: center;
     background: transparent;
+    transition: background-color 220ms ease;
+}
+
+.mode-switcher-container.switch-bg-level-1 {
+    background: #87CEEB;
+}
+
+.mode-switcher-container.switch-bg-level-2 {
+    background: #d5f0d8;
+}
+
+.mode-switcher-container.switch-bg-level-3 {
+    background: #ffe0bd;
 }
 
 .mode-switcher-pill {
@@ -382,8 +395,8 @@
 
 .funmath-level-title {
     margin: 0.1rem 0 0;
-    font-size: 1.2rem;
-    line-height: 1.35rem;
+    font-size: 1.5rem;
+    line-height: 2rem;
     font-weight: 900;
     color: #3d2e1f;
 }

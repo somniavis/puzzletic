@@ -24,6 +24,7 @@ import floorTilerKo from '../../games/math/adventure/level3/FloorTiler/locales/k
 import frogJumpKo from '../../games/math/adventure/level3/FrogJump/locales/ko';
 import chipCashierKo from '../../games/math/adventure/level3/ChipCashier/locales/ko';
 import cellCloneKo from '../../games/math/adventure/level3/CellClone/locales/ko';
+import tenFramePopLocale from '../../games/math/adventure/level3/TenFramePop/locales/ko';
 import beginnerWizardKo from '../../games/math/adventure/level3/BeginnerWizard/locales/ko';
 import constellationFinderKo from '../../games/math/adventure/level3/ConstellationFinder/locales/ko';
 import trollAttackKo from '../../games/math/adventure/level3/TrollAttack/locales/ko';
@@ -1030,7 +1031,7 @@ const koBase = {
         },
         sections: {
             funMath: {
-                title: '펀매쓰',
+                title: '즐거운 놀이수학',
                 desc: '재미있는 수학 모험',
             },
             training: {
@@ -1076,6 +1077,7 @@ const koBase = {
         'frog-jump': frogJumpKo,
         'chip-cashier': chipCashierKo,
         'cell-clone': cellCloneKo,
+        'ten-frame-pop': tenFramePopLocale,
         'beginner-wizard': beginnerWizardKo,
         'constellation-finder': constellationFinderKo,
         'troll-attack': trollAttackKo,

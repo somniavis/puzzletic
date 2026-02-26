@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, Suspense, lazy } from 'react'
 import './App.css'
 import { PetRoom } from './components/PetRoom/PetRoom'
 import { GlobalErrorBoundary } from './components/GlobalErrorBoundary'
+import { AppLoadingOverlay } from './components/common/AppLoadingOverlay'
 
 import { createCharacter } from './data/characters'
 import type { CharacterAction, CharacterMood, EvolutionStage } from './types/character'
@@ -11,7 +12,6 @@ import { NurturingProvider, useNurturing } from './contexts/NurturingContext'
 import { SoundProvider } from './contexts/SoundContext'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import { preloadSounds, playJelloClickSound } from './utils/sound'
-import { useTranslation } from 'react-i18next'
 
 // React Router
 import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom'
@@ -32,30 +32,33 @@ const DebugLayoutPreview = lazy(() => import('./pages/DebugLayoutPreview').then(
 
 const LandingPage = lazy(() => import('./pages/LandingPage').then(module => ({ default: module.LandingPage })));
 
-// Simple Loading Component
-const Loading = () => (
-  <div style={{
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: '100vh',
-    fontSize: '1.2rem',
-    color: '#666'
-  }}>
-    Loading...
-  </div>
-);
+const Loading = () => <AppLoadingOverlay />;
 
 // Protected Route Wrapper
 const ProtectedRoute = ({ children }: { children: React.ReactElement }) => {
   const { user, isGuest, loading } = useAuth();
-  const { t } = useTranslation();
-  if (loading) return <div>{t('common.loading')}</div>;
+  if (loading) return <AppLoadingOverlay />;
 
   // Allow if User is logged in OR is a Guest
   if (!user && !isGuest) return <Navigate to="/" replace />;
 
   return children;
+};
+
+const AppProvidersContent: React.FC = () => {
+  const { loading } = useAuth();
+
+  if (loading) return <AppLoadingOverlay />;
+
+  return (
+    <SoundProvider>
+      <NurturingProviderWrapper>
+        <GlobalErrorBoundary>
+          <AppContent />
+        </GlobalErrorBoundary>
+      </NurturingProviderWrapper>
+    </SoundProvider>
+  );
 };
 
 function AppContent() {
@@ -308,13 +311,7 @@ function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <SoundProvider>
-          <NurturingProviderWrapper>
-            <GlobalErrorBoundary>
-              <AppContent />
-            </GlobalErrorBoundary>
-          </NurturingProviderWrapper>
-        </SoundProvider>
+        <AppProvidersContent />
       </AuthProvider>
     </BrowserRouter>
   )
