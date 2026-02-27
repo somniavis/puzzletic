@@ -9,25 +9,28 @@ export const GameIds = {
     MATH_ARCHERY: 'math-archery',
     MATH_ARCHERY_LV1: 'math-archery-lv1',
     MATH_COMPARE_CRITTERS: 'math-compare-critters',
-    MATH_ARCHERY_LV2: 'math-archery-lv2',
+    DEEP_SEA_DIVE_LV1: 'deep-sea-dive-lv1',
 
     // Math Level 2
     TEN_FRAME_COUNT: 'ten-frame-count',
     PINWHEEL_POP: 'pinwheel-pop',
     DEEP_SEA_DIVE: 'deep-sea-dive', // Legacy?
-    DEEP_SEA_DIVE_LV1: 'deep-sea-dive-lv1',
+    MATH_ARCHERY_LV2: 'math-archery-lv2',
     DEEP_SEA_DIVE_LV2: 'deep-sea-dive-lv2',
     MATH_UFO_INVASION: 'math-level2-ufo-invasion',
     MATH_LOCK_OPENING: 'math-lock-opening',
     MATH_CARGO_TRAIN: 'math-cargo-train',
     MATH_ROCKET_LAUNCHER: 'math-rocket-launcher',
     SHAPE_SUM_LINK: 'shape-sum-link',
+
+    // Math Level 3
     MATH_FRUIT_BOX: 'math-fruit-box',
     MATH_ICE_STACKING: 'math-ice-stacking',
     MATH_FLOOR_TILER: 'math-floor-tiler',
     MATH_FROG_JUMP: 'math-frog-jump',
     MATH_CHIP_CASHIER: 'math-chip-cashier',
     MATH_CELL_CLONE: 'math-cell-clone',
+    MATH_THREE_LEAF_CLOVER: 'math-three-leaf-clover',
     MATH_TEN_FRAME_POP: 'math-ten-frame-pop',
     MATH_BEGINNER_WIZARD: 'math-beginner-wizard',
     MATH_CONSTELLATION_FINDER: 'math-constellation-finder',

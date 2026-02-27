@@ -24,6 +24,7 @@ import floorTilerJa from '../../games/math/adventure/level3/FloorTiler/locales/j
 import frogJumpJa from '../../games/math/adventure/level3/FrogJump/locales/ja';
 import chipCashierJa from '../../games/math/adventure/level3/ChipCashier/locales/ja';
 import cellCloneJa from '../../games/math/adventure/level3/CellClone/locales/ja';
+import threeLeafCloverLocale from '../../games/math/adventure/level3/ThreeLeafClover/locales/ja';
 import tenFramePopLocale from '../../games/math/adventure/level3/TenFramePop/locales/ja';
 import beginnerWizardJa from '../../games/math/adventure/level3/BeginnerWizard/locales/ja';
 import constellationFinderJa from '../../games/math/adventure/level3/ConstellationFinder/locales/ja';
@@ -1820,6 +1821,7 @@ const jaBase = {
         'frog-jump': frogJumpJa,
         'chip-cashier': chipCashierJa,
         'cell-clone': cellCloneJa,
+        'three-leaf-clover': threeLeafCloverLocale,
         'ten-frame-pop': tenFramePopLocale,
         'beginner-wizard': beginnerWizardJa,
         'constellation-finder': constellationFinderJa,

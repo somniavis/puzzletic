@@ -31,6 +31,7 @@ import floorTilerPt from '../../games/math/adventure/level3/FloorTiler/locales/p
 import frogJumpPt from '../../games/math/adventure/level3/FrogJump/locales/pt-PT';
 import chipCashierPt from '../../games/math/adventure/level3/ChipCashier/locales/pt-PT';
 import cellClonePt from '../../games/math/adventure/level3/CellClone/locales/pt-PT';
+import threeLeafCloverLocale from '../../games/math/adventure/level3/ThreeLeafClover/locales/pt-PT';
 import tenFramePopLocale from '../../games/math/adventure/level3/TenFramePop/locales/pt-PT';
 import beginnerWizardPt from '../../games/math/adventure/level3/BeginnerWizard/locales/pt-PT';
 import constellationFinderPt from '../../games/math/adventure/level3/ConstellationFinder/locales/pt-PT';
@@ -1075,7 +1076,8 @@ export const ptPT = {
     'frog-jump': frogJumpPt,
     'chip-cashier': chipCashierPt,
     'cell-clone': cellClonePt,
-        'ten-frame-pop': tenFramePopLocale,
+    'three-leaf-clover': threeLeafCloverLocale,
+    'ten-frame-pop': tenFramePopLocale,
     'beginner-wizard': beginnerWizardPt,
     'constellation-finder': constellationFinderPt,
     'troll-attack': trollAttackPt,
