@@ -4,7 +4,7 @@ import type { GameCategory } from '../games/types';
 export const CATEGORY_ICONS: Record<GameCategory, string> = {
     math: 'fa-calculator',
     brain: 'fa-brain',
-    science: 'fa-flask',
+    science: 'fa-gear',
     sw: 'fa-code'
 };
 

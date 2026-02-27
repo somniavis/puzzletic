@@ -1046,7 +1046,7 @@ const koBase = {
         categories: {
             brain: '두뇌',
             math: '수학',
-            science: '과학',
+            science: '설정',
             sw: '코딩',
         },
         game: {

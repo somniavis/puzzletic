@@ -1679,7 +1679,7 @@ export const viVN = {
     categories: {
       brain: 'TƯ DUY',
       math: 'TOÁN',
-      science: 'KHOA HỌC',
+      science: 'CÀI ĐẶT',
       sw: 'LẬP TRÌNH',
     },
     game: {

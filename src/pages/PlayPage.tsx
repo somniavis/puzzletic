@@ -13,6 +13,7 @@ import { usePlayPageLogic, type Operator } from '../hooks/usePlayPageLogic';
 import { CATEGORY_ICONS } from '../utils/playPageUtils';
 import { usePremiumStatus, isPremiumGame } from '../utils/premiumLogic';
 import { PremiumPurchaseModal } from '../components/Premium/PremiumPurchaseModal';
+import { SettingsMenu } from '../components/SettingsMenu/SettingsMenu';
 
 // Components
 import { AdventureCard } from '../components/PlayPage/AdventureCard';
@@ -41,6 +42,7 @@ const PlayPage: React.FC = () => {
 
     const { isPremium } = usePremiumStatus();
     const [isPremiumModalOpen, setIsPremiumModalOpen] = React.useState(false);
+    const [isSettingsMenuOpen, setIsSettingsMenuOpen] = React.useState(false);
     const [activeAdventureLevel, setActiveAdventureLevel] = React.useState<number>(1);
     const hubContentRef = React.useRef<HTMLDivElement | null>(null);
 
@@ -146,6 +148,10 @@ const PlayPage: React.FC = () => {
     // -- Handlers --
     const onTabSelect = (category: GameCategory) => {
         playButtonSound();
+        if (category === 'science') {
+            setIsSettingsMenuOpen(true);
+            return;
+        }
         handleTabSelect(category);
     };
 
@@ -201,7 +207,7 @@ const PlayPage: React.FC = () => {
 
     const renderBottomNav = () => (
         <nav className="bottom-nav-hub">
-            {(['math', 'brain', 'science', 'sw'] as GameCategory[]).map(cat => (
+            {(['math', 'brain', 'sw', 'science'] as GameCategory[]).map(cat => (
                 <button
                     key={cat}
                     className={`nav-item-hub ${activeTab === cat ? `active ${cat}` : ''}`}
@@ -449,6 +455,11 @@ const PlayPage: React.FC = () => {
             <PremiumPurchaseModal
                 isOpen={isPremiumModalOpen}
                 onClose={() => setIsPremiumModalOpen(false)}
+            />
+
+            <SettingsMenu
+                isOpen={isSettingsMenuOpen}
+                onClose={() => setIsSettingsMenuOpen(false)}
             />
         </div>
     );

@@ -1044,7 +1044,7 @@ export const frFR = {
     categories: {
       brain: 'CERVEAU',
       math: 'MATHS',
-      science: 'SCIENCE',
+      science: 'PARAMETRES',
       sw: 'SW',
     },
     game: {

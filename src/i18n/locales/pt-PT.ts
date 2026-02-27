@@ -1044,7 +1044,7 @@ export const ptPT = {
     categories: {
       brain: 'CÉREBRO',
       math: 'MATH',
-      science: 'SCIENCE',
+      science: 'DEFINICOES',
       sw: 'SW',
     },
     game: {

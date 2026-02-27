@@ -1044,7 +1044,7 @@ export const en = {
     categories: {
       brain: 'BRAIN',
       math: 'MATH',
-      science: 'SCIENCE',
+      science: 'SETTINGS',
       sw: 'SW',
     },
     game: {

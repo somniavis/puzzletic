@@ -1044,7 +1044,7 @@ export const esES = {
     categories: {
       brain: 'MENTE',
       math: 'MATH',
-      science: 'SCIENCE',
+      science: 'AJUSTES',
       sw: 'SW',
     },
     game: {

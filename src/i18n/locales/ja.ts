@@ -1789,7 +1789,7 @@ const jaBase = {
         categories: {
             brain: '脳トレ',
             math: '算数',
-            science: '科学',
+            science: '設定',
             sw: 'プログラミング',
         },
         game: {

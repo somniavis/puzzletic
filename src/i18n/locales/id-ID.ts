@@ -1044,7 +1044,7 @@ export const idID = {
     categories: {
       brain: 'OTAK',
       math: 'MATEMATIKA',
-      science: 'SAINS',
+      science: 'PENGATURAN',
       sw: 'PEMROGRAMAN',
     },
     game: {
