@@ -79,7 +79,7 @@ const createProblem = (excludeKey?: string): FrogProblem => {
 
 export const FrogJump: React.FC<FrogJumpProps> = ({ onExit }) => {
     const { t } = useTranslation();
-    const engine = useGameEngine({ initialLives: 3, initialTime: 60, maxDifficulty: 1 });
+    const engine = useGameEngine({ initialLives: 3, initialTime: 90, maxDifficulty: 1 });
 
     const [problem, setProblem] = React.useState<FrogProblem | null>(null);
     const [frogIndex, setFrogIndex] = React.useState(0);

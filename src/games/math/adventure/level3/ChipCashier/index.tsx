@@ -81,7 +81,7 @@ const ChipToken: React.FC<{ size: BundleSize }> = React.memo(({ size }) => (
 
 export const ChipCashier: React.FC<ChipCashierProps> = ({ onExit }) => {
     const { t } = useTranslation();
-    const engine = useGameEngine({ initialLives: 3, initialTime: 60, maxDifficulty: 1 });
+    const engine = useGameEngine({ initialLives: 3, initialTime: 90, maxDifficulty: 1 });
 
     const [problem, setProblem] = React.useState<Problem | null>(null);
     const [selectedCount, setSelectedCount] = React.useState<number | null>(null);

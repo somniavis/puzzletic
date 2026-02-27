@@ -173,7 +173,7 @@ const createRoundState = (difficulty: DifficultyLevel, prevN?: number): RoundSta
 };
 export const ThreeLeafClover: React.FC<ThreeLeafCloverProps> = ({ onExit }) => {
     const { t } = useTranslation();
-    const engine = useGameEngine({ initialLives: 3, initialTime: 60, maxDifficulty: 2 });
+    const engine = useGameEngine({ initialLives: 3, initialTime: 90, maxDifficulty: 2 });
     const [difficultyLevel, setDifficultyLevel] = React.useState<DifficultyLevel>(1);
     const [consecutiveCorrect, setConsecutiveCorrect] = React.useState(0);
     const [consecutiveWrong, setConsecutiveWrong] = React.useState(0);

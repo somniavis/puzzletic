@@ -108,7 +108,7 @@ const getRoundSignature = (plan: Pick<RoundPlan, 'baseCount' | 'targetColor' | '
 
 export const CellClone: React.FC<CellCloneProps> = ({ onExit }) => {
     const { t } = useTranslation();
-    const engine = useGameEngine({ initialLives: 3, initialTime: 60, maxDifficulty: 1 });
+    const engine = useGameEngine({ initialLives: 3, initialTime: 90, maxDifficulty: 1 });
     const [cellCount, setCellCount] = React.useState<number>(() => randomCellCount());
     const [reagentOptions, setReagentOptions] = React.useState<ReagentOption[]>([]);
     const [roundTarget, setRoundTarget] = React.useState<RoundTarget | null>(null);

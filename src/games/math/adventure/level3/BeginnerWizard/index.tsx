@@ -65,7 +65,7 @@ export const BeginnerWizard: React.FC<BeginnerWizardProps> = ({ onExit }) => {
     const { t } = useTranslation();
     const engine = useGameEngine({
         initialLives: 3,
-        initialTime: 75,
+        initialTime: 90,
         maxDifficulty: 3
     });
     const [problem, setProblem] = React.useState<RoundProblem>(() => createProblem());
