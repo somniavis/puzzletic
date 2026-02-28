@@ -270,7 +270,7 @@ const koBase = {
             title: 'One for you,\none for a friend in need.',
             desc: '<bold>나</bold>의 프리미엄 잠금 해제가,\n<bold>도움이 필요한 친구</bold>에게도 기회를 줍니다.',
             benefit1: '모든 젤로 진화 & 게임 잠금 해제',
-            benefit2: 'XP 부스트로 3배-8배 빠른 학습',
+            benefit2: 'Grow Faster with XP & GRO Boost',
             benefit3: '둘이서 함께하는 프리미엄 경험',
         },
         loading: '로딩 중...',

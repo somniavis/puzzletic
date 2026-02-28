@@ -7,6 +7,9 @@ const en = {
         extraLife: 'Extra Life',
         doubleScore: 'Double Score',
     },
+    ui: {
+        jumpHint: 'How many jumps for the frog?'
+    },
     howToPlay: {
         step1: {
             title: 'Check the marks!',

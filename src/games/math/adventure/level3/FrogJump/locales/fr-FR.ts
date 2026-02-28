@@ -7,6 +7,9 @@ const en = {
         extraLife: 'Vie supplémentaire',
         doubleScore: 'Score doublé',
     },
+    ui: {
+        jumpHint: 'Combien de sauts pour la grenouille ?'
+    },
     howToPlay: {
         step1: {
             title: 'Observe les repères !',

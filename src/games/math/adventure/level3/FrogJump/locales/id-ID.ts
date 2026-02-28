@@ -7,6 +7,9 @@ const en = {
         extraLife: 'Nyawa Ekstra',
         doubleScore: 'Skor Ganda',
     },
+    ui: {
+        jumpHint: 'Berapa lompatan untuk katak?'
+    },
     howToPlay: {
         step1: {
             title: 'Lihat tandanya!',

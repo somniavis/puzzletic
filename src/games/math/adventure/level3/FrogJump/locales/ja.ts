@@ -7,6 +7,9 @@ const ja = {
         extraLife: 'ライフ追加',
         doubleScore: 'スコア2倍',
     },
+    ui: {
+        jumpHint: 'カエルは何回ジャンプする？'
+    },
     howToPlay: {
         step1: {
             title: '目盛りをチェック！',

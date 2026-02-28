@@ -9,6 +9,20 @@
         linear-gradient(180deg, #bbf7d0 0%, #93e6d8 35%, #76d6f7 100%);
 }
 
+.frog-jump-container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+    background: transparent;
+}
+
+.frog-jump-layout2 .layout2-grid-wrapper {
+    padding: 0;
+    align-items: stretch;
+    justify-content: stretch;
+}
+
 .frog-jump-shell {
     width: 100%;
     height: 100%;
@@ -34,6 +48,55 @@
     grid-template-columns: 66% 34%;
     gap: 0.35rem;
     overflow: hidden;
+}
+
+.archery-pull-shoot-hint {
+    position: absolute;
+    left: 1rem;
+    right: 1rem;
+    bottom: clamp(0.6rem, 2dvh, 1.15rem);
+    z-index: 120;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.5rem;
+    border-radius: 0.8rem;
+    background: rgba(255, 255, 255, 0.94);
+    color: #1e3a8a;
+    font-size: 1.02rem;
+    font-weight: 800;
+    letter-spacing: 0.01em;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.18);
+    animation: archery-hint-fade-in 0.2s ease-out forwards;
+}
+
+.archery-pull-shoot-hint.is-exiting {
+    animation: archery-hint-fade-out 0.22s ease-in forwards;
+}
+
+@keyframes archery-hint-fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes archery-hint-fade-out {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    to {
+        opacity: 0;
+        transform: translateY(4px);
+    }
 }
 
 .frog-jump-stage::before {
@@ -259,6 +322,26 @@
     margin-left: 3px;
     border-radius: 999px;
     background: #1e293b;
+}
+
+.frog-jump-left-guide-box {
+    position: absolute;
+    left: -2.05rem;
+    transform: translateY(50%);
+    min-width: 1.28rem;
+    height: 1.12rem;
+    border-radius: 0.28rem;
+    border: 1px solid rgba(51, 65, 85, 0.22);
+    background: rgba(255, 255, 255, 0.4);
+    color: rgba(30, 41, 59, 0.62);
+    font-size: 0.72rem;
+    font-weight: 800;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    z-index: 5;
 }
 
 .frog-jump-small-tick {

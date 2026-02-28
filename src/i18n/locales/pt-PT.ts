@@ -268,7 +268,7 @@ export const ptPT = {
       title: 'Um para si,\noutro para um amigo que precisa.',
       desc: 'A sua subscrição desbloqueia o Premium para <bold>SI</bold> + oferece acesso gratuito a <bold>um amigo que precisa</bold>.',
       benefit1: 'Desbloqueie todas as evoluções e jogos dos Jellos',
-      benefit2: 'Aprenda 3x-8x mais rápido com bónus de XP',
+      benefit2: 'Grow Faster with XP & GRO Boost',
       benefit3: 'Experiência premium partilhada para duas pessoas',
     },
     loading: 'A carregar...',

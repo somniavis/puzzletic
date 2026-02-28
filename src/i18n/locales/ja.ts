@@ -270,7 +270,7 @@ const jaBase = {
             title: 'One for you,\none for a friend in need.',
             desc: '<bold>あなた</bold>がプレミアムになることで、<br/><bold>学びを必要とする友達</bold>にも機会が届きます。',
             benefit1: '全てのジェロ進化 & ゲームを解除',
-            benefit2: 'XPブーストで3倍-8倍速く学習',
+            benefit2: 'Grow Faster with XP & GRO Boost',
             benefit3: '二人で共有するプレミアム体験',
         },
         loading: '読み込み中...',

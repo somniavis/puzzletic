@@ -268,7 +268,7 @@ export const frFR = {
       title: 'Un pour vous,\nun pour un ami qui en a besoin.',
       desc: 'Votre abonnement débloque Premium pour <bold>VOUS</bold> + offre un accès gratuit à <bold>un ami dans le besoin</bold>.',
       benefit1: 'Débloquez toutes les évolutions de Jello et tous les jeux',
-      benefit2: "Apprenez 3x à 8x plus vite avec le boost d'XP",
+      benefit2: 'Grow Faster with XP & GRO Boost',
       benefit3: 'Une expérience premium partagée à deux',
     },
     loading: 'Chargement...',

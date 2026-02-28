@@ -7,6 +7,9 @@ const ptPT = {
         extraLife: 'Vida Extra',
         doubleScore: 'Pontuação a Dobrar',
     },
+    ui: {
+        jumpHint: 'Quantos saltos para o sapo?'
+    },
     howToPlay: {
         step1: {
             title: 'Ver marcas!',

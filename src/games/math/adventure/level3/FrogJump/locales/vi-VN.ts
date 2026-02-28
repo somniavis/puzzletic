@@ -7,6 +7,9 @@ const en = {
         extraLife: 'Thêm mạng',
         doubleScore: 'Nhân đôi điểm',
     },
+    ui: {
+        jumpHint: 'Ếch cần bao nhiêu lần nhảy?'
+    },
     howToPlay: {
         step1: {
             title: 'Xem các vạch!',

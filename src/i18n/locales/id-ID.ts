@@ -268,7 +268,7 @@ export const idID = {
       title: 'Satu untukmu,\nsatu untuk teman yang membutuhkan.',
       desc: 'Langgananmu membuka Premium untuk <bold>KAMU</bold> + memberi akses gratis kepada <bold>teman yang membutuhkan</bold>.',
       benefit1: 'Buka semua evolusi Jello & game',
-      benefit2: 'Belajar 3x-8x lebih cepat dengan XP Boost',
+      benefit2: 'Grow Faster with XP & GRO Boost',
       benefit3: 'Pengalaman premium bersama untuk dua orang',
     },
     loading: 'Memuat...',

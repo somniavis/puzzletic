@@ -7,6 +7,9 @@ const es = {
         extraLife: 'Vida extra',
         doubleScore: 'Puntuación doble',
     },
+    ui: {
+        jumpHint: '¿Cuántos saltos para la rana?'
+    },
     howToPlay: {
         step1: {
             title: '¡Mira las marcas!',

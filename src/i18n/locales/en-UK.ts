@@ -268,7 +268,7 @@ export const enUK = {
       title: 'One for you,\none for a friend in need.',
       desc: 'Your subscription unlocks Premium for <bold>YOU</bold> + gives free access to a <bold>friend in need</bold>.',
       benefit1: 'Unlock All Jello Evolutions & Games',
-      benefit2: 'Learn 3x-8x Faster with XP Boost',
+      benefit2: 'Grow Faster with XP & GRO Boost',
       benefit3: 'Shared premium experience for two',
     },
     loading: 'Loading...',

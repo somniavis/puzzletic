@@ -405,7 +405,7 @@ export const viVN = {
       title: 'Một cho bạn,\nmột cho người bạn cần giúp đỡ.',
       desc: 'Đăng ký của bạn mở khóa gói cao cấp cho <bold>BẠN</bold> + tặng quyền truy cập miễn phí cho <bold>một người bạn cần giúp đỡ</bold>.',
       benefit1: 'Mở khóa toàn bộ tiến hóa Jello và trò chơi',
-      benefit2: 'Học nhanh hơn 3x-8x với tăng XP',
+      benefit2: 'Grow Faster with XP & GRO Boost',
       benefit3: 'Trải nghiệm premium chia sẻ cho hai người',
     },
     loading: 'Đang tải...',

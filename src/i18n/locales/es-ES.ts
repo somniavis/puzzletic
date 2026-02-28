@@ -268,7 +268,7 @@ export const esES = {
       title: 'Uno para ti,\notro para un amigo que lo necesite.',
       desc: 'Tu suscripción desbloquea Premium para <bold>TI</bold> + acceso gratis para <bold>un amigo que lo necesite</bold>.',
       benefit1: 'Desbloquea todas las evoluciones y juegos de Jello',
-      benefit2: 'Aprende de 3 a 8 veces más rápido con bonus de XP',
+      benefit2: 'Grow Faster with XP & GRO Boost',
       benefit3: 'Experiencia Premium compartida para dos',
     },
     loading: 'Cargando...',

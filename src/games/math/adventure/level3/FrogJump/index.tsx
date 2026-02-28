@@ -22,6 +22,8 @@ interface FrogProblem {
     ticks: number[];
 }
 
+type DifficultyLevel = 1 | 2;
+
 const POWERUP_TYPES: Array<'timeFreeze' | 'extraLife' | 'doubleScore'> = ['timeFreeze', 'extraLife', 'doubleScore'];
 const HOP_INTERVAL_MS = 330;
 const SETTLE_DELAY_MS = 140;
@@ -31,15 +33,15 @@ const RIPPLE_DURATION_MS = 1700;
 
 const randInt = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1)) + min;
 
-const createProblem = (excludeKey?: string): FrogProblem => {
-    let a = randInt(1, 9);
+const createProblem = (difficulty: DifficultyLevel, excludeKey?: string): FrogProblem => {
+    let a = difficulty === 1 ? randInt(1, 4) : randInt(2, 9);
     let b = randInt(2, 9);
     let key = `${a}x${b}`;
 
     if (excludeKey) {
         let guard = 0;
         while (key === excludeKey && guard < 20) {
-            a = randInt(1, 9);
+            a = difficulty === 1 ? randInt(1, 4) : randInt(2, 9);
             b = randInt(2, 9);
             key = `${a}x${b}`;
             guard += 1;
@@ -89,6 +91,9 @@ export const FrogJump: React.FC<FrogJumpProps> = ({ onExit }) => {
     const [ripples, setRipples] = React.useState<JumpRipple[]>([]);
     const [railHeightPx, setRailHeightPx] = React.useState(0);
     const [roundId, setRoundId] = React.useState(0);
+    const [showJumpHint, setShowJumpHint] = React.useState(false);
+    const [isJumpHintExiting, setIsJumpHintExiting] = React.useState(false);
+    const [difficultyLevel, setDifficultyLevel] = React.useState<DifficultyLevel>(1);
 
     const prevGameStateRef = React.useRef(engine.gameState);
     const jumpTimerRef = React.useRef<number | null>(null);
@@ -98,6 +103,13 @@ export const FrogJump: React.FC<FrogJumpProps> = ({ onExit }) => {
     const rippleIdRef = React.useRef(0);
     const prevProblemKeyRef = React.useRef<string | null>(null);
     const railRef = React.useRef<HTMLDivElement | null>(null);
+    const hasShownJumpHintRef = React.useRef(false);
+    const jumpHintTimerRef = React.useRef<number | null>(null);
+    const jumpHintExitTimerRef = React.useRef<number | null>(null);
+    const difficultyRef = React.useRef<DifficultyLevel>(1);
+    const levelOneCorrectStreakRef = React.useRef(0);
+    const levelOneCorrectTotalRef = React.useRef(0);
+    const levelTwoWrongStreakRef = React.useRef(0);
 
     const clearTimer = React.useCallback((ref: React.MutableRefObject<number | null>) => {
         if (ref.current != null) {
@@ -115,8 +127,20 @@ export const FrogJump: React.FC<FrogJumpProps> = ({ onExit }) => {
         setRipples([]);
     }, []);
 
-    const generateNext = React.useCallback(() => {
-        const next = createProblem(prevProblemKeyRef.current ?? undefined);
+    const resetDifficultyProgress = React.useCallback(() => {
+        levelOneCorrectStreakRef.current = 0;
+        levelOneCorrectTotalRef.current = 0;
+        levelTwoWrongStreakRef.current = 0;
+    }, []);
+
+    const setDifficulty = React.useCallback((next: DifficultyLevel) => {
+        difficultyRef.current = next;
+        setDifficultyLevel(next);
+    }, []);
+
+    const generateNext = React.useCallback((forcedDifficulty?: DifficultyLevel) => {
+        const activeDifficulty = forcedDifficulty ?? difficultyRef.current;
+        const next = createProblem(activeDifficulty, prevProblemKeyRef.current ?? undefined);
         prevProblemKeyRef.current = `${next.a}x${next.b}`;
         resetRoundUi();
         setRoundId((prev) => prev + 1);
@@ -126,20 +150,72 @@ export const FrogJump: React.FC<FrogJumpProps> = ({ onExit }) => {
     React.useEffect(() => {
         const prev = prevGameStateRef.current;
         if (engine.gameState === 'playing' && (prev === 'idle' || prev === 'gameover' || !problem)) {
-            generateNext();
+            if (prev === 'idle' || prev === 'gameover') {
+                resetDifficultyProgress();
+                setDifficulty(1);
+                generateNext(1);
+            } else {
+                generateNext();
+            }
         }
         prevGameStateRef.current = engine.gameState;
-    }, [engine.gameState, generateNext, problem]);
+    }, [engine.gameState, generateNext, problem, resetDifficultyProgress, setDifficulty]);
 
     React.useEffect(() => {
         return () => {
             clearTimer(jumpTimerRef);
             clearTimer(settleTimerRef);
             clearTimer(nextRoundTimerRef);
+            clearTimer(jumpHintTimerRef);
+            clearTimer(jumpHintExitTimerRef);
             rippleTimersRef.current.forEach((timerId) => window.clearTimeout(timerId));
             rippleTimersRef.current = [];
         };
     }, [clearTimer]);
+
+    React.useEffect(() => {
+        if (engine.gameState !== 'gameover' && engine.gameState !== 'idle') return;
+
+        clearTimer(jumpHintTimerRef);
+        clearTimer(jumpHintExitTimerRef);
+        setShowJumpHint(false);
+        setIsJumpHintExiting(false);
+        hasShownJumpHintRef.current = false;
+    }, [clearTimer, engine.gameState]);
+
+    React.useEffect(() => {
+        const isFirstProblem = engine.stats.correct === 0 && engine.stats.wrong === 0;
+        if (engine.gameState !== 'playing' || !problem || !isFirstProblem) {
+            clearTimer(jumpHintTimerRef);
+            clearTimer(jumpHintExitTimerRef);
+            setShowJumpHint(false);
+            setIsJumpHintExiting(false);
+            return;
+        }
+
+        if (hasShownJumpHintRef.current) {
+            return;
+        }
+
+        hasShownJumpHintRef.current = true;
+        setShowJumpHint(true);
+        setIsJumpHintExiting(false);
+
+        jumpHintTimerRef.current = window.setTimeout(() => {
+            setIsJumpHintExiting(true);
+            jumpHintExitTimerRef.current = window.setTimeout(() => {
+                setShowJumpHint(false);
+                setIsJumpHintExiting(false);
+                jumpHintExitTimerRef.current = null;
+            }, 220);
+            jumpHintTimerRef.current = null;
+        }, 1800);
+
+        return () => {
+            clearTimer(jumpHintTimerRef);
+            clearTimer(jumpHintExitTimerRef);
+        };
+    }, [clearTimer, engine.gameState, engine.stats.correct, engine.stats.wrong, problem]);
 
     React.useEffect(() => {
         const target = railRef.current;
@@ -174,22 +250,51 @@ export const FrogJump: React.FC<FrogJumpProps> = ({ onExit }) => {
             engine.setPowerUps((prev) => ({ ...prev, [type]: prev[type] + 1 }));
         }
 
+        let nextDifficulty = difficultyRef.current;
+        if (difficultyRef.current === 1) {
+            levelOneCorrectStreakRef.current += 1;
+            levelOneCorrectTotalRef.current += 1;
+            if (levelOneCorrectStreakRef.current >= 3 || levelOneCorrectTotalRef.current >= 4) {
+                nextDifficulty = 2;
+                setDifficulty(2);
+                levelOneCorrectStreakRef.current = 0;
+                levelOneCorrectTotalRef.current = 0;
+                levelTwoWrongStreakRef.current = 0;
+            }
+        } else {
+            levelTwoWrongStreakRef.current = 0;
+        }
+
         engine.submitAnswer(true, { skipFeedback: true });
         engine.registerEvent({ type: 'correct' });
         clearTimer(nextRoundTimerRef);
         nextRoundTimerRef.current = window.setTimeout(() => {
-            generateNext();
+            generateNext(nextDifficulty);
         }, NEXT_ROUND_DELAY_CORRECT_MS);
-    }, [clearTimer, engine, generateNext]);
+    }, [clearTimer, engine, generateNext, setDifficulty]);
 
     const submitWrong = React.useCallback(() => {
+        let nextDifficulty = difficultyRef.current;
+        if (difficultyRef.current === 1) {
+            levelOneCorrectStreakRef.current = 0;
+        } else {
+            levelTwoWrongStreakRef.current += 1;
+            if (levelTwoWrongStreakRef.current >= 2) {
+                nextDifficulty = 1;
+                setDifficulty(1);
+                levelOneCorrectStreakRef.current = 0;
+                levelOneCorrectTotalRef.current = 0;
+                levelTwoWrongStreakRef.current = 0;
+            }
+        }
+
         engine.submitAnswer(false);
         engine.registerEvent({ type: 'wrong' });
         clearTimer(nextRoundTimerRef);
         nextRoundTimerRef.current = window.setTimeout(() => {
-            generateNext();
+            generateNext(nextDifficulty);
         }, NEXT_ROUND_DELAY_WRONG_MS);
-    }, [clearTimer, engine, generateNext]);
+    }, [clearTimer, engine, generateNext, setDifficulty]);
 
     const handlePickValue = React.useCallback((value: number, targetIndex: number) => {
         if (!problem || engine.gameState !== 'playing' || isResolving) return;
@@ -235,6 +340,7 @@ export const FrogJump: React.FC<FrogJumpProps> = ({ onExit }) => {
     }, [clearTimer, engine.gameState, isResolving, problem, roundId, submitCorrect, submitWrong]);
 
     const tickCount = problem?.ticks.length ?? 1;
+    const showLeftGuide = engine.gameState === 'playing' && difficultyLevel === 1;
     const currentProblemKey = React.useMemo(() => `${roundId}`, [roundId]);
     const stepPercent = tickCount > 1 ? 100 / (tickCount - 1) : 0;
     const yPercentForIndex = React.useCallback((index: number) => index * stepPercent, [stepPercent]);
@@ -314,11 +420,18 @@ export const FrogJump: React.FC<FrogJumpProps> = ({ onExit }) => {
             cardBackground={<div className="frog-jump-card-bg" />}
             powerUps={powerUps}
             instructions={instructions}
+            className="frog-jump-layout2"
         >
             {problem && (
-                <div className="frog-jump-shell">
-                    <div className="frog-jump-stage">
-                        <div className="frog-jump-left">
+                <div className="frog-jump-container">
+                    {showJumpHint && (
+                        <div className={`archery-pull-shoot-hint ${isJumpHintExiting ? 'is-exiting' : ''}`}>
+                            {t('games.frog-jump.ui.jumpHint')}
+                        </div>
+                    )}
+                    <div className="frog-jump-shell">
+                        <div className="frog-jump-stage">
+                            <div className="frog-jump-left">
                             <span className="frog-jump-fish frog-jump-fish-a" aria-hidden>🐠</span>
                             <span className="frog-jump-fish frog-jump-fish-b" aria-hidden>🐟</span>
                             <span className="frog-jump-lotus-leaf" aria-hidden="true" />
@@ -341,73 +454,90 @@ export const FrogJump: React.FC<FrogJumpProps> = ({ onExit }) => {
                             </div>
                         </div>
 
-                        <div className="frog-jump-right">
-                            <div
-                                className="frog-jump-rail"
-                                key={`${roundId}-${problem.a}x${problem.b}-${problem.ticks.length}`}
-                                ref={railRef}
-                                style={
-                                    {
-                                        '--major-count': Math.max(1, problem.ticks.length - 1),
-                                        '--tick-gap': `calc((100% - 1rem) / ${Math.max(1, problem.ticks.length - 1)})`,
-                                        '--btn-height': `${buttonHeightPx}px`,
-                                        '--btn-font-size': `${buttonFontPx}px`
-                                    } as React.CSSProperties
-                                }
-                            >
-                                {problem.ticks.map((_, idx) => {
-                                    if (idx >= problem.ticks.length - 1) return null;
-                                    const base = yPercentForIndex(idx);
-                                    const minorTickCount = Math.max(0, problem.a - 1);
-                                    return Array.from({ length: minorTickCount }, (_, minorIdx) => {
-                                        const ratio = (minorIdx + 1) / problem.a;
-                                        const isMiddleTick = problem.a % 2 === 0 && ratio === 0.5;
-                                        return (
-                                            <span
-                                                key={`s-${idx}-${minorIdx}`}
-                                                className={`frog-jump-small-tick ${isMiddleTick ? 'is-middle' : ''}`}
-                                                style={{ bottom: `${base + ratio * (100 / (problem.ticks.length - 1))}%` }}
-                                            />
-                                        );
-                                    });
-                                })}
+                            <div className="frog-jump-right">
+                                <div
+                                    className="frog-jump-rail"
+                                    key={`${roundId}-${problem.a}x${problem.b}-${problem.ticks.length}`}
+                                    ref={railRef}
+                                    style={
+                                        {
+                                            '--major-count': Math.max(1, problem.ticks.length - 1),
+                                            '--tick-gap': `calc((100% - 1rem) / ${Math.max(1, problem.ticks.length - 1)})`,
+                                            '--btn-height': `${buttonHeightPx}px`,
+                                            '--btn-font-size': `${buttonFontPx}px`
+                                        } as React.CSSProperties
+                                    }
+                                >
+                                    {showLeftGuide && problem.ticks.length > 1 && (
+                                        <>
+                                            {Array.from({ length: problem.ticks.length - 1 }, (_, index) => {
+                                                const hopCount = index + 1;
+                                                return (
+                                                    <span
+                                                        key={`left-guide-${hopCount}`}
+                                                        className="frog-jump-left-guide-box"
+                                                        style={{ bottom: `${yPercentForIndex(hopCount)}%` }}
+                                                    >
+                                                        {hopCount}
+                                                    </span>
+                                                );
+                                            })}
+                                        </>
+                                    )}
+                                    {problem.ticks.map((_, idx) => {
+                                        if (idx >= problem.ticks.length - 1) return null;
+                                        const base = yPercentForIndex(idx);
+                                        const minorTickCount = Math.max(0, problem.a - 1);
+                                        return Array.from({ length: minorTickCount }, (_, minorIdx) => {
+                                            const ratio = (minorIdx + 1) / problem.a;
+                                            const isMiddleTick = problem.a % 2 === 0 && ratio === 0.5;
+                                            return (
+                                                <span
+                                                    key={`s-${idx}-${minorIdx}`}
+                                                    className={`frog-jump-small-tick ${isMiddleTick ? 'is-middle' : ''}`}
+                                                    style={{ bottom: `${base + ratio * (100 / (problem.ticks.length - 1))}%` }}
+                                                />
+                                            );
+                                        });
+                                    })}
 
-                                {problem.ticks.map((value, idx) => (
-                                    <div
-                                        key={value}
-                                        className="frog-jump-big-row"
-                                        style={{ bottom: `${yPercentForIndex(idx)}%` }}
-                                    >
-                                        <span className="frog-jump-big-tick" />
-                                        {idx === 0 ? (
-                                            <button className="frog-jump-btn frog-jump-btn-zero" disabled>
-                                                0
-                                            </button>
-                                        ) : (
-                                            <button
-                                                key={`${roundId}-${value}-${idx}`}
-                                                className={`frog-jump-btn ${
-                                                    selectedPick?.problemKey === currentProblemKey && selectedPick.value === value
-                                                        ? 'is-selected'
-                                                        : ''
-                                                }`}
-                                                onClick={() => handlePickValue(value, idx)}
-                                                onPointerUp={(e) => {
-                                                    e.currentTarget.blur();
-                                                }}
-                                                onTouchEnd={(e) => {
-                                                    e.currentTarget.blur();
-                                                }}
-                                                onTouchCancel={(e) => {
-                                                    e.currentTarget.blur();
-                                                }}
-                                                disabled={engine.gameState !== 'playing' || isResolving}
-                                            >
-                                                {value}
-                                            </button>
-                                        )}
-                                    </div>
-                                ))}
+                                    {problem.ticks.map((value, idx) => (
+                                        <div
+                                            key={value}
+                                            className="frog-jump-big-row"
+                                            style={{ bottom: `${yPercentForIndex(idx)}%` }}
+                                        >
+                                            <span className="frog-jump-big-tick" />
+                                            {idx === 0 ? (
+                                                <button className="frog-jump-btn frog-jump-btn-zero" disabled>
+                                                    0
+                                                </button>
+                                            ) : (
+                                                <button
+                                                    key={`${roundId}-${value}-${idx}`}
+                                                    className={`frog-jump-btn ${
+                                                        selectedPick?.problemKey === currentProblemKey && selectedPick.value === value
+                                                            ? 'is-selected'
+                                                            : ''
+                                                    }`}
+                                                    onClick={() => handlePickValue(value, idx)}
+                                                    onPointerUp={(e) => {
+                                                        e.currentTarget.blur();
+                                                    }}
+                                                    onTouchEnd={(e) => {
+                                                        e.currentTarget.blur();
+                                                    }}
+                                                    onTouchCancel={(e) => {
+                                                        e.currentTarget.blur();
+                                                    }}
+                                                    disabled={engine.gameState !== 'playing' || isResolving}
+                                                >
+                                                    {value}
+                                                </button>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
                         </div>
                     </div>

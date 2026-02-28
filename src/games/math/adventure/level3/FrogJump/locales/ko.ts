@@ -7,6 +7,9 @@ const ko = {
         extraLife: '추가 생명',
         doubleScore: '점수 2배',
     },
+    ui: {
+        jumpHint: '개구리는 몇 번 점프해야 해?'
+    },
     howToPlay: {
         step1: {
             title: '눈금 확인!',
