@@ -367,7 +367,7 @@ export const useColorLinkLogic = (engine: GameEngineInterface) => {
         const size = currentLevel.size;
 
         // Connectivity Check: Ensure each category pair is connected
-        const catGroups: Record<CategoryId, { r: number, c: number }[]> = {} as any;
+        const catGroups: Partial<Record<CategoryId, { r: number, c: number }[]>> = {};
         currentLevel.dots.forEach(d => {
             if (!catGroups[d.category]) catGroups[d.category] = [];
             catGroups[d.category].push(d);
@@ -384,7 +384,7 @@ export const useColorLinkLogic = (engine: GameEngineInterface) => {
             // Traverse
             let currR = start.r;
             let currC = start.c;
-            let visited = new Set<string>();
+            const visited = new Set<string>();
             let reachedEnd = false;
 
             for (let i = 0; i < size * size; i++) {

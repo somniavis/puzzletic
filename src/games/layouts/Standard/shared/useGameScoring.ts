@@ -1,8 +1,8 @@
-import { useState, useEffect, useRef } from 'react';
-import { useNurturing } from '../../../../contexts/NurturingContext';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { useOptionalNurturing } from '../../../../contexts/NurturingContext';
 import { calculateMinigameReward } from '../../../../services/rewardService';
 import { parseGameScore } from '../../../../utils/progression';
-import type { RewardCalculation, MinigameDifficulty } from '../../../../types/gameMechanics';
+import type { RewardCalculation, MinigameDifficulty, EvolutionStage } from '../../../../types/gameMechanics';
 
 interface ScoringProps {
     gameState: string; // 'idle' | 'playing' | 'gameover' etc.
@@ -25,8 +25,19 @@ export const useGameScoring = ({
     stats,
     gameOverReason
 }: ScoringProps) => {
-    // Context is the Single Source of Truth for High Scores
-    const { evolutionStage, addRewards, recordGameScore, gameScores } = useNurturing();
+    const nurturing = useOptionalNurturing();
+    // Fallback-safe defaults so layout can render even outside NurturingProvider.
+    const evolutionStage = nurturing?.evolutionStage ?? 1;
+    const addRewards = useCallback((xp: number, gro: number) => {
+        nurturing?.addRewards?.(xp, gro);
+    }, [nurturing]);
+    const recordGameScore = useCallback((id: string, value: number, incrementPlayCount?: boolean, starsEarned?: number) => {
+        nurturing?.recordGameScore?.(id, value, incrementPlayCount, starsEarned);
+    }, [nurturing]);
+    const gameScores = nurturing?.gameScores;
+    const safeEvolutionStage: EvolutionStage = [1, 2, 3, 4, 5].includes(evolutionStage)
+        ? (evolutionStage as EvolutionStage)
+        : 1;
 
     const [rewardResult, setRewardResult] = useState<RewardCalculation | null>(null);
     const [highScore, setHighScore] = useState<number>(0);
@@ -44,7 +55,7 @@ export const useGameScoring = ({
     }, [gameId, gameScores]);
 
     // Helper to process results (Memoized to be callable from outside)
-    const processResult = () => {
+    const processResult = useCallback(() => {
         // Calculate Reward
         const totalAttempts = (stats?.correct || 0) + (stats?.wrong || 0);
         const accuracyVal = totalAttempts > 0 ? (stats?.correct || 0) / totalAttempts : 0;
@@ -54,7 +65,7 @@ export const useGameScoring = ({
             accuracy: accuracyVal,
             isPerfect: lives === 3,
             masteryBonus: 1.0
-        }, evolutionStage as any);
+        }, safeEvolutionStage);
 
         // Calculate Stars (Clear or Time Over with Score)
         let starsEarned = 0;
@@ -92,7 +103,19 @@ export const useGameScoring = ({
             // Persist (Context updates state and saves to localStorage/Cloud)
             recordGameScore(gameId, score, shouldIncrementPlayCount, starsEarned);
         }
-    };
+    }, [
+        stats,
+        engineDifficulty,
+        lives,
+        safeEvolutionStage,
+        gameId,
+        gameOverReason,
+        score,
+        gameLevel,
+        addRewards,
+        gameScores,
+        recordGameScore
+    ]);
 
     // 2. Handle Game Over & Rewards
     // Track processing status to prevent double-execution (Critical for "New Record" check)
@@ -109,7 +132,7 @@ export const useGameScoring = ({
             if (rewardResult) setRewardResult(null);
             setIsNewRecord(false);
         }
-    }, [gameState, rewardResult]);
+    }, [gameState, rewardResult, processResult]);
 
     return {
         rewardResult,

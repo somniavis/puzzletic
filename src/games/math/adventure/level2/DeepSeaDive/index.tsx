@@ -21,7 +21,7 @@ export const DeepSeaDive: React.FC<DeepSeaDiveProps> = ({ onExit, level = 1 }) =
         stats, isPlaying, gameOver, lives,
         currentProblem, currentAnimal, isDiving,
         startGame, stopTimer, handleAnswer, lastEvent, diveTargetIndex,
-        powerUps: logicPowerUps, usePowerUp, timeFrozen, doubleScoreActive
+        powerUps: logicPowerUps, usePowerUp: activatePowerUp, timeFrozen, doubleScoreActive
     } = gameLogic;
 
     // Load translations
@@ -31,7 +31,7 @@ export const DeepSeaDive: React.FC<DeepSeaDiveProps> = ({ onExit, level = 1 }) =
             i18n.addResourceBundle(lang, 'translation', newResources[lang as keyof typeof newResources].translation, true, true);
         });
         return () => stopTimer();
-    }, []);
+    }, [i18n, stopTimer]);
 
     // Force blur on problem change (Safari Focus Fix)
     React.useEffect(() => {
@@ -63,7 +63,7 @@ export const DeepSeaDive: React.FC<DeepSeaDiveProps> = ({ onExit, level = 1 }) =
             count: logicPowerUps.timeFreeze,
             status: timeFrozen ? 'active' : 'normal',
             disabledConfig: logicPowerUps.timeFreeze <= 0 || timeFrozen,
-            onClick: () => usePowerUp('freeze')
+            onClick: () => activatePowerUp('freeze')
         },
         {
             title: t('games.deep-sea-dive.powerups.extraLife'),
@@ -72,7 +72,7 @@ export const DeepSeaDive: React.FC<DeepSeaDiveProps> = ({ onExit, level = 1 }) =
             count: logicPowerUps.extraLife,
             status: lives >= 3 ? 'maxed' : 'normal',
             disabledConfig: logicPowerUps.extraLife <= 0 || lives >= 3,
-            onClick: () => usePowerUp('extraLife')
+            onClick: () => activatePowerUp('extraLife')
         },
         {
             title: t('games.deep-sea-dive.powerups.doubleScore'),
@@ -81,9 +81,9 @@ export const DeepSeaDive: React.FC<DeepSeaDiveProps> = ({ onExit, level = 1 }) =
             count: logicPowerUps.doubleScore,
             status: doubleScoreActive ? 'active' : 'normal',
             disabledConfig: logicPowerUps.doubleScore <= 0 || doubleScoreActive,
-            onClick: () => usePowerUp('doubleScore')
+            onClick: () => activatePowerUp('doubleScore')
         }
-    ], [t, logicPowerUps, timeFrozen, lives, doubleScoreActive, usePowerUp]);
+    ], [t, logicPowerUps, timeFrozen, lives, doubleScoreActive, activatePowerUp]);
 
     // Helper for vertical position calculation
     const getVerticalPosition = (index: number | null | undefined): string => {
@@ -98,7 +98,7 @@ export const DeepSeaDive: React.FC<DeepSeaDiveProps> = ({ onExit, level = 1 }) =
             title={t(level === 1 ? 'games.deep-sea-dive.title-lv1' : 'games.deep-sea-dive.title-lv2')}
             subtitle={t('games.deep-sea-dive.subtitle')}
             gameId={currentGameId}
-            engine={engine as any} // Layout3 types might drag
+            engine={engine as typeof gameLogic} // Layout3 types might drag
             powerUps={powerUps}
             onExit={onExit}
             target={{
@@ -177,6 +177,7 @@ export const DeepSeaDive: React.FC<DeepSeaDiveProps> = ({ onExit, level = 1 }) =
     );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const manifest: GameManifest = {
     id: GameIds.DEEP_SEA_DIVE,
     title: 'Deep Sea Dive',

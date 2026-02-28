@@ -516,6 +516,7 @@ export const CellClone: React.FC<CellCloneProps> = ({ onExit }) => {
     );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const manifest: GameManifest = {
     id: GameIds.MATH_CELL_CLONE,
     title: '세포복제',

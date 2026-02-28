@@ -206,7 +206,7 @@ export const IceStacking: React.FC<IceStackingProps> = ({ onExit }) => {
 
     const handleRoundResult = React.useCallback((isCorrect: boolean, keepSameProblem: boolean) => {
         engine.submitAnswer(isCorrect, { skipDifficulty: true, skipFeedback: true });
-        engine.registerEvent({ type: isCorrect ? 'correct' : 'wrong' } as any);
+        engine.registerEvent({ type: isCorrect ? 'correct' : 'wrong' });
 
         roundTimerRef.current = window.setTimeout(() => {
             if (keepSameProblem) {
@@ -328,7 +328,7 @@ export const IceStacking: React.FC<IceStackingProps> = ({ onExit }) => {
     }, [engine.gameState, isDropping, isCollapsing, placedBundles, problem.boxCount, problem.bundleSize]);
 
     const computeDropStartCol = React.useCallback((bundleSize: number): number => {
-        let startCol = clamp(snappedArmColRef.current, 0, GRID_COLS - bundleSize);
+        const startCol = clamp(snappedArmColRef.current, 0, GRID_COLS - bundleSize);
         if (!boardRef.current || !carriageRef.current) return startCol;
 
         const boardRect = boardRef.current.getBoundingClientRect();
@@ -416,7 +416,7 @@ export const IceStacking: React.FC<IceStackingProps> = ({ onExit }) => {
 
     const currentTotal = placedBundles * problem.bundleSize;
     const atTarget = placedBundles === problem.boxCount;
-    const centerHintCols = React.useMemo(() => getBaseCenterCols(gridRef.current), [settledPieces]);
+    const centerHintCols = getBaseCenterCols(gridRef.current);
     const resultClass = currentTotal === 0
         ? 'ice-order-result-neutral'
         : atTarget && stackStable

@@ -154,7 +154,7 @@ export const useFishingCountLogic = () => {
 
     // Timer
     useEffect(() => {
-        let interval: any;
+        let interval: ReturnType<typeof setInterval> | null = null;
         if (gameState.isPlaying && gameState.timeLeft > 0) {
             interval = setInterval(() => {
                 setGameState(prev => {
@@ -166,7 +166,9 @@ export const useFishingCountLogic = () => {
                 });
             }, 1000);
         }
-        return () => clearInterval(interval);
+        return () => {
+            if (interval) clearInterval(interval);
+        };
     }, [gameState.isPlaying, gameState.timeLeft]);
 
 

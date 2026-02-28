@@ -48,7 +48,7 @@ const generateLv2Problem = (internalDifficulty: number) => {
             attempts++;
             const unitB = Math.floor(Math.random() * (unitA + 1));
             const maxTensB = Math.floor((a - unitB - 1) / 10);
-            let tensB = (maxTensB < 0) ? 0 : Math.floor(Math.random() * (maxTensB + 1));
+            const tensB = (maxTensB < 0) ? 0 : Math.floor(Math.random() * (maxTensB + 1));
             tempB = tensB * 10 + unitB;
             if (tempB === 0) tempB = 1;
         } while ((tempB >= a || (a % 10) < (tempB % 10)) && attempts < 50);
@@ -75,7 +75,7 @@ const generateLv2Problem = (internalDifficulty: number) => {
         const unitA = a % 10;
         const unitB = Math.floor(Math.random() * (9 - unitA)) + (unitA + 1);
         const maxTensB = Math.floor((a - unitB - 1) / 10);
-        let actualTensB = (maxTensB < 1) ? 1 : (Math.floor(Math.random() * maxTensB) + 1);
+        const actualTensB = (maxTensB < 1) ? 1 : (Math.floor(Math.random() * maxTensB) + 1);
         b = actualTensB * 10 + unitB;
         if (b < 10 || b >= a) {
             do {

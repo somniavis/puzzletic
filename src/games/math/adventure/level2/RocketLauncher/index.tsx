@@ -21,7 +21,7 @@ export default function RocketLauncher() {
     });
 
     const controller = useRocketLauncherLogic(engine);
-    const { powerUps, usePowerUp, isTimeFrozen, doubleScoreActive } = controller;
+    const { powerUps, usePowerUp: activatePowerUp, isTimeFrozen, doubleScoreActive } = controller;
 
     const instructions = [
         { icon: '🚀', title: t('games.rocketLauncher.howToPlay.step1.title'), description: t('games.rocketLauncher.howToPlay.step1.desc') },
@@ -35,7 +35,7 @@ export default function RocketLauncher() {
             color: "blue",
             icon: "❄️",
             title: "Time Freeze",
-            onClick: () => usePowerUp('timeFreeze'),
+            onClick: () => activatePowerUp('timeFreeze'),
             disabledConfig: isTimeFrozen,
             status: isTimeFrozen ? 'active' : 'normal'
         },
@@ -44,7 +44,7 @@ export default function RocketLauncher() {
             color: "red",
             icon: "❤️",
             title: "Extra Life",
-            onClick: () => usePowerUp('extraLife'),
+            onClick: () => activatePowerUp('extraLife'),
             disabledConfig: engine.lives >= 3,
             status: engine.lives >= 3 ? 'maxed' : 'normal'
         },
@@ -53,11 +53,11 @@ export default function RocketLauncher() {
             color: "yellow",
             icon: "⚡",
             title: "Double Score",
-            onClick: () => usePowerUp('doubleScore'),
+            onClick: () => activatePowerUp('doubleScore'),
             disabledConfig: doubleScoreActive,
             status: doubleScoreActive ? 'active' : 'normal'
         }
-    ], [powerUps, isTimeFrozen, engine.lives, doubleScoreActive, usePowerUp]);
+    ], [powerUps, isTimeFrozen, engine.lives, doubleScoreActive, activatePowerUp]);
 
     return (
         <Layout2

@@ -29,6 +29,8 @@ export interface Problem {
     options: NumberItem[];
 }
 
+type PowerUpType = 'timeFreeze' | 'extraLife' | 'doubleScore';
+
 const ITEMS = ['🍏', '🍎', '🍐', '🍊', '🍋', '🍌', '🍉', '🍇', '🍓', '🫐', '🍈', '🍒', '🍑', '🥭', '🍍', '🥥', '🥝', '🍅', '🥑', '🍆'];
 
 const getRandomEmoji = () => ITEMS[Math.floor(Math.random() * ITEMS.length)];
@@ -235,7 +237,7 @@ export const useNumberBalanceLogic = () => {
 
                 // Drop Powerup Chance
                 if ((gameState.combo + 1) % 3 === 0 && Math.random() > 0.45) {
-                    const types: (keyof typeof powerUps)[] = ['timeFreeze', 'extraLife', 'doubleScore'];
+                    const types: PowerUpType[] = ['timeFreeze', 'extraLife', 'doubleScore'];
                     const type = types[Math.floor(Math.random() * types.length)];
                     setPowerUps(prev => ({ ...prev, [type]: prev[type] + 1 }));
                     // playEatingSound(); // REMOVED
@@ -275,7 +277,7 @@ export const useNumberBalanceLogic = () => {
             }
         }, 500); // 500ms delay to see the balance
 
-    }, [gameState.combo, doubleScoreActive, powerUps, generateProblem, questionStartTime, rightPanItems, isChecking, gameState.lives]);
+    }, [gameState.combo, gameState.gameOver, gameState.lives, doubleScoreActive, generateProblem, questionStartTime, rightPanItems, isChecking]);
 
     // Calculate Scale Angle whenever items change
     useEffect(() => {

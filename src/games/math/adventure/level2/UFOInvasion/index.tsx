@@ -38,7 +38,7 @@ const SpaceBackground = () => {
                         left: s.left,
                         '--duration': s.duration,
                         '--delay': s.delay
-                    } as any}
+                    } as React.CSSProperties}
                 />
             ))}
         </div>
@@ -200,7 +200,7 @@ export default function UFOInvasion({ onExit }: UFOInvasionProps) {
                                 // Actually, styles.rocket likely has its own transform for movement (if using CSS transitions).
                                 // Let's check UFO.module.css. Usually movement is handled by specific classes or left/top interpolation.
                                 // But here we see style={{ '--tx': ... }} implying CSS variable based movement.
-                            } as any}
+                            } as React.CSSProperties}
                         >
                             {/* Apply rotation to the sprite wrapper to avoid conflicting with movement transform if any */}
                             <span
@@ -239,6 +239,7 @@ export default function UFOInvasion({ onExit }: UFOInvasionProps) {
     );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const manifest = {
     id: GAME_ID,
     title: 'UFO Invasion',

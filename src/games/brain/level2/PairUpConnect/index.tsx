@@ -14,6 +14,7 @@ import manifest_en from './locales/en';
 import { GameIds } from '../../../../constants/gameIds';
 const GAME_ID = GameIds.PAIR_UP_CONNECT;
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const manifest: GameManifest = {
     id: GAME_ID,
     title: 'Pair Up! Connect',
@@ -79,7 +80,7 @@ const PairUpConnect: React.FC = () => {
             title: 'Double Score',
             disabledConfig: engine.isDoubleScore || engine.powerUps.doubleScore <= 0
         }
-    ], [engine.powerUps, engine.isTimeFrozen, engine.isDoubleScore, engine.activatePowerUp, engine.lives]);
+    ], [engine]);
 
     // --- Game Logic ---
     const logic = usePairUpLogic(engine, 'connect');

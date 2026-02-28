@@ -253,10 +253,10 @@ export const BeginnerWizard: React.FC<BeginnerWizardProps> = ({ onExit }) => {
                     engine.setPowerUps((prev) => ({ ...prev, [reward]: prev[reward] + 1 }));
                 }
                 engine.submitAnswer(true, { skipFeedback: true });
-                engine.registerEvent({ type: 'correct' } as any);
+                engine.registerEvent({ type: 'correct' });
             } else {
                 engine.submitAnswer(false);
-                engine.registerEvent({ type: 'wrong' } as any);
+                engine.registerEvent({ type: 'wrong' });
             }
         };
 
@@ -412,7 +412,7 @@ export const BeginnerWizard: React.FC<BeginnerWizardProps> = ({ onExit }) => {
                     description: t('games.beginner-wizard.howToPlay.step3.description')
                 }
             ]}
-            engine={engine as any}
+            engine={engine}
             onExit={onExit}
             powerUps={[
                 {
@@ -457,7 +457,7 @@ export const BeginnerWizard: React.FC<BeginnerWizardProps> = ({ onExit }) => {
             <div
                 ref={stageRef}
                 className={`beginner-wizard-stage ${resolveType === 'wrong' ? 'is-wrong' : ''}`}
-                style={{ ['--cloud-size-px' as any]: `${cloudSizePx}px` }}
+                style={{ '--cloud-size-px': `${cloudSizePx}px` } as React.CSSProperties}
             >
                 <div className="beginner-wizard-cloud-rows" aria-hidden>
                     {Array.from({ length: 3 }, (_, rowIdx) => (
@@ -481,9 +481,9 @@ export const BeginnerWizard: React.FC<BeginnerWizardProps> = ({ onExit }) => {
                     ref={familyRef}
                     className={`beginner-wizard-family ${isFamilyWalking ? 'is-walking' : ''} ${showRemoveMotion && removeSuckActive ? 'is-removing' : ''}`}
                     style={{
-                        ['--family-travel-ms' as any]: `${FAMILY_TRAVEL_MS}ms`,
+                        '--family-travel-ms': `${FAMILY_TRAVEL_MS}ms`,
                         ...(frozenFamilyTransform ? { transform: frozenFamilyTransform } : {})
-                    }}
+                    } as React.CSSProperties}
                     onAnimationEnd={handleFamilyAnimationEnd}
                 >
                     {familyNodes.map((node, idx) => (
@@ -501,9 +501,9 @@ export const BeginnerWizard: React.FC<BeginnerWizardProps> = ({ onExit }) => {
                                     style={{
                                         left: `${lx}%`,
                                         top: `${ly}%`,
-                                        ['--suck-dx-px' as any]: `${Math.round(suckDxPx)}px`,
-                                        ['--suck-dy-px' as any]: `${Math.round(suckDyPx)}px`
-                                    }}
+                                        '--suck-dx-px': `${Math.round(suckDxPx)}px`,
+                                        '--suck-dy-px': `${Math.round(suckDyPx)}px`
+                                    } as React.CSSProperties}
                                 >
                                     {problem.animalEmoji}
                                 </span>
@@ -578,6 +578,7 @@ export const BeginnerWizard: React.FC<BeginnerWizardProps> = ({ onExit }) => {
     );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const manifest: GameManifest = {
     id: GameIds.MATH_BEGINNER_WIZARD,
     title: '초보마법사',

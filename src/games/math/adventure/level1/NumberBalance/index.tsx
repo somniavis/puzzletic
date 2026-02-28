@@ -22,7 +22,7 @@ export const NumberBalance: React.FC<NumberBalanceProps> = ({ onExit }) => {
     const {
         lives, gameOver,
         currentProblem, rightPanItems, scaleAngle, powerUps, timeFrozen, doubleScoreActive,
-        startGame, stopGame, handleDrop, handleRemoveFromPan, usePowerUp, lastEvent
+        startGame, stopGame, handleDrop, handleRemoveFromPan, usePowerUp: activatePowerUp, lastEvent
     } = engine;
 
     useEffect(() => {
@@ -30,7 +30,7 @@ export const NumberBalance: React.FC<NumberBalanceProps> = ({ onExit }) => {
         Object.keys(newResources).forEach(lang => {
             i18n.addResourceBundle(lang, 'translation', newResources[lang as keyof typeof newResources].translation, true, true);
         });
-    }, []);
+    }, [i18n]);
 
     // Force blur on problem change (Safari Focus Fix)
     useEffect(() => {
@@ -108,7 +108,7 @@ export const NumberBalance: React.FC<NumberBalanceProps> = ({ onExit }) => {
         ghostRef.current.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
     };
 
-    const onGlobalPointerUp = (_: PointerEvent) => {
+    const onGlobalPointerUp = () => {
         window.removeEventListener('pointermove', onGlobalPointerMove);
         window.removeEventListener('pointerup', onGlobalPointerUp);
 
@@ -171,15 +171,15 @@ export const NumberBalance: React.FC<NumberBalanceProps> = ({ onExit }) => {
     const powerUpConfig: PowerUpBtnProps[] = [
         {
             count: powerUps.timeFreeze, color: "blue", icon: "❄️", title: t('games.math-number-balance.powerups.freeze'),
-            onClick: () => usePowerUp('timeFreeze'), disabledConfig: timeFrozen, status: (timeFrozen ? 'active' : 'normal')
+            onClick: () => activatePowerUp('timeFreeze'), disabledConfig: timeFrozen, status: (timeFrozen ? 'active' : 'normal')
         },
         {
             count: powerUps.extraLife, color: "red", icon: "❤️", title: t('games.math-number-balance.powerups.life'),
-            onClick: () => usePowerUp('extraLife'), disabledConfig: lives >= 3, status: (lives >= 3 ? 'maxed' : 'normal')
+            onClick: () => activatePowerUp('extraLife'), disabledConfig: lives >= 3, status: (lives >= 3 ? 'maxed' : 'normal')
         },
         {
             count: powerUps.doubleScore, color: "yellow", icon: "⚡", title: t('games.math-number-balance.powerups.double'),
-            onClick: () => usePowerUp('doubleScore'), disabledConfig: doubleScoreActive, status: (doubleScoreActive ? 'active' : 'normal')
+            onClick: () => activatePowerUp('doubleScore'), disabledConfig: doubleScoreActive, status: (doubleScoreActive ? 'active' : 'normal')
         }
     ];
 
@@ -188,7 +188,7 @@ export const NumberBalance: React.FC<NumberBalanceProps> = ({ onExit }) => {
             title={t('games.math-number-balance.title')}
             subtitle={t('games.math-number-balance.subtitle')}
             gameId={GameIds.MATH_NUMBER_BALANCE}
-            engine={layoutEngine as any}
+            engine={layoutEngine as typeof engine}
             instructions={[
                 { icon: '⚖️', title: t('games.math-number-balance.howToPlay.step1.title'), description: t('games.math-number-balance.howToPlay.step1.description') },
                 { icon: '🔢', title: t('games.math-number-balance.howToPlay.step2.title'), description: t('games.math-number-balance.howToPlay.step2.description') },
@@ -280,6 +280,7 @@ export const NumberBalance: React.FC<NumberBalanceProps> = ({ onExit }) => {
     );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const manifest: GameManifest = {
     id: GameIds.MATH_NUMBER_BALANCE,
     title: 'Number Balance',

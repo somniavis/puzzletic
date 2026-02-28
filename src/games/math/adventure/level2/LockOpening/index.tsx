@@ -559,6 +559,7 @@ export const LockOpening: React.FC<LockOpeningProps> = ({ onExit }) => {
     );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const manifest: GameManifest = {
     id: GameIds.MATH_LOCK_OPENING,
     title: '자물쇠 열기',

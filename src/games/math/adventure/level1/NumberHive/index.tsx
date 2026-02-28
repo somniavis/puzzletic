@@ -23,7 +23,7 @@ export const NumberHive: React.FC<NumberHiveProps> = ({ onExit }) => {
         powerUps,
         timeFrozen,
         doubleScoreActive,
-        usePowerUp,
+        usePowerUp: activatePowerUp,
         startGame,
         stopGame,
         isPlaying,
@@ -64,7 +64,7 @@ export const NumberHive: React.FC<NumberHiveProps> = ({ onExit }) => {
             color: 'blue',
             icon: "❄️",
             title: "Freeze Time",
-            onClick: () => usePowerUp('timeFreeze'),
+            onClick: () => activatePowerUp('timeFreeze'),
             disabledConfig: timeFrozen,
             status: (timeFrozen ? 'active' : 'normal')
         },
@@ -73,7 +73,7 @@ export const NumberHive: React.FC<NumberHiveProps> = ({ onExit }) => {
             color: 'red',
             icon: "❤️",
             title: "Extra Life",
-            onClick: () => usePowerUp('extraLife'),
+            onClick: () => activatePowerUp('extraLife'),
             disabledConfig: lives >= 3,
             status: (lives >= 3 ? 'maxed' : 'normal')
         },
@@ -82,7 +82,7 @@ export const NumberHive: React.FC<NumberHiveProps> = ({ onExit }) => {
             color: 'yellow',
             icon: "⚡",
             title: "Double Score",
-            onClick: () => usePowerUp('doubleScore'),
+            onClick: () => activatePowerUp('doubleScore'),
             disabledConfig: doubleScoreActive,
             status: (doubleScoreActive ? 'active' : 'normal')
         }
@@ -132,7 +132,7 @@ export const NumberHive: React.FC<NumberHiveProps> = ({ onExit }) => {
             title={t('games.math-number-hive.title')}
             subtitle={t('games.math-number-hive.subtitle')}
             gameId={GameIds.MATH_NUMBER_HIVE}
-            engine={layoutEngine as any}
+            engine={layoutEngine as typeof useLogic}
             instructions={[
                 { icon: '🐝', title: t('games.math-number-hive.howToPlay.step1.title'), description: t('games.math-number-hive.howToPlay.step1.description') },
                 { icon: '🔢', title: t('games.math-number-hive.howToPlay.step2.title'), description: t('games.math-number-hive.howToPlay.step2.description') },
@@ -174,7 +174,7 @@ export const NumberHive: React.FC<NumberHiveProps> = ({ onExit }) => {
                                 <div key={rowIndex} className={`hex-row ${rowIndex % 2 !== 0 ? 'even' : 'odd'}`}>
                                     {currentLevel.cells
                                         .slice(rowIndex * currentLevel.gridSize, (rowIndex + 1) * currentLevel.gridSize)
-                                        .map((cell: any) => (
+                                        .map((cell) => (
                                             <div
                                                 key={cell.id}
                                                 className={`hex-cell ${cell.isRevealed ? 'revealed' : ''} ${shakeId === cell.id ? 'shaking' : ''}`}
@@ -193,6 +193,7 @@ export const NumberHive: React.FC<NumberHiveProps> = ({ onExit }) => {
     );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const manifest: GameManifest = {
     id: GameIds.MATH_NUMBER_HIVE,
     title: 'Number Hive',

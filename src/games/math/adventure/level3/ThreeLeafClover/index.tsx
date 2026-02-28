@@ -273,6 +273,7 @@ export const ThreeLeafClover: React.FC<ThreeLeafCloverProps> = ({ onExit }) => {
         }),
         [difficultyLevel, engine, onExit]
     );
+    const layoutEngineForLayout = layoutEngine as typeof engine;
 
     const handleDotClick = React.useCallback((index: number) => {
         if (engine.gameState !== 'playing') return;
@@ -410,7 +411,7 @@ export const ThreeLeafClover: React.FC<ThreeLeafCloverProps> = ({ onExit }) => {
             subtitle={t('games.three-leaf-clover.subtitle')}
             description={t('games.three-leaf-clover.description')}
             gameId={GameIds.MATH_THREE_LEAF_CLOVER}
-            engine={layoutEngine as any}
+            engine={layoutEngineForLayout}
             powerUps={powerUps}
             cardBackground={<div className="three-leaf-clover-card-bg" />}
             target={target}
@@ -502,6 +503,7 @@ export const ThreeLeafClover: React.FC<ThreeLeafCloverProps> = ({ onExit }) => {
     );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const manifest: GameManifest = {
     id: GameIds.MATH_THREE_LEAF_CLOVER,
     title: '세잎 클로버',

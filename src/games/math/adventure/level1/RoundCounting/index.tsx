@@ -37,7 +37,7 @@ export const RoundCounting: React.FC<RoundCountingProps> = ({ onExit }) => {
         doubleScoreActive,
         startGame,
         handleItemClick,
-        usePowerUp,
+        usePowerUp: activatePowerUp,
         stopTimer,
         lastEvent
     } = useRoundCountingLogicReturns;
@@ -58,7 +58,7 @@ export const RoundCounting: React.FC<RoundCountingProps> = ({ onExit }) => {
 
     useEffect(() => {
         return () => stopTimer();
-    }, []);
+    }, [stopTimer]);
 
     const derivedGameState = gameOver ? 'gameover' : (isPlaying ? 'playing' : 'idle');
 
@@ -88,7 +88,7 @@ export const RoundCounting: React.FC<RoundCountingProps> = ({ onExit }) => {
             color: "blue",
             icon: "❄️",
             title: t('games.math-round-counting.powerups.freeze'),
-            onClick: () => usePowerUp('timeFreeze'),
+            onClick: () => activatePowerUp('timeFreeze'),
             disabledConfig: timeFrozen,
             status: (timeFrozen ? 'active' : 'normal')
         },
@@ -97,7 +97,7 @@ export const RoundCounting: React.FC<RoundCountingProps> = ({ onExit }) => {
             color: "red",
             icon: "❤️",
             title: t('games.math-round-counting.powerups.life'),
-            onClick: () => usePowerUp('extraLife'),
+            onClick: () => activatePowerUp('extraLife'),
             disabledConfig: lives >= 3,
             status: (lives >= 3 ? 'maxed' : 'normal')
         },
@@ -106,7 +106,7 @@ export const RoundCounting: React.FC<RoundCountingProps> = ({ onExit }) => {
             color: "yellow",
             icon: "⚡",
             title: t('games.math-round-counting.powerups.double'),
-            onClick: () => usePowerUp('doubleScore'),
+            onClick: () => activatePowerUp('doubleScore'),
             disabledConfig: doubleScoreActive,
             status: (doubleScoreActive ? 'active' : 'normal')
         }
@@ -125,7 +125,7 @@ export const RoundCounting: React.FC<RoundCountingProps> = ({ onExit }) => {
             title={t('games.math-round-counting.title')}
             subtitle={t('games.math-round-counting.subtitle')}
             gameId={GameIds.MATH_ROUND_COUNTING}
-            engine={layoutEngine as any}
+            engine={layoutEngine as typeof useRoundCountingLogicReturns}
             instructions={[
                 { icon: '🎯', title: t('games.math-round-counting.howToPlay.step1.title'), description: t('games.math-round-counting.howToPlay.step1.description') },
                 { icon: '👆', title: t('games.math-round-counting.howToPlay.step2.title'), description: t('games.math-round-counting.howToPlay.step2.description') },
@@ -177,6 +177,7 @@ export const RoundCounting: React.FC<RoundCountingProps> = ({ onExit }) => {
     );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const manifest: GameManifest = {
     id: GameIds.MATH_ROUND_COUNTING,
     title: 'Round Counting',

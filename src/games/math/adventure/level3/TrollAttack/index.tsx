@@ -439,7 +439,7 @@ export const TrollAttack: React.FC<TrollAttackProps> = ({ onExit }) => {
                 for (let i = 0; i < castleLifeLossCount; i += 1) {
                     updateLivesRef.current(false);
                     updateComboRef.current(false);
-                    registerEventRef.current({ type: 'wrong' } as any);
+                    registerEventRef.current({ type: 'wrong' });
                 }
             }
 
@@ -468,6 +468,8 @@ export const TrollAttack: React.FC<TrollAttackProps> = ({ onExit }) => {
         }
         return autoTargetTroll;
     }, [trolls, manualTargetId, autoTargetTroll]);
+    const targetTrollId = targetTroll?.id ?? null;
+    const targetAnswer = targetTroll?.problem.answer ?? null;
 
     const hasCastleUnderAttack = React.useMemo(
         () => trolls.some((troll) => troll.arrivedAt != null && troll.path !== 'loop'),
@@ -481,12 +483,12 @@ export const TrollAttack: React.FC<TrollAttackProps> = ({ onExit }) => {
     }, [trolls, manualTargetId]);
 
     React.useEffect(() => {
-        if (!targetTroll) {
+        if (targetAnswer == null) {
             setAmmoOptions([]);
             return;
         }
-        setAmmoOptions(createAmmoOptions(targetTroll.problem.answer));
-    }, [targetTroll?.id]);
+        setAmmoOptions(createAmmoOptions(targetAnswer));
+    }, [targetTrollId, targetAnswer]);
 
     const onShotLanded = React.useCallback((shotValue: number, targetId: number, answer: number) => {
         if (gameStateRef.current !== 'playing') return;
@@ -514,7 +516,7 @@ export const TrollAttack: React.FC<TrollAttackProps> = ({ onExit }) => {
             }
 
             engine.submitAnswer(true, { skipDifficulty: true, skipFeedback: true });
-            engine.registerEvent({ type: 'correct' } as any);
+            engine.registerEvent({ type: 'correct' });
             const timer = window.setTimeout(() => setHitTrollId(null), 320);
             timersRef.current.push(timer);
             return;
@@ -523,10 +525,10 @@ export const TrollAttack: React.FC<TrollAttackProps> = ({ onExit }) => {
         setShieldTrollId(targetId);
         updateLivesRef.current(false);
         updateComboRef.current(false);
-        registerEventRef.current({ type: 'wrong' } as any);
+        registerEventRef.current({ type: 'wrong' });
         const timer = window.setTimeout(() => setShieldTrollId(null), 320);
         timersRef.current.push(timer);
-    }, [engine, t]);
+    }, [engine]);
 
     const fireAmmo = React.useCallback((shotValue: number) => {
         if (engine.gameState !== 'playing') return;

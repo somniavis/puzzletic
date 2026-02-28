@@ -31,6 +31,8 @@ export interface GameState {
     };
 }
 
+type PowerUpType = 'timeFreeze' | 'extraLife' | 'doubleScore';
+
 // Use broadly supported emoji set to avoid missing-glyph rendering on older Android devices.
 const ITEMS = [
     // Mammals
@@ -55,7 +57,6 @@ const generateProblem = (difficulty: number): Problem => {
     let gridSize: number;
     let cols: number;
     let targetCount: number;
-    let distractorCount: number;
 
     if (difficulty === 1) {
         // Beginner: 3x3
@@ -80,7 +81,7 @@ const generateProblem = (difficulty: number): Problem => {
     }
 
     targetCount = Math.min(targetCount, gridSize - 1);
-    distractorCount = gridSize - targetCount;
+    const distractorCount = gridSize - targetCount;
 
     const targetEmoji = ITEMS[Math.floor(Math.random() * ITEMS.length)];
     const distractors = shuffleArray(ITEMS.filter(i => i !== targetEmoji)).slice(0, distractorCount);
@@ -231,7 +232,7 @@ export const useRoundCountingLogic = () => {
             // If we really want to ensure no repeat target:
             // This requires correct closure or ref usage.
             // For now, simple generation is 99% fine.
-            let newProblem = generateProblem(level);
+            const newProblem = generateProblem(level);
 
 
             setCurrentProblem(newProblem);
@@ -289,7 +290,7 @@ export const useRoundCountingLogic = () => {
 
                 // Check for powerups
                 if ((gameState.combo + 1) % 3 === 0 && Math.random() > 0.45) {
-                    const types: (keyof typeof powerUps)[] = ['timeFreeze', 'extraLife', 'doubleScore'];
+                    const types: PowerUpType[] = ['timeFreeze', 'extraLife', 'doubleScore'];
                     const type = types[Math.floor(Math.random() * types.length)];
                     setPowerUps(prev => ({ ...prev, [type]: prev[type] + 1 }));
                     // playEatingSound(); // REMOVED
@@ -339,7 +340,7 @@ export const useRoundCountingLogic = () => {
             });
             adjustDifficulty(false);
         }
-    }, [gameState, currentProblem, foundIds, isShuffling, incorrectClickIndex, questionStartTime, doubleScoreActive, adjustDifficulty, generateNewProblem, powerUps]);
+    }, [gameState, currentProblem, foundIds, isShuffling, incorrectClickIndex, questionStartTime, doubleScoreActive, adjustDifficulty, generateNewProblem]);
 
     const usePowerUp = useCallback((type: keyof typeof powerUps) => {
         if (powerUps[type] > 0) {

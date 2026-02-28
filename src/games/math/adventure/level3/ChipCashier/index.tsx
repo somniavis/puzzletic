@@ -353,6 +353,7 @@ export const ChipCashier: React.FC<ChipCashierProps> = ({ onExit }) => {
     );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const manifest: GameManifest = {
     id: GameIds.MATH_CHIP_CASHIER,
     title: '코인 캐셔',

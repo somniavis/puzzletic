@@ -34,7 +34,7 @@ export const TicTacToeGame: React.FC<GameLogicProps> = ({ engine }) => {
 
     // --- Core Logic ---
 
-    const checkWinner = (currentBoard: BoardState): { winner: Player | 'draw', line: number[] | null } | null => {
+    const checkWinner = useCallback((currentBoard: BoardState): { winner: Player | 'draw', line: number[] | null } | null => {
         for (const combo of WINNING_COMBINATIONS) {
             const [a, b, c] = combo;
             if (currentBoard[a] && currentBoard[a] === currentBoard[b] && currentBoard[a] === currentBoard[c]) {
@@ -45,7 +45,7 @@ export const TicTacToeGame: React.FC<GameLogicProps> = ({ engine }) => {
             return { winner: 'draw', line: null };
         }
         return null; // Game continues
-    };
+    }, []);
 
     const handleGameEnd = useCallback((result: 'won' | 'lost' | 'draw', line: number[] | null) => {
         setGameStatus(result);
@@ -84,7 +84,7 @@ export const TicTacToeGame: React.FC<GameLogicProps> = ({ engine }) => {
     // 2. Block if threatened
     // 3. Take center
     // 4. Take random available
-    const getBestMove = (currentBoard: BoardState): number => {
+    const getBestMove = useCallback((currentBoard: BoardState): number => {
         const availableMoves = currentBoard.map((val, idx) => val === null ? idx : null).filter(val => val !== null) as number[];
 
         // Helper to check if a move leads to a win for a specific player
@@ -112,7 +112,7 @@ export const TicTacToeGame: React.FC<GameLogicProps> = ({ engine }) => {
         // 4. Random from remaining
         const randomIndex = Math.floor(Math.random() * availableMoves.length);
         return availableMoves[randomIndex];
-    };
+    }, [checkWinner]);
 
     // --- User Interaction ---
 
@@ -158,7 +158,7 @@ export const TicTacToeGame: React.FC<GameLogicProps> = ({ engine }) => {
             }, 600); // 600ms thinking time
             return () => clearTimeout(timer);
         }
-    }, [isPlayerTurn, gameStatus, board, handleGameEnd]);
+    }, [isPlayerTurn, gameStatus, board, checkWinner, getBestMove, handleGameEnd]);
 
     useEffect(() => {
         const isFirstProblem = engine.stats.correct === 0 && engine.stats.wrong === 0;

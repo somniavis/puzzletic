@@ -20,6 +20,7 @@ export const FruitSlice: React.FC<FruitSliceProps> = ({ onExit }) => {
     // Actually, stick to one edit per "chunk" logic.
     // Let's do imports first.
     const { t, i18n } = useTranslation();
+    const logic = useFruitSliceLogic();
     const {
         gameState,
         currentProblem,
@@ -29,9 +30,9 @@ export const FruitSlice: React.FC<FruitSliceProps> = ({ onExit }) => {
         startGame,
         stopTimer,
         handleAnswer,
-        usePowerUp,
+        usePowerUp: activatePowerUp,
         lastEvent
-    } = useFruitSliceLogic();
+    } = logic;
 
     useEffect(() => {
         const newResources = { en: { translation: { games: { 'math-fruit-slice': manifest_en } } } };
@@ -180,15 +181,15 @@ export const FruitSlice: React.FC<FruitSliceProps> = ({ onExit }) => {
     const powerUpConfig: PowerUpBtnProps[] = [
         {
             count: powerUps.timeFreeze, color: "blue", icon: "❄️", title: t('games.math-fruit-slice.powerups.freeze'),
-            onClick: () => usePowerUp('timeFreeze'), disabledConfig: timeFrozen, status: (timeFrozen ? 'active' : 'normal')
+            onClick: () => activatePowerUp('timeFreeze'), disabledConfig: timeFrozen, status: (timeFrozen ? 'active' : 'normal')
         },
         {
             count: powerUps.extraLife, color: "red", icon: "❤️", title: t('games.math-fruit-slice.powerups.life'),
-            onClick: () => usePowerUp('extraLife'), disabledConfig: gameState.lives >= 3, status: (gameState.lives >= 3 ? 'maxed' : 'normal')
+            onClick: () => activatePowerUp('extraLife'), disabledConfig: gameState.lives >= 3, status: (gameState.lives >= 3 ? 'maxed' : 'normal')
         },
         {
             count: powerUps.doubleScore, color: "yellow", icon: "⚡", title: t('games.math-fruit-slice.powerups.double'),
-            onClick: () => usePowerUp('doubleScore'), disabledConfig: doubleScoreActive, status: (doubleScoreActive ? 'active' : 'normal')
+            onClick: () => activatePowerUp('doubleScore'), disabledConfig: doubleScoreActive, status: (doubleScoreActive ? 'active' : 'normal')
         }
     ];
 
@@ -201,7 +202,7 @@ export const FruitSlice: React.FC<FruitSliceProps> = ({ onExit }) => {
             title={t('games.math-fruit-slice.title')}
             subtitle={t('games.math-fruit-slice.subtitle')}
             gameId={GameIds.MATH_FRUIT_SLICE}
-            engine={layoutEngine as any}
+            engine={layoutEngine as typeof logic}
             instructions={[
                 { icon: '🧮', title: t('games.math-fruit-slice.howToPlay.step1.title'), description: t('games.math-fruit-slice.howToPlay.step1.description') },
                 { icon: '🔪', title: t('games.math-fruit-slice.howToPlay.step2.title'), description: t('games.math-fruit-slice.howToPlay.step2.description') },
@@ -298,6 +299,7 @@ export const FruitSlice: React.FC<FruitSliceProps> = ({ onExit }) => {
     );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const manifest: GameManifest = {
     id: GameIds.MATH_FRUIT_SLICE,
     title: 'Fruit Slice',

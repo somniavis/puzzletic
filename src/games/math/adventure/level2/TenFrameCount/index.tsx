@@ -43,13 +43,14 @@ export const TenFrameCount: React.FC<TenFrameCountProps> = ({ onExit }) => {
         difficultyLevel: 1, // Fixed for now or dynamic based on round? Logic handles internal difficulty.
         maxLevel: 1
     };
+    const layoutEngineForLayout = layoutEngine as typeof logic;
 
     return (
         <Layout1
             title={t('games.ten-frame-count.title')}
             subtitle={t('games.ten-frame-count.subtitle')}
             gameId={GameIds.TEN_FRAME_COUNT}
-            engine={layoutEngine as any}
+            engine={layoutEngineForLayout}
             instructions={[
                 { icon: '🧱', title: t('games.ten-frame-count.howToPlay.step1.title'), description: t('games.ten-frame-count.howToPlay.step1.description') },
                 { icon: '🔟', title: t('games.ten-frame-count.howToPlay.step2.title'), description: t('games.ten-frame-count.howToPlay.step2.description') },
@@ -109,6 +110,7 @@ export const TenFrameCount: React.FC<TenFrameCountProps> = ({ onExit }) => {
     );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const manifest: GameManifest = {
     id: GameIds.TEN_FRAME_COUNT,
     title: 'Ten-Frame Count',

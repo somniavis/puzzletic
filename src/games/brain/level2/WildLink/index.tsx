@@ -117,7 +117,7 @@ export default function WildLink({ onExit }: WildLinkProps) {
             title: 'Double Score',
             disabledConfig: logic.isDoubleScore || logic.powerUps.doubleScore <= 0
         }
-    ], [logic.powerUps, logic.isTimeFrozen, logic.isDoubleScore, logic.activatePowerUp, engine.lives]);
+    ], [logic, engine.lives]);
 
     const handlePointerMove = useCallback((e: React.PointerEvent) => {
         // Get element under the pointer (works for both mouse and touch)
@@ -135,7 +135,7 @@ export default function WildLink({ onExit }: WildLinkProps) {
         if (row >= 0 && col >= 0) {
             logic.handleMove(row, col);
         }
-    }, [logic.handleMove]);
+    }, [logic]);
 
     return (
         <Layout2
@@ -200,6 +200,7 @@ export default function WildLink({ onExit }: WildLinkProps) {
 
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const manifest = {
     id: GameIds.WILD_LINK,
     title: 'Wild Link',

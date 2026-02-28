@@ -74,16 +74,16 @@ export interface GameState {
     };
 }
 
-export const useMathArcheryLogic = (gameLevel: number = 1) => {
-    const TARGET_START_OFFSET_X = -30;
-    const TARGET_SPEED_PER_SEC = 18; // percent / sec
-    const TARGET_SPEED_STEP = 1.2; // every 3-combo
+const TARGET_START_OFFSET_X = -30;
+const TARGET_SPEED_PER_SEC = 18; // percent / sec
+const TARGET_SPEED_STEP = 1.2; // every 3-combo
+const TARGET_SYMBOLS = [
+    '🔴', '🟠', '🟡', '🟢', '🔵', '🟣',
+    '🟥', '🟧', '🟨', '🟩', '🟦', '🟪',
+    '❤️', '🩷', '🧡', '💛', '💙', '💜'
+];
 
-    const TARGET_SYMBOLS = [
-        '🔴', '🟠', '🟡', '🟢', '🔵', '🟣',
-        '🟥', '🟧', '🟨', '🟩', '🟦', '🟪',
-        '❤️', '🩷', '🧡', '💛', '💙', '💜'
-    ];
+export const useMathArcheryLogic = (gameLevel: number = 1) => {
     const [gameState, setGameState] = useState<GameState>({
         score: 0,
         lives: 3,
@@ -110,6 +110,7 @@ export const useMathArcheryLogic = (gameLevel: number = 1) => {
     const roundResolvedRef = useRef(false);
     const targetDirectionRef = useRef<1 | -1>(1);
     const stuckArrowTimerRef = useRef<number | null>(null);
+    const stableHandleHitRef = useRef<(isCorrect: boolean, ringScore?: number) => void>(() => undefined);
 
     // Generate Problem
     const generateProblem = useCallback((internalDifficulty: number, forceOp?: 'add' | 'sub') => {
@@ -288,7 +289,7 @@ export const useMathArcheryLogic = (gameLevel: number = 1) => {
 
                 // 2) Come back left and disappear/fail after fully passing.
                 if (targetDirectionRef.current === -1 && next <= leftExitOffset && !roundResolvedRef.current) {
-                    stableHandleHit(false);
+                    stableHandleHitRef.current(false);
                     return leftExitOffset;
                 }
                 return next;
@@ -362,7 +363,7 @@ export const useMathArcheryLogic = (gameLevel: number = 1) => {
                 }, 300);
 
                 const isCorrectTarget = hitTarget.value === currentProblem.answer;
-                stableHandleHit(isCorrectTarget, ringScore);
+                stableHandleHitRef.current(isCorrectTarget, ringScore);
             }
             setArrow(prev => prev ? { ...prev, active: false } : null); // Deactivate arrow immediately
         } else {
@@ -459,6 +460,7 @@ export const useMathArcheryLogic = (gameLevel: number = 1) => {
             }
         }
     };
+    stableHandleHitRef.current = stableHandleHit;
 
     // Public Shoot Function
     const shootArrow = (angle: number, power: number) => {

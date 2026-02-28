@@ -140,7 +140,6 @@ export const JelloFeeding: React.FC<JelloFeedingProps> = ({ onExit }) => {
         setResourcesReady(true);
     }, [i18n]);
 
-    if (!resourcesReady) return null;
 
     useEffect(() => {
         const prev = prevGameStateRef.current;
@@ -403,7 +402,7 @@ export const JelloFeeding: React.FC<JelloFeedingProps> = ({ onExit }) => {
 
         const isCorrect = fedCount === problem.minus;
         engine.submitAnswer(isCorrect, { skipDifficulty: true });
-        engine.registerEvent({ type: isCorrect ? 'correct' : 'wrong' } as any);
+        engine.registerEvent({ type: isCorrect ? 'correct' : 'wrong' });
 
         if (isCorrect) {
             nextRound();
@@ -457,13 +456,15 @@ export const JelloFeeding: React.FC<JelloFeedingProps> = ({ onExit }) => {
 
     const currentCharacter = useMemo(() => {
         const id = nurturing.speciesId || 'yellowJello';
-        const char = createCharacter(id as any);
-        char.evolutionStage = (nurturing.evolutionStage || 1) as any;
+        const char = createCharacter(id);
+        char.evolutionStage = nurturing.evolutionStage || 1;
         if (nurturing.characterName) {
             char.name = nurturing.characterName;
         }
         return { id, char };
     }, [nurturing.speciesId, nurturing.evolutionStage, nurturing.characterName]);
+
+    if (!resourcesReady) return null;
 
     const liveResult = fedCount === 0 ? '?' : String(remainingCount);
     const resultStateClass = fedCount === 0
@@ -606,6 +607,7 @@ export const JelloFeeding: React.FC<JelloFeedingProps> = ({ onExit }) => {
     );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const manifest: GameManifest = {
     id: GameIds.MATH_JELLO_FEEDING,
     title: 'Jello Feeding',
@@ -620,3 +622,4 @@ export const manifest: GameManifest = {
     thumbnail: '🍏',
     tagsKey: 'games.tags.subtraction'
 };
+    if (!resourcesReady) return null;

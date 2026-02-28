@@ -40,7 +40,7 @@ export const Sharpshooter: React.FC<SharpshooterProps> = ({ onExit }) => {
         stuckArrow,
         stats,
         powerUps, timeFrozen, doubleScoreActive,
-        startGame, stopTimer, usePowerUp, lastEvent,
+        startGame, stopTimer, usePowerUp: activatePowerUp, lastEvent,
         arrow, shootArrow
     } = useMathArcheryLogicReturns;
 
@@ -57,7 +57,7 @@ export const Sharpshooter: React.FC<SharpshooterProps> = ({ onExit }) => {
             i18n.addResourceBundle(lang, 'translation', newResources[lang as keyof typeof newResources].translation, true, true);
         });
         return () => stopTimer();
-    }, []);
+    }, [i18n, stopTimer]);
 
     // Drag Logic
     const [dragStart, setDragStart] = useState<{ x: number, y: number } | null>(null);
@@ -149,9 +149,9 @@ export const Sharpshooter: React.FC<SharpshooterProps> = ({ onExit }) => {
     };
 
     const powerUpConfig: PowerUpBtnProps[] = [
-        { count: powerUps.timeFreeze, color: "blue", icon: "❄️", title: t('games.sharpshooter.powerups.freeze'), onClick: () => usePowerUp('timeFreeze'), disabledConfig: timeFrozen, status: (timeFrozen ? 'active' : 'normal') },
-        { count: powerUps.extraLife, color: "red", icon: "❤️", title: t('games.sharpshooter.powerups.life'), onClick: () => usePowerUp('extraLife'), disabledConfig: lives >= 3, status: (lives >= 3 ? 'maxed' : 'normal') },
-        { count: powerUps.doubleScore, color: "yellow", icon: "⚡", title: t('games.sharpshooter.powerups.double'), onClick: () => usePowerUp('doubleScore'), disabledConfig: doubleScoreActive, status: (doubleScoreActive ? 'active' : 'normal') }
+        { count: powerUps.timeFreeze, color: "blue", icon: "❄️", title: t('games.sharpshooter.powerups.freeze'), onClick: () => activatePowerUp('timeFreeze'), disabledConfig: timeFrozen, status: (timeFrozen ? 'active' : 'normal') },
+        { count: powerUps.extraLife, color: "red", icon: "❤️", title: t('games.sharpshooter.powerups.life'), onClick: () => activatePowerUp('extraLife'), disabledConfig: lives >= 3, status: (lives >= 3 ? 'maxed' : 'normal') },
+        { count: powerUps.doubleScore, color: "yellow", icon: "⚡", title: t('games.sharpshooter.powerups.double'), onClick: () => activatePowerUp('doubleScore'), disabledConfig: doubleScoreActive, status: (doubleScoreActive ? 'active' : 'normal') }
     ];
 
     const layoutEngine = {
@@ -199,7 +199,7 @@ export const Sharpshooter: React.FC<SharpshooterProps> = ({ onExit }) => {
             title={t('games.sharpshooter.title')}
             subtitle={t('games.sharpshooter.subtitle')}
             gameId={GameIds.BRAIN_SHARPSHOOTER}
-            engine={layoutEngine as any}
+            engine={layoutEngine as typeof useMathArcheryLogicReturns}
             powerUps={powerUpConfig}
             onExit={onExit}
             className="sharpshooter-layout3"
@@ -348,6 +348,7 @@ export const Sharpshooter: React.FC<SharpshooterProps> = ({ onExit }) => {
     );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const manifest: GameManifest = {
     id: GameIds.BRAIN_SHARPSHOOTER,
     title: 'Master Archer',

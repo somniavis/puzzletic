@@ -438,7 +438,7 @@ export const FloorTiler: React.FC<FloorTilerProps> = ({ onExit }) => {
 
         if (!canPlace) {
             engine.submitAnswer(false, { skipFeedback: true });
-            engine.registerEvent({ type: 'wrong' } as any);
+            engine.registerEvent({ type: 'wrong' });
             setPreviewRect(null);
             return;
         }
@@ -451,7 +451,7 @@ export const FloorTiler: React.FC<FloorTilerProps> = ({ onExit }) => {
         setPreviewRect(null);
 
         engine.submitAnswer(true, { skipFeedback: true });
-        engine.registerEvent({ type: 'correct' } as any);
+        engine.registerEvent({ type: 'correct' });
 
         if (isBoardFull(nextBoard)) {
             setRoundClearing(true);
@@ -625,6 +625,7 @@ export const FloorTiler: React.FC<FloorTilerProps> = ({ onExit }) => {
     );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const manifest: GameManifest = {
     id: GameIds.MATH_FLOOR_TILER,
     title: 'Floor Tiler',

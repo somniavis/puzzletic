@@ -35,45 +35,7 @@ export const useSignalHunterLogic = () => {
     const [roundsCleared, setRoundsCleared] = useState(0); // Track rounds for difficulty progression
     const lastGameStateRef = useRef<string>('idle');
 
-    // Initial Setup & Restart Handler
-    useEffect(() => {
-        const prevState = lastGameStateRef.current;
-        lastGameStateRef.current = engine.gameState;
-
-        // Only reset difficulty on FRESH game start (from idle or gameover)
-        if (engine.gameState === 'playing' && (prevState === 'idle' || prevState === 'gameover')) {
-            setLocalDifficulty(1);
-            setRoundsCleared(0);
-            startRound(1);
-        }
-    }, [engine.gameState]);
-
-    const startRound = (difficulty: number) => {
-        // Generate Codes - Random count within difficulty tier
-        let minCount = 2;
-        let maxCount = 2;
-
-        if (difficulty >= 5) {
-            minCount = 2; maxCount = 4;  // 5+: 2~4개
-        } else if (difficulty >= 3) {
-            minCount = 2; maxCount = 3;  // 3-4: 2~3개
-        } else {
-            minCount = 2; maxCount = 2;  // 1-2: 2개 고정
-        }
-
-        const count = minCount + Math.floor(Math.random() * (maxCount - minCount + 1));
-        const newCodes = [];
-        for (let i = 0; i < count; i++) newCodes.push(EMOJI_POOL[Math.floor(Math.random() * EMOJI_POOL.length)]);
-
-        setCodes(newCodes);
-        setCurrentCodeIdx(0);
-        setNeedleAngle(0);
-        setDirection(1);
-        spawnTarget(newCodes[0], difficulty, null); // First spawn, no previous target
-        setIsRotating(true);
-    };
-
-    const spawnTarget = (targetEmoji: string, difficulty: number, prevTargetAngle: number | null) => {
+    const spawnTarget = useCallback((targetEmoji: string, difficulty: number, prevTargetAngle: number | null) => {
         // 1. Determine Counts
         // Level 1-2: 1 decoy, Level 3-4: 2 decoys, Level 5+: 3 decoys
         const decoyCount = Math.min(1 + Math.floor(difficulty / 2), 3);
@@ -142,7 +104,45 @@ export const useSignalHunterLogic = () => {
             newDecoys.push({ angle: validAngles[i], emoji: decoyEmoji });
         }
         setDecoys(newDecoys);
-    };
+    }, []);
+
+    const startRound = useCallback((difficulty: number) => {
+        // Generate Codes - Random count within difficulty tier
+        let minCount = 2;
+        let maxCount = 2;
+
+        if (difficulty >= 5) {
+            minCount = 2; maxCount = 4;  // 5+: 2~4개
+        } else if (difficulty >= 3) {
+            minCount = 2; maxCount = 3;  // 3-4: 2~3개
+        } else {
+            minCount = 2; maxCount = 2;  // 1-2: 2개 고정
+        }
+
+        const count = minCount + Math.floor(Math.random() * (maxCount - minCount + 1));
+        const newCodes = [];
+        for (let i = 0; i < count; i++) newCodes.push(EMOJI_POOL[Math.floor(Math.random() * EMOJI_POOL.length)]);
+
+        setCodes(newCodes);
+        setCurrentCodeIdx(0);
+        setNeedleAngle(0);
+        setDirection(1);
+        spawnTarget(newCodes[0], difficulty, null); // First spawn, no previous target
+        setIsRotating(true);
+    }, [spawnTarget]);
+
+    // Initial Setup & Restart Handler
+    useEffect(() => {
+        const prevState = lastGameStateRef.current;
+        lastGameStateRef.current = engine.gameState;
+
+        // Only reset difficulty on FRESH game start (from idle or gameover)
+        if (engine.gameState === 'playing' && (prevState === 'idle' || prevState === 'gameover')) {
+            setLocalDifficulty(1);
+            setRoundsCleared(0);
+            startRound(1);
+        }
+    }, [engine.gameState, startRound]);
 
     // Ref for frame timing (for cross-platform consistent speed)
     const lastTimeRef = useRef<number>(0);
@@ -182,28 +182,7 @@ export const useSignalHunterLogic = () => {
     }, [isRotating, direction, engine.gameState, localDifficulty]);
 
 
-    // Interaction
-    const handleTap = useCallback(() => {
-        if (!isRotating) return;
-
-        // Normalize angles to 0-360 positive
-        const n = (needleAngle + 360) % 360;
-        const t = (targetAngle + 360) % 360;
-
-        // Check distance (handling wrap-around)
-        let diff = Math.abs(n - t);
-        if (diff > 180) diff = 360 - diff;
-
-        if (diff <= TARGET_TOLERANCE) {
-            // Success
-            handleSuccess();
-        } else {
-            // Fail
-            handleFail();
-        }
-    }, [needleAngle, targetAngle, isRotating]);
-
-    const handleSuccess = () => {
+    const handleSuccess = useCallback(() => {
         engine.registerEvent({ type: 'correct', isFinal: currentCodeIdx >= codes.length - 1 });
 
         if (currentCodeIdx >= codes.length - 1) {
@@ -241,13 +220,34 @@ export const useSignalHunterLogic = () => {
             // Pass the CURRENT target angle as the 'previous' one for the new spawn
             spawnTarget(codes[currentCodeIdx + 1], localDifficulty, targetAngle);
         }
-    };
+    }, [engine, currentCodeIdx, codes, roundsCleared, localDifficulty, targetAngle, startRound, spawnTarget]);
 
-    const handleFail = () => {
+    const handleFail = useCallback(() => {
         engine.registerEvent({ type: 'wrong' });
         engine.submitAnswer(false); // Lose Life
         // Shake effect handled by engine
-    };
+    }, [engine]);
+
+    // Interaction
+    const handleTap = useCallback(() => {
+        if (!isRotating) return;
+
+        // Normalize angles to 0-360 positive
+        const n = (needleAngle + 360) % 360;
+        const t = (targetAngle + 360) % 360;
+
+        // Check distance (handling wrap-around)
+        let diff = Math.abs(n - t);
+        if (diff > 180) diff = 360 - diff;
+
+        if (diff <= TARGET_TOLERANCE) {
+            // Success
+            handleSuccess();
+        } else {
+            // Fail
+            handleFail();
+        }
+    }, [needleAngle, targetAngle, isRotating, handleSuccess, handleFail]);
 
     const usePowerUp = (type: 'timeFreeze' | 'extraLife' | 'doubleScore') => {
         if (engine.powerUps[type] > 0) {

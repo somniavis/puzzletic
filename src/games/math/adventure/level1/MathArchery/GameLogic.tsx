@@ -72,6 +72,8 @@ export interface GameState {
     };
 }
 
+type PowerUpType = 'timeFreeze' | 'extraLife' | 'doubleScore';
+
 export const useMathArcheryLogic = (gameLevel: number = 1) => {
     const [gameState, setGameState] = useState<GameState>({
         score: 0,
@@ -266,9 +268,9 @@ export const useMathArcheryLogic = (gameLevel: number = 1) => {
             }
         }
 
-    }, [arrow, currentProblem]);
+    }, [arrow, currentProblem, handleHit]);
 
-    const handleHit = (isCorrect: boolean) => {
+    const handleHit = useCallback((isCorrect: boolean) => {
         if (isCorrect) {
             // playCleaningSound(); // REMOVED: Managed by Layout
             setLastEvent({ type: 'correct', id: Date.now() });
@@ -304,7 +306,7 @@ export const useMathArcheryLogic = (gameLevel: number = 1) => {
 
             // Powerup drop logic
             if ((gameState.combo + 1) % 3 === 0 && Math.random() > 0.45) {
-                const types: (keyof typeof powerUps)[] = ['timeFreeze', 'extraLife', 'doubleScore'];
+                const types: PowerUpType[] = ['timeFreeze', 'extraLife', 'doubleScore'];
                 const type = types[Math.floor(Math.random() * types.length)];
                 setPowerUps(prev => ({ ...prev, [type]: prev[type] + 1 }));
                 // playEatingSound(); // REMOVED: Managed by Layout (or ignore for powerup pickup sound?)
@@ -354,7 +356,7 @@ export const useMathArcheryLogic = (gameLevel: number = 1) => {
             // Reset Arrow
             setArrow(null);
         }
-    };
+    }, [gameState, questionStartTime, doubleScoreActive, generateProblem]);
 
     // Ref for generateProblem in timeout
     const generateNextRef = useRef(generateProblem);
@@ -395,7 +397,7 @@ export const useMathArcheryLogic = (gameLevel: number = 1) => {
 
             // Powerup
             if ((prev.combo + 1) % 3 === 0 && Math.random() > 0.45) {
-                const types: (keyof typeof powerUps)[] = ['timeFreeze', 'extraLife', 'doubleScore'];
+                const types: PowerUpType[] = ['timeFreeze', 'extraLife', 'doubleScore'];
                 const type = types[Math.floor(Math.random() * types.length)];
                 setPowerUps(p => ({ ...p, [type]: p[type] + 1 }));
                 // playEatingSound(); // REMOVED

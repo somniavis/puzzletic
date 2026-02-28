@@ -547,6 +547,7 @@ export const FrogJump: React.FC<FrogJumpProps> = ({ onExit }) => {
     );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const manifest: GameManifest = {
     id: GameIds.MATH_FROG_JUMP,
     title: '개구리 점프',

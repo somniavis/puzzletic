@@ -239,7 +239,7 @@ export default function CargoTrain() {
             title: t('games.cargoTrain.powerUps.doubleScore'),
             disabledConfig: gameLogic.isDoubleScore
         }
-    ], [t, gameLogic.powerUps, gameLogic.isTimeFrozen, gameLogic.lives, gameLogic.isDoubleScore, gameLogic.activatePowerUp]);
+    ], [t, gameLogic]);
 
 
     const cardBackground = useMemo(() => (

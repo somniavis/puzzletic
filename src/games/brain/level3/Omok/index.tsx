@@ -55,7 +55,7 @@ export const OmokGame: React.FC<OmokGameProps> = ({ onExit, gameId }) => {
 };
 
 // Inner component to access engine
-const OmokBoardWrapper = ({ engine }: { engine: any }) => {
+const OmokBoardWrapper = ({ engine }: { engine: ReturnType<typeof useGameEngine> }) => {
     const { t } = useTranslation();
     const { updateScore, updateLives, registerEvent } = engine;
     const {

@@ -199,6 +199,7 @@ export default function AnimalBanquet({ onExit }: AnimalBanquetProps) {
     );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const manifest = {
     id: GameIds.ANIMAL_BANQUET,
     title: 'Animal Banquet',

@@ -41,7 +41,7 @@ export const FishingCount: React.FC<FishingCountProps> = ({ onExit }) => {
             i18n.addResourceBundle(lang, 'translation', newResources[lang as keyof typeof newResources].translation, true, true);
         });
         // startGame handled by Layout start screen interaction
-    }, []);
+    }, [i18n]);
 
     // Force blur on target change (Safari Focus Fix)
     useEffect(() => {
@@ -250,7 +250,7 @@ export const FishingCount: React.FC<FishingCountProps> = ({ onExit }) => {
             title={t('games.math-fishing-count.title')}
             subtitle={t('games.math-fishing-count.subtitle')}
             gameId={GameIds.MATH_FISHING_COUNT}
-            engine={layoutEngine as any} // Cast safely
+            engine={layoutEngine as typeof useFishingCountLogicReturns}
             powerUps={[]} // No powerups for this Level 1 game yet
             target={{
                 value: targetInline,
@@ -315,6 +315,7 @@ export const FishingCount: React.FC<FishingCountProps> = ({ onExit }) => {
     );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const manifest: GameManifest = {
     id: GameIds.MATH_FISHING_COUNT,
     title: 'Fishing Count',

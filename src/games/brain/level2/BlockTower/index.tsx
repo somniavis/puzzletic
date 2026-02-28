@@ -393,6 +393,9 @@ export const BlockTower: React.FC<BlockTowerProps> = ({ onExit }) => {
     }, [snappedArmCol]);
 
     const towerHeight = React.useMemo(() => {
+        // settledPieces length is the intended recompute trigger for ref-based grid metrics.
+        const _pieceCount = settledPieces.length;
+        void _pieceCount;
         const { totalBlocks, topMostRow } = getTowerMetrics(gridRef.current);
         if (totalBlocks === 0) return 0;
         return GRID_ROWS - topMostRow;
@@ -408,7 +411,7 @@ export const BlockTower: React.FC<BlockTowerProps> = ({ onExit }) => {
         setIsCollapsing(true);
         roundTimerRef.current = window.setTimeout(() => {
             engine.submitAnswer(false, { skipDifficulty: true, skipFeedback: true });
-            engine.registerEvent({ type: 'wrong' } as any);
+            engine.registerEvent({ type: 'wrong' });
             const next = createProblem(problemRef.current);
             setProblem(next);
             problemRef.current = next;
@@ -468,7 +471,7 @@ export const BlockTower: React.FC<BlockTowerProps> = ({ onExit }) => {
     }, [isActiveRoundState, isDropping, isCollapsing, isRoundClearing, problem.bundleSize, armSpeedMultiplier]);
 
     const computeDropStartCol = React.useCallback((bundleSize: number): number => {
-        let startCol = clamp(snappedArmColRef.current, 0, GRID_COLS - bundleSize);
+        const startCol = clamp(snappedArmColRef.current, 0, GRID_COLS - bundleSize);
         if (!boardRef.current || !carriageRef.current) return startCol;
 
         const boardRect = boardRef.current.getBoundingClientRect();
@@ -494,7 +497,7 @@ export const BlockTower: React.FC<BlockTowerProps> = ({ onExit }) => {
 
             // Safe drop on empty ground: consume turn and continue.
             engine.submitAnswer(true, { skipDifficulty: true, skipFeedback: true });
-            engine.registerEvent({ type: 'correct', isFinal: false } as any);
+            engine.registerEvent({ type: 'correct', isFinal: false });
 
             const upcoming = nextProblemRef.current;
             setProblem(upcoming);
@@ -537,7 +540,7 @@ export const BlockTower: React.FC<BlockTowerProps> = ({ onExit }) => {
         if (reachedTop) {
             setIsRoundClearing(true);
             engine.submitAnswer(true, { skipDifficulty: true });
-            engine.registerEvent({ type: 'correct', isFinal: true } as any);
+            engine.registerEvent({ type: 'correct', isFinal: true });
             roundTimerRef.current = window.setTimeout(() => {
                 startNewProblem();
             }, 850);
@@ -545,7 +548,7 @@ export const BlockTower: React.FC<BlockTowerProps> = ({ onExit }) => {
         }
 
         engine.submitAnswer(true, { skipDifficulty: true, skipFeedback: true });
-        engine.registerEvent({ type: 'correct', isFinal: false } as any);
+        engine.registerEvent({ type: 'correct', isFinal: false });
 
         const upcoming = nextProblemRef.current;
         setProblem(upcoming);
@@ -602,13 +605,19 @@ export const BlockTower: React.FC<BlockTowerProps> = ({ onExit }) => {
         runFallAnimation(landingRow, startCol, currentProblem);
     }, [computeDropStartCol, isActiveRoundState, isCollapsing, isDropping, isRoundClearing, runFallAnimation, triggerCollapseFail]);
 
-    const centerHintCols = React.useMemo(() => getBaseCenterCols(gridRef.current), [settledPieces]);
+    const centerHintCols = React.useMemo(() => {
+        const _pieceCount = settledPieces.length;
+        void _pieceCount;
+        return getBaseCenterCols(gridRef.current);
+    }, [settledPieces]);
     const balanceStatus = React.useMemo(
-        () => (
-            problem.kind === 'hazard'
+        () => {
+            const _pieceCount = settledPieces.length;
+            void _pieceCount;
+            return problem.kind === 'hazard'
                 ? 'normal'
-                : getPredictedBalanceStatus(gridRef.current, snappedArmCol, problem.bundleSize)
-        ),
+                : getPredictedBalanceStatus(gridRef.current, snappedArmCol, problem.bundleSize);
+        },
         [settledPieces, snappedArmCol, problem.bundleSize, problem.kind]
     );
 

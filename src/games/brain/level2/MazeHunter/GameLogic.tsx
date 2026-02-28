@@ -109,7 +109,7 @@ const generateLevel = (size: number, difficulty: number): LevelDef => {
     const targetEmpty = Math.floor(totalCells * (0.45 + (difficulty / 10) * 0.2));
     let currentEmptyCount = solutionPath.length;
 
-    let growthPoints = [...solutionPath];
+    const growthPoints = [...solutionPath];
     let loopCount = 0;
     const maxLoops = totalCells * 10;
 

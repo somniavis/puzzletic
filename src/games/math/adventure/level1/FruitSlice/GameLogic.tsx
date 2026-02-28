@@ -38,6 +38,8 @@ export interface GameState {
     correctInLevel: number;
 }
 
+type PowerUpType = 'timeFreeze' | 'extraLife' | 'doubleScore';
+
 export const FRUITS = [
     { type: 'grape', emoji: '🍇', color: '#A855F7' },
     { type: 'melon', emoji: '🍈', color: '#bef264' },
@@ -83,14 +85,14 @@ const generateProblem = (difficulty: number, lastProblem?: Problem | null): Prob
     const result = a - b;
     const correctValue = result; // User finds the result (C)
 
-    const randomFruit = FRUITS[Math.floor(Math.random() * FRUITS.length)];
+    const randomFruit: (typeof FRUITS)[number] = FRUITS[Math.floor(Math.random() * FRUITS.length)];
 
     const fruit: FruitItem = {
         id: Date.now(),
         value: correctValue,
         equationA: a,
         equationResult: b, // Note: We store 'B' in equationResult field to pass to UI, UI will show A - B = ?
-        fruitType: randomFruit.type as any
+        fruitType: randomFruit.type
     };
 
     // Generate Knives (1 correct + 3 distractors)
@@ -134,6 +136,7 @@ const generateProblem = (difficulty: number, lastProblem?: Problem | null): Prob
     };
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useFruitSliceLogic = () => {
     const [gameState, setGameState] = useState<GameState>({
         score: 0,
@@ -244,7 +247,7 @@ export const useFruitSliceLogic = () => {
 
             // Powerup drop logic
             if ((gameState.combo + 1) % 3 === 0 && Math.random() > 0.45) {
-                const types: (keyof typeof powerUps)[] = ['timeFreeze', 'extraLife', 'doubleScore'];
+                const types: PowerUpType[] = ['timeFreeze', 'extraLife', 'doubleScore'];
                 const type = types[Math.floor(Math.random() * types.length)];
                 setPowerUps(prev => ({ ...prev, [type]: prev[type] + 1 }));
                 // playEatingSound(); // REMOVED
@@ -280,7 +283,7 @@ export const useFruitSliceLogic = () => {
             });
             // Downgrade logic skipped as agreed
         }
-    }, [gameState, currentProblem, doubleScoreActive, powerUps, questionStartTime]);
+    }, [gameState, currentProblem, doubleScoreActive, questionStartTime]);
 
 
     const usePowerUp = useCallback((type: keyof typeof powerUps) => {

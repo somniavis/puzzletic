@@ -5,6 +5,7 @@ export type RocketState = 'idle' | 'launch-left' | 'launch-right' | 'launch-both
 export type AnswerType = '>' | '<' | '=';
 
 export const useRocketLauncherLogic = (engine: ReturnType<typeof useGameEngine>) => {
+    const { setPowerUps } = engine;
     const [leftValue, setLeftValue] = useState(0);
     const [rightValue, setRightValue] = useState(0);
     const [rocketState, setRocketState] = useState<RocketState>('idle');
@@ -23,7 +24,7 @@ export const useRocketLauncherLogic = (engine: ReturnType<typeof useGameEngine>)
         // 5% Equal
         const gapType = Math.random();
 
-        let left = Math.floor(Math.random() * (max - min + 1)) + min;
+        const left = Math.floor(Math.random() * (max - min + 1)) + min;
         let right = left;
 
         if (gapType < 0.05) {
@@ -105,14 +106,14 @@ export const useRocketLauncherLogic = (engine: ReturnType<typeof useGameEngine>)
         generateProblem();
 
         // Initialize Powerups
-        if (engine.setPowerUps) {
-            engine.setPowerUps({
+        if (setPowerUps) {
+            setPowerUps({
                 timeFreeze: 1,
                 extraLife: 1,
                 doubleScore: 1
             });
         }
-    }, []); // Run once on mount
+    }, [generateProblem, setPowerUps]); // Run once on mount
 
     const handleAnswer = useCallback((operator: AnswerType) => {
         if (isProcessing) return;

@@ -17,7 +17,8 @@ export const usePinwheelLogic = () => {
     const engine = useGameEngine({
         initialTime: CONSTS.TIME_LIMIT,
         initialLives: CONSTS.BASE_LIVES,
-        maxDifficulty: 10,
+        // Reward service supports difficulty 1..5.
+        maxDifficulty: 5,
         difficultyThresholds: {
             promoteStreak: 3,
             promoteTotal: 4,
@@ -33,9 +34,7 @@ export const usePinwheelLogic = () => {
         finalSpin: false
     });
 
-    const [powerUps, setPowerUps] = useState({ timeFreeze: 0, extraLife: 0, doubleScore: 0 });
-    const [isTimeFrozen, setIsTimeFrozen] = useState(false);
-    const [doubleScoreActive, setDoubleScoreActive] = useState(false);
+    const roundTimerRef = useRef<number | null>(null);
 
     // Helper: Generate Set of 4 Outer Numbers with Constraints
     const generatePinwheelSet = useCallback((difficulty: number): number[] => {
@@ -122,7 +121,7 @@ export const usePinwheelLogic = () => {
         } else if (targetPos === 1) {
             // Correct is Middle
             let smaller = generateDistractor(correct, false);
-            let larger = generateDistractor(correct, true);
+            const larger = generateDistractor(correct, true);
 
             // Safety: Ensure smaller is valid positive
             if (smaller <= 0) {
@@ -192,13 +191,15 @@ export const usePinwheelLogic = () => {
             options: generateOptions(correct),
             finalSpin: false
         });
-    }, []);
+    }, [generatePinwheelSet]);
 
     // Initial Start & Restart Logic
+    const hasInitializedRef = useRef(false);
     useEffect(() => {
-        // Start game on mount
+        if (hasInitializedRef.current) return;
+        hasInitializedRef.current = true;
         generateRound(engine.difficultyLevel);
-    }, []); // Run on mount only
+    }, [engine.difficultyLevel, generateRound]);
 
     // Force regeneration ONLY when lives reset (Explicit Restart / Try Again)
     // We do NOT listen to difficultyLevel here, as it changes mid-game and shouldn't interrupt the set.
@@ -209,6 +210,15 @@ export const usePinwheelLogic = () => {
             generateRound(1); // Force Difficulty 1 on Restart
         }
     }, [engine.gameState, engine.score, engine.lives, generateRound]);
+
+    useEffect(() => {
+        return () => {
+            if (roundTimerRef.current != null) {
+                window.clearTimeout(roundTimerRef.current);
+                roundTimerRef.current = null;
+            }
+        };
+    }, []);
 
     // Ref for synchronous debounce
     const isProcessing = useRef(false);
@@ -246,13 +256,17 @@ export const usePinwheelLogic = () => {
             engine.submitAnswer(true, {
                 skipCombo: false, // Enable combo for every hit
                 skipDifficulty: false, // Enable difficulty progression for every hit (3 streak or 4 total)
-                skipFeedback: !isRoundComplete // Skip 'correct' state delay for intermediate wings
+                skipFeedback: !isRoundComplete, // Skip 'correct' state delay for intermediate wings
+                scoreMultiplier: 0.5
             });
             engine.registerEvent({ type: 'correct', isFinal: isRoundComplete });
 
-            // Apply Double Score bonus manually if active
-            if (doubleScoreActive) {
-                engine.updateScore(50 * engine.difficultyLevel);
+            // Reward a random power-up every 3 combo hits.
+            const nextCombo = engine.combo + 1;
+            if (nextCombo % 3 === 0 && Math.random() > 0.45) {
+                const rewardTypes: Array<'timeFreeze' | 'extraLife' | 'doubleScore'> = ['timeFreeze', 'extraLife', 'doubleScore'];
+                const reward = rewardTypes[Math.floor(Math.random() * rewardTypes.length)];
+                engine.setPowerUps((prev) => ({ ...prev, [reward]: prev[reward] + 1 }));
             }
 
             const newAnswers = [...pinwheel.outerAnswers];
@@ -261,17 +275,27 @@ export const usePinwheelLogic = () => {
             if (currentStage >= 3) {
                 // Round Complete
                 setPinwheel(prev => ({ ...prev, outerAnswers: newAnswers, finalSpin: true }));
-                setTimeout(() => {
-                    generateRound(engine.difficultyLevel);
-                    // Add safety cooldown to prevent ghost clicks
-                    setTimeout(() => {
+                roundTimerRef.current = window.setTimeout(() => {
+                    if (engine.gameState !== 'playing' || engine.timeLeft <= 0) {
                         isProcessing.current = false;
+                        roundTimerRef.current = null;
+                        return;
+                    }
+                    generateRound(engine.difficultyLevel);
+                    roundTimerRef.current = window.setTimeout(() => {
+                        isProcessing.current = false;
+                        roundTimerRef.current = null;
                     }, 300);
                 }, 1200);
             } else {
                 // Next Stage - Add small delay for visual clarity? 
                 // Currently instant. We keep it instant but we unlock the Ref after a microtask/short delay to prevent ghost click.
-                setTimeout(() => {
+                roundTimerRef.current = window.setTimeout(() => {
+                    if (engine.gameState !== 'playing' || engine.timeLeft <= 0) {
+                        isProcessing.current = false;
+                        roundTimerRef.current = null;
+                        return;
+                    }
                     const nextStage = currentStage + 1;
                     const nIdx1 = nextStage;
                     const nIdx2 = (nextStage + 1) % 4;
@@ -284,7 +308,10 @@ export const usePinwheelLogic = () => {
                         options: generateOptions(nextCorrect)
                     }));
                     // Unlock after state update + small buffer
-                    setTimeout(() => { isProcessing.current = false; }, 300);
+                    roundTimerRef.current = window.setTimeout(() => {
+                        isProcessing.current = false;
+                        roundTimerRef.current = null;
+                    }, 300);
                 }, 50); // Small processing delay
             }
         } else {
@@ -298,28 +325,15 @@ export const usePinwheelLogic = () => {
     };
 
     const usePowerUp = useCallback((type: 'timeFreeze' | 'extraLife' | 'doubleScore') => {
-        if (powerUps[type] > 0) {
-            setPowerUps(prev => ({ ...prev, [type]: prev[type] - 1 }));
-
-            if (type === 'timeFreeze') {
-                engine.activatePowerUp('timeFreeze');
-                setIsTimeFrozen(true);
-                setTimeout(() => setIsTimeFrozen(false), 5000);
-            } else if (type === 'extraLife') {
-                engine.activatePowerUp('extraLife');
-            } else if (type === 'doubleScore') {
-                setDoubleScoreActive(true);
-                setTimeout(() => setDoubleScoreActive(false), 10000); // 10s duration
-            }
-        }
-    }, [powerUps, engine]);
+        engine.activatePowerUp(type);
+    }, [engine]);
 
     return {
         ...engine,
         ...pinwheel,
-        powerUps,
-        isTimeFrozen,
-        doubleScoreActive,
+        powerUps: engine.powerUps,
+        isTimeFrozen: engine.isTimeFrozen,
+        doubleScoreActive: engine.isDoubleScore,
         usePowerUp,
         handleAnswer
     };

@@ -211,7 +211,7 @@ export const useNumberHiveLogic = () => {
             }, 1000);
             return () => clearInterval(timer);
         }
-    }, [gameState.isPlaying, gameState.gameOver]);
+    }, [gameState.isPlaying, gameState.gameOver, timeFrozen]);
 
 
     const handleCellClick = useCallback((cell: HiveCell) => {
@@ -316,7 +316,7 @@ export const useNumberHiveLogic = () => {
                 };
             });
         }
-    }, [gameState.isPlaying, gameState.gameOver, gameState.currentNumber, currentLevel, shakeId]);
+    }, [gameState.isPlaying, gameState.gameOver, gameState.currentNumber, gameState.levelsCleared, currentLevel, shakeId, doubleScoreActive]);
 
     return {
         ...gameState,

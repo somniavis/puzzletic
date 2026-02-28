@@ -195,6 +195,7 @@ export const TenFramePop: React.FC<TenFramePopProps> = ({ onExit }) => {
         difficultyLevel: difficulty.level,
         maxLevel: 2
     };
+    const layoutEngineForLayout = layoutEngine as typeof logic;
 
     return (
         <Layout1
@@ -202,7 +203,7 @@ export const TenFramePop: React.FC<TenFramePopProps> = ({ onExit }) => {
             subtitle={t('games.ten-frame-pop.subtitle')}
             description={t('games.ten-frame-pop.description')}
             gameId={GameIds.MATH_TEN_FRAME_POP}
-            engine={layoutEngine as any}
+            engine={layoutEngineForLayout}
             cardBackground={<WaveBackground />}
             instructions={[
                 { icon: '1️⃣', title: t('games.ten-frame-pop.howToPlay.step1.title'), description: t('games.ten-frame-pop.howToPlay.step1.description') },
@@ -281,6 +282,7 @@ export const TenFramePop: React.FC<TenFramePopProps> = ({ onExit }) => {
     );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const manifest: GameManifest = {
     id: GameIds.MATH_TEN_FRAME_POP,
     title: '10-Frame Pop',

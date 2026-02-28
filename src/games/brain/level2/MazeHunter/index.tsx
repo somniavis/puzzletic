@@ -7,12 +7,16 @@ import type { PowerUpBtnProps } from '../../../../components/Game/PowerUpBtn';
 import manifest_en from './locales/en';
 import { BlobBackground } from '../../../math/components/BlobBackground';
 import { useMazeHunterLogic } from './GameLogic';
+import type { MazeCell as MazeGridCell } from './GameLogic';
 import styles from './MazeEscape.module.css';
 import { useNurturing } from '../../../../contexts/NurturingContext';
 import { JelloAvatar } from '../../../../components/characters/JelloAvatar';
+import { createCharacter } from '../../../../data/characters';
+import type { EvolutionStage } from '../../../../types/character';
 
 import { GameIds } from '../../../../constants/gameIds';
 const GAME_ID = GameIds.MAZE_HUNTER;
+type NurturingState = ReturnType<typeof useNurturing>;
 
 // Memoized Cell Component to prevent grid re-renders on drag
 const MazeCell = React.memo(({
@@ -24,9 +28,9 @@ const MazeCell = React.memo(({
     targetAnimal,
     isTargetEmojiScaled
 }: {
-    cell: any,
+    cell: MazeGridCell,
     levelSize: number,
-    nurturing: any,
+    nurturing: NurturingState,
     getObstacleEmoji: (t?: string) => string,
     onStart: (r: number, c: number) => void,
     targetAnimal: string,
@@ -46,6 +50,10 @@ const MazeCell = React.memo(({
         paddingBottom: cell.row === levelSize - 1 ? `${edgeInsetPct}%` : undefined,
         paddingLeft: cell.col === 0 ? `${edgeInsetPct}%` : undefined,
     };
+
+    const avatarCharacter = createCharacter(nurturing.speciesId || 'yellowJello', nurturing.characterName || 'Jello');
+    avatarCharacter.evolutionStage = Math.min(5, Math.max(1, nurturing.evolutionStage || 1)) as EvolutionStage;
+    avatarCharacter.stats = nurturing.stats;
 
     return (
         <div
@@ -80,12 +88,7 @@ const MazeCell = React.memo(({
                         justifyContent: 'center'
                     }}>
                         <JelloAvatar
-                            character={{
-                                speciesId: nurturing.speciesId || 'yellowJello',
-                                evolutionStage: (nurturing.evolutionStage || 1) as any,
-                                name: nurturing.characterName || 'Jello',
-                                stats: nurturing.stats
-                            } as any}
+                            character={avatarCharacter}
                             size="small"
                             action="idle"
                             disableAnimation
@@ -272,7 +275,7 @@ export default function MazeHunter() {
             title: 'Double Score',
             disabledConfig: logic.isDoubleScore || logic.powerUps.doubleScore <= 0
         }
-    ], [logic.powerUps, logic.isTimeFrozen, logic.isDoubleScore, logic.activatePowerUp, engine.lives]);
+    ], [logic, engine.lives]);
 
     const handlePointerMove = useCallback((e: React.PointerEvent) => {
         const element = document.elementFromPoint(e.clientX, e.clientY);
@@ -284,7 +287,7 @@ export default function MazeHunter() {
         if (row >= 0 && col >= 0) {
             logic.handleMove(row, col);
         }
-    }, [logic.handleMove]);
+    }, [logic]);
 
     // Obstacle Emoji Map
     const getObstacleEmoji = useCallback((type?: string) => {
@@ -347,6 +350,7 @@ export default function MazeHunter() {
     );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const manifest = {
     id: GAME_ID,
     title: 'Maze Hunter',

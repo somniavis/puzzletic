@@ -83,6 +83,7 @@ export const FruitBox: React.FC<FruitBoxProps> = ({ onExit }) => {
         initialTime: 90,
         maxDifficulty: 2
     });
+    const { setPowerUps } = engine;
 
     const [problem, setProblem] = React.useState<Problem>(() => createProblem());
     const [sourceBundles, setSourceBundles] = React.useState<number[]>(() => createBundleIds(problem.boxCount));
@@ -181,12 +182,12 @@ export const FruitBox: React.FC<FruitBoxProps> = ({ onExit }) => {
 
     // FruitBox: power-ups are intentionally disabled.
     React.useEffect(() => {
-        engine.setPowerUps((prev) => (
+        setPowerUps((prev) => (
             prev.timeFreeze === 0 && prev.extraLife === 0 && prev.doubleScore === 0
                 ? prev
                 : { timeFreeze: 0, extraLife: 0, doubleScore: 0 }
         ));
-    }, [engine.setPowerUps]);
+    }, [setPowerUps]);
 
     const highFruitTwoRowLayout = problem.perBox >= 7 && problem.boxCount === 2;
     const bundleMaxPerRow = highFruitTwoRowLayout
@@ -353,7 +354,7 @@ export const FruitBox: React.FC<FruitBoxProps> = ({ onExit }) => {
         const allFilled = boxValues.every((v) => v != null);
         if (!allFilled) {
             engine.submitAnswer(false, { skipDifficulty: true, skipFeedback: true });
-            engine.registerEvent({ type: 'wrong' } as any);
+            engine.registerEvent({ type: 'wrong' });
             return;
         }
 
@@ -362,7 +363,7 @@ export const FruitBox: React.FC<FruitBoxProps> = ({ onExit }) => {
         const isCorrect = allSame && first === problem.perBox;
 
         engine.submitAnswer(isCorrect, { skipDifficulty: true, skipFeedback: true });
-        engine.registerEvent({ type: isCorrect ? 'correct' : 'wrong' } as any);
+        engine.registerEvent({ type: isCorrect ? 'correct' : 'wrong' });
 
         if (!isCorrect) {
             resetSameProblem();
@@ -569,6 +570,7 @@ export const FruitBox: React.FC<FruitBoxProps> = ({ onExit }) => {
     );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const manifest: GameManifest = {
     id: GameIds.MATH_FRUIT_BOX,
     title: 'Fruit Box',

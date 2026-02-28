@@ -24,7 +24,7 @@ export const MathPinwheel: React.FC<MathPinwheelProps> = ({ onExit }) => {
         powerUps,
         isTimeFrozen,
 
-        usePowerUp,
+        usePowerUp: activatePowerUp,
         finalSpin
     } = logic;
 
@@ -34,7 +34,7 @@ export const MathPinwheel: React.FC<MathPinwheelProps> = ({ onExit }) => {
             color: "blue",
             icon: "❄️",
             title: "Time Freeze",
-            onClick: () => usePowerUp('timeFreeze'),
+            onClick: () => activatePowerUp('timeFreeze'),
             disabledConfig: isTimeFrozen,
             status: isTimeFrozen ? 'active' : 'normal'
         },
@@ -43,7 +43,7 @@ export const MathPinwheel: React.FC<MathPinwheelProps> = ({ onExit }) => {
             color: "red" as const,
             icon: "❤️",
             title: "Extra Life",
-            onClick: () => usePowerUp('extraLife'),
+            onClick: () => activatePowerUp('extraLife'),
             disabledConfig: logic.lives >= 3,
             status: logic.lives >= 3 ? 'maxed' : 'normal'
         },
@@ -52,11 +52,11 @@ export const MathPinwheel: React.FC<MathPinwheelProps> = ({ onExit }) => {
             color: "yellow" as const,
             icon: "⚡",
             title: "Double Score",
-            onClick: () => usePowerUp('doubleScore'),
+            onClick: () => activatePowerUp('doubleScore'),
             disabledConfig: logic.doubleScoreActive,
             status: logic.doubleScoreActive ? 'active' : 'normal'
         }
-    ], [powerUps, isTimeFrozen, logic.lives, logic.doubleScoreActive, usePowerUp]);
+    ], [powerUps, isTimeFrozen, logic.lives, logic.doubleScoreActive, activatePowerUp]);
 
     // Load Translations
     useEffect(() => {
@@ -78,7 +78,7 @@ export const MathPinwheel: React.FC<MathPinwheelProps> = ({ onExit }) => {
             title={t('games.pinwheel-pop.title')}
             subtitle={t('games.pinwheel-pop.subtitle')}
             gameId={GameIds.PINWHEEL_POP}
-            engine={logic as any}
+            engine={logic}
             powerUps={powerUpConfig}
             instructions={[
                 { icon: '👀', title: t('games.pinwheel-pop.howToPlay.step1.title'), description: t('games.pinwheel-pop.howToPlay.step1.description') },
@@ -164,6 +164,7 @@ export const MathPinwheel: React.FC<MathPinwheelProps> = ({ onExit }) => {
     );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const manifest: GameManifest = {
     id: GameIds.PINWHEEL_POP,
     title: 'Broken Pinwheel',

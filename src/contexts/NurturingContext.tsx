@@ -143,6 +143,8 @@ export const useNurturing = () => {
   return context;
 };
 
+export const useOptionalNurturing = () => useContext(NurturingContext);
+
 interface NurturingProviderProps {
   children: React.ReactNode;
 }

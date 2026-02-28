@@ -1165,6 +1165,7 @@ export const ConstellationFinder: React.FC<ConstellationFinderProps> = ({ onExit
     );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const manifest: GameManifest = {
     id: GameIds.MATH_CONSTELLATION_FINDER,
     title: 'Constellation Finder',

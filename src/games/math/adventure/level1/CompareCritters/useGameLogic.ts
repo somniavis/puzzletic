@@ -10,7 +10,7 @@ export const useCompareCrittersLogic = (engine: ReturnType<typeof useGameEngine>
 
     const generateProblem = useCallback(() => {
         const left = Math.floor(Math.random() * 21); // 0-20
-        let right = Math.floor(Math.random() * 21); // 0-20
+        const right = Math.floor(Math.random() * 21); // 0-20
 
         // Ensure not too many equality cases (optional, but good for variety)
         // logic is fine as is for random distribution

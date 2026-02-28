@@ -411,7 +411,7 @@ export const ShapeSumLink: React.FC<ShapeSumLinkProps> = ({ onExit }) => {
         }
 
         engine.submitAnswer(isCorrect, { skipDifficulty: true });
-        engine.registerEvent({ type: isCorrect ? 'correct' : 'wrong', sfx: 'none' } as any);
+        engine.registerEvent({ type: isCorrect ? 'correct' : 'wrong' });
         setPendingRoundAction({
             regenerate: isCorrect,
             nextLevel: nextProgress.level
@@ -593,6 +593,7 @@ export const ShapeSumLink: React.FC<ShapeSumLinkProps> = ({ onExit }) => {
     );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const manifest: GameManifest = {
     id: GameIds.SHAPE_SUM_LINK,
     title: '3-Dot Link',
