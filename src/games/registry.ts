@@ -37,6 +37,7 @@ const L3_FrogJump = lazy(() => delayedImport(import('./math/adventure/level3/Fro
 const L3_ChipCashier = lazy(() => delayedImport(import('./math/adventure/level3/ChipCashier').then(m => ({ default: m.ChipCashier }))));
 const L3_CellClone = lazy(() => delayedImport(import('./math/adventure/level3/CellClone').then(m => ({ default: m.CellClone }))));
 const L3_ThreeLeafClover = lazy(() => delayedImport(import('./math/adventure/level3/ThreeLeafClover').then(m => ({ default: m.ThreeLeafClover }))));
+const L3_HexHiveSix = lazy(() => delayedImport(import('./math/adventure/level3/HexHiveSix').then(m => ({ default: m.HexHiveSix }))));
 const L3_TenFramePop = lazy(() => delayedImport(import('./math/adventure/level3/TenFramePop').then(m => ({ default: m.TenFramePop }))));
 const L3_BeginnerWizard = lazy(() => delayedImport(import('./math/adventure/level3/BeginnerWizard').then(m => ({ default: m.BeginnerWizard }))));
 const L3_ConstellationFinder = lazy(() => delayedImport(import('./math/adventure/level3/ConstellationFinder').then(m => ({ default: m.ConstellationFinder }))));
@@ -464,6 +465,21 @@ export const GAMES: GameManifest[] = [
         mode: 'adventure',
         component: L3_TenFramePop,
         thumbnail: '🫧',
+        tagsKey: 'games.tags.multiplication'
+    },
+    {
+        id: GameIds.MATH_HEX_HIVE_SIX,
+        title: '6각형 벌집',
+        titleKey: 'games.hex-hive-six.title',
+        subtitle: '6단 마스터',
+        subtitleKey: 'games.hex-hive-six.subtitle',
+        description: 'ㅇㅇㅇ',
+        descriptionKey: 'games.hex-hive-six.description',
+        category: 'math',
+        level: 3,
+        mode: 'adventure',
+        component: L3_HexHiveSix,
+        thumbnail: '⬢',
         tagsKey: 'games.tags.multiplication'
     },
     {

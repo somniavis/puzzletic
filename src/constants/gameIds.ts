@@ -31,6 +31,7 @@ export const GameIds = {
     MATH_CHIP_CASHIER: 'math-chip-cashier',
     MATH_CELL_CLONE: 'math-cell-clone',
     MATH_THREE_LEAF_CLOVER: 'math-three-leaf-clover',
+    MATH_HEX_HIVE_SIX: 'math-hex-hive-six',
     MATH_TEN_FRAME_POP: 'math-ten-frame-pop',
     MATH_BEGINNER_WIZARD: 'math-beginner-wizard',
     MATH_CONSTELLATION_FINDER: 'math-constellation-finder',

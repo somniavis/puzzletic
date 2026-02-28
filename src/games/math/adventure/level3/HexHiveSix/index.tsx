@@ -5,9 +5,9 @@ import { useGameEngine } from '../../../../layouts/Standard/Layout0/useGameEngin
 import type { GameManifest } from '../../../../types';
 import { GameIds } from '../../../../../constants/gameIds';
 import type { PowerUpBtnProps } from '../../../../../components/Game/PowerUpBtn';
-import './ThreeLeafClover.css';
+import './HexHiveSix.css';
 
-interface ThreeLeafCloverProps {
+interface HexHiveSixProps {
     onExit: () => void;
 }
 type DotPos = { x: number; y: number };
@@ -15,16 +15,17 @@ type RoundState = {
     n: number;
     bloomed: boolean[];
     mirrored: boolean[];
-    dotPositions: DotPos[];
     bugPositions: DotPos[];
     options: number[];
 };
 
 type DifficultyLevel = 1 | 2;
+const MULTIPLIER = 6;
+const BEE_COUNT = 5;
 
 const N_RANGES: Record<DifficultyLevel, { min: number; max: number }> = {
-    1: { min: 1, max: 5 },
-    2: { min: 3, max: 9 }
+    1: { min: 1, max: 9 },
+    2: { min: 1, max: 9 }
 };
 const REWARD_TYPES: Array<'timeFreeze' | 'extraLife' | 'doubleScore'> = ['timeFreeze', 'extraLife', 'doubleScore'];
 const randInt = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1)) + min;
@@ -46,86 +47,35 @@ const buildOptions = (correct: number): number[] => {
     const candidates = new Set<number>([correct]);
     while (candidates.size < 3) {
         const delta = randInt(1, 6) * (Math.random() < 0.5 ? -1 : 1);
-        const wrong = Math.max(3, Math.min(27, correct + delta));
+        const wrong = Math.max(6, Math.min(54, correct + delta));
         if (wrong !== correct) candidates.add(wrong);
     }
     return shuffle(Array.from(candidates));
 };
-const COLLISION_MIN_DX = 15.5;
-const COLLISION_MIN_DY = 23;
-const isOverlapping = (a: DotPos, b: DotPos) =>
-    Math.abs(a.x - b.x) < COLLISION_MIN_DX && Math.abs(a.y - b.y) < COLLISION_MIN_DY;
-
-const GRID_ANCHORS_3X3: Array<DotPos> = [
-    { x: 18, y: 25 }, { x: 50, y: 25 }, { x: 82, y: 25 },
-    { x: 18, y: 52 }, { x: 50, y: 52 }, { x: 82, y: 52 },
-    { x: 18, y: 79 }, { x: 50, y: 79 }, { x: 82, y: 79 }
+const HEX_ROWS: number[][] = [
+    [0, 1, 2, 3],
+    [4, 5, 6, 7],
+    [8, 9, 10, 11]
 ];
-
-const jitterAnchor = (anchor: DotPos) => ({
-    x: anchor.x + randFloat(-1.6, 1.6),
-    y: anchor.y + randFloat(-1.3, 1.3)
-});
-
-const buildNonOverlappingFromAnchors = (count: number): DotPos[] => {
-    const selected = shuffle(GRID_ANCHORS_3X3).slice(0, count);
-    const points: DotPos[] = [];
-    selected.forEach((anchor) => {
-        let placed = false;
-        for (let attempt = 0; attempt < 40; attempt += 1) {
-            const candidate = jitterAnchor(anchor);
-            if (points.every((p) => !isOverlapping(p, candidate))) {
-                points.push(candidate);
-                placed = true;
-                break;
-            }
-        }
-        if (!placed) points.push(anchor);
-    });
-    return points;
-};
-
-const generateSpreadDotPositions = (count: number): DotPos[] => {
-    const bounds = { minX: 18, maxX: 82, minY: 25, maxY: 79 };
-    let best: DotPos[] = [];
-
-    // Random non-overlap sampling with bounded retries (small N: max 9)
-    for (let restart = 0; restart < 12; restart += 1) {
-        const points: DotPos[] = [];
-        while (points.length < count) {
-            let placed = false;
-            for (let attempt = 0; attempt < 60; attempt += 1) {
-                const candidate = {
-                    x: randFloat(bounds.minX, bounds.maxX),
-                    y: randFloat(bounds.minY, bounds.maxY)
-                };
-                if (points.every((p) => !isOverlapping(p, candidate))) {
-                    points.push(candidate);
-                    placed = true;
-                    break;
-                }
-            }
-            if (!placed) break;
-        }
-        if (points.length > best.length) best = points;
-        if (points.length === count) return points;
-    }
-    if (best.length === count) return best;
-    return buildNonOverlappingFromAnchors(count);
-};
 const generateBugPositions = (): DotPos[] => {
     const bugs: DotPos[] = [];
     const bounds = { minX: 18, maxX: 82, minY: 28, maxY: 82 };
-    const minDist = 18;
-    for (let attempt = 0; attempt < 120 && bugs.length < 3; attempt += 1) {
+    const minDist = 14;
+    for (let attempt = 0; attempt < 220 && bugs.length < BEE_COUNT; attempt += 1) {
         const candidate = { x: randFloat(bounds.minX, bounds.maxX), y: randFloat(bounds.minY, bounds.maxY) };
         if (bugs.every((b) => distance(b, candidate) >= minDist)) {
             bugs.push(candidate);
         }
     }
-    if (bugs.length < 3) {
-        const fallback = shuffle([{ x: 22, y: 72 }, { x: 72, y: 66 }, { x: 48, y: 80 }]);
-        while (bugs.length < 3) {
+    if (bugs.length < BEE_COUNT) {
+        const fallback = shuffle([
+            { x: 20, y: 72 },
+            { x: 72, y: 66 },
+            { x: 48, y: 80 },
+            { x: 30, y: 52 },
+            { x: 64, y: 44 }
+        ]);
+        while (bugs.length < BEE_COUNT) {
             bugs.push(fallback[bugs.length]);
         }
     }
@@ -164,39 +114,44 @@ const createRoundState = (difficulty: DifficultyLevel, prevN?: number): RoundSta
     }
     return {
         n: nextN,
-        bloomed: Array.from({ length: nextN }, () => false),
+        bloomed: Array.from({ length: 12 }, () => false),
         mirrored: Array.from({ length: nextN }, () => Math.random() < 0.5),
-        dotPositions: generateSpreadDotPositions(nextN),
         bugPositions: generateBugPositions(),
-        options: buildOptions(3 * nextN)
+        options: buildOptions(MULTIPLIER * nextN)
     };
 };
-export const ThreeLeafClover: React.FC<ThreeLeafCloverProps> = ({ onExit }) => {
+export const HexHiveSix: React.FC<HexHiveSixProps> = ({ onExit }) => {
     const { t } = useTranslation();
     const engine = useGameEngine({ initialLives: 3, initialTime: 90, maxDifficulty: 2 });
     const [difficultyLevel, setDifficultyLevel] = React.useState<DifficultyLevel>(1);
     const [consecutiveCorrect, setConsecutiveCorrect] = React.useState(0);
     const [consecutiveWrong, setConsecutiveWrong] = React.useState(0);
     const [round, setRound] = React.useState<RoundState>(() => createRoundState(1));
-    const [scaredBugs, setScaredBugs] = React.useState<boolean[]>([false, false, false]);
+    const [scaredBugs, setScaredBugs] = React.useState<boolean[]>(Array.from({ length: BEE_COUNT }, () => false));
+    const [wrongCells, setWrongCells] = React.useState<boolean[]>(Array.from({ length: 12 }, () => false));
     const [pressingOption, setPressingOption] = React.useState<number | null>(null);
     const [showTapHint, setShowTapHint] = React.useState(false);
     const [isTapHintExiting, setIsTapHintExiting] = React.useState(false);
     const prevGameStateRef = React.useRef(engine.gameState);
     const hasShownTapHintRef = React.useRef(false);
-    const scareTimersRef = React.useRef<Array<number | null>>([null, null, null]);
+    const scareTimersRef = React.useRef<Array<number | null>>(Array.from({ length: BEE_COUNT }, () => null));
+    const wrongCellTimersRef = React.useRef<Array<number | null>>(Array.from({ length: 12 }, () => null));
     const tapHintTimerRef = React.useRef<number | null>(null);
     const tapHintExitTimerRef = React.useRef<number | null>(null);
 
     const setupRound = React.useCallback((difficulty: DifficultyLevel) => {
         setPressingOption(null);
         setRound((prev) => createRoundState(difficulty, prev.n));
-        setScaredBugs([false, false, false]);
+        setScaredBugs(Array.from({ length: BEE_COUNT }, () => false));
+        setWrongCells(Array.from({ length: 12 }, () => false));
     }, []);
 
     React.useEffect(
         () => () => {
             scareTimersRef.current.forEach((timer) => {
+                if (timer != null) window.clearTimeout(timer);
+            });
+            wrongCellTimersRef.current.forEach((timer) => {
                 if (timer != null) window.clearTimeout(timer);
             });
             if (tapHintTimerRef.current != null) {
@@ -275,16 +230,51 @@ export const ThreeLeafClover: React.FC<ThreeLeafCloverProps> = ({ onExit }) => {
     );
     const layoutEngineForLayout = layoutEngine as typeof engine;
 
+    const handleWrongHiveClick = React.useCallback((index: number) => {
+        if (engine.gameState !== 'playing') return;
+
+        setWrongCells((prev) => {
+            const next = [...prev];
+            next[index] = true;
+            return next;
+        });
+
+        if (wrongCellTimersRef.current[index] != null) {
+            window.clearTimeout(wrongCellTimersRef.current[index]!);
+        }
+        wrongCellTimersRef.current[index] = window.setTimeout(() => {
+            setWrongCells((prev) => {
+                const next = [...prev];
+                next[index] = false;
+                return next;
+            });
+            wrongCellTimersRef.current[index] = null;
+        }, 360);
+
+        engine.registerEvent({ type: 'wrong' });
+        engine.updateLives(false);
+        engine.updateCombo(false);
+    }, [engine]);
+
     const handleDotClick = React.useCallback((index: number) => {
         if (engine.gameState !== 'playing') return;
+        let isOverClick = false;
         setRound((prev) => {
             const current = prev.bloomed[index];
             if (current) return prev;
+            const bloomedCount = prev.bloomed.filter(Boolean).length;
+            if (bloomedCount >= prev.n) {
+                isOverClick = true;
+                return prev;
+            }
             const nextBloomed = [...prev.bloomed];
             nextBloomed[index] = true;
             return { ...prev, bloomed: nextBloomed };
         });
-    }, [engine.gameState]);
+        if (isOverClick) {
+            handleWrongHiveClick(index);
+        }
+    }, [engine.gameState, handleWrongHiveClick]);
     const handleBugClick = React.useCallback((index: number) => {
         if (engine.gameState !== 'playing') return;
 
@@ -315,13 +305,16 @@ export const ThreeLeafClover: React.FC<ThreeLeafCloverProps> = ({ onExit }) => {
             scareTimersRef.current[index] = null;
         }, 420);
     }, [engine.gameState]);
-    const allBloomed = React.useMemo(() => round.bloomed.length > 0 && round.bloomed.every(Boolean), [round.bloomed]);
+    const allBloomed = React.useMemo(
+        () => round.bloomed.filter(Boolean).length >= round.n,
+        [round.bloomed, round.n]
+    );
     const handleOptionClick = React.useCallback((value: number, buttonEl?: HTMLButtonElement | null) => {
         if (engine.gameState !== 'playing' || !allBloomed) return;
         buttonEl?.blur();
         setPressingOption(null);
 
-        const correct = 3 * round.n;
+        const correct = MULTIPLIER * round.n;
         const isCorrect = value === correct;
 
         if (isCorrect) {
@@ -365,13 +358,13 @@ export const ThreeLeafClover: React.FC<ThreeLeafCloverProps> = ({ onExit }) => {
     const clearPressingOption = React.useCallback(() => setPressingOption(null), []);
     const instructions = React.useMemo(
         () => [
-            { icon: '🔎', title: t('games.three-leaf-clover.howToPlay.step1.title'), description: t('games.three-leaf-clover.howToPlay.step1.description') },
-            { icon: '☘️', title: t('games.three-leaf-clover.howToPlay.step2.title'), description: t('games.three-leaf-clover.howToPlay.step2.description') },
-            { icon: '✅', title: t('games.three-leaf-clover.howToPlay.step3.title'), description: t('games.three-leaf-clover.howToPlay.step3.description') }
+            { icon: '🔎', title: t('games.hex-hive-six.howToPlay.step1.title'), description: t('games.hex-hive-six.howToPlay.step1.description') },
+            { icon: '🍯', title: t('games.hex-hive-six.howToPlay.step2.title'), description: t('games.hex-hive-six.howToPlay.step2.description') },
+            { icon: '✅', title: t('games.hex-hive-six.howToPlay.step3.title'), description: t('games.hex-hive-six.howToPlay.step3.description') }
         ],
         [t]
     );
-    const target = React.useMemo(() => ({ value: `3 x ${round.n}`, icon: '☘️' }), [round.n]);
+    const target = React.useMemo(() => ({ value: `6 x ${round.n}`, icon: '⬢' }), [round.n]);
     const powerUps = React.useMemo<PowerUpBtnProps[]>(
         () => [
             {
@@ -407,10 +400,10 @@ export const ThreeLeafClover: React.FC<ThreeLeafCloverProps> = ({ onExit }) => {
 
     return (
         <Layout3
-            title={t('games.three-leaf-clover.title')}
-            subtitle={t('games.three-leaf-clover.subtitle')}
-            description={t('games.three-leaf-clover.description')}
-            gameId={GameIds.MATH_THREE_LEAF_CLOVER}
+            title="6각형 벌집"
+            subtitle="6단 마스터"
+            description="ㅇㅇㅇ"
+            gameId={GameIds.MATH_HEX_HIVE_SIX}
             engine={layoutEngineForLayout}
             powerUps={powerUps}
             cardBackground={<div className="three-leaf-clover-card-bg" />}
@@ -427,57 +420,46 @@ export const ThreeLeafClover: React.FC<ThreeLeafCloverProps> = ({ onExit }) => {
                 <section className="three-leaf-clover-mid">
                     <div className="three-leaf-clover-ground">
                         <div className="three-leaf-clover-bugs">
-                            <button
-                                type="button"
-                                className={`three-leaf-clover-bug bug-ladybug-a ${scaredBugs[0] ? 'is-scared' : ''}`}
-                                style={{ left: `${(round.bugPositions[0]?.x ?? 20).toFixed(2)}%`, top: `${(round.bugPositions[0]?.y ?? 70).toFixed(2)}%` }}
-                                onClick={() => handleBugClick(0)}
-                                aria-label={t('games.three-leaf-clover.a11y.ladybug1')}
-                            >
-                                🐞
-                            </button>
-                            <button
-                                type="button"
-                                className={`three-leaf-clover-bug bug-ladybug-b ${scaredBugs[1] ? 'is-scared' : ''}`}
-                                style={{ left: `${(round.bugPositions[1]?.x ?? 70).toFixed(2)}%`, top: `${(round.bugPositions[1]?.y ?? 66).toFixed(2)}%` }}
-                                onClick={() => handleBugClick(1)}
-                                aria-label={t('games.three-leaf-clover.a11y.ladybug2')}
-                            >
-                                🐞
-                            </button>
-                            <button
-                                type="button"
-                                className={`three-leaf-clover-bug bug-beetle ${scaredBugs[2] ? 'is-scared' : ''}`}
-                                style={{ left: `${(round.bugPositions[2]?.x ?? 46).toFixed(2)}%`, top: `${(round.bugPositions[2]?.y ?? 80).toFixed(2)}%` }}
-                                onClick={() => handleBugClick(2)}
-                                aria-label={t('games.three-leaf-clover.a11y.beetle')}
-                            >
-                                🪲
-                            </button>
-                        </div>
-                        {round.bloomed.map((isBloomed, index) => {
-                            const pos = round.dotPositions[index] ?? { x: 50, y: 50 };
-                            const isMirrored = round.mirrored[index] ?? false;
-                            return (
+                            {round.bugPositions.map((bugPos, index) => (
                                 <button
-                                    key={`dot-${index}`}
+                                    key={`bee-${index}`}
                                     type="button"
-                                    className={`three-leaf-clover-dot ${isBloomed ? 'is-bloomed' : ''}`}
-                                    style={{ left: `${pos.x}%`, top: `${pos.y}%` }}
-                                    onClick={() => handleDotClick(index)}
-                                    aria-label={t('games.three-leaf-clover.a11y.cloverDot', { index: index + 1 })}
+                                    className={`three-leaf-clover-bug bug-bee-${(index % 3) + 1} ${scaredBugs[index] ? 'is-scared' : ''}`}
+                                    style={{ left: `${bugPos.x.toFixed(2)}%`, top: `${bugPos.y.toFixed(2)}%` }}
+                                    onClick={() => handleBugClick(index)}
+                                    aria-label={`Bee ${index + 1}`}
                                 >
-                                    {isBloomed ? <span className={`three-leaf-clover-sprite ${isMirrored ? 'is-mirrored' : ''}`}>☘️</span> : null}
+                                    🐝
                                 </button>
-                            );
-                        })}
+                            ))}
+                        </div>
+                        <div className="hex-hive-grid-area">
+                            <div className="hex-hive-container grid-4">
+                                {HEX_ROWS.map((row, rowIndex) => (
+                                    <div key={`hex-row-${rowIndex}`} className="hex-hive-row">
+                                        {row.map((index) => {
+                                            const isBloomed = round.bloomed[index] ?? false;
+                                            return (
+                                                <button
+                                                    key={`dot-${index}`}
+                                                    type="button"
+                                                    className={`hex-hive-cell ${isBloomed ? 'is-bloomed' : ''} ${wrongCells[index] ? 'is-wrong' : ''}`}
+                                                    onClick={() => handleDotClick(index)}
+                                                    aria-label={t('games.three-leaf-clover.a11y.cloverDot', { index: index + 1 })}
+                                                />
+                                            );
+                                        })}
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
                     </div>
                 </section>
 
                 <section className="three-leaf-clover-bottom">
                     {allBloomed && (
                         <div className="three-leaf-clover-answer-panel is-visible">
-                            <p className="three-leaf-clover-question">{t('games.three-leaf-clover.question')}</p>
+                            <p className="three-leaf-clover-question">{t('games.hex-hive-six.question')}</p>
                             <div className="three-leaf-clover-options">
                                 {round.options.map((option) => (
                                     <button
@@ -505,15 +487,15 @@ export const ThreeLeafClover: React.FC<ThreeLeafCloverProps> = ({ onExit }) => {
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const manifest: GameManifest = {
-    id: GameIds.MATH_THREE_LEAF_CLOVER,
-    title: '세잎 클로버',
-    titleKey: 'games.three-leaf-clover.title',
-    subtitle: '3단 마스터',
-    subtitleKey: 'games.three-leaf-clover.subtitle',
-    description: '클로버를 피우며 3단을 익혀요!',
-    descriptionKey: 'games.three-leaf-clover.description',
+    id: GameIds.MATH_HEX_HIVE_SIX,
+    title: '6각형 벌집',
+    titleKey: 'games.hex-hive-six.title',
+    subtitle: '6단 마스터',
+    subtitleKey: 'games.hex-hive-six.subtitle',
+    description: 'ㅇㅇㅇ',
+    descriptionKey: 'games.hex-hive-six.description',
     category: 'math',
     level: 3,
-    component: ThreeLeafClover,
-    thumbnail: '🍀'
+    component: HexHiveSix,
+    thumbnail: '🍯'
 };

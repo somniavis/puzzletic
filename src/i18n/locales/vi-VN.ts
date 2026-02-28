@@ -32,6 +32,7 @@ import frogJumpVi from '../../games/math/adventure/level3/FrogJump/locales/vi-VN
 import chipCashierVi from '../../games/math/adventure/level3/ChipCashier/locales/vi-VN';
 import cellCloneVi from '../../games/math/adventure/level3/CellClone/locales/vi-VN';
 import threeLeafCloverLocale from '../../games/math/adventure/level3/ThreeLeafClover/locales/vi-VN';
+import hexHiveSixLocale from '../../games/math/adventure/level3/HexHiveSix/locales/vi-VN';
 import tenFramePopLocale from '../../games/math/adventure/level3/TenFramePop/locales/vi-VN';
 import beginnerWizardVi from '../../games/math/adventure/level3/BeginnerWizard/locales/vi-VN';
 import constellationFinderVi from '../../games/math/adventure/level3/ConstellationFinder/locales/vi-VN';
@@ -1711,7 +1712,8 @@ export const viVN = {
     'frog-jump': frogJumpVi,
     'chip-cashier': chipCashierVi,
     'cell-clone': cellCloneVi,
-    'three-leaf-clover': threeLeafCloverLocale,
+     'three-leaf-clover': threeLeafCloverLocale,
+    'hex-hive-six': hexHiveSixLocale,
     'ten-frame-pop': tenFramePopLocale,
     'beginner-wizard': beginnerWizardVi,
     'constellation-finder': constellationFinderVi,

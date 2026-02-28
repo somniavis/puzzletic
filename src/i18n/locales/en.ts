@@ -32,6 +32,7 @@ import frogJumpEn from '../../games/math/adventure/level3/FrogJump/locales/en';
 import chipCashierEn from '../../games/math/adventure/level3/ChipCashier/locales/en';
 import cellCloneEn from '../../games/math/adventure/level3/CellClone/locales/en';
 import threeLeafCloverLocale from '../../games/math/adventure/level3/ThreeLeafClover/locales/en';
+import hexHiveSixLocale from '../../games/math/adventure/level3/HexHiveSix/locales/en';
 import tenFramePopLocale from '../../games/math/adventure/level3/TenFramePop/locales/en';
 import beginnerWizardEn from '../../games/math/adventure/level3/BeginnerWizard/locales/en';
 import constellationFinderEn from '../../games/math/adventure/level3/ConstellationFinder/locales/en';
@@ -1076,7 +1077,8 @@ export const en = {
     'frog-jump': frogJumpEn,
     'chip-cashier': chipCashierEn,
     'cell-clone': cellCloneEn,
-    'three-leaf-clover': threeLeafCloverLocale,
+     'three-leaf-clover': threeLeafCloverLocale,
+    'hex-hive-six': hexHiveSixLocale,
     'ten-frame-pop': tenFramePopLocale,
     'beginner-wizard': beginnerWizardEn,
     'constellation-finder': constellationFinderEn,

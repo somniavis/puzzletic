@@ -84,6 +84,11 @@ export const renderThumbnail = (thumbnail: string | React.ReactNode | undefined,
         return <img src={thumbnail} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 'inherit' }} />;
     }
 
+    // Hex Hive icon: yellow + slightly larger
+    if (typeof thumbnail === 'string' && thumbnail === '⬢') {
+        return <span style={{ color: '#facc15', display: 'inline-block', transform: 'scale(1.3)' }}>{thumbnail}</span>;
+    }
+
     // Regular emoji or React node
     return <span>{thumbnail}</span>;
 };
