@@ -197,7 +197,7 @@ export const MathArchery: React.FC<MathArcheryProps> = ({ level = 1, onExit }) =
             title={level === 1 ? t('games.math-archery.title-lv1') : t('games.math-archery.title-lv2')}
             subtitle={t('games.math-archery.subtitle')}
             gameId={level === 1 ? GameIds.MATH_ARCHERY_LV1 : GameIds.MATH_ARCHERY_LV2}
-            engine={layoutEngine as typeof useMathArcheryLogicReturns}
+            engine={layoutEngine}
             powerUps={powerUpConfig}
             onExit={onExit}
             target={{

@@ -2,7 +2,7 @@ const ja = {
     title: '六角ハチの巣',
     subtitle: '6の段マスター！',
     description: 'ハチの巣を埋めて6の段をマスターしよう！',
-    question: 'n個の六角形の辺は全部でいくつ？',
+    question: '辺は全部でいくつ？',
     powerups: {
         timeFreeze: '時間停止',
         extraLife: 'ライフ追加',

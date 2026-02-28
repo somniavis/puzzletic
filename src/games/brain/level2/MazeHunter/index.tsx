@@ -53,7 +53,16 @@ const MazeCell = React.memo(({
 
     const avatarCharacter = createCharacter(nurturing.speciesId || 'yellowJello', nurturing.characterName || 'Jello');
     avatarCharacter.evolutionStage = Math.min(5, Math.max(1, nurturing.evolutionStage || 1)) as EvolutionStage;
-    avatarCharacter.stats = nurturing.stats;
+    avatarCharacter.stats = {
+        hunger: Math.max(0, Math.min(100, 100 - nurturing.stats.fullness)),
+        happiness: nurturing.stats.happiness,
+        health: nurturing.stats.health,
+        hygiene: nurturing.stats.health,
+        fatigue: Math.max(0, Math.min(100, 100 - nurturing.stats.fullness)),
+        affection: nurturing.stats.affection ?? 50,
+        intelligence: 50,
+        stamina: nurturing.stats.health
+    };
 
     return (
         <div

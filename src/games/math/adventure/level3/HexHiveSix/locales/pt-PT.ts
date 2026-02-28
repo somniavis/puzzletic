@@ -2,7 +2,7 @@ const pt = {
     title: 'Colmeia Hexagonal',
     subtitle: 'domina a tabuada do 6!',
     description: 'Preenche a colmeia e domina a tabuada do 6.',
-    question: 'Quantos lados há em n hexágonos?',
+    question: 'Quantos lados há ao todo?',
     powerups: {
         timeFreeze: 'Congelar tempo',
         extraLife: 'Vida extra',

@@ -188,7 +188,7 @@ export const NumberBalance: React.FC<NumberBalanceProps> = ({ onExit }) => {
             title={t('games.math-number-balance.title')}
             subtitle={t('games.math-number-balance.subtitle')}
             gameId={GameIds.MATH_NUMBER_BALANCE}
-            engine={layoutEngine as typeof engine}
+            engine={layoutEngine}
             instructions={[
                 { icon: '⚖️', title: t('games.math-number-balance.howToPlay.step1.title'), description: t('games.math-number-balance.howToPlay.step1.description') },
                 { icon: '🔢', title: t('games.math-number-balance.howToPlay.step2.title'), description: t('games.math-number-balance.howToPlay.step2.description') },

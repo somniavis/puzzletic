@@ -2,7 +2,7 @@ const vi = {
     title: 'To Ong Luc Giac',
     subtitle: 'lam chu bang nhan 6!',
     description: 'Lap day to ong va lam chu bang nhan 6.',
-    question: 'Có bao nhiêu cạnh trong n hình lục giác?',
+    question: 'Tổng cộng có bao nhiêu cạnh?',
     powerups: {
         timeFreeze: 'Dong Bang Thoi Gian',
         extraLife: 'Them Mang',

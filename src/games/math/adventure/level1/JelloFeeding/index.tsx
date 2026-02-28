@@ -9,6 +9,7 @@ import { useNurturing } from '../../../../../contexts/NurturingContext';
 import { createCharacter } from '../../../../../data/characters';
 import { JelloAvatar } from '../../../../../components/characters/JelloAvatar';
 import { playEatingSound } from '../../../../../utils/sound';
+import type { EvolutionStage } from '../../../../../types/character';
 import manifestEn from './locales/en';
 import manifestKo from './locales/ko';
 import manifestJa from './locales/ja';
@@ -457,7 +458,7 @@ export const JelloFeeding: React.FC<JelloFeedingProps> = ({ onExit }) => {
     const currentCharacter = useMemo(() => {
         const id = nurturing.speciesId || 'yellowJello';
         const char = createCharacter(id);
-        char.evolutionStage = nurturing.evolutionStage || 1;
+        char.evolutionStage = Math.min(5, Math.max(1, nurturing.evolutionStage || 1)) as EvolutionStage;
         if (nurturing.characterName) {
             char.name = nurturing.characterName;
         }
@@ -622,4 +623,3 @@ export const manifest: GameManifest = {
     thumbnail: '🍏',
     tagsKey: 'games.tags.subtraction'
 };
-    if (!resourcesReady) return null;

@@ -2,7 +2,7 @@ const es = {
     title: 'Colmena Hexagonal',
     subtitle: '¡domina la tabla del 6!',
     description: 'Llena la colmena y domina la tabla del 6.',
-    question: '¿Cuántos lados hay en n hexágonos?',
+    question: '¿Cuántos lados hay en total?',
     powerups: {
         timeFreeze: 'Congelar tiempo',
         extraLife: 'Vida extra',

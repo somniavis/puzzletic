@@ -250,7 +250,7 @@ export const FishingCount: React.FC<FishingCountProps> = ({ onExit }) => {
             title={t('games.math-fishing-count.title')}
             subtitle={t('games.math-fishing-count.subtitle')}
             gameId={GameIds.MATH_FISHING_COUNT}
-            engine={layoutEngine as typeof useFishingCountLogicReturns}
+            engine={layoutEngine}
             powerUps={[]} // No powerups for this Level 1 game yet
             target={{
                 value: targetInline,

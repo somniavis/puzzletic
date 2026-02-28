@@ -2,7 +2,7 @@ const ko = {
     title: '6각형 벌집',
     subtitle: '6단 마스터',
     description: '벌집을 채우며 6단을 익혀요!',
-    question: 'n개의 육각형 변은 모두 몇 개일까요?',
+    question: '육각형 변은 모두 몇 개일까요?',
     powerups: {
         timeFreeze: '시간 정지',
         extraLife: '생명 추가',

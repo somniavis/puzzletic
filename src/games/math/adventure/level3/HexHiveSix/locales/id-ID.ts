@@ -2,7 +2,7 @@ const id = {
     title: 'Sarang Hexa',
     subtitle: 'jago perkalian 6!',
     description: 'Isi sarang dan kuasai perkalian 6.',
-    question: 'Berapa jumlah sisi pada n heksagon?',
+    question: 'Berapa jumlah sisi semuanya?',
     powerups: {
         timeFreeze: 'Bekukan Waktu',
         extraLife: 'Nyawa Tambahan',

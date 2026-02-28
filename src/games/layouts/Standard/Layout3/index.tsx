@@ -2,7 +2,6 @@ import React from 'react';
 import { useSound } from '../../../../contexts/SoundContext';
 import { startBackgroundMusic } from '../../../../utils/sound';
 import './Layout3.css';
-import { useGameEngine } from '../Layout0/useGameEngine';
 import type { MinigameDifficulty } from '../../../../types/gameMechanics';
 import { PowerUpBtn } from '../../../../components/Game/PowerUpBtn';
 import type { PowerUpBtnProps } from '../../../../components/Game/PowerUpBtn';
@@ -21,7 +20,19 @@ interface Layout3Props {
     gameId?: string;
     description?: string;
     instructions?: { icon?: string; title: string; description: string }[];
-    engine: ReturnType<typeof useGameEngine>;
+    engine: {
+        gameState: string;
+        score: number;
+        lives: number;
+        timeLeft: number;
+        combo: number;
+        bestCombo: number;
+        stats: { correct: number; wrong: number };
+        gameOverReason?: string | null;
+        startGame: () => void;
+        difficultyLevel: number;
+        lastEvent?: { id: number; type: 'correct' | 'wrong'; isFinal?: boolean } | null;
+    };
     onExit: () => void;
     children: React.ReactNode;
     powerUps: PowerUpBtnProps[];
@@ -77,6 +88,10 @@ export const Layout3: React.FC<Layout3Props> = ({
         startGame,
         lastEvent
     } = engine;
+    const normalizedGameOverReason =
+        gameOverReason === 'time' || gameOverReason === 'lives' || gameOverReason === 'cleared'
+            ? gameOverReason
+            : null;
 
     const { settings, toggleBgm } = useSound();
 
@@ -91,7 +106,7 @@ export const Layout3: React.FC<Layout3Props> = ({
         gameId,
         engineDifficulty: engine.difficultyLevel as MinigameDifficulty,
         stats: stats || { correct: 0, wrong: 0 },
-        gameOverReason
+        gameOverReason: normalizedGameOverReason
     });
 
     // 3. BGM Management

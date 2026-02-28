@@ -2,7 +2,7 @@ const en = {
     title: 'Hex Hive',
     subtitle: 'master 6s!',
     description: 'Fill the hive and master the 6 times table!',
-    question: 'How many sides in n hexagons?',
+    question: 'How many sides are there in total?',
     powerups: {
         timeFreeze: 'Time Freeze',
         extraLife: 'Extra Life',

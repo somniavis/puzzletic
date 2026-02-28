@@ -2,7 +2,7 @@ const fr = {
     title: 'Ruche Hexagonale',
     subtitle: 'maitrise la table de 6 !',
     description: 'Remplis la ruche et maitrise la table de 6.',
-    question: 'Combien de côtés dans n hexagones ?',
+    question: 'Combien de côtés y a-t-il au total ?',
     powerups: {
         timeFreeze: 'Temps fige',
         extraLife: 'Vie en plus',

@@ -369,8 +369,9 @@ export const useColorLinkLogic = (engine: GameEngineInterface) => {
         // Connectivity Check: Ensure each category pair is connected
         const catGroups: Partial<Record<CategoryId, { r: number, c: number }[]>> = {};
         currentLevel.dots.forEach(d => {
-            if (!catGroups[d.category]) catGroups[d.category] = [];
-            catGroups[d.category].push(d);
+            const group = catGroups[d.category] ?? [];
+            group.push(d);
+            catGroups[d.category] = group;
         });
 
         const allConnected = Object.entries(catGroups).every(([cat, dots]) => {

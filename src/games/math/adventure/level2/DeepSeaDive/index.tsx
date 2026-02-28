@@ -98,7 +98,7 @@ export const DeepSeaDive: React.FC<DeepSeaDiveProps> = ({ onExit, level = 1 }) =
             title={t(level === 1 ? 'games.deep-sea-dive.title-lv1' : 'games.deep-sea-dive.title-lv2')}
             subtitle={t('games.deep-sea-dive.subtitle')}
             gameId={currentGameId}
-            engine={engine as typeof gameLogic} // Layout3 types might drag
+            engine={engine}
             powerUps={powerUps}
             onExit={onExit}
             target={{

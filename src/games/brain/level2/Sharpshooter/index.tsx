@@ -199,7 +199,7 @@ export const Sharpshooter: React.FC<SharpshooterProps> = ({ onExit }) => {
             title={t('games.sharpshooter.title')}
             subtitle={t('games.sharpshooter.subtitle')}
             gameId={GameIds.BRAIN_SHARPSHOOTER}
-            engine={layoutEngine as typeof useMathArcheryLogicReturns}
+            engine={layoutEngine}
             powerUps={powerUpConfig}
             onExit={onExit}
             className="sharpshooter-layout3"

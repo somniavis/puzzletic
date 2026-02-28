@@ -202,7 +202,7 @@ export const FruitSlice: React.FC<FruitSliceProps> = ({ onExit }) => {
             title={t('games.math-fruit-slice.title')}
             subtitle={t('games.math-fruit-slice.subtitle')}
             gameId={GameIds.MATH_FRUIT_SLICE}
-            engine={layoutEngine as typeof logic}
+            engine={layoutEngine}
             instructions={[
                 { icon: '🧮', title: t('games.math-fruit-slice.howToPlay.step1.title'), description: t('games.math-fruit-slice.howToPlay.step1.description') },
                 { icon: '🔪', title: t('games.math-fruit-slice.howToPlay.step2.title'), description: t('games.math-fruit-slice.howToPlay.step2.description') },

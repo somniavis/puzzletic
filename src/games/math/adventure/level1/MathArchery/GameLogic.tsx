@@ -270,7 +270,7 @@ export const useMathArcheryLogic = (gameLevel: number = 1) => {
 
     }, [arrow, currentProblem, handleHit]);
 
-    const handleHit = useCallback((isCorrect: boolean) => {
+    function handleHit(isCorrect: boolean) {
         if (isCorrect) {
             // playCleaningSound(); // REMOVED: Managed by Layout
             setLastEvent({ type: 'correct', id: Date.now() });
@@ -356,7 +356,7 @@ export const useMathArcheryLogic = (gameLevel: number = 1) => {
             // Reset Arrow
             setArrow(null);
         }
-    }, [gameState, questionStartTime, doubleScoreActive, generateProblem]);
+    }
 
     // Ref for generateProblem in timeout
     const generateNextRef = useRef(generateProblem);

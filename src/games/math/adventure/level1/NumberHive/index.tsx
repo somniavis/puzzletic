@@ -132,7 +132,7 @@ export const NumberHive: React.FC<NumberHiveProps> = ({ onExit }) => {
             title={t('games.math-number-hive.title')}
             subtitle={t('games.math-number-hive.subtitle')}
             gameId={GameIds.MATH_NUMBER_HIVE}
-            engine={layoutEngine as typeof useLogic}
+            engine={layoutEngine}
             instructions={[
                 { icon: '🐝', title: t('games.math-number-hive.howToPlay.step1.title'), description: t('games.math-number-hive.howToPlay.step1.description') },
                 { icon: '🔢', title: t('games.math-number-hive.howToPlay.step2.title'), description: t('games.math-number-hive.howToPlay.step2.description') },
