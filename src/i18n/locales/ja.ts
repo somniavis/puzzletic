@@ -24,6 +24,7 @@ import floorTilerJa from '../../games/math/adventure/level3/FloorTiler/locales/j
 import frogJumpJa from '../../games/math/adventure/level3/FrogJump/locales/ja';
 import chipCashierJa from '../../games/math/adventure/level3/ChipCashier/locales/ja';
 import cellCloneJa from '../../games/math/adventure/level3/CellClone/locales/ja';
+import neonMatrixJa from '../../games/math/adventure/level3/NeonMatrix/locales/ja';
 import threeLeafCloverLocale from '../../games/math/adventure/level3/ThreeLeafClover/locales/ja';
 import hexHiveSixLocale from '../../games/math/adventure/level3/HexHiveSix/locales/ja';
 import flightCalendarLocale from '../../games/math/adventure/level3/FlightCalendar/locales/ja';
@@ -1823,6 +1824,7 @@ const jaBase = {
         'frog-jump': frogJumpJa,
         'chip-cashier': chipCashierJa,
         'cell-clone': cellCloneJa,
+        'neon-matrix': neonMatrixJa,
         'three-leaf-clover': threeLeafCloverLocale,
         'hex-hive-six': hexHiveSixLocale,
         'flight-calendar': flightCalendarLocale,

@@ -31,6 +31,7 @@ import floorTilerPt from '../../games/math/adventure/level3/FloorTiler/locales/p
 import frogJumpPt from '../../games/math/adventure/level3/FrogJump/locales/pt-PT';
 import chipCashierPt from '../../games/math/adventure/level3/ChipCashier/locales/pt-PT';
 import cellClonePt from '../../games/math/adventure/level3/CellClone/locales/pt-PT';
+import neonMatrixPt from '../../games/math/adventure/level3/NeonMatrix/locales/pt-PT';
 import threeLeafCloverLocale from '../../games/math/adventure/level3/ThreeLeafClover/locales/pt-PT';
 import hexHiveSixLocale from '../../games/math/adventure/level3/HexHiveSix/locales/pt-PT';
 import flightCalendarLocale from '../../games/math/adventure/level3/FlightCalendar/locales/pt-PT';
@@ -1078,6 +1079,7 @@ export const ptPT = {
         'frog-jump': frogJumpPt,
         'chip-cashier': chipCashierPt,
         'cell-clone': cellClonePt,
+        'neon-matrix': neonMatrixPt,
         'three-leaf-clover': threeLeafCloverLocale,
         'hex-hive-six': hexHiveSixLocale,
         'flight-calendar': flightCalendarLocale,

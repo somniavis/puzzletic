@@ -207,7 +207,9 @@ export const useGameEngine = (config: GameEngineConfig = {}) => {
             if (!options.skipCombo && newCombo >= 5) setAchievements(prev => ({ ...prev, comboMaster: true }));
 
         } else {
-            setGameState('wrong');
+            if (!options.skipFeedback) {
+                setGameState('wrong');
+            }
             setStats(prev => ({ ...prev, wrong: prev.wrong + 1 }));
             setCombo(0); // Wrong answer always resets combo? Yes.
             setConsecutiveCorrect(0);
@@ -232,8 +234,11 @@ export const useGameEngine = (config: GameEngineConfig = {}) => {
         // Reset for next question (if not gameover)
         // Skip restart timer if feedback was skipped (continuous play)
         if (lives > (isCorrect ? 0 : 1)) {
-            if (isCorrect && options.skipFeedback) {
-                // Just reset start time for next question tracking
+            if (options.skipFeedback) {
+                // Keep gameplay continuous when feedback screen is skipped.
+                if (!isCorrect) {
+                    setGameState('playing');
+                }
                 setQuestionStartTime(Date.now());
             } else {
                 setTimeout(() => {

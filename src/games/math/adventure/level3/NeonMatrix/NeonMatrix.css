@@ -1,0 +1,434 @@
+.neon-matrix-layout2 .layout2-grid-wrapper {
+    min-height: 100%;
+}
+
+.neon-matrix-card-bg {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(120% 140% at 10% 0%, #11203f 0%, #090f22 65%, #050913 100%);
+}
+
+.neon-matrix-shell {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    gap: clamp(0.55rem, 1.4vh, 0.85rem);
+    width: 100%;
+    height: 100%;
+    padding: clamp(0.4rem, 1.1vh, 0.7rem) clamp(0.5rem, 1.4vw, 0.8rem) clamp(0.55rem, 1.2vh, 0.85rem);
+    box-sizing: border-box;
+}
+
+.neon-matrix-pattern-hint {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: clamp(2.6rem, 6dvh, 3.6rem);
+    z-index: 25;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.5rem;
+    border-radius: 0.8rem;
+    background: rgba(255, 255, 255, 0.94);
+    color: #1e3a8a;
+    font-size: 1.02rem;
+    font-weight: 800;
+    letter-spacing: 0.01em;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.18);
+    animation: neon-matrix-hint-fade-in 0.2s ease-out forwards;
+}
+
+.neon-matrix-pattern-hint.is-exiting {
+    animation: neon-matrix-hint-fade-out 0.22s ease-in forwards;
+}
+
+@keyframes neon-matrix-hint-fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes neon-matrix-hint-fade-out {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    to {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+}
+
+.neon-matrix-sign {
+    align-self: start;
+    justify-self: center;
+    text-align: center;
+    width: 100%;
+    padding: clamp(0.4rem, 1vh, 0.62rem) clamp(0.75rem, 1.8vw, 1.2rem);
+    border-radius: 14px;
+    border: 1px solid rgba(130, 155, 255, 0.35);
+    background: linear-gradient(180deg, rgba(15, 24, 52, 0.9) 0%, rgba(8, 13, 30, 0.95) 100%);
+    box-shadow: inset 0 0 0 1px rgba(75, 103, 220, 0.24), 0 10px 22px rgba(0, 0, 0, 0.32);
+}
+
+.neon-matrix-sign-title {
+    color: #d7e6ff;
+    font-size: clamp(0.78rem, 1.75vh, 0.96rem);
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-shadow: 0 0 8px rgba(130, 202, 255, 0.55);
+}
+
+.neon-matrix-sign-code {
+    margin-top: 0.14rem;
+    color: #9fffe8;
+    font-size: clamp(1rem, 2.45vh, 1.32rem);
+    font-weight: 900;
+    letter-spacing: 0.18em;
+    text-shadow:
+        0 0 6px rgba(123, 255, 232, 0.9),
+        0 0 14px rgba(123, 255, 232, 0.5),
+        0 0 24px rgba(89, 206, 255, 0.35);
+}
+
+.neon-matrix-board {
+    position: relative;
+    overflow: hidden;
+    align-self: center;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: clamp(0.4rem, 1.1vw, 0.62rem);
+    padding: clamp(0.5rem, 1.2vw, 0.8rem);
+    border-radius: 16px;
+    border: 1px solid rgba(107, 132, 255, 0.35);
+    background: linear-gradient(180deg, rgba(10, 16, 37, 0.88) 0%, rgba(7, 12, 27, 0.96) 100%);
+    box-shadow: inset 0 0 0 1px rgba(60, 86, 202, 0.25), 0 14px 26px rgba(0, 0, 0, 0.35);
+}
+
+.neon-matrix-cell {
+    --neon-label-band-height: 1.45rem;
+    appearance: none;
+    border: 0;
+    min-height: clamp(4.6rem, 12vh, 6rem);
+    border-radius: 12px;
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    background: linear-gradient(180deg, #1f9be4 0%, #198fd4 100%);
+    color: #d8e3ff;
+    padding: 0;
+    overflow: hidden;
+    box-shadow: inset 0 0 0 1px rgba(70, 178, 248, 0.55);
+}
+
+.neon-matrix-cell-label {
+    position: absolute;
+    top: calc((var(--neon-label-band-height) - 1em) / 2);
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: clamp(0.72rem, 1.85vh, 1rem);
+    font-weight: 800;
+    letter-spacing: 0.03em;
+    color: #021a2c;
+    text-shadow: none;
+    line-height: 1;
+    white-space: nowrap;
+    z-index: 2;
+}
+
+.neon-matrix-cell.is-active .neon-matrix-cell-label {
+    color: #b8fff1;
+    text-shadow: 0 0 7px rgba(124, 255, 229, 0.6);
+}
+
+.neon-matrix-cell-value {
+    width: 100%;
+    height: calc(100% - var(--neon-label-band-height));
+    min-height: 3.15rem;
+    border-radius: 0 0 12px 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: clamp(1.3rem, 3.77vh, 2.15rem);
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-align: left;
+    line-height: 0.95;
+    color: #60c7ff;
+    background: linear-gradient(180deg, #033d5d 0%, #032f4b 100%);
+    box-shadow: inset 0 0 0 1px rgba(44, 130, 186, 0.42);
+}
+
+.neon-matrix-tens,
+.neon-matrix-ones {
+    display: block;
+}
+
+.neon-matrix-tens.is-question,
+.neon-matrix-ones.is-question {
+    color: #d4f5ff;
+    text-shadow:
+        0 0 6px rgba(184, 247, 255, 0.9),
+        0 0 12px rgba(111, 228, 255, 0.7),
+        0 0 20px rgba(74, 190, 255, 0.55);
+    transform: scale(1.06);
+}
+
+.neon-matrix-tens {
+    margin-right: 0.72em;
+    margin-bottom: 0.08em;
+}
+
+.neon-matrix-ones {
+    margin-left: 0.72em;
+    margin-top: 0.08em;
+}
+
+.neon-matrix-cell.is-hint-pair {
+    box-shadow:
+        inset 0 0 0 1px rgba(255, 120, 120, 0.96),
+        0 0 12px rgba(255, 92, 92, 0.28);
+}
+
+.neon-matrix-cell.is-hint-pair .neon-matrix-cell-value {
+    box-shadow: inset 0 0 0 2px rgba(255, 118, 118, 0.95), 0 0 14px rgba(255, 82, 82, 0.45);
+}
+
+.neon-matrix-cell.is-hint-pair .neon-matrix-ones:not(.is-question) {
+    color: #ffd3d3;
+    text-shadow:
+        0 0 8px rgba(255, 224, 224, 0.9),
+        0 0 16px rgba(255, 141, 141, 0.8),
+        0 0 28px rgba(255, 92, 92, 0.66);
+}
+
+.neon-matrix-cell.is-masked {
+    background: linear-gradient(180deg, #1f9be4 0%, #198fd4 100%);
+}
+
+.neon-matrix-cell.is-masked .neon-matrix-cell-value {
+    color: #5ac4ff;
+    background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0 22%, transparent 22% 30%, rgba(255, 255, 255, 0.05) 30% 48%, transparent 48% 56%, rgba(255, 255, 255, 0.04) 56% 72%, transparent 72%),
+        linear-gradient(180deg, #033d5d 0%, #032f4b 100%);
+}
+
+.neon-matrix-cell.is-active {
+    box-shadow: inset 0 0 0 1px rgba(70, 178, 248, 0.55);
+}
+
+.neon-matrix-cell.is-active .neon-matrix-cell-value {
+    color: #8de2ff;
+    box-shadow: inset 0 0 0 2px rgba(111, 248, 230, 0.92), 0 0 12px rgba(95, 234, 214, 0.45);
+}
+
+.neon-matrix-board.is-correct .neon-matrix-cell.is-active {
+    box-shadow: inset 0 0 0 1px rgba(70, 178, 248, 0.55);
+}
+
+.neon-matrix-board.is-correct .neon-matrix-cell.is-active .neon-matrix-cell-value {
+    box-shadow: inset 0 0 0 2px rgba(92, 255, 142, 0.95), 0 0 16px rgba(76, 255, 156, 0.52);
+}
+
+.neon-matrix-board.is-wrong .neon-matrix-cell.is-active {
+    box-shadow: inset 0 0 0 1px rgba(70, 178, 248, 0.55);
+}
+
+.neon-matrix-board.is-wrong .neon-matrix-cell.is-active .neon-matrix-cell-value {
+    box-shadow: inset 0 0 0 2px rgba(255, 118, 118, 0.95), 0 0 14px rgba(255, 82, 82, 0.45);
+}
+
+.neon-matrix-board.is-row-pulse-0::after,
+.neon-matrix-board.is-row-pulse-1::after {
+    content: '';
+    position: absolute;
+    left: 0.5rem;
+    right: 0.5rem;
+    height: calc(50% - 0.55rem);
+    border-radius: 12px;
+    background: linear-gradient(
+        90deg,
+        rgba(60, 255, 170, 0) 0%,
+        rgba(60, 255, 170, 0.58) 38%,
+        rgba(140, 228, 255, 0.75) 56%,
+        rgba(60, 255, 170, 0) 100%
+    );
+    box-shadow:
+        0 0 12px rgba(86, 255, 196, 0.5),
+        0 0 24px rgba(98, 213, 255, 0.35);
+    pointer-events: none;
+    animation: neon-matrix-row-current 520ms ease-out;
+}
+
+.neon-matrix-board.is-row-pulse-0::after {
+    top: 0.5rem;
+}
+
+.neon-matrix-board.is-row-pulse-1::after {
+    bottom: 0.5rem;
+}
+
+.neon-matrix-board.is-cycle-pulse {
+    box-shadow: inset 0 0 0 1px rgba(84, 126, 255, 0.3), 0 0 0 2px rgba(97, 255, 245, 0.22), 0 14px 26px rgba(0, 0, 0, 0.35);
+}
+
+.neon-matrix-board.is-cycle-pulse .neon-matrix-cell {
+    animation: neon-matrix-cycle-shine 640ms ease-out;
+}
+
+.neon-matrix-board.is-row-pulse-0 .neon-matrix-cell.row-0 .neon-matrix-ones:not(.is-question),
+.neon-matrix-board.is-row-pulse-1 .neon-matrix-cell.row-1 .neon-matrix-ones:not(.is-question) {
+    animation: neon-matrix-ones-wave 440ms ease-out 1;
+    animation-delay: calc(var(--col-index, 0) * 50ms);
+}
+
+.neon-matrix-keypad {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: clamp(0.45rem, 1.1vw, 0.62rem);
+    align-self: end;
+    margin-top: clamp(0.2rem, 0.6vh, 0.35rem);
+    margin-bottom: clamp(2.4rem, 5vh, 3.4rem);
+}
+
+.neon-matrix-key-btn {
+    appearance: none;
+    -webkit-appearance: none;
+    border: 0;
+    border-radius: 12px;
+    min-height: clamp(2.5rem, 7.4vh, 3.35rem);
+    font-size: clamp(1.1rem, 3.1vh, 1.7rem);
+    font-weight: 900;
+    color: #eff7ff;
+    background: linear-gradient(180deg, #2f4b8f 0%, #21366b 100%);
+    box-shadow:
+        0 5px 0 #162750,
+        0 10px 16px rgba(0, 0, 0, 0.34),
+        inset 0 0 0 1px rgba(188, 213, 255, 0.22);
+    transform: translateY(0);
+    filter: brightness(1);
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    user-select: none;
+    cursor: pointer;
+    transition: transform 0.04s ease, filter 0.06s ease, box-shadow 0.04s ease;
+}
+
+.neon-matrix-key-btn:focus,
+.neon-matrix-key-btn:focus-visible {
+    outline: none;
+}
+
+.neon-matrix-key-btn.is-pressing {
+    animation: neon-matrix-key-press 95ms ease-out 1;
+}
+
+.neon-matrix-key-btn:disabled {
+    opacity: 0.48;
+    cursor: not-allowed;
+    transform: translateY(0);
+    filter: brightness(1);
+    box-shadow:
+        0 5px 0 #162750,
+        0 10px 16px rgba(0, 0, 0, 0.34),
+        inset 0 0 0 1px rgba(188, 213, 255, 0.22);
+}
+
+@keyframes neon-matrix-row-current {
+    0% {
+        transform: translateX(-35%);
+        opacity: 0;
+    }
+    25% {
+        opacity: 1;
+    }
+    100% {
+        transform: translateX(35%);
+        opacity: 0;
+    }
+}
+
+@keyframes neon-matrix-cycle-shine {
+    0% {
+        filter: brightness(1);
+    }
+    30% {
+        filter: brightness(1.2);
+    }
+    100% {
+        filter: brightness(1);
+    }
+}
+
+@keyframes neon-matrix-key-press {
+    0% {
+        transform: translateY(0);
+        box-shadow:
+            0 5px 0 #162750,
+            0 10px 16px rgba(0, 0, 0, 0.34),
+            inset 0 0 0 1px rgba(188, 213, 255, 0.22);
+        filter: brightness(1);
+    }
+    35% {
+        transform: translateY(3px);
+        box-shadow:
+            0 2px 0 #162750,
+            0 4px 8px rgba(0, 0, 0, 0.28),
+            0 0 0 1px rgba(116, 145, 232, 0.36),
+            inset 0 0 0 1px rgba(188, 213, 255, 0.22);
+        filter: brightness(1.08);
+    }
+    100% {
+        transform: translateY(0);
+        box-shadow:
+            0 5px 0 #162750,
+            0 10px 16px rgba(0, 0, 0, 0.34),
+            inset 0 0 0 1px rgba(188, 213, 255, 0.22);
+        filter: brightness(1);
+    }
+}
+
+@keyframes neon-matrix-ones-wave {
+    0% {
+        color: #60c7ff;
+        text-shadow: none;
+    }
+    40% {
+        color: #f6f0ff;
+        text-shadow:
+            0 0 6px rgba(243, 235, 255, 0.9),
+            0 0 14px rgba(193, 154, 255, 0.82),
+            0 0 24px rgba(123, 99, 255, 0.62);
+    }
+    100% {
+        color: #60c7ff;
+        text-shadow: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .neon-matrix-shell {
+        gap: 0.52rem;
+    }
+
+    .neon-matrix-board {
+        gap: 0.4rem;
+        padding: 0.5rem;
+    }
+
+    .neon-matrix-keypad {
+        gap: 0.4rem;
+    }
+}

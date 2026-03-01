@@ -27,6 +27,21 @@ export const getIconBackground = (thumbnail: string | React.ReactNode | undefine
         '🍕': '#fecaca', // red-200
         '🛸': '#e9d5ff', // purple-200
         '🚀': '#bfdbfe', // blue-200
+        '8': '#dbeafe', // blue-100 (Neon Matrix)
+        // Math level 3 games
+        '📦': '#fef3c7', // amber-100
+        '🧊': '#cffafe', // cyan-100
+        '🟧': '#ffedd5', // orange-100 (quad marker for Floor Tiler)
+        '🐸': '#dcfce7', // green-100
+        '🪙': '#fde68a', // amber-200
+        '🧫': '#e9d5ff', // purple-200
+        '🍀': '#d1fae5', // emerald-100
+        '🫧': '#dbeafe', // blue-100
+        '⬢': '#fef9c3', // yellow-100
+        '📜': '#ffedd5', // orange-100
+        '⭐': '#fef3c7', // amber-100
+        '🧌': '#fecaca', // red-200
+        '🧙🏿‍♂️': '#ddd6fe', // violet-200
         // Brain games
         '🔗': '#fce7f3', // pink-100
         '🔴': '#fce7f3', // pink-100 (for quad thumbnails)
@@ -87,6 +102,23 @@ export const renderThumbnail = (thumbnail: string | React.ReactNode | undefined,
     // Hex Hive icon: yellow + slightly larger
     if (typeof thumbnail === 'string' && thumbnail === '⬢') {
         return <span style={{ color: '#facc15', display: 'inline-block', transform: 'scale(1.3)' }}>{thumbnail}</span>;
+    }
+
+    // Neon Matrix icon: neon 8 + glow
+    if (typeof thumbnail === 'string' && thumbnail === '8') {
+        return (
+            <span
+                style={{
+                    color: '#c4b5fd',
+                    fontWeight: 900,
+                    display: 'inline-block',
+                    transform: 'scale(1.06)',
+                    textShadow: '0 0 5px rgba(196,181,253,0.95), 0 0 12px rgba(139,92,246,0.82), 0 0 22px rgba(76,29,149,0.62)'
+                }}
+            >
+                8
+            </span>
+        );
     }
 
     // Regular emoji or React node

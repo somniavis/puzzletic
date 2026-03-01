@@ -30,6 +30,7 @@ export const GameIds = {
     MATH_FROG_JUMP: 'math-frog-jump',
     MATH_CHIP_CASHIER: 'math-chip-cashier',
     MATH_CELL_CLONE: 'math-cell-clone',
+    MATH_NEON_MATRIX: 'math-neon-matrix',
     MATH_THREE_LEAF_CLOVER: 'math-three-leaf-clover',
     MATH_HEX_HIVE_SIX: 'math-hex-hive-six',
     MATH_FLIGHT_CALENDAR: 'math-flight-calendar',

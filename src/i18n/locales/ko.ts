@@ -24,6 +24,7 @@ import floorTilerKo from '../../games/math/adventure/level3/FloorTiler/locales/k
 import frogJumpKo from '../../games/math/adventure/level3/FrogJump/locales/ko';
 import chipCashierKo from '../../games/math/adventure/level3/ChipCashier/locales/ko';
 import cellCloneKo from '../../games/math/adventure/level3/CellClone/locales/ko';
+import neonMatrixKo from '../../games/math/adventure/level3/NeonMatrix/locales/ko';
 import threeLeafCloverLocale from '../../games/math/adventure/level3/ThreeLeafClover/locales/ko';
 import hexHiveSixLocale from '../../games/math/adventure/level3/HexHiveSix/locales/ko';
 import flightCalendarLocale from '../../games/math/adventure/level3/FlightCalendar/locales/ko';
@@ -1080,6 +1081,7 @@ const koBase = {
         'frog-jump': frogJumpKo,
         'chip-cashier': chipCashierKo,
         'cell-clone': cellCloneKo,
+        'neon-matrix': neonMatrixKo,
         'three-leaf-clover': threeLeafCloverLocale,
         'hex-hive-six': hexHiveSixLocale,
         'flight-calendar': flightCalendarLocale,

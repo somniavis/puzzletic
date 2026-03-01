@@ -36,6 +36,7 @@ const L3_FloorTiler = lazy(() => delayedImport(import('./math/adventure/level3/F
 const L3_FrogJump = lazy(() => delayedImport(import('./math/adventure/level3/FrogJump').then(m => ({ default: m.FrogJump }))));
 const L3_ChipCashier = lazy(() => delayedImport(import('./math/adventure/level3/ChipCashier').then(m => ({ default: m.ChipCashier }))));
 const L3_CellClone = lazy(() => delayedImport(import('./math/adventure/level3/CellClone').then(m => ({ default: m.CellClone }))));
+const L3_NeonMatrix = lazy(() => delayedImport(import('./math/adventure/level3/NeonMatrix').then(m => ({ default: m.NeonMatrix }))));
 const L3_ThreeLeafClover = lazy(() => delayedImport(import('./math/adventure/level3/ThreeLeafClover').then(m => ({ default: m.ThreeLeafClover }))));
 const L3_HexHiveSix = lazy(() => delayedImport(import('./math/adventure/level3/HexHiveSix').then(m => ({ default: m.HexHiveSix }))));
 const L3_FlightCalendar = lazy(() => delayedImport(import('./math/adventure/level3/FlightCalendar').then(m => ({ default: m.FlightCalendar }))));
@@ -481,6 +482,21 @@ export const GAMES: GameManifest[] = [
         mode: 'adventure',
         component: L3_HexHiveSix,
         thumbnail: '⬢',
+        tagsKey: 'games.tags.multiplication'
+    },
+    {
+        id: GameIds.MATH_NEON_MATRIX,
+        title: 'Neon Matrix',
+        titleKey: 'games.neon-matrix.title',
+        subtitle: 'Master 8s',
+        subtitleKey: 'games.neon-matrix.subtitle',
+        description: 'ㅇㅇㅇ',
+        descriptionKey: 'games.neon-matrix.description',
+        category: 'math',
+        level: 3,
+        mode: 'adventure',
+        component: L3_NeonMatrix,
+        thumbnail: '8',
         tagsKey: 'games.tags.multiplication'
     },
     {
