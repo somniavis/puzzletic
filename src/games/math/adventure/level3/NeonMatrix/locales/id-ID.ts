@@ -1,5 +1,5 @@
 const manifest = {
-    title: 'Neon Matrix',
+    title: 'Matriks Neon',
     subtitle: 'Kuasai perkalian 8!',
     description: 'Puzzle cepat untuk menguasai pola digit akhir perkalian 8.',
     powerups: {

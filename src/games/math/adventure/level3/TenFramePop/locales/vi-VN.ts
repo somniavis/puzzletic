@@ -1,5 +1,5 @@
 const vi = {
-    title: '10-Frame Pop',
+    title: 'No Bong Khung 10',
     subtitle: 'Lam chu bang 9',
     description: 'Lam vo bong cuoi cung va hoan thanh bang cuu chuong 9.',
     howToPlay: {

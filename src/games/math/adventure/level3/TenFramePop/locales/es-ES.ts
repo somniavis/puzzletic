@@ -1,5 +1,5 @@
 const es = {
-    title: '10-Frame Pop',
+    title: 'Pop de 10 Marcos',
     subtitle: 'Domina la tabla del 9',
     description: 'Revienta la burbuja final y resuelve la tabla del 9.',
     howToPlay: {

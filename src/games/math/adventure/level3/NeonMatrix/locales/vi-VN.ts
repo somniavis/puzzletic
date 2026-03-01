@@ -1,5 +1,5 @@
 const manifest = {
-    title: 'Neon Matrix',
+    title: 'Ma Tran Neon',
     subtitle: 'Làm chủ bảng 8!',
     description: 'Trò chơi tốc độ để làm chủ quy luật chữ số tận cùng của bảng 8.',
     powerups: {

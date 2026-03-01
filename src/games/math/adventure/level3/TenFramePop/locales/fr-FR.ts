@@ -1,5 +1,5 @@
 const fr = {
-    title: '10-Frame Pop',
+    title: 'Pop 10 Cases',
     subtitle: 'Maitrise la table de 9',
     description: 'Eclate la derniere bulle et complete la table de 9.',
     howToPlay: {

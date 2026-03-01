@@ -1,5 +1,5 @@
 const manifest = {
-    title: 'Neon Matrix',
+    title: 'Matriz Néon',
     subtitle: 'Domina a tabuada do 8!',
     description: 'Um puzzle rápido para dominar o padrão final da tabuada do 8.',
     powerups: {
