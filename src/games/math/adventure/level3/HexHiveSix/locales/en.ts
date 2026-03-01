@@ -15,7 +15,7 @@ const en = {
         cloverDot: 'Clover spot {{index}}'
     },
     ui: {
-        tapEverySpotFirst: 'tap every spot first.'
+        tapEverySpotFirst: 'Tap the right number of hexes.'
     },
     howToPlay: {
         step1: { title: 'Read the problem', description: 'Check ⬢ 6×n.' },

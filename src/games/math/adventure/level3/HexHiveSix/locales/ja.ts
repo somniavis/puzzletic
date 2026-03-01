@@ -15,7 +15,7 @@ const ja = {
         cloverDot: 'クローバーの位置 {{index}}'
     },
     ui: {
-        tapEverySpotFirst: 'tap every spot first.'
+        tapEverySpotFirst: '正しい数の六角形をタップしよう。'
     },
     howToPlay: {
         step1: { title: '問題を確認', description: '⬢ 6×nを見よう。' },

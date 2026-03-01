@@ -371,7 +371,7 @@ export const HexHiveSix: React.FC<HexHiveSixProps> = ({ onExit }) => {
                 count: engine.powerUps.timeFreeze,
                 color: 'blue',
                 icon: '❄️',
-                title: t('games.three-leaf-clover.powerups.timeFreeze'),
+                title: t('games.hex-hive-six.powerups.timeFreeze'),
                 onClick: () => engine.activatePowerUp('timeFreeze'),
                 disabledConfig: engine.isTimeFrozen,
                 status: engine.isTimeFrozen ? 'active' : 'normal'
@@ -380,7 +380,7 @@ export const HexHiveSix: React.FC<HexHiveSixProps> = ({ onExit }) => {
                 count: engine.powerUps.extraLife,
                 color: 'red',
                 icon: '❤️',
-                title: t('games.three-leaf-clover.powerups.extraLife'),
+                title: t('games.hex-hive-six.powerups.extraLife'),
                 onClick: () => engine.activatePowerUp('extraLife'),
                 disabledConfig: engine.lives >= 3,
                 status: engine.lives >= 3 ? 'maxed' : 'normal'
@@ -389,7 +389,7 @@ export const HexHiveSix: React.FC<HexHiveSixProps> = ({ onExit }) => {
                 count: engine.powerUps.doubleScore,
                 color: 'yellow',
                 icon: '⚡',
-                title: t('games.three-leaf-clover.powerups.doubleScore'),
+                title: t('games.hex-hive-six.powerups.doubleScore'),
                 onClick: () => engine.activatePowerUp('doubleScore'),
                 disabledConfig: engine.isDoubleScore,
                 status: engine.isDoubleScore ? 'active' : 'normal'
@@ -400,9 +400,9 @@ export const HexHiveSix: React.FC<HexHiveSixProps> = ({ onExit }) => {
 
     return (
         <Layout3
-            title="6각형 벌집"
-            subtitle="6단 마스터"
-            description="ㅇㅇㅇ"
+            title={t('games.hex-hive-six.title')}
+            subtitle={t('games.hex-hive-six.subtitle')}
+            description={t('games.hex-hive-six.description')}
             gameId={GameIds.MATH_HEX_HIVE_SIX}
             engine={layoutEngineForLayout}
             powerUps={powerUps}
@@ -414,7 +414,7 @@ export const HexHiveSix: React.FC<HexHiveSixProps> = ({ onExit }) => {
             <div className="three-leaf-clover-playfield">
                 {showTapHint && (
                     <div className={`archery-pull-shoot-hint ${isTapHintExiting ? 'is-exiting' : ''}`}>
-                        {t('games.three-leaf-clover.ui.tapEverySpotFirst')}
+                        {t('games.hex-hive-six.ui.tapEverySpotFirst')}
                     </div>
                 )}
                 <section className="three-leaf-clover-mid">
@@ -445,7 +445,7 @@ export const HexHiveSix: React.FC<HexHiveSixProps> = ({ onExit }) => {
                                                     type="button"
                                                     className={`hex-hive-cell ${isBloomed ? 'is-bloomed' : ''} ${wrongCells[index] ? 'is-wrong' : ''}`}
                                                     onClick={() => handleDotClick(index)}
-                                                    aria-label={t('games.three-leaf-clover.a11y.cloverDot', { index: index + 1 })}
+                                                    aria-label={t('games.hex-hive-six.a11y.cloverDot', { index: index + 1 })}
                                                 />
                                             );
                                         })}

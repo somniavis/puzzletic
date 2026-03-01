@@ -5,35 +5,29 @@ import { useGameEngine } from '../../../../layouts/Standard/Layout0/useGameEngin
 import type { GameManifest } from '../../../../types';
 import { GameIds } from '../../../../../constants/gameIds';
 import type { PowerUpBtnProps } from '../../../../../components/Game/PowerUpBtn';
-import './ThreeLeafClover.css';
+import './FlightCalendar.css';
 
-interface ThreeLeafCloverProps {
+interface FlightCalendarProps {
     onExit: () => void;
 }
-type DotPos = { x: number; y: number };
 type RoundState = {
     n: number;
-    bloomed: boolean[];
-    mirrored: boolean[];
-    dotPositions: DotPos[];
-    bugPositions: DotPos[];
+    filledWeeks: boolean[];
     options: number[];
 };
 
 type DifficultyLevel = 1 | 2;
+const MULTIPLIER = 7;
 
 const N_RANGES: Record<DifficultyLevel, { min: number; max: number }> = {
-    1: { min: 1, max: 5 },
-    2: { min: 3, max: 9 }
+    1: { min: 1, max: 4 },
+    2: { min: 2, max: 9 }
 };
 const REWARD_TYPES: Array<'timeFreeze' | 'extraLife' | 'doubleScore'> = ['timeFreeze', 'extraLife', 'doubleScore'];
+const CALENDAR_ROWS = 9;
+const CALENDAR_COLS = 7;
+const CALENDAR_CELLS = CALENDAR_ROWS * CALENDAR_COLS;
 const randInt = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1)) + min;
-const randFloat = (min: number, max: number) => Math.random() * (max - min) + min;
-const distance = (a: DotPos, b: DotPos) => {
-    const dx = a.x - b.x;
-    const dy = a.y - b.y;
-    return Math.sqrt(dx * dx + dy * dy);
-};
 const shuffle = <T,>(arr: T[]): T[] => {
     const next = [...arr];
     for (let i = next.length - 1; i > 0; i -= 1) {
@@ -46,113 +40,15 @@ const buildOptions = (correct: number): number[] => {
     const candidates = new Set<number>([correct]);
     while (candidates.size < 3) {
         const delta = randInt(1, 6) * (Math.random() < 0.5 ? -1 : 1);
-        const wrong = Math.max(3, Math.min(27, correct + delta));
+        const wrong = Math.max(7, Math.min(63, correct + delta));
         if (wrong !== correct) candidates.add(wrong);
     }
     return shuffle(Array.from(candidates));
 };
-const COLLISION_MIN_DX = 15.5;
-const COLLISION_MIN_DY = 23;
-const isOverlapping = (a: DotPos, b: DotPos) =>
-    Math.abs(a.x - b.x) < COLLISION_MIN_DX && Math.abs(a.y - b.y) < COLLISION_MIN_DY;
-
-const GRID_ANCHORS_3X3: Array<DotPos> = [
-    { x: 18, y: 25 }, { x: 50, y: 25 }, { x: 82, y: 25 },
-    { x: 18, y: 52 }, { x: 50, y: 52 }, { x: 82, y: 52 },
-    { x: 18, y: 79 }, { x: 50, y: 79 }, { x: 82, y: 79 }
-];
-
-const jitterAnchor = (anchor: DotPos) => ({
-    x: anchor.x + randFloat(-1.6, 1.6),
-    y: anchor.y + randFloat(-1.3, 1.3)
-});
-
-const buildNonOverlappingFromAnchors = (count: number): DotPos[] => {
-    const selected = shuffle(GRID_ANCHORS_3X3).slice(0, count);
-    const points: DotPos[] = [];
-    selected.forEach((anchor) => {
-        let placed = false;
-        for (let attempt = 0; attempt < 40; attempt += 1) {
-            const candidate = jitterAnchor(anchor);
-            if (points.every((p) => !isOverlapping(p, candidate))) {
-                points.push(candidate);
-                placed = true;
-                break;
-            }
-        }
-        if (!placed) points.push(anchor);
-    });
-    return points;
-};
-
-const generateSpreadDotPositions = (count: number): DotPos[] => {
-    const bounds = { minX: 18, maxX: 82, minY: 25, maxY: 79 };
-    let best: DotPos[] = [];
-
-    // Random non-overlap sampling with bounded retries (small N: max 9)
-    for (let restart = 0; restart < 12; restart += 1) {
-        const points: DotPos[] = [];
-        while (points.length < count) {
-            let placed = false;
-            for (let attempt = 0; attempt < 60; attempt += 1) {
-                const candidate = {
-                    x: randFloat(bounds.minX, bounds.maxX),
-                    y: randFloat(bounds.minY, bounds.maxY)
-                };
-                if (points.every((p) => !isOverlapping(p, candidate))) {
-                    points.push(candidate);
-                    placed = true;
-                    break;
-                }
-            }
-            if (!placed) break;
-        }
-        if (points.length > best.length) best = points;
-        if (points.length === count) return points;
-    }
-    if (best.length === count) return best;
-    return buildNonOverlappingFromAnchors(count);
-};
-const generateBugPositions = (): DotPos[] => {
-    const bugs: DotPos[] = [];
-    const bounds = { minX: 18, maxX: 82, minY: 28, maxY: 82 };
-    const minDist = 18;
-    for (let attempt = 0; attempt < 120 && bugs.length < 3; attempt += 1) {
-        const candidate = { x: randFloat(bounds.minX, bounds.maxX), y: randFloat(bounds.minY, bounds.maxY) };
-        if (bugs.every((b) => distance(b, candidate) >= minDist)) {
-            bugs.push(candidate);
-        }
-    }
-    if (bugs.length < 3) {
-        const fallback = shuffle([{ x: 22, y: 72 }, { x: 72, y: 66 }, { x: 48, y: 80 }]);
-        while (bugs.length < 3) {
-            bugs.push(fallback[bugs.length]);
-        }
-    }
-    return bugs;
-};
-const getFarBugPosition = (current: DotPos, others: DotPos[]): DotPos => {
-    const bounds = { minX: 18, maxX: 82, minY: 28, maxY: 82 };
-    const minDistanceFromCurrent = 26;
-    const minDistanceFromOthers = 14;
-
-    for (let attempt = 0; attempt < 80; attempt += 1) {
-        const candidate = {
-            x: randFloat(bounds.minX, bounds.maxX),
-            y: randFloat(bounds.minY, bounds.maxY)
-        };
-        const dx = candidate.x - current.x;
-        const dy = candidate.y - current.y;
-        const fromCurrent = Math.sqrt(dx * dx + dy * dy);
-        if (fromCurrent < minDistanceFromCurrent) continue;
-        const separated = others.every((other) => distance(candidate, other) >= minDistanceFromOthers);
-        if (separated) return candidate;
-    }
-
-    return {
-        x: current.x < 50 ? 78 : 22,
-        y: current.y < 55 ? 78 : 32
-    };
+const getCalendarRowCount = (n: number): number => {
+    if (n <= 3) return 4;
+    if (n <= 6) return n + 2; // n=4,5,6 -> rows=6,7,8
+    return 9;
 };
 const createRoundState = (difficulty: DifficultyLevel, prevN?: number): RoundState => {
     const range = N_RANGES[difficulty];
@@ -164,39 +60,37 @@ const createRoundState = (difficulty: DifficultyLevel, prevN?: number): RoundSta
     }
     return {
         n: nextN,
-        bloomed: Array.from({ length: nextN }, () => false),
-        mirrored: Array.from({ length: nextN }, () => Math.random() < 0.5),
-        dotPositions: generateSpreadDotPositions(nextN),
-        bugPositions: generateBugPositions(),
-        options: buildOptions(3 * nextN)
+        filledWeeks: Array.from({ length: CALENDAR_ROWS }, () => false),
+        options: buildOptions(MULTIPLIER * nextN)
     };
 };
-export const ThreeLeafClover: React.FC<ThreeLeafCloverProps> = ({ onExit }) => {
+export const FlightCalendar: React.FC<FlightCalendarProps> = ({ onExit }) => {
     const { t } = useTranslation();
     const engine = useGameEngine({ initialLives: 3, initialTime: 90, maxDifficulty: 2 });
     const [difficultyLevel, setDifficultyLevel] = React.useState<DifficultyLevel>(1);
     const [consecutiveCorrect, setConsecutiveCorrect] = React.useState(0);
+    const [correctCountAtLevel, setCorrectCountAtLevel] = React.useState(0);
     const [consecutiveWrong, setConsecutiveWrong] = React.useState(0);
     const [round, setRound] = React.useState<RoundState>(() => createRoundState(1));
-    const [scaredBugs, setScaredBugs] = React.useState<boolean[]>([false, false, false]);
+    const [wrongCells, setWrongCells] = React.useState<boolean[]>(Array.from({ length: CALENDAR_CELLS }, () => false));
     const [pressingOption, setPressingOption] = React.useState<number | null>(null);
     const [showTapHint, setShowTapHint] = React.useState(false);
     const [isTapHintExiting, setIsTapHintExiting] = React.useState(false);
     const prevGameStateRef = React.useRef(engine.gameState);
     const hasShownTapHintRef = React.useRef(false);
-    const scareTimersRef = React.useRef<Array<number | null>>([null, null, null]);
+    const wrongCellTimersRef = React.useRef<Array<number | null>>(Array.from({ length: CALENDAR_CELLS }, () => null));
     const tapHintTimerRef = React.useRef<number | null>(null);
     const tapHintExitTimerRef = React.useRef<number | null>(null);
 
     const setupRound = React.useCallback((difficulty: DifficultyLevel) => {
         setPressingOption(null);
         setRound((prev) => createRoundState(difficulty, prev.n));
-        setScaredBugs([false, false, false]);
+        setWrongCells(Array.from({ length: CALENDAR_CELLS }, () => false));
     }, []);
 
     React.useEffect(
         () => () => {
-            scareTimersRef.current.forEach((timer) => {
+            wrongCellTimersRef.current.forEach((timer) => {
                 if (timer != null) window.clearTimeout(timer);
             });
             if (tapHintTimerRef.current != null) {
@@ -216,6 +110,7 @@ export const ThreeLeafClover: React.FC<ThreeLeafCloverProps> = ({ onExit }) => {
         if (engine.gameState === 'playing' && (prev === 'idle' || prev === 'gameover')) {
             setDifficultyLevel(1);
             setConsecutiveCorrect(0);
+            setCorrectCountAtLevel(0);
             setConsecutiveWrong(0);
             setupRound(1);
         }
@@ -275,62 +170,77 @@ export const ThreeLeafClover: React.FC<ThreeLeafCloverProps> = ({ onExit }) => {
     );
     const layoutEngineForLayout = layoutEngine as typeof engine;
 
-    const handleDotClick = React.useCallback((index: number) => {
-        if (engine.gameState !== 'playing') return;
-        setRound((prev) => {
-            const current = prev.bloomed[index];
-            if (current) return prev;
-            const nextBloomed = [...prev.bloomed];
-            nextBloomed[index] = true;
-            return { ...prev, bloomed: nextBloomed };
-        });
-    }, [engine.gameState]);
-    const handleBugClick = React.useCallback((index: number) => {
+    const handleWrongHiveClick = React.useCallback((index: number) => {
         if (engine.gameState !== 'playing') return;
 
-        setScaredBugs((prev) => {
-            if (prev[index]) return prev;
+        setWrongCells((prev) => {
             const next = [...prev];
             next[index] = true;
             return next;
         });
 
-        setRound((prev) => {
-            const nextBugPositions = [...prev.bugPositions];
-            const current = nextBugPositions[index] ?? { x: 50, y: 50 };
-            const others = nextBugPositions.filter((_, i) => i !== index);
-            nextBugPositions[index] = getFarBugPosition(current, others);
-            return { ...prev, bugPositions: nextBugPositions };
-        });
-
-        if (scareTimersRef.current[index] != null) {
-            window.clearTimeout(scareTimersRef.current[index]!);
+        if (wrongCellTimersRef.current[index] != null) {
+            window.clearTimeout(wrongCellTimersRef.current[index]!);
         }
-        scareTimersRef.current[index] = window.setTimeout(() => {
-            setScaredBugs((prev) => {
+        wrongCellTimersRef.current[index] = window.setTimeout(() => {
+            setWrongCells((prev) => {
                 const next = [...prev];
                 next[index] = false;
                 return next;
             });
-            scareTimersRef.current[index] = null;
-        }, 420);
-    }, [engine.gameState]);
-    const allBloomed = React.useMemo(() => round.bloomed.length > 0 && round.bloomed.every(Boolean), [round.bloomed]);
+            wrongCellTimersRef.current[index] = null;
+        }, 360);
+
+        engine.registerEvent({ type: 'wrong' });
+        engine.updateLives(false);
+        engine.updateCombo(false);
+    }, [engine]);
+
+    const handleWeekClick = React.useCallback((index: number) => {
+        if (engine.gameState !== 'playing') return;
+
+        const rowIndex = Math.floor(index / CALENDAR_COLS);
+        let isOverClick = false;
+
+        setRound((prev) => {
+            const filledWeekCount = prev.filledWeeks.filter(Boolean).length;
+            if (filledWeekCount >= prev.n) {
+                isOverClick = true;
+                return prev;
+            }
+
+            if (prev.filledWeeks[rowIndex]) return prev;
+
+            const nextFilledWeeks = [...prev.filledWeeks];
+            nextFilledWeeks[rowIndex] = true;
+            return { ...prev, filledWeeks: nextFilledWeeks };
+        });
+
+        if (isOverClick) {
+            handleWrongHiveClick(index);
+        }
+    }, [engine.gameState, handleWrongHiveClick]);
+    const allBloomed = React.useMemo(
+        () => round.filledWeeks.filter(Boolean).length >= round.n,
+        [round.filledWeeks, round.n]
+    );
     const handleOptionClick = React.useCallback((value: number, buttonEl?: HTMLButtonElement | null) => {
         if (engine.gameState !== 'playing' || !allBloomed) return;
         buttonEl?.blur();
         setPressingOption(null);
 
-        const correct = 3 * round.n;
+        const correct = MULTIPLIER * round.n;
         const isCorrect = value === correct;
 
         if (isCorrect) {
             const nextConsecutiveCorrect = consecutiveCorrect + 1;
-            const shouldPromote = difficultyLevel === 1 && nextConsecutiveCorrect >= 3;
+            const nextCorrectCountAtLevel = correctCountAtLevel + 1;
+            const shouldPromote = difficultyLevel === 1 && (nextConsecutiveCorrect >= 3 || nextCorrectCountAtLevel >= 4);
             const nextDifficulty: DifficultyLevel = shouldPromote ? 2 : difficultyLevel;
 
             setConsecutiveWrong(0);
-            setConsecutiveCorrect(shouldPromote ? 0 : nextConsecutiveCorrect);
+            setConsecutiveCorrect(shouldPromote ? 0 : (difficultyLevel === 1 ? nextConsecutiveCorrect : 0));
+            setCorrectCountAtLevel(shouldPromote ? 0 : (difficultyLevel === 1 ? nextCorrectCountAtLevel : 0));
             if (shouldPromote) {
                 setDifficultyLevel(2);
             }
@@ -349,6 +259,7 @@ export const ThreeLeafClover: React.FC<ThreeLeafCloverProps> = ({ onExit }) => {
         const nextConsecutiveWrong = consecutiveWrong + 1;
         const shouldDemote = difficultyLevel === 2 && nextConsecutiveWrong >= 2;
         setConsecutiveCorrect(0);
+        setCorrectCountAtLevel(0);
         setConsecutiveWrong(shouldDemote ? 0 : nextConsecutiveWrong);
         if (shouldDemote) {
             setDifficultyLevel(1);
@@ -357,28 +268,42 @@ export const ThreeLeafClover: React.FC<ThreeLeafCloverProps> = ({ onExit }) => {
         engine.registerEvent({ type: 'wrong' });
         engine.updateLives(false);
         engine.updateCombo(false);
-    }, [allBloomed, consecutiveCorrect, consecutiveWrong, difficultyLevel, engine, round.n, setupRound]);
+    }, [allBloomed, consecutiveCorrect, consecutiveWrong, correctCountAtLevel, difficultyLevel, engine, round.n, setupRound]);
     const handleOptionPointerDown = React.useCallback((value: number) => {
         if (engine.gameState !== 'playing' || !allBloomed) return;
         setPressingOption(value);
     }, [allBloomed, engine.gameState]);
     const clearPressingOption = React.useCallback(() => setPressingOption(null), []);
+    const calendarRowCount = React.useMemo(() => getCalendarRowCount(round.n), [round.n]);
+    const visibleCells = React.useMemo(() => calendarRowCount * CALENDAR_COLS, [calendarRowCount]);
+    const weekdays = React.useMemo(
+        () => ([
+            t('games.flight-calendar.weekdays.mon'),
+            t('games.flight-calendar.weekdays.tue'),
+            t('games.flight-calendar.weekdays.wed'),
+            t('games.flight-calendar.weekdays.thu'),
+            t('games.flight-calendar.weekdays.fri'),
+            t('games.flight-calendar.weekdays.sat'),
+            t('games.flight-calendar.weekdays.sun')
+        ]),
+        [t]
+    );
     const instructions = React.useMemo(
         () => [
-            { icon: '🔎', title: t('games.three-leaf-clover.howToPlay.step1.title'), description: t('games.three-leaf-clover.howToPlay.step1.description') },
-            { icon: '☘️', title: t('games.three-leaf-clover.howToPlay.step2.title'), description: t('games.three-leaf-clover.howToPlay.step2.description') },
-            { icon: '✅', title: t('games.three-leaf-clover.howToPlay.step3.title'), description: t('games.three-leaf-clover.howToPlay.step3.description') }
+            { icon: '🎯', title: t('games.flight-calendar.howToPlay.step1.title'), description: t('games.flight-calendar.howToPlay.step1.description') },
+            { icon: '🗓️', title: t('games.flight-calendar.howToPlay.step2.title'), description: t('games.flight-calendar.howToPlay.step2.description') },
+            { icon: '✅', title: t('games.flight-calendar.howToPlay.step3.title'), description: t('games.flight-calendar.howToPlay.step3.description') }
         ],
         [t]
     );
-    const target = React.useMemo(() => ({ value: `3 x ${round.n}`, icon: '☘️' }), [round.n]);
+    const target = React.useMemo(() => ({ value: `7 x ${round.n}`, icon: '🛩️' }), [round.n]);
     const powerUps = React.useMemo<PowerUpBtnProps[]>(
         () => [
             {
                 count: engine.powerUps.timeFreeze,
                 color: 'blue',
                 icon: '❄️',
-                title: t('games.three-leaf-clover.powerups.timeFreeze'),
+                title: t('games.flight-calendar.powerups.timeFreeze'),
                 onClick: () => engine.activatePowerUp('timeFreeze'),
                 disabledConfig: engine.isTimeFrozen,
                 status: engine.isTimeFrozen ? 'active' : 'normal'
@@ -387,7 +312,7 @@ export const ThreeLeafClover: React.FC<ThreeLeafCloverProps> = ({ onExit }) => {
                 count: engine.powerUps.extraLife,
                 color: 'red',
                 icon: '❤️',
-                title: t('games.three-leaf-clover.powerups.extraLife'),
+                title: t('games.flight-calendar.powerups.extraLife'),
                 onClick: () => engine.activatePowerUp('extraLife'),
                 disabledConfig: engine.lives >= 3,
                 status: engine.lives >= 3 ? 'maxed' : 'normal'
@@ -396,7 +321,7 @@ export const ThreeLeafClover: React.FC<ThreeLeafCloverProps> = ({ onExit }) => {
                 count: engine.powerUps.doubleScore,
                 color: 'yellow',
                 icon: '⚡',
-                title: t('games.three-leaf-clover.powerups.doubleScore'),
+                title: t('games.flight-calendar.powerups.doubleScore'),
                 onClick: () => engine.activatePowerUp('doubleScore'),
                 disabledConfig: engine.isDoubleScore,
                 status: engine.isDoubleScore ? 'active' : 'normal'
@@ -407,78 +332,62 @@ export const ThreeLeafClover: React.FC<ThreeLeafCloverProps> = ({ onExit }) => {
 
     return (
         <Layout3
-            title={t('games.three-leaf-clover.title')}
-            subtitle={t('games.three-leaf-clover.subtitle')}
-            description={t('games.three-leaf-clover.description')}
-            gameId={GameIds.MATH_THREE_LEAF_CLOVER}
+            title={t('games.flight-calendar.title')}
+            subtitle={t('games.flight-calendar.subtitle')}
+            description={t('games.flight-calendar.description')}
+            gameId={GameIds.MATH_FLIGHT_CALENDAR}
             engine={layoutEngineForLayout}
             powerUps={powerUps}
             cardBackground={<div className="three-leaf-clover-card-bg" />}
             target={target}
             instructions={instructions}
             onExit={onExit}
-            className="three-leaf-clover-theme"
+            className="flight-calendar-theme"
         >
             <div className="three-leaf-clover-playfield">
                 {showTapHint && (
                     <div className={`archery-pull-shoot-hint ${isTapHintExiting ? 'is-exiting' : ''}`}>
-                        {t('games.three-leaf-clover.ui.tapEverySpotFirst')}
+                        {t('games.flight-calendar.ui.tapEverySpotFirst')}
                     </div>
                 )}
                 <section className="three-leaf-clover-mid">
                     <div className="three-leaf-clover-ground">
-                        <div className="three-leaf-clover-bugs">
-                            <button
-                                type="button"
-                                className={`three-leaf-clover-bug bug-ladybug-a ${scaredBugs[0] ? 'is-scared' : ''}`}
-                                style={{ left: `${(round.bugPositions[0]?.x ?? 20).toFixed(2)}%`, top: `${(round.bugPositions[0]?.y ?? 70).toFixed(2)}%` }}
-                                onClick={() => handleBugClick(0)}
-                                aria-label={t('games.three-leaf-clover.a11y.ladybug1')}
-                            >
-                                🐞
-                            </button>
-                            <button
-                                type="button"
-                                className={`three-leaf-clover-bug bug-ladybug-b ${scaredBugs[1] ? 'is-scared' : ''}`}
-                                style={{ left: `${(round.bugPositions[1]?.x ?? 70).toFixed(2)}%`, top: `${(round.bugPositions[1]?.y ?? 66).toFixed(2)}%` }}
-                                onClick={() => handleBugClick(1)}
-                                aria-label={t('games.three-leaf-clover.a11y.ladybug2')}
-                            >
-                                🐞
-                            </button>
-                            <button
-                                type="button"
-                                className={`three-leaf-clover-bug bug-beetle ${scaredBugs[2] ? 'is-scared' : ''}`}
-                                style={{ left: `${(round.bugPositions[2]?.x ?? 46).toFixed(2)}%`, top: `${(round.bugPositions[2]?.y ?? 80).toFixed(2)}%` }}
-                                onClick={() => handleBugClick(2)}
-                                aria-label={t('games.three-leaf-clover.a11y.beetle')}
-                            >
-                                🪲
-                            </button>
+                        <div className="flight-calendar-ground-layer">
+                            <div className="flight-calendar-weekdays">
+                                {weekdays.map((day) => (
+                                    <div key={day} className="flight-calendar-weekday">{day}</div>
+                                ))}
+                            </div>
+                            <div className="flight-calendar-grid" style={{ '--calendar-rows': calendarRowCount } as React.CSSProperties}>
+                                {Array.from({ length: visibleCells }).map((_, index) => {
+                                    const rowIndex = Math.floor(index / CALENDAR_COLS);
+                                    const isBloomed = round.filledWeeks[rowIndex] ?? false;
+                                    const isGoal = index === (round.n * CALENDAR_COLS) - 1;
+                                    const isStart = index === 0;
+                                    const isSunday = (index + 1) % CALENDAR_COLS === 0;
+
+                                    return (
+                                        <button
+                                            key={`calendar-cell-${index}`}
+                                            type="button"
+                                            className={`flight-calendar-cell ${isBloomed ? 'is-bloomed' : ''} ${wrongCells[index] ? 'is-wrong' : ''} ${isStart ? 'is-start' : ''} ${isGoal ? 'is-goal' : ''} ${isSunday ? 'is-sunday-trigger' : ''}`}
+                                            onClick={() => handleWeekClick(index)}
+                                            disabled={!isSunday || engine.gameState !== 'playing'}
+                                            aria-label={t('games.flight-calendar.a11y.cloverDot', { index: index + 1 })}
+                                        >
+                                            {isStart ? <span className="flight-calendar-goal-emoji">🏠</span> : isGoal ? <span className="flight-calendar-goal-emoji">🛩️</span> : ''}
+                                        </button>
+                                    );
+                                })}
+                            </div>
                         </div>
-                        {round.bloomed.map((isBloomed, index) => {
-                            const pos = round.dotPositions[index] ?? { x: 50, y: 50 };
-                            const isMirrored = round.mirrored[index] ?? false;
-                            return (
-                                <button
-                                    key={`dot-${index}`}
-                                    type="button"
-                                    className={`three-leaf-clover-dot ${isBloomed ? 'is-bloomed' : ''}`}
-                                    style={{ left: `${pos.x}%`, top: `${pos.y}%` }}
-                                    onClick={() => handleDotClick(index)}
-                                    aria-label={t('games.three-leaf-clover.a11y.cloverDot', { index: index + 1 })}
-                                >
-                                    {isBloomed ? <span className={`three-leaf-clover-sprite ${isMirrored ? 'is-mirrored' : ''}`}>☘️</span> : null}
-                                </button>
-                            );
-                        })}
                     </div>
                 </section>
 
                 <section className="three-leaf-clover-bottom">
                     {allBloomed && (
                         <div className="three-leaf-clover-answer-panel is-visible">
-                            <p className="three-leaf-clover-question">{t('games.three-leaf-clover.question')}</p>
+                            <p className="three-leaf-clover-question">{t('games.flight-calendar.question')}</p>
                             <div className="three-leaf-clover-options">
                                 {round.options.map((option) => (
                                     <button
@@ -506,15 +415,15 @@ export const ThreeLeafClover: React.FC<ThreeLeafCloverProps> = ({ onExit }) => {
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const manifest: GameManifest = {
-    id: GameIds.MATH_THREE_LEAF_CLOVER,
-    title: '세잎 클로버',
-    titleKey: 'games.three-leaf-clover.title',
-    subtitle: '3단 마스터',
-    subtitleKey: 'games.three-leaf-clover.subtitle',
-    description: '클로버를 피우며 3단을 익혀요!',
-    descriptionKey: 'games.three-leaf-clover.description',
+    id: GameIds.MATH_FLIGHT_CALENDAR,
+    title: 'flight calendar',
+    titleKey: 'games.flight-calendar.title',
+    subtitle: 'master 7s',
+    subtitleKey: 'games.flight-calendar.subtitle',
+    description: 'Practice the 7-times table by filling calendar weeks.',
+    descriptionKey: 'games.flight-calendar.description',
     category: 'math',
     level: 3,
-    component: ThreeLeafClover,
-    thumbnail: '🍀'
+    component: FlightCalendar,
+    thumbnail: '📜'
 };

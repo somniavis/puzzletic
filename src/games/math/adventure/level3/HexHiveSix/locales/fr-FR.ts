@@ -15,7 +15,7 @@ const fr = {
         cloverDot: 'Point de trefle {{index}}'
     },
     ui: {
-        tapEverySpotFirst: 'tap every spot first.'
+        tapEverySpotFirst: 'Tape le bon nombre d’hexagones.'
     },
     howToPlay: {
         step1: { title: 'Vérifie le problème', description: 'Regarde ⬢ 6×n.' },

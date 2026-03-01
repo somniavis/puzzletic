@@ -33,6 +33,7 @@ import chipCashierVi from '../../games/math/adventure/level3/ChipCashier/locales
 import cellCloneVi from '../../games/math/adventure/level3/CellClone/locales/vi-VN';
 import threeLeafCloverLocale from '../../games/math/adventure/level3/ThreeLeafClover/locales/vi-VN';
 import hexHiveSixLocale from '../../games/math/adventure/level3/HexHiveSix/locales/vi-VN';
+import flightCalendarLocale from '../../games/math/adventure/level3/FlightCalendar/locales/vi-VN';
 import tenFramePopLocale from '../../games/math/adventure/level3/TenFramePop/locales/vi-VN';
 import beginnerWizardVi from '../../games/math/adventure/level3/BeginnerWizard/locales/vi-VN';
 import constellationFinderVi from '../../games/math/adventure/level3/ConstellationFinder/locales/vi-VN';
@@ -1708,12 +1709,13 @@ export const viVN = {
     'shape-sum-link': shapeSumLinkVi,
     'fruit-box': fruitBoxVi,
     'ice-stacking': iceStackingVi,
-    'floor-tiler': floorTilerVi,
-    'frog-jump': frogJumpVi,
-    'chip-cashier': chipCashierVi,
-    'cell-clone': cellCloneVi,
-     'three-leaf-clover': threeLeafCloverLocale,
-    'hex-hive-six': hexHiveSixLocale,
+        'floor-tiler': floorTilerVi,
+        'frog-jump': frogJumpVi,
+        'chip-cashier': chipCashierVi,
+        'cell-clone': cellCloneVi,
+        'three-leaf-clover': threeLeafCloverLocale,
+        'hex-hive-six': hexHiveSixLocale,
+        'flight-calendar': flightCalendarLocale,
     'ten-frame-pop': tenFramePopLocale,
     'beginner-wizard': beginnerWizardVi,
     'constellation-finder': constellationFinderVi,

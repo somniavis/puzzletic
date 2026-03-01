@@ -15,7 +15,7 @@ const vi = {
         cloverDot: 'Vi tri co ba la {{index}}'
     },
     ui: {
-        tapEverySpotFirst: 'tap every spot first.'
+        tapEverySpotFirst: 'Chạm đúng số lượng ô lục giác.'
     },
     howToPlay: {
         step1: { title: 'Xem bai toan', description: 'Nhin ⬢ 6×n.' },

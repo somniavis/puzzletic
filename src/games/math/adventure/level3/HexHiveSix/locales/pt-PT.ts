@@ -15,7 +15,7 @@ const pt = {
         cloverDot: 'Ponto do trevo {{index}}'
     },
     ui: {
-        tapEverySpotFirst: 'tap every spot first.'
+        tapEverySpotFirst: 'Toca no número certo de hexágonos.'
     },
     howToPlay: {
         step1: { title: 'Ver o problema', description: 'Vê ⬢ 6×n.' },

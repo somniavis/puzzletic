@@ -15,7 +15,7 @@ const es = {
         cloverDot: 'Punto de trebol {{index}}'
     },
     ui: {
-        tapEverySpotFirst: 'tap every spot first.'
+        tapEverySpotFirst: 'Toca la cantidad correcta de hexágonos.'
     },
     howToPlay: {
         step1: { title: 'Revisa el problema', description: 'Mira ⬢ 6×n.' },

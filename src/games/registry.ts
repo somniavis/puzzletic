@@ -38,6 +38,7 @@ const L3_ChipCashier = lazy(() => delayedImport(import('./math/adventure/level3/
 const L3_CellClone = lazy(() => delayedImport(import('./math/adventure/level3/CellClone').then(m => ({ default: m.CellClone }))));
 const L3_ThreeLeafClover = lazy(() => delayedImport(import('./math/adventure/level3/ThreeLeafClover').then(m => ({ default: m.ThreeLeafClover }))));
 const L3_HexHiveSix = lazy(() => delayedImport(import('./math/adventure/level3/HexHiveSix').then(m => ({ default: m.HexHiveSix }))));
+const L3_FlightCalendar = lazy(() => delayedImport(import('./math/adventure/level3/FlightCalendar').then(m => ({ default: m.FlightCalendar }))));
 const L3_TenFramePop = lazy(() => delayedImport(import('./math/adventure/level3/TenFramePop').then(m => ({ default: m.TenFramePop }))));
 const L3_BeginnerWizard = lazy(() => delayedImport(import('./math/adventure/level3/BeginnerWizard').then(m => ({ default: m.BeginnerWizard }))));
 const L3_ConstellationFinder = lazy(() => delayedImport(import('./math/adventure/level3/ConstellationFinder').then(m => ({ default: m.ConstellationFinder }))));
@@ -480,6 +481,21 @@ export const GAMES: GameManifest[] = [
         mode: 'adventure',
         component: L3_HexHiveSix,
         thumbnail: '⬢',
+        tagsKey: 'games.tags.multiplication'
+    },
+    {
+        id: GameIds.MATH_FLIGHT_CALENDAR,
+        title: 'Flight Calendar',
+        titleKey: 'games.flight-calendar.title',
+        subtitle: 'Master 7s',
+        subtitleKey: 'games.flight-calendar.subtitle',
+        description: 'ㅇㅇㅇ',
+        descriptionKey: 'games.flight-calendar.description',
+        category: 'math',
+        level: 3,
+        mode: 'adventure',
+        component: L3_FlightCalendar,
+        thumbnail: '🗓️',
         tagsKey: 'games.tags.multiplication'
     },
     {

@@ -33,6 +33,7 @@ import chipCashierEn from '../../games/math/adventure/level3/ChipCashier/locales
 import cellCloneEn from '../../games/math/adventure/level3/CellClone/locales/id-ID';
 import threeLeafCloverLocale from '../../games/math/adventure/level3/ThreeLeafClover/locales/id-ID';
 import hexHiveSixLocale from '../../games/math/adventure/level3/HexHiveSix/locales/id-ID';
+import flightCalendarLocale from '../../games/math/adventure/level3/FlightCalendar/locales/id-ID';
 import tenFramePopLocale from '../../games/math/adventure/level3/TenFramePop/locales/id-ID';
 import beginnerWizardEn from '../../games/math/adventure/level3/BeginnerWizard/locales/id-ID';
 import constellationFinderEn from '../../games/math/adventure/level3/ConstellationFinder/locales/id-ID';
@@ -1073,12 +1074,13 @@ export const idID = {
     'shape-sum-link': shapeSumLinkEn,
     'fruit-box': fruitBoxEn,
     'ice-stacking': iceStackingEn,
-    'floor-tiler': floorTilerEn,
-    'frog-jump': frogJumpEn,
-    'chip-cashier': chipCashierEn,
-    'cell-clone': cellCloneEn,
-     'three-leaf-clover': threeLeafCloverLocale,
-    'hex-hive-six': hexHiveSixLocale,
+        'floor-tiler': floorTilerEn,
+        'frog-jump': frogJumpEn,
+        'chip-cashier': chipCashierEn,
+        'cell-clone': cellCloneEn,
+        'three-leaf-clover': threeLeafCloverLocale,
+        'hex-hive-six': hexHiveSixLocale,
+        'flight-calendar': flightCalendarLocale,
     'ten-frame-pop': tenFramePopLocale,
     'beginner-wizard': beginnerWizardEn,
     'constellation-finder': constellationFinderEn,

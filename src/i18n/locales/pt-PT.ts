@@ -33,6 +33,7 @@ import chipCashierPt from '../../games/math/adventure/level3/ChipCashier/locales
 import cellClonePt from '../../games/math/adventure/level3/CellClone/locales/pt-PT';
 import threeLeafCloverLocale from '../../games/math/adventure/level3/ThreeLeafClover/locales/pt-PT';
 import hexHiveSixLocale from '../../games/math/adventure/level3/HexHiveSix/locales/pt-PT';
+import flightCalendarLocale from '../../games/math/adventure/level3/FlightCalendar/locales/pt-PT';
 import tenFramePopLocale from '../../games/math/adventure/level3/TenFramePop/locales/pt-PT';
 import beginnerWizardPt from '../../games/math/adventure/level3/BeginnerWizard/locales/pt-PT';
 import constellationFinderPt from '../../games/math/adventure/level3/ConstellationFinder/locales/pt-PT';
@@ -1073,12 +1074,13 @@ export const ptPT = {
     'shape-sum-link': shapeSumLinkPt,
     'fruit-box': fruitBoxPt,
     'ice-stacking': iceStackingPt,
-    'floor-tiler': floorTilerPt,
-    'frog-jump': frogJumpPt,
-    'chip-cashier': chipCashierPt,
-    'cell-clone': cellClonePt,
-     'three-leaf-clover': threeLeafCloverLocale,
-    'hex-hive-six': hexHiveSixLocale,
+        'floor-tiler': floorTilerPt,
+        'frog-jump': frogJumpPt,
+        'chip-cashier': chipCashierPt,
+        'cell-clone': cellClonePt,
+        'three-leaf-clover': threeLeafCloverLocale,
+        'hex-hive-six': hexHiveSixLocale,
+        'flight-calendar': flightCalendarLocale,
     'ten-frame-pop': tenFramePopLocale,
     'beginner-wizard': beginnerWizardPt,
     'constellation-finder': constellationFinderPt,

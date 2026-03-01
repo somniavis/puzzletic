@@ -15,7 +15,7 @@ const ko = {
         cloverDot: '클로버 자리 {{index}}'
     },
     ui: {
-        tapEverySpotFirst: 'tap every spot first.'
+        tapEverySpotFirst: '정확한 개수의 육각형을 눌러요.'
     },
     howToPlay: {
         step1: { title: '문제 확인', description: '⬢ 6×n을 봐요.' },

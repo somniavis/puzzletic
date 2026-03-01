@@ -1,0 +1,709 @@
+.flight-calendar-theme .three-leaf-clover-card-bg {
+    position: absolute;
+    inset: 0;
+    border-radius: 1.25rem;
+    overflow: hidden;
+    isolation: isolate;
+    background:
+        linear-gradient(
+            180deg,
+            transparent 0 69%,
+            rgba(88, 28, 135, 0.3) 69% 70.3%,
+            transparent 70.3% 100%
+        ),
+        linear-gradient(
+            180deg,
+            #f8fafc 0%,
+            #eef2ff 58%,
+            #e2e8f0 69%,
+            #7c3aed 69%,
+            #7c3aed 86%,
+            #7c3aed 100%
+        );
+    box-shadow:
+        inset 0 2px 0 rgb(255 255 255 / 65%),
+        inset 0 -10px 0 rgba(76, 29, 149, 0.24);
+}
+
+.flight-calendar-theme .three-leaf-clover-card-bg::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 30.8%;
+    pointer-events: none;
+    background:
+        repeating-linear-gradient(
+            90deg,
+            rgba(148, 163, 184, 0.08) 0 1px,
+            transparent 1px 26px
+        ),
+        repeating-linear-gradient(
+            180deg,
+            rgba(148, 163, 184, 0.08) 0 1px,
+            transparent 1px 26px
+        );
+    z-index: 0;
+}
+
+.three-leaf-clover-playfield {
+    --three-leaf-clover-section-gap: 0.7rem;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    display: grid;
+    position: relative;
+    grid-template-rows: minmax(0, 1fr) auto;
+    gap: var(--three-leaf-clover-section-gap);
+    margin-top: var(--three-leaf-clover-section-gap);
+}
+
+.three-leaf-clover-bottom {
+    height: auto;
+    min-height: 0;
+    position: relative;
+    z-index: 30;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 0.15rem 0 1rem;
+    overflow: visible;
+}
+
+.three-leaf-clover-mid {
+    min-height: 0;
+    position: relative;
+    z-index: 10;
+    padding-bottom: 0;
+    overflow: hidden;
+}
+
+.flight-calendar-theme .three-leaf-clover-ground {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    border-radius: 1.25rem;
+    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+    box-shadow:
+        inset 0 -10px 0 rgba(148, 163, 184, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.flight-calendar-theme .three-leaf-clover-ground::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 12px;
+    pointer-events: none;
+    background:
+        repeating-linear-gradient(
+            90deg,
+            rgba(148, 163, 184, 0.1) 0 1px,
+            transparent 1px 26px
+        ),
+        repeating-linear-gradient(
+            180deg,
+            rgba(148, 163, 184, 0.08) 0 1px,
+            transparent 1px 26px
+        ),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.34) 0%, rgba(148, 163, 184, 0.08) 100%);
+    z-index: 0;
+}
+
+.archery-pull-shoot-hint {
+    position: absolute;
+    left: 1rem;
+    right: 1rem;
+    bottom: clamp(0.6rem, 2dvh, 1.15rem);
+    z-index: 120;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.5rem;
+    border-radius: 0.8rem;
+    background: rgba(255, 255, 255, 0.94);
+    color: #1e3a8a;
+    font-size: 1.02rem;
+    font-weight: 800;
+    letter-spacing: 0.01em;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.18);
+    animation: archery-hint-fade-in 0.2s ease-out forwards;
+}
+
+.archery-pull-shoot-hint.is-exiting {
+    animation: archery-hint-fade-out 0.22s ease-in forwards;
+}
+
+.target-display-card .target-emoji {
+    color: #e6a500;
+    font-size: 3.38rem;
+}
+
+@keyframes archery-hint-fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes archery-hint-fade-out {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    to {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+}
+
+.three-leaf-clover-bugs {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 6;
+}
+
+.three-leaf-clover-bug {
+    position: absolute;
+    font-size: clamp(1.8rem, 4.32dvw, 2.34rem);
+    line-height: 1;
+    border: 0;
+    padding: 0;
+    background: transparent;
+    filter: drop-shadow(0 1px 2px rgb(0 0 0 / 28%));
+    will-change: transform;
+    pointer-events: auto;
+    cursor: pointer;
+    transition: left 0.32s ease-out, top 0.32s ease-out;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.three-leaf-clover-bug.bug-bee-1 {
+    animation: clover-bug-ladybug-a 22s linear infinite;
+}
+
+.three-leaf-clover-bug.bug-bee-2 {
+    animation: clover-bug-ladybug-b 26s linear infinite;
+}
+
+.three-leaf-clover-bug.bug-bee-3 {
+    animation: clover-bug-beetle 30s linear infinite;
+}
+
+.three-leaf-clover-bug.is-scared {
+    animation-duration: 0.42s;
+    animation-name: clover-bug-scared-hop;
+}
+
+.hex-hive-grid-area {
+    position: absolute;
+    inset: 0;
+    z-index: 4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(0.2rem, 1.1dvh, 0.85rem) clamp(0.32rem, 0.9dvw, 0.7rem);
+    container-type: size;
+}
+
+.hex-hive-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    --hex-gap: clamp(4px, 1.1vmin, 9px);
+    --hex-w: clamp(40px, 14.5vmin, 104px);
+    --hex-h: calc(var(--hex-w) * 1.1547);
+    --row-stagger: calc((var(--hex-w) + var(--hex-gap)) / 2);
+}
+
+.hex-hive-container.grid-4 {
+    --hex-w: clamp(32px, 12vmin, 80px);
+    --hex-h: calc(var(--hex-w) * 1.1547);
+}
+
+@supports (width: 1cqi) {
+    .hex-hive-container {
+        --hex-w: min(24.8cqi, 30cqb);
+        --hex-gap: 1.35cqmin;
+    }
+
+    .hex-hive-container.grid-4 {
+        --hex-w: min(22cqi, 24cqb);
+    }
+}
+
+.hex-hive-row {
+    display: flex;
+    justify-content: center;
+    margin-top: calc(var(--hex-h) * -0.25 + var(--hex-gap));
+}
+
+.hex-hive-row:first-child {
+    margin-top: 0;
+}
+
+.hex-hive-row:nth-child(even) {
+    transform: translateX(calc(var(--row-stagger) * 0.5));
+}
+
+.hex-hive-row:nth-child(odd) {
+    transform: translateX(calc(var(--row-stagger) * -0.5));
+}
+
+.hex-hive-cell {
+    position: relative;
+    width: var(--hex-w);
+    height: var(--hex-h);
+    margin: 0 calc(var(--hex-gap) / 2);
+    border: 0;
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    background-color: #6f5232;
+    background-image:
+        radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.14) 0%, transparent 20%),
+        radial-gradient(circle at 75% 65%, rgba(57, 37, 20, 0.32) 0%, transparent 42%),
+        radial-gradient(circle at 40% 80%, rgba(24, 16, 9, 0.2) 0%, transparent 30%);
+    box-shadow:
+        inset 0 0 8px rgba(24, 16, 9, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.09);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #78350f;
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.16s ease, background-color 0.2s;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    overflow: hidden;
+    isolation: isolate;
+}
+
+.hex-hive-cell::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(circle at 24% 24%, rgba(255, 255, 255, 0.46) 0%, transparent 22%),
+        radial-gradient(circle at 72% 68%, rgba(185, 106, 8, 0.3) 0%, transparent 42%),
+        linear-gradient(180deg, #ffd75a 0%, #f6c33d 60%, #e5a929 100%);
+    box-shadow:
+        inset 0 0 8px rgba(146, 80, 8, 0.35),
+        inset 0 1px 0 rgba(255, 255, 255, 0.22);
+    transform-origin: bottom center;
+    transform: scaleY(0);
+    opacity: 0;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.hex-hive-cell:active {
+    transform: scale(0.95);
+}
+
+.hex-hive-cell.is-bloomed {
+    animation: hex-hive-cell-nudge 0.22s ease-out;
+}
+
+.hex-hive-cell.is-bloomed::after {
+    animation: hex-hive-honey-fill 0.52s ease-out forwards;
+}
+
+.hex-hive-cell.is-wrong {
+    animation: hex-hive-cell-wrong 0.34s ease;
+}
+
+.hex-hive-cell.is-wrong::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 45%, rgba(255, 86, 86, 0.42) 0%, rgba(255, 86, 86, 0) 72%);
+    z-index: 2;
+    pointer-events: none;
+    animation: hex-hive-wrong-flash 0.34s ease;
+}
+
+.hex-hive-cell > * {
+    position: relative;
+    z-index: 1;
+}
+
+.hex-hive-cell.is-inactive {
+    cursor: default;
+    opacity: 1;
+}
+
+.hex-hive-cell:disabled {
+    pointer-events: none;
+}
+
+.three-leaf-clover-sprite {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    color: #fff;
+    text-shadow: 0 2px 6px rgb(18 62 21 / 35%);
+    transform: scale(2.2);
+    transform-origin: center;
+    pointer-events: none;
+}
+
+.three-leaf-clover-sprite.is-mirrored {
+    transform: scale(2.2) scaleX(-1);
+}
+
+.three-leaf-clover-answer-panel {
+    width: 100%;
+    height: auto;
+    min-height: 0;
+    border-radius: 1.1rem;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    padding: 0.42rem 0.48rem 0.17rem;
+    box-sizing: border-box;
+    display: grid;
+    position: relative;
+    z-index: 40;
+    grid-template-rows: auto auto;
+    gap: 0.34rem;
+    align-content: start;
+    opacity: 0;
+    transform: translateY(1.2rem);
+    transition: opacity 0.24s ease, transform 0.24s ease;
+    pointer-events: none;
+}
+
+.three-leaf-clover-answer-panel.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+.three-leaf-clover-question {
+    margin: 0;
+    color: #fff;
+    text-align: center;
+    font-size: clamp(0.98rem, 2.2dvw, 1.35rem);
+    font-weight: 800;
+    line-height: 1.1;
+}
+
+.three-leaf-clover-options {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.4rem;
+    min-height: 0;
+}
+
+.three-leaf-clover-option-btn {
+    height: clamp(46px, 7.4dvh, 64px);
+    border: 0;
+    border-radius: 1rem;
+    background: #ececec;
+    color: #111;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    font-size: clamp(1.5rem, 4.1dvw, 2.25rem);
+    font-weight: 800;
+    box-shadow: inset 0 1px 0 #fff, 0 3px 0 #b9b9b9;
+    transition: none;
+}
+
+.three-leaf-clover-option-btn:disabled {
+    cursor: default;
+    opacity: 1;
+    transform: none;
+    background: #ececec;
+    box-shadow: inset 0 1px 0 #fff, 0 3px 0 #b9b9b9;
+}
+
+.three-leaf-clover-option-btn.is-pressing:not(:disabled) {
+    transform: translateY(2px) scale(0.98);
+    background: #d6ecff;
+    box-shadow: inset 0 1px 0 #fff, 0 1px 0 #9fb8cc;
+}
+
+.layout3-game-area .three-leaf-clover-option-btn:focus,
+.layout3-game-area .three-leaf-clover-option-btn:focus-visible {
+    box-shadow: inset 0 1px 0 #fff, 0 3px 0 #b9b9b9 !important;
+}
+
+.layout3-game-area .three-leaf-clover-option-btn.is-pressing:focus,
+.layout3-game-area .three-leaf-clover-option-btn.is-pressing:focus-visible {
+    box-shadow: inset 0 1px 0 #fff, 0 1px 0 #9fb8cc !important;
+}
+
+@keyframes clover-bug-ladybug-a {
+    0% {
+        transform: translate3d(0, 0, 0) rotate(70deg);
+    }
+    30% {
+        transform: translate3d(12px, -18px, 0) rotate(35deg);
+    }
+    55% {
+        transform: translate3d(30px, -12px, 0) rotate(110deg);
+    }
+    80% {
+        transform: translate3d(24px, 8px, 0) rotate(210deg);
+    }
+    100% {
+        transform: translate3d(0, 0, 0) rotate(250deg);
+    }
+}
+
+@keyframes clover-bug-ladybug-b {
+    0% {
+        transform: translate3d(0, 0, 0) rotate(260deg);
+    }
+    28% {
+        transform: translate3d(-10px, -14px, 0) rotate(320deg);
+    }
+    56% {
+        transform: translate3d(-26px, -18px, 0) rotate(25deg);
+    }
+    78% {
+        transform: translate3d(-22px, 6px, 0) rotate(145deg);
+    }
+    100% {
+        transform: translate3d(0, 0, 0) rotate(205deg);
+    }
+}
+
+@keyframes clover-bug-beetle {
+    0% {
+        transform: translate3d(0, 0, 0) rotate(18deg);
+    }
+    24% {
+        transform: translate3d(8px, -10px, 0) rotate(58deg);
+    }
+    50% {
+        transform: translate3d(-6px, -18px, 0) rotate(328deg);
+    }
+    74% {
+        transform: translate3d(-14px, -8px, 0) rotate(284deg);
+    }
+    100% {
+        transform: translate3d(0, 0, 0) rotate(198deg);
+    }
+}
+
+@keyframes clover-bug-scared-hop {
+    0% {
+        transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
+    }
+    25% {
+        transform: translate3d(2px, -8px, 0) scale(1.18) rotate(-18deg);
+    }
+    65% {
+        transform: translate3d(-3px, -12px, 0) scale(0.94) rotate(14deg);
+    }
+    100% {
+        transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
+    }
+}
+
+@keyframes three-leaf-clover-bloom {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.2);
+    }
+
+    70% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1.14);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+@keyframes hex-hive-cell-nudge {
+    0% {
+        transform: scale(0.985);
+    }
+
+    55% {
+        transform: scale(1.02);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes hex-hive-honey-fill {
+    0% {
+        opacity: 0.28;
+        transform: scaleY(0);
+    }
+
+    85% {
+        opacity: 1;
+        transform: scaleY(1.04);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scaleY(1);
+    }
+}
+
+@keyframes hex-hive-cell-wrong {
+    0% {
+        transform: translateX(0);
+    }
+
+    20% {
+        transform: translateX(-2px) rotate(-1.6deg);
+    }
+
+    42% {
+        transform: translateX(2px) rotate(1.6deg);
+    }
+
+    68% {
+        transform: translateX(-1px) rotate(-0.8deg);
+    }
+
+    100% {
+        transform: translateX(0) rotate(0deg);
+    }
+}
+
+@keyframes hex-hive-wrong-flash {
+    0% {
+        opacity: 0;
+    }
+
+    35% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+/* Scroll Calendar overlay on the same ground structure */
+.flight-calendar-ground-layer {
+    position: absolute;
+    top: 0;
+    bottom: 12px;
+    left: 1rem;
+    right: 1rem;
+    z-index: 5;
+    display: grid;
+    grid-template-rows: auto 1fr;
+    gap: clamp(0.25rem, 0.8dvh, 0.55rem);
+    padding: clamp(0.45rem, 1.2dvh, 0.85rem) 0 clamp(2px, 0.7vmin, 6px);
+}
+
+.flight-calendar-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: clamp(2px, 0.65vmin, 6px);
+}
+
+.flight-calendar-weekday {
+    text-align: center;
+    color: #334155;
+    font-size: clamp(0.74rem, 1.75dvw, 1rem);
+    font-weight: 800;
+    text-shadow: none;
+}
+
+.flight-calendar-weekday:last-child {
+    color: #b91c1c;
+}
+
+.flight-calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    grid-template-rows: repeat(var(--calendar-rows, 9), minmax(0, 1fr));
+    height: 100%;
+    gap: clamp(2px, 0.7vmin, 6px);
+}
+
+.flight-calendar-cell {
+    border-radius: clamp(5px, 1.1vmin, 9px);
+    border: 1px solid rgba(148, 163, 184, 0.42);
+    background: rgba(255, 255, 255, 0.72);
+    color: #334155;
+    font-size: clamp(0.5rem, 1.25dvw, 0.75rem);
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-shadow: 0 1px 1px rgba(15, 23, 42, 0.45);
+    appearance: none;
+    cursor: pointer;
+    transition: transform 0.14s ease, background-color 0.2s ease;
+    min-height: 0;
+    padding: 0.05rem;
+    container-type: size;
+}
+
+.flight-calendar-goal-emoji {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    font-size: min(85cqw, 85cqh);
+}
+
+.flight-calendar-cell.is-start {
+    background: rgba(37, 99, 235, 0.6);
+    border-color: rgba(147, 197, 253, 0.95);
+}
+
+.flight-calendar-cell.is-goal {
+    background: rgba(22, 163, 74, 0.62);
+    border-color: rgba(134, 239, 172, 0.95);
+}
+
+.flight-calendar-cell:nth-child(7n) {
+    background: rgba(254, 226, 226, 0.78);
+    border-color: rgba(248, 113, 113, 0.68);
+    color: #b91c1c;
+}
+
+.flight-calendar-cell.is-bloomed {
+    background: rgba(250, 204, 21, 0.7);
+    border-color: rgba(254, 240, 138, 0.95);
+    color: #1f2937;
+    text-shadow: none;
+}
+
+.flight-calendar-cell.is-wrong {
+    background: rgba(239, 68, 68, 0.55);
+    border-color: rgba(252, 165, 165, 0.95);
+}
+
+.flight-calendar-cell:active {
+    transform: scale(0.96);
+}
+
+.flight-calendar-cell:disabled {
+    cursor: default;
+}

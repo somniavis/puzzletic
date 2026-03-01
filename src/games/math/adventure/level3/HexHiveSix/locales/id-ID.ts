@@ -15,7 +15,7 @@ const id = {
         cloverDot: 'Titik semanggi {{index}}'
     },
     ui: {
-        tapEverySpotFirst: 'tap every spot first.'
+        tapEverySpotFirst: 'Ketuk jumlah heksagon yang tepat.'
     },
     howToPlay: {
         step1: { title: 'Cek soal', description: 'Lihat ⬢ 6×n.' },
