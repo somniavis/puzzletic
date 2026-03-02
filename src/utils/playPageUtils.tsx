@@ -109,11 +109,11 @@ export const renderThumbnail = (thumbnail: string | React.ReactNode | undefined,
         return (
             <span
                 style={{
-                    color: '#c4b5fd',
+                    color: '#60c7ff',
                     fontWeight: 900,
                     display: 'inline-block',
                     transform: 'scale(1.06)',
-                    textShadow: '0 0 5px rgba(196,181,253,0.95), 0 0 12px rgba(139,92,246,0.82), 0 0 22px rgba(76,29,149,0.62)'
+                    textShadow: '0 0 5px rgba(96,199,255,0.92), 0 0 12px rgba(37,99,235,0.62), 0 0 22px rgba(30,58,138,0.56)'
                 }}
             >
                 8

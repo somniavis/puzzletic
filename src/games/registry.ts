@@ -16,6 +16,7 @@ const delayedImport = <T>(importPromise: Promise<T>): Promise<T> => {
 
 // Math Adventure Level 1 Games (named exports)
 const L1_FishingCount = lazy(() => delayedImport(import('./math/adventure/level1/FishingCount').then(m => ({ default: m.FishingCount }))));
+const L1_TenFrameNumber = lazy(() => delayedImport(import('./math/adventure/level1/TenFrameNumber').then(m => ({ default: m.TenFrameNumber }))));
 const L1_RoundCounting = lazy(() => delayedImport(import('./math/adventure/level1/RoundCounting').then(m => ({ default: m.RoundCounting }))));
 const L1_NumberHive = lazy(() => delayedImport(import('./math/adventure/level1/NumberHive').then(m => ({ default: m.NumberHive }))));
 const L1_NumberBalance = lazy(() => delayedImport(import('./math/adventure/level1/NumberBalance').then(m => ({ default: m.NumberBalance }))));
@@ -120,6 +121,20 @@ export const GAMES: GameManifest[] = [
         component: L1_NumberHive,
         thumbnail: '🐝',
         tagsKey: 'games.tags.sequence'
+    },
+    {
+        id: GameIds.MATH_TENFRAME_NUMBER,
+        title: '10frame-number',
+        titleKey: 'games.tenframe-number.title',
+        subtitle: 'ㅇㅇㅇ',
+        subtitleKey: 'games.tenframe-number.subtitle',
+        description: 'ㅇㅇㅇ',
+        descriptionKey: 'games.tenframe-number.description',
+        category: 'math',
+        level: 1,
+        component: L1_TenFrameNumber,
+        thumbnail: '🔟',
+        tagsKey: 'games.tags.numberSense'
     },
     {
         id: GameIds.MATH_COMPARE_CRITTERS,
@@ -456,7 +471,7 @@ export const GAMES: GameManifest[] = [
     },
     {
         id: GameIds.MATH_TEN_FRAME_POP,
-        title: '10-frame pop',
+        title: 'Bubble Pop 9s',
         titleKey: 'games.ten-frame-pop.title',
         subtitle: 'Master 9s!',
         subtitleKey: 'games.ten-frame-pop.subtitle',

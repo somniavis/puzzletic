@@ -1,5 +1,5 @@
 const pt = {
-    title: 'Pop de 10 Quadros',
+    title: 'Bubble Pop dos 9',
     subtitle: 'Domina a tabuada do 9',
     description: 'Estoura a ultima bolha e completa a tabuada do 9.',
     howToPlay: {

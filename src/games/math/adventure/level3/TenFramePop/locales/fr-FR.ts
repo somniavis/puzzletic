@@ -1,5 +1,5 @@
 const fr = {
-    title: 'Pop 10 Cases',
+    title: 'Bubble Pop des 9',
     subtitle: 'Maitrise la table de 9',
     description: 'Eclate la derniere bulle et complete la table de 9.',
     howToPlay: {

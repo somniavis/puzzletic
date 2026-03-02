@@ -1,5 +1,6 @@
 // Game Locales - Updated
 import fishingCountJa from '../../games/math/adventure/level1/FishingCount/locales/ja';
+import tenFrameNumberLocale from '../../games/math/adventure/level1/TenFrameNumber/locales/ja';
 import roundCountingJa from '../../games/math/adventure/level1/RoundCounting/locales/ja';
 import numberHiveJa from '../../games/math/adventure/level1/NumberHive/locales/ja';
 import fruitSliceJa from '../../games/math/adventure/level1/FruitSlice/locales/ja';
@@ -1805,6 +1806,7 @@ const jaBase = {
     },
     games: {
         'math-fishing-count': fishingCountJa,
+    'tenframe-number': tenFrameNumberLocale,
         'math-round-counting': roundCountingJa,
         'math-compare-critters': compareCrittersJa,
         'math-number-hive': numberHiveJa,

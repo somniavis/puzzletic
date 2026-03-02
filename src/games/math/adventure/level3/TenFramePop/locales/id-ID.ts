@@ -1,5 +1,5 @@
 const id = {
-    title: 'Pop 10 Kotak',
+    title: 'Bubble Pop 9',
     subtitle: 'Kuasai perkalian 9',
     description: 'Pecahkan gelembung terakhir dan selesaikan perkalian 9.',
     howToPlay: {

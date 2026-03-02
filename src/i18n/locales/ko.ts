@@ -1,5 +1,6 @@
 // Global Korean Locales
 import fishingCountKo from '../../games/math/adventure/level1/FishingCount/locales/ko';
+import tenFrameNumberLocale from '../../games/math/adventure/level1/TenFrameNumber/locales/ko';
 import roundCountingKo from '../../games/math/adventure/level1/RoundCounting/locales/ko';
 import numberHiveKo from '../../games/math/adventure/level1/NumberHive/locales/ko';
 import fruitSliceKo from '../../games/math/adventure/level1/FruitSlice/locales/ko';
@@ -1062,6 +1063,7 @@ const koBase = {
     },
     games: {
         'math-fishing-count': fishingCountKo,
+    'tenframe-number': tenFrameNumberLocale,
         'math-round-counting': roundCountingKo,
         'math-compare-critters': compareCrittersKo,
         'math-number-hive': numberHiveKo,

@@ -285,7 +285,7 @@ export const TenFramePop: React.FC<TenFramePopProps> = ({ onExit }) => {
 // eslint-disable-next-line react-refresh/only-export-components
 export const manifest: GameManifest = {
     id: GameIds.MATH_TEN_FRAME_POP,
-    title: '10-Frame Pop',
+    title: 'Bubble Pop 9s',
     titleKey: 'games.ten-frame-pop.title',
     subtitle: 'Master 9s!',
     subtitleKey: 'games.ten-frame-pop.subtitle',

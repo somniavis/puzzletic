@@ -1,5 +1,5 @@
 const ko = {
-    title: '10-프레임 팝',
+    title: '9단 버블 팝',
     subtitle: '9단 마스터',
     description: '끝 버블을 터뜨리고 9단 식을 완성하세요.',
     howToPlay: {

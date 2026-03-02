@@ -1,5 +1,5 @@
 const enUK = {
-    title: '10-Frame Pop',
+    title: 'Bubble Pop 9s',
     subtitle: 'Master 9s!',
     description: 'Pop the last bubbles and solve 9-times fast.',
     howToPlay: {

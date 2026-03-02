@@ -1,6 +1,7 @@
 // Global English Locales
 // Updated for Compare Critters
 import fishingCountEn from '../../games/math/adventure/level1/FishingCount/locales/fr-FR';
+import tenFrameNumberLocale from '../../games/math/adventure/level1/TenFrameNumber/locales/fr-FR';
 import roundCountingEn from '../../games/math/adventure/level1/RoundCounting/locales/fr-FR';
 import numberHiveEn from '../../games/math/adventure/level1/NumberHive/locales/fr-FR';
 import fruitSliceEn from '../../games/math/adventure/level1/FruitSlice/locales/fr-FR';
@@ -1060,6 +1061,7 @@ export const frFR = {
   },
   games: {
     'math-fishing-count': fishingCountEn,
+    'tenframe-number': tenFrameNumberLocale,
     'math-round-counting': roundCountingEn,
     'math-number-hive': numberHiveEn,
     'math-fruit-slice': fruitSliceEn,

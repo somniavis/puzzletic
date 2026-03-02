@@ -1,5 +1,5 @@
 const ja = {
-    title: '10フレームポップ',
+    title: '9のだんバブルポップ',
     subtitle: '9のだんマスター',
     description: '最後のバブルを割って9のだんを完成させよう。',
     howToPlay: {

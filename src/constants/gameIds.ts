@@ -1,6 +1,7 @@
 export const GameIds = {
     // Math Level 1
     MATH_FISHING_COUNT: 'math-fishing-count',
+    MATH_TENFRAME_NUMBER: 'math-tenframe-number',
     MATH_ROUND_COUNTING: 'math-round-counting',
     MATH_NUMBER_HIVE: 'math-number-hive',
     MATH_NUMBER_BALANCE: 'math-number-balance',
