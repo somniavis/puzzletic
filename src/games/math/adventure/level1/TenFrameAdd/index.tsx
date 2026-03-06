@@ -81,6 +81,11 @@ export const TenFrameAdd: React.FC<TenFrameAddProps> = ({ onExit }) => {
     const frameElementsRef = React.useRef<Array<HTMLDivElement | null>>([]);
     const gridElementsRef = React.useRef<Array<HTMLDivElement | null>>([]);
     const prevGameStateRef = React.useRef(engine.gameState);
+    const [showTapRedHint, setShowTapRedHint] = React.useState(false);
+    const [isTapRedHintExiting, setIsTapRedHintExiting] = React.useState(false);
+    const hasShownTapRedHintRef = React.useRef(false);
+    const tapRedHintTimerRef = React.useRef<number | null>(null);
+    const tapRedHintExitTimerRef = React.useRef<number | null>(null);
 
     const baseCells = React.useMemo(() => {
         const cells: CellColor[] = [];
@@ -181,9 +186,64 @@ export const TenFrameAdd: React.FC<TenFrameAddProps> = ({ onExit }) => {
             spinTimersRef.current.forEach((timer) => {
                 if (timer != null) window.clearTimeout(timer);
             });
+            if (tapRedHintTimerRef.current != null) {
+                window.clearTimeout(tapRedHintTimerRef.current);
+                tapRedHintTimerRef.current = null;
+            }
+            if (tapRedHintExitTimerRef.current != null) {
+                window.clearTimeout(tapRedHintExitTimerRef.current);
+                tapRedHintExitTimerRef.current = null;
+            }
         },
         []
     );
+
+    React.useEffect(() => {
+        if (engine.gameState !== 'gameover') return;
+        if (tapRedHintTimerRef.current != null) {
+            window.clearTimeout(tapRedHintTimerRef.current);
+            tapRedHintTimerRef.current = null;
+        }
+        if (tapRedHintExitTimerRef.current != null) {
+            window.clearTimeout(tapRedHintExitTimerRef.current);
+            tapRedHintExitTimerRef.current = null;
+        }
+        setShowTapRedHint(false);
+        setIsTapRedHintExiting(false);
+        hasShownTapRedHintRef.current = false;
+    }, [engine.gameState]);
+
+    React.useEffect(() => {
+        const isFirstProblem = engine.stats.correct === 0 && engine.stats.wrong === 0;
+        if (engine.gameState !== 'playing' || !isFirstProblem || hasShownTapRedHintRef.current) {
+            return;
+        }
+
+        hasShownTapRedHintRef.current = true;
+        setShowTapRedHint(true);
+        setIsTapRedHintExiting(false);
+
+        tapRedHintTimerRef.current = window.setTimeout(() => {
+            setIsTapRedHintExiting(true);
+            tapRedHintExitTimerRef.current = window.setTimeout(() => {
+                setShowTapRedHint(false);
+                setIsTapRedHintExiting(false);
+                tapRedHintExitTimerRef.current = null;
+            }, 220);
+            tapRedHintTimerRef.current = null;
+        }, 1800);
+
+        return () => {
+            if (tapRedHintTimerRef.current != null) {
+                window.clearTimeout(tapRedHintTimerRef.current);
+                tapRedHintTimerRef.current = null;
+            }
+            if (tapRedHintExitTimerRef.current != null) {
+                window.clearTimeout(tapRedHintExitTimerRef.current);
+                tapRedHintExitTimerRef.current = null;
+            }
+        };
+    }, [engine.gameState, engine.stats.correct, engine.stats.wrong]);
 
     React.useLayoutEffect(() => {
         if (engine.gameState !== 'playing') return;
@@ -433,6 +493,12 @@ export const TenFrameAdd: React.FC<TenFrameAddProps> = ({ onExit }) => {
                         </div>
                     )}
                 </section>
+
+                {showTapRedHint && (
+                    <div className={`archery-pull-shoot-hint ${isTapRedHintExiting ? 'is-exiting' : ''}`}>
+                        {t('games.ten-frame-add.ui.tapRedHint')}
+                    </div>
+                )}
             </div>
         </Layout3>
     );

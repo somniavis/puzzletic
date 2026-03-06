@@ -8,6 +8,9 @@ const locale = {
         extraLife: '추가 생명',
         doubleScore: '점수 2배'
     },
+    ui: {
+        tapRedHint: '빨간점을 탭해요!'
+    },
     howToPlay: {
         step1: { title: '목표 확인', description: '빈칸 수를 찾아요.' },
         step2: { title: '점 뒤집기', description: '빨간 점을 파랑으로.' },

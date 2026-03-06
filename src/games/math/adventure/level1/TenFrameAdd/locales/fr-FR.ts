@@ -8,6 +8,9 @@ const locale = {
         extraLife: 'Vie bonus',
         doubleScore: 'Score x2'
     },
+    ui: {
+        tapRedHint: 'Touchez les points rouges !'
+    },
     howToPlay: {
         step1: { title: 'Lis l’objectif', description: 'Trouve le nombre manquant.' },
         step2: { title: 'Retourne les points', description: 'Passe les points rouges en bleu.' },

@@ -8,6 +8,9 @@ const locale = {
         extraLife: 'ライフ追加',
         doubleScore: 'スコア2倍'
     },
+    ui: {
+        tapRedHint: '赤い点をタップしよう！'
+    },
     howToPlay: {
         step1: { title: '目標を確認', description: '空欄の数を見つけよう。' },
         step2: { title: '点を切り替え', description: '赤を青に変えよう。' },

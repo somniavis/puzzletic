@@ -8,6 +8,9 @@ const locale = {
         extraLife: 'Extra Life',
         doubleScore: 'Double Score'
     },
+    ui: {
+        tapRedHint: 'Tap the red dots!'
+    },
     howToPlay: {
         step1: { title: 'Read the goal', description: 'Find the missing number.' },
         step2: { title: 'Flip dots', description: 'Turn red dots blue.' },

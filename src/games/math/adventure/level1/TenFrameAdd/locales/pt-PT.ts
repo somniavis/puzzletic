@@ -8,6 +8,9 @@ const locale = {
         extraLife: 'Vida extra',
         doubleScore: 'Pontuação a dobrar'
     },
+    ui: {
+        tapRedHint: 'Toca nos pontos vermelhos!'
+    },
     howToPlay: {
         step1: { title: 'Vê o objetivo', description: 'Encontra o número em falta.' },
         step2: { title: 'Vira os pontos', description: 'Muda os pontos vermelhos para azul.' },

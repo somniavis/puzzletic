@@ -8,6 +8,9 @@ const locale = {
         extraLife: 'Thêm mạng',
         doubleScore: 'Nhân đôi điểm'
     },
+    ui: {
+        tapRedHint: 'Hãy chạm vào các chấm đỏ!'
+    },
     howToPlay: {
         step1: { title: 'Xem mục tiêu', description: 'Tìm số còn thiếu.' },
         step2: { title: 'Lật chấm', description: 'Đổi chấm đỏ thành xanh.' },

@@ -8,6 +8,9 @@ const locale = {
         extraLife: 'Nyawa Ekstra',
         doubleScore: 'Skor Ganda'
     },
+    ui: {
+        tapRedHint: 'Ketuk titik merah!'
+    },
     howToPlay: {
         step1: { title: 'Lihat target', description: 'Cari angka yang hilang.' },
         step2: { title: 'Balik titik', description: 'Ubah titik merah jadi biru.' },
