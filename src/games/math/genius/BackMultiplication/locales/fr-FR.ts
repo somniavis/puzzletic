@@ -1,19 +1,19 @@
 export default {
     lv1: {
         title: 'Multiplication arrière 1',
-        subtitle: '1-digit x 1-digit',
+        subtitle: '1 chiffre x 1 chiffre',
     },
     lv2: {
         title: 'Multiplication arrière 2',
-        subtitle: '2-digit x 1-digit',
+        subtitle: '2 chiffres x 1 chiffre',
     },
     lv3: {
         title: 'Multiplication arrière 3',
-        subtitle: '3-digit x 1-digit',
+        subtitle: '3 chiffres x 1 chiffre',
     },
     lv4: {
         title: 'Multiplication arrière 4',
-        subtitle: '2-digit x 2-digit',
+        subtitle: '2 chiffres x 2 chiffres',
         desc: 'Résous avec la méthode croisée.'
     },
     description: 'Calcule de droite à gauche avec les produits partiels !',

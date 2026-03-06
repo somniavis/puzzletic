@@ -23,9 +23,11 @@
     display: grid;
     grid-template-rows: 1fr auto;
     gap: 0;
-    padding: 0.2rem 0 0;
+    padding: 0;
     box-sizing: border-box;
     margin: 0 auto;
+    min-height: 0;
+    overflow: hidden;
 }
 
 .tenframe-number-grid-area {
@@ -40,6 +42,7 @@
     border-radius: 1.2rem;
     padding: 0.55rem 0;
     box-sizing: border-box;
+    overflow: hidden;
 }
 
 .tenframe-number-grid-deck {
@@ -51,6 +54,8 @@
     align-items: center;
     justify-content: center;
     gap: var(--grid-stack-gap);
+    min-height: 0;
+    overflow: hidden;
 }
 
 .tenframe-number-grid-deck.grid-count-1 {
@@ -177,13 +182,15 @@
 .tenframe-number-grid {
     --grid-gap: 0.1rem;
     width: auto;
-    height: 100%;
-    aspect-ratio: 5 / 2;
-    max-width: 95%;
-    max-height: 100%;
+    height: auto;
+    --cell-w-limit: calc((100% - (4 * var(--grid-gap))) / 5);
+    --cell-h-limit: calc((100% - var(--grid-gap)) / 2);
+    --cell-size: min(var(--cell-w-limit), var(--cell-h-limit));
+    --viewport-cell-limit: calc((min(100vw, 600px) - 4rem) / 5);
+    --final-cell-size: min(var(--cell-size-px, var(--cell-size)), var(--viewport-cell-limit));
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    grid-template-rows: repeat(2, 1fr);
+    grid-template-columns: repeat(5, var(--final-cell-size));
+    grid-template-rows: repeat(2, var(--final-cell-size));
     gap: var(--grid-gap);
     justify-content: center;
     align-content: center;
@@ -191,6 +198,8 @@
     margin-right: auto;
     align-self: center;
     flex: 0 0 auto;
+    max-width: 95%;
+    max-height: 100%;
 }
 
 .tenframe-number-grid-cell {

@@ -1,19 +1,19 @@
 export default {
     lv1: {
         title: 'Resta Frontal 1',
-        subtitle: '2-digit - 1-digit',
+        subtitle: '2 dígitos - 1 dígito',
     },
     lv2: {
         title: 'Resta Frontal 2',
-        subtitle: '2-digit - 2-digit',
+        subtitle: '2 dígitos - 2 dígitos',
     },
     lv3: {
         title: 'Resta Frontal 3',
-        subtitle: '3-digit - 2-digit',
+        subtitle: '3 dígitos - 2 dígitos',
     },
     lv4: {
         title: 'Resta Frontal 4',
-        subtitle: '3-digit - 3-digit',
+        subtitle: '3 dígitos - 3 dígitos',
     },
     description: '¡Resta de izquierda a derecha! Es una forma más rápida de calcular.',
     powerups: {

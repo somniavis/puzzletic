@@ -144,6 +144,7 @@ export const TenFrameNumber: React.FC<TenFrameNumberProps> = ({ onExit }) => {
     const [disableOverlayEnterAnim, setDisableOverlayEnterAnim] = React.useState(false);
     const [emojiSizePx, setEmojiSizePx] = React.useState<number>(0);
     const [targetEmojiSizePx, setTargetEmojiSizePx] = React.useState<number>(0);
+    const [gridCellSizes, setGridCellSizes] = React.useState<number[]>([]);
     const [showOptionsHint, setShowOptionsHint] = React.useState(false);
     const [numberHintCellKey, setNumberHintCellKey] = React.useState<string | null>(null);
     const [jiggleCellKey, setJiggleCellKey] = React.useState<string | null>(null);
@@ -157,6 +158,8 @@ export const TenFrameNumber: React.FC<TenFrameNumberProps> = ({ onExit }) => {
     const jiggleTimerRef = React.useRef<number | null>(null);
     const stageRef = React.useRef<HTMLDivElement | null>(null);
     const targetBoxRef = React.useRef<HTMLDivElement | null>(null);
+    const gridCenterRefs = React.useRef<Array<HTMLDivElement | null>>([]);
+    const gridRefs = React.useRef<Array<HTMLDivElement | null>>([]);
     const successfulSetsRef = React.useRef(0);
     const hasShownOptionsHintRef = React.useRef(false);
 
@@ -366,6 +369,47 @@ export const TenFrameNumber: React.FC<TenFrameNumberProps> = ({ onExit }) => {
         };
     }, [gridCount, round.signature]);
 
+    React.useLayoutEffect(() => {
+        if (engine.gameState !== 'playing') return;
+        const observers: ResizeObserver[] = [];
+        const rafIds: number[] = [];
+
+        cardIndexes.forEach((cardIdx) => {
+            const centerEl = gridCenterRefs.current[cardIdx];
+            const gridEl = gridRefs.current[cardIdx];
+            if (!centerEl || !gridEl) return;
+
+            const updateCellSize = () => {
+                const centerRect = centerEl.getBoundingClientRect();
+                if (centerRect.width <= 0 || centerRect.height <= 0) return;
+                const gridStyle = window.getComputedStyle(gridEl);
+                const colGap = Number.parseFloat(gridStyle.columnGap) || 0;
+                const rowGap = Number.parseFloat(gridStyle.rowGap) || colGap;
+                const byWidth = (centerRect.width - colGap * 4) / 5;
+                const byHeight = (centerRect.height - rowGap) / 2;
+                const nextSize = Math.max(1, Math.floor(Math.min(byWidth, byHeight)));
+                setGridCellSizes((prev) => {
+                    if (prev[cardIdx] === nextSize) return prev;
+                    const next = [...prev];
+                    next[cardIdx] = nextSize;
+                    return next;
+                });
+            };
+
+            updateCellSize();
+            rafIds.push(window.requestAnimationFrame(updateCellSize));
+            rafIds.push(window.requestAnimationFrame(updateCellSize));
+            const observer = new ResizeObserver(() => updateCellSize());
+            observer.observe(centerEl);
+            observers.push(observer);
+        });
+
+        return () => {
+            observers.forEach((observer) => observer.disconnect());
+            rafIds.forEach((id) => window.cancelAnimationFrame(id));
+        };
+    }, [cardIndexes, engine.gameState, round.signature]);
+
     const handleChoose = (value: number) => {
         if (engine.gameState !== 'playing' || selectedOption !== null || isCardOverlayVisible) return;
         setSelectedOption(value);
@@ -461,8 +505,19 @@ export const TenFrameNumber: React.FC<TenFrameNumberProps> = ({ onExit }) => {
                                 <div className="tenframe-number-grid-card-inner">
                                     <div className="tenframe-number-grid-card-corner top-left">♠</div>
                                     <div className="tenframe-number-grid-card-corner bottom-right">♠</div>
-                                    <div className="tenframe-number-grid-center">
-                                        <div className="tenframe-number-grid">
+                                    <div
+                                        className="tenframe-number-grid-center"
+                                        ref={(el) => {
+                                            gridCenterRefs.current[cardIdx] = el;
+                                        }}
+                                    >
+                                            <div
+                                                className="tenframe-number-grid"
+                                                ref={(el) => {
+                                                    gridRefs.current[cardIdx] = el;
+                                                }}
+                                                style={{ ['--cell-size-px' as string]: gridCellSizes[cardIdx] ? `${gridCellSizes[cardIdx]}px` : undefined }}
+                                            >
                                             {cellIndexes.map((cellIdx) => {
                                                 const globalCellIdx = cardIdx * GRID_CELLS_PER_CARD + cellIdx;
                                                 const cellColor = visibleCells[globalCellIdx] ?? null;
@@ -497,7 +552,7 @@ export const TenFrameNumber: React.FC<TenFrameNumberProps> = ({ onExit }) => {
                                                     </div>
                                                 );
                                             })}
-                                        </div>
+                                            </div>
                                     </div>
                                 </div>
                                 {isCardOverlayVisible && (

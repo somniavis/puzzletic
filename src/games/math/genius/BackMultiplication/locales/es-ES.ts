@@ -1,19 +1,19 @@
 export default {
     lv1: {
         title: 'Multiplicación Inversa 1',
-        subtitle: '1-digit x 1-digit',
+        subtitle: '1 dígito x 1 dígito',
     },
     lv2: {
         title: 'Multiplicación Inversa 2',
-        subtitle: '2-digit x 1-digit',
+        subtitle: '2 dígitos x 1 dígito',
     },
     lv3: {
         title: 'Multiplicación Inversa 3',
-        subtitle: '3-digit x 1-digit',
+        subtitle: '3 dígitos x 1 dígito',
     },
     lv4: {
         title: 'Multiplicación Inversa 4',
-        subtitle: '2-digit x 2-digit',
+        subtitle: '2 dígitos x 2 dígitos',
         desc: 'Resuelve usando el método cruzado.'
     },
     description: '¡Calcula desde atrás usando productos parciales!',

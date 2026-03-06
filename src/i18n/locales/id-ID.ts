@@ -2,6 +2,7 @@
 // Updated for Compare Critters
 import fishingCountEn from '../../games/math/adventure/level1/FishingCount/locales/id-ID';
 import tenFrameNumberLocale from '../../games/math/adventure/level1/TenFrameNumber/locales/id-ID';
+import tenFrameAddLocale from '../../games/math/adventure/level1/TenFrameAdd/locales/id-ID';
 import roundCountingEn from '../../games/math/adventure/level1/RoundCounting/locales/id-ID';
 import numberHiveEn from '../../games/math/adventure/level1/NumberHive/locales/id-ID';
 import fruitSliceEn from '../../games/math/adventure/level1/FruitSlice/locales/id-ID';
@@ -1062,6 +1063,7 @@ export const idID = {
   games: {
     'math-fishing-count': fishingCountEn,
     'tenframe-number': tenFrameNumberLocale,
+    'ten-frame-add': tenFrameAddLocale,
     'math-round-counting': roundCountingEn,
     'math-number-hive': numberHiveEn,
     'math-fruit-slice': fruitSliceEn,

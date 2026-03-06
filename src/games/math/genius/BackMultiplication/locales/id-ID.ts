@@ -1,19 +1,19 @@
 export default {
     lv1: {
         title: 'Perkalian Mundur 1',
-        subtitle: '1-digit x 1-digit',
+        subtitle: '1 angka x 1 angka',
     },
     lv2: {
         title: 'Perkalian Mundur 2',
-        subtitle: '2-digit x 1-digit',
+        subtitle: '2 angka x 1 angka',
     },
     lv3: {
         title: 'Perkalian Mundur 3',
-        subtitle: '3-digit x 1-digit',
+        subtitle: '3 angka x 1 angka',
     },
     lv4: {
         title: 'Perkalian Mundur 4',
-        subtitle: '2-digit x 2-digit',
+        subtitle: '2 angka x 2 angka',
         desc: 'Selesaikan dengan metode silang.'
     },
     description: 'Hitung dari belakang menggunakan hasil kali parsial!',

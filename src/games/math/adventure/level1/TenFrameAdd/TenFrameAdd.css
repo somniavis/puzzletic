@@ -1,0 +1,307 @@
+.ten-frame-add-card-bg {
+    position: absolute;
+    inset: 0;
+    border-radius: 1.25rem;
+    overflow: hidden;
+    background:
+        linear-gradient(
+            180deg,
+            transparent 0 69%,
+            rgb(143 74 51 / 42%) 69% 70.3%,
+            transparent 70.3% 100%
+        ),
+        linear-gradient(
+            180deg,
+            #40c9b3 0%,
+            #31b6a1 58%,
+            #269a88 69%,
+            #b86a4d 69%,
+            #a85d42 86%,
+            #8f4a33 100%
+        );
+    box-shadow:
+        inset 0 2px 0 rgb(255 255 255 / 18%),
+        inset 0 -10px 0 rgb(143 74 51 / 32%);
+}
+
+.ten-frame-add-playfield {
+    --ten-frame-add-section-gap: 0.7rem;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    display: grid;
+    position: relative;
+    grid-template-rows: minmax(0, 1fr) auto;
+    gap: var(--ten-frame-add-section-gap);
+    padding-top: var(--ten-frame-add-section-gap);
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.ten-frame-add-bottom {
+    height: auto;
+    min-height: 0;
+    position: relative;
+    z-index: 30;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 0;
+    max-height: 0;
+    overflow: visible;
+    transition: max-height 0.24s ease, padding 0.24s ease;
+}
+
+.ten-frame-add-playfield.with-answer .ten-frame-add-bottom {
+    max-height: 10rem;
+    padding: 0.15rem 0 1rem;
+}
+
+.ten-frame-add-mid {
+    min-height: 0;
+    position: relative;
+    z-index: 10;
+    padding-bottom: 0;
+    overflow: hidden;
+    transition: transform 0.28s ease;
+}
+
+.ten-frame-add-playfield.with-answer .ten-frame-add-mid {
+    transform: none;
+}
+
+.ten-frame-add-ground {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    border-radius: 1.25rem;
+    background: linear-gradient(180deg, #40c9b3 0%, #31b6a1 76%, #269a88 100%);
+    box-shadow: inset 0 -12px 0 rgb(0 0 0 / 10%);
+}
+
+.ten-frame-add-grid-stack {
+    --frame-count: 1;
+    --stack-pad: clamp(0.45rem, 1.5dvh, 0.8rem);
+    --frame-gap: clamp(0.5rem, 1.5dvh, 0.8rem);
+    --cell-gap: clamp(0.2rem, 0.8dvw, 0.3rem);
+    height: 100%;
+    display: grid;
+    grid-template-rows: repeat(var(--frame-count), minmax(0, 1fr));
+    gap: var(--frame-gap);
+    padding: var(--stack-pad);
+    box-sizing: border-box;
+    align-items: stretch;
+    justify-items: stretch;
+    min-height: 0;
+}
+
+.ten-frame-add-grid-frame {
+    width: 100%;
+    min-height: 0;
+    min-width: 0;
+    background: rgb(255 255 255 / 82%);
+    border-radius: 0.8rem;
+    padding: clamp(0.35rem, 1dvh, 0.5rem);
+    box-sizing: border-box;
+    display: grid;
+    place-items: center;
+}
+
+.ten-frame-add-grid {
+    display: grid;
+    width: 100%;
+    height: 100%;
+    place-content: center;
+    --cell-w-limit: calc((100% - (4 * var(--cell-gap))) / 5);
+    --cell-h-limit: calc((100% - var(--cell-gap)) / 2);
+    --cell-size: min(var(--cell-w-limit), var(--cell-h-limit));
+    --viewport-cell-limit: calc((100vw - 5rem) / 5);
+    --final-cell-size: min(var(--cell-size-px, var(--cell-size)), var(--viewport-cell-limit));
+    grid-template-columns: repeat(5, var(--final-cell-size));
+    grid-template-rows: repeat(2, var(--final-cell-size));
+    gap: var(--cell-gap);
+}
+
+.ten-frame-add-cell {
+    position: relative;
+    border: 0;
+    border-radius: 0.62rem;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    background: rgb(255 255 255 / 92%);
+    box-shadow: inset 0 0 0 1px rgb(120 120 120 / 25%);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ten-frame-add-cell.is-spinning {
+    animation: ten-frame-add-cell-spin 0.26s ease-in-out;
+}
+
+.ten-frame-add-cell-dot {
+    width: 78%;
+    height: 78%;
+    border-radius: 999px;
+    transition: background-color 0.2s ease;
+}
+
+.ten-frame-add-cell.is-blue .ten-frame-add-cell-dot {
+    background: #2d8fff;
+}
+
+.ten-frame-add-cell.is-red .ten-frame-add-cell-dot {
+    background: #ff5151;
+}
+
+@keyframes ten-frame-add-cell-spin {
+    0% {
+        transform: rotate(0deg) scale(1);
+    }
+    50% {
+        transform: rotate(180deg) scale(0.86);
+    }
+    100% {
+        transform: rotate(360deg) scale(1);
+    }
+}
+
+.ten-frame-add-target-formula {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.38rem;
+    font-size: clamp(2rem, 4.2dvw, 2.5rem);
+    font-weight: 800;
+    line-height: 1;
+}
+
+.ten-frame-add-target-blue-dot {
+    width: 0.95em;
+    height: 0.95em;
+    border-radius: 999px;
+    background: #2d8fff;
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 55%);
+}
+
+.ten-frame-add-target-op {
+    font-size: 0.85em;
+    color: #334155;
+}
+
+.ten-frame-add-target-blank-box {
+    width: 1.14em;
+    height: 1.14em;
+    border-radius: 0.2em;
+    background: #d1d5db;
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 55%);
+}
+
+
+.ten-frame-add-answer-panel {
+    width: 100%;
+    height: auto;
+    min-height: 0;
+    border-radius: 1.1rem;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    padding: 0.42rem 0.48rem 0.17rem;
+    box-sizing: border-box;
+    display: grid;
+    position: relative;
+    z-index: 40;
+    grid-template-rows: auto auto;
+    gap: 0.34rem;
+    align-content: start;
+    opacity: 0;
+    transform: translateY(1.2rem);
+    transition: opacity 0.24s ease, transform 0.24s ease;
+    pointer-events: none;
+}
+
+.ten-frame-add-answer-panel.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+.ten-frame-add-question {
+    margin: 0;
+    color: #fff;
+    text-align: center;
+    font-size: clamp(0.98rem, 2.2dvw, 1.35rem);
+    font-weight: 800;
+    line-height: 1.1;
+}
+
+.ten-frame-add-options {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.4rem;
+    min-height: 0;
+}
+
+.ten-frame-add-option-btn {
+    height: clamp(46px, 7.4dvh, 64px);
+    border: 0;
+    border-radius: 1rem;
+    background: #ececec;
+    color: #111;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    font-size: clamp(1.5rem, 4.1dvw, 2.25rem);
+    font-weight: 800;
+    box-shadow: inset 0 1px 0 #fff, 0 3px 0 #b9b9b9;
+    transition: none;
+}
+
+.ten-frame-add-option-btn:disabled {
+    cursor: default;
+    opacity: 1;
+    transform: none;
+    background: #ececec;
+    box-shadow: inset 0 1px 0 #fff, 0 3px 0 #b9b9b9;
+}
+
+.ten-frame-add-option-btn.is-pressing:not(:disabled) {
+    transform: translateY(2px) scale(0.98);
+    background: #d6ecff;
+    box-shadow: inset 0 1px 0 #fff, 0 1px 0 #9fb8cc;
+}
+
+.layout3-game-area .ten-frame-add-option-btn:focus,
+.layout3-game-area .ten-frame-add-option-btn:focus-visible {
+    box-shadow: inset 0 1px 0 #fff, 0 3px 0 #b9b9b9 !important;
+}
+
+.layout3-game-area .ten-frame-add-option-btn.is-pressing:focus,
+.layout3-game-area .ten-frame-add-option-btn.is-pressing:focus-visible {
+    box-shadow: inset 0 1px 0 #fff, 0 1px 0 #9fb8cc !important;
+}
+
+/* Keep TenFrameAdd visuals isolated from other games sharing base class names. */
+.ten-frame-add-theme .ten-frame-add-ground {
+    background: #40c9b3;
+    box-shadow: inset 0 -12px 0 rgb(0 0 0 / 10%);
+}
+
+.ten-frame-add-theme .ten-frame-add-ground::before {
+    content: none;
+    display: none;
+}
+
+.ten-frame-add-theme .ten-frame-add-card-bg {
+    background: linear-gradient(180deg, #40c9b3 0%, #31b6a1 58%, #269a88 69%, #b86a4d 69%, #a85d42 86%, #8f4a33 100%);
+    box-shadow:
+        inset 0 2px 0 rgb(255 255 255 / 18%),
+        inset 0 -10px 0 rgb(143 74 51 / 32%);
+}
+
+.ten-frame-add-theme .ten-frame-add-card-bg::before {
+    content: none;
+    display: none;
+}

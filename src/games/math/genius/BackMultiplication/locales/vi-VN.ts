@@ -1,19 +1,19 @@
 export default {
     lv1: {
         title: 'Nhân Ngược 1',
-        subtitle: '1-digit x 1-digit',
+        subtitle: '1 chữ số x 1 chữ số',
     },
     lv2: {
         title: 'Nhân Ngược 2',
-        subtitle: '2-digit x 1-digit',
+        subtitle: '2 chữ số x 1 chữ số',
     },
     lv3: {
         title: 'Nhân Ngược 3',
-        subtitle: '3-digit x 1-digit',
+        subtitle: '3 chữ số x 1 chữ số',
     },
     lv4: {
         title: 'Nhân Ngược 4',
-        subtitle: '2-digit x 2-digit',
+        subtitle: '2 chữ số x 2 chữ số',
         desc: 'Giải bằng phương pháp nhân chéo.'
     },
     description: 'Tính từ hàng thấp lên bằng tích từng phần!',

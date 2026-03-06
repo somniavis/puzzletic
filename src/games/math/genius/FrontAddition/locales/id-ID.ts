@@ -1,19 +1,19 @@
 export default {
     lv1: {
         title: 'Penjumlahan Depan 1',
-        subtitle: '2-digit + 1-digit',
+        subtitle: '2 angka + 1 angka',
     },
     lv2: {
         title: 'Penjumlahan Depan 2',
-        subtitle: '2-digit + 2-digit',
+        subtitle: '2 angka + 2 angka',
     },
     lv3: {
         title: 'Penjumlahan Depan 3',
-        subtitle: '3-digit + 2-digit',
+        subtitle: '3 angka + 2 angka',
     },
     lv4: {
         title: 'Penjumlahan Depan 4',
-        subtitle: '3-digit + 3-digit',
+        subtitle: '3 angka + 3 angka',
     },
     description: 'Jumlahkan angka dari kiri ke kanan! Cara hitung yang lebih cepat.',
     powerups: {

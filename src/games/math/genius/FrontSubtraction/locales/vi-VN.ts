@@ -1,19 +1,19 @@
 export default {
     lv1: {
         title: 'Trừ Thuận 1',
-        subtitle: '2-digit - 1-digit',
+        subtitle: '2 chữ số - 1 chữ số',
     },
     lv2: {
         title: 'Trừ Thuận 2',
-        subtitle: '2-digit - 2-digit',
+        subtitle: '2 chữ số - 2 chữ số',
     },
     lv3: {
         title: 'Trừ Thuận 3',
-        subtitle: '3-digit - 2-digit',
+        subtitle: '3 chữ số - 2 chữ số',
     },
     lv4: {
         title: 'Trừ Thuận 4',
-        subtitle: '3-digit - 3-digit',
+        subtitle: '3 chữ số - 3 chữ số',
     },
     description: 'Trừ từ trái sang phải! Đây là cách tính nhanh hơn.',
     powerups: {

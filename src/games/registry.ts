@@ -20,6 +20,7 @@ const L1_TenFrameNumber = lazy(() => delayedImport(import('./math/adventure/leve
 const L1_RoundCounting = lazy(() => delayedImport(import('./math/adventure/level1/RoundCounting').then(m => ({ default: m.RoundCounting }))));
 const L1_NumberHive = lazy(() => delayedImport(import('./math/adventure/level1/NumberHive').then(m => ({ default: m.NumberHive }))));
 const L1_NumberBalance = lazy(() => delayedImport(import('./math/adventure/level1/NumberBalance').then(m => ({ default: m.NumberBalance }))));
+const L1_TenFrameAdd = lazy(() => delayedImport(import('./math/adventure/level1/TenFrameAdd').then(m => ({ default: m.TenFrameAdd }))));
 const L1_JelloFeeding = lazy(() => delayedImport(import('./math/adventure/level1/JelloFeeding').then(m => ({ default: m.JelloFeeding }))));
 const L1_FruitSlice = lazy(() => delayedImport(import('./math/adventure/level1/FruitSlice').then(m => ({ default: m.FruitSlice }))));
 const L1_MathArchery = lazy(() => delayedImport(import('./math/adventure/level1/MathArchery').then(m => ({ default: (props: any) => createElement(m.MathArchery, { ...props, level: 1 }) }))));
@@ -165,6 +166,20 @@ export const GAMES: GameManifest[] = [
         tagsKey: 'games.tags.addition'
     },
     {
+        id: GameIds.MATH_TENFRAME_ADD,
+        title: '10 frame-add',
+        titleKey: 'games.ten-frame-add.title',
+        subtitle: 'ㅇㅇㅇ',
+        subtitleKey: 'games.ten-frame-add.subtitle',
+        description: 'ㅇㅇㅇ',
+        descriptionKey: 'games.ten-frame-add.description',
+        category: 'math',
+        level: 1,
+        component: L1_TenFrameAdd,
+        thumbnail: '🔟',
+        tagsKey: 'games.tags.addition'
+    },
+    {
         id: GameIds.MATH_JELLO_FEEDING,
         title: 'Jello Feeding',
         titleKey: 'games.jello-feeding.title',
@@ -206,6 +221,21 @@ export const GAMES: GameManifest[] = [
         thumbnail: '🤿',
         tagsKey: 'games.tags.subtraction'
     },
+    // [Math Level 2]
+    {
+        id: GameIds.MATH_ARCHERY_LV1,
+        title: 'Math Archery (Lv.1)',
+        titleKey: 'games.math-archery.title-lv1',
+        subtitle: 'Hit the target!',
+        subtitleKey: 'games.math-archery.subtitle',
+        description: 'Shoot arrows at math targets.',
+        descriptionKey: 'games.math-archery.description',
+        category: 'math',
+        level: 2,
+        component: L1_MathArchery,
+        thumbnail: '🏹',
+        tagsKey: 'games.tags.mixedOps'
+    },
     {
         id: GameIds.MATH_LOCK_OPENING,
         title: '자물쇠 열기',
@@ -221,22 +251,6 @@ export const GAMES: GameManifest[] = [
         thumbnail: '🔐',
         tagsKey: 'games.tags.mixedOps'
     },
-    {
-        id: GameIds.MATH_ARCHERY_LV1,
-        title: 'Math Archery (Lv.1)',
-        titleKey: 'games.math-archery.title-lv1',
-        subtitle: 'Hit the target!',
-        subtitleKey: 'games.math-archery.subtitle',
-        description: 'Shoot arrows at math targets.',
-        descriptionKey: 'games.math-archery.description',
-        category: 'math',
-        level: 1,
-        component: L1_MathArchery,
-        thumbnail: '🏹',
-        tagsKey: 'games.tags.mixedOps'
-    },
-    // [Math Level 2]
-
     {
         id: GameIds.TEN_FRAME_COUNT,
         title: 'Ten Frame',

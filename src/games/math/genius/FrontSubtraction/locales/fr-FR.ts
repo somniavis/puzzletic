@@ -1,19 +1,19 @@
 export default {
     lv1: {
         title: 'Soustraction frontale 1',
-        subtitle: '2-digit - 1-digit',
+        subtitle: '2 chiffres - 1 chiffre',
     },
     lv2: {
         title: 'Soustraction frontale 2',
-        subtitle: '2-digit - 2-digit',
+        subtitle: '2 chiffres - 2 chiffres',
     },
     lv3: {
         title: 'Soustraction frontale 3',
-        subtitle: '3-digit - 2-digit',
+        subtitle: '3 chiffres - 2 chiffres',
     },
     lv4: {
         title: 'Soustraction frontale 4',
-        subtitle: '3-digit - 3-digit',
+        subtitle: '3 chiffres - 3 chiffres',
     },
     description: 'Soustrais de gauche à droite ! C’est une méthode plus rapide.',
     powerups: {
