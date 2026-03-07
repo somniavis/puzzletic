@@ -3,6 +3,7 @@
 import fishingCountEn from '../../games/math/adventure/level1/FishingCount/locales/en-UK';
 import tenFrameNumberLocale from '../../games/math/adventure/level1/TenFrameNumber/locales/en-UK';
 import tenFrameAddLocale from '../../games/math/adventure/level1/TenFrameAdd/locales/en-UK';
+import moleWhackLocale from '../../games/math/adventure/level1/MoleWhack/locales/en-UK';
 import roundCountingEn from '../../games/math/adventure/level1/RoundCounting/locales/en-UK';
 import numberHiveEn from '../../games/math/adventure/level1/NumberHive/locales/en-UK';
 import fruitSliceEn from '../../games/math/adventure/level1/FruitSlice/locales/en-UK';
@@ -1064,6 +1065,7 @@ export const enUK = {
     'math-fishing-count': fishingCountEn,
     'tenframe-number': tenFrameNumberLocale,
     'ten-frame-add': tenFrameAddLocale,
+    'mole-whack': moleWhackLocale,
     'math-round-counting': roundCountingEn,
     'math-number-hive': numberHiveEn,
     'math-fruit-slice': fruitSliceEn,

@@ -21,6 +21,7 @@ const L1_RoundCounting = lazy(() => delayedImport(import('./math/adventure/level
 const L1_NumberHive = lazy(() => delayedImport(import('./math/adventure/level1/NumberHive').then(m => ({ default: m.NumberHive }))));
 const L1_NumberBalance = lazy(() => delayedImport(import('./math/adventure/level1/NumberBalance').then(m => ({ default: m.NumberBalance }))));
 const L1_TenFrameAdd = lazy(() => delayedImport(import('./math/adventure/level1/TenFrameAdd').then(m => ({ default: m.TenFrameAdd }))));
+const L1_MoleWhack = lazy(() => delayedImport(import('./math/adventure/level1/MoleWhack').then(m => ({ default: m.MoleWhack }))));
 const L1_JelloFeeding = lazy(() => delayedImport(import('./math/adventure/level1/JelloFeeding').then(m => ({ default: m.JelloFeeding }))));
 const L1_FruitSlice = lazy(() => delayedImport(import('./math/adventure/level1/FruitSlice').then(m => ({ default: m.FruitSlice }))));
 const L1_MathArchery = lazy(() => delayedImport(import('./math/adventure/level1/MathArchery').then(m => ({ default: (props: any) => createElement(m.MathArchery, { ...props, level: 1 }) }))));
@@ -177,6 +178,20 @@ export const GAMES: GameManifest[] = [
         level: 1,
         component: L1_TenFrameAdd,
         thumbnail: '🔟',
+        tagsKey: 'games.tags.addition'
+    },
+    {
+        id: GameIds.MATH_MOLE_WHACK,
+        title: 'Mice Whack',
+        titleKey: 'games.mole-whack.title',
+        subtitle: 'ㅇㅇㅇ',
+        subtitleKey: 'games.mole-whack.subtitle',
+        description: 'ㅇㅇㅇ',
+        descriptionKey: 'games.mole-whack.description',
+        category: 'math',
+        level: 1,
+        component: L1_MoleWhack,
+        thumbnail: 'whack-hammer',
         tagsKey: 'games.tags.addition'
     },
     {

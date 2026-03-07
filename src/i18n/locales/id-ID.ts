@@ -3,6 +3,7 @@
 import fishingCountEn from '../../games/math/adventure/level1/FishingCount/locales/id-ID';
 import tenFrameNumberLocale from '../../games/math/adventure/level1/TenFrameNumber/locales/id-ID';
 import tenFrameAddLocale from '../../games/math/adventure/level1/TenFrameAdd/locales/id-ID';
+import moleWhackLocale from '../../games/math/adventure/level1/MoleWhack/locales/id-ID';
 import roundCountingEn from '../../games/math/adventure/level1/RoundCounting/locales/id-ID';
 import numberHiveEn from '../../games/math/adventure/level1/NumberHive/locales/id-ID';
 import fruitSliceEn from '../../games/math/adventure/level1/FruitSlice/locales/id-ID';
@@ -1064,6 +1065,7 @@ export const idID = {
     'math-fishing-count': fishingCountEn,
     'tenframe-number': tenFrameNumberLocale,
     'ten-frame-add': tenFrameAddLocale,
+    'mole-whack': moleWhackLocale,
     'math-round-counting': roundCountingEn,
     'math-number-hive': numberHiveEn,
     'math-fruit-slice': fruitSliceEn,

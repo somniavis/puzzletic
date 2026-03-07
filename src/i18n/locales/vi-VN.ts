@@ -3,6 +3,7 @@
 import fishingCountVi from '../../games/math/adventure/level1/FishingCount/locales/vi-VN';
 import tenFrameNumberLocale from '../../games/math/adventure/level1/TenFrameNumber/locales/vi-VN';
 import tenFrameAddLocale from '../../games/math/adventure/level1/TenFrameAdd/locales/vi-VN';
+import moleWhackLocale from '../../games/math/adventure/level1/MoleWhack/locales/vi-VN';
 import roundCountingVi from '../../games/math/adventure/level1/RoundCounting/locales/vi-VN';
 import numberHiveVi from '../../games/math/adventure/level1/NumberHive/locales/vi-VN';
 import fruitSliceVi from '../../games/math/adventure/level1/FruitSlice/locales/vi-VN';
@@ -1699,6 +1700,7 @@ export const viVN = {
     'math-fishing-count': fishingCountVi,
     'tenframe-number': tenFrameNumberLocale,
     'ten-frame-add': tenFrameAddLocale,
+    'mole-whack': moleWhackLocale,
     'math-round-counting': roundCountingVi,
     'math-number-hive': numberHiveVi,
     'math-fruit-slice': fruitSliceVi,

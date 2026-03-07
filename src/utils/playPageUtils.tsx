@@ -21,6 +21,7 @@ export const getIconBackground = (thumbnail: string | React.ReactNode | undefine
         '⚖️': '#dbeafe', // blue-100
         '🍎': '#ffe4e6', // rose-100
         '🏹': '#d1fae5', // emerald-100
+        'whack-hammer': '#ffe4ef', // rose-100 (Mouse Whack custom hammer)
         '🧱': '#fed7aa', // orange-200
         '🍭': '#ddd6fe', // violet-200
         '🤿': '#cffafe', // cyan-100
@@ -117,6 +118,76 @@ export const renderThumbnail = (thumbnail: string | React.ReactNode | undefined,
                 }}
             >
                 8
+            </span>
+        );
+    }
+
+    // Mouse Whack icon: cute pink hammer
+    if (typeof thumbnail === 'string' && thumbnail === 'whack-hammer') {
+        return (
+            <span
+                style={{
+                    position: 'relative',
+                    width: '100%',
+                    height: '100%',
+                    display: 'inline-block'
+                }}
+            >
+                <span
+                    style={{
+                        position: 'absolute',
+                        left: '52%',
+                        top: '47%',
+                        width: '64%',
+                        height: '70%',
+                        transform: 'translate(-50%, -50%) rotate(25deg)',
+                        transformOrigin: '50% 50%'
+                    }}
+                >
+                    <span
+                        style={{
+                            position: 'absolute',
+                            left: '50%',
+                            top: '63%',
+                            width: '28%',
+                            height: '56%',
+                            transform: 'translate(-50%, -50%)',
+                            borderRadius: '999px',
+                            border: '1.5px solid rgba(69,115,110,0.45)',
+                            background: 'linear-gradient(180deg, #9df0da 0%, #6fd7bd 100%)',
+                            boxShadow: '0 2px 0 rgba(64,121,109,0.35)'
+                        }}
+                    />
+                    <span
+                        style={{
+                            position: 'absolute',
+                            left: '50%',
+                            top: '28%',
+                            width: '74%',
+                            height: '34%',
+                            transform: 'translate(-50%, -50%)',
+                            borderRadius: '999px',
+                            border: '1.5px solid rgba(124,76,106,0.45)',
+                            background:
+                                'radial-gradient(circle at 28% 34%, rgba(255,255,255,0.86) 0%, rgba(255,255,255,0) 42%), linear-gradient(180deg, #ffb4d5 0%, #ff8dc0 100%)',
+                            boxShadow: '0 2px 0 rgba(154,86,128,0.45), 0 4px 8px rgba(80,34,57,0.2)'
+                        }}
+                    />
+                    <span
+                        style={{
+                            position: 'absolute',
+                            left: '62%',
+                            top: '27%',
+                            transform: 'translate(-50%, -50%)',
+                            fontSize: '0.34em',
+                            fontWeight: 900,
+                            color: 'rgba(255,255,255,0.96)',
+                            textShadow: '0 1px 0 rgba(177,89,137,0.4)'
+                        }}
+                    >
+                        ★
+                    </span>
+                </span>
             </span>
         );
     }

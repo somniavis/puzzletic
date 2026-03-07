@@ -3,6 +3,7 @@
 import fishingCountPt from '../../games/math/adventure/level1/FishingCount/locales/pt-PT';
 import tenFrameNumberLocale from '../../games/math/adventure/level1/TenFrameNumber/locales/pt-PT';
 import tenFrameAddLocale from '../../games/math/adventure/level1/TenFrameAdd/locales/pt-PT';
+import moleWhackLocale from '../../games/math/adventure/level1/MoleWhack/locales/pt-PT';
 import roundCountingPt from '../../games/math/adventure/level1/RoundCounting/locales/pt-PT';
 import numberHivePt from '../../games/math/adventure/level1/NumberHive/locales/pt-PT';
 import fruitSlicePt from '../../games/math/adventure/level1/FruitSlice/locales/pt-PT';
@@ -1064,6 +1065,7 @@ export const ptPT = {
     'math-fishing-count': fishingCountPt,
     'tenframe-number': tenFrameNumberLocale,
     'ten-frame-add': tenFrameAddLocale,
+    'mole-whack': moleWhackLocale,
     'math-round-counting': roundCountingPt,
     'math-number-hive': numberHivePt,
     'math-fruit-slice': fruitSlicePt,
