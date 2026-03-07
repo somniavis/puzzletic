@@ -1,5 +1,7 @@
 const manifest = {
     title: 'Magic Potion',
+    'title-lv1': 'Magic Potion (Lv1)',
+    'title-lv2': 'Magic Potion (Lv2)',
     subtitle: 'Mélange des ingrédients magiques !',
     description: 'ㅇㅇㅇ',
     ui: {

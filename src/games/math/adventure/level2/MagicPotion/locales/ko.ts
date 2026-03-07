@@ -1,5 +1,7 @@
 const manifest = {
     title: '마법물약',
+    'title-lv1': '마법물약 (Lv1)',
+    'title-lv2': '마법물약 (Lv2)',
     subtitle: '마법 재료 섞기!',
     description: 'ㅇㅇㅇ',
     ui: {

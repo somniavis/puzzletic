@@ -52,7 +52,8 @@ const L1_DeepSeaDive = lazy(() => delayedImport(import('./math/adventure/level2/
 const L2_DeepSeaDive = lazy(() => delayedImport(import('./math/adventure/level2/DeepSeaDive').then(m => ({ default: (props: any) => createElement(m.DeepSeaDive, { ...props, level: 2 }) }))));
 const L2_UFOInvasion = lazy(() => delayedImport(import('./math/adventure/level2/UFOInvasion'))); // default export
 const L2_LockOpening = lazy(() => delayedImport(import('./math/adventure/level2/LockOpening').then(m => ({ default: m.LockOpening }))));
-const L2_MagicPotion = lazy(() => delayedImport(import('./math/adventure/level2/MagicPotion').then(m => ({ default: m.MagicPotion }))));
+const L2_MagicPotionLv1 = lazy(() => delayedImport(import('./math/adventure/level2/MagicPotion').then(m => ({ default: (props: any) => createElement(m.MagicPotion, { ...props, level: 1 }) }))));
+const L3_MagicPotionLv2 = lazy(() => delayedImport(import('./math/adventure/level2/MagicPotion').then(m => ({ default: (props: any) => createElement(m.MagicPotion, { ...props, level: 2 }) }))));
 
 // Math Genius Games (calculation drills)
 const L2_FrontAddition = lazy(() => delayedImport(import('./math/genius/FrontAddition').then(m => ({ default: m.FrontAdditionGame }))));
@@ -268,9 +269,9 @@ export const GAMES: GameManifest[] = [
         tagsKey: 'games.tags.mixedOps'
     },
     {
-        id: GameIds.MATH_MAGIC_POTION,
-        title: '마법물약',
-        titleKey: 'games.math-magic-potion.title',
+        id: GameIds.MATH_MAGIC_POTION_LV1,
+        title: 'Magic Potion (Lv1)',
+        titleKey: 'games.math-magic-potion.title-lv1',
         subtitle: 'ㅇㅇㅇ',
         subtitleKey: 'games.math-magic-potion.subtitle',
         description: 'ㅇㅇㅇ',
@@ -278,7 +279,7 @@ export const GAMES: GameManifest[] = [
         category: 'math',
         level: 2,
         mode: 'adventure',
-        component: L2_MagicPotion,
+        component: L2_MagicPotionLv1,
         thumbnail: '⚗️',
         tagsKey: 'games.tags.addition'
     },
@@ -587,6 +588,21 @@ export const GAMES: GameManifest[] = [
         mode: 'adventure',
         component: L3_ConstellationFinder,
         thumbnail: '⭐',
+        tagsKey: 'games.tags.multiplication'
+    },
+    {
+        id: GameIds.MATH_MAGIC_POTION_LV2,
+        title: 'Magic Potion (Lv2)',
+        titleKey: 'games.math-magic-potion.title-lv2',
+        subtitle: 'ㅇㅇㅇ',
+        subtitleKey: 'games.math-magic-potion.subtitle',
+        description: 'ㅇㅇㅇ',
+        descriptionKey: 'games.math-magic-potion.description',
+        category: 'math',
+        level: 3,
+        mode: 'adventure',
+        component: L3_MagicPotionLv2,
+        thumbnail: '⚗️',
         tagsKey: 'games.tags.multiplication'
     },
     {

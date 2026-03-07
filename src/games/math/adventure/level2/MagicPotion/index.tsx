@@ -9,14 +9,16 @@ import './MagicPotion.css';
 
 interface MagicPotionProps {
     onExit: () => void;
+    level?: 1 | 2;
 }
 
-type PotionOp = '+' | '-';
+type PotionOp = '+' | '-' | '×';
+type PotionSpecial = '🫟';
 
 type PotionToken = {
     id: string;
     type: 'num' | 'op';
-    value: number | PotionOp;
+    value: number | PotionOp | PotionSpecial;
     color?: string;
 };
 
@@ -25,7 +27,8 @@ type PotionRound = {
     tokens: PotionToken[];
 };
 
-const NUMBER_POOL = Array.from({ length: 21 }, (_, i) => i);
+const NUMBER_POOL_LV1 = Array.from({ length: 21 }, (_, i) => i);
+const NUMBER_POOL_LV2 = Array.from({ length: 9 }, (_, i) => i + 1);
 const NUMBER_TOKEN_COLORS = ['#22c55e', '#06b6d4', '#f97316', '#eab308', '#ec4899', '#8b5cf6'];
 const POWERUP_TYPES: Array<'timeFreeze' | 'extraLife' | 'doubleScore'> = ['timeFreeze', 'extraLife', 'doubleScore'];
 const WIZARD_EMOJIS = ['🧙🏻‍♀️', '🧙🏼‍♀️', '🧙🏽‍♀️', '🧙🏾‍♀️', '🧙🏿‍♀️'] as const;
@@ -107,7 +110,7 @@ const getDualPotionGradient = (c1: string, c2: string): React.CSSProperties => {
     return next;
 };
 
-const createRound = (): PotionRound => {
+const createRoundLv1 = (): PotionRound => {
     const op: PotionOp = Math.random() < 0.5 ? '+' : '-';
 
     let left = 0;
@@ -129,7 +132,7 @@ const createRound = (): PotionRound => {
     }
 
     const used = new Set<number>([left, right]);
-    const distractorPool = shuffle(NUMBER_POOL.filter((n) => !used.has(n)));
+    const distractorPool = shuffle(NUMBER_POOL_LV1.filter((n) => !used.has(n)));
     const numeric = [left, right, ...distractorPool.slice(0, 4)];
     const colorPool = shuffle(NUMBER_TOKEN_COLORS);
     const tokens = shuffle<PotionToken>([
@@ -143,20 +146,42 @@ const createRound = (): PotionRound => {
         { id: 'op-minus', type: 'op' as const, value: '-' as const },
     ]);
 
-    return {
-        target,
-        tokens,
-    };
+    return { target, tokens };
 };
 
-export const MagicPotion: React.FC<MagicPotionProps> = ({ onExit }) => {
+const createRoundLv2 = (): PotionRound => {
+    const left = randomInt(1, 9);
+    const right = randomInt(1, 9);
+    const target = left * right;
+    const used = new Set<number>([left, right]);
+    const distractorPool = shuffle(NUMBER_POOL_LV2.filter((n) => !used.has(n)));
+    const numeric = [left, right, ...distractorPool.slice(0, 4)];
+    const colorPool = shuffle(NUMBER_TOKEN_COLORS);
+    const tokens = shuffle<PotionToken>([
+        ...numeric.map((value, idx) => ({
+            id: `num-${idx}-${value}`,
+            type: 'num' as const,
+            value,
+            color: colorPool[idx],
+        })),
+        { id: 'op-mul', type: 'op' as const, value: '×' as const },
+        { id: 'op-trap', type: 'op' as const, value: '🫟' as const },
+    ]);
+
+    return { target, tokens };
+};
+
+const createRound = (level: 1 | 2): PotionRound => (level === 2 ? createRoundLv2() : createRoundLv1());
+
+export const MagicPotion: React.FC<MagicPotionProps> = ({ onExit, level = 1 }) => {
     const { t } = useTranslation();
-    const engine = useGameEngine({ initialLives: 3, initialTime: 60 });
+    const engine = useGameEngine({ initialLives: 3, initialTime: level === 2 ? 90 : 60 });
     const [round, setRound] = React.useState<PotionRound | null>(null);
     const [cauldronSlots, setCauldronSlots] = React.useState<PotionToken[]>([]);
     const [draggingToken, setDraggingToken] = React.useState<PotionToken | null>(null);
     const [dragPos, setDragPos] = React.useState<{ x: number; y: number } | null>(null);
     const [judgeState, setJudgeState] = React.useState<'idle' | 'correct' | 'wrong'>('idle');
+    const [consumedTokenIds, setConsumedTokenIds] = React.useState<Set<string>>(() => new Set());
     const [showOptionsHint, setShowOptionsHint] = React.useState(false);
     const [wizardEmoji, setWizardEmoji] = React.useState<string>(() => WIZARD_EMOJIS[Math.floor(Math.random() * WIZARD_EMOJIS.length)]);
     const cauldronDropRef = React.useRef<HTMLDivElement | null>(null);
@@ -180,7 +205,11 @@ export const MagicPotion: React.FC<MagicPotionProps> = ({ onExit }) => {
             })),
         []
     );
-    const placedTokenIds = React.useMemo(() => new Set(cauldronSlots.map((token) => token.id)), [cauldronSlots]);
+    const usedTokenIds = React.useMemo(() => {
+        const ids = new Set(cauldronSlots.map((token) => token.id));
+        consumedTokenIds.forEach((id) => ids.add(id));
+        return ids;
+    }, [cauldronSlots, consumedTokenIds]);
     const scheduleDragPosUpdate = React.useCallback((x: number, y: number) => {
         pendingDragPosRef.current = { x, y };
         if (dragRafRef.current != null) return;
@@ -210,7 +239,7 @@ export const MagicPotion: React.FC<MagicPotionProps> = ({ onExit }) => {
             const left = a.value as number;
             const right = b.value as number;
             const sign = op.value as PotionOp;
-            const result = sign === '+' ? left + right : left - right;
+            const result = sign === '+' ? left + right : sign === '-' ? left - right : left * right;
             isCorrect = result === round.target;
         }
 
@@ -234,13 +263,14 @@ export const MagicPotion: React.FC<MagicPotionProps> = ({ onExit }) => {
         }
         roundTimerRef.current = window.setTimeout(() => {
             setCauldronSlots([]);
+            setConsumedTokenIds(new Set());
             setJudgeState('idle');
             if (isCorrect) {
-                setRound(createRound());
+                setRound(createRound(level));
             }
             roundTimerRef.current = null;
         }, ROUND_RESET_DELAY_MS);
-    }, [engine, judgeState, round]);
+    }, [engine, judgeState, level, round]);
 
     React.useEffect(() => {
         const prev = prevGameStateRef.current;
@@ -248,17 +278,19 @@ export const MagicPotion: React.FC<MagicPotionProps> = ({ onExit }) => {
             setWizardEmoji(WIZARD_EMOJIS[Math.floor(Math.random() * WIZARD_EMOJIS.length)]);
         }
         if (engine.gameState === 'playing' && !round) {
-            setRound(createRound());
+            setRound(createRound(level));
             setCauldronSlots([]);
+            setConsumedTokenIds(new Set());
             setJudgeState('idle');
         }
         if ((engine.gameState === 'idle' || engine.gameState === 'gameover') && round) {
             setRound(null);
             setCauldronSlots([]);
+            setConsumedTokenIds(new Set());
             setJudgeState('idle');
         }
         prevGameStateRef.current = engine.gameState;
-    }, [engine.gameState, round]);
+    }, [engine.gameState, level, round]);
 
     React.useEffect(() => {
         return () => {
@@ -329,6 +361,18 @@ export const MagicPotion: React.FC<MagicPotionProps> = ({ onExit }) => {
             if (droppedInCauldron) {
                 const current = cauldronSlotsRef.current;
                 if (!current.some((token) => token.id === draggingToken.id) && current.length < 3) {
+                    if (draggingToken.value === '🫟') {
+                        setConsumedTokenIds((prev) => {
+                            const next = new Set(prev);
+                            next.add(draggingToken.id);
+                            return next;
+                        });
+                        engine.updateLives(false);
+                        setDraggingToken(null);
+                        setDragPos(null);
+                        pendingDragPosRef.current = null;
+                        return;
+                    }
                     const nextSlots = [...current, draggingToken];
                     setCauldronSlots(nextSlots);
                     if (nextSlots.length === 3) {
@@ -392,24 +436,24 @@ export const MagicPotion: React.FC<MagicPotionProps> = ({ onExit }) => {
                 dragRafRef.current = null;
             }
         };
-    }, [draggingToken, resolveAnswer, scheduleDragPosUpdate]);
+    }, [draggingToken, engine, resolveAnswer, scheduleDragPosUpdate]);
 
     const handleTokenPointerDown = React.useCallback(
         (event: React.PointerEvent<HTMLButtonElement>, token: PotionToken) => {
             if (judgeState !== 'idle') return;
-            if (placedTokenIds.has(token.id)) return;
+            if (usedTokenIds.has(token.id)) return;
             primeAudioOnce();
             event.preventDefault();
             setDraggingToken(token);
             scheduleDragPosUpdate(event.clientX, event.clientY);
         },
-        [judgeState, placedTokenIds, primeAudioOnce, scheduleDragPosUpdate]
+        [judgeState, usedTokenIds, primeAudioOnce, scheduleDragPosUpdate]
     );
 
     const handleTokenTouchStart = React.useCallback(
         (event: React.TouchEvent<HTMLButtonElement>, token: PotionToken) => {
             if (judgeState !== 'idle') return;
-            if (placedTokenIds.has(token.id)) return;
+            if (usedTokenIds.has(token.id)) return;
             const touch = event.touches[0];
             if (!touch) return;
             primeAudioOnce();
@@ -417,7 +461,7 @@ export const MagicPotion: React.FC<MagicPotionProps> = ({ onExit }) => {
             setDraggingToken(token);
             scheduleDragPosUpdate(touch.clientX, touch.clientY);
         },
-        [judgeState, placedTokenIds, primeAudioOnce, scheduleDragPosUpdate]
+        [judgeState, usedTokenIds, primeAudioOnce, scheduleDragPosUpdate]
     );
 
     const removeSlotToken = React.useCallback((index: number) => {
@@ -486,10 +530,10 @@ export const MagicPotion: React.FC<MagicPotionProps> = ({ onExit }) => {
 
     return (
         <Layout2
-            title={t('games.math-magic-potion.title')}
+            title={t(level === 2 ? 'games.math-magic-potion.title-lv2' : 'games.math-magic-potion.title-lv1')}
             subtitle={t('games.math-magic-potion.subtitle')}
             description={t('games.math-magic-potion.description')}
-            gameId={GameIds.MATH_MAGIC_POTION}
+            gameId={level === 2 ? GameIds.MATH_MAGIC_POTION_LV2 : GameIds.MATH_MAGIC_POTION_LV1}
             engine={engine}
             onExit={onExit}
             className="magic-potion-theme"
@@ -591,7 +635,7 @@ export const MagicPotion: React.FC<MagicPotionProps> = ({ onExit }) => {
                                 key={token.id}
                                 type="button"
                                 className={`magic-potion-token ${token.type === 'op' ? 'is-op' : ''} ${
-                                    placedTokenIds.has(token.id) ? 'is-used' : ''
+                                    usedTokenIds.has(token.id) ? 'is-used' : ''
                                 }`}
                                 style={token.type === 'num' ? getTokenBoxStyle(token.color) : undefined}
                                 onPointerDown={(event) => handleTokenPointerDown(event, token)}
@@ -624,7 +668,7 @@ export const MagicPotion: React.FC<MagicPotionProps> = ({ onExit }) => {
 export const manifest: GameManifest = {
     id: GameIds.MATH_MAGIC_POTION,
     title: '마법물약',
-    titleKey: 'games.math-magic-potion.title',
+    titleKey: 'games.math-magic-potion.title-lv1',
     subtitle: '마법 재료 섞기!',
     subtitleKey: 'games.math-magic-potion.subtitle',
     description: 'ㅇㅇㅇ',
