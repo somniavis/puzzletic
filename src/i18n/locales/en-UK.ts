@@ -18,7 +18,9 @@ import mathPinwheelEn from '../../games/math/adventure/level2/PinwheelPop/locale
 import compareCrittersEn from '../../games/math/adventure/level1/CompareCritters/locales/en-UK';
 import deepSeaDiveEn from '../../games/math/adventure/level2/DeepSeaDive/locales/en-UK';
 import signalHunterEn from '../../games/brain/level2/SignalHunter/locales/en-UK';
-import lockOpeningEn from '../../games/math/adventure/level2/LockOpening/locales/en-UK';
+import lockOpeningLocale from '../../games/math/adventure/level2/LockOpening/locales/en-UK';
+import magicPotionLocale from '../../games/math/adventure/level2/MagicPotion/locales/en-UK';
+
 import colorLinkEn from '../../games/brain/level1/ColorLink/locales/en-UK';
 import pairUpTwinEn from '../../games/brain/level1/PairUpTwin/locales/en-UK';
 import wildLinkEn from '../../games/brain/level2/WildLink/locales/en-UK';
@@ -1109,7 +1111,13 @@ export const enUK = {
     omok: omokEn,
     cargoTrain: cargoTrainEn,
     rocketLauncher: rocketLauncherEn,
-    'math-lock-opening': lockOpeningEn,
+    
+    
+    
+    'math-lock-opening': lockOpeningLocale,
+    'math-magic-potion': magicPotionLocale,
+    
+    
     tags: {
       counting: 'Counting',
       sequence: 'Sequencing',

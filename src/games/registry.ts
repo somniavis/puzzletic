@@ -52,6 +52,7 @@ const L1_DeepSeaDive = lazy(() => delayedImport(import('./math/adventure/level2/
 const L2_DeepSeaDive = lazy(() => delayedImport(import('./math/adventure/level2/DeepSeaDive').then(m => ({ default: (props: any) => createElement(m.DeepSeaDive, { ...props, level: 2 }) }))));
 const L2_UFOInvasion = lazy(() => delayedImport(import('./math/adventure/level2/UFOInvasion'))); // default export
 const L2_LockOpening = lazy(() => delayedImport(import('./math/adventure/level2/LockOpening').then(m => ({ default: m.LockOpening }))));
+const L2_MagicPotion = lazy(() => delayedImport(import('./math/adventure/level2/MagicPotion').then(m => ({ default: m.MagicPotion }))));
 
 // Math Genius Games (calculation drills)
 const L2_FrontAddition = lazy(() => delayedImport(import('./math/genius/FrontAddition').then(m => ({ default: m.FrontAdditionGame }))));
@@ -128,7 +129,7 @@ export const GAMES: GameManifest[] = [
         id: GameIds.MATH_TENFRAME_NUMBER,
         title: '10frame-number',
         titleKey: 'games.tenframe-number.title',
-        subtitle: 'ㅇㅇㅇ',
+        subtitle: '마법 재료 섞기!',
         subtitleKey: 'games.tenframe-number.subtitle',
         description: 'ㅇㅇㅇ',
         descriptionKey: 'games.tenframe-number.description',
@@ -265,6 +266,21 @@ export const GAMES: GameManifest[] = [
         component: L2_LockOpening,
         thumbnail: '🔐',
         tagsKey: 'games.tags.mixedOps'
+    },
+    {
+        id: GameIds.MATH_MAGIC_POTION,
+        title: '마법물약',
+        titleKey: 'games.math-magic-potion.title',
+        subtitle: 'ㅇㅇㅇ',
+        subtitleKey: 'games.math-magic-potion.subtitle',
+        description: 'ㅇㅇㅇ',
+        descriptionKey: 'games.math-magic-potion.description',
+        category: 'math',
+        level: 2,
+        mode: 'adventure',
+        component: L2_MagicPotion,
+        thumbnail: '⚗️',
+        tagsKey: 'games.tags.addition'
     },
     {
         id: GameIds.TEN_FRAME_COUNT,

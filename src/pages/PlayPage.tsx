@@ -25,7 +25,7 @@ const PlayPage: React.FC = () => {
     const navigate = useNavigate();
     const { gameId } = useParams();
     const { t } = useTranslation();
-    const { setGameDifficulty, pauseTick, resumeTick, gameScores, categoryProgress, totalGameStars, lastPlayedGameId, setLastPlayedGameId } = useNurturing();
+    const { setGameDifficulty, gameScores, categoryProgress, totalGameStars, lastPlayedGameId, setLastPlayedGameId } = useNurturing();
 
     // -- Custom Hook for State & Logic --
     const {
@@ -61,11 +61,6 @@ const PlayPage: React.FC = () => {
     );
 
     // -- Effects --
-    useEffect(() => {
-        pauseTick();
-        return () => resumeTick();
-    }, [pauseTick, resumeTick]);
-
     // Auto-scroll to last played game on mount or tab change
     useEffect(() => {
         // Only scroll if we are in List View (no active gameId) and have a last played game

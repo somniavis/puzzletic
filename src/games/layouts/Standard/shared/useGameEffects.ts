@@ -15,7 +15,6 @@ export const useGameEffects = (lastEvent: GameEvent | null | undefined) => {
 
     // We need to track processed event IDs to avoid duplicate effects
     const processedEventIds = useRef<Set<number>>(new Set());
-
     const generateParticles = (type: 'correct' | 'wrong', count = 10, emojiOverride?: string) => {
         const newParticles = [];
         for (let i = 0; i < count; i++) {

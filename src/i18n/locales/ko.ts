@@ -17,7 +17,9 @@ import mathPinwheelKo from '../../games/math/adventure/level2/PinwheelPop/locale
 import compareCrittersKo from '../../games/math/adventure/level1/CompareCritters/locales/ko';
 import deepSeaDiveKo from '../../games/math/adventure/level2/DeepSeaDive/locales/ko';
 import ufoInvasionKo from '../../games/math/adventure/level2/UFOInvasion/locales/ko';
-import lockOpeningKo from '../../games/math/adventure/level2/LockOpening/locales/ko';
+import lockOpeningLocale from '../../games/math/adventure/level2/LockOpening/locales/ko';
+import magicPotionLocale from '../../games/math/adventure/level2/MagicPotion/locales/ko';
+
 import cargoTrainKo from '../../games/math/adventure/level2/CargoTrain/locales/ko.ts';
 import rocketLauncherKo from '../../games/math/adventure/level2/RocketLauncher/locales/ko';
 import shapeSumLinkKo from '../../games/math/adventure/level2/ShapeSumLink/locales/ko';
@@ -1112,7 +1114,13 @@ const koBase = {
         omok: omokKo,
         cargoTrain: cargoTrainKo,
         rocketLauncher: rocketLauncherKo,
-        'math-lock-opening': lockOpeningKo,
+        
+    
+    
+    'math-lock-opening': lockOpeningLocale,
+    'math-magic-potion': magicPotionLocale,
+    
+    
         tags: {
             counting: '수 세기',
             sequence: '수 순서',

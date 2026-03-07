@@ -18,7 +18,9 @@ import mathPinwheelVi from '../../games/math/adventure/level2/PinwheelPop/locale
 import compareCrittersVi from '../../games/math/adventure/level1/CompareCritters/locales/vi-VN';
 import deepSeaDiveVi from '../../games/math/adventure/level2/DeepSeaDive/locales/vi-VN';
 import signalHunterVi from '../../games/brain/level2/SignalHunter/locales/vi-VN';
-import lockOpeningVi from '../../games/math/adventure/level2/LockOpening/locales/vi-VN';
+import lockOpeningLocale from '../../games/math/adventure/level2/LockOpening/locales/vi-VN';
+import magicPotionLocale from '../../games/math/adventure/level2/MagicPotion/locales/vi-VN';
+
 import colorLinkVi from '../../games/brain/level1/ColorLink/locales/vi-VN';
 import pairUpTwinVi from '../../games/brain/level1/PairUpTwin/locales/vi-VN';
 import wildLinkVi from '../../games/brain/level2/WildLink/locales/vi-VN';
@@ -1744,7 +1746,13 @@ export const viVN = {
     omok: omokVi,
     cargoTrain: cargoTrainVi,
     rocketLauncher: rocketLauncherVi,
-    'math-lock-opening': lockOpeningVi,
+    
+    
+    
+    'math-lock-opening': lockOpeningLocale,
+    'math-magic-potion': magicPotionLocale,
+    
+    
     tags: {
       counting: 'Đếm số',
       sequence: 'Thứ tự',

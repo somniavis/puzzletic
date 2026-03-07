@@ -14,7 +14,7 @@ import { AuthProvider, useAuth } from './contexts/AuthContext'
 import { preloadSounds, playJelloClickSound } from './utils/sound'
 
 // React Router
-import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom'
 
 import { CHARACTER_SPECIES, type CharacterSpeciesId, getEvolutionName } from './data/species';
 import { useSmartImagePreloader } from './hooks/useSmartImagePreloader';
@@ -63,6 +63,7 @@ const AppProvidersContent: React.FC = () => {
 
 function AppContent() {
   const navigate = useNavigate();
+  const location = useLocation();
   // currentPage state is removed in favor of URL routing
   const [selectedSpeciesId, setSelectedSpeciesId] = useState<CharacterSpeciesId>('yellowJello')
   const [character, setCharacter] = useState(() => createCharacter('yellowJello'))
@@ -70,6 +71,15 @@ function AppContent() {
   const [action, setAction] = useState<CharacterAction>('idle')
 
   const nurturing = useNurturing();
+
+  // Global tick policy: run only on PetRoom route.
+  useEffect(() => {
+    if (location.pathname === '/room') {
+      nurturing.resumeTick();
+    } else {
+      nurturing.pauseTick();
+    }
+  }, [location.pathname, nurturing.pauseTick, nurturing.resumeTick]);
 
   // Smart Image Preloader: Cache images for owned Jellos
   useSmartImagePreloader(nurturing.unlockedJellos);

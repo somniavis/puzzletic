@@ -17,7 +17,9 @@ import mathPinwheelJa from '../../games/math/adventure/level2/PinwheelPop/locale
 import compareCrittersJa from '../../games/math/adventure/level1/CompareCritters/locales/ja';
 import deepSeaDiveJa from '../../games/math/adventure/level2/DeepSeaDive/locales/ja';
 import ufoInvasionJa from '../../games/math/adventure/level2/UFOInvasion/locales/ja';
-import lockOpeningJa from '../../games/math/adventure/level2/LockOpening/locales/ja';
+import lockOpeningLocale from '../../games/math/adventure/level2/LockOpening/locales/ja';
+import magicPotionLocale from '../../games/math/adventure/level2/MagicPotion/locales/ja';
+
 import cargoTrainJa from '../../games/math/adventure/level2/CargoTrain/locales/ja.ts';
 import rocketLauncherJa from '../../games/math/adventure/level2/RocketLauncher/locales/ja';
 import shapeSumLinkJa from '../../games/math/adventure/level2/ShapeSumLink/locales/ja';
@@ -1855,7 +1857,13 @@ const jaBase = {
         omok: omokJa,
         cargoTrain: cargoTrainJa,
         rocketLauncher: rocketLauncherJa,
-        'math-lock-opening': lockOpeningJa,
+        
+    
+    
+    'math-lock-opening': lockOpeningLocale,
+    'math-magic-potion': magicPotionLocale,
+    
+    
         tags: {
             counting: '数え方',
             sequence: '数の順序',

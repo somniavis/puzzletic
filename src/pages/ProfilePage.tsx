@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation, Trans } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
@@ -10,17 +10,9 @@ export const ProfilePage: React.FC = () => {
     const { t } = useTranslation();
     const [showCancelModal, setShowCancelModal] = React.useState(false);
     const { user } = useAuth();
-    const { pauseTick, resumeTick, gro, xp, addRewards, maxStats, subscription, purchasePlan, cancelSubscription, debugUnlockAllGames, debugAddStars } = useNurturing();
+    const { gro, xp, addRewards, maxStats, subscription, purchasePlan, cancelSubscription, debugUnlockAllGames, debugAddStars } = useNurturing();
     const isPremium = subscription.isPremium;
     const isGuest = !user;
-
-    // Pause ticks when entering Profile page, resume when leaving
-    useEffect(() => {
-        pauseTick();
-        return () => {
-            resumeTick();
-        };
-    }, [pauseTick, resumeTick]);
 
     const handleCancelSubscription = async () => {
         const success = await cancelSubscription();

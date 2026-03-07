@@ -18,7 +18,9 @@ import mathPinwheelPt from '../../games/math/adventure/level2/PinwheelPop/locale
 import compareCrittersPt from '../../games/math/adventure/level1/CompareCritters/locales/pt-PT';
 import deepSeaDivePt from '../../games/math/adventure/level2/DeepSeaDive/locales/pt-PT';
 import signalHunterPt from '../../games/brain/level2/SignalHunter/locales/pt-PT';
-import lockOpeningPt from '../../games/math/adventure/level2/LockOpening/locales/pt-PT';
+import lockOpeningLocale from '../../games/math/adventure/level2/LockOpening/locales/pt-PT';
+import magicPotionLocale from '../../games/math/adventure/level2/MagicPotion/locales/pt-PT';
+
 import colorLinkPt from '../../games/brain/level1/ColorLink/locales/pt-PT';
 import pairUpTwinPt from '../../games/brain/level1/PairUpTwin/locales/pt-PT';
 import wildLinkPt from '../../games/brain/level2/WildLink/locales/pt-PT';
@@ -1109,7 +1111,13 @@ export const ptPT = {
     omok: omokPt,
     cargoTrain: cargoTrainPt,
     rocketLauncher: rocketLauncherPt,
-    'math-lock-opening': lockOpeningPt,
+    
+    
+    
+    'math-lock-opening': lockOpeningLocale,
+    'math-magic-potion': magicPotionLocale,
+    
+    
     tags: {
       counting: 'Contagem',
       sequence: 'Sequenciação',
