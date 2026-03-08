@@ -4,6 +4,7 @@ import type { GameManifest } from '../../../../types';
 import { Layout2 } from '../../../../layouts/Standard/Layout2';
 import { useGameEngine } from '../../../../layouts/Standard/Layout0/useGameEngine';
 import { GameIds } from '../../../../../constants/gameIds';
+import { playClearSound, playJelloClickSound } from '../../../../../utils/sound';
 import './FairShare.css';
 
 interface FairShareProps {
@@ -162,6 +163,7 @@ export const FairShare: React.FC<FairShareProps> = ({ onExit }) => {
     const lastJudgedAssignmentKeyRef = React.useRef<string | null>(null);
     const overfillPenaltyAssignmentKeyRef = React.useRef<string | null>(null);
     const gestureEventAssignmentKeyRef = React.useRef<string | null>(null);
+    const audioPrimedRef = React.useRef(false);
 
     const scientistEmoji = React.useMemo(
         () => SCIENTIST_EMOJIS[Math.floor(Math.random() * SCIENTIST_EMOJIS.length)],
@@ -199,6 +201,14 @@ export const FairShare: React.FC<FairShareProps> = ({ onExit }) => {
             window.clearTimeout(dragHintExitTimerRef.current);
             dragHintExitTimerRef.current = null;
         }
+    }, []);
+
+    const primeAudioOnce = React.useCallback(() => {
+        if (audioPrimedRef.current) return;
+        audioPrimedRef.current = true;
+        // iOS Safari audio unlock warm-up (silent)
+        playClearSound(0);
+        playJelloClickSound(0);
     }, []);
 
     const hideDragHintOverlay = React.useCallback((withExit: boolean) => {
@@ -492,6 +502,7 @@ export const FairShare: React.FC<FairShareProps> = ({ onExit }) => {
 
     const handleFruitPointerDown = React.useCallback((event: React.PointerEvent<HTMLButtonElement>, fruitId: string) => {
         if (engine.gameState !== 'playing' || isResolving) return;
+        primeAudioOnce();
         event.preventDefault();
         if (event.pointerType === 'touch') {
             event.currentTarget.setPointerCapture?.(event.pointerId);
@@ -501,23 +512,25 @@ export const FairShare: React.FC<FairShareProps> = ({ onExit }) => {
         activePointerIdRef.current = event.pointerId;
         activeTouchIdRef.current = null;
         setDragState({ fruitId, x: event.clientX, y: event.clientY, fromAssigned: false });
-    }, [engine.gameState, hideDragHintOverlay, isResolving]);
+    }, [engine.gameState, hideDragHintOverlay, isResolving, primeAudioOnce]);
 
     const handleFruitTouchStart = React.useCallback((event: React.TouchEvent<HTMLButtonElement>, fruitId: string) => {
         if (engine.gameState !== 'playing' || isResolving) return;
         const touch = event.changedTouches[0];
         if (!touch) return;
+        primeAudioOnce();
         event.preventDefault();
         hideDragHintOverlay(true);
         draggingFruitIdRef.current = fruitId;
         activePointerIdRef.current = -1;
         activeTouchIdRef.current = touch.identifier;
         setDragState({ fruitId, x: touch.clientX, y: touch.clientY, fromAssigned: false });
-    }, [engine.gameState, hideDragHintOverlay, isResolving]);
+    }, [engine.gameState, hideDragHintOverlay, isResolving, primeAudioOnce]);
 
     const handleAssignedFruitPointerDown = React.useCallback(
         (event: React.PointerEvent<HTMLButtonElement>, fruitId: string) => {
             if (engine.gameState !== 'playing' || isResolving) return;
+            primeAudioOnce();
             event.preventDefault();
             if (event.pointerType === 'touch') {
                 event.currentTarget.setPointerCapture?.(event.pointerId);
@@ -528,7 +541,7 @@ export const FairShare: React.FC<FairShareProps> = ({ onExit }) => {
             activeTouchIdRef.current = null;
             setDragState({ fruitId, x: event.clientX, y: event.clientY, fromAssigned: true });
         },
-        [engine.gameState, hideDragHintOverlay, isResolving]
+        [engine.gameState, hideDragHintOverlay, isResolving, primeAudioOnce]
     );
 
     const handleAssignedFruitTouchStart = React.useCallback(
@@ -536,6 +549,7 @@ export const FairShare: React.FC<FairShareProps> = ({ onExit }) => {
             if (engine.gameState !== 'playing' || isResolving) return;
             const touch = event.changedTouches[0];
             if (!touch) return;
+            primeAudioOnce();
             event.preventDefault();
             hideDragHintOverlay(true);
             draggingFruitIdRef.current = fruitId;
@@ -543,7 +557,7 @@ export const FairShare: React.FC<FairShareProps> = ({ onExit }) => {
             activeTouchIdRef.current = touch.identifier;
             setDragState({ fruitId, x: touch.clientX, y: touch.clientY, fromAssigned: true });
         },
-        [engine.gameState, hideDragHintOverlay, isResolving]
+        [engine.gameState, hideDragHintOverlay, isResolving, primeAudioOnce]
     );
 
     const missionText = React.useMemo(() => {
