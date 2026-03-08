@@ -29,6 +29,7 @@ import floorTilerKo from '../../games/math/adventure/level3/FloorTiler/locales/k
 import frogJumpKo from '../../games/math/adventure/level3/FrogJump/locales/ko';
 import chipCashierKo from '../../games/math/adventure/level3/ChipCashier/locales/ko';
 import cellCloneKo from '../../games/math/adventure/level3/CellClone/locales/ko';
+import fairShareLocale from "../../games/math/adventure/level3/FairShare/locales/ko";
 import neonMatrixKo from '../../games/math/adventure/level3/NeonMatrix/locales/ko';
 import threeLeafCloverLocale from '../../games/math/adventure/level3/ThreeLeafClover/locales/ko';
 import hexHiveSixLocale from '../../games/math/adventure/level3/HexHiveSix/locales/ko';
@@ -1059,6 +1060,7 @@ const koBase = {
         },
         game: {
             playNow: '지금 플레이',
+            reset: '처음부터',
             noGames: '새로운 게임이 준비 중입니다!',
             unlock: {
                 reason: '{{game}} 마스터 등급 달성 시 해금',
@@ -1089,6 +1091,7 @@ const koBase = {
         'frog-jump': frogJumpKo,
         'chip-cashier': chipCashierKo,
         'cell-clone': cellCloneKo,
+        'fair-share': fairShareLocale,
         'neon-matrix': neonMatrixKo,
         'three-leaf-clover': threeLeafCloverLocale,
         'hex-hive-six': hexHiveSixLocale,

@@ -47,6 +47,7 @@ const L3_TenFramePop = lazy(() => delayedImport(import('./math/adventure/level3/
 const L3_BeginnerWizard = lazy(() => delayedImport(import('./math/adventure/level3/BeginnerWizard').then(m => ({ default: m.BeginnerWizard }))));
 const L3_ConstellationFinder = lazy(() => delayedImport(import('./math/adventure/level3/ConstellationFinder').then(m => ({ default: m.ConstellationFinder }))));
 const L3_TrollAttack = lazy(() => delayedImport(import('./math/adventure/level3/TrollAttack').then(m => ({ default: m.TrollAttack }))));
+const L3_FairShare = lazy(() => delayedImport(import('./math/adventure/level3/FairShare').then(m => ({ default: m.FairShare }))));
 
 const L1_DeepSeaDive = lazy(() => delayedImport(import('./math/adventure/level2/DeepSeaDive').then(m => ({ default: (props: any) => createElement(m.DeepSeaDive, { ...props, level: 1 }) }))));
 const L2_DeepSeaDive = lazy(() => delayedImport(import('./math/adventure/level2/DeepSeaDive').then(m => ({ default: (props: any) => createElement(m.DeepSeaDive, { ...props, level: 2 }) }))));
@@ -618,6 +619,21 @@ export const GAMES: GameManifest[] = [
         mode: 'adventure',
         component: L3_TrollAttack,
         thumbnail: '🧌',
+        tagsKey: 'games.tags.multiplication'
+    },
+    {
+        id: GameIds.MATH_FAIR_SHARE,
+        title: 'Fair Share',
+        titleKey: 'games.fair-share.title',
+        subtitle: '2단 · 4단 마스터',
+        subtitleKey: 'games.fair-share.subtitle',
+        description: '2단과 4단을 연습하는 게임입니다.',
+        descriptionKey: 'games.fair-share.description',
+        category: 'math',
+        level: 3,
+        mode: 'adventure',
+        component: L3_FairShare,
+        thumbnail: '🧺',
         tagsKey: 'games.tags.multiplication'
     },
     // Front Addition Levels

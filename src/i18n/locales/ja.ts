@@ -29,6 +29,7 @@ import floorTilerJa from '../../games/math/adventure/level3/FloorTiler/locales/j
 import frogJumpJa from '../../games/math/adventure/level3/FrogJump/locales/ja';
 import chipCashierJa from '../../games/math/adventure/level3/ChipCashier/locales/ja';
 import cellCloneJa from '../../games/math/adventure/level3/CellClone/locales/ja';
+import fairShareLocale from "../../games/math/adventure/level3/FairShare/locales/ja";
 import neonMatrixJa from '../../games/math/adventure/level3/NeonMatrix/locales/ja';
 import threeLeafCloverLocale from '../../games/math/adventure/level3/ThreeLeafClover/locales/ja';
 import hexHiveSixLocale from '../../games/math/adventure/level3/HexHiveSix/locales/ja';
@@ -1802,6 +1803,7 @@ const jaBase = {
         },
         game: {
             playNow: '今すぐプレイ',
+            reset: 'はじめから',
             noGames: '新しいゲームを準備中！',
             unlock: {
                 reason: '{{game}}のマスターランク達成で解禁',
@@ -1832,6 +1834,7 @@ const jaBase = {
         'frog-jump': frogJumpJa,
         'chip-cashier': chipCashierJa,
         'cell-clone': cellCloneJa,
+        'fair-share': fairShareLocale,
         'neon-matrix': neonMatrixJa,
         'three-leaf-clover': threeLeafCloverLocale,
         'hex-hive-six': hexHiveSixLocale,

@@ -36,6 +36,7 @@ import floorTilerEn from '../../games/math/adventure/level3/FloorTiler/locales/e
 import frogJumpEn from '../../games/math/adventure/level3/FrogJump/locales/en-UK';
 import chipCashierEn from '../../games/math/adventure/level3/ChipCashier/locales/en-UK';
 import cellCloneEn from '../../games/math/adventure/level3/CellClone/locales/en-UK';
+import fairShareLocale from "../../games/math/adventure/level3/FairShare/locales/en-UK";
 import neonMatrixEn from '../../games/math/adventure/level3/NeonMatrix/locales/en-UK';
 import threeLeafCloverLocale from '../../games/math/adventure/level3/ThreeLeafClover/locales/en-UK';
 import hexHiveSixLocale from '../../games/math/adventure/level3/HexHiveSix/locales/en-UK';
@@ -1057,6 +1058,7 @@ export const enUK = {
     },
     game: {
       playNow: 'Play Now',
+      reset: 'Start Over',
       noGames: 'More games coming soon!',
       unlock: {
         reason: 'Complete mastery of {{game}} to unlock',
@@ -1087,6 +1089,7 @@ export const enUK = {
         'frog-jump': frogJumpEn,
         'chip-cashier': chipCashierEn,
         'cell-clone': cellCloneEn,
+        'fair-share': fairShareLocale,
         'neon-matrix': neonMatrixEn,
         'three-leaf-clover': threeLeafCloverLocale,
         'hex-hive-six': hexHiveSixLocale,

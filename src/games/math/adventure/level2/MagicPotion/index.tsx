@@ -472,17 +472,17 @@ export const MagicPotion: React.FC<MagicPotionProps> = ({ onExit, level = 1 }) =
     const instructions = React.useMemo(
         () => [
             {
-                icon: '1️⃣',
+                icon: '🎯',
                 title: t('games.math-magic-potion.howToPlay.step1.title'),
                 description: t('games.math-magic-potion.howToPlay.step1.description'),
             },
             {
-                icon: '2️⃣',
+                icon: '🎨',
                 title: t('games.math-magic-potion.howToPlay.step2.title'),
                 description: t('games.math-magic-potion.howToPlay.step2.description'),
             },
             {
-                icon: '3️⃣',
+                icon: '⚗️',
                 title: t('games.math-magic-potion.howToPlay.step3.title'),
                 description: t('games.math-magic-potion.howToPlay.step3.description'),
             },

@@ -36,6 +36,7 @@ import floorTilerVi from '../../games/math/adventure/level3/FloorTiler/locales/v
 import frogJumpVi from '../../games/math/adventure/level3/FrogJump/locales/vi-VN';
 import chipCashierVi from '../../games/math/adventure/level3/ChipCashier/locales/vi-VN';
 import cellCloneVi from '../../games/math/adventure/level3/CellClone/locales/vi-VN';
+import fairShareLocale from "../../games/math/adventure/level3/FairShare/locales/vi-VN";
 import neonMatrixVi from '../../games/math/adventure/level3/NeonMatrix/locales/vi-VN';
 import threeLeafCloverLocale from '../../games/math/adventure/level3/ThreeLeafClover/locales/vi-VN';
 import hexHiveSixLocale from '../../games/math/adventure/level3/HexHiveSix/locales/vi-VN';
@@ -1692,6 +1693,7 @@ export const viVN = {
     },
     game: {
       playNow: 'Chơi ngay',
+      reset: 'Bắt đầu lại',
       noGames: 'Sắp có thêm trò chơi!',
       unlock: {
         reason: 'Hoàn thành thuần thục {{game}} để mở khóa',
@@ -1722,6 +1724,7 @@ export const viVN = {
         'frog-jump': frogJumpVi,
         'chip-cashier': chipCashierVi,
         'cell-clone': cellCloneVi,
+        'fair-share': fairShareLocale,
         'neon-matrix': neonMatrixVi,
         'three-leaf-clover': threeLeafCloverLocale,
         'hex-hive-six': hexHiveSixLocale,
