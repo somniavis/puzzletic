@@ -189,6 +189,51 @@ const handleAnswer = (selected) => {
     *   **Component**: `const GAME_ID = GameIds.MY_GAME;`
     *   **Registry**: `id: GameIds.MY_GAME` in `GAMES` array.
 
+### 4.7. iOS Safari First-Drag SFX Issue (CRITICAL)
+**Symptoms**:
+1. First drag/touch plays incorrect sounds (or both correct/wrong sounds).
+2. After changing unlock logic, correct/wrong sounds stop playing on iOS Safari.
+
+**Root Cause**:
+1. Calling game SFX functions (e.g. `playClearSound(0)`, `playJelloClickSound(0)`) during the first gesture as "unlock" can pollute/consume the feedback channel in Safari.
+2. Unlocking with unrelated silent audio only may not prepare the actual feedback SFX pool used at grading time.
+
+**Required Pattern**:
+1. Keep grading feedback on the existing event path (`engine.registerEvent({ type: 'correct' | 'wrong' })`).
+2. On first gesture, run **silent priming on the actual feedback SFX channels**.
+3. Do NOT play visible/audible SFX during first gesture.
+
+**Reference Implementation (used in FairShare)**:
+1. Add utility in `src/utils/sound.ts`:
+```ts
+export const primeFeedbackSoundsSilently = (): void => {
+  soundManager.primeSilently([
+    SOUNDS.cleaning,    // clear sound source
+    SOUNDS.jelloClick1, // wrong sound pool
+    SOUNDS.jelloClick2,
+    SOUNDS.jelloClick3,
+  ]);
+};
+```
+2. Call once at first pointer/touch in game component:
+```ts
+const audioPrimedRef = useRef(false);
+const primeAudioOnce = () => {
+  if (audioPrimedRef.current) return;
+  audioPrimedRef.current = true;
+  primeFeedbackSoundsSilently();
+};
+```
+3. Keep judge-time logic unchanged:
+```ts
+engine.submitAnswer(isCorrect);
+engine.registerEvent({ type: isCorrect ? 'correct' : 'wrong' });
+```
+
+**Do Not**:
+1. Do not unlock by calling real feedback SFX with volume 0.
+2. Do not move unlock timing to "first correct/wrong" (gesture context may be lost in Safari).
+
 ---
 
 ## 5. Development Checklist (New Game)

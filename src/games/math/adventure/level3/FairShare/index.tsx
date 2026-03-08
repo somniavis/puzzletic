@@ -4,7 +4,7 @@ import type { GameManifest } from '../../../../types';
 import { Layout2 } from '../../../../layouts/Standard/Layout2';
 import { useGameEngine } from '../../../../layouts/Standard/Layout0/useGameEngine';
 import { GameIds } from '../../../../../constants/gameIds';
-import { playClearSound, playJelloClickSound } from '../../../../../utils/sound';
+import { primeFeedbackSoundsSilently } from '../../../../../utils/sound';
 import './FairShare.css';
 
 interface FairShareProps {
@@ -206,9 +206,8 @@ export const FairShare: React.FC<FairShareProps> = ({ onExit }) => {
     const primeAudioOnce = React.useCallback(() => {
         if (audioPrimedRef.current) return;
         audioPrimedRef.current = true;
-        // iOS Safari audio unlock warm-up (silent)
-        playClearSound(0);
-        playJelloClickSound(0);
+        // Prime actual correct/wrong feedback channels silently at first gesture.
+        primeFeedbackSoundsSilently();
     }, []);
 
     const hideDragHintOverlay = React.useCallback((withExit: boolean) => {
@@ -704,7 +703,7 @@ export const FairShare: React.FC<FairShareProps> = ({ onExit }) => {
             engine={engine}
             onExit={onExit}
             powerUps={powerUps}
-            className="cell-clone-layout2"
+            className="cell-clone-layout2 fair-share-layout2"
             cardBackground={<div className="cell-clone-card-bg" />}
         >
             <div className="cell-clone-shell">

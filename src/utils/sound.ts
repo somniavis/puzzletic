@@ -222,6 +222,38 @@ class SoundManager {
   }
 
   /**
+   * 사운드 풀을 무음으로 프라임 (iOS Safari 대응)
+   * 실제 들리는 소리 없이 해당 오디오 채널 재생 가능 상태를 준비한다.
+   */
+  primeSilently(soundUrls: string[]): void {
+    try {
+      soundUrls.forEach((soundUrl) => {
+        const audio = this.getAvailableAudio(soundUrl);
+        const prevVolume = audio.volume;
+        audio.muted = true;
+        audio.volume = 0;
+        if (!audio.paused) {
+          audio.currentTime = 0;
+        }
+
+        const restore = () => {
+          audio.pause();
+          audio.currentTime = 0;
+          audio.muted = false;
+          audio.volume = prevVolume;
+        };
+
+        audio.play().then(restore).catch(() => {
+          audio.muted = false;
+          audio.volume = prevVolume;
+        });
+      });
+    } catch (error) {
+      console.warn('Silent prime failed:', error);
+    }
+  }
+
+  /**
    * 모든 사운드 프리로드
    */
   async preloadAll(): Promise<void> {
@@ -410,4 +442,17 @@ export const playPlopSound = (volume: number = 0.5): void => {
   if (!isSfxEnabled()) return;
   // TODO: Add specific plop sound to SOUNDS
   soundManager.play(SOUNDS.eating, volume);
+};
+
+/**
+ * 피드백 SFX(정답/오답) 채널을 무음으로 프라임합니다.
+ * iOS Safari에서 첫 제스처 시 호출하면 이후 판정 사운드 누락을 줄일 수 있습니다.
+ */
+export const primeFeedbackSoundsSilently = (): void => {
+  soundManager.primeSilently([
+    SOUNDS.cleaning,
+    SOUNDS.jelloClick1,
+    SOUNDS.jelloClick2,
+    SOUNDS.jelloClick3,
+  ]);
 };
