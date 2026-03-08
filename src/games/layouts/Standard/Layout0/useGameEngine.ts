@@ -117,6 +117,7 @@ export const useGameEngine = (config: GameEngineConfig = {}) => {
 
     const startGame = useCallback(() => {
         setGameState('playing');
+        setLastEvent(null);
         setScore(0);
         setLives(initialLives);
         setTimeLeft(initialTime);

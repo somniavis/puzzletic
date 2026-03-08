@@ -575,6 +575,7 @@
     position: relative;
     z-index: 2;
     transform: translateY(clamp(0.18rem, 0.48vh, 0.28rem));
+    animation: fair-share-animal-float var(--animal-float-duration, 2.6s) ease-in-out var(--animal-float-delay, 0s) infinite;
 }
 
 .fair-share-animal-body {
@@ -681,6 +682,15 @@
     }
     to {
         transform: translateX(0);
+    }
+}
+
+@keyframes fair-share-animal-float {
+    0%, 100% {
+        transform: translateY(clamp(0.18rem, 0.48vh, 0.28rem));
+    }
+    50% {
+        transform: translateY(clamp(0.02rem, 0.08vh, 0.08rem));
     }
 }
 

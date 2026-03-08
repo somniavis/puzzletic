@@ -42,6 +42,13 @@ type AnimalReaction = {
     emoji: string;
     mode: 'good' | 'sad';
 };
+type AssignmentMeta = {
+    key: string;
+    allAssigned: boolean;
+    counts: number[];
+    groups: FruitSlot[][];
+    unassigned: FruitSlot[];
+};
 
 const FEEDBACK_DELAY_MS = 720;
 const ROUND_SLIDE_OUT_MS = 340;
@@ -49,6 +56,7 @@ const ROUND_SLIDE_IN_MS = 380;
 const REACTION_MS = 1150;
 const GOOD_REACTIONS = ['😁', '🥰', '☺️', '💖', '❤️'] as const;
 const SAD_REACTIONS = ['😰', '😱', '😡'] as const;
+const POWER_UP_REWARDS: Array<'timeFreeze' | 'extraLife' | 'doubleScore'> = ['timeFreeze', 'extraLife', 'doubleScore'];
 
 const shuffle = <T,>(items: readonly T[]): T[] => {
     const arr = [...items];
@@ -57,6 +65,31 @@ const shuffle = <T,>(items: readonly T[]): T[] => {
         [arr[i], arr[j]] = [arr[j], arr[i]];
     }
     return arr;
+};
+
+const pickRandom = <T,>(items: readonly T[]): T =>
+    items[Math.floor(Math.random() * items.length)];
+
+const buildAssignmentMeta = (slots: FruitSlot[], animalCount: number): AssignmentMeta => {
+    const counts = Array.from({ length: animalCount }, () => 0);
+    const groups = Array.from({ length: animalCount }, () => [] as FruitSlot[]);
+    const unassigned: FruitSlot[] = [];
+    let allAssigned = true;
+
+    for (let i = 0; i < slots.length; i += 1) {
+        const slot = slots[i];
+        const { assignedTo } = slot;
+        if (assignedTo === null) {
+            allAssigned = false;
+            unassigned.push(slot);
+            continue;
+        }
+        counts[assignedTo] += 1;
+        groups[assignedTo].push(slot);
+    }
+
+    const key = slots.map((slot) => (slot.assignedTo === null ? 'x' : String(slot.assignedTo))).join(',');
+    return { key, allAssigned, counts, groups, unassigned };
 };
 
 const createDivisionRound = (): DivisionRound => {
@@ -117,6 +150,7 @@ export const FairShare: React.FC<FairShareProps> = ({ onExit }) => {
     const prevDivisionSignatureRef = React.useRef<string | null>(null);
     const draggingFruitIdRef = React.useRef<string | null>(null);
     const activePointerIdRef = React.useRef<number | null>(null);
+    const activeTouchIdRef = React.useRef<number | null>(null);
     const animalBoxRefs = React.useRef<Array<HTMLDivElement | null>>([]);
     const hasShownDragHintRef = React.useRef(false);
     const dragHintTimerRef = React.useRef<number | null>(null);
@@ -125,6 +159,9 @@ export const FairShare: React.FC<FairShareProps> = ({ onExit }) => {
     const slideOutTimerRef = React.useRef<number | null>(null);
     const slideInTimerRef = React.useRef<number | null>(null);
     const reactionTimersRef = React.useRef<number[]>([]);
+    const lastJudgedAssignmentKeyRef = React.useRef<string | null>(null);
+    const overfillPenaltyAssignmentKeyRef = React.useRef<string | null>(null);
+    const gestureEventAssignmentKeyRef = React.useRef<string | null>(null);
 
     const scientistEmoji = React.useMemo(
         () => SCIENTIST_EMOJIS[Math.floor(Math.random() * SCIENTIST_EMOJIS.length)],
@@ -208,6 +245,9 @@ export const FairShare: React.FC<FairShareProps> = ({ onExit }) => {
         setAnimalReactions(Array.from({ length: nextDivision.animalCount }, () => null));
         setIsResolving(false);
         setIsRoundReady(true);
+        lastJudgedAssignmentKeyRef.current = null;
+        overfillPenaltyAssignmentKeyRef.current = null;
+        gestureEventAssignmentKeyRef.current = null;
     }, [clearReactionTimers]);
 
     React.useEffect(() => {
@@ -247,6 +287,9 @@ export const FairShare: React.FC<FairShareProps> = ({ onExit }) => {
             setRoundSlideState('idle');
             clearReactionTimers();
             setAnimalReactions([]);
+            lastJudgedAssignmentKeyRef.current = null;
+            overfillPenaltyAssignmentKeyRef.current = null;
+            gestureEventAssignmentKeyRef.current = null;
         }
 
         prevGameStateRef.current = engine.gameState;
@@ -272,7 +315,7 @@ export const FairShare: React.FC<FairShareProps> = ({ onExit }) => {
             prev.map((reaction, idx) =>
                 idx === animalIndex
                     ? {
-                        emoji: GOOD_REACTIONS[Math.floor(Math.random() * GOOD_REACTIONS.length)],
+                        emoji: pickRandom(GOOD_REACTIONS),
                         mode: 'good'
                     }
                     : reaction
@@ -289,7 +332,7 @@ export const FairShare: React.FC<FairShareProps> = ({ onExit }) => {
             Array.from({ length: animalCount }, (_, idx) => {
                 if (idx === skipAnimalIndex) return null;
                 return {
-                    emoji: SAD_REACTIONS[Math.floor(Math.random() * SAD_REACTIONS.length)],
+                    emoji: pickRandom(SAD_REACTIONS),
                     mode: 'sad'
                 };
             })
@@ -315,6 +358,7 @@ export const FairShare: React.FC<FairShareProps> = ({ onExit }) => {
                 setDragState(null);
                 draggingFruitIdRef.current = null;
                 activePointerIdRef.current = null;
+                activeTouchIdRef.current = null;
                 return;
             }
 
@@ -338,15 +382,25 @@ export const FairShare: React.FC<FairShareProps> = ({ onExit }) => {
                 const nextSlots = fruitSlots.map((slot) =>
                     slot.id === draggingFruitId ? { ...slot, assignedTo: hitAnimalIndex } : slot
                 );
+                const nextAssignmentMeta = buildAssignmentMeta(nextSlots, divisionRound.animalCount);
                 setFruitSlots(nextSlots);
-                const counts = Array.from({ length: divisionRound.animalCount }, (_, idx) =>
-                    nextSlots.filter((slot) => slot.assignedTo === idx).length
-                );
-                if (counts[hitAnimalIndex] > divisionRound.fruitsPerAnimal) {
+                if (nextAssignmentMeta.counts[hitAnimalIndex] > divisionRound.fruitsPerAnimal) {
+                    overfillPenaltyAssignmentKeyRef.current = nextAssignmentMeta.key;
+                    gestureEventAssignmentKeyRef.current = nextAssignmentMeta.key;
                     setAnimalReactions((prev) => prev.map((reaction, idx) => (idx === hitAnimalIndex ? null : reaction)));
                     showSadReactionsForOthers(hitAnimalIndex, divisionRound.animalCount);
+                    // Penalize immediately when a basket exceeds the allowed count.
+                    engine.submitAnswer(false, { skipFeedback: true });
+                    engine.registerEvent({ type: 'wrong' });
                 } else {
                     showGoodReaction(hitAnimalIndex);
+                    if (nextAssignmentMeta.allAssigned) {
+                        const isCorrectNow = nextAssignmentMeta.counts.every(
+                            (count) => count === divisionRound.fruitsPerAnimal
+                        );
+                        gestureEventAssignmentKeyRef.current = nextAssignmentMeta.key;
+                        engine.registerEvent(isCorrectNow ? { type: 'correct' } : { type: 'wrong' });
+                    }
                 }
             } else if (dragState?.fromAssigned) {
                 // Dropped outside any basket: return fruit to source area
@@ -360,6 +414,7 @@ export const FairShare: React.FC<FairShareProps> = ({ onExit }) => {
             setDragState(null);
             draggingFruitIdRef.current = null;
             activePointerIdRef.current = null;
+            activeTouchIdRef.current = null;
         };
 
         const handlePointerCancel = (event: PointerEvent) => {
@@ -367,16 +422,58 @@ export const FairShare: React.FC<FairShareProps> = ({ onExit }) => {
             setDragState(null);
             draggingFruitIdRef.current = null;
             activePointerIdRef.current = null;
+            activeTouchIdRef.current = null;
+        };
+
+        const getActiveTouch = (touches: TouchList): Touch | null => {
+            const id = activeTouchIdRef.current;
+            if (id === null) return null;
+            for (let i = 0; i < touches.length; i += 1) {
+                if (touches[i].identifier === id) return touches[i];
+            }
+            return null;
+        };
+
+        const handleTouchMove = (event: TouchEvent) => {
+            const touch = getActiveTouch(event.touches);
+            if (!touch) return;
+            event.preventDefault();
+            setDragState((prev) => (prev ? { ...prev, x: touch.clientX, y: touch.clientY } : prev));
+        };
+
+        const handleTouchEnd = (event: TouchEvent) => {
+            const touch = getActiveTouch(event.changedTouches);
+            if (!touch) return;
+            handlePointerUp({
+                pointerId: activePointerIdRef.current ?? -1,
+                clientX: touch.clientX,
+                clientY: touch.clientY
+            } as PointerEvent);
+        };
+
+        const handleTouchCancel = (event: TouchEvent) => {
+            const touch = getActiveTouch(event.changedTouches);
+            if (!touch) return;
+            setDragState(null);
+            draggingFruitIdRef.current = null;
+            activePointerIdRef.current = null;
+            activeTouchIdRef.current = null;
         };
 
         window.addEventListener('pointermove', handlePointerMove);
         window.addEventListener('pointerup', handlePointerUp);
         window.addEventListener('pointercancel', handlePointerCancel);
+        window.addEventListener('touchmove', handleTouchMove, { passive: false });
+        window.addEventListener('touchend', handleTouchEnd, { passive: false });
+        window.addEventListener('touchcancel', handleTouchCancel, { passive: false });
 
         return () => {
             window.removeEventListener('pointermove', handlePointerMove);
             window.removeEventListener('pointerup', handlePointerUp);
             window.removeEventListener('pointercancel', handlePointerCancel);
+            window.removeEventListener('touchmove', handleTouchMove);
+            window.removeEventListener('touchend', handleTouchEnd);
+            window.removeEventListener('touchcancel', handleTouchCancel);
         };
     }, [
         divisionRound,
@@ -402,7 +499,20 @@ export const FairShare: React.FC<FairShareProps> = ({ onExit }) => {
         hideDragHintOverlay(true);
         draggingFruitIdRef.current = fruitId;
         activePointerIdRef.current = event.pointerId;
+        activeTouchIdRef.current = null;
         setDragState({ fruitId, x: event.clientX, y: event.clientY, fromAssigned: false });
+    }, [engine.gameState, hideDragHintOverlay, isResolving]);
+
+    const handleFruitTouchStart = React.useCallback((event: React.TouchEvent<HTMLButtonElement>, fruitId: string) => {
+        if (engine.gameState !== 'playing' || isResolving) return;
+        const touch = event.changedTouches[0];
+        if (!touch) return;
+        event.preventDefault();
+        hideDragHintOverlay(true);
+        draggingFruitIdRef.current = fruitId;
+        activePointerIdRef.current = -1;
+        activeTouchIdRef.current = touch.identifier;
+        setDragState({ fruitId, x: touch.clientX, y: touch.clientY, fromAssigned: false });
     }, [engine.gameState, hideDragHintOverlay, isResolving]);
 
     const handleAssignedFruitPointerDown = React.useCallback(
@@ -415,7 +525,23 @@ export const FairShare: React.FC<FairShareProps> = ({ onExit }) => {
             hideDragHintOverlay(true);
             draggingFruitIdRef.current = fruitId;
             activePointerIdRef.current = event.pointerId;
+            activeTouchIdRef.current = null;
             setDragState({ fruitId, x: event.clientX, y: event.clientY, fromAssigned: true });
+        },
+        [engine.gameState, hideDragHintOverlay, isResolving]
+    );
+
+    const handleAssignedFruitTouchStart = React.useCallback(
+        (event: React.TouchEvent<HTMLButtonElement>, fruitId: string) => {
+            if (engine.gameState !== 'playing' || isResolving) return;
+            const touch = event.changedTouches[0];
+            if (!touch) return;
+            event.preventDefault();
+            hideDragHintOverlay(true);
+            draggingFruitIdRef.current = fruitId;
+            activePointerIdRef.current = -1;
+            activeTouchIdRef.current = touch.identifier;
+            setDragState({ fruitId, x: touch.clientX, y: touch.clientY, fromAssigned: true });
         },
         [engine.gameState, hideDragHintOverlay, isResolving]
     );
@@ -425,41 +551,55 @@ export const FairShare: React.FC<FairShareProps> = ({ onExit }) => {
         return t('games.fair-share.ui.mission', { count: divisionRound.animalCount });
     }, [divisionRound, t]);
 
-    const remainingFruits = React.useMemo(
-        () => fruitSlots.filter((slot) => slot.assignedTo === null),
-        [fruitSlots]
+    const assignmentMeta = React.useMemo(
+        () => (divisionRound ? buildAssignmentMeta(fruitSlots, divisionRound.animalCount) : null),
+        [divisionRound, fruitSlots]
     );
 
-    const fruitsByAnimal = React.useMemo(() => {
-        if (!divisionRound) return [] as FruitSlot[][];
-        return Array.from({ length: divisionRound.animalCount }, (_, animalIdx) =>
-            fruitSlots.filter((slot) => slot.assignedTo === animalIdx)
-        );
-    }, [divisionRound, fruitSlots]);
+    const remainingFruits = assignmentMeta?.unassigned ?? [];
+    const fruitsByAnimal = assignmentMeta?.groups ?? [];
+    const assignmentKey = assignmentMeta?.key ?? '';
 
     React.useEffect(() => {
         if (!divisionRound) return;
+        if (!assignmentMeta) return;
         if (engine.gameState !== 'playing') return;
         if (isResolving) return;
         if (fruitSlots.length === 0) return;
 
-        const allAssigned = fruitSlots.every((slot) => slot.assignedTo !== null);
-        if (!allAssigned) return;
+        if (!assignmentMeta.allAssigned) {
+            lastJudgedAssignmentKeyRef.current = null;
+            return;
+        }
+        if (lastJudgedAssignmentKeyRef.current === assignmentKey) return;
+        lastJudgedAssignmentKeyRef.current = assignmentKey;
+
+        const isCorrect = assignmentMeta.counts.every((count) => count === divisionRound.fruitsPerAnimal);
+        const alreadyPenalizedByOverfill =
+            !isCorrect && overfillPenaltyAssignmentKeyRef.current === assignmentKey;
+        if (alreadyPenalizedByOverfill) return;
 
         setIsResolving(true);
-        const isCorrect = fruitsByAnimal.every((group) => group.length === divisionRound.fruitsPerAnimal);
 
         if (isCorrect) {
             const nextCombo = engine.combo + 1;
             if (nextCombo % 3 === 0 && Math.random() > 0.45) {
-                const rewardTypes: Array<'timeFreeze' | 'extraLife' | 'doubleScore'> = ['timeFreeze', 'extraLife', 'doubleScore'];
-                const reward = rewardTypes[Math.floor(Math.random() * rewardTypes.length)];
+                const reward = pickRandom(POWER_UP_REWARDS);
                 engine.setPowerUps((prev) => ({ ...prev, [reward]: prev[reward] + 1 }));
             }
         }
 
-        engine.submitAnswer(isCorrect);
-        engine.registerEvent({ type: isCorrect ? 'correct' : 'wrong' });
+        if (isCorrect) {
+            engine.submitAnswer(true);
+        } else {
+            // Keep the same round active on wrong answers while still losing one life.
+            engine.submitAnswer(false, { skipFeedback: true });
+        }
+        if (gestureEventAssignmentKeyRef.current !== assignmentKey) {
+            engine.registerEvent(isCorrect ? { type: 'correct' } : { type: 'wrong' });
+        } else {
+            gestureEventAssignmentKeyRef.current = null;
+        }
 
         clearResolveTimer();
         resolveTimerRef.current = window.setTimeout(() => {
@@ -479,15 +619,15 @@ export const FairShare: React.FC<FairShareProps> = ({ onExit }) => {
                 }, ROUND_SLIDE_OUT_MS);
                 return;
             }
-            setFruitSlots((prev) => prev.map((slot) => ({ ...slot, assignedTo: null })));
             setIsResolving(false);
         }, FEEDBACK_DELAY_MS);
     }, [
+        assignmentMeta,
+        assignmentKey,
         clearResolveTimer,
         divisionRound,
         engine,
         fruitSlots,
-        fruitsByAnimal,
         isResolving,
         prepareRound
     ]);
@@ -564,7 +704,17 @@ export const FairShare: React.FC<FairShareProps> = ({ onExit }) => {
                                 const tone = getAnimalBodyTone(animal);
                                 return (
                                     <div key={`animal-${idx}`} className="fair-share-animal-card">
-                                        <div className="fair-share-animal">{animal}</div>
+                                        <div
+                                            className="fair-share-animal"
+                                            style={
+                                                {
+                                                    '--animal-float-duration': `${2.4 + (idx % 3) * 0.35}s`,
+                                                    '--animal-float-delay': `${(idx % 4) * 0.12}s`
+                                                } as React.CSSProperties
+                                            }
+                                        >
+                                            {animal}
+                                        </div>
                                         {animalReactions[idx] && (
                                             <span
                                                 className={`fair-share-reaction ${animalReactions[idx]?.mode === 'sad' ? 'is-sad' : 'is-good'}`}
@@ -596,6 +746,7 @@ export const FairShare: React.FC<FairShareProps> = ({ onExit }) => {
                                                     type="button"
                                                     className="fair-share-box-fruit"
                                                     onPointerDown={(event) => handleAssignedFruitPointerDown(event, slot.id)}
+                                                    onTouchStart={(event) => handleAssignedFruitTouchStart(event, slot.id)}
                                                     disabled={isResolving}
                                                 >
                                                     {divisionRound.fruitEmoji}
@@ -632,6 +783,7 @@ export const FairShare: React.FC<FairShareProps> = ({ onExit }) => {
                                     type="button"
                                     className={`fair-share-fruit-btn ${isResolving ? 'is-disabled' : ''}`}
                                     onPointerDown={(event) => handleFruitPointerDown(event, slot.id)}
+                                    onTouchStart={(event) => handleFruitTouchStart(event, slot.id)}
                                     disabled={isResolving}
                                 >
                                     <span aria-hidden>{divisionRound?.fruitEmoji ?? '🍎'}</span>
