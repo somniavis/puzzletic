@@ -43,6 +43,7 @@ const PlayPage: React.FC = () => {
     const { isPremium } = usePremiumStatus();
     const [isPremiumModalOpen, setIsPremiumModalOpen] = React.useState(false);
     const [isSettingsMenuOpen, setIsSettingsMenuOpen] = React.useState(false);
+    const [playLearnMode, setPlayLearnMode] = React.useState<'play' | 'learn'>('learn');
     const [activeAdventureLevel, setActiveAdventureLevel] = React.useState<number>(1);
     const hubContentRef = React.useRef<HTMLDivElement | null>(null);
 
@@ -187,9 +188,33 @@ const PlayPage: React.FC = () => {
 
     const renderHeader = () => (
         <header className="play-header-hub">
-            <div className="header-brand">
-                <div className="brand-icon"><i className="fas fa-gamepad"></i></div>
-                <h1 className="brand-title">{t('play.title')}</h1>
+            <div className="play-learn-switch" role="tablist" aria-label="Play mode switch">
+                <button
+                    type="button"
+                    role="tab"
+                    aria-selected={playLearnMode === 'play'}
+                    className={`play-learn-btn ${playLearnMode === 'play' ? 'active' : ''}`}
+                    onClick={() => {
+                        playButtonSound();
+                        setPlayLearnMode('play');
+                    }}
+                >
+                    <i className="fas fa-gamepad" aria-hidden="true"></i>
+                    <span>Play</span>
+                </button>
+                <button
+                    type="button"
+                    role="tab"
+                    aria-selected={playLearnMode === 'learn'}
+                    className={`play-learn-btn ${playLearnMode === 'learn' ? 'active' : ''}`}
+                    onClick={() => {
+                        playButtonSound();
+                        setPlayLearnMode('learn');
+                    }}
+                >
+                    <i className="fas fa-graduation-cap" aria-hidden="true"></i>
+                    <span>Learn</span>
+                </button>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <div className="star-display" style={{ display: 'flex', alignItems: 'center', background: 'rgba(0,0,0,0.2)', padding: '4px 12px', borderRadius: '16px', fontWeight: 'bold', color: '#FFD700', fontSize: '1rem' }}>
@@ -431,21 +456,25 @@ const PlayPage: React.FC = () => {
         <div className="play-page-container">
             {renderHeader()}
 
-            {activeTab === 'math' && renderMathModeSwitcher()}
+            {playLearnMode === 'learn' && activeTab === 'math' && renderMathModeSwitcher()}
 
             <div
                 ref={hubContentRef}
                 className={`hub-content ${activeTab === 'math' && mathMode === 'adventure' ? 'hub-content-math-adventure' : ''}`}
             >
-                {activeTab === 'math' ? (
-                    mathMode === 'adventure' ? renderAdventureSection() : renderGeniusSection()
+                {playLearnMode === 'play' ? (
+                    <div className="play-mode-empty" aria-live="polite" />
                 ) : (
-                    // Other tabs reuse the adventure/category layout logic
-                    renderAdventureSection()
+                    activeTab === 'math' ? (
+                        mathMode === 'adventure' ? renderAdventureSection() : renderGeniusSection()
+                    ) : (
+                        // Other tabs reuse the adventure/category layout logic
+                        renderAdventureSection()
+                    )
                 )}
             </div>
 
-            {renderBottomNav()}
+            {playLearnMode === 'learn' && renderBottomNav()}
 
             <PremiumPurchaseModal
                 isOpen={isPremiumModalOpen}
