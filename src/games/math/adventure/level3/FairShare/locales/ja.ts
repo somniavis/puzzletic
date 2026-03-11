@@ -1,5 +1,5 @@
 const ja = {
-    title: 'Fair Share',
+    title: 'フェアシェア',
     subtitle: '同じ数ずつ分けよう！',
     description: '2の段と4の段を練習するゲームです。',
     powerups: {

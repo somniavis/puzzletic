@@ -1,0 +1,384 @@
+.donut-shop-layout2 .layout2-game-area {
+    position: relative;
+    background: #FFF4CC;
+    --donut-box-rim: #b8aba1;
+    --donut-box-rim-dark: #9d8e83;
+    --donut-box-floor: #f4b826;
+    --donut-box-floor-shadow: #d79f1e;
+    --donut-box-label: #6f5a48;
+}
+
+.donut-shop-layout2 .layout2-sub-header {
+    position: relative;
+    overflow: hidden;
+    margin: 0;
+    padding: clamp(0.58rem, 1.45vh, 0.82rem) clamp(0.72rem, 1.7vw, 0.98rem) clamp(0.16rem, 0.55vh, 0.34rem);
+    border-radius: 0;
+    border: 2px solid rgba(173, 117, 25, 0.5);
+    box-shadow: inset 0 -4px 0 rgba(191, 132, 26, 0.32), 0 3px 0 rgba(186, 128, 22, 0.28);
+    background-color: #facc15;
+    background-image:
+        linear-gradient(180deg, rgba(255, 250, 216, 0.34) 0%, rgba(250, 204, 21, 0.08) 100%),
+        repeating-linear-gradient(0deg, transparent 0 20px, rgba(245, 158, 11, 0.34) 20px 22px),
+        repeating-linear-gradient(90deg, transparent 0 20px, rgba(245, 158, 11, 0.34) 20px 22px);
+    background-size: 100% 100%, 100% 22px, 22px 100%;
+    background-position: 0 0, 0 0, 0 0;
+}
+
+.donut-shop-layout2 .layout2-sub-header .powerup-row {
+    position: relative;
+    z-index: 1;
+}
+
+.donut-shop-layout2 .layout2-grid-wrapper {
+    padding: 0 1rem 0 1rem;
+}
+
+.donut-shop-shell {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.donut-shop-board {
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-rows: minmax(0, auto) minmax(0, 1fr);
+    gap: 1.08rem;
+    padding: 0.2rem 0.3rem 0.34rem;
+    overflow: hidden;
+}
+
+.donut-shop-top-panel {
+    min-height: 0;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: 0.42rem;
+}
+
+.donut-shop-top-mission-row {
+    display: flex;
+    align-items: center;
+    gap: 0.52rem;
+}
+
+.donut-shop-chef {
+    font-size: clamp(3rem, 7.95vh, 3.825rem);
+    line-height: 1;
+    flex-shrink: 0;
+    transform: translateX(0.24rem);
+}
+
+.donut-shop-mission-bubble {
+    position: relative;
+    border-radius: 0.9rem;
+    background: rgba(255, 255, 255, 0.95);
+    border: 2px solid rgba(148, 163, 184, 0.34);
+    box-shadow: 0 3px 0 rgba(148, 163, 184, 0.35);
+    padding: clamp(0.3rem, 0.75vh, 0.45rem) clamp(0.55rem, 1.2vw, 0.8rem);
+    min-height: clamp(2rem, 5vh, 2.5rem);
+    display: inline-flex;
+    align-items: center;
+}
+
+.donut-shop-mission-bubble::before {
+    content: '';
+    position: absolute;
+    left: -0.34rem;
+    top: 50%;
+    width: 0.6rem;
+    height: 0.6rem;
+    background: rgba(255, 255, 255, 0.95);
+    border-left: 2px solid rgba(148, 163, 184, 0.34);
+    border-bottom: 2px solid rgba(148, 163, 184, 0.34);
+    transform: translateY(-50%) rotate(45deg);
+}
+
+.donut-shop-mission-text {
+    font-size: clamp(0.9rem, 2.2vh, 1.1rem);
+    font-weight: 800;
+    color: #1f2937;
+    line-height: 1.2;
+}
+
+.donut-shop-shelf-box {
+    position: relative;
+    z-index: 1;
+    border-radius: 0.85rem;
+    padding: 0.42rem;
+    background: linear-gradient(180deg, #ffe8cc 0%, #ffd5aa 100%);
+    border: 3px solid #cc8f62;
+    box-shadow: inset 0 -4px 0 rgba(125, 79, 47, 0.35);
+    overflow: visible;
+}
+
+.donut-shop-shelf-wrap {
+    position: relative;
+    isolation: isolate;
+}
+
+.donut-shop-shelf-wrap::before,
+.donut-shop-shelf-wrap::after {
+    content: '';
+    position: absolute;
+    bottom: -12px;
+    width: 12px;
+    height: 16px;
+    border-radius: 4px;
+    background: linear-gradient(180deg, #d08a58 0%, #a6613c 100%);
+    border: 2px solid #8b4f31;
+    box-shadow: inset 0 -2px 0 rgba(79, 44, 27, 0.35);
+    pointer-events: none;
+    z-index: 0;
+}
+
+.donut-shop-shelf-wrap::before {
+    left: 12px;
+}
+
+.donut-shop-shelf-wrap::after {
+    right: 12px;
+}
+
+.donut-shop-shelf-grid {
+    --shelf-rows: 2;
+    --shelf-slot-h: clamp(2.4rem, 5.6vh, 3rem);
+    --shelf-slot-gap: clamp(0.35rem, 0.9vw, 0.6rem);
+    min-height: 0;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: var(--shelf-slot-gap);
+    min-height: calc(
+        var(--shelf-slot-h) * var(--shelf-rows) + var(--shelf-slot-gap) * (var(--shelf-rows) - 1)
+    );
+    align-content: center;
+    justify-content: center;
+    justify-items: center;
+    align-items: center;
+    overflow: hidden;
+    padding-right: 0;
+    height: auto;
+    touch-action: none;
+}
+
+.donut-shop-donut-btn {
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    font-size: clamp(1.45rem, calc(1.45rem + 1.6vh), 2.8rem);
+    line-height: 1;
+    height: clamp(2.4rem, 5.6vh, 3rem);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 1;
+    cursor: grab;
+    touch-action: none;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+.donut-shop-shelf-slot-placeholder {
+    width: 100%;
+    height: clamp(2.4rem, 5.6vh, 3rem);
+}
+
+.donut-shop-bottom-boxes {
+    position: relative;
+    border-radius: 0;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    padding: 0.25rem 0.35rem 0.32rem;
+    display: grid;
+    gap: 0.35rem;
+    min-height: 0;
+    height: 100%;
+    max-height: 100%;
+    align-content: stretch;
+    overflow: visible;
+}
+
+.donut-shop-hint-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.96);
+    border-radius: 0.8rem;
+    z-index: 20;
+    pointer-events: auto;
+}
+
+.donut-shop-hint-text {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #1f2937;
+    text-align: center;
+    letter-spacing: 0.01em;
+}
+
+.donut-shop-boxes-title {
+    display: none;
+}
+
+.donut-shop-box-grid {
+    --box-cols: 4;
+    width: min(100%, 40rem);
+    margin: 0 auto;
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: repeat(var(--box-cols), minmax(0, 1fr));
+    grid-template-rows: repeat(2, minmax(0, 1fr));
+    grid-auto-rows: minmax(0, 1fr);
+    gap: clamp(0.5rem, 1.2vw, 0.8rem);
+    height: 100%;
+    max-height: 100%;
+    overflow: visible;
+    align-content: stretch;
+    justify-items: stretch;
+}
+
+.donut-shop-box-grid--vertical {
+    gap: clamp(0.5rem, 1.2vw, 0.8rem);
+}
+
+.donut-shop-box {
+    position: relative;
+    border-radius: 0 0 1rem 1rem;
+    border-left: 4px solid #5e74cc;
+    border-right: 4px solid #5e74cc;
+    border-bottom: 4px solid #5e74cc;
+    border-top: 0;
+    background: linear-gradient(180deg, #a9bcff 0%, #8fa8ff 34%, #7b93ea 100%);
+    box-shadow:
+        inset 0 10px 0 rgba(255, 255, 255, 0.24),
+        inset 0 -4px 0 rgba(94, 116, 204, 0.38),
+        0 6px 0 rgba(94, 116, 204, 0.46),
+        0 10px 16px rgba(43, 58, 116, 0.24);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(0.08rem, 0.4vh, 0.18rem);
+    padding: clamp(0.52rem, 1.8vh, 0.86rem) 0.32rem;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.donut-shop-box::before {
+    content: '';
+    position: absolute;
+    left: -4px;
+    right: -4px;
+    top: -8px;
+    height: 8px;
+    background: linear-gradient(
+        90deg,
+        #5e74cc 0 14%,
+        transparent 14% 86%,
+        #5e74cc 86% 100%
+    );
+    pointer-events: none;
+    z-index: 2;
+}
+
+.donut-shop-box::after {
+    content: '';
+    position: absolute;
+    left: 8px;
+    right: 8px;
+    top: 0;
+    height: 0.36rem;
+    border-radius: 0 0 0.4rem 0.4rem;
+    background: rgba(255, 255, 255, 0.55);
+    z-index: 1;
+}
+
+.donut-shop-box.is-slot-inactive {
+    border: 2px dashed rgba(94, 116, 204, 0.7);
+    border-radius: 0.75rem;
+    background: rgba(255, 255, 255, 0.2);
+    box-shadow: none;
+}
+
+.donut-shop-box.is-slot-inactive::before,
+.donut-shop-box.is-slot-inactive::after {
+    content: none;
+}
+
+.donut-shop-box.is-slot-inactive .donut-shop-box-donuts {
+    display: none;
+}
+
+.donut-shop-box--horizontal {
+    min-height: 0;
+}
+
+.donut-shop-box--vertical {
+    min-height: 0;
+}
+
+.donut-shop-box-donuts {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+    gap: 0.12rem;
+    height: 100%;
+}
+
+.donut-shop-box-donuts--horizontal {
+    align-content: center;
+}
+
+.donut-shop-box-donuts--vertical {
+    align-content: center;
+}
+
+.donut-shop-box-donut-btn {
+    width: auto;
+    height: auto;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    padding: 0;
+    font-size: clamp(1.45rem, calc(1.45rem + 1.6vh), 2.8rem);
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: grab;
+    touch-action: none;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+.donut-shop-drag-preview {
+    position: fixed;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: 1200;
+    font-size: 1.55rem;
+    filter: drop-shadow(0 3px 5px rgba(0, 0, 0, 0.24));
+}
+
+.donut-shop-placeholder {
+    font-size: clamp(1.2rem, 2.5vw, 2rem);
+    font-weight: 900;
+    color: #4b5563;
+    letter-spacing: 0.08em;
+}

@@ -1,5 +1,5 @@
 const manifest = {
-    title: 'Fair Share',
+    title: 'Partilha Justa',
     subtitle: 'Partilha o mesmo número!',
     description: 'Um jogo de multiplicação para praticar as tabuadas do 2 e do 4.',
     powerups: {

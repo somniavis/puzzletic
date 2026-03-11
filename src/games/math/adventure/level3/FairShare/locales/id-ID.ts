@@ -1,5 +1,5 @@
 const manifest = {
-    title: 'Fair Share',
+    title: 'Bagi Rata',
     subtitle: 'Bagi dengan jumlah yang sama!',
     description: 'Game perkalian untuk melatih tabel 2 dan 4.',
     powerups: {

@@ -45,6 +45,7 @@ export const GameIds = {
     MATH_CONSTELLATION_FINDER: 'math-constellation-finder',
     MATH_TROLL_ATTACK: 'math-troll-attack',
     MATH_FAIR_SHARE: 'math-fair-share',
+    MATH_DONUT_SHOP: 'math-donut-shop',
 
     // Math Genius - Front Addition
     FRONT_ADDITION_LV1: 'front-addition-lv1',

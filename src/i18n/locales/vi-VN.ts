@@ -37,6 +37,7 @@ import frogJumpVi from '../../games/math/adventure/level3/FrogJump/locales/vi-VN
 import chipCashierVi from '../../games/math/adventure/level3/ChipCashier/locales/vi-VN';
 import cellCloneVi from '../../games/math/adventure/level3/CellClone/locales/vi-VN';
 import fairShareLocale from "../../games/math/adventure/level3/FairShare/locales/vi-VN";
+import donutShopLocale from "../../games/math/adventure/level3/DonutShop/locales/vi-VN";
 import neonMatrixVi from '../../games/math/adventure/level3/NeonMatrix/locales/vi-VN';
 import threeLeafCloverLocale from '../../games/math/adventure/level3/ThreeLeafClover/locales/vi-VN';
 import hexHiveSixLocale from '../../games/math/adventure/level3/HexHiveSix/locales/vi-VN';
@@ -1725,6 +1726,7 @@ export const viVN = {
         'chip-cashier': chipCashierVi,
         'cell-clone': cellCloneVi,
         'fair-share': fairShareLocale,
+        'donut-shop': donutShopLocale,
         'neon-matrix': neonMatrixVi,
         'three-leaf-clover': threeLeafCloverLocale,
         'hex-hive-six': hexHiveSixLocale,

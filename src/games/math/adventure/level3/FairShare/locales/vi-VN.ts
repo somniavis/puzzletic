@@ -1,5 +1,5 @@
 const manifest = {
-    title: 'Fair Share',
+    title: 'Chia Đều',
     subtitle: 'Chia cùng một số lượng!',
     description: 'Trò chơi nhân để luyện bảng cửu chương 2 và 4.',
     powerups: {

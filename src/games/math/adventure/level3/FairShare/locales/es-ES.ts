@@ -1,5 +1,5 @@
 const manifest = {
-    title: 'Fair Share',
+    title: 'Reparto Justo',
     subtitle: '¡Reparte la misma cantidad!',
     description: 'Un juego de multiplicación para practicar las tablas del 2 y del 4.',
     powerups: {
