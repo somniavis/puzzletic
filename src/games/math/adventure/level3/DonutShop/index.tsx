@@ -38,6 +38,7 @@ type DragState = {
 
 const FEEDBACK_DELAY_MS = 720;
 const POWER_UP_REWARDS: Array<'timeFreeze' | 'extraLife' | 'doubleScore'> = ['timeFreeze', 'extraLife', 'doubleScore'];
+const CHEF_EMOJIS = ['🧑🏻‍🍳', '🧑🏼‍🍳', '🧑🏽‍🍳', '🧑🏾‍🍳', '🧑🏿‍🍳'] as const;
 
 const DONUT_ROUND_CANDIDATES: DonutRound[] = (() => {
     const candidates: DonutRound[] = [];
@@ -111,6 +112,7 @@ export const DonutShop: React.FC<DonutShopProps> = ({ onExit }) => {
     const [isRoundReady, setIsRoundReady] = React.useState(false);
     const [isResolving, setIsResolving] = React.useState(false);
     const [showBoxHint, setShowBoxHint] = React.useState(false);
+    const [chefEmoji, setChefEmoji] = React.useState<string>(() => pickRandom(CHEF_EMOJIS));
     const prevRoundSignatureRef = React.useRef<string | null>(null);
     const prevGameStateRef = React.useRef(engine.gameState);
     const wasPlayingRef = React.useRef(false);
@@ -181,6 +183,7 @@ export const DonutShop: React.FC<DonutShopProps> = ({ onExit }) => {
 
         if (engine.gameState === 'playing' && (prev === 'idle' || prev === 'gameover')) {
             setIsRoundReady(false);
+            setChefEmoji(pickRandom(CHEF_EMOJIS));
             prepareRound();
         }
 
@@ -576,7 +579,7 @@ export const DonutShop: React.FC<DonutShopProps> = ({ onExit }) => {
                     <div className="donut-shop-board">
                         <section className="donut-shop-top-panel" aria-label="donut-shelf">
                             <div className="donut-shop-top-mission-row">
-                                <span className="donut-shop-chef" aria-hidden>🧑‍🍳</span>
+                                <span className="donut-shop-chef" aria-hidden>{chefEmoji}</span>
                                 <div className="donut-shop-mission-bubble" aria-live="polite">
                                     <span className="donut-shop-mission-text">
                                         {t('games.donut-shop.ui.mission', { count: donutRound.donutsPerBox })}
@@ -589,12 +592,13 @@ export const DonutShop: React.FC<DonutShopProps> = ({ onExit }) => {
                                         className="donut-shop-shelf-grid"
                                         style={{ '--shelf-rows': shelfRows } as React.CSSProperties}
                                     >
-                                        {donutSlots.map((slot) =>
+                                        {donutSlots.map((slot, idx) =>
                                             slot.assignedTo === null ? (
                                                 <button
                                                     key={slot.id}
                                                     type="button"
-                                                    className="donut-shop-donut-btn"
+                                                    className="donut-shop-donut-btn donut-shop-donut-btn--wave-in"
+                                                    style={{ '--donut-entry-delay': `${Math.min(idx, 11) * 48}ms` } as React.CSSProperties}
                                                     onPointerDown={(event) => handleShelfDonutPointerDown(event, slot.id)}
                                                     onTouchStart={(event) => handleShelfDonutTouchStart(event, slot.id)}
                                                     disabled={isResolving}

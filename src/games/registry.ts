@@ -49,6 +49,7 @@ const L3_ConstellationFinder = lazy(() => delayedImport(import('./math/adventure
 const L3_TrollAttack = lazy(() => delayedImport(import('./math/adventure/level3/TrollAttack').then(m => ({ default: m.TrollAttack }))));
 const L3_FairShare = lazy(() => delayedImport(import('./math/adventure/level3/FairShare').then(m => ({ default: m.FairShare }))));
 const L3_DonutShop = lazy(() => delayedImport(import('./math/adventure/level3/DonutShop').then(m => ({ default: m.DonutShop }))));
+const L3_ChocolateSplit = lazy(() => delayedImport(import('./math/adventure/level3/ChocolateSplit').then(m => ({ default: m.ChocolateSplit }))));
 
 const L1_DeepSeaDive = lazy(() => delayedImport(import('./math/adventure/level2/DeepSeaDive').then(m => ({ default: (props: any) => createElement(m.DeepSeaDive, { ...props, level: 1 }) }))));
 const L2_DeepSeaDive = lazy(() => delayedImport(import('./math/adventure/level2/DeepSeaDive').then(m => ({ default: (props: any) => createElement(m.DeepSeaDive, { ...props, level: 2 }) }))));
@@ -650,6 +651,21 @@ export const GAMES: GameManifest[] = [
         mode: 'adventure',
         component: L3_DonutShop,
         thumbnail: '🍩',
+        tagsKey: 'games.tags.multiplication'
+    },
+    {
+        id: GameIds.MATH_CHOCOLATE_SPLIT,
+        title: '초콜릿 쪼개기',
+        titleKey: 'games.chocolate-split.title',
+        subtitle: '같은 묶음으로 나눠요',
+        subtitleKey: 'games.chocolate-split.subtitle',
+        description: 'ㅇㅇㅇ',
+        descriptionKey: 'games.chocolate-split.description',
+        category: 'math',
+        level: 3,
+        mode: 'adventure',
+        component: L3_ChocolateSplit,
+        thumbnail: '🍫',
         tagsKey: 'games.tags.multiplication'
     },
     // Front Addition Levels

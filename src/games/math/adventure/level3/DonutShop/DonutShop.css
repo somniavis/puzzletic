@@ -71,6 +71,26 @@
     line-height: 1;
     flex-shrink: 0;
     transform: translateX(0.24rem);
+    transform-origin: 50% 80%;
+    animation: donut-shop-chef-wiggle 4.8s ease-in-out infinite;
+}
+
+@keyframes donut-shop-chef-wiggle {
+    0%, 82%, 100% {
+        transform: translateX(0.24rem) rotate(0deg);
+    }
+    86% {
+        transform: translateX(0.24rem) rotate(-7deg);
+    }
+    90% {
+        transform: translateX(0.24rem) rotate(6deg);
+    }
+    94% {
+        transform: translateX(0.24rem) rotate(-4deg);
+    }
+    97% {
+        transform: translateX(0.24rem) rotate(2deg);
+    }
 }
 
 .donut-shop-mission-bubble {
@@ -181,6 +201,29 @@
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     user-select: none;
+}
+
+.donut-shop-donut-btn--wave-in {
+    animation: donut-shop-donut-wave-in 460ms cubic-bezier(0.2, 0.9, 0.25, 1) both;
+    animation-delay: var(--donut-entry-delay, 0ms);
+}
+
+@keyframes donut-shop-donut-wave-in {
+    0% {
+        opacity: 0;
+        transform: translateY(9px) scale(0.86);
+        filter: saturate(0.85);
+    }
+    60% {
+        opacity: 1;
+        transform: translateY(-3px) scale(1.06);
+        filter: saturate(1.08);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: saturate(1);
+    }
 }
 
 .donut-shop-shelf-slot-placeholder {

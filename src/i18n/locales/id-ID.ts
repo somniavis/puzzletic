@@ -38,6 +38,7 @@ import chipCashierEn from '../../games/math/adventure/level3/ChipCashier/locales
 import cellCloneEn from '../../games/math/adventure/level3/CellClone/locales/id-ID';
 import fairShareLocale from "../../games/math/adventure/level3/FairShare/locales/id-ID";
 import donutShopLocale from "../../games/math/adventure/level3/DonutShop/locales/id-ID";
+import chocolateSplitLocale from "../../games/math/adventure/level3/ChocolateSplit/locales/id-ID";
 import neonMatrixEn from '../../games/math/adventure/level3/NeonMatrix/locales/id-ID';
 import threeLeafCloverLocale from '../../games/math/adventure/level3/ThreeLeafClover/locales/id-ID';
 import hexHiveSixLocale from '../../games/math/adventure/level3/HexHiveSix/locales/id-ID';
@@ -1092,6 +1093,7 @@ export const idID = {
         'cell-clone': cellCloneEn,
         'fair-share': fairShareLocale,
         'donut-shop': donutShopLocale,
+        'chocolate-split': chocolateSplitLocale,
         'neon-matrix': neonMatrixEn,
         'three-leaf-clover': threeLeafCloverLocale,
         'hex-hive-six': hexHiveSixLocale,

@@ -31,6 +31,7 @@ import chipCashierJa from '../../games/math/adventure/level3/ChipCashier/locales
 import cellCloneJa from '../../games/math/adventure/level3/CellClone/locales/ja';
 import fairShareLocale from "../../games/math/adventure/level3/FairShare/locales/ja";
 import donutShopLocale from "../../games/math/adventure/level3/DonutShop/locales/ja";
+import chocolateSplitLocale from "../../games/math/adventure/level3/ChocolateSplit/locales/ja";
 import neonMatrixJa from '../../games/math/adventure/level3/NeonMatrix/locales/ja';
 import threeLeafCloverLocale from '../../games/math/adventure/level3/ThreeLeafClover/locales/ja';
 import hexHiveSixLocale from '../../games/math/adventure/level3/HexHiveSix/locales/ja';
@@ -1837,6 +1838,7 @@ const jaBase = {
         'cell-clone': cellCloneJa,
         'fair-share': fairShareLocale,
         'donut-shop': donutShopLocale,
+        'chocolate-split': chocolateSplitLocale,
         'neon-matrix': neonMatrixJa,
         'three-leaf-clover': threeLeafCloverLocale,
         'hex-hive-six': hexHiveSixLocale,

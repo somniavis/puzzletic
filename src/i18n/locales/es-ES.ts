@@ -38,6 +38,7 @@ import chipCashierEn from '../../games/math/adventure/level3/ChipCashier/locales
 import cellCloneEn from '../../games/math/adventure/level3/CellClone/locales/es-ES';
 import fairShareLocale from "../../games/math/adventure/level3/FairShare/locales/es-ES";
 import donutShopLocale from "../../games/math/adventure/level3/DonutShop/locales/es-ES";
+import chocolateSplitLocale from "../../games/math/adventure/level3/ChocolateSplit/locales/es-ES";
 import neonMatrixEn from '../../games/math/adventure/level3/NeonMatrix/locales/es-ES';
 import threeLeafCloverLocale from '../../games/math/adventure/level3/ThreeLeafClover/locales/es-ES';
 import hexHiveSixLocale from '../../games/math/adventure/level3/HexHiveSix/locales/es-ES';
@@ -1092,6 +1093,7 @@ export const esES = {
         'cell-clone': cellCloneEn,
         'fair-share': fairShareLocale,
         'donut-shop': donutShopLocale,
+        'chocolate-split': chocolateSplitLocale,
         'neon-matrix': neonMatrixEn,
         'three-leaf-clover': threeLeafCloverLocale,
         'hex-hive-six': hexHiveSixLocale,
