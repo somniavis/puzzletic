@@ -1165,6 +1165,39 @@ export const enUK = {
     saving: 'Saving...',
     tapHint: 'Tap! {{current}}/{{max}}',
   },
+  dailyRoutine: {
+    title: 'Daily Routine',
+    claim: 'Claim Reward',
+    claiming: 'Claiming...',
+    claimed: 'Today Complete',
+    done: 'Done',
+    inProgress: 'In Progress',
+    task: {
+      studyStars: 'Earn stars in games 5 times',
+      petTouch: 'Pet your jello 5 times',
+      feedCategory: 'Feed {{category}} 3 times',
+      brushTeeth: 'Brush teeth 2 times',
+      shower: 'Take a shower 2 times',
+      cleanPoop: 'Clean poop 2 times',
+      cleanBug: 'Catch bugs 1 time',
+      sleep: 'Go to sleep 1 time',
+    },
+    foodCategory: {
+      fruit: 'Fruit',
+      vegetable: 'Vegetable',
+      bakery: 'Bakery',
+      meal: 'Meal',
+      dessert: 'Dessert',
+    },
+    reward: {
+      title: 'Daily Routine Reward',
+    },
+    error: {
+      loginRequired: 'Login is required to claim the daily routine reward.',
+      alreadyClaimed: "Today's daily routine reward was already claimed.",
+      claimFailed: 'Failed to claim daily routine reward.',
+    },
+  },
   train: {
     reward: {
       glo: 'GLO',

@@ -656,6 +656,150 @@
   padding: 1.5rem;
 }
 
+.daily-routine-modal {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.daily-routine-task-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.daily-routine-task-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.1rem;
+  border-radius: 18px;
+  border: 3px solid #8b4513;
+  background: linear-gradient(180deg, #fffef7 0%, #f5ecd0 100%);
+  box-shadow: 0 4px 0 #6b3513, 0 6px 10px rgba(0, 0, 0, 0.14);
+}
+
+.daily-routine-task-card.completed {
+  background: linear-gradient(180deg, #f4ffe8 0%, #dff3c3 100%);
+  border-color: #6b8e23;
+  box-shadow: 0 4px 0 #5b7a1d, 0 6px 10px rgba(0, 0, 0, 0.14);
+}
+
+.daily-routine-task-main {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.daily-routine-task-check {
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  border: 2px solid #8b4513;
+  background: #fff8dc;
+  color: #6b3513;
+  font-size: 1.05rem;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.daily-routine-task-card.completed .daily-routine-task-check {
+  border-color: #6b8e23;
+  background: #f7ffe7;
+  color: #4f6d17;
+}
+
+.daily-routine-task-copy {
+  min-width: 0;
+}
+
+.daily-routine-task-title {
+  color: #4d3e2f;
+  font-size: 1rem;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.daily-routine-task-progress {
+  color: #7a624d;
+  flex-shrink: 0;
+  min-width: 56px;
+  text-align: center;
+  font-size: 0.92rem;
+  font-weight: 800;
+}
+
+.daily-routine-task-status {
+  flex-shrink: 0;
+  min-width: 74px;
+  text-align: center;
+  padding: 0.45rem 0.7rem;
+  border-radius: 999px;
+  font-weight: 900;
+}
+
+.daily-routine-task-status.todo {
+  background: #efe0bf;
+  color: #7a5528;
+}
+
+.daily-routine-task-status.done {
+  background: #d9efba;
+  color: #52761f;
+}
+
+.daily-routine-claim-button {
+  width: 100%;
+  border: 4px solid #8b4513;
+  border-radius: 16px;
+  background: linear-gradient(180deg, #ffd972 0%, #ffb347 100%);
+  color: #4d2d12;
+  font-size: 1.05rem;
+  font-weight: 900;
+  padding: 0.95rem 1rem;
+  box-shadow: 0 4px 0 #6b3513, 0 6px 10px rgba(0, 0, 0, 0.18);
+  transition: all 0.2s ease;
+}
+
+.daily-routine-claim-button:not(:disabled) {
+  cursor: pointer;
+}
+
+.daily-routine-claim-button:not(:disabled):hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 #6b3513, 0 8px 12px rgba(0, 0, 0, 0.22);
+}
+
+.daily-routine-claim-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+  filter: grayscale(0.15);
+}
+
+.daily-routine-error-message {
+  margin-bottom: 0.9rem;
+  padding: 0.8rem 0.9rem;
+  border-radius: 14px;
+  background: rgba(194, 78, 59, 0.12);
+  color: #9c3324;
+  font-size: 0.88rem;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.daily-routine-claim-button.claimed {
+  background: linear-gradient(180deg, #d4e6c1 0%, #b7d59d 100%);
+  color: #46611b;
+  border-color: #6b8e23;
+  box-shadow: 0 4px 0 #57721c, 0 6px 10px rgba(0, 0, 0, 0.18);
+}
+
 .shop-content {
   width: 100%;
 }

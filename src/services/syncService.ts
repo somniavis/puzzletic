@@ -5,6 +5,7 @@
 
 import type { User } from 'firebase/auth';
 import type { NurturingPersistentState } from '../types/nurturing';
+import type { DailyRoutineReward } from './dailyRoutineRewardService';
 
 const API_BASE_URL = 'https://api-grogrojello.grogrojello.workers.dev';
 
@@ -181,6 +182,55 @@ export const cancelSubscription = async (
     }
 };
 
+export type ClaimDailyRoutineResult =
+    | { success: true; reward: DailyRoutineReward; claimedAt: number }
+    | { success: false; error: string; alreadyClaimed?: boolean };
+
+export const claimDailyRoutineReward = async (
+    user: User,
+    dateKey: string
+): Promise<ClaimDailyRoutineResult> => {
+    try {
+        const token = await user.getIdToken();
+        const response = await fetch(`${API_BASE_URL}/api/users/${user.uid}/daily-routine-claim`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ dateKey, date_key: dateKey }),
+        });
+
+        const json = await response.json();
+
+        if (response.status === 409) {
+            return {
+                success: false,
+                error: json.error || 'Already claimed',
+                alreadyClaimed: true,
+            };
+        }
+
+        if (!response.ok) {
+            return {
+                success: false,
+                error: json.error || `Claim Error: ${response.status}`,
+            };
+        }
+
+        return {
+            success: true,
+            reward: json.reward,
+            claimedAt: json.claimedAt,
+        };
+    } catch (error: any) {
+        return {
+            success: false,
+            error: error.message || 'Unknown error',
+        };
+    }
+};
+
 /**
  * Sync (Upsert) user data to Cloudflare D1
  * 
@@ -327,4 +377,3 @@ export const syncUserData = async (
         return false;
     }
 };
-

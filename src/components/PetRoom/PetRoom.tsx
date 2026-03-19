@@ -5,6 +5,7 @@ import type { Character, CharacterMood, CharacterAction } from '../../types/char
 import type { CharacterSpeciesId } from '../../data/species';
 import type { EmotionCategory } from '../../types/emotion';
 import { useNurturing } from '../../contexts/NurturingContext';
+import { useAuth } from '../../contexts/AuthContext';
 import { startBackgroundMusic, playButtonSound, playCleaningSound, playEatingSound } from '../../utils/sound';
 // import { ActionResultModal } from './ActionResultModal'; // Placeholder, verify location
 import { CameraModal } from './CameraModal'; // Confirmed in PetRoom dir
@@ -13,9 +14,16 @@ import { SignupPromoModal } from '../SignupPromoModal'; // Confirmed in componen
 import { EvolutionOverlay } from './EvolutionOverlay';
 import { ConfirmModal } from './ConfirmModal'; // Confirmed in PetRoom
 import { FabMenu } from './FabMenu'; // Confirmed in PetRoom
+import { DailyRoutineModal } from './DailyRoutineModal';
 import { TrainRewardModal } from '../TrainRewardModal'; // Will update if index.tsx exists
+import { DailyRoutineRewardModal } from '../DailyRoutineRewardModal';
 import { EvolutionControls } from './EvolutionControls';
 import { PremiumPurchaseModal } from '../Premium/PremiumPurchaseModal';
+import {
+  generateDailyRoutineReward,
+  type DailyRoutineReward,
+} from '../../services/dailyRoutineRewardService';
+import { claimDailyRoutineReward } from '../../services/syncService';
 
 // Hooks
 import { usePetRoomUI } from './hooks/usePetRoomUI';
@@ -53,6 +61,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({
 }) => {
   const { t } = useTranslation();
   const nurturing = useNurturing();
+  const { user, isGuest } = useAuth();
 
   // Resume tick safety check
   useEffect(() => {
@@ -161,6 +170,9 @@ export const PetRoom: React.FC<PetRoomProps> = ({
     type: 'small' | 'snack' | 'big' | 'dud';
     amount: number;
   } | null>(null);
+  const [pendingDailyRoutineReward, setPendingDailyRoutineReward] = useState<DailyRoutineReward | null>(null);
+  const [isClaimingDailyRoutine, setIsClaimingDailyRoutine] = useState(false);
+  const [dailyRoutineError, setDailyRoutineError] = useState<string | null>(null);
 
   useEffect(() => {
     const lastTrainTime = parseInt(localStorage.getItem('lastTrainTime') || '0', 10);
@@ -252,6 +264,14 @@ export const PetRoom: React.FC<PetRoomProps> = ({
   // --- Evolution Premium Lock & Premium Modal ---
   const [showPremiumModal, setShowPremiumModal] = useState(false);
 
+  const isLegacyDailyRoutineClaimError = useCallback((error: string) => {
+    const normalized = error.toLowerCase();
+    return normalized.includes('invalid gro value')
+      || normalized.includes('invalid xp value')
+      || normalized.includes('claim error: 404')
+      || normalized.includes('claim error: 405');
+  }, []);
+
   const handleEvolutionTrigger = () => {
     // Level 3 -> 4 Lock (Premium Only)
     // evolutionStage 3 means current level is 3. Trying to evolve to 4.
@@ -269,6 +289,68 @@ export const PetRoom: React.FC<PetRoomProps> = ({
 
   const handlePremiumClick = useCallback(() => {
     setShowPremiumModal(true);
+  }, []);
+
+  const handleOpenDailyRoutine = useCallback(() => {
+    playButtonSound();
+    setDailyRoutineError(null);
+    ui.menus.setShowDailyRoutineModal(true);
+  }, [ui.menus.setShowDailyRoutineModal]);
+
+  const handleClaimDailyRoutineReward = useCallback(async () => {
+    if (!user || isGuest) {
+      setDailyRoutineError(t('dailyRoutine.error.loginRequired'));
+      return;
+    }
+
+    if (!nurturing.dailyRoutine.completed || nurturing.dailyRoutine.claimed || isClaimingDailyRoutine) {
+      return;
+    }
+
+    setIsClaimingDailyRoutine(true);
+    setDailyRoutineError(null);
+
+    try {
+      const result = await claimDailyRoutineReward(user, nurturing.dailyRoutine.dateKey);
+
+      if (!result.success) {
+        if (result.alreadyClaimed) {
+          nurturing.markDailyRoutineClaimed();
+          setDailyRoutineError(t('dailyRoutine.error.alreadyClaimed'));
+          return;
+        }
+
+        if (import.meta.env.DEV && isLegacyDailyRoutineClaimError(result.error || '')) {
+          const fallbackReward = generateDailyRoutineReward(nurturing.evolutionStage);
+          nurturing.addRewards(fallbackReward.xp, fallbackReward.gro);
+          nurturing.markDailyRoutineClaimed();
+          ui.menus.setShowDailyRoutineModal(false);
+          setPendingDailyRoutineReward(fallbackReward);
+          return;
+        }
+
+        setDailyRoutineError(result.error || t('dailyRoutine.error.claimFailed'));
+        return;
+      }
+
+      nurturing.addRewards(result.reward.xp, result.reward.gro);
+      nurturing.markDailyRoutineClaimed();
+      ui.menus.setShowDailyRoutineModal(false);
+      setPendingDailyRoutineReward(result.reward);
+    } finally {
+      setIsClaimingDailyRoutine(false);
+    }
+  }, [
+    user,
+    isGuest,
+    nurturing,
+    ui.menus,
+    isClaimingDailyRoutine,
+    isLegacyDailyRoutineClaimError,
+  ]);
+
+  const handleConfirmDailyRoutineReward = useCallback(() => {
+    setPendingDailyRoutineReward(null);
   }, []);
 
   return (
@@ -297,6 +379,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({
           <FabMenu
             isFabOpen={isFabOpen}
             setIsFabOpen={setIsFabOpen}
+            openDailyRoutine={handleOpenDailyRoutine}
             toggleShopMenu={handleToggleShop}
             handleCameraClick={camera.handleCameraClick}
             showGiftBox={showGiftBox}
@@ -378,6 +461,17 @@ export const PetRoom: React.FC<PetRoomProps> = ({
         />
       )}
 
+      {ui.menus.showDailyRoutineModal && (
+        <DailyRoutineModal
+          dailyRoutine={nurturing.dailyRoutine}
+          onClose={() => ui.menus.setShowDailyRoutineModal(false)}
+          onClaim={handleClaimDailyRoutineReward}
+          isClaiming={isClaimingDailyRoutine}
+          canClaim={!!user && !isGuest}
+          errorMessage={dailyRoutineError}
+        />
+      )}
+
       {ui.modals.confirmModalType && (
         <ConfirmModal
           title={ui.modals.confirmModalType === 'sleep' ? t('sleep.confirm.sleepTitle') : t('sleep.confirm.wakeTitle')}
@@ -402,6 +496,13 @@ export const PetRoom: React.FC<PetRoomProps> = ({
           rewardType={pendingTrainReward.type}
           amount={pendingTrainReward.amount}
           onConfirm={handleConfirmTrainReward}
+        />
+      )}
+
+      {pendingDailyRoutineReward && (
+        <DailyRoutineRewardModal
+          reward={pendingDailyRoutineReward}
+          onConfirm={handleConfirmDailyRoutineReward}
         />
       )}
 

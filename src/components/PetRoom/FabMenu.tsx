@@ -7,6 +7,7 @@ import './PetRoom.css';
 interface FabMenuProps {
     isFabOpen: boolean;
     setIsFabOpen: (isOpen: boolean) => void;
+    openDailyRoutine: () => void;
     toggleShopMenu: () => void;
     handleCameraClick: () => void;
     showGiftBox: boolean;
@@ -17,6 +18,7 @@ interface FabMenuProps {
 export const FabMenu: React.FC<FabMenuProps> = React.memo(({
     isFabOpen,
     setIsFabOpen,
+    openDailyRoutine,
     toggleShopMenu,
     handleCameraClick,
     showGiftBox,
@@ -53,6 +55,15 @@ export const FabMenu: React.FC<FabMenuProps> = React.memo(({
             {/* Expanded Menu Items */}
             {isFabOpen && (
                 <>
+                    <button
+                        className="fab-menu-item"
+                        onClick={openDailyRoutine}
+                        disabled={isActionInProgress || showGiftBox}
+                        title={t('dailyRoutine.title')}
+                    >
+                        <span className="action-icon">🗒️</span>
+                    </button>
+
                     {/* Shop Button */}
                     <button
                         className="fab-menu-item"

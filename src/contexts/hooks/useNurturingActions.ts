@@ -12,6 +12,7 @@ import type {
     PendingPoop
 } from '../../types/nurturing';
 import type { FoodItem } from '../../types/food';
+import type { DailyRoutineProgressPayload } from '../../types/dailyRoutine';
 import type { MedicineItem } from '../../types/medicine';
 import type { CleaningTool } from '../../types/cleaning';
 import { PET_ITEMS } from '../../types/shop';
@@ -64,6 +65,7 @@ export const useNurturingActions = (
     setState: React.Dispatch<React.SetStateAction<NurturingPersistentState>>,
     setCondition: (condition: CharacterCondition) => void,
     stateRef: React.MutableRefObject<NurturingPersistentState>,
+    onDailyRoutineProgress?: (payload: DailyRoutineProgressPayload) => void,
     userId?: string
 ) => {
 
@@ -115,7 +117,7 @@ export const useNurturingActions = (
     }, [setState, setCondition]);
 
     const feed = useCallback((food: FoodItem): ActionResult => {
-        return performAction(
+        const result = performAction(
             (currentState) => serviceFeed(currentState.stats, food.id, currentState.poops, currentState.pendingPoops || []),
             (result, _newState) => {
                 const newHistory = {
@@ -137,7 +139,9 @@ export const useNurturingActions = (
                 return { history: newHistory };
             }
         );
-    }, [performAction]);
+        onDailyRoutineProgress?.({ type: 'feed_category', foodCategory: food.category });
+        return result;
+    }, [performAction, onDailyRoutineProgress]);
 
     const giveMedicine = useCallback((medicine: MedicineItem): ActionResult => {
         return performAction(
@@ -308,16 +312,23 @@ export const useNurturingActions = (
     }, [setState, setCondition]);
 
     const takeShower = useCallback((): ActionResult => {
-        return performAction((currentState) => serviceTakeShower(currentState.stats));
-    }, [performAction]);
+        const result = performAction((currentState) => serviceTakeShower(currentState.stats));
+        onDailyRoutineProgress?.({ type: 'shower' });
+        return result;
+    }, [performAction, onDailyRoutineProgress]);
 
     const brushTeeth = useCallback((): ActionResult => {
-        return performAction((currentState) => serviceBrushTeeth(currentState.stats));
-    }, [performAction]);
+        const result = performAction((currentState) => serviceBrushTeeth(currentState.stats));
+        onDailyRoutineProgress?.({ type: 'brush_teeth' });
+        return result;
+    }, [performAction, onDailyRoutineProgress]);
 
     const clickPoop = useCallback((poopId: string, happinessBonus: number = 0) => {
+        let removed = false;
         setState((currentState) => {
-            const { updatedPoops, removed } = removePoop(poopId, currentState.poops);
+            const poopResult = removePoop(poopId, currentState.poops);
+            const updatedPoops = poopResult.updatedPoops;
+            removed = poopResult.removed;
 
             if (!removed) {
                 return currentState;
@@ -337,9 +348,13 @@ export const useNurturingActions = (
                 poops: updatedPoops,
             };
         });
-    }, [setState, setCondition]);
+        if (removed) {
+            onDailyRoutineProgress?.({ type: 'clean_poop' });
+        }
+    }, [setState, setCondition, onDailyRoutineProgress]);
 
     const clickBug = useCallback((bugId: string) => {
+        let removed = false;
         setState((currentState) => {
             const bugs = currentState.bugs || [];
             const bugToRemove = bugs.find(b => b.id === bugId);
@@ -347,6 +362,7 @@ export const useNurturingActions = (
             if (!bugToRemove) {
                 return currentState;
             }
+            removed = true;
 
             const updatedBugs = bugs.filter(b => b.id !== bugId);
 
@@ -364,7 +380,10 @@ export const useNurturingActions = (
                 bugs: updatedBugs,
             };
         });
-    }, [setState, setCondition]);
+        if (removed) {
+            onDailyRoutineProgress?.({ type: 'clean_bug' });
+        }
+    }, [setState, setCondition, onDailyRoutineProgress]);
 
     const cleanBug = useCallback((): ActionResult => {
         let result: ActionResult = { success: false, statChanges: {} };
@@ -396,8 +415,11 @@ export const useNurturingActions = (
             };
         });
 
+        if (result.success) {
+            onDailyRoutineProgress?.({ type: 'clean_bug' });
+        }
         return result;
-    }, [setState, setCondition]);
+    }, [setState, setCondition, onDailyRoutineProgress]);
 
     const purchaseItem = useCallback((itemId: string, price: number): boolean => {
         const current = stateRef.current;
@@ -447,7 +469,7 @@ export const useNurturingActions = (
         return true;
     }, [setState, userId]);
 
-    const petCharacter = useCallback((happinessChange: number, affectionChange: number = 0) => {
+    const petCharacter = useCallback((happinessChange: number, affectionChange: number = 0, source: 'jello' | 'pet' = 'jello') => {
         setState((currentState) => {
             const newStats: NurturingStats = {
                 ...currentState.stats,
@@ -463,7 +485,10 @@ export const useNurturingActions = (
                 lastActiveTime: Date.now(),
             };
         });
-    }, [setState, setCondition]);
+        if (source === 'jello') {
+            onDailyRoutineProgress?.({ type: 'pet_touch' });
+        }
+    }, [setState, setCondition, onDailyRoutineProgress]);
 
     const purchaseRandomPet = useCallback((): { success: boolean; petId?: string; message?: string } => {
         let result = { success: false, petId: undefined as string | undefined, message: '' };
@@ -524,6 +549,3 @@ export const useNurturingActions = (
         purchaseRandomPet
     };
 };
-
-
-

@@ -1165,6 +1165,39 @@ export const idID = {
     saving: 'Menyimpan...',
     tapHint: 'Ketuk! {{current}}/{{max}}',
   },
+  dailyRoutine: {
+    title: 'Rutinitas Harian',
+    claim: 'Ambil Hadiah',
+    claiming: 'Mengambil...',
+    claimed: 'Selesai Hari Ini',
+    done: 'Selesai',
+    inProgress: 'Sedang Berjalan',
+    task: {
+      studyStars: 'Dapatkan bintang di game 5 kali',
+      petTouch: 'Elus jello-mu 5 kali',
+      feedCategory: 'Beri {{category}} 3 kali',
+      brushTeeth: 'Sikat gigi 2 kali',
+      shower: 'Mandikan 2 kali',
+      cleanPoop: 'Bersihkan poop 2 kali',
+      cleanBug: 'Tangkap bug 1 kali',
+      sleep: 'Tidurkan 1 kali',
+    },
+    foodCategory: {
+      fruit: 'buah',
+      vegetable: 'sayur',
+      bakery: 'roti',
+      meal: 'makanan',
+      dessert: 'dessert',
+    },
+    reward: {
+      title: 'Hadiah Rutinitas Harian',
+    },
+    error: {
+      loginRequired: 'Login diperlukan untuk mengambil hadiah rutinitas harian.',
+      alreadyClaimed: 'Hadiah rutinitas harian hari ini sudah diambil.',
+      claimFailed: 'Gagal mengambil hadiah rutinitas harian.',
+    },
+  },
   train: {
     reward: {
       glo: 'GLO',

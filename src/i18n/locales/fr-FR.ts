@@ -1165,6 +1165,39 @@ export const frFR = {
     saving: 'Enregistrement...',
     tapHint: 'Touchez ! {{current}}/{{max}}',
   },
+  dailyRoutine: {
+    title: 'Routine quotidienne',
+    claim: 'Recevoir la récompense',
+    claiming: 'Réclamation...',
+    claimed: 'Terminé aujourd’hui',
+    done: 'Terminé',
+    inProgress: 'En cours',
+    task: {
+      studyStars: 'Gagne des étoiles dans les jeux 5 fois',
+      petTouch: 'Caresse ton jello 5 fois',
+      feedCategory: 'Donne {{category}} 3 fois',
+      brushTeeth: 'Brosse les dents 2 fois',
+      shower: 'Donne une douche 2 fois',
+      cleanPoop: 'Nettoie le caca 2 fois',
+      cleanBug: 'Attrape des insectes 1 fois',
+      sleep: 'Endors-le 1 fois',
+    },
+    foodCategory: {
+      fruit: 'fruit',
+      vegetable: 'légume',
+      bakery: 'boulangerie',
+      meal: 'repas',
+      dessert: 'dessert',
+    },
+    reward: {
+      title: 'Récompense de routine quotidienne',
+    },
+    error: {
+      loginRequired: 'Vous devez vous connecter pour recevoir la récompense de la routine quotidienne.',
+      alreadyClaimed: 'La récompense de routine quotidienne d’aujourd’hui a déjà été reçue.',
+      claimFailed: 'Impossible de recevoir la récompense de routine quotidienne.',
+    },
+  },
   train: {
     reward: {
       glo: 'GLO',

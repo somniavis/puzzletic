@@ -15,6 +15,7 @@ import type {
   AbandonmentStatusUI,
   GameScoreValue,
 } from '../types/nurturing';
+import type { DailyRoutineState } from '../types/dailyRoutine';
 import type { FoodItem } from '../types/food';
 import type { MedicineItem } from '../types/medicine';
 import type { CleaningTool } from '../types/cleaning';
@@ -36,6 +37,7 @@ import { useNurturingTick } from './hooks/useNurturingTick';
 import { useNurturingActions } from './hooks/useNurturingActions';
 import { useEvolutionLogic } from './hooks/useEvolutionLogic';
 import type { EvolutionPhase } from '../services/evolutionService';
+import { useDailyRoutine } from './hooks/useDailyRoutine';
 
 interface NurturingContextValue {
   // 상태
@@ -77,7 +79,7 @@ interface NurturingContextValue {
   takeShower: () => ActionResult;
   brushTeeth: () => ActionResult;
   play: () => ActionResult;
-  petCharacter: (happinessChange: number, affectionChange?: number) => void;
+  petCharacter: (happinessChange: number, affectionChange?: number, source?: 'jello' | 'pet') => void;
   study: () => ActionResult;
   clickPoop: (poopId: string, happinessBonus?: number) => void;
   clickBug: (bugId: string) => void;
@@ -128,6 +130,10 @@ interface NurturingContextValue {
   // Global Loading State
   isGlobalLoading: boolean;
 
+  // Daily Routine
+  dailyRoutine: DailyRoutineState;
+  markDailyRoutineClaimed: () => void;
+
   // Debug
   debugUnlockAllGames: () => void;
   debugAddStars: (amount: number) => void;
@@ -151,6 +157,7 @@ interface NurturingProviderProps {
 
 export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }) => {
   const { user, guestId, isGuest } = useAuth();
+  const dailyRoutineScopeId = user?.uid || guestId || undefined;
 
 
 
@@ -193,8 +200,21 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
   // 2. Game Tick Loop
   const { pauseTick, resumeTick } = useNurturingTick(user, guestId, state, setState, setCondition);
 
+  const {
+    dailyRoutine,
+    incrementTask: incrementDailyRoutineTask,
+    markClaimed: markDailyRoutineClaimed,
+    refreshForToday: refreshDailyRoutineForToday,
+  } = useDailyRoutine(dailyRoutineScopeId);
+
   // 3. Actions
-  const actions = useNurturingActions(setState, setCondition, stateRef, user?.uid);
+  const actions = useNurturingActions(
+    setState,
+    setCondition,
+    stateRef,
+    incrementDailyRoutineTask,
+    user?.uid
+  );
 
   // 4. Evolution Logic
   const evolution = useEvolutionLogic(
@@ -261,6 +281,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
   }, [user, setState]);
 
   const toggleSleep = useCallback(() => {
+    const wasSleeping = !!stateRef.current.isSleeping;
     setState((currentState) => {
       const nextIsSleeping = !currentState.isSleeping;
       console.log(nextIsSleeping ? '😴 젤로가 잠들었습니다.' : '🌅 젤로가 일어났습니다.');
@@ -270,7 +291,10 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
         sleepStartTime: nextIsSleeping ? Date.now() : undefined,
       };
     });
-  }, [setState]);
+    if (!wasSleeping) {
+      incrementDailyRoutineTask({ type: 'sleep' });
+    }
+  }, [setState, incrementDailyRoutineTask, stateRef]);
 
   const setGameDifficulty = useCallback((difficulty: number | null) => {
     console.log(`🎮 Game Difficulty Set: ${difficulty}`);
@@ -333,7 +357,14 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
       saveNurturingState(newState, user?.uid); // Force Save immediately (Fixes navigation data loss)
       return newState;
     });
-  }, [user?.uid, setState]);
+    if (starsEarned > 0) {
+      incrementDailyRoutineTask({ type: 'study_stars' });
+    }
+  }, [user?.uid, setState, incrementDailyRoutineTask]);
+
+  React.useEffect(() => {
+    refreshDailyRoutineForToday();
+  }, [refreshDailyRoutineForToday]);
 
   const debugUnlockAllGames = useCallback(() => {
     setState((currentState) => {
@@ -426,6 +457,8 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     purchaseRandomPet: actions.purchaseRandomPet,
 
     isGlobalLoading,
+    dailyRoutine,
+    markDailyRoutineClaimed,
 
     // UX
     lastPlayedGameId: state.lastPlayedGameId,
@@ -453,7 +486,10 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     debugAddStars,
     completeCharacterCreation,
     user,
-    isGlobalLoading
+    isGlobalLoading,
+    dailyRoutine,
+    markDailyRoutineClaimed,
+    refreshDailyRoutineForToday
   ]);
 
   return <NurturingContext.Provider value={value}>{children}</NurturingContext.Provider>;

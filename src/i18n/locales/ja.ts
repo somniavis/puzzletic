@@ -1911,6 +1911,39 @@ const jaBase = {
         saving: '保存中...',
         tapHint: 'タップ! {{current}}/{{max}}',
     },
+    dailyRoutine: {
+        title: 'Daily Routine',
+        claim: '報酬を受け取る',
+        claiming: '受け取り中...',
+        claimed: '今日の完了',
+        done: '完了',
+        inProgress: '進行中',
+        task: {
+            studyStars: '星を獲得して学習 5回',
+            petTouch: 'ジェロをなでる 5回',
+            feedCategory: '{{category}}をあげる 3回',
+            brushTeeth: '歯みがき 2回',
+            shower: 'シャワー 2回',
+            cleanPoop: 'うんち掃除 2回',
+            cleanBug: '虫取り 1回',
+            sleep: '寝かせる 1回',
+        },
+        foodCategory: {
+            fruit: '果物',
+            vegetable: '野菜',
+            bakery: 'ベーカリー',
+            meal: 'ごはん',
+            dessert: 'デザート',
+        },
+        reward: {
+            title: 'デイリールーティン報酬',
+        },
+        error: {
+            loginRequired: 'デイリールーティン報酬を受け取るにはログインが必要です。',
+            alreadyClaimed: '今日のデイリールーティン報酬はすでに受け取り済みです。',
+            claimFailed: 'デイリールーティン報酬を受け取れませんでした。',
+        },
+    },
     train: {
         reward: {
             glo: 'GLO',

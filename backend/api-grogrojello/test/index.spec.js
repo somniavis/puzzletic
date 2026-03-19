@@ -78,6 +78,7 @@ describe('Worker auth gate', () => {
 
 	beforeEach(async () => {
 		await env.DB.prepare('DROP TABLE IF EXISTS users').run();
+		await env.DB.prepare('DROP TABLE IF EXISTS daily_routine_claims').run();
 		await env.DB.prepare(`
 			CREATE TABLE users (
 				uid TEXT PRIMARY KEY,
@@ -95,6 +96,14 @@ describe('Worker auth gate', () => {
 				is_premium INTEGER DEFAULT 0,
 				subscription_end INTEGER DEFAULT 0,
 				subscription_plan TEXT
+			)
+		`).run();
+		await env.DB.prepare(`
+			CREATE TABLE daily_routine_claims (
+				uid TEXT NOT NULL,
+				date_key TEXT NOT NULL,
+				claimed_at INTEGER NOT NULL,
+				PRIMARY KEY (uid, date_key)
 			)
 		`).run();
 	});
@@ -263,5 +272,89 @@ describe('Worker auth gate', () => {
 		expect(row.is_premium).toBe(0);
 		expect(row.subscription_end).toBe(0);
 		expect(row.subscription_plan).toBeNull();
+	});
+
+	it('claims daily routine reward once per date and updates xp/gro', async () => {
+		const nowMs = Date.now();
+		await env.DB.prepare(`
+			INSERT INTO users (uid, email, display_name, level, xp, gro, star, current_land, inventory, game_data, created_at, last_synced_at, is_premium, subscription_end, subscription_plan)
+			VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+		`).bind(
+			userId,
+			'test@example.com',
+			'Tester',
+			3,
+			100,
+			50,
+			10,
+			'default_ground',
+			JSON.stringify([]),
+			JSON.stringify({ hasCharacter: true }),
+			nowMs,
+			nowMs,
+			0,
+			0,
+			null
+		).run();
+
+		const now = Math.floor(Date.now() / 1000);
+		const token = await signJwt(privateKey, publicJwk.kid, {
+			iss: `https://securetoken.google.com/${PROJECT_ID}`,
+			aud: PROJECT_ID,
+			sub: userId,
+			iat: now - 30,
+			exp: now + 3600,
+			auth_time: now - 30,
+		});
+
+		await withMockedJwks(publicJwk, async () => {
+			const request = new Request(`http://example.com/api/users/${userId}/daily-routine-claim`, {
+				method: 'POST',
+				headers: {
+					Authorization: `Bearer ${token}`,
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({ dateKey: '2026-03-20' }),
+			});
+			const ctx = createExecutionContext();
+			const response = await worker.fetch(request, env, ctx);
+			await waitOnExecutionContext(ctx);
+
+			expect(response.status).toBe(200);
+			const body = await response.json();
+			expect(body.success).toBe(true);
+			expect(body.reward.gro).toBeGreaterThan(0);
+			expect(body.reward.xp).toBeGreaterThan(0);
+		});
+
+		const updatedUser = await env.DB.prepare('SELECT xp, gro FROM users WHERE uid = ?')
+			.bind(userId)
+			.first();
+		expect(updatedUser).toBeTruthy();
+		expect(updatedUser.xp).toBeGreaterThan(100);
+		expect(updatedUser.gro).toBeGreaterThan(50);
+
+		const claimRow = await env.DB.prepare('SELECT uid, date_key FROM daily_routine_claims WHERE uid = ? AND date_key = ?')
+			.bind(userId, '2026-03-20')
+			.first();
+		expect(claimRow).toBeTruthy();
+
+		await withMockedJwks(publicJwk, async () => {
+			const request = new Request(`http://example.com/api/users/${userId}/daily-routine-claim`, {
+				method: 'POST',
+				headers: {
+					Authorization: `Bearer ${token}`,
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({ dateKey: '2026-03-20' }),
+			});
+			const ctx = createExecutionContext();
+			const response = await worker.fetch(request, env, ctx);
+			await waitOnExecutionContext(ctx);
+
+			expect(response.status).toBe(409);
+			const body = await response.json();
+			expect(body.alreadyClaimed).toBe(true);
+		});
 	});
 });

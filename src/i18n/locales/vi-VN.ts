@@ -1800,6 +1800,39 @@ export const viVN = {
     saving: 'Đang lưu...',
     tapHint: 'Chạm! {{current}}/{{max}}',
   },
+  dailyRoutine: {
+    title: 'Nhiệm vụ hằng ngày',
+    claim: 'Nhận thưởng',
+    claiming: 'Đang nhận...',
+    claimed: 'Hoàn thành hôm nay',
+    done: 'Hoàn thành',
+    inProgress: 'Đang tiến hành',
+    task: {
+      studyStars: 'Nhận sao trong trò chơi 5 lần',
+      petTouch: 'Vuốt ve jello 5 lần',
+      feedCategory: 'Cho ăn {{category}} 3 lần',
+      brushTeeth: 'Đánh răng 2 lần',
+      shower: 'Tắm 2 lần',
+      cleanPoop: 'Dọn poop 2 lần',
+      cleanBug: 'Bắt côn trùng 1 lần',
+      sleep: 'Cho đi ngủ 1 lần',
+    },
+    foodCategory: {
+      fruit: 'trái cây',
+      vegetable: 'rau',
+      bakery: 'bánh',
+      meal: 'thức ăn',
+      dessert: 'tráng miệng',
+    },
+    reward: {
+      title: 'Thưởng nhiệm vụ hằng ngày',
+    },
+    error: {
+      loginRequired: 'Cần đăng nhập để nhận thưởng nhiệm vụ hằng ngày.',
+      alreadyClaimed: 'Phần thưởng nhiệm vụ hằng ngày hôm nay đã được nhận.',
+      claimFailed: 'Không thể nhận phần thưởng nhiệm vụ hằng ngày.',
+    },
+  },
   train: {
     reward: {
       glo: 'GLO',

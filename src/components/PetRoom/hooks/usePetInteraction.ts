@@ -83,7 +83,7 @@ export const usePetInteraction = ({
         showBubble(category, level, 1800);
 
         // Update Global Context Logic (Fix for UI sync)
-        nurturing.petCharacter(happinessChange, 1);
+        nurturing.petCharacter(happinessChange, 1, 'jello');
 
 
 

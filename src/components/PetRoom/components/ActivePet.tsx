@@ -121,7 +121,7 @@ export const ActivePet: React.FC<ActivePetProps> = ({ petId }) => {
         setTimeout(() => setEmojiReaction(null), 1000);
 
         // Add affection/happiness (small amount)
-        petCharacter(1, 1);
+        petCharacter(1, 1, 'pet');
     };
 
     if (!petData) return null;

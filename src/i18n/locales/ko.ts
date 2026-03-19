@@ -1168,6 +1168,39 @@ const koBase = {
         saving: '저장 중...',
         tapHint: '탭! {{current}}/{{max}}',
     },
+    dailyRoutine: {
+        title: 'Daily Routine',
+        claim: '보상 받기',
+        claiming: '보상 받는 중...',
+        claimed: '오늘 완료',
+        done: '완료',
+        inProgress: '진행 중',
+        task: {
+            studyStars: '학습하기(별 획득 기준) 5회',
+            petTouch: '쓰다듬기 5회',
+            feedCategory: '{{category}} 주기 3회',
+            brushTeeth: '이닦기 2회',
+            shower: '샤워시키기 2회',
+            cleanPoop: '청소하기 2회',
+            cleanBug: '벌레 잡기 1회',
+            sleep: '잠자기 1회',
+        },
+        foodCategory: {
+            fruit: '과일',
+            vegetable: '야채',
+            bakery: '베이크',
+            meal: '음식',
+            dessert: '디저트',
+        },
+        reward: {
+            title: '일일 루틴 보상',
+        },
+        error: {
+            loginRequired: '일일 루틴 보상을 받으려면 로그인이 필요해요.',
+            alreadyClaimed: '오늘의 일일 루틴 보상은 이미 받았어요.',
+            claimFailed: '일일 루틴 보상을 받지 못했어요.',
+        },
+    },
     train: {
         reward: {
             glo: 'GLO',

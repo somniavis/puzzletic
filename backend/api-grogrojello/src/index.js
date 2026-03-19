@@ -9,6 +9,52 @@ const FIREBASE_JWKS_URL = 'https://www.googleapis.com/service_accounts/v1/jwk/se
 let firebaseJwksCache = null;
 let firebaseJwksExpiry = 0;
 
+const DAILY_ROUTINE_REWARD_TABLE = {
+	1: {
+		normal: { gro: 12, xp: 2, chance: 0.7 },
+		bonus: { gro: 16, xp: 3, chance: 0.25 },
+		jackpot: { gro: 20, xp: 4, chance: 0.05 },
+	},
+	2: {
+		normal: { gro: 18, xp: 3, chance: 0.7 },
+		bonus: { gro: 24, xp: 4, chance: 0.25 },
+		jackpot: { gro: 30, xp: 5, chance: 0.05 },
+	},
+	3: {
+		normal: { gro: 28, xp: 4, chance: 0.7 },
+		bonus: { gro: 36, xp: 5, chance: 0.25 },
+		jackpot: { gro: 45, xp: 7, chance: 0.05 },
+	},
+	4: {
+		normal: { gro: 40, xp: 6, chance: 0.7 },
+		bonus: { gro: 52, xp: 8, chance: 0.25 },
+		jackpot: { gro: 65, xp: 10, chance: 0.05 },
+	},
+	5: {
+		normal: { gro: 55, xp: 8, chance: 0.7 },
+		bonus: { gro: 70, xp: 10, chance: 0.25 },
+		jackpot: { gro: 85, xp: 13, chance: 0.05 },
+	},
+};
+
+const clampStage = (stage) => Math.min(5, Math.max(1, Math.floor(Number(stage) || 1)));
+
+const generateDailyRoutineReward = (stage) => {
+	const clampedStage = clampStage(stage);
+	const stageReward = DAILY_ROUTINE_REWARD_TABLE[clampedStage];
+	const roll = Math.random();
+
+	if (roll < stageReward.normal.chance) {
+		return { gro: stageReward.normal.gro, xp: stageReward.normal.xp, tier: 'normal' };
+	}
+
+	if (roll < stageReward.normal.chance + stageReward.bonus.chance) {
+		return { gro: stageReward.bonus.gro, xp: stageReward.bonus.xp, tier: 'bonus' };
+	}
+
+	return { gro: stageReward.jackpot.gro, xp: stageReward.jackpot.xp, tier: 'jackpot' };
+};
+
 const base64UrlToUint8Array = (input) => {
 	const base64 = input.replace(/-/g, '+').replace(/_/g, '/');
 	const padded = base64 + '='.repeat((4 - (base64.length % 4)) % 4);
@@ -297,6 +343,71 @@ export default {
 						`).bind(uid, now, now).run();
 
 						return new Response(JSON.stringify({ success: true, is_premium: 0 }), {
+							headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+						});
+					} catch (err) {
+						return new Response(JSON.stringify({ error: err.message }), {
+							status: 500,
+							headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+						});
+					}
+				}
+
+				if (path.endsWith('/daily-routine-claim')) {
+					try {
+						const body = await request.json();
+						const rawDateKey = body.dateKey || body.date_key;
+						const dateKey = typeof rawDateKey === 'string' ? rawDateKey.trim() : '';
+
+						if (typeof dateKey !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(dateKey)) {
+							return new Response(JSON.stringify({ error: 'Invalid dateKey' }), {
+								status: 400,
+								headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+							});
+						}
+
+						const now = Date.now();
+						const currentUser = await env.DB.prepare(
+							'SELECT level, xp, gro FROM users WHERE uid = ?'
+						).bind(uid).first();
+
+						if (!currentUser) {
+							return new Response(JSON.stringify({ error: 'User not found' }), {
+								status: 404,
+								headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+							});
+						}
+
+						const insertClaim = await env.DB.prepare(`
+							INSERT OR IGNORE INTO daily_routine_claims (uid, date_key, claimed_at)
+							VALUES (?, ?, ?)
+						`).bind(uid, dateKey, now).run();
+
+						if (!insertClaim.meta?.changes) {
+							return new Response(JSON.stringify({ success: false, alreadyClaimed: true }), {
+								status: 409,
+								headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+							});
+						}
+
+						const reward = generateDailyRoutineReward(currentUser.level || 1);
+
+						await env.DB.prepare(`
+							UPDATE users
+							SET xp = ?, gro = ?, last_synced_at = ?
+							WHERE uid = ?
+						`).bind(
+							(currentUser.xp || 0) + reward.xp,
+							(currentUser.gro || 0) + reward.gro,
+							now,
+							uid
+						).run();
+
+						return new Response(JSON.stringify({
+							success: true,
+							reward,
+							claimedAt: now,
+						}), {
 							headers: { ...corsHeaders, 'Content-Type': 'application/json' }
 						});
 					} catch (err) {

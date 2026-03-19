@@ -1165,6 +1165,39 @@ export const ptPT = {
     saving: 'A guardar...',
     tapHint: 'Toque! {{current}}/{{max}}',
   },
+  dailyRoutine: {
+    title: 'Rotina diária',
+    claim: 'Receber recompensa',
+    claiming: 'A receber...',
+    claimed: 'Concluído hoje',
+    done: 'Concluído',
+    inProgress: 'Em progresso',
+    task: {
+      studyStars: 'Ganha estrelas nos jogos 5 vezes',
+      petTouch: 'Faz festas ao teu jello 5 vezes',
+      feedCategory: 'Dá {{category}} 3 vezes',
+      brushTeeth: 'Lava os dentes 2 vezes',
+      shower: 'Dá banho 2 vezes',
+      cleanPoop: 'Limpa cocó 2 vezes',
+      cleanBug: 'Apanha insetos 1 vez',
+      sleep: 'Põe a dormir 1 vez',
+    },
+    foodCategory: {
+      fruit: 'fruta',
+      vegetable: 'legume',
+      bakery: 'padaria',
+      meal: 'refeição',
+      dessert: 'sobremesa',
+    },
+    reward: {
+      title: 'Recompensa da rotina diária',
+    },
+    error: {
+      loginRequired: 'É necessário iniciar sessão para receber a recompensa da rotina diária.',
+      alreadyClaimed: 'A recompensa da rotina diária de hoje já foi recebida.',
+      claimFailed: 'Não foi possível receber a recompensa da rotina diária.',
+    },
+  },
   train: {
     reward: {
       glo: 'GLO',

@@ -26,6 +26,7 @@ export const usePetRoomUI = (showGiftBox: boolean) => {
     const [showMedicineMenu, setShowMedicineMenu] = useState(false);
     const [showShopMenu, setShowShopMenu] = useState(false);
     const [showSettingsMenu, setShowSettingsMenu] = useState(false);
+    const [showDailyRoutineModal, setShowDailyRoutineModal] = useState(false);
 
     // Category Selections
     const [selectedFoodCategory, setSelectedFoodCategory] = useState<FoodCategory>('fruit');
@@ -54,6 +55,7 @@ export const usePetRoomUI = (showGiftBox: boolean) => {
             showMedicineMenu, setShowMedicineMenu,
             showShopMenu, setShowShopMenu,
             showSettingsMenu, setShowSettingsMenu,
+            showDailyRoutineModal, setShowDailyRoutineModal,
         },
         selections: {
             selectedFoodCategory, setSelectedFoodCategory,
