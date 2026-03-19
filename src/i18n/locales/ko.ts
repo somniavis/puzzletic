@@ -1176,7 +1176,7 @@ const koBase = {
         done: '완료',
         inProgress: '진행 중',
         task: {
-            studyStars: '학습하기(별 획득 기준) 5회',
+            studyStars: '게임완료 5회',
             petTouch: '쓰다듬기 5회',
             feedCategory: '{{category}} 주기 3회',
             brushTeeth: '이닦기 2회',

@@ -1173,7 +1173,7 @@ export const frFR = {
     done: 'Terminé',
     inProgress: 'En cours',
     task: {
-      studyStars: 'Gagne des étoiles dans les jeux 5 fois',
+      studyStars: 'Termine 5 jeux',
       petTouch: 'Caresse ton jello 5 fois',
       feedCategory: 'Donne {{category}} 3 fois',
       brushTeeth: 'Brosse les dents 2 fois',

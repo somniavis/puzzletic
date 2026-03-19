@@ -1808,7 +1808,7 @@ export const viVN = {
     done: 'Hoàn thành',
     inProgress: 'Đang tiến hành',
     task: {
-      studyStars: 'Nhận sao trong trò chơi 5 lần',
+      studyStars: 'Hoàn thành 5 trò chơi',
       petTouch: 'Vuốt ve jello 5 lần',
       feedCategory: 'Cho ăn {{category}} 3 lần',
       brushTeeth: 'Đánh răng 2 lần',

@@ -1173,7 +1173,7 @@ export const idID = {
     done: 'Selesai',
     inProgress: 'Sedang Berjalan',
     task: {
-      studyStars: 'Dapatkan bintang di game 5 kali',
+      studyStars: 'Selesaikan 5 permainan',
       petTouch: 'Elus jello-mu 5 kali',
       feedCategory: 'Beri {{category}} 3 kali',
       brushTeeth: 'Sikat gigi 2 kali',

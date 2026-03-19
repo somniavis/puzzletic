@@ -1173,7 +1173,7 @@ export const en = {
     done: 'Done',
     inProgress: 'In Progress',
     task: {
-      studyStars: 'Earn stars in games 5 times',
+      studyStars: 'Complete 5 games',
       petTouch: 'Pet your jello 5 times',
       feedCategory: 'Feed {{category}} 3 times',
       brushTeeth: 'Brush teeth 2 times',

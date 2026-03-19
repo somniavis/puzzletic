@@ -1173,7 +1173,7 @@ export const esES = {
     done: 'Completado',
     inProgress: 'En progreso',
     task: {
-      studyStars: 'Consigue estrellas en juegos 5 veces',
+      studyStars: 'Completa 5 juegos',
       petTouch: 'Acaricia a tu jello 5 veces',
       feedCategory: 'Dale {{category}} 3 veces',
       brushTeeth: 'Cepilla los dientes 2 veces',

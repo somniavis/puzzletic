@@ -1173,7 +1173,7 @@ export const ptPT = {
     done: 'Concluído',
     inProgress: 'Em progresso',
     task: {
-      studyStars: 'Ganha estrelas nos jogos 5 vezes',
+      studyStars: 'Conclui 5 jogos',
       petTouch: 'Faz festas ao teu jello 5 vezes',
       feedCategory: 'Dá {{category}} 3 vezes',
       brushTeeth: 'Lava os dentes 2 vezes',

@@ -1919,7 +1919,7 @@ const jaBase = {
         done: '完了',
         inProgress: '進行中',
         task: {
-            studyStars: '星を獲得して学習 5回',
+            studyStars: 'ゲーム完了 5回',
             petTouch: 'ジェロをなでる 5回',
             feedCategory: '{{category}}をあげる 3回',
             brushTeeth: '歯みがき 2回',
