@@ -560,6 +560,22 @@
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
+.daily-routine-menu .food-menu-header {
+  background: linear-gradient(180deg, #8fc0aa 0%, #7faf9a 100%);
+  border-bottom-color: #5f8f7a;
+}
+
+.daily-routine-menu .food-menu-header h3 {
+  color: #f5fff9;
+}
+
+.daily-routine-menu .close-btn {
+  background: linear-gradient(180deg, #f2fffa 0%, #d8f0e5 100%);
+  border-color: #5f8f7a;
+  color: #3d6a58;
+  box-shadow: 0 4px 0 #4f7c6b;
+}
+
 .close-btn {
   background: rgba(255, 255, 255, 0.2);
   border: 3px solid #4d3e2f;

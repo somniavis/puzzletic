@@ -60,7 +60,12 @@ export const DailyRoutineModal: React.FC<DailyRoutineModalProps> = ({
     : t('dailyRoutine.claim');
 
   return (
-    <MenuModal title={t('dailyRoutine.title')} onClose={onClose} variant="custom">
+    <MenuModal
+      title={t('dailyRoutine.title')}
+      onClose={onClose}
+      variant="custom"
+      className="daily-routine-menu"
+    >
       <div className="daily-routine-modal">
         <div className="daily-routine-task-list">
           {dailyRoutine.tasks.map((task) => (
@@ -70,7 +75,7 @@ export const DailyRoutineModal: React.FC<DailyRoutineModalProps> = ({
             >
               <div className="daily-routine-task-main">
                 <div className="daily-routine-task-check" aria-hidden="true">
-                  {task.completed ? '✓' : '○'}
+                  {task.completed ? '✓' : ''}
                 </div>
                 <div className="daily-routine-task-copy">
                   <div className="daily-routine-task-title">{getTaskLabel(task, t)}</div>
