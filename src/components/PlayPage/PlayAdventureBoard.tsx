@@ -62,6 +62,27 @@ interface BoardLevelViewModel {
     currentFreeRoamTile: { level: number; x: number; y: number } | null;
 }
 
+type ForestClusterVariant =
+    | 'trees'
+    | 'pines'
+    | 'sunflowers'
+    | 'tulips'
+    | 'hyacinths'
+    | 'mushrooms'
+    | 'woodpile'
+    | 'desert-sprouts'
+    | 'cacti'
+    | 'rocks'
+    | 'scorpions'
+    | 'beetles';
+
+interface ScorpionMotionPreset {
+    animationName: string;
+    delay: string;
+    duration: string;
+    scaleX: string;
+}
+
 const DIAMOND_STEP = 4;
 const START_PAD_ROW_OFFSET = 1;
 const DEFAULT_LEVEL_ROW_OFFSET = 1;
@@ -91,6 +112,184 @@ const DIAMOND_B_TILES: BoardTile[] = [
 ];
 
 const PAD_X_SEQUENCE = [2, 0, 2, 4];
+const LEVEL_ONE_WATER_DECORATIONS = [
+    { top: '8%', left: '4%', size: '2.18rem', duration: '19s', delay: '-4s', opacity: 0.34 },
+    { top: '16%', left: '18%', size: '1.65rem', duration: '15s', delay: '-9s', opacity: 0.28 },
+    { top: '24%', left: '38%', size: '2.55rem', duration: '23s', delay: '-3s', opacity: 0.3 },
+    { top: '38%', left: '8%', size: '1.8rem', duration: '17s', delay: '-11s', opacity: 0.26 },
+    { top: '44%', left: '46%', size: '2.33rem', duration: '21s', delay: '-7s', opacity: 0.3 },
+    { top: '58%', left: '22%', size: '1.58rem', duration: '16s', delay: '-5s', opacity: 0.24 },
+    { top: '66%', left: '42%', size: '2.1rem', duration: '20s', delay: '-13s', opacity: 0.3 },
+    { top: '78%', left: '14%', size: '1.88rem', duration: '18s', delay: '-2s', opacity: 0.28 },
+];
+const LEVEL_ONE_SAILBOAT_DECORATIONS = [
+    { top: '21%', left: '12%', size: '1.55rem', duration: '26s', delay: '-6s', opacity: 0.42 },
+    { top: '49%', left: '42%', size: '1.8rem', duration: '31s', delay: '-14s', opacity: 0.38 },
+    { top: '71%', left: '26%', size: '1.45rem', duration: '28s', delay: '-10s', opacity: 0.4 },
+];
+const LEVEL_TWO_LEAF_DECORATIONS = [
+    { top: '10%', left: '72%', size: '2.1rem', duration: '20s', delay: '-5s', opacity: 0.28 },
+    { top: '18%', left: '48%', size: '1.7rem', duration: '16s', delay: '-9s', opacity: 0.24 },
+    { top: '29%', left: '86%', size: '2.35rem', duration: '24s', delay: '-3s', opacity: 0.26 },
+    { top: '41%', left: '57%', size: '1.85rem', duration: '18s', delay: '-11s', opacity: 0.23 },
+    { top: '54%', left: '79%', size: '2.2rem', duration: '22s', delay: '-7s', opacity: 0.26 },
+    { top: '67%', left: '43%', size: '1.6rem', duration: '17s', delay: '-13s', opacity: 0.22 },
+    { top: '79%', left: '68%', size: '2rem', duration: '21s', delay: '-2s', opacity: 0.25 },
+];
+const LEVEL_TWO_ENVIRA_DECORATIONS = [
+    { top: '23%', left: '64%', size: '1.55rem', duration: '27s', delay: '-6s', opacity: 0.32 },
+    { top: '48%', left: '84%', size: '1.75rem', duration: '30s', delay: '-12s', opacity: 0.28 },
+    { top: '73%', left: '58%', size: '1.45rem', duration: '28s', delay: '-9s', opacity: 0.3 },
+];
+const LEVEL_TWO_BIRD_DECORATIONS = [
+    { top: '14%', left: '12%', size: '1.7rem', duration: '34s', delay: '-8s', opacity: 0.44, icon: 'dove' },
+    { top: '32%', left: '30%', size: '1.45rem', duration: '38s', delay: '-15s', opacity: 0.36, icon: 'twitter' },
+    { top: '57%', left: '10%', size: '1.6rem', duration: '36s', delay: '-4s', opacity: 0.4, icon: 'dove' },
+    { top: '74%', left: '36%', size: '1.35rem', duration: '40s', delay: '-18s', opacity: 0.34, icon: 'twitter' },
+];
+const LEVEL_THREE_WIND_DECORATIONS = [
+    { top: '12%', left: '8%', size: '1.9rem', duration: '24s', delay: '-5s', opacity: 0.26 },
+    { top: '22%', left: '28%', size: '1.55rem', duration: '18s', delay: '-11s', opacity: 0.22 },
+    { top: '38%', left: '16%', size: '2.15rem', duration: '26s', delay: '-3s', opacity: 0.24 },
+    { top: '51%', left: '34%', size: '1.75rem', duration: '21s', delay: '-9s', opacity: 0.2 },
+    { top: '66%', left: '10%', size: '2.05rem', duration: '25s', delay: '-14s', opacity: 0.24 },
+    { top: '79%', left: '30%', size: '1.6rem', duration: '19s', delay: '-7s', opacity: 0.22 },
+    { top: '16%', left: '46%', size: '1.7rem', duration: '20s', delay: '-12s', opacity: 0.22 },
+    { top: '30%', left: '58%', size: '2rem', duration: '27s', delay: '-6s', opacity: 0.24 },
+    { top: '46%', left: '50%', size: '1.45rem', duration: '17s', delay: '-16s', opacity: 0.2 },
+    { top: '61%', left: '64%', size: '1.85rem', duration: '23s', delay: '-10s', opacity: 0.22 },
+    { top: '74%', left: '48%', size: '1.7rem', duration: '18s', delay: '-4s', opacity: 0.21 },
+    { top: '84%', left: '62%', size: '1.5rem', duration: '22s', delay: '-13s', opacity: 0.2 },
+];
+const LEVEL_TWO_SIMPLE_CLUSTER_BY_BUNDLE: Partial<Record<number, ForestClusterVariant>> = {
+    0: 'trees',
+    1: 'pines',
+    4: 'pines',
+    5: 'trees',
+};
+const LEVEL_THREE_SIMPLE_CLUSTER_BY_BUNDLE: Partial<Record<number, ForestClusterVariant>> = {
+    0: 'desert-sprouts',
+    1: 'cacti',
+    2: 'cacti',
+    3: 'rocks',
+    4: 'scorpions',
+    5: 'cacti',
+    6: 'beetles',
+    7: 'cacti',
+};
+const SCORPION_PRESETS: ScorpionMotionPreset[] = [
+    { animationName: 'playBoardScorpionTop', delay: '0s', duration: '16s', scaleX: '-1' },
+    { animationName: 'playBoardScorpionLeft', delay: '4s', duration: '16s', scaleX: '1' },
+    { animationName: 'playBoardScorpionRight', delay: '8s', duration: '16s', scaleX: '-1' },
+    { animationName: 'playBoardScorpionBottom', delay: '12s', duration: '16s', scaleX: '1' },
+];
+
+const renderEmojiCluster = (
+    emoji: string,
+    clusterClassName = 'play-board-tree-cluster',
+    itemClassName = 'play-board-tree',
+    slotPrefix: 'tree' | 'object' = 'tree'
+) => (
+    <span className={clusterClassName} aria-hidden="true">
+        <span className={`${itemClassName} ${slotPrefix}-a`}>{emoji}</span>
+        <span className={`${itemClassName} ${slotPrefix}-b`}>{emoji}</span>
+        <span className={`${itemClassName} ${slotPrefix}-c`}>{emoji}</span>
+        <span className={`${itemClassName} ${slotPrefix}-d`}>{emoji}</span>
+    </span>
+);
+
+const getForestClusterVariant = (
+    level: number,
+    tile: BoardTile,
+    tileBundleIndex: number,
+    rowOffset: number
+): ForestClusterVariant | null => {
+    if (tile.kind !== 'forest') return null;
+    const bundleLocalY = tile.y - rowOffset - (tileBundleIndex * DIAMOND_STEP);
+
+    if (level === 2) {
+        if (tileBundleIndex === 2) {
+            if (tile.x === 2) return 'sunflowers';
+            return tile.x === 4 ? 'hyacinths' : 'tulips';
+        }
+
+        if (tileBundleIndex === 3) {
+            return tile.x === 0 ? 'woodpile' : 'mushrooms';
+        }
+
+        return LEVEL_TWO_SIMPLE_CLUSTER_BY_BUNDLE[tileBundleIndex] ?? null;
+    }
+
+    if (level === 3) {
+        if (tileBundleIndex === 8) {
+            if (bundleLocalY === 1) return 'cacti';
+            if (bundleLocalY === 2) return tile.x === 2 ? 'cacti' : 'rocks';
+            if (bundleLocalY === 3) return 'rocks';
+        }
+
+        return LEVEL_THREE_SIMPLE_CLUSTER_BY_BUNDLE[tileBundleIndex] ?? null;
+    }
+
+    return null;
+};
+
+const renderForestCluster = (
+    variant: ForestClusterVariant | null,
+    creatureMotion: ScorpionMotionPreset | null
+) => {
+    if (!variant) return null;
+
+    switch (variant) {
+    case 'trees':
+        return renderEmojiCluster('🌳');
+    case 'pines':
+        return renderEmojiCluster('🌲');
+    case 'sunflowers':
+        return renderEmojiCluster('🌻', 'play-board-tree-cluster play-board-flower-cluster');
+    case 'tulips':
+        return renderEmojiCluster('🌷', 'play-board-tree-cluster play-board-flower-cluster');
+    case 'hyacinths':
+        return renderEmojiCluster('🪻', 'play-board-tree-cluster play-board-flower-cluster');
+    case 'mushrooms':
+        return renderEmojiCluster('🍄', 'play-board-tree-cluster play-board-object-cluster', 'play-board-object', 'object');
+    case 'woodpile':
+        return renderEmojiCluster('🪵', 'play-board-tree-cluster play-board-object-cluster play-board-woodpile-cluster', 'play-board-object', 'object');
+    case 'desert-sprouts':
+        return renderEmojiCluster('🪾', 'play-board-tree-cluster play-board-desert-cluster');
+    case 'cacti':
+        return renderEmojiCluster('🌵', 'play-board-tree-cluster play-board-desert-cluster');
+    case 'rocks':
+        return renderEmojiCluster('🪨', 'play-board-tree-cluster play-board-desert-cluster');
+    case 'scorpions':
+        return creatureMotion ? (
+            <span
+                className="play-board-scorpion"
+                aria-hidden="true"
+                style={{
+                    animation: `${creatureMotion.animationName} ${creatureMotion.duration} ease-in-out ${creatureMotion.delay} infinite`,
+                    ['--scorpion-scale-x' as string]: creatureMotion.scaleX,
+                }}
+            >
+                🦂
+            </span>
+        ) : null;
+    case 'beetles':
+        return creatureMotion ? (
+            <span
+                className="play-board-scorpion play-board-beetle"
+                aria-hidden="true"
+                style={{
+                    animation: `${creatureMotion.animationName} ${creatureMotion.duration} ease-in-out ${creatureMotion.delay} infinite`,
+                    ['--scorpion-scale-x' as string]: creatureMotion.scaleX,
+                }}
+            >
+                🪲
+            </span>
+        ) : null;
+    default:
+        return null;
+    }
+};
 
 const buildTiles = (diamondCount: number) => {
     const tiles = new Map<string, BoardTile>();
@@ -207,6 +406,26 @@ export const PlayAdventureBoard: React.FC<PlayAdventureBoardProps> = ({
         }),
         [currentJelloGameId, currentJelloTilePosition, levelGroups]
     );
+    const scorpionMotionByTileKey = React.useMemo(() => {
+        const assignments = new Map<string, ScorpionMotionPreset>();
+
+        boardLevels.forEach(({ level, layout }) => {
+            if (level !== 3) return;
+
+            [4, 6].forEach((bundleIndex) => {
+                const shuffled = [...SCORPION_PRESETS].sort(() => Math.random() - 0.5);
+                const creatureTiles = layout.tiles.filter((tile) =>
+                    tile.kind === 'forest' && getBundleIndex(tile.y, layout.rowOffset) === bundleIndex
+                );
+
+                creatureTiles.forEach((tile, index) => {
+                    assignments.set(`${level}:${tile.x}:${tile.y}`, shuffled[index % shuffled.length]);
+                });
+            });
+        });
+
+        return assignments;
+    }, [boardLevels]);
 
     if (boardLevels.length === 0) {
         return (
@@ -228,6 +447,117 @@ export const PlayAdventureBoard: React.FC<PlayAdventureBoardProps> = ({
                 return (
                     <React.Fragment key={level}>
                         <section className={`play-board-level level-${level}`} data-level={level}>
+                            {level === 1 && (
+                                <div className="play-board-water-decor" aria-hidden="true">
+                                    {LEVEL_ONE_WATER_DECORATIONS.map((decor, decorIndex) => (
+                                        <span
+                                            key={`water-${decorIndex}`}
+                                            className="play-board-water-icon"
+                                            style={{
+                                                top: decor.top,
+                                                left: decor.left,
+                                                fontSize: decor.size,
+                                                opacity: decor.opacity,
+                                                animationDuration: decor.duration,
+                                                animationDelay: decor.delay,
+                                            }}
+                                        >
+                                            <i className="fas fa-water" aria-hidden="true" />
+                                        </span>
+                                    ))}
+                                    {LEVEL_ONE_SAILBOAT_DECORATIONS.map((decor, decorIndex) => (
+                                        <span
+                                            key={`sailboat-${decorIndex}`}
+                                            className="play-board-sailboat-icon"
+                                            style={{
+                                                top: decor.top,
+                                                left: decor.left,
+                                                fontSize: decor.size,
+                                                opacity: decor.opacity,
+                                                animationDuration: decor.duration,
+                                                animationDelay: decor.delay,
+                                            }}
+                                        >
+                                            <i className="fas fa-sailboat" aria-hidden="true" />
+                                        </span>
+                                    ))}
+                                </div>
+                            )}
+                            {level === 2 && (
+                                <div className="play-board-water-decor play-board-forest-decor" aria-hidden="true">
+                                    {LEVEL_TWO_LEAF_DECORATIONS.map((decor, decorIndex) => (
+                                        <span
+                                            key={`leaf-${decorIndex}`}
+                                            className="play-board-leaf-icon"
+                                            style={{
+                                                top: decor.top,
+                                                left: decor.left,
+                                                fontSize: decor.size,
+                                                opacity: decor.opacity,
+                                                animationDuration: decor.duration,
+                                                animationDelay: decor.delay,
+                                            }}
+                                        >
+                                            <i className="fas fa-leaf" aria-hidden="true" />
+                                        </span>
+                                    ))}
+                                    {LEVEL_TWO_ENVIRA_DECORATIONS.map((decor, decorIndex) => (
+                                        <span
+                                            key={`envira-${decorIndex}`}
+                                            className="play-board-envira-icon"
+                                            style={{
+                                                top: decor.top,
+                                                left: decor.left,
+                                                fontSize: decor.size,
+                                                opacity: decor.opacity,
+                                                animationDuration: decor.duration,
+                                                animationDelay: decor.delay,
+                                            }}
+                                        >
+                                            <i className="fab fa-envira" aria-hidden="true" />
+                                        </span>
+                                    ))}
+                                    {LEVEL_TWO_BIRD_DECORATIONS.map((decor, decorIndex) => (
+                                        <span
+                                            key={`level-two-bird-${decorIndex}`}
+                                            className={`play-board-bird-icon ${decor.icon === 'twitter' ? 'twitter' : 'dove'}`}
+                                            style={{
+                                                top: decor.top,
+                                                left: decor.left,
+                                                fontSize: decor.size,
+                                                opacity: decor.opacity,
+                                                animationDuration: decor.duration,
+                                                animationDelay: decor.delay,
+                                            }}
+                                        >
+                                            <i
+                                                className={decor.icon === 'twitter' ? 'fab fa-twitter' : 'fas fa-dove'}
+                                                aria-hidden="true"
+                                            />
+                                        </span>
+                                    ))}
+                                </div>
+                            )}
+                            {level === 3 && (
+                                <div className="play-board-water-decor play-board-wind-decor" aria-hidden="true">
+                                    {LEVEL_THREE_WIND_DECORATIONS.map((decor, decorIndex) => (
+                                        <span
+                                            key={`wind-${decorIndex}`}
+                                            className="play-board-wind-icon"
+                                            style={{
+                                                top: decor.top,
+                                                left: decor.left,
+                                                fontSize: decor.size,
+                                                opacity: decor.opacity,
+                                                animationDuration: decor.duration,
+                                                animationDelay: decor.delay,
+                                            }}
+                                        >
+                                            <i className="fas fa-wind" aria-hidden="true" />
+                                        </span>
+                                    ))}
+                                </div>
+                            )}
                             <div className="play-board-level-header">
                                 <p className="play-board-level-eyebrow">{t('play.modes.adventure')}</p>
                                 <h3 className="play-board-level-title">{t('play.controls.level')} {level}</h3>
@@ -242,12 +572,17 @@ export const PlayAdventureBoard: React.FC<PlayAdventureBoardProps> = ({
                                         {tiles.map((tile, index) => {
                                             const tileBundleIndex = getBundleIndex(tile.y, rowOffset);
                                             const isTileAccessible = accessibleBundleIndexes.has(tileBundleIndex);
+                                            const forestClusterVariant = getForestClusterVariant(level, tile, tileBundleIndex, rowOffset);
+                                            const creatureMotion =
+                                                forestClusterVariant === 'scorpions' || forestClusterVariant === 'beetles'
+                                                    ? scorpionMotionByTileKey.get(`${level}:${tile.x}:${tile.y}`) ?? null
+                                                    : null;
 
                                             return (
                                             <button
                                                 key={`tile-${level}-${index}`}
                                                 type="button"
-                                                className={`play-board-tile ${tile.kind} ${isTileAccessible ? 'open' : 'blocked'}`}
+                                                className={`play-board-tile ${tile.kind} ${forestClusterVariant ? 'forest-cluster' : ''} ${isTileAccessible ? 'open' : 'blocked'}`}
                                                 style={{
                                                     ['--tile-x' as string]: tile.x,
                                                     ['--tile-y' as string]: tile.y,
@@ -258,7 +593,9 @@ export const PlayAdventureBoard: React.FC<PlayAdventureBoardProps> = ({
                                                 }}
                                                 aria-disabled={!isTileAccessible}
                                                 aria-label={t('play.modes.adventure')}
-                                            />
+                                            >
+                                                {renderForestCluster(forestClusterVariant, creatureMotion)}
+                                            </button>
                                             );
                                         })}
                                     </div>
