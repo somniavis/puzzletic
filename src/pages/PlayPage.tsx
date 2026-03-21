@@ -7,9 +7,13 @@ import { useNurturing } from '../contexts/NurturingContext';
 import { GAMES, getGameById } from '../games/registry';
 import type { GameCategory, GameManifest } from '../games/types';
 import { isGameUnlocked, parseGameScore, ADVENTURE_UNLOCK_THRESHOLD, GENIUS_UNLOCK_THRESHOLD } from '../utils/progression';
+import { useAuth } from '../contexts/AuthContext';
+import { createCharacter } from '../data/characters';
+import type { EvolutionStage } from '../types/character';
 
 // Hooks & Utils
 import { usePlayPageLogic, type Operator } from '../hooks/usePlayPageLogic';
+import { usePlayUiPreferences } from '../hooks/usePlayUiPreferences';
 import { CATEGORY_ICONS } from '../utils/playPageUtils';
 import { usePremiumStatus, isPremiumGame } from '../utils/premiumLogic';
 import { PremiumPurchaseModal } from '../components/Premium/PremiumPurchaseModal';
@@ -19,64 +23,153 @@ import { SettingsMenu } from '../components/SettingsMenu/SettingsMenu';
 import { AdventureCard } from '../components/PlayPage/AdventureCard';
 import { DrillItem } from '../components/PlayPage/DrillItem';
 import { GeniusDashboard } from '../components/PlayPage/GeniusDashboard';
+import { PlayAdventureBoard, type PlayAdventureBoardGame } from '../components/PlayPage/PlayAdventureBoard';
+import { PlayGameInfoModal } from '../components/PlayPage/PlayGameInfoModal';
 import { GameErrorBoundary } from '../components/Game/GameErrorBoundary';
+
+const scrollContainerToCenteredElement = (container: HTMLElement, target: HTMLElement) => {
+    const containerRect = container.getBoundingClientRect();
+    const targetRect = target.getBoundingClientRect();
+    const targetTop = container.scrollTop
+        + (targetRect.top - containerRect.top)
+        - ((container.clientHeight - targetRect.height) / 2);
+
+    container.scrollTo({
+        top: Math.max(0, targetTop),
+        behavior: 'auto',
+    });
+};
 
 const PlayPage: React.FC = () => {
     const navigate = useNavigate();
     const { gameId } = useParams();
     const { t } = useTranslation();
-    const { setGameDifficulty, gameScores, categoryProgress, totalGameStars, lastPlayedGameId, setLastPlayedGameId } = useNurturing();
-
-    // -- Custom Hook for State & Logic --
+    const { user, guestId } = useAuth();
     const {
+        setGameDifficulty,
+        gameScores,
+        categoryProgress,
+        totalGameStars,
+        lastPlayedGameId,
+        setLastPlayedGameId,
+        hasCharacter,
+        speciesId,
+        evolutionStage,
+        characterName,
+    } = useNurturing();
+    const playUiScopeId = user?.uid || guestId || undefined;
+    const {
+        playLearnMode,
+        setPlayLearnMode,
         activeTab,
         mathMode,
         selectedOp,
         setSelectedOp,
+        setActiveTab,
+        setMathMode,
+    } = usePlayUiPreferences(playUiScopeId);
+
+    // -- Custom Hook for State & Logic --
+    const {
         adventureGames,
         filteredDrills,
         drillStats,
         handleTabSelect,
         handleMathModeSelect
-    } = usePlayPageLogic({ gameScores });
+    } = usePlayPageLogic({
+        gameScores,
+        activeTab,
+        mathMode,
+        selectedOp,
+        onActiveTabChange: setActiveTab,
+        onMathModeChange: setMathMode,
+        onSelectedOpChange: setSelectedOp,
+    });
 
     const { isPremium } = usePremiumStatus();
     const [isPremiumModalOpen, setIsPremiumModalOpen] = React.useState(false);
     const [isSettingsMenuOpen, setIsSettingsMenuOpen] = React.useState(false);
-    const [playLearnMode, setPlayLearnMode] = React.useState<'play' | 'learn'>('learn');
     const [activeAdventureLevel, setActiveAdventureLevel] = React.useState<number>(1);
+    const [selectedPlayBoardGameId, setSelectedPlayBoardGameId] = React.useState<string | null>(null);
+    const [currentBoardGameId, setCurrentBoardGameId] = React.useState<string | null>(null);
+    const [currentBoardTilePosition, setCurrentBoardTilePosition] = React.useState<{ level: number; x: number; y: number } | null>(null);
     const hubContentRef = React.useRef<HTMLDivElement | null>(null);
+    const isPlayAdventureMode = playLearnMode === 'play' && activeTab === 'math' && mathMode === 'adventure';
 
     const activeGame = gameId ? getGameById(gameId) : null;
+    const adventureGameStates = useMemo<PlayAdventureBoardGame[]>(() => {
+        return adventureGames.map((game) => {
+            const scoreValue = gameScores?.[game.id];
+            const { clearCount } = parseGameScore(scoreValue);
+            const { unlocked, reason, requiredGame } = isGameUnlocked(game.id, GAMES, { gameScores, categoryProgress });
+            let displayReason = reason;
+            if (requiredGame) {
+                const requiredGameTitle = requiredGame.titleKey ? t(requiredGame.titleKey) : requiredGame.title;
+                displayReason = t('play.game.unlock.reason', { game: requiredGameTitle });
+            }
+
+            return {
+                game,
+                unlocked,
+                isPremiumLocked: !isPremium && isPremiumGame(game),
+                displayReason,
+                clearCount,
+                isMastered: clearCount >= ADVENTURE_UNLOCK_THRESHOLD,
+            };
+        });
+    }, [adventureGames, gameScores, categoryProgress, isPremium, t]);
+
     const mathAdventureLevelGroups = useMemo(() => {
         return [1, 2, 3]
             .map((level) => ({
                 level,
-                games: adventureGames.filter((game) => game.level === level),
+                games: adventureGameStates.filter(({ game }) => game.level === level),
             }))
             .filter((group) => group.games.length > 0);
-    }, [adventureGames]);
+    }, [adventureGameStates]);
     const mathAdventureLevelSignature = useMemo(
         () => mathAdventureLevelGroups.map((group) => `${group.level}:${group.games.length}`).join('|'),
         [mathAdventureLevelGroups]
     );
+    const adventureGameStateMap = useMemo(
+        () => new Map(adventureGameStates.map((state) => [state.game.id, state])),
+        [adventureGameStates]
+    );
+
+    const selectedPlayBoardGame = useMemo(() => {
+        return selectedPlayBoardGameId ? adventureGameStateMap.get(selectedPlayBoardGameId) ?? null : null;
+    }, [adventureGameStateMap, selectedPlayBoardGameId]);
+    const currentBoardJelloGameId = currentBoardGameId || lastPlayedGameId || null;
+
+    const boardJelloCharacter = useMemo(() => {
+        if (!hasCharacter || !speciesId) return null;
+        const character = createCharacter(speciesId, characterName);
+        character.evolutionStage = Math.max(1, Math.min(5, evolutionStage || 1)) as EvolutionStage;
+        return character;
+    }, [hasCharacter, speciesId, characterName, evolutionStage]);
 
     // -- Effects --
-    // Auto-scroll to last played game on mount or tab change
     useEffect(() => {
-        // Only scroll if we are in List View (no active gameId) and have a last played game
-        if (!gameId && lastPlayedGameId) {
-            // Small delay to ensure rendering
-            const timeoutId = window.setTimeout(() => {
-                const element = document.getElementById(`game-card-${lastPlayedGameId}`);
-                if (element) {
-                    element.scrollIntoView({ behavior: 'auto', block: 'center' });
-                }
-            }, 100);
+        if (currentBoardGameId || !lastPlayedGameId) return;
+        setCurrentBoardGameId(lastPlayedGameId);
+    }, [currentBoardGameId, lastPlayedGameId]);
 
-            return () => window.clearTimeout(timeoutId);
-        }
-    }, [lastPlayedGameId, activeTab, mathMode, gameId]); // Added gameId to trigger when returning from game
+    // Auto-scroll to the last played game in the currently visible layout.
+    useEffect(() => {
+        if (gameId || !lastPlayedGameId) return;
+        if (isPlayAdventureMode) return;
+
+        const timeoutId = window.setTimeout(() => {
+            const targetId = `game-card-${lastPlayedGameId}`;
+
+            const element = document.getElementById(targetId);
+            if (element) {
+                element.scrollIntoView({ behavior: 'auto', block: 'center', inline: 'center' });
+            }
+        }, 100);
+
+        return () => window.clearTimeout(timeoutId);
+    }, [lastPlayedGameId, gameId, isPlayAdventureMode]);
 
     // Sync math mode switcher background with current adventure level section while scrolling.
     useEffect(() => {
@@ -89,14 +182,15 @@ const PlayPage: React.FC = () => {
         if (!switcher) return;
 
         const headerNodes = Array.from(
-            container.querySelectorAll<HTMLElement>('.funmath-level-header')
+            container.querySelectorAll<HTMLElement>('.funmath-level-header, .play-board-level-header')
         );
         if (!headerNodes.length) return;
         const headerAnchors = headerNodes
             .map((header) => {
                 const section = header.closest<HTMLElement>('.funmath-level-section[data-level]');
+                const playSection = header.closest<HTMLElement>('.play-board-level[data-level]');
                 return {
-                    level: Number(section?.dataset.level),
+                    level: Number(section?.dataset.level ?? playSection?.dataset.level),
                     header,
                 };
             })
@@ -139,7 +233,34 @@ const PlayPage: React.FC = () => {
             container.removeEventListener('scroll', onScroll);
             window.removeEventListener('resize', onResize);
         };
-    }, [activeTab, mathMode, mathAdventureLevelSignature]);
+    }, [activeTab, mathMode, mathAdventureLevelSignature, playLearnMode]);
+
+    useEffect(() => {
+        if (gameId) return;
+        if (!isPlayAdventureMode) return;
+
+        const container = hubContentRef.current;
+        if (!container) return;
+
+        const timeoutId = window.setTimeout(() => {
+            if (!lastPlayedGameId) {
+                container.scrollTo({ top: 0, behavior: 'auto' });
+                return;
+            }
+
+            const targetElement = document.getElementById(`play-mission-pad-${lastPlayedGameId}`);
+            if (targetElement) {
+                requestAnimationFrame(() => {
+                    scrollContainerToCenteredElement(container, targetElement);
+                });
+                return;
+            }
+
+            container.scrollTo({ top: 0, behavior: 'auto' });
+        }, 100);
+
+        return () => window.clearTimeout(timeoutId);
+    }, [gameId, isPlayAdventureMode, lastPlayedGameId]);
 
     // -- Handlers --
     const onTabSelect = (category: GameCategory) => {
@@ -176,7 +297,23 @@ const PlayPage: React.FC = () => {
         playButtonSound();
         setGameDifficulty(game.level);
         setLastPlayedGameId(game.id); // Save as last played
+        setCurrentBoardGameId(game.id);
+        setCurrentBoardTilePosition(null);
+        setSelectedPlayBoardGameId(null);
         navigate(`/play/${game.id}`);
+    };
+
+    const handleSelectPlayBoardGame = (gameId: string) => {
+        setCurrentBoardTilePosition(null);
+        setSelectedPlayBoardGameId(gameId);
+        const targetGame = adventureGameStateMap.get(gameId);
+        if (targetGame?.unlocked && !targetGame.isPremiumLocked) {
+            setCurrentBoardGameId(gameId);
+        }
+    };
+
+    const handleSelectBoardTile = (position: { level: number; x: number; y: number }) => {
+        setCurrentBoardTilePosition(position);
     };
 
     const handleExitGame = () => {
@@ -189,10 +326,12 @@ const PlayPage: React.FC = () => {
     const renderHeader = () => (
         <header className="play-header-hub">
             <div className="play-learn-switch" role="tablist" aria-label="Play mode switch">
+                <span className="play-learn-mode-label">Mode</span>
                 <button
                     type="button"
                     role="tab"
                     aria-selected={playLearnMode === 'play'}
+                    aria-label="Play mode"
                     className={`play-learn-btn ${playLearnMode === 'play' ? 'active' : ''}`}
                     onClick={() => {
                         playButtonSound();
@@ -200,12 +339,12 @@ const PlayPage: React.FC = () => {
                     }}
                 >
                     <i className="fas fa-gamepad" aria-hidden="true"></i>
-                    <span>Play</span>
                 </button>
                 <button
                     type="button"
                     role="tab"
                     aria-selected={playLearnMode === 'learn'}
+                    aria-label="Learn mode"
                     className={`play-learn-btn ${playLearnMode === 'learn' ? 'active' : ''}`}
                     onClick={() => {
                         playButtonSound();
@@ -213,7 +352,6 @@ const PlayPage: React.FC = () => {
                     }}
                 >
                     <i className="fas fa-graduation-cap" aria-hidden="true"></i>
-                    <span>Learn</span>
                 </button>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -282,19 +420,7 @@ const PlayPage: React.FC = () => {
                                 <h3 className="funmath-level-title">{t('play.controls.level')} {level}</h3>
                             </div>
                             <div className="game-list">
-                                {games.map(game => {
-                                    const scoreValue = gameScores?.[game.id];
-                                    const { clearCount } = parseGameScore(scoreValue);
-                                    const { unlocked, reason, requiredGame } = isGameUnlocked(game.id, GAMES, { gameScores, categoryProgress });
-
-                                    let displayReason = reason;
-                                    if (requiredGame) {
-                                        const requiredGameTitle = requiredGame.titleKey ? t(requiredGame.titleKey) : requiredGame.title;
-                                        displayReason = t('play.game.unlock.reason', { game: requiredGameTitle });
-                                    }
-
-                                    const isMastered = clearCount >= ADVENTURE_UNLOCK_THRESHOLD;
-
+                                {games.map(({ game, unlocked, displayReason, clearCount, isMastered, isPremiumLocked }) => {
                                     return (
                                         <AdventureCard
                                             key={game.id}
@@ -305,7 +431,7 @@ const PlayPage: React.FC = () => {
                                             clearCount={clearCount}
                                             isMastered={isMastered}
                                             onPlay={handlePlayClick}
-                                            isPremiumLocked={!isPremium && isPremiumGame(game)}
+                                            isPremiumLocked={isPremiumLocked}
                                         />
                                     );
                                 })}
@@ -334,20 +460,8 @@ const PlayPage: React.FC = () => {
                         <p className="section-desc">{t('play.sections.training.desc')}</p>
                     </div>
                 <div className="game-list">
-                    {adventureGames.length > 0 ? (
-                        adventureGames.map(game => {
-                            const scoreValue = gameScores?.[game.id];
-                            const { clearCount } = parseGameScore(scoreValue);
-                            const { unlocked, reason, requiredGame } = isGameUnlocked(game.id, GAMES, { gameScores, categoryProgress });
-
-                            let displayReason = reason;
-                            if (requiredGame) {
-                                const requiredGameTitle = requiredGame.titleKey ? t(requiredGame.titleKey) : requiredGame.title;
-                                displayReason = t('play.game.unlock.reason', { game: requiredGameTitle });
-                            }
-
-                            const isMastered = clearCount >= ADVENTURE_UNLOCK_THRESHOLD;
-
+                    {adventureGameStates.length > 0 ? (
+                        adventureGameStates.map(({ game, unlocked, displayReason, clearCount, isMastered, isPremiumLocked }) => {
                             return (
                                 <AdventureCard
                                     key={game.id}
@@ -358,7 +472,7 @@ const PlayPage: React.FC = () => {
                                     clearCount={clearCount}
                                     isMastered={isMastered}
                                     onPlay={handlePlayClick}
-                                    isPremiumLocked={!isPremium && isPremiumGame(game)}
+                                    isPremiumLocked={isPremiumLocked}
                                 />
                             );
                         })
@@ -431,6 +545,34 @@ const PlayPage: React.FC = () => {
         </div >
     );
 
+    const renderPlayModeContent = () => {
+        if (activeTab === 'math') {
+            return mathMode === 'adventure' ? (
+                <PlayAdventureBoard
+                    levelGroups={mathAdventureLevelGroups}
+                    selectedGameId={selectedPlayBoardGameId}
+                    currentJelloGameId={currentBoardJelloGameId}
+                    currentJelloTilePosition={currentBoardTilePosition}
+                    jelloCharacter={boardJelloCharacter}
+                    onSelectGame={handleSelectPlayBoardGame}
+                    onSelectTile={handleSelectBoardTile}
+                />
+            ) : (
+                renderGeniusSection()
+            );
+        }
+
+        return (
+            <div className="play-board-empty">
+                <div className="play-board-empty-card">
+                    <span className="play-board-empty-icon">🧭</span>
+                    <h3>{t('play.categories.' + activeTab)}</h3>
+                    <p>{t('play.sections.training.desc')}</p>
+                </div>
+            </div>
+        );
+    };
+
     // -- Main Render --
     if (activeGame) {
         const GameComponent = activeGame.component;
@@ -456,14 +598,14 @@ const PlayPage: React.FC = () => {
         <div className="play-page-container">
             {renderHeader()}
 
-            {playLearnMode === 'learn' && activeTab === 'math' && renderMathModeSwitcher()}
+            {activeTab === 'math' && renderMathModeSwitcher()}
 
             <div
                 ref={hubContentRef}
                 className={`hub-content ${activeTab === 'math' && mathMode === 'adventure' ? 'hub-content-math-adventure' : ''}`}
             >
                 {playLearnMode === 'play' ? (
-                    <div className="play-mode-empty" aria-live="polite" />
+                    renderPlayModeContent()
                 ) : (
                     activeTab === 'math' ? (
                         mathMode === 'adventure' ? renderAdventureSection() : renderGeniusSection()
@@ -475,6 +617,19 @@ const PlayPage: React.FC = () => {
             </div>
 
             {playLearnMode === 'learn' && renderBottomNav()}
+
+            {selectedPlayBoardGame && (
+                <PlayGameInfoModal
+                    game={selectedPlayBoardGame.game}
+                    unlocked={selectedPlayBoardGame.unlocked}
+                    displayReason={selectedPlayBoardGame.displayReason}
+                    clearCount={selectedPlayBoardGame.clearCount}
+                    isMastered={selectedPlayBoardGame.isMastered}
+                    isPremiumLocked={selectedPlayBoardGame.isPremiumLocked}
+                    onPlay={handlePlayClick}
+                    onClose={() => setSelectedPlayBoardGameId(null)}
+                />
+            )}
 
             <PremiumPurchaseModal
                 isOpen={isPremiumModalOpen}

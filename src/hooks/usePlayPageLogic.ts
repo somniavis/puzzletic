@@ -1,44 +1,43 @@
-import { useState, useMemo } from 'react';
+import { useMemo } from 'react';
 import type { GameCategory } from '../games/types';
 import { GAMES } from '../games/registry';
 import type { GameScoreValue } from '../types/nurturing';
 import { parseGameScore } from '../utils/progression';
+import type { PlayMathMode, PlayOperator } from '../services/playUiPreferencesService';
 
-export type MathMode = 'adventure' | 'genius';
-export type Operator = 'ADD' | 'SUB' | 'MUL' | 'DIV';
+export type MathMode = PlayMathMode;
+export type Operator = PlayOperator;
 
 export interface UsePlayPageLogicProps {
     gameScores?: Record<string, GameScoreValue>;
+    activeTab: GameCategory;
+    mathMode: MathMode;
+    selectedOp: Operator;
+    onActiveTabChange: (category: GameCategory) => void;
+    onMathModeChange: (mode: MathMode) => void;
+    onSelectedOpChange: (op: Operator) => void;
 }
 
-export const usePlayPageLogic = ({ gameScores }: UsePlayPageLogicProps) => {
-    // -- State --
-    const [activeTab, setActiveTab] = useState<GameCategory>(() => {
-        return (sessionStorage.getItem('play_tab') as GameCategory) || 'math';
-    });
-
-    const [mathMode, setMathMode] = useState<MathMode>(() => {
-        return (sessionStorage.getItem('play_math_mode') as MathMode) || 'adventure';
-    });
-
-    const [selectedOp, setSelectedOpState] = useState<Operator>(() => {
-        return (sessionStorage.getItem('play_genius_op') as Operator) || 'ADD';
-    });
-
+export const usePlayPageLogic = ({
+    gameScores,
+    activeTab,
+    mathMode,
+    selectedOp,
+    onActiveTabChange,
+    onMathModeChange,
+    onSelectedOpChange,
+}: UsePlayPageLogicProps) => {
     // -- Handlers --
     const handleTabSelect = (category: GameCategory) => {
-        setActiveTab(category);
-        sessionStorage.setItem('play_tab', category);
+        onActiveTabChange(category);
     };
 
     const handleMathModeSelect = (mode: MathMode) => {
-        setMathMode(mode);
-        sessionStorage.setItem('play_math_mode', mode);
+        onMathModeChange(mode);
     };
 
     const setSelectedOp = (op: Operator) => {
-        setSelectedOpState(op);
-        sessionStorage.setItem('play_genius_op', op);
+        onSelectedOpChange(op);
     };
 
     // -- Data Filtering --
