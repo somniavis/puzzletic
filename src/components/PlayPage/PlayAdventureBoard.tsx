@@ -114,18 +114,18 @@ const DIAMOND_B_TILES: BoardTile[] = [
 const PAD_X_SEQUENCE = [2, 0, 2, 4];
 const LEVEL_ONE_WATER_DECORATIONS = [
     { top: '8%', left: '4%', size: '2.18rem', duration: '19s', delay: '-4s', opacity: 0.34 },
-    { top: '16%', left: '18%', size: '1.65rem', duration: '15s', delay: '-9s', opacity: 0.28 },
-    { top: '24%', left: '38%', size: '2.55rem', duration: '23s', delay: '-3s', opacity: 0.3 },
+    { top: '16%', left: '24%', size: '1.65rem', duration: '15s', delay: '-9s', opacity: 0.28 },
+    { top: '24%', left: '46%', size: '2.55rem', duration: '23s', delay: '-3s', opacity: 0.3 },
     { top: '38%', left: '8%', size: '1.8rem', duration: '17s', delay: '-11s', opacity: 0.26 },
-    { top: '44%', left: '46%', size: '2.33rem', duration: '21s', delay: '-7s', opacity: 0.3 },
-    { top: '58%', left: '22%', size: '1.58rem', duration: '16s', delay: '-5s', opacity: 0.24 },
-    { top: '66%', left: '42%', size: '2.1rem', duration: '20s', delay: '-13s', opacity: 0.3 },
-    { top: '78%', left: '14%', size: '1.88rem', duration: '18s', delay: '-2s', opacity: 0.28 },
+    { top: '44%', left: '54%', size: '2.33rem', duration: '21s', delay: '-7s', opacity: 0.3 },
+    { top: '58%', left: '30%', size: '1.58rem', duration: '16s', delay: '-5s', opacity: 0.24 },
+    { top: '66%', left: '56%', size: '2.1rem', duration: '20s', delay: '-13s', opacity: 0.3 },
+    { top: '78%', left: '22%', size: '1.88rem', duration: '18s', delay: '-2s', opacity: 0.28 },
 ];
 const LEVEL_ONE_SAILBOAT_DECORATIONS = [
-    { top: '21%', left: '12%', size: '1.55rem', duration: '26s', delay: '-6s', opacity: 0.42 },
-    { top: '49%', left: '42%', size: '1.8rem', duration: '31s', delay: '-14s', opacity: 0.38 },
-    { top: '71%', left: '26%', size: '1.45rem', duration: '28s', delay: '-10s', opacity: 0.4 },
+    { top: '21%', left: '18%', size: '1.55rem', duration: '26s', delay: '-6s', opacity: 0.42 },
+    { top: '49%', left: '48%', size: '1.8rem', duration: '31s', delay: '-14s', opacity: 0.38 },
+    { top: '71%', left: '34%', size: '1.45rem', duration: '28s', delay: '-10s', opacity: 0.4 },
 ];
 const LEVEL_TWO_LEAF_DECORATIONS = [
     { top: '10%', left: '72%', size: '2.1rem', duration: '20s', delay: '-5s', opacity: 0.28 },
@@ -135,11 +135,14 @@ const LEVEL_TWO_LEAF_DECORATIONS = [
     { top: '54%', left: '79%', size: '2.2rem', duration: '22s', delay: '-7s', opacity: 0.26 },
     { top: '67%', left: '43%', size: '1.6rem', duration: '17s', delay: '-13s', opacity: 0.22 },
     { top: '79%', left: '68%', size: '2rem', duration: '21s', delay: '-2s', opacity: 0.25 },
+    { top: '24%', left: '50%', size: '1.9rem', duration: '19s', delay: '-8s', opacity: 0.24 },
+    { top: '60%', left: '48%', size: '1.75rem', duration: '18s', delay: '-6s', opacity: 0.23 },
 ];
 const LEVEL_TWO_ENVIRA_DECORATIONS = [
     { top: '23%', left: '64%', size: '1.55rem', duration: '27s', delay: '-6s', opacity: 0.32 },
     { top: '48%', left: '84%', size: '1.75rem', duration: '30s', delay: '-12s', opacity: 0.28 },
     { top: '73%', left: '58%', size: '1.45rem', duration: '28s', delay: '-9s', opacity: 0.3 },
+    { top: '36%', left: '46%', size: '1.6rem', duration: '25s', delay: '-4s', opacity: 0.3 },
 ];
 const LEVEL_TWO_BIRD_DECORATIONS = [
     { top: '14%', left: '12%', size: '1.7rem', duration: '34s', delay: '-8s', opacity: 0.44, icon: 'dove' },
@@ -160,6 +163,11 @@ const LEVEL_THREE_WIND_DECORATIONS = [
     { top: '61%', left: '64%', size: '1.85rem', duration: '23s', delay: '-10s', opacity: 0.22 },
     { top: '74%', left: '48%', size: '1.7rem', duration: '18s', delay: '-4s', opacity: 0.21 },
     { top: '84%', left: '62%', size: '1.5rem', duration: '22s', delay: '-13s', opacity: 0.2 },
+    { top: '10%', left: '72%', size: '1.8rem', duration: '21s', delay: '-8s', opacity: 0.22 },
+    { top: '26%', left: '82%', size: '1.55rem', duration: '19s', delay: '-2s', opacity: 0.2 },
+    { top: '42%', left: '74%', size: '1.95rem', duration: '24s', delay: '-12s', opacity: 0.23 },
+    { top: '57%', left: '86%', size: '1.6rem', duration: '20s', delay: '-6s', opacity: 0.2 },
+    { top: '72%', left: '76%', size: '1.75rem', duration: '22s', delay: '-15s', opacity: 0.21 },
 ];
 const LEVEL_TWO_SIMPLE_CLUSTER_BY_BUNDLE: Partial<Record<number, ForestClusterVariant>> = {
     0: 'trees',

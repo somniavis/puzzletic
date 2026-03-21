@@ -526,8 +526,8 @@
 .play-board-track {
     position: relative;
     --tile-size: clamp(3.6rem, 13vw, 5.4rem);
-    --tile-step-x: calc(var(--tile-size) * 0.82);
-    --tile-step-y: calc(var(--tile-size) * 0.78);
+    --tile-step-x: calc(var(--tile-size) * 0.81);
+    --tile-step-y: calc(var(--tile-size) * 0.77);
     --board-content-offset-y: var(--level-board-content-offset-y, 0rem);
     --board-width: calc(var(--tile-size) + var(--tile-step-x) * 4);
     --board-height: calc(var(--tile-size) + var(--tile-step-y) * (var(--board-rows) - 1));
