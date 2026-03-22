@@ -616,7 +616,7 @@ const PlayPage: React.FC = () => {
                 )}
             </div>
 
-            {playLearnMode === 'learn' && renderBottomNav()}
+            {renderBottomNav()}
 
             {selectedPlayBoardGame && (
                 <PlayGameInfoModal

@@ -4,6 +4,7 @@ import type { GameManifest } from '../../games/types';
 import { renderThumbnail } from '../../utils/playPageUtils';
 import type { Character } from '../../types/character';
 import { JelloAvatar } from '../characters/JelloAvatar';
+import { playJelloClickSound } from '../../utils/sound';
 
 export interface PlayAdventureBoardGame {
     game: GameManifest;
@@ -57,12 +58,21 @@ interface BoardLevelViewModel {
     games: PlayAdventureBoardGame[];
     layout: BoardLayout;
     accessibleBundleIndexes: Set<number>;
+}
+
+interface BoardLevelRenderModel extends BoardLevelViewModel {
     currentJelloGame: PlayAdventureBoardGame | null;
     currentJelloSlot: { x: number; y: number } | null;
     currentFreeRoamTile: { level: number; x: number; y: number } | null;
 }
 
 type ForestClusterVariant =
+    | 'island'
+    | 'beach'
+    | 'fish'
+    | 'jellyfish'
+    | 'whale'
+    | 'pufferfish'
     | 'trees'
     | 'pines'
     | 'sunflowers'
@@ -76,16 +86,44 @@ type ForestClusterVariant =
     | 'scorpions'
     | 'beetles';
 
-interface ScorpionMotionPreset {
+interface CreatureMotionPreset {
     animationName: string;
     delay: string;
     duration: string;
-    scaleX: string;
 }
+
+interface CreatureFacingPreset {
+    scaleX: string;
+    angle: string;
+}
+
+interface CreatureMotionAssignment extends CreatureMotionPreset, CreatureFacingPreset {
+}
+
+interface BoatMotionAssignment {
+    tileKey: string;
+    animationName: string;
+    delay: string;
+    duration: string;
+}
+
+const randomizeArray = <T,>(items: T[]) => {
+    const nextItems = [...items];
+
+    for (let index = nextItems.length - 1; index > 0; index -= 1) {
+        const swapIndex = Math.floor(Math.random() * (index + 1));
+        [nextItems[index], nextItems[swapIndex]] = [nextItems[swapIndex], nextItems[index]];
+    }
+
+    return nextItems;
+};
 
 const DIAMOND_STEP = 4;
 const START_PAD_ROW_OFFSET = 1;
 const DEFAULT_LEVEL_ROW_OFFSET = 1;
+const LEVEL_ONE_CREATURE_BUNDLE_INDEXES = [0, 2, 4, 5] as const;
+const LEVEL_THREE_CREATURE_BUNDLE_INDEXES = [4, 6] as const;
+const CREATURE_VARIANTS = new Set<ForestClusterVariant>(['fish', 'jellyfish', 'whale', 'pufferfish', 'scorpions', 'beetles']);
 
 const DIAMOND_A_TILES: BoardTile[] = [
     { x: 2, y: 0, kind: 'path' },
@@ -137,12 +175,17 @@ const LEVEL_TWO_LEAF_DECORATIONS = [
     { top: '79%', left: '68%', size: '2rem', duration: '21s', delay: '-2s', opacity: 0.25 },
     { top: '24%', left: '50%', size: '1.9rem', duration: '19s', delay: '-8s', opacity: 0.24 },
     { top: '60%', left: '48%', size: '1.75rem', duration: '18s', delay: '-6s', opacity: 0.23 },
+    { top: '14%', left: '60%', size: '1.95rem', duration: '23s', delay: '-10s', opacity: 0.24 },
+    { top: '36%', left: '70%', size: '1.7rem', duration: '20s', delay: '-1s', opacity: 0.22 },
+    { top: '72%', left: '55%', size: '1.85rem', duration: '19s', delay: '-14s', opacity: 0.23 },
 ];
 const LEVEL_TWO_ENVIRA_DECORATIONS = [
     { top: '23%', left: '64%', size: '1.55rem', duration: '27s', delay: '-6s', opacity: 0.32 },
     { top: '48%', left: '84%', size: '1.75rem', duration: '30s', delay: '-12s', opacity: 0.28 },
     { top: '73%', left: '58%', size: '1.45rem', duration: '28s', delay: '-9s', opacity: 0.3 },
     { top: '36%', left: '46%', size: '1.6rem', duration: '25s', delay: '-4s', opacity: 0.3 },
+    { top: '18%', left: '56%', size: '1.5rem', duration: '26s', delay: '-16s', opacity: 0.29 },
+    { top: '62%', left: '74%', size: '1.68rem', duration: '29s', delay: '-7s', opacity: 0.27 },
 ];
 const LEVEL_TWO_BIRD_DECORATIONS = [
     { top: '14%', left: '12%', size: '1.7rem', duration: '34s', delay: '-8s', opacity: 0.44, icon: 'dove' },
@@ -185,12 +228,67 @@ const LEVEL_THREE_SIMPLE_CLUSTER_BY_BUNDLE: Partial<Record<number, ForestCluster
     6: 'beetles',
     7: 'cacti',
 };
-const SCORPION_PRESETS: ScorpionMotionPreset[] = [
-    { animationName: 'playBoardScorpionTop', delay: '0s', duration: '16s', scaleX: '-1' },
-    { animationName: 'playBoardScorpionLeft', delay: '4s', duration: '16s', scaleX: '1' },
-    { animationName: 'playBoardScorpionRight', delay: '8s', duration: '16s', scaleX: '-1' },
-    { animationName: 'playBoardScorpionBottom', delay: '12s', duration: '16s', scaleX: '1' },
+const CREATURE_PRESETS: CreatureMotionAssignment[] = [
+    { animationName: 'playBoardFishLeft', delay: '0s', duration: '18s', scaleX: '1', angle: '0deg' },
+    { animationName: 'playBoardFishRight', delay: '3s', duration: '19s', scaleX: '-1', angle: '0deg' },
+    { animationName: 'playBoardFishUpLeft', delay: '6s', duration: '17s', scaleX: '1', angle: '-28deg' },
+    { animationName: 'playBoardFishDownRight', delay: '9s', duration: '20s', scaleX: '-1', angle: '28deg' },
+    { animationName: 'playBoardFishUpRight', delay: '12s', duration: '18s', scaleX: '-1', angle: '-28deg' },
+    { animationName: 'playBoardFishDownLeft', delay: '15s', duration: '19s', scaleX: '1', angle: '28deg' },
 ];
+
+const BOAT_PRESETS: Omit<BoatMotionAssignment, 'tileKey'>[] = [
+    { animationName: 'playBoardBoatRight', delay: '0s', duration: '14s' },
+    { animationName: 'playBoardBoatLeft', delay: '0s', duration: '15s' },
+];
+
+type SeaCreatureEmojiProfile = 'default' | 'fallback';
+
+let cachedSeaCreatureEmojiProfile: SeaCreatureEmojiProfile | null = null;
+
+const getRandomCreaturePreset = (exclude?: CreatureMotionAssignment | null) => {
+    const candidates = CREATURE_PRESETS.filter((preset) =>
+        !exclude
+        || preset.animationName !== exclude.animationName
+        || preset.scaleX !== exclude.scaleX
+        || preset.angle !== exclude.angle
+    );
+
+    const pool = candidates.length > 0 ? candidates : CREATURE_PRESETS;
+    return pool[Math.floor(Math.random() * pool.length)];
+};
+
+const getRandomBoatPreset = (tileKeys: string[], exclude?: BoatMotionAssignment | null): BoatMotionAssignment | null => {
+    if (tileKeys.length === 0) return null;
+
+    const tilePool = tileKeys.filter((tileKey) => tileKey !== exclude?.tileKey);
+    const nextTileKey = (tilePool.length > 0 ? tilePool : tileKeys)[Math.floor(Math.random() * (tilePool.length > 0 ? tilePool : tileKeys).length)];
+
+    const presetPool = BOAT_PRESETS.filter((preset) => preset.animationName !== exclude?.animationName);
+    const nextPreset = (presetPool.length > 0 ? presetPool : BOAT_PRESETS)[Math.floor(Math.random() * (presetPool.length > 0 ? presetPool : BOAT_PRESETS).length)];
+
+    return {
+        tileKey: nextTileKey,
+        ...nextPreset,
+    };
+};
+
+const getLevelOneOverlayTileKeys = (
+    levelOneLayout: BoardLayout | null,
+    bundleIndex: number,
+    matcher: (bundleLocalY: number, tile: BoardTile) => boolean
+) => {
+    if (!levelOneLayout) return [] as string[];
+
+    return levelOneLayout.tiles
+        .filter((tile) => {
+            const tileBundleIndex = getBundleIndex(tile.y, levelOneLayout.rowOffset);
+            if (tileBundleIndex !== bundleIndex || tile.kind !== 'forest') return false;
+            const bundleLocalY = tile.y - levelOneLayout.rowOffset - (tileBundleIndex * DIAMOND_STEP);
+            return matcher(bundleLocalY, tile);
+        })
+        .map((tile) => `1:${tile.x}:${tile.y}`);
+};
 
 const renderEmojiCluster = (
     emoji: string,
@@ -206,6 +304,58 @@ const renderEmojiCluster = (
     </span>
 );
 
+const renderCenteredEmoji = (emoji: string, className = 'play-board-centered-object') => (
+    <span className={className} aria-hidden="true">
+        {emoji}
+    </span>
+);
+
+const getSeaCreatureEmojiProfile = (): SeaCreatureEmojiProfile => {
+    if (cachedSeaCreatureEmojiProfile) return cachedSeaCreatureEmojiProfile;
+    if (typeof navigator === 'undefined') return 'default';
+
+    const ua = navigator.userAgent || '';
+    const platform = navigator.platform || '';
+    const isIOSDevice = /iP(hone|od|ad)/.test(ua) || (platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    const isWindowsDevice = /Windows/i.test(ua) || /Win/i.test(platform);
+
+    if (isWindowsDevice) {
+        cachedSeaCreatureEmojiProfile = 'fallback';
+        return cachedSeaCreatureEmojiProfile;
+    }
+
+    if (!isIOSDevice) {
+        cachedSeaCreatureEmojiProfile = 'default';
+        return cachedSeaCreatureEmojiProfile;
+    }
+
+    const iosVersionMatch = ua.match(/OS (\d+)_/);
+    const iosMajorVersion = iosVersionMatch ? parseInt(iosVersionMatch[1], 10) : null;
+    const isLegacyIOS = iosMajorVersion !== null && iosMajorVersion <= 15;
+
+    cachedSeaCreatureEmojiProfile = isLegacyIOS ? 'fallback' : 'default';
+    return cachedSeaCreatureEmojiProfile;
+};
+
+const getSeaCreatureEmoji = (variant: 'fish' | 'jellyfish') => {
+    if (variant === 'fish') return '🐟';
+
+    return getSeaCreatureEmojiProfile() === 'fallback' ? '🐢' : '🪼';
+};
+
+const getOverlayAnimationName = (animationName: string, emoji: string) => {
+    if (emoji !== '⛵') return animationName;
+
+    switch (animationName) {
+    case 'playBoardBoatRight':
+        return 'playBoardSailboatRight';
+    case 'playBoardBoatLeft':
+        return 'playBoardSailboatLeft';
+    default:
+        return animationName;
+    }
+};
+
 const getForestClusterVariant = (
     level: number,
     tile: BoardTile,
@@ -214,6 +364,34 @@ const getForestClusterVariant = (
 ): ForestClusterVariant | null => {
     if (tile.kind !== 'forest') return null;
     const bundleLocalY = tile.y - rowOffset - (tileBundleIndex * DIAMOND_STEP);
+
+    if (level === 1) {
+        if (tileBundleIndex === 0) {
+            return 'fish';
+        }
+
+        if (tileBundleIndex === 2) {
+            return 'jellyfish';
+        }
+
+        if (tileBundleIndex === 4) {
+            return 'whale';
+        }
+
+        if (tileBundleIndex === 5) {
+            return 'pufferfish';
+        }
+
+        if (tileBundleIndex === 1 && bundleLocalY === 2 && tile.x === 0) {
+            return 'island';
+        }
+
+        if (tileBundleIndex === 3 && bundleLocalY === 2 && tile.x === 2) {
+            return 'beach';
+        }
+
+        return null;
+    }
 
     if (level === 2) {
         if (tileBundleIndex === 2) {
@@ -241,13 +419,128 @@ const getForestClusterVariant = (
     return null;
 };
 
+const renderBoat = (
+    boatMotion: BoatMotionAssignment | null,
+    emoji: string,
+    className: string,
+    onBoatAnimationIteration?: () => void
+) => {
+    if (!boatMotion) return null;
+
+    return (
+        <span
+            className={className}
+            aria-hidden="true"
+            onAnimationIteration={() => {
+                if (onBoatAnimationIteration) {
+                    onBoatAnimationIteration();
+                }
+            }}
+            style={{
+                animation: `${getOverlayAnimationName(boatMotion.animationName, emoji)} ${boatMotion.duration} ease-in-out ${boatMotion.delay} infinite`,
+            }}
+        >
+            {emoji === '🚢' ? (
+                <>
+                    <span className="play-board-boat-icon left">🚢</span>
+                    <span className="play-board-boat-icon right">🚢</span>
+                </>
+            ) : (
+                <span className="play-board-overlay-sailboat-icon">{emoji}</span>
+            )}
+        </span>
+    );
+};
+
 const renderForestCluster = (
     variant: ForestClusterVariant | null,
-    creatureMotion: ScorpionMotionPreset | null
+    creatureMotion: CreatureMotionAssignment | null,
+    tileKey?: string,
+    onCreatureAnimationIteration?: (tileKey: string) => void
 ) => {
     if (!variant) return null;
 
     switch (variant) {
+    case 'island':
+        return renderCenteredEmoji('🏝️');
+    case 'beach':
+        return renderCenteredEmoji('🏖️');
+    case 'fish':
+        return creatureMotion ? (
+            <span
+                className="play-board-scorpion play-board-fish"
+                aria-hidden="true"
+                onAnimationIteration={() => {
+                    if (tileKey && onCreatureAnimationIteration) {
+                        onCreatureAnimationIteration(tileKey);
+                    }
+                }}
+                style={{
+                    animation: `${creatureMotion.animationName} ${creatureMotion.duration} ease-in-out ${creatureMotion.delay} infinite`,
+                    ['--scorpion-scale-x' as string]: creatureMotion.scaleX,
+                    ['--creature-angle' as string]: creatureMotion.angle,
+                }}
+            >
+                {getSeaCreatureEmoji('fish')}
+            </span>
+        ) : null;
+    case 'jellyfish':
+        return creatureMotion ? (
+            <span
+                className="play-board-scorpion play-board-fish play-board-jellyfish"
+                aria-hidden="true"
+                onAnimationIteration={() => {
+                    if (tileKey && onCreatureAnimationIteration) {
+                        onCreatureAnimationIteration(tileKey);
+                    }
+                }}
+                style={{
+                    animation: `${creatureMotion.animationName} ${creatureMotion.duration} ease-in-out ${creatureMotion.delay} infinite`,
+                    ['--scorpion-scale-x' as string]: creatureMotion.scaleX,
+                    ['--creature-angle' as string]: creatureMotion.angle,
+                }}
+            >
+                {getSeaCreatureEmoji('jellyfish')}
+            </span>
+        ) : null;
+    case 'whale':
+        return creatureMotion ? (
+            <span
+                className="play-board-scorpion play-board-fish play-board-whale"
+                aria-hidden="true"
+                onAnimationIteration={() => {
+                    if (tileKey && onCreatureAnimationIteration) {
+                        onCreatureAnimationIteration(tileKey);
+                    }
+                }}
+                style={{
+                    animation: `${creatureMotion.animationName} ${creatureMotion.duration} ease-in-out ${creatureMotion.delay} infinite`,
+                    ['--scorpion-scale-x' as string]: creatureMotion.scaleX,
+                    ['--creature-angle' as string]: creatureMotion.angle,
+                }}
+            >
+                🐳
+            </span>
+        ) : null;
+    case 'pufferfish':
+        return creatureMotion ? (
+            <span
+                className="play-board-scorpion play-board-fish play-board-pufferfish"
+                aria-hidden="true"
+                onAnimationIteration={() => {
+                    if (tileKey && onCreatureAnimationIteration) {
+                        onCreatureAnimationIteration(tileKey);
+                    }
+                }}
+                style={{
+                    animation: `${creatureMotion.animationName} ${creatureMotion.duration} ease-in-out ${creatureMotion.delay} infinite`,
+                    ['--scorpion-scale-x' as string]: creatureMotion.scaleX,
+                    ['--creature-angle' as string]: creatureMotion.angle,
+                }}
+            >
+                🐡
+            </span>
+        ) : null;
     case 'trees':
         return renderEmojiCluster('🌳');
     case 'pines':
@@ -273,9 +566,15 @@ const renderForestCluster = (
             <span
                 className="play-board-scorpion"
                 aria-hidden="true"
+                onAnimationIteration={() => {
+                    if (tileKey && onCreatureAnimationIteration) {
+                        onCreatureAnimationIteration(tileKey);
+                    }
+                }}
                 style={{
                     animation: `${creatureMotion.animationName} ${creatureMotion.duration} ease-in-out ${creatureMotion.delay} infinite`,
                     ['--scorpion-scale-x' as string]: creatureMotion.scaleX,
+                    ['--creature-angle' as string]: creatureMotion.angle,
                 }}
             >
                 🦂
@@ -286,9 +585,15 @@ const renderForestCluster = (
             <span
                 className="play-board-scorpion play-board-beetle"
                 aria-hidden="true"
+                onAnimationIteration={() => {
+                    if (tileKey && onCreatureAnimationIteration) {
+                        onCreatureAnimationIteration(tileKey);
+                    }
+                }}
                 style={{
                     animation: `${creatureMotion.animationName} ${creatureMotion.duration} ease-in-out ${creatureMotion.delay} infinite`,
                     ['--scorpion-scale-x' as string]: creatureMotion.scaleX,
+                    ['--creature-angle' as string]: creatureMotion.angle,
                 }}
             >
                 🪲
@@ -386,11 +691,27 @@ export const PlayAdventureBoard: React.FC<PlayAdventureBoardProps> = ({
     onSelectTile,
 }) => {
     const { t } = useTranslation();
+    const playJelloMoveSound = React.useCallback(() => {
+        playJelloClickSound(0.35);
+    }, []);
     const boardLevels = React.useMemo<BoardLevelViewModel[]>(
         () => levelGroups.map(({ level, games }) => {
             const layout = buildBoardLayout(level, games.length);
             const { padSlots, hasStartPad, rowOffset } = layout;
-            const accessibleBundleIndexes = buildAccessibleBundleIndexes(games, padSlots, hasStartPad, rowOffset);
+
+            return {
+                level,
+                games,
+                layout,
+                accessibleBundleIndexes: buildAccessibleBundleIndexes(games, padSlots, hasStartPad, rowOffset),
+            };
+        }),
+        [levelGroups]
+    );
+    const renderBoardLevels = React.useMemo<BoardLevelRenderModel[]>(
+        () => boardLevels.map((boardLevel) => {
+            const { level, games, layout } = boardLevel;
+            const { padSlots, hasStartPad } = layout;
             const currentJelloIndex = currentJelloGameId
                 ? games.findIndex(({ game }) => game.id === currentJelloGameId)
                 : -1;
@@ -403,39 +724,90 @@ export const PlayAdventureBoard: React.FC<PlayAdventureBoardProps> = ({
                 : null;
 
             return {
-                level,
-                games,
-                layout,
-                accessibleBundleIndexes,
+                ...boardLevel,
                 currentJelloGame,
                 currentJelloSlot: currentFreeRoamTile ?? currentMissionSlot,
                 currentFreeRoamTile,
             };
         }),
-        [currentJelloGameId, currentJelloTilePosition, levelGroups]
+        [boardLevels, currentJelloGameId, currentJelloTilePosition]
     );
-    const scorpionMotionByTileKey = React.useMemo(() => {
-        const assignments = new Map<string, ScorpionMotionPreset>();
+    const levelOneLayout = React.useMemo(
+        () => boardLevels.find(({ level }) => level === 1)?.layout ?? null,
+        [boardLevels]
+    );
+    const initialCreatureMotionByTileKey = React.useMemo(() => {
+        const assignments = new Map<string, CreatureMotionAssignment>();
 
         boardLevels.forEach(({ level, layout }) => {
-            if (level !== 3) return;
+            const creatureBundleIndexes =
+                level === 1 ? LEVEL_ONE_CREATURE_BUNDLE_INDEXES
+                    : level === 3 ? LEVEL_THREE_CREATURE_BUNDLE_INDEXES
+                        : [];
 
-            [4, 6].forEach((bundleIndex) => {
-                const shuffled = [...SCORPION_PRESETS].sort(() => Math.random() - 0.5);
+            creatureBundleIndexes.forEach((bundleIndex) => {
                 const creatureTiles = layout.tiles.filter((tile) =>
                     tile.kind === 'forest' && getBundleIndex(tile.y, layout.rowOffset) === bundleIndex
                 );
 
+                const shuffledPresets = randomizeArray(CREATURE_PRESETS);
+
                 creatureTiles.forEach((tile, index) => {
-                    assignments.set(`${level}:${tile.x}:${tile.y}`, shuffled[index % shuffled.length]);
+                    assignments.set(`${level}:${tile.x}:${tile.y}`, shuffledPresets[index % shuffledPresets.length]);
                 });
             });
         });
 
         return assignments;
     }, [boardLevels]);
+    const levelOneBoatTileKeys = React.useMemo(
+        () => getLevelOneOverlayTileKeys(levelOneLayout, 3, (bundleLocalY, tile) =>
+            (bundleLocalY === 1 && tile.x === 1) || (bundleLocalY === 2 && tile.x === 0) || (bundleLocalY === 3 && tile.x === 1)
+        ),
+        [levelOneLayout]
+    );
+    const levelOneSailboatTileKeys = React.useMemo(
+        () => getLevelOneOverlayTileKeys(levelOneLayout, 1, (bundleLocalY, tile) =>
+            (bundleLocalY === 1 && tile.x === 1) || (bundleLocalY === 2 && tile.x === 2) || (bundleLocalY === 3 && tile.x === 1)
+        ),
+        [levelOneLayout]
+    );
+    const [creatureMotionByTileKey, setCreatureMotionByTileKey] = React.useState<Map<string, CreatureMotionAssignment>>(
+        () => initialCreatureMotionByTileKey
+    );
+    const [boatMotion, setBoatMotion] = React.useState<BoatMotionAssignment | null>(
+        () => getRandomBoatPreset(levelOneBoatTileKeys)
+    );
+    const [sailboatMotion, setSailboatMotion] = React.useState<BoatMotionAssignment | null>(
+        () => getRandomBoatPreset(levelOneSailboatTileKeys)
+    );
 
-    if (boardLevels.length === 0) {
+    React.useEffect(() => {
+        setCreatureMotionByTileKey(initialCreatureMotionByTileKey);
+    }, [initialCreatureMotionByTileKey]);
+
+    React.useEffect(() => {
+        setBoatMotion(getRandomBoatPreset(levelOneBoatTileKeys));
+    }, [levelOneBoatTileKeys]);
+    React.useEffect(() => {
+        setSailboatMotion(getRandomBoatPreset(levelOneSailboatTileKeys));
+    }, [levelOneSailboatTileKeys]);
+
+    const handleCreatureAnimationIteration = React.useCallback((tileKey: string) => {
+        setCreatureMotionByTileKey((previous) => {
+            const next = new Map(previous);
+            next.set(tileKey, getRandomCreaturePreset(previous.get(tileKey) ?? null));
+            return next;
+        });
+    }, []);
+    const handleBoatAnimationIteration = React.useCallback(() => {
+        setBoatMotion((previous) => getRandomBoatPreset(levelOneBoatTileKeys, previous));
+    }, [levelOneBoatTileKeys]);
+    const handleSailboatAnimationIteration = React.useCallback(() => {
+        setSailboatMotion((previous) => getRandomBoatPreset(levelOneSailboatTileKeys, previous));
+    }, [levelOneSailboatTileKeys]);
+
+    if (renderBoardLevels.length === 0) {
         return (
             <div className="play-board-empty">
                 <div className="play-board-empty-card">
@@ -448,9 +820,9 @@ export const PlayAdventureBoard: React.FC<PlayAdventureBoardProps> = ({
 
     return (
         <div className="play-adventure-board">
-            {boardLevels.map(({ level, games, layout, accessibleBundleIndexes, currentJelloGame, currentJelloSlot, currentFreeRoamTile }, index) => {
+            {renderBoardLevels.map(({ level, games, layout, accessibleBundleIndexes, currentJelloGame, currentJelloSlot, currentFreeRoamTile }, index) => {
                 const { boardRows, hasStartPad, tiles, padSlots, rowOffset } = layout;
-                const nextLevel = boardLevels[index + 1]?.level;
+                const nextLevel = renderBoardLevels[index + 1]?.level;
 
                 return (
                     <React.Fragment key={level}>
@@ -581,9 +953,17 @@ export const PlayAdventureBoard: React.FC<PlayAdventureBoardProps> = ({
                                             const tileBundleIndex = getBundleIndex(tile.y, rowOffset);
                                             const isTileAccessible = accessibleBundleIndexes.has(tileBundleIndex);
                                             const forestClusterVariant = getForestClusterVariant(level, tile, tileBundleIndex, rowOffset);
-                                            const creatureMotion =
-                                                forestClusterVariant === 'scorpions' || forestClusterVariant === 'beetles'
-                                                    ? scorpionMotionByTileKey.get(`${level}:${tile.x}:${tile.y}`) ?? null
+                                            const tileKey = `${level}:${tile.x}:${tile.y}`;
+                                            const creatureMotion = forestClusterVariant && CREATURE_VARIANTS.has(forestClusterVariant)
+                                                ? creatureMotionByTileKey.get(tileKey) ?? null
+                                                : null;
+                                            const activeBoatMotion =
+                                                boatMotion?.tileKey === tileKey
+                                                    ? boatMotion
+                                                    : null;
+                                            const activeSailboatMotion =
+                                                sailboatMotion?.tileKey === tileKey
+                                                    ? sailboatMotion
                                                     : null;
 
                                             return (
@@ -597,12 +977,26 @@ export const PlayAdventureBoard: React.FC<PlayAdventureBoardProps> = ({
                                                 }}
                                                 onClick={() => {
                                                     if (!isTileAccessible) return;
+                                                    if (
+                                                        currentJelloSlot?.x !== tile.x
+                                                        || currentJelloSlot?.y !== tile.y
+                                                        || currentFreeRoamTile?.level !== level
+                                                    ) {
+                                                        playJelloMoveSound();
+                                                    }
                                                     onSelectTile({ level, x: tile.x, y: tile.y });
                                                 }}
                                                 aria-disabled={!isTileAccessible}
                                                 aria-label={t('play.modes.adventure')}
                                             >
-                                                {renderForestCluster(forestClusterVariant, creatureMotion)}
+                                                {renderForestCluster(
+                                                    forestClusterVariant,
+                                                    creatureMotion,
+                                                    tileKey,
+                                                    handleCreatureAnimationIteration
+                                                )}
+                                                {renderBoat(activeBoatMotion, '🚢', 'play-board-boat', handleBoatAnimationIteration)}
+                                                {renderBoat(activeSailboatMotion, '⛵', 'play-board-sailboat', handleSailboatAnimationIteration)}
                                             </button>
                                             );
                                         })}
@@ -642,7 +1036,16 @@ export const PlayAdventureBoard: React.FC<PlayAdventureBoardProps> = ({
                                                         ['--tile-x' as string]: slot.x,
                                                         ['--tile-y' as string]: slot.y,
                                                     }}
-                                                    onClick={() => onSelectGame(game.id)}
+                                                    onClick={() => {
+                                                        if (
+                                                            unlocked
+                                                            && !isPremiumLocked
+                                                            && currentJelloGameId !== game.id
+                                                        ) {
+                                                            playJelloMoveSound();
+                                                        }
+                                                        onSelectGame(game.id);
+                                                    }}
                                                     aria-label={label}
                                                 >
                                                     <span className="play-mission-pad-shadow" />
