@@ -1,5 +1,5 @@
 const ptPt = {
-    title: 'Chocolate Split',
+    title: 'Partir Chocolate',
     subtitle: 'Faz grupos iguais',
     description: 'ㅇㅇㅇ',
     powerups: {

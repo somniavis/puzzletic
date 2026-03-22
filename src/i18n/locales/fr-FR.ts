@@ -1058,6 +1058,11 @@ export const frFR = {
       science: 'PARAMETRES',
       sw: 'SW',
     },
+    worlds: {
+      level1: "Monde de l'Eau",
+      level2: 'Monde de la Forêt',
+      level3: 'Monde du Désert',
+    },
     game: {
       playNow: 'Jouer',
       reset: 'Recommencer',
@@ -1145,6 +1150,7 @@ export const frFR = {
       memory: 'Mémoire',
       logic: 'Logique',
       comparison: 'Comparaison',
+      division: 'Division',
       multiplication: 'Multiplication',
     },
     mission: {

@@ -1058,6 +1058,11 @@ export const esES = {
       science: 'AJUSTES',
       sw: 'SW',
     },
+    worlds: {
+      level1: 'Mundo del Agua',
+      level2: 'Mundo del Bosque',
+      level3: 'Mundo del Desierto',
+    },
     game: {
       playNow: 'Jugar ahora',
       reset: 'Empezar de nuevo',
@@ -1145,6 +1150,7 @@ export const esES = {
       memory: 'Memoria',
       logic: 'Lógica',
       comparison: 'Comparación',
+      division: 'División',
       multiplication: 'Multiplicación',
     },
     mission: {

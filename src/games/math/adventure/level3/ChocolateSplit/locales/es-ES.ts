@@ -1,5 +1,5 @@
 const esEs = {
-    title: 'Chocolate Split',
+    title: 'Partir Chocolate',
     subtitle: 'Forma grupos iguales',
     description: 'ㅇㅇㅇ',
     powerups: {

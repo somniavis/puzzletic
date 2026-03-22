@@ -1,5 +1,5 @@
 const locale = {
-    title: '10 frame-add',
+    title: 'Suma en marco de 10',
     subtitle: 'Haz 10 y 20',
     description: 'Cambia los puntos y encuentra el número que falta.',
     question: '¿Qué número va en el espacio vacío?',

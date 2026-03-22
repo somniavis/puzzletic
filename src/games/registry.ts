@@ -651,7 +651,7 @@ export const GAMES: GameManifest[] = [
         mode: 'adventure',
         component: L3_DonutShop,
         thumbnail: '🍩',
-        tagsKey: 'games.tags.multiplication'
+        tagsKey: 'games.tags.division'
     },
     {
         id: GameIds.MATH_CHOCOLATE_SPLIT,
@@ -666,7 +666,7 @@ export const GAMES: GameManifest[] = [
         mode: 'adventure',
         component: L3_ChocolateSplit,
         thumbnail: '🍫',
-        tagsKey: 'games.tags.multiplication'
+        tagsKey: 'games.tags.division'
     },
     // Front Addition Levels
     {

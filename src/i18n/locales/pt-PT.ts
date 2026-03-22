@@ -1058,6 +1058,11 @@ export const ptPT = {
       science: 'DEFINICOES',
       sw: 'SW',
     },
+    worlds: {
+      level1: 'Mundo da Água',
+      level2: 'Mundo da Floresta',
+      level3: 'Mundo do Deserto',
+    },
     game: {
       playNow: 'Jogar agora',
       reset: 'Recomeçar',
@@ -1145,6 +1150,7 @@ export const ptPT = {
       memory: 'Memória',
       logic: 'Lógica',
       comparison: 'Comparação',
+      division: 'Divisão',
       multiplication: 'Multiplicação',
     },
     mission: {

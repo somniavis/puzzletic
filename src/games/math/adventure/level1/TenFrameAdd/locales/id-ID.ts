@@ -1,5 +1,5 @@
 const locale = {
-    title: '10 frame-add',
+    title: 'Penjumlahan Bingkai 10',
     subtitle: 'Buat 10 & 20',
     description: 'Ubah titik lalu cari angka yang hilang.',
     question: 'Angka berapa yang masuk ke kotak kosong?',

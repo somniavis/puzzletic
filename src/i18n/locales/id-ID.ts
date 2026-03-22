@@ -1058,6 +1058,11 @@ export const idID = {
       science: 'PENGATURAN',
       sw: 'PEMROGRAMAN',
     },
+    worlds: {
+      level1: 'Dunia Air',
+      level2: 'Dunia Hutan',
+      level3: 'Dunia Gurun',
+    },
     game: {
       playNow: 'Main Sekarang',
       reset: 'Mulai dari awal',
@@ -1145,6 +1150,7 @@ export const idID = {
       memory: 'Memori',
       logic: 'Logika',
       comparison: 'Perbandingan',
+      division: 'Pembagian',
       multiplication: 'Perkalian',
     },
     mission: {

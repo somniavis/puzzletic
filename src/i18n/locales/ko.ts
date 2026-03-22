@@ -1060,6 +1060,11 @@ const koBase = {
             science: '설정',
             sw: '코딩',
         },
+        worlds: {
+            level1: '워터 월드',
+            level2: '포레스트 월드',
+            level3: '데저트 월드',
+        },
         game: {
             playNow: '지금 플레이',
             reset: '처음부터',
@@ -1148,6 +1153,7 @@ const koBase = {
             memory: '기억력',
             logic: '논리',
             comparison: '비교',
+            division: '나눗셈',
             multiplication: '곱셈',
         },
         mission: {

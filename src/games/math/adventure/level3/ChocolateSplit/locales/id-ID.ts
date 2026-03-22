@@ -1,5 +1,5 @@
 const idId = {
-    title: 'Chocolate Split',
+    title: 'Membagi Cokelat',
     subtitle: 'Buat kelompok yang sama',
     description: 'ㅇㅇㅇ',
     powerups: {

@@ -1,5 +1,5 @@
 const frFr = {
-    title: 'Chocolate Split',
+    title: 'Partager le Chocolat',
     subtitle: 'Fais des groupes egaux',
     description: 'ㅇㅇㅇ',
     powerups: {

@@ -69,6 +69,7 @@ interface BoardLevelRenderModel extends BoardLevelViewModel {
 type ForestClusterVariant =
     | 'island'
     | 'beach'
+    | 'desert-oasis'
     | 'fish'
     | 'jellyfish'
     | 'whale'
@@ -77,7 +78,6 @@ type ForestClusterVariant =
     | 'pines'
     | 'sunflowers'
     | 'tulips'
-    | 'hyacinths'
     | 'mushrooms'
     | 'woodpile'
     | 'desert-sprouts'
@@ -228,6 +228,11 @@ const LEVEL_THREE_SIMPLE_CLUSTER_BY_BUNDLE: Partial<Record<number, ForestCluster
     6: 'beetles',
     7: 'cacti',
 };
+const PLAY_LEVEL_WORLD_TITLE_KEYS: Record<number, string> = {
+    1: 'play.worlds.level1',
+    2: 'play.worlds.level2',
+    3: 'play.worlds.level3',
+};
 const CREATURE_PRESETS: CreatureMotionAssignment[] = [
     { animationName: 'playBoardFishLeft', delay: '0s', duration: '18s', scaleX: '1', angle: '0deg' },
     { animationName: 'playBoardFishRight', delay: '3s', duration: '19s', scaleX: '-1', angle: '0deg' },
@@ -273,21 +278,22 @@ const getRandomBoatPreset = (tileKeys: string[], exclude?: BoatMotionAssignment 
     };
 };
 
-const getLevelOneOverlayTileKeys = (
-    levelOneLayout: BoardLayout | null,
+const getOverlayTileKeys = (
+    layout: BoardLayout | null,
+    level: number,
     bundleIndex: number,
     matcher: (bundleLocalY: number, tile: BoardTile) => boolean
 ) => {
-    if (!levelOneLayout) return [] as string[];
+    if (!layout) return [] as string[];
 
-    return levelOneLayout.tiles
+    return layout.tiles
         .filter((tile) => {
-            const tileBundleIndex = getBundleIndex(tile.y, levelOneLayout.rowOffset);
+            const tileBundleIndex = getBundleIndex(tile.y, layout.rowOffset);
             if (tileBundleIndex !== bundleIndex || tile.kind !== 'forest') return false;
-            const bundleLocalY = tile.y - levelOneLayout.rowOffset - (tileBundleIndex * DIAMOND_STEP);
+            const bundleLocalY = tile.y - layout.rowOffset - (tileBundleIndex * DIAMOND_STEP);
             return matcher(bundleLocalY, tile);
         })
-        .map((tile) => `1:${tile.x}:${tile.y}`);
+        .map((tile) => `${level}:${tile.x}:${tile.y}`);
 };
 
 const renderEmojiCluster = (
@@ -344,6 +350,28 @@ const getSeaCreatureEmoji = (variant: 'fish' | 'jellyfish') => {
 };
 
 const getOverlayAnimationName = (animationName: string, emoji: string) => {
+    if (emoji === '🐫' || emoji === '🐘') {
+        switch (animationName) {
+        case 'playBoardBoatRight':
+            return 'playBoardCamelRight';
+        case 'playBoardBoatLeft':
+            return 'playBoardCamelLeft';
+        default:
+            return animationName;
+        }
+    }
+
+    if (emoji === '🐝') {
+        switch (animationName) {
+        case 'playBoardBoatRight':
+            return 'playBoardBeeRight';
+        case 'playBoardBoatLeft':
+            return 'playBoardBeeLeft';
+        default:
+            return animationName;
+        }
+    }
+
     if (emoji !== '⛵') return animationName;
 
     switch (animationName) {
@@ -396,17 +424,28 @@ const getForestClusterVariant = (
     if (level === 2) {
         if (tileBundleIndex === 2) {
             if (tile.x === 2) return 'sunflowers';
-            return tile.x === 4 ? 'hyacinths' : 'tulips';
+            return tile.x === 4 ? null : 'tulips';
         }
 
         if (tileBundleIndex === 3) {
             return tile.x === 0 ? 'woodpile' : 'mushrooms';
         }
 
+        if (tileBundleIndex === 4) {
+            return bundleLocalY === 3 && tile.x === 3 ? 'pines' : null;
+        }
+
         return LEVEL_TWO_SIMPLE_CLUSTER_BY_BUNDLE[tileBundleIndex] ?? null;
     }
 
     if (level === 3) {
+        if (tileBundleIndex === 2) {
+            if (bundleLocalY === 2 && tile.x === 4) {
+                return 'desert-oasis';
+            }
+            return null;
+        }
+
         if (tileBundleIndex === 8) {
             if (bundleLocalY === 1) return 'cacti';
             if (bundleLocalY === 2) return tile.x === 2 ? 'cacti' : 'rocks';
@@ -445,6 +484,24 @@ const renderBoat = (
                     <span className="play-board-boat-icon left">🚢</span>
                     <span className="play-board-boat-icon right">🚢</span>
                 </>
+            ) : emoji === '🐫' ? (
+                <span
+                    className={`play-board-camel-icon ${boatMotion.animationName === 'playBoardBoatRight' ? 'is-flipped' : ''}`}
+                >
+                    🐫
+                </span>
+            ) : emoji === '🐘' ? (
+                <span
+                    className={`play-board-elephant-icon ${boatMotion.animationName === 'playBoardBoatRight' ? 'is-flipped' : ''}`}
+                >
+                    🐘
+                </span>
+            ) : emoji === '🐝' ? (
+                <span
+                    className={`play-board-bee-icon ${boatMotion.animationName === 'playBoardBoatRight' ? 'is-flipped' : ''}`}
+                >
+                    🐝
+                </span>
             ) : (
                 <span className="play-board-overlay-sailboat-icon">{emoji}</span>
             )}
@@ -465,6 +522,8 @@ const renderForestCluster = (
         return renderCenteredEmoji('🏝️');
     case 'beach':
         return renderCenteredEmoji('🏖️');
+    case 'desert-oasis':
+        return renderCenteredEmoji('🏜️');
     case 'fish':
         return creatureMotion ? (
             <span
@@ -549,10 +608,8 @@ const renderForestCluster = (
         return renderEmojiCluster('🌻', 'play-board-tree-cluster play-board-flower-cluster');
     case 'tulips':
         return renderEmojiCluster('🌷', 'play-board-tree-cluster play-board-flower-cluster');
-    case 'hyacinths':
-        return renderEmojiCluster('🪻', 'play-board-tree-cluster play-board-flower-cluster');
     case 'mushrooms':
-        return renderEmojiCluster('🍄', 'play-board-tree-cluster play-board-object-cluster', 'play-board-object', 'object');
+        return renderEmojiCluster('🍄', 'play-board-tree-cluster play-board-object-cluster play-board-mushroom-cluster', 'play-board-object', 'object');
     case 'woodpile':
         return renderEmojiCluster('🪵', 'play-board-tree-cluster play-board-object-cluster play-board-woodpile-cluster', 'play-board-object', 'object');
     case 'desert-sprouts':
@@ -761,16 +818,42 @@ export const PlayAdventureBoard: React.FC<PlayAdventureBoardProps> = ({
         return assignments;
     }, [boardLevels]);
     const levelOneBoatTileKeys = React.useMemo(
-        () => getLevelOneOverlayTileKeys(levelOneLayout, 3, (bundleLocalY, tile) =>
+        () => getOverlayTileKeys(levelOneLayout, 1, 3, (bundleLocalY, tile) =>
             (bundleLocalY === 1 && tile.x === 1) || (bundleLocalY === 2 && tile.x === 0) || (bundleLocalY === 3 && tile.x === 1)
         ),
         [levelOneLayout]
     );
     const levelOneSailboatTileKeys = React.useMemo(
-        () => getLevelOneOverlayTileKeys(levelOneLayout, 1, (bundleLocalY, tile) =>
+        () => getOverlayTileKeys(levelOneLayout, 1, 1, (bundleLocalY, tile) =>
             (bundleLocalY === 1 && tile.x === 1) || (bundleLocalY === 2 && tile.x === 2) || (bundleLocalY === 3 && tile.x === 1)
         ),
         [levelOneLayout]
+    );
+    const levelThreeLayout = React.useMemo(
+        () => boardLevels.find(({ level }) => level === 3)?.layout ?? null,
+        [boardLevels]
+    );
+    const levelThreeCamelTileKeys = React.useMemo(
+        () => getOverlayTileKeys(levelThreeLayout, 3, 2, (bundleLocalY, tile) =>
+            (bundleLocalY === 1 && tile.x === 3) || (bundleLocalY === 2 && tile.x === 2) || (bundleLocalY === 3 && tile.x === 3)
+        ),
+        [levelThreeLayout]
+    );
+    const levelTwoLayout = React.useMemo(
+        () => boardLevels.find(({ level }) => level === 2)?.layout ?? null,
+        [boardLevels]
+    );
+    const levelTwoBeeTileKeys = React.useMemo(
+        () => getOverlayTileKeys(levelTwoLayout, 2, 2, (bundleLocalY, tile) =>
+            bundleLocalY === 2 && tile.x === 4
+        ),
+        [levelTwoLayout]
+    );
+    const levelTwoElephantTileKeys = React.useMemo(
+        () => getOverlayTileKeys(levelTwoLayout, 2, 4, (bundleLocalY, tile) =>
+            (bundleLocalY === 1 && tile.x === 3) || (bundleLocalY === 2 && (tile.x === 2 || tile.x === 4))
+        ),
+        [levelTwoLayout]
     );
     const [creatureMotionByTileKey, setCreatureMotionByTileKey] = React.useState<Map<string, CreatureMotionAssignment>>(
         () => initialCreatureMotionByTileKey
@@ -780,6 +863,15 @@ export const PlayAdventureBoard: React.FC<PlayAdventureBoardProps> = ({
     );
     const [sailboatMotion, setSailboatMotion] = React.useState<BoatMotionAssignment | null>(
         () => getRandomBoatPreset(levelOneSailboatTileKeys)
+    );
+    const [camelMotion, setCamelMotion] = React.useState<BoatMotionAssignment | null>(
+        () => getRandomBoatPreset(levelThreeCamelTileKeys)
+    );
+    const [beeMotion, setBeeMotion] = React.useState<BoatMotionAssignment | null>(
+        () => getRandomBoatPreset(levelTwoBeeTileKeys)
+    );
+    const [elephantMotion, setElephantMotion] = React.useState<BoatMotionAssignment | null>(
+        () => getRandomBoatPreset(levelTwoElephantTileKeys)
     );
 
     React.useEffect(() => {
@@ -792,6 +884,15 @@ export const PlayAdventureBoard: React.FC<PlayAdventureBoardProps> = ({
     React.useEffect(() => {
         setSailboatMotion(getRandomBoatPreset(levelOneSailboatTileKeys));
     }, [levelOneSailboatTileKeys]);
+    React.useEffect(() => {
+        setCamelMotion(getRandomBoatPreset(levelThreeCamelTileKeys));
+    }, [levelThreeCamelTileKeys]);
+    React.useEffect(() => {
+        setBeeMotion(getRandomBoatPreset(levelTwoBeeTileKeys));
+    }, [levelTwoBeeTileKeys]);
+    React.useEffect(() => {
+        setElephantMotion(getRandomBoatPreset(levelTwoElephantTileKeys));
+    }, [levelTwoElephantTileKeys]);
 
     const handleCreatureAnimationIteration = React.useCallback((tileKey: string) => {
         setCreatureMotionByTileKey((previous) => {
@@ -806,6 +907,15 @@ export const PlayAdventureBoard: React.FC<PlayAdventureBoardProps> = ({
     const handleSailboatAnimationIteration = React.useCallback(() => {
         setSailboatMotion((previous) => getRandomBoatPreset(levelOneSailboatTileKeys, previous));
     }, [levelOneSailboatTileKeys]);
+    const handleCamelAnimationIteration = React.useCallback(() => {
+        setCamelMotion((previous) => getRandomBoatPreset(levelThreeCamelTileKeys, previous));
+    }, [levelThreeCamelTileKeys]);
+    const handleBeeAnimationIteration = React.useCallback(() => {
+        setBeeMotion((previous) => getRandomBoatPreset(levelTwoBeeTileKeys, previous));
+    }, [levelTwoBeeTileKeys]);
+    const handleElephantAnimationIteration = React.useCallback(() => {
+        setElephantMotion((previous) => getRandomBoatPreset(levelTwoElephantTileKeys, previous));
+    }, [levelTwoElephantTileKeys]);
 
     if (renderBoardLevels.length === 0) {
         return (
@@ -939,8 +1049,8 @@ export const PlayAdventureBoard: React.FC<PlayAdventureBoardProps> = ({
                                 </div>
                             )}
                             <div className="play-board-level-header">
-                                <p className="play-board-level-eyebrow">{t('play.modes.adventure')}</p>
-                                <h3 className="play-board-level-title">{t('play.controls.level')} {level}</h3>
+                                <p className="play-board-level-eyebrow">{t('play.controls.level')} {level}</p>
+                                <h3 className="play-board-level-title">{t(PLAY_LEVEL_WORLD_TITLE_KEYS[level] ?? 'play.controls.level', { level })}</h3>
                             </div>
 
                             <div
@@ -964,6 +1074,18 @@ export const PlayAdventureBoard: React.FC<PlayAdventureBoardProps> = ({
                                             const activeSailboatMotion =
                                                 sailboatMotion?.tileKey === tileKey
                                                     ? sailboatMotion
+                                                    : null;
+                                            const activeCamelMotion =
+                                                camelMotion?.tileKey === tileKey
+                                                    ? camelMotion
+                                                    : null;
+                                            const activeBeeMotion =
+                                                beeMotion?.tileKey === tileKey
+                                                    ? beeMotion
+                                                    : null;
+                                            const activeElephantMotion =
+                                                elephantMotion?.tileKey === tileKey
+                                                    ? elephantMotion
                                                     : null;
 
                                             return (
@@ -997,6 +1119,9 @@ export const PlayAdventureBoard: React.FC<PlayAdventureBoardProps> = ({
                                                 )}
                                                 {renderBoat(activeBoatMotion, '🚢', 'play-board-boat', handleBoatAnimationIteration)}
                                                 {renderBoat(activeSailboatMotion, '⛵', 'play-board-sailboat', handleSailboatAnimationIteration)}
+                                                {renderBoat(activeCamelMotion, '🐫', 'play-board-camel', handleCamelAnimationIteration)}
+                                                {renderBoat(activeBeeMotion, '🐝', 'play-board-bee', handleBeeAnimationIteration)}
+                                                {renderBoat(activeElephantMotion, '🐘', 'play-board-elephant', handleElephantAnimationIteration)}
                                             </button>
                                             );
                                         })}
@@ -1004,13 +1129,24 @@ export const PlayAdventureBoard: React.FC<PlayAdventureBoardProps> = ({
 
                                     <div className="play-board-pads">
                                         {hasStartPad && (
-                                            <div
+                                            <button
+                                                type="button"
                                                 className="play-mission-pad start-point"
                                                 style={{
                                                     ['--tile-x' as string]: padSlots[0].x,
                                                     ['--tile-y' as string]: padSlots[0].y,
                                                 }}
-                                                aria-hidden="true"
+                                                onClick={() => {
+                                                    if (
+                                                        currentJelloSlot?.x !== padSlots[0].x
+                                                        || currentJelloSlot?.y !== padSlots[0].y
+                                                        || currentFreeRoamTile?.level !== level
+                                                    ) {
+                                                        playJelloMoveSound();
+                                                    }
+                                                    onSelectTile({ level, x: padSlots[0].x, y: padSlots[0].y });
+                                                }}
+                                                aria-label="Start point"
                                             >
                                                 <span className="play-mission-pad-shadow" />
                                                 <span className="play-mission-pad-face">
@@ -1018,7 +1154,7 @@ export const PlayAdventureBoard: React.FC<PlayAdventureBoardProps> = ({
                                                         <i className="fas fa-flag" aria-hidden="true" />
                                                     </span>
                                                 </span>
-                                            </div>
+                                            </button>
                                         )}
                                         {games.map((boardGame, index) => {
                                             const { game, unlocked, isPremiumLocked } = boardGame;

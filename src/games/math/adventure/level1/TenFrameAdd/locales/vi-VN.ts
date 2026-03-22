@@ -1,5 +1,5 @@
 const locale = {
-    title: '10 frame-add',
+    title: 'Cộng Khung 10',
     subtitle: 'Tạo 10 và 20',
     description: 'Đổi chấm màu để tìm số còn thiếu.',
     question: 'Số nào điền vào ô trống?',

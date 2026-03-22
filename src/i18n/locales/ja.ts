@@ -1803,6 +1803,11 @@ const jaBase = {
             science: '設定',
             sw: 'プログラミング',
         },
+        worlds: {
+            level1: 'みずのせかい',
+            level2: 'もりのせかい',
+            level3: 'さばくのせかい',
+        },
         game: {
             playNow: '今すぐプレイ',
             reset: 'はじめから',
@@ -1891,6 +1896,7 @@ const jaBase = {
             memory: '記憶力',
             logic: '論理',
             comparison: '比較',
+            division: 'わり算',
             multiplication: 'かけ算',
         },
         mission: {

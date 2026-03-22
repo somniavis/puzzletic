@@ -1693,6 +1693,11 @@ export const viVN = {
       science: 'CÀI ĐẶT',
       sw: 'LẬP TRÌNH',
     },
+    worlds: {
+      level1: 'Thế Giới Nước',
+      level2: 'Thế Giới Rừng',
+      level3: 'Thế Giới Sa Mạc',
+    },
     game: {
       playNow: 'Chơi ngay',
       reset: 'Bắt đầu lại',
@@ -1780,6 +1785,7 @@ export const viVN = {
       memory: 'Ghi nhớ',
       logic: 'Logic',
       comparison: 'So sánh',
+      division: 'Chia',
       multiplication: 'Nhân',
     },
     mission: {

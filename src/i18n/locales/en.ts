@@ -1058,6 +1058,11 @@ export const en = {
       science: 'SETTINGS',
       sw: 'SW',
     },
+    worlds: {
+      level1: 'Water World',
+      level2: 'Forest World',
+      level3: 'Desert World',
+    },
     game: {
       playNow: 'Play Now',
       reset: 'Start Over',
@@ -1145,6 +1150,7 @@ export const en = {
       memory: 'Memory',
       logic: 'Logic',
       comparison: 'Comparison',
+      division: 'Division',
       multiplication: 'Multiplication',
     },
     mission: {

@@ -1,5 +1,5 @@
 const locale = {
-    title: '10 frame-add',
+    title: 'Addition au cadre de 10',
     subtitle: 'Faire 10 et 20',
     description: 'Remplis les points pour trouver le nombre manquant.',
     question: 'Quel nombre va dans la case vide ?',

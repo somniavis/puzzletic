@@ -1,5 +1,5 @@
 const viVn = {
-    title: 'Chocolate Split',
+    title: 'Tách Sô-cô-la',
     subtitle: 'Tao cac nhom bang nhau',
     description: 'ㅇㅇㅇ',
     powerups: {

@@ -1,7 +1,7 @@
 const manifest = {
-    title: 'Magic Potion',
-    'title-lv1': 'Magic Potion (Lv1)',
-    'title-lv2': 'Magic Potion (Lv2)',
+    title: 'Ramuan Ajaib',
+    'title-lv1': 'Ramuan Ajaib (Lv1)',
+    'title-lv2': 'Ramuan Ajaib (Lv2)',
     subtitle: 'Campur Bahan Ajaib!',
     description: 'ㅇㅇㅇ',
     ui: {
