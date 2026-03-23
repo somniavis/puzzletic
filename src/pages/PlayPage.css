@@ -62,6 +62,14 @@
     user-select: none;
 }
 
+.play-page-container.play-page-container-brain {
+    background:
+        radial-gradient(circle at top right, rgba(198, 226, 239, 0.2) 0, rgba(198, 226, 239, 0.2) 10rem, transparent 10.05rem),
+        linear-gradient(135deg, rgba(187, 214, 226, 0.12) 0 16%, transparent 16% 100%),
+        linear-gradient(225deg, rgba(163, 190, 205, 0.08) 0 14%, transparent 14% 100%),
+        linear-gradient(180deg, #e7edf2 0%, #d6dfe6 100%);
+}
+
 /* --- Game Loading Wrapper --- */
 .game-wrapper {
     width: 100vw;
@@ -1888,6 +1896,12 @@
     padding-top: 0;
 }
 
+.hub-content.hub-content-brain {
+    background:
+        radial-gradient(circle at 92% 6%, rgba(214, 236, 245, 0.14) 0, rgba(214, 236, 245, 0.14) 6rem, transparent 6.05rem),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.1) 0%, rgba(157, 181, 196, 0.06) 100%);
+}
+
 .hub-content::-webkit-scrollbar {
     display: none;
     /* Chrome/Safari */
@@ -2103,6 +2117,124 @@
     margin-bottom: 0;
 }
 
+.brain-level-groups {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.brain-level-section {
+    margin-left: -1.5rem;
+    margin-right: -1.5rem;
+    padding: 1.25rem 1.5rem 1.05rem;
+    --brain-card-bg-top: #232b46;
+    --brain-card-bg-bottom: #171d31;
+    --brain-grid-color: rgba(188, 197, 232, 0.18);
+    --brain-card-border: rgba(104, 116, 164, 0.42);
+    --brain-badge-bg: rgba(169, 179, 221, 0.15);
+    --brain-badge-color: #d7defe;
+    --brain-star-color: #b9c4ff;
+    --brain-icon-ring: rgba(176, 187, 229, 0.16);
+    --brain-divider: rgba(181, 192, 231, 0.4);
+    --brain-button-top: #a4b0ea;
+    --brain-button-bottom: #7d89c9;
+    --brain-button-border: #6570aa;
+    --brain-button-shadow: #556096;
+    --brain-button-text: #18213b;
+}
+
+.brain-level-section.level-1 {
+    background: #dce7ef;
+    --brain-card-bg-top: #27324c;
+    --brain-card-bg-bottom: #1b2439;
+    --brain-grid-color: rgba(196, 215, 240, 0.18);
+    --brain-card-border: rgba(120, 141, 173, 0.42);
+    --brain-badge-bg: rgba(176, 204, 233, 0.16);
+    --brain-badge-color: #deecff;
+    --brain-star-color: #c1d7ff;
+    --brain-icon-ring: rgba(187, 210, 236, 0.18);
+    --brain-divider: rgba(194, 212, 235, 0.4);
+    --brain-button-top: #afc3e8;
+    --brain-button-bottom: #8198c4;
+    --brain-button-border: #6980ab;
+    --brain-button-shadow: #586b92;
+}
+
+.brain-level-section.level-2 {
+    background: #d8e3df;
+    --brain-card-bg-top: #26343f;
+    --brain-card-bg-bottom: #1a252d;
+    --brain-grid-color: rgba(193, 220, 212, 0.18);
+    --brain-card-border: rgba(112, 140, 129, 0.42);
+    --brain-badge-bg: rgba(173, 207, 196, 0.16);
+    --brain-badge-color: #def5ed;
+    --brain-star-color: #bde4d7;
+    --brain-icon-ring: rgba(182, 214, 203, 0.18);
+    --brain-divider: rgba(188, 219, 209, 0.4);
+    --brain-button-top: #a8cfbf;
+    --brain-button-bottom: #7fa996;
+    --brain-button-border: #648977;
+    --brain-button-shadow: #4f6d60;
+}
+
+.brain-level-section.level-3 {
+    background: #dee0e6;
+    --brain-card-bg-top: #2f3146;
+    --brain-card-bg-bottom: #1f2233;
+    --brain-grid-color: rgba(209, 200, 223, 0.18);
+    --brain-card-border: rgba(124, 116, 155, 0.42);
+    --brain-badge-bg: rgba(191, 182, 213, 0.16);
+    --brain-badge-color: #eee5ff;
+    --brain-star-color: #d2c4f5;
+    --brain-icon-ring: rgba(202, 193, 223, 0.18);
+    --brain-divider: rgba(208, 199, 228, 0.4);
+    --brain-button-top: #b9addb;
+    --brain-button-bottom: #8b7db2;
+    --brain-button-border: #73659a;
+    --brain-button-shadow: #5d517f;
+}
+
+.brain-level-header {
+    margin-bottom: 0.85rem;
+    padding: 0.2rem 0.125rem 0.35rem 0.25rem;
+    animation: fadeIn 0.5s ease-out both;
+}
+
+.brain-level-eyebrow {
+    margin: 0;
+    font-size: 0.72rem;
+    line-height: 1rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(36, 50, 75, 0.58);
+}
+
+.brain-level-title {
+    margin: 0.1rem 0 0;
+    font-size: 1.5rem;
+    line-height: 2rem;
+    font-weight: 900;
+    color: #24324b;
+}
+
+.brain-level-transition {
+    margin-left: -1.5rem;
+    margin-right: -1.5rem;
+    height: 2.6rem;
+    margin-top: -1px;
+    margin-bottom: -1px;
+    pointer-events: none;
+}
+
+.brain-level-transition.from-1.to-2 {
+    background: linear-gradient(180deg, #dce7ef 0%, #d9e4e8 40%, #d8e3df 100%);
+}
+
+.brain-level-transition.from-2.to-3 {
+    background: linear-gradient(180deg, #d8e3df 0%, #dbdfe2 40%, #dee0e6 100%);
+}
+
 .adventure-card {
     background:
         radial-gradient(circle at top right, rgba(255, 236, 174, 0.42) 0, rgba(255, 236, 174, 0.42) 4.6rem, transparent 4.65rem),
@@ -2135,6 +2267,88 @@
         0 22px 38px rgba(64, 72, 98, 0.16),
         0 8px 18px rgba(64, 72, 98, 0.1);
 }
+
+.adventure-card.brain-card.brain-hybrid {
+    background:
+        linear-gradient(180deg, var(--brain-card-bg-top) 0%, var(--brain-card-bg-bottom) 100%);
+    border: 1px solid var(--brain-card-border);
+    border-radius: 1.5rem;
+    box-shadow:
+        0 20px 36px rgba(10, 17, 31, 0.34),
+        inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.adventure-card.brain-card.brain-hybrid::before {
+    content: '';
+    position: absolute;
+    inset: 0.85rem 0.85rem auto auto;
+    width: 4.15rem;
+    height: 4.15rem;
+    border-radius: 1rem;
+    background:
+        linear-gradient(90deg, var(--brain-grid-color) 1px, transparent 1px),
+        linear-gradient(var(--brain-grid-color) 1px, transparent 1px);
+    background-size: 0.7rem 0.7rem;
+    opacity: 0.85;
+    pointer-events: none;
+}
+
+.adventure-card.brain-card.brain-hybrid .card-title,
+.adventure-card.brain-card.brain-hybrid .card-subtitle-text,
+.adventure-card.brain-card.brain-hybrid .card-mission-text {
+    color: #eef6ff;
+}
+
+.adventure-card.brain-card.brain-hybrid .category-badge {
+    background: var(--brain-badge-bg);
+    color: var(--brain-badge-color);
+}
+
+.adventure-card.brain-card.brain-hybrid .star.filled {
+    color: var(--brain-star-color);
+}
+
+.adventure-card.brain-card.brain-hybrid .star.empty {
+    color: rgba(148, 163, 184, 0.42);
+}
+
+.adventure-card.brain-card.brain-hybrid .card-icon-box {
+    border-radius: 1rem;
+    box-shadow:
+        inset 0 2px 8px rgba(255, 255, 255, 0.12),
+        0 0 0 1px var(--brain-icon-ring),
+        0 12px 24px rgba(0, 0, 0, 0.24);
+}
+
+.adventure-card.brain-card.brain-hybrid .card-top,
+.adventure-card.brain-card.brain-hybrid .card-actions {
+    position: relative;
+    z-index: 1;
+}
+
+.adventure-card.brain-card.brain-hybrid .card-actions {
+    padding-top: 0.35rem;
+}
+
+.adventure-card.brain-card.brain-hybrid .play-quest-btn {
+    background: linear-gradient(180deg, var(--brain-button-top) 0%, var(--brain-button-bottom) 100%);
+    border-color: var(--brain-button-border);
+    color: var(--brain-button-text);
+    box-shadow: 0 5px 0 var(--brain-button-shadow), 0 10px 16px rgba(13, 18, 38, 0.34);
+}
+
+.adventure-card.brain-card.brain-hybrid .play-quest-btn:hover {
+    box-shadow:
+        0 6px 0 var(--brain-button-shadow),
+        0 14px 22px rgba(13, 18, 38, 0.4);
+    filter: brightness(1.1) saturate(1.05);
+}
+
+.adventure-card.brain-card.brain-hybrid .badge-box {
+    box-shadow: 0 8px 16px rgba(7, 16, 34, 0.3);
+}
+
+
 
 .funmath-level-section.level-1 .adventure-card,
 .funmath-level-section.level-1 .adventure-card.brain-card {
@@ -2330,7 +2544,12 @@
 }
 
 .play-quest-btn:hover {
-    filter: brightness(1.05);
+    background: linear-gradient(180deg, #22c88d 0%, #0cab75 100%);
+    border-color: #059669;
+    box-shadow:
+        0 6px 0 #047857,
+        0 14px 22px rgba(5, 150, 105, 0.28);
+    transform: translateY(-1px);
 }
 
 .locked .play-quest-btn {

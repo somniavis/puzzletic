@@ -127,6 +127,15 @@ const PlayPage: React.FC = () => {
             }))
             .filter((group) => group.games.length > 0);
     }, [adventureGameStates]);
+    const brainAdventureLevelGroups = useMemo(() => {
+        if (activeTab !== 'brain') return [];
+        return [1, 2, 3]
+            .map((level) => ({
+                level,
+                games: adventureGameStates.filter(({ game }) => game.level === level),
+            }))
+            .filter((group) => group.games.length > 0);
+    }, [activeTab, adventureGameStates]);
     const mathAdventureLevelSignature = useMemo(
         () => mathAdventureLevelGroups.map((group) => `${group.level}:${group.games.length}`).join('|'),
         [mathAdventureLevelGroups]
@@ -451,9 +460,56 @@ const PlayPage: React.FC = () => {
         );
     };
 
+    const renderBrainAdventureByLevel = () => {
+        if (brainAdventureLevelGroups.length === 0) {
+            return <div style={{ textAlign: 'center', padding: '2rem', color: '#9ca3af' }}>🚧 {t('play.game.noGames')} 🚧</div>;
+        }
+
+        return (
+            <div className="brain-level-groups">
+                {brainAdventureLevelGroups.map(({ level, games }, index) => {
+                    const nextLevel = brainAdventureLevelGroups[index + 1]?.level;
+                    return (
+                        <React.Fragment key={level}>
+                            <section className={`brain-level-section level-${level}`} data-level={level}>
+                                <div className="brain-level-header">
+                                    <p className="brain-level-eyebrow">Brain Gym</p>
+                                    <h3 className="brain-level-title">{t('play.controls.level')} {level}</h3>
+                                </div>
+                                <div className="game-list">
+                                    {games.map(({ game, unlocked, displayReason, clearCount, isMastered, isPremiumLocked }) => (
+                                        <AdventureCard
+                                            key={game.id}
+                                            id={`game-card-${game.id}`}
+                                            game={game}
+                                            unlocked={unlocked}
+                                            displayReason={displayReason}
+                                            clearCount={clearCount}
+                                            isMastered={isMastered}
+                                            onPlay={handlePlayClick}
+                                            isPremiumLocked={isPremiumLocked}
+                                            variant="brain-hybrid"
+                                        />
+                                    ))}
+                                </div>
+                            </section>
+                            {index < brainAdventureLevelGroups.length - 1 && (
+                                <div
+                                    className={`brain-level-transition from-${level} to-${nextLevel}`}
+                                    data-to-level={nextLevel}
+                                    aria-hidden="true"
+                                />
+                            )}
+                        </React.Fragment>
+                    );
+                })}
+            </div>
+        );
+    };
+
     const renderAdventureSection = () => (
         <div className="section-container">
-            {activeTab === 'math' ? renderMathAdventureByLevel() : (
+            {activeTab === 'math' ? renderMathAdventureByLevel() : activeTab === 'brain' ? renderBrainAdventureByLevel() : (
                 <>
                     <div className="section-header">
                         <h2 className="section-title">{t(`play.categories.${activeTab}`)}</h2>
@@ -595,14 +651,14 @@ const PlayPage: React.FC = () => {
     }
 
     return (
-        <div className="play-page-container">
+        <div className={`play-page-container ${activeTab === 'brain' ? 'play-page-container-brain' : ''}`}>
             {renderHeader()}
 
             {activeTab === 'math' && renderMathModeSwitcher()}
 
             <div
                 ref={hubContentRef}
-                className={`hub-content ${activeTab === 'math' && mathMode === 'adventure' ? 'hub-content-math-adventure' : ''}`}
+                className={`hub-content ${activeTab === 'math' && mathMode === 'adventure' ? 'hub-content-math-adventure' : ''} ${activeTab === 'brain' ? 'hub-content-brain' : ''}`}
             >
                 {playLearnMode === 'play' ? (
                     renderPlayModeContent()

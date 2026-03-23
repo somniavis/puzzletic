@@ -13,6 +13,7 @@ interface AdventureCardProps {
     isMastered: boolean;
     onPlay: (game: GameManifest, isLocked: boolean, reason?: string) => void;
     isPremiumLocked?: boolean;
+    variant?: 'brain-hybrid';
 }
 
 export const AdventureCard: React.FC<AdventureCardProps> = ({
@@ -23,7 +24,8 @@ export const AdventureCard: React.FC<AdventureCardProps> = ({
     clearCount,
     isMastered,
     onPlay,
-    isPremiumLocked = false
+    isPremiumLocked = false,
+    variant
 }) => {
     const { t } = useTranslation();
 
@@ -95,7 +97,7 @@ export const AdventureCard: React.FC<AdventureCardProps> = ({
     return (
         <div
             id={id}
-            className={`adventure-card ${game.category === 'brain' ? 'brain-card' : ''} ${(!unlocked || isPremiumLocked) ? 'locked' : ''}`}
+            className={`adventure-card ${game.category === 'brain' ? 'brain-card' : ''} ${variant ? variant : ''} ${(!unlocked || isPremiumLocked) ? 'locked' : ''}`}
         >
             {isPremiumLocked && <PremiumLockOverlay />}
             <div className="card-top">
