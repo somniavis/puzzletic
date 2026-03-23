@@ -44,7 +44,7 @@ export const PlayGameInfoModal: React.FC<PlayGameInfoModalProps> = ({
             role="presentation"
         >
             <div
-                className={`play-game-modal-card level-${game.level}`}
+                className={`play-game-modal-card level-${game.level} ${game.category === 'brain' ? 'brain-theme' : ''}`}
                 onClick={(event) => event.stopPropagation()}
                 role="dialog"
                 aria-modal="true"
@@ -68,6 +68,7 @@ export const PlayGameInfoModal: React.FC<PlayGameInfoModalProps> = ({
                     isMastered={isMastered}
                     onPlay={onPlay}
                     isPremiumLocked={isPremiumLocked}
+                    variant={game.category === 'brain' ? 'brain-hybrid' : undefined}
                 />
             </div>
         </div>

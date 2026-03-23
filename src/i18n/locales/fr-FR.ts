@@ -1063,6 +1063,10 @@ export const frFR = {
       level2: 'Monde de la Forêt',
       level3: 'Monde du Désert',
     },
+    comingSoon: {
+      nextAdventure: 'Prochaine aventure',
+      title: 'Bientôt disponible',
+    },
     game: {
       playNow: 'Jouer',
       reset: 'Recommencer',

@@ -19,6 +19,7 @@ import type {
     BoardLevelViewModel,
     BoatMotionAssignment,
     CreatureMotionAssignment,
+    PlayAdventureBoardTheme,
 } from './playAdventureBoardTypes';
 
 interface PlayAdventureBoardMotionState {
@@ -37,7 +38,8 @@ interface PlayAdventureBoardMotionState {
 }
 
 export const usePlayAdventureBoardMotion = (
-    boardLevels: BoardLevelViewModel[]
+    boardLevels: BoardLevelViewModel[],
+    theme: PlayAdventureBoardTheme
 ): PlayAdventureBoardMotionState => {
     const layoutByLevel = React.useMemo(
         () => new Map(boardLevels.map((boardLevel) => [boardLevel.level, boardLevel.layout])),
@@ -45,6 +47,10 @@ export const usePlayAdventureBoardMotion = (
     );
 
     const initialCreatureMotionByTileKey = React.useMemo(() => {
+        if (theme === 'brain') {
+            return new Map<string, CreatureMotionAssignment>();
+        }
+
         const creatureTilesByBundle = boardLevels.flatMap(({ level, layout }) => {
             const creatureBundleIndexes =
                 level === 1 ? LEVEL_ONE_CREATURE_BUNDLE_INDEXES
@@ -60,15 +66,15 @@ export const usePlayAdventureBoardMotion = (
         });
 
         return buildInitialCreatureMotionByTileKey(creatureTilesByBundle);
-    }, [boardLevels]);
+    }, [boardLevels, theme]);
 
     const overlayTileKeysByMotionKey = React.useMemo(() => ({
-        boat: getOverlayTileKeysForRule(layoutByLevel.get(OVERLAY_TILE_RULES.boat.level) ?? null, OVERLAY_TILE_RULES.boat),
-        sailboat: getOverlayTileKeysForRule(layoutByLevel.get(OVERLAY_TILE_RULES.sailboat.level) ?? null, OVERLAY_TILE_RULES.sailboat),
-        camel: getOverlayTileKeysForRule(layoutByLevel.get(OVERLAY_TILE_RULES.camel.level) ?? null, OVERLAY_TILE_RULES.camel),
-        bee: getOverlayTileKeysForRule(layoutByLevel.get(OVERLAY_TILE_RULES.bee.level) ?? null, OVERLAY_TILE_RULES.bee),
-        elephant: getOverlayTileKeysForRule(layoutByLevel.get(OVERLAY_TILE_RULES.elephant.level) ?? null, OVERLAY_TILE_RULES.elephant),
-    }), [layoutByLevel]);
+        boat: theme === 'math' ? getOverlayTileKeysForRule(layoutByLevel.get(OVERLAY_TILE_RULES.boat.level) ?? null, OVERLAY_TILE_RULES.boat) : [],
+        sailboat: theme === 'math' ? getOverlayTileKeysForRule(layoutByLevel.get(OVERLAY_TILE_RULES.sailboat.level) ?? null, OVERLAY_TILE_RULES.sailboat) : [],
+        camel: theme === 'math' ? getOverlayTileKeysForRule(layoutByLevel.get(OVERLAY_TILE_RULES.camel.level) ?? null, OVERLAY_TILE_RULES.camel) : [],
+        bee: theme === 'math' ? getOverlayTileKeysForRule(layoutByLevel.get(OVERLAY_TILE_RULES.bee.level) ?? null, OVERLAY_TILE_RULES.bee) : [],
+        elephant: theme === 'math' ? getOverlayTileKeysForRule(layoutByLevel.get(OVERLAY_TILE_RULES.elephant.level) ?? null, OVERLAY_TILE_RULES.elephant) : [],
+    }), [layoutByLevel, theme]);
 
     const [creatureMotionByTileKey, setCreatureMotionByTileKey] = React.useState<Map<string, CreatureMotionAssignment>>(
         () => initialCreatureMotionByTileKey

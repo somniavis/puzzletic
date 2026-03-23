@@ -1,4 +1,18 @@
-import type { BoardTile, ForestClusterVariant } from './playAdventureBoardTypes';
+import type {
+    BoardTile,
+    BrainPulseDecoration,
+    ForestClusterVariant,
+    PlayAdventureBoardTheme,
+} from './playAdventureBoardTypes';
+
+export const COMING_SOON_THEMES = new Set<PlayAdventureBoardTheme>(['math', 'brain']);
+export const COMING_SOON_PREVIEW_TILE_CLASSES = [
+    'tile-a path',
+    'tile-b path',
+    'tile-c forest',
+    'tile-d forest',
+] as const;
+export const COMING_SOON_PREVIEW_PAD_CLASSES = ['pad-l4', 'pad-l5'] as const;
 
 export const LEVEL_ONE_CREATURE_BUNDLE_INDEXES = [0, 2, 4, 5] as const;
 export const LEVEL_THREE_CREATURE_BUNDLE_INDEXES = [4, 6] as const;
@@ -72,6 +86,27 @@ export const LEVEL_THREE_WIND_DECORATIONS = [
     { top: '72%', left: '76%', size: '1.75rem', duration: '22s', delay: '-15s', opacity: 0.21 },
 ] as const;
 
+export const BRAIN_LEVEL_PULSE_DECORATIONS: Record<number, readonly BrainPulseDecoration[]> = {
+    1: [
+        { className: 'horizontal-right', top: '18%', left: '-10%', duration: '7.2s', delay: '0s' },
+        { className: 'horizontal-left', top: '54%', left: '108%', duration: '9.1s', delay: '2.1s' },
+        { className: 'vertical-down', top: '-12%', left: '24%', duration: '8.3s', delay: '1.2s' },
+        { className: 'vertical-up', top: '104%', left: '78%', duration: '10.2s', delay: '4.1s' },
+    ],
+    2: [
+        { className: 'horizontal-right', top: '24%', left: '-10%', duration: '8.4s', delay: '0.7s' },
+        { className: 'horizontal-left', top: '66%', left: '108%', duration: '9.8s', delay: '2.9s' },
+        { className: 'vertical-down', top: '-12%', left: '42%', duration: '7.9s', delay: '1.4s' },
+        { className: 'vertical-up', top: '104%', left: '16%', duration: '10.8s', delay: '4.8s' },
+    ],
+    3: [
+        { className: 'horizontal-right', top: '22%', left: '-10%', duration: '7.8s', delay: '0.4s' },
+        { className: 'horizontal-left', top: '62%', left: '108%', duration: '10.4s', delay: '3.2s' },
+        { className: 'vertical-down', top: '-12%', left: '70%', duration: '8.6s', delay: '1.8s' },
+        { className: 'vertical-up', top: '104%', left: '34%', duration: '9.6s', delay: '4.6s' },
+    ],
+};
+
 const LEVEL_TWO_SIMPLE_CLUSTER_BY_BUNDLE: Partial<Record<number, ForestClusterVariant>> = {
     0: 'trees',
     1: 'pines',
@@ -96,13 +131,20 @@ export const PLAY_LEVEL_WORLD_TITLE_KEYS: Record<number, string> = {
     3: 'play.worlds.level3',
 };
 
+export const getPlayAdventureBoardTitleKey = (theme: PlayAdventureBoardTheme, level: number) => {
+    if (theme === 'brain') return 'play.categories.brain';
+    return PLAY_LEVEL_WORLD_TITLE_KEYS[level] ?? 'play.controls.level';
+};
+
 export const getForestClusterVariant = (
+    theme: PlayAdventureBoardTheme,
     level: number,
     tile: BoardTile,
     tileBundleIndex: number,
     rowOffset: number,
     diamondStep: number
 ): ForestClusterVariant | null => {
+    if (theme === 'brain') return null;
     if (tile.kind !== 'forest') return null;
     const bundleLocalY = tile.y - rowOffset - (tileBundleIndex * diamondStep);
 

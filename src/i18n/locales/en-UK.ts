@@ -1063,6 +1063,10 @@ export const enUK = {
       level2: 'Forest World',
       level3: 'Desert World',
     },
+    comingSoon: {
+      nextAdventure: 'Next Adventure',
+      title: 'Coming Soon',
+    },
     game: {
       playNow: 'Play Now',
       reset: 'Start Over',

@@ -94,7 +94,8 @@ const PlayPage: React.FC = () => {
     const [currentBoardGameId, setCurrentBoardGameId] = React.useState<string | null>(null);
     const [currentBoardTilePosition, setCurrentBoardTilePosition] = React.useState<{ level: number; x: number; y: number } | null>(null);
     const hubContentRef = React.useRef<HTMLDivElement | null>(null);
-    const isPlayAdventureMode = playLearnMode === 'play' && activeTab === 'math' && mathMode === 'adventure';
+    const isPlayAdventureMode = playLearnMode === 'play'
+        && ((activeTab === 'math' && mathMode === 'adventure') || activeTab === 'brain');
 
     const activeGame = gameId ? getGameById(gameId) : null;
     const adventureGameStates = useMemo<PlayAdventureBoardGame[]>(() => {
@@ -472,6 +473,10 @@ const PlayPage: React.FC = () => {
                     return (
                         <React.Fragment key={level}>
                             <section className={`brain-level-section level-${level}`} data-level={level}>
+                                <div className="brain-level-synapse" aria-hidden="true">
+                                    <span className="brain-level-synapse-pulse pulse-a" />
+                                    <span className="brain-level-synapse-pulse pulse-b" />
+                                </div>
                                 <div className="brain-level-header">
                                     <p className="brain-level-eyebrow">Brain Gym</p>
                                     <h3 className="brain-level-title">{t('play.controls.level')} {level}</h3>
@@ -605,6 +610,7 @@ const PlayPage: React.FC = () => {
         if (activeTab === 'math') {
             return mathMode === 'adventure' ? (
                 <PlayAdventureBoard
+                    theme="math"
                     levelGroups={mathAdventureLevelGroups}
                     selectedGameId={selectedPlayBoardGameId}
                     currentJelloGameId={currentBoardJelloGameId}
@@ -615,6 +621,21 @@ const PlayPage: React.FC = () => {
                 />
             ) : (
                 renderGeniusSection()
+            );
+        }
+
+        if (activeTab === 'brain') {
+            return (
+                <PlayAdventureBoard
+                    theme="brain"
+                    levelGroups={brainAdventureLevelGroups}
+                    selectedGameId={selectedPlayBoardGameId}
+                    currentJelloGameId={currentBoardJelloGameId}
+                    currentJelloTilePosition={currentBoardTilePosition}
+                    jelloCharacter={boardJelloCharacter}
+                    onSelectGame={handleSelectPlayBoardGame}
+                    onSelectTile={handleSelectBoardTile}
+                />
             );
         }
 
@@ -658,7 +679,7 @@ const PlayPage: React.FC = () => {
 
             <div
                 ref={hubContentRef}
-                className={`hub-content ${activeTab === 'math' && mathMode === 'adventure' ? 'hub-content-math-adventure' : ''} ${activeTab === 'brain' ? 'hub-content-brain' : ''}`}
+                className={`hub-content ${playLearnMode === 'play' && (activeTab === 'math' || activeTab === 'brain') ? 'hub-content-adventure-board' : ''} ${activeTab === 'brain' ? 'hub-content-brain' : ''}`}
             >
                 {playLearnMode === 'play' ? (
                     renderPlayModeContent()

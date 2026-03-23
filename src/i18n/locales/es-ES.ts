@@ -1063,6 +1063,10 @@ export const esES = {
       level2: 'Mundo del Bosque',
       level3: 'Mundo del Desierto',
     },
+    comingSoon: {
+      nextAdventure: 'Próxima aventura',
+      title: 'Próximamente',
+    },
     game: {
       playNow: 'Jugar ahora',
       reset: 'Empezar de nuevo',

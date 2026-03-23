@@ -7,8 +7,36 @@ The Play feature provides an educational game hub within the Puzzleletic applica
 
 ### Core Components
 - **`src/pages/PlayPage.tsx`**: The main entry point for the Play feature. Handles UI rendering, category/level selection, and game list display.
-- **`src/pages/PlayPage.css`**: Dedicated styling for the Play page, ensuring consistency with the PetRoom aesthetic.
+- **`src/pages/PlayPage.css`**: Play page style entry file. Now keeps only shared page layout/base styles plus imports for feature-specific style modules.
 - **`src/components/PlayPage/PlayAdventureBoard.tsx`**: Container for the Play Adventure board. Builds level view models, connects motion state, and renders level sections.
+
+### PlayPage Style Structure
+`PlayPage.css` became too large to maintain comfortably, so the styling was split by responsibility. This keeps navigation/layout styles separate from board-heavy styling and makes future edits safer.
+
+- **Style Entry**
+  - **`src/pages/PlayPage.css`**
+  - Responsibility: shared page-level styles such as root tokens, page container background, common loading/header layout, and imports for feature-specific style files.
+
+- **Adventure Board Styles**
+  - **`src/pages/play-page-styles/adventure-board.css`**
+  - Responsibility: math play adventure board visuals including level backgrounds, board tiles, mission pads, jello, emoji clusters, moving overlay objects, and board-specific animations.
+
+- **Cards / Level Group Styles**
+  - **`src/pages/play-page-styles/cards-and-levels.css`**
+  - Responsibility: Learn/Brain card styles, math/brain level section styling, level transitions, card variants, and the brain section synapse header effect.
+
+- **Drill / Bottom Navigation Styles**
+  - **`src/pages/play-page-styles/drill-and-nav.css`**
+  - Responsibility: Genius drill list UI, operator tabs, drill items, mini action buttons, bottom navigation, and shared page animation utilities that belong to these sections.
+
+### Maintenance Notes For PlayPage Styles
+- When changing only play adventure board visuals, prefer editing:
+  - **`adventure-board.css`**
+- When changing Learn cards, Brain cards, or level-group presentation, prefer editing:
+  - **`cards-and-levels.css`**
+- When changing Genius drills or bottom navigation, prefer editing:
+  - **`drill-and-nav.css`**
+- Keep **`PlayPage.css`** focused on high-level page layout and imports so the file does not grow back into a single monolithic stylesheet.
 
 ### Play Adventure Board Structure
 The Play Adventure board was split into smaller modules so that layout, decoration rules, motion state, and rendering concerns are isolated. This improves readability and helps keep re-renders/recalculation scopes smaller on older devices.

@@ -1,16 +1,18 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Character } from '../../types/character';
-import { PLAY_LEVEL_WORLD_TITLE_KEYS } from './playAdventureBoardDecorations';
+import { getPlayAdventureBoardTitleKey } from './playAdventureBoardDecorations';
 import { PlayAdventureBoardLevelContent } from './PlayAdventureBoardLevelContent';
 import { PlayAdventureBoardLevelDecor } from './PlayAdventureBoardLevelDecor';
 import type {
     BoardLevelRenderModel,
     BoatMotionAssignment,
     CreatureMotionAssignment,
+    PlayAdventureBoardTheme,
 } from './playAdventureBoardTypes';
 
 interface PlayAdventureBoardLevelSectionProps {
+    theme: PlayAdventureBoardTheme;
     boardLevel: BoardLevelRenderModel;
     nextLevel?: number;
     selectedGameId: string | null;
@@ -34,6 +36,7 @@ interface PlayAdventureBoardLevelSectionProps {
 }
 
 export const PlayAdventureBoardLevelSection: React.FC<PlayAdventureBoardLevelSectionProps> = ({
+    theme,
     boardLevel,
     nextLevel,
     selectedGameId,
@@ -60,13 +63,14 @@ export const PlayAdventureBoardLevelSection: React.FC<PlayAdventureBoardLevelSec
 
     return (
         <>
-            <section className={`play-board-level level-${level}`} data-level={level}>
-                <PlayAdventureBoardLevelDecor level={level} />
+            <section className={`play-board-level ${theme}-theme level-${level}`} data-level={level}>
+                <PlayAdventureBoardLevelDecor level={level} theme={theme} />
                 <div className="play-board-level-header">
                     <p className="play-board-level-eyebrow">{t('play.controls.level')} {level}</p>
-                    <h3 className="play-board-level-title">{t(PLAY_LEVEL_WORLD_TITLE_KEYS[level] ?? 'play.controls.level', { level })}</h3>
+                    <h3 className="play-board-level-title">{t(getPlayAdventureBoardTitleKey(theme, level), { level })}</h3>
                 </div>
                 <PlayAdventureBoardLevelContent
+                    theme={theme}
                     boardLevel={boardLevel}
                     selectedGameId={selectedGameId}
                     currentJelloGameId={currentJelloGameId}
@@ -90,7 +94,7 @@ export const PlayAdventureBoardLevelSection: React.FC<PlayAdventureBoardLevelSec
             </section>
             {typeof nextLevel === 'number' && (
                 <div
-                    className={`play-board-transition from-${level} to-${nextLevel}`}
+                    className={`play-board-transition ${theme}-theme from-${level} to-${nextLevel}`}
                     data-to-level={nextLevel}
                     aria-hidden="true"
                 />

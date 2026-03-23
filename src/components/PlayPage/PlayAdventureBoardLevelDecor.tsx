@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+    BRAIN_LEVEL_PULSE_DECORATIONS,
     LEVEL_ONE_SAILBOAT_DECORATIONS,
     LEVEL_ONE_WATER_DECORATIONS,
     LEVEL_THREE_WIND_DECORATIONS,
@@ -7,12 +8,36 @@ import {
     LEVEL_TWO_ENVIRA_DECORATIONS,
     LEVEL_TWO_LEAF_DECORATIONS,
 } from './playAdventureBoardDecorations';
+import type { BrainPulseDecoration } from './playAdventureBoardTypes';
+import type { PlayAdventureBoardTheme } from './playAdventureBoardTypes';
 
 interface PlayAdventureBoardLevelDecorProps {
     level: number;
+    theme: PlayAdventureBoardTheme;
 }
 
-export const PlayAdventureBoardLevelDecor: React.FC<PlayAdventureBoardLevelDecorProps> = ({ level }) => {
+const renderBrainPulses = (level: number, pulses: readonly BrainPulseDecoration[]) => (
+    <div className="play-board-brain-decor" aria-hidden="true">
+        {pulses.map((pulse, pulseIndex) => (
+            <span
+                key={`brain-pulse-${level}-${pulseIndex}`}
+                className={`play-board-brain-pulse ${pulse.className}`}
+                style={{
+                    top: pulse.top,
+                    left: pulse.left,
+                    animationDuration: pulse.duration,
+                    animationDelay: pulse.delay,
+                }}
+            />
+        ))}
+    </div>
+);
+
+export const PlayAdventureBoardLevelDecor: React.FC<PlayAdventureBoardLevelDecorProps> = ({ level, theme }) => {
+    if (theme === 'brain') {
+        return renderBrainPulses(level, BRAIN_LEVEL_PULSE_DECORATIONS[level] ?? []);
+    }
+
     if (level === 1) {
         return (
             <div className="play-board-water-decor" aria-hidden="true">

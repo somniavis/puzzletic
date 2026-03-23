@@ -1,0 +1,920 @@
+/* --- Section Headers --- */
+.section-header {
+    margin-bottom: 1.5rem;
+    animation: fadeIn 0.5s ease-out;
+}
+
+.play-page-container .section-title {
+    font-family: inherit;
+    font-size: 1.5rem;
+    line-height: 2rem;
+    font-weight: 900;
+    color: #4d3e2f;
+    letter-spacing: -0.025em;
+    margin: 0;
+}
+
+.play-page-container .section-title::before {
+    display: none;
+}
+
+.play-page-container .section-desc {
+    font-family: inherit;
+    color: #8B7355;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    font-weight: 500;
+    margin-top: 0.25rem;
+}
+
+/* --- Math Adventure by Level --- */
+.funmath-level-groups {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.funmath-level-section {
+    margin-left: -1.5rem;
+    margin-right: -1.5rem;
+    padding: 1.4rem 1.5rem 1.1rem;
+}
+
+.funmath-level-section.level-1 {
+    background: #87CEEB;
+    padding-top: 0.7rem;
+}
+
+.funmath-level-section.level-2 {
+    background: #d5f0d8;
+}
+
+.funmath-level-section.level-3 {
+    background: #ffe0bd;
+}
+
+.funmath-level-header {
+    margin-bottom: 0.85rem;
+    padding: 0.2rem 0.125rem 0.35rem 0.25rem;
+    animation: fadeIn 0.5s ease-out both;
+}
+
+.funmath-level-section.level-1 .funmath-level-header {
+    animation-delay: 0s;
+}
+
+.funmath-level-section.level-2 .funmath-level-header {
+    animation-delay: 0.08s;
+}
+
+.funmath-level-section.level-3 .funmath-level-header {
+    animation-delay: 0.16s;
+}
+
+.funmath-level-eyebrow {
+    margin: 0;
+    font-size: 0.72rem;
+    line-height: 1rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(61, 46, 31, 0.72);
+}
+
+.funmath-level-title {
+    margin: 0.1rem 0 0;
+    font-size: 1.5rem;
+    line-height: 2rem;
+    font-weight: 900;
+    color: #3d2e1f;
+}
+
+.funmath-level-transition {
+    margin-left: -1.5rem;
+    margin-right: -1.5rem;
+    height: 3.2rem;
+    margin-top: -1px;
+    margin-bottom: -1px;
+    pointer-events: none;
+}
+
+.funmath-level-transition.from-1.to-2 {
+    background: linear-gradient(
+        180deg,
+        #87CEEB 0%,
+        #a8dbdf 35%,
+        #c1e7d8 65%,
+        #d5f0d8 100%
+    );
+}
+
+.funmath-level-transition.from-2.to-3 {
+    background: linear-gradient(
+        180deg,
+        #d5f0d8 0%,
+        #e5efd2 35%,
+        #f4e9c7 65%,
+        #ffe0bd 100%
+    );
+}
+
+.funmath-level-transition.from-1.to-3 {
+    background: linear-gradient(
+        180deg,
+        #87CEEB 0%,
+        #b1dede 35%,
+        #e1e3ca 65%,
+        #ffe0bd 100%
+    );
+}
+
+.funmath-level-section .game-list .adventure-card:last-child {
+    margin-bottom: 0;
+}
+
+.brain-level-groups {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.brain-level-section {
+    margin-left: -1.5rem;
+    margin-right: -1.5rem;
+    padding: 3.25rem 1.5rem 1.05rem;
+    position: relative;
+    overflow: hidden;
+    --brain-card-bg-top: #232b46;
+    --brain-card-bg-bottom: #171d31;
+    --brain-grid-color: rgba(188, 197, 232, 0.18);
+    --brain-card-border: rgba(104, 116, 164, 0.42);
+    --brain-badge-bg: rgba(169, 179, 221, 0.15);
+    --brain-badge-color: #d7defe;
+    --brain-star-color: #b9c4ff;
+    --brain-icon-ring: rgba(176, 187, 229, 0.16);
+    --brain-divider: rgba(181, 192, 231, 0.4);
+    --brain-button-top: #a4b0ea;
+    --brain-button-bottom: #7d89c9;
+    --brain-button-border: #6570aa;
+    --brain-button-shadow: #556096;
+    --brain-button-text: #18213b;
+    --brain-synapse-line: rgba(119, 141, 168, 0.26);
+    --brain-synapse-glow: rgba(255, 255, 255, 0.22);
+    --brain-synapse-pulse: rgba(246, 250, 255, 0.96);
+    --brain-synapse-pulse-glow: rgba(242, 248, 255, 0.7);
+}
+
+.brain-level-section.level-1 {
+    background: #dce7ef;
+    --brain-card-bg-top: #27324c;
+    --brain-card-bg-bottom: #1b2439;
+    --brain-grid-color: rgba(196, 215, 240, 0.18);
+    --brain-card-border: rgba(120, 141, 173, 0.42);
+    --brain-badge-bg: rgba(176, 204, 233, 0.16);
+    --brain-badge-color: #deecff;
+    --brain-star-color: #c1d7ff;
+    --brain-icon-ring: rgba(187, 210, 236, 0.18);
+    --brain-divider: rgba(194, 212, 235, 0.4);
+    --brain-button-top: #afc3e8;
+    --brain-button-bottom: #8198c4;
+    --brain-button-border: #6980ab;
+    --brain-button-shadow: #586b92;
+    --brain-synapse-line: rgba(122, 149, 183, 0.25);
+    --brain-synapse-pulse: rgba(241, 248, 255, 0.97);
+    --brain-synapse-pulse-glow: rgba(203, 228, 255, 0.8);
+}
+
+.brain-level-section.level-2 {
+    background: #d8e3df;
+    --brain-card-bg-top: #26343f;
+    --brain-card-bg-bottom: #1a252d;
+    --brain-grid-color: rgba(193, 220, 212, 0.18);
+    --brain-card-border: rgba(112, 140, 129, 0.42);
+    --brain-badge-bg: rgba(173, 207, 196, 0.16);
+    --brain-badge-color: #def5ed;
+    --brain-star-color: #bde4d7;
+    --brain-icon-ring: rgba(182, 214, 203, 0.18);
+    --brain-divider: rgba(188, 219, 209, 0.4);
+    --brain-button-top: #a8cfbf;
+    --brain-button-bottom: #7fa996;
+    --brain-button-border: #648977;
+    --brain-button-shadow: #4f6d60;
+    --brain-synapse-line: rgba(102, 142, 129, 0.24);
+    --brain-synapse-pulse: rgba(242, 255, 250, 0.97);
+    --brain-synapse-pulse-glow: rgba(196, 239, 219, 0.78);
+}
+
+.brain-level-section.level-3 {
+    background: #dee0e6;
+    --brain-card-bg-top: #2f3146;
+    --brain-card-bg-bottom: #1f2233;
+    --brain-grid-color: rgba(209, 200, 223, 0.18);
+    --brain-card-border: rgba(124, 116, 155, 0.42);
+    --brain-badge-bg: rgba(191, 182, 213, 0.16);
+    --brain-badge-color: #eee5ff;
+    --brain-star-color: #d2c4f5;
+    --brain-icon-ring: rgba(202, 193, 223, 0.18);
+    --brain-divider: rgba(208, 199, 228, 0.4);
+    --brain-button-top: #b9addb;
+    --brain-button-bottom: #8b7db2;
+    --brain-button-border: #73659a;
+    --brain-button-shadow: #5d517f;
+    --brain-synapse-line: rgba(130, 118, 164, 0.25);
+    --brain-synapse-pulse: rgba(247, 243, 255, 0.97);
+    --brain-synapse-pulse-glow: rgba(223, 209, 255, 0.78);
+}
+
+.brain-level-section::before,
+.brain-level-section::after {
+    content: '';
+    position: absolute;
+    left: 1.35rem;
+    right: 1.35rem;
+    pointer-events: none;
+}
+
+.brain-level-section::before {
+    top: 0.82rem;
+    height: 2rem;
+    opacity: 0.78;
+    background:
+        linear-gradient(11deg, transparent 0 12%, var(--brain-synapse-line) 12% 14%, transparent 14% 100%) 5% 62% / 18% 0.5rem no-repeat,
+        linear-gradient(-20deg, transparent 0 14%, var(--brain-synapse-line) 14% 16%, transparent 16% 100%) 20% 38% / 15% 0.5rem no-repeat,
+        linear-gradient(10deg, transparent 0 12%, var(--brain-synapse-line) 12% 14%, transparent 14% 100%) 35% 72% / 18% 0.5rem no-repeat,
+        linear-gradient(-17deg, transparent 0 13%, var(--brain-synapse-line) 13% 15%, transparent 15% 100%) 50% 42% / 15% 0.5rem no-repeat,
+        linear-gradient(12deg, transparent 0 12%, var(--brain-synapse-line) 12% 14%, transparent 14% 100%) 64% 74% / 17% 0.5rem no-repeat,
+        linear-gradient(-18deg, transparent 0 13%, var(--brain-synapse-line) 13% 15%, transparent 15% 100%) 79% 48% / 15% 0.5rem no-repeat;
+}
+
+.brain-level-section::after {
+    top: 0.7rem;
+    height: 2.15rem;
+    opacity: 0.24;
+    background:
+        radial-gradient(circle at 21% 37%, var(--brain-synapse-glow) 0 0.22rem, transparent 0.23rem),
+        radial-gradient(circle at 51% 41%, var(--brain-synapse-glow) 0 0.2rem, transparent 0.21rem),
+        radial-gradient(circle at 80% 47%, var(--brain-synapse-glow) 0 0.22rem, transparent 0.23rem);
+}
+
+.brain-level-synapse {
+    position: absolute;
+    left: 1.35rem;
+    right: 1.35rem;
+    top: 0.52rem;
+    height: 2.85rem;
+    pointer-events: none;
+    overflow: hidden;
+    contain: layout paint;
+}
+
+.brain-level-synapse-pulse {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0.42rem;
+    height: 0.42rem;
+    background: var(--brain-synapse-pulse);
+    border-radius: 0.08rem;
+    box-shadow:
+        0 0 0.28rem var(--brain-synapse-pulse-glow),
+        0 0 0.85rem var(--brain-synapse-pulse-glow);
+    opacity: 0;
+    will-change: left, opacity, filter;
+    animation: brainSynapsePulseTravel var(--brain-pulse-duration, 7s) linear infinite var(--brain-pulse-delay, 0s);
+}
+
+.brain-level-synapse-pulse::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: 100%;
+    width: 6.75rem;
+    height: 0.14rem;
+    transform: translateY(-50%);
+    transform-origin: right center;
+    border-radius: 999px;
+    background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.1) 24%, var(--brain-synapse-pulse-glow) 100%);
+    filter: blur(0.12rem);
+    opacity: 0;
+    animation: brainSynapseTailTrail var(--brain-pulse-duration, 7s) linear infinite var(--brain-pulse-delay, 0s);
+}
+
+.brain-level-synapse-pulse.pulse-a {
+    --brain-pulse-top: 0.65rem;
+    --brain-pulse-start: 0%;
+    --brain-pulse-end: 98%;
+    --brain-pulse-duration: 6.8s;
+    --brain-pulse-delay: 0s;
+    --brain-pulse-tail-angle: 0deg;
+}
+
+.brain-level-synapse-pulse.pulse-b {
+    --brain-pulse-top: 1.95rem;
+    --brain-pulse-start: 98%;
+    --brain-pulse-end: -4%;
+    --brain-pulse-duration: 8.2s;
+    --brain-pulse-delay: 2.1s;
+    --brain-pulse-tail-angle: 180deg;
+}
+
+.brain-level-header {
+    margin-bottom: 0.85rem;
+    padding: 0.1rem 0.125rem 0.35rem 0.25rem;
+    animation: fadeIn 0.5s ease-out both;
+    position: relative;
+    z-index: 1;
+}
+
+.brain-level-eyebrow {
+    margin: 0;
+    font-size: 0.72rem;
+    line-height: 1rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(36, 50, 75, 0.58);
+}
+
+.brain-level-title {
+    margin: 0.1rem 0 0;
+    font-size: 1.5rem;
+    line-height: 2rem;
+    font-weight: 900;
+    color: #24324b;
+}
+
+@keyframes brainSynapsePulseTravel {
+    0%, 10% {
+        opacity: 0;
+        left: var(--brain-pulse-start);
+        top: var(--brain-pulse-top);
+        filter: brightness(0.9);
+    }
+    16% {
+        opacity: 1;
+        left: calc(var(--brain-pulse-start) + ((var(--brain-pulse-end) - var(--brain-pulse-start)) * 0.14));
+        top: var(--brain-pulse-top);
+        filter: brightness(1.18);
+    }
+    44% {
+        opacity: 1;
+        left: calc(var(--brain-pulse-start) + ((var(--brain-pulse-end) - var(--brain-pulse-start)) * 0.48));
+        top: var(--brain-pulse-top);
+    }
+    68% {
+        opacity: 1;
+        left: calc(var(--brain-pulse-start) + ((var(--brain-pulse-end) - var(--brain-pulse-start)) * 0.78));
+        top: var(--brain-pulse-top);
+        filter: brightness(1.28);
+    }
+    82% {
+        opacity: 0.96;
+        left: calc(var(--brain-pulse-start) + ((var(--brain-pulse-end) - var(--brain-pulse-start)) * 0.94));
+        top: var(--brain-pulse-top);
+    }
+    92%, 100% {
+        opacity: 0;
+        left: var(--brain-pulse-end);
+        top: var(--brain-pulse-top);
+        filter: brightness(0.95);
+    }
+}
+
+@keyframes brainSynapseTailTrail {
+    0%, 10%, 92%, 100% {
+        opacity: 0;
+        transform: translateY(-50%) rotate(var(--brain-pulse-tail-angle)) scaleX(0.25);
+    }
+    16%, 44% {
+        opacity: 0.9;
+        transform: translateY(-50%) rotate(var(--brain-pulse-tail-angle)) scaleX(1);
+    }
+    68% {
+        opacity: 0.84;
+        transform: translateY(-50%) rotate(var(--brain-pulse-tail-angle)) scaleX(1.08);
+    }
+    82% {
+        opacity: 0.76;
+        transform: translateY(-50%) rotate(var(--brain-pulse-tail-angle)) scaleX(0.98);
+    }
+}
+
+.brain-level-transition {
+    margin-left: -1.5rem;
+    margin-right: -1.5rem;
+    height: 2.6rem;
+    margin-top: -1px;
+    margin-bottom: -1px;
+    pointer-events: none;
+}
+
+.brain-level-transition.from-1.to-2 {
+    background: linear-gradient(180deg, #dce7ef 0%, #d9e4e8 40%, #d8e3df 100%);
+}
+
+.brain-level-transition.from-2.to-3 {
+    background: linear-gradient(180deg, #d8e3df 0%, #dbdfe2 40%, #dee0e6 100%);
+}
+
+.adventure-card {
+    background:
+        radial-gradient(circle at top right, rgba(255, 236, 174, 0.42) 0, rgba(255, 236, 174, 0.42) 4.6rem, transparent 4.65rem),
+        linear-gradient(180deg, #ffffff 0%, #fbfbfd 100%);
+    border-radius: 2rem;
+    padding: 1.25rem 1.2rem 1.1rem;
+    border: 1px solid rgba(255, 255, 255, 0.85);
+    box-shadow:
+        0 18px 34px rgba(64, 72, 98, 0.14),
+        0 6px 14px rgba(64, 72, 98, 0.08);
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    transition: all 0.15s;
+    cursor: pointer;
+    position: relative;
+    overflow: visible !important;
+}
+
+.adventure-card.brain-card {
+    background:
+        radial-gradient(circle at top right, rgba(255, 236, 174, 0.42) 0, rgba(255, 236, 174, 0.42) 4.6rem, transparent 4.65rem),
+        linear-gradient(180deg, #ffffff 0%, #fbfbfd 100%);
+    border-color: rgba(255, 255, 255, 0.85);
+}
+
+.adventure-card.brain-card:hover {
+    box-shadow:
+        0 22px 38px rgba(64, 72, 98, 0.16),
+        0 8px 18px rgba(64, 72, 98, 0.1);
+}
+
+.adventure-card.brain-card.brain-hybrid {
+    background:
+        linear-gradient(180deg, var(--brain-card-bg-top) 0%, var(--brain-card-bg-bottom) 100%);
+    border: 1px solid var(--brain-card-border);
+    border-radius: 1.5rem;
+    box-shadow:
+        0 20px 36px rgba(10, 17, 31, 0.34),
+        inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.adventure-card.brain-card.brain-hybrid::before {
+    content: '';
+    position: absolute;
+    inset: 0.85rem 0.85rem auto auto;
+    width: 4.15rem;
+    height: 4.15rem;
+    border-radius: 1rem;
+    background:
+        linear-gradient(90deg, var(--brain-grid-color) 1px, transparent 1px),
+        linear-gradient(var(--brain-grid-color) 1px, transparent 1px);
+    background-size: 0.7rem 0.7rem;
+    opacity: 0.85;
+    pointer-events: none;
+}
+
+.adventure-card.brain-card.brain-hybrid .card-title,
+.adventure-card.brain-card.brain-hybrid .card-subtitle-text,
+.adventure-card.brain-card.brain-hybrid .card-mission-text {
+    color: #eef6ff;
+}
+
+.adventure-card.brain-card.brain-hybrid .category-badge {
+    background: var(--brain-badge-bg);
+    color: var(--brain-badge-color);
+}
+
+.adventure-card.brain-card.brain-hybrid .star.filled {
+    color: var(--brain-star-color);
+}
+
+.adventure-card.brain-card.brain-hybrid .star.empty {
+    color: rgba(148, 163, 184, 0.42);
+}
+
+.adventure-card.brain-card.brain-hybrid .card-icon-box {
+    border-radius: 1rem;
+    box-shadow:
+        inset 0 2px 8px rgba(255, 255, 255, 0.12),
+        0 0 0 1px var(--brain-icon-ring),
+        0 12px 24px rgba(0, 0, 0, 0.24);
+}
+
+.adventure-card.brain-card.brain-hybrid .card-top,
+.adventure-card.brain-card.brain-hybrid .card-actions {
+    position: relative;
+    z-index: 1;
+}
+
+.adventure-card.brain-card.brain-hybrid .card-actions {
+    padding-top: 0.35rem;
+}
+
+.adventure-card.brain-card.brain-hybrid .play-quest-btn {
+    background: linear-gradient(180deg, var(--brain-button-top) 0%, var(--brain-button-bottom) 100%);
+    border-color: var(--brain-button-border);
+    color: var(--brain-button-text);
+    box-shadow: 0 5px 0 var(--brain-button-shadow), 0 10px 16px rgba(13, 18, 38, 0.34);
+}
+
+.adventure-card.brain-card.brain-hybrid .play-quest-btn:hover {
+    box-shadow:
+        0 6px 0 var(--brain-button-shadow),
+        0 14px 22px rgba(13, 18, 38, 0.4);
+    filter: brightness(1.1) saturate(1.05);
+}
+
+.adventure-card.brain-card.brain-hybrid .badge-box {
+    box-shadow: 0 8px 16px rgba(7, 16, 34, 0.3);
+}
+
+.play-game-modal-card .adventure-card.brain-card.brain-hybrid {
+    margin-bottom: 0;
+    position: relative;
+    z-index: 1;
+    padding: 0.2rem 0.35rem 0.25rem;
+    gap: 1rem;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+.play-game-modal-card .adventure-card.brain-card.brain-hybrid::before {
+    content: none;
+}
+
+.play-game-modal-card .adventure-card.brain-card.brain-hybrid:hover,
+.play-game-modal-card .adventure-card.brain-card.brain-hybrid:active {
+    transform: none;
+}
+
+
+
+.funmath-level-section.level-1 .adventure-card,
+.funmath-level-section.level-1 .adventure-card.brain-card {
+    background:
+        radial-gradient(circle at top right, rgba(124, 214, 255, 0.28) 0, rgba(124, 214, 255, 0.28) 4.6rem, transparent 4.65rem),
+        linear-gradient(180deg, #ffffff 0%, #fbfbfd 100%);
+}
+
+.funmath-level-section.level-2 .adventure-card,
+.funmath-level-section.level-2 .adventure-card.brain-card {
+    background:
+        radial-gradient(circle at top right, rgba(166, 221, 169, 0.27) 0, rgba(166, 221, 169, 0.27) 4.6rem, transparent 4.65rem),
+        linear-gradient(180deg, #ffffff 0%, #fbfbfd 100%);
+}
+
+.funmath-level-section.level-3 .adventure-card,
+.funmath-level-section.level-3 .adventure-card.brain-card {
+    background:
+        radial-gradient(circle at top right, rgba(242, 206, 133, 0.25) 0, rgba(242, 206, 133, 0.25) 4.6rem, transparent 4.65rem),
+        linear-gradient(180deg, #ffffff 0%, #fbfbfd 100%);
+}
+
+.adventure-card.brain-card .play-quest-btn {
+    background: linear-gradient(180deg, #6366f1 0%, #4f46e5 100%);
+    border-color: #4338ca;
+    box-shadow: 0 5px 0 #3730a3, 0 8px 12px rgba(0, 0, 0, 0.2);
+}
+
+.adventure-card.brain-card .play-quest-btn:active:not(:disabled) {
+    box-shadow: 0 2px 0 #3730a3, 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.adventure-card:active {
+    transform: translateY(1px);
+    box-shadow:
+        0 8px 16px rgba(64, 72, 98, 0.12),
+        0 3px 8px rgba(64, 72, 98, 0.08);
+}
+
+.adventure-card:hover {
+    box-shadow:
+        0 22px 38px rgba(64, 72, 98, 0.16),
+        0 8px 18px rgba(64, 72, 98, 0.1);
+    transform: translateY(-2px);
+}
+
+.card-top {
+    display: flex;
+    gap: 1.25rem;
+    align-items: center;
+}
+
+.card-icon-box {
+    width: 4.5rem;
+    height: 4.5rem;
+    border-radius: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.25rem;
+    flex-shrink: 0;
+    box-shadow: inset 0 2px 6px rgba(255, 255, 255, 0.35);
+    transition: transform 0.3s;
+}
+
+.adventure-card.locked .card-icon-box {
+    filter: grayscale(0.2);
+    opacity: 0.8;
+}
+
+.adventure-card.locked:hover .card-icon-box {
+    transform: none;
+}
+
+.adventure-card:hover .card-icon-box {
+    transform: scale(1.1);
+}
+
+/* Dynamic colors for icon box would be inline or utility classes */
+
+.card-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.card-meta {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 0.375rem;
+}
+
+.category-badge {
+    font-size: 0.625rem;
+    font-weight: 900;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    background: rgba(255, 197, 66, 0.12);
+    padding: 0.2rem 0.55rem;
+    border-radius: 999px;
+    border: none;
+}
+
+.difficulty-stars {
+    display: flex;
+    gap: 0.125rem;
+    margin-left: auto;
+}
+
+.star {
+    font-size: 0.625rem;
+}
+
+.star.filled {
+    color: #f59e0b;
+    /* Brighter amber for filled stars */
+}
+
+.star.empty {
+    color: #d1d5db;
+    /* Light gray for empty stars - easier to distinguish */
+}
+
+.card-title {
+    font-size: 1.7rem;
+    font-weight: 900;
+    color: #24324b;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+    line-height: 1.15;
+    margin: 0;
+}
+
+.progress-row {
+    margin-top: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.progress-track {
+    flex: 1;
+    height: 0.5rem;
+    background: var(--c-slate-50);
+    border-radius: 9999px;
+    overflow: hidden;
+    border: 1px solid var(--c-slate-100);
+}
+
+.progress-fill {
+    height: 100%;
+    background: var(--c-indigo-500);
+    border-radius: 9999px;
+    transition: width 1s ease-out;
+}
+
+.progress-text {
+    font-size: 0.7rem;
+    font-weight: 900;
+    color: var(--c-slate-400);
+}
+
+.play-quest-btn {
+    width: 100%;
+    padding: 1rem;
+    background: linear-gradient(180deg, #10b981 0%, #059669 100%);
+    color: white;
+    border-radius: 1rem;
+    font-weight: 900;
+    font-size: 0.95rem;
+    border: 4px solid #047857;
+    box-shadow:
+        0 5px 0 #065f46,
+        0 10px 18px rgba(5, 150, 105, 0.22);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    transition: all 0.1s;
+    cursor: pointer;
+}
+
+.play-quest-btn:active:not(:disabled) {
+    transform: translateY(3px);
+    box-shadow:
+        0 2px 0 #065f46,
+        0 5px 12px rgba(5, 150, 105, 0.18);
+}
+
+.play-quest-btn:hover {
+    background: linear-gradient(180deg, #22c88d 0%, #0cab75 100%);
+    border-color: #059669;
+    box-shadow:
+        0 6px 0 #047857,
+        0 14px 22px rgba(5, 150, 105, 0.28);
+    transform: translateY(-1px);
+}
+
+.locked .play-quest-btn {
+    background: var(--c-slate-400);
+    cursor: not-allowed;
+}
+
+.card-actions {
+    display: flex;
+    gap: 0.6rem;
+    align-items: stretch;
+}
+
+.badge-box {
+    width: 3.2rem;
+    flex-shrink: 0;
+    border-radius: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    position: relative;
+    cursor: pointer;
+    overflow: visible !important;
+    background: linear-gradient(180deg, #f4f7fb 0%, #e8eef5 100%);
+    box-shadow: none;
+}
+
+.badge-box.gray {
+    background: var(--c-slate-100);
+    border: 3px solid var(--c-slate-200);
+    color: var(--c-slate-300);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.badge-box.gold {
+    background: linear-gradient(135deg, #FFF7ED 0%, #FEF3C7 100%);
+    border: 3px solid #FCD34D;
+    color: #DA9100;
+    box-shadow: 0 4px 0 #D97706, 0 8px 16px rgba(234, 179, 8, 0.3);
+    animation: badgePop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes badgePop {
+    0% {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.badge-box.bronze {
+    background: linear-gradient(135deg, #FFEDD5 0%, #FFF7ED 100%);
+    border: 3px solid #B45309;
+    color: #92400E;
+    box-shadow: 0 4px 0 #92400E, 0 8px 16px rgba(180, 83, 9, 0.3);
+    animation: badgePop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.badge-box.silver {
+    background: linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%);
+    border: 3px solid #94A3B8;
+    color: #475569;
+    box-shadow: 0 4px 0 #64748B, 0 8px 16px rgba(100, 116, 139, 0.3);
+    animation: badgePop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* --- Dynamic Subtitle Text --- */
+.card-subtitle-text {
+    color: #8492ab !important;
+    font-weight: 800;
+    font-size: 0.72rem;
+    line-height: 1.2;
+    display: block;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+/* --- Medal Tooltip --- */
+.medal-tooltip {
+    position: absolute;
+    bottom: 100%;
+    right: 0;
+    margin-bottom: 0.75rem;
+    background: #475569;
+    color: white;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    white-space: nowrap;
+    width: max-content;
+    z-index: 9999;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    animation: tooltipPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    pointer-events: none;
+}
+
+.medal-tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    right: 1.25rem;
+    border-width: 6px;
+    border-style: solid;
+    border-color: #475569 transparent transparent transparent;
+}
+
+@keyframes tooltipPop {
+    0% {
+        opacity: 0;
+        transform: translateY(10px) scale(0.9);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Tooltip Right Side Variant (for List Items) */
+.medal-tooltip.right-side {
+    left: 100%;
+    right: auto;
+    bottom: auto;
+    top: 50%;
+    transform: translateY(-50%);
+    margin-left: 0.75rem;
+    margin-bottom: 0;
+    animation: tooltipPopRight 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.medal-tooltip.right-side::after {
+    top: 50%;
+    right: auto;
+    left: -12px;
+    bottom: auto;
+    transform: translateY(-50%);
+    border-color: transparent #475569 transparent transparent;
+}
+
+@keyframes tooltipPopRight {
+    0% {
+        opacity: 0;
+        transform: translateY(-50%) translateX(-10px) scale(0.9);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(-50%) translateX(0) scale(1);
+    }
+}
+
+.card-mission-text {
+    color: #8492ab !important;
+    font-weight: 800;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    display: block;
+    text-transform: uppercase;
+}

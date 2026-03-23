@@ -1063,6 +1063,10 @@ export const ptPT = {
       level2: 'Mundo da Floresta',
       level3: 'Mundo do Deserto',
     },
+    comingSoon: {
+      nextAdventure: 'Próxima Aventura',
+      title: 'Em Breve',
+    },
     game: {
       playNow: 'Jogar agora',
       reset: 'Recomeçar',

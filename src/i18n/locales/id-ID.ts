@@ -1063,6 +1063,10 @@ export const idID = {
       level2: 'Dunia Hutan',
       level3: 'Dunia Gurun',
     },
+    comingSoon: {
+      nextAdventure: 'Petualangan Berikutnya',
+      title: 'Segera Hadir',
+    },
     game: {
       playNow: 'Main Sekarang',
       reset: 'Mulai dari awal',

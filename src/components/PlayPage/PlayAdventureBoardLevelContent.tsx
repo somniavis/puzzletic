@@ -10,9 +10,11 @@ import type {
     BoardLevelRenderModel,
     BoatMotionAssignment,
     CreatureMotionAssignment,
+    PlayAdventureBoardTheme,
 } from './playAdventureBoardTypes';
 
 interface PlayAdventureBoardLevelContentProps {
+    theme: PlayAdventureBoardTheme;
     boardLevel: BoardLevelRenderModel;
     selectedGameId: string | null;
     currentJelloGameId?: string | null;
@@ -35,6 +37,7 @@ interface PlayAdventureBoardLevelContentProps {
 }
 
 export const PlayAdventureBoardLevelContent: React.FC<PlayAdventureBoardLevelContentProps> = ({
+    theme,
     boardLevel,
     selectedGameId,
     currentJelloGameId,
@@ -69,7 +72,7 @@ export const PlayAdventureBoardLevelContent: React.FC<PlayAdventureBoardLevelCon
                     {tiles.map((tile, index) => {
                         const tileBundleIndex = getBundleIndex(tile.y, rowOffset);
                         const isTileAccessible = accessibleBundleIndexes.has(tileBundleIndex);
-                        const forestClusterVariant = getForestClusterVariant(level, tile, tileBundleIndex, rowOffset, DIAMOND_STEP);
+                        const forestClusterVariant = getForestClusterVariant(theme, level, tile, tileBundleIndex, rowOffset, DIAMOND_STEP);
                         const tileKey = `${level}:${tile.x}:${tile.y}`;
                         const creatureMotion = forestClusterVariant && CREATURE_VARIANTS.has(forestClusterVariant)
                             ? creatureMotionByTileKey.get(tileKey) ?? null

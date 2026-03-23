@@ -1698,6 +1698,10 @@ export const viVN = {
       level2: 'Thế Giới Rừng',
       level3: 'Thế Giới Sa Mạc',
     },
+    comingSoon: {
+      nextAdventure: 'Cuộc phiêu lưu tiếp theo',
+      title: 'Sắp ra mắt',
+    },
     game: {
       playNow: 'Chơi ngay',
       reset: 'Bắt đầu lại',

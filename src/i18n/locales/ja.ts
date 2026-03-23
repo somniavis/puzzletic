@@ -1808,6 +1808,10 @@ const jaBase = {
             level2: 'もりのせかい',
             level3: 'さばくのせかい',
         },
+        comingSoon: {
+            nextAdventure: 'つぎのぼうけん',
+            title: 'こうかいよてい',
+        },
         game: {
             playNow: '今すぐプレイ',
             reset: 'はじめから',

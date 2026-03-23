@@ -6,16 +6,20 @@ import {
     buildAccessibleBundleIndexes,
     buildBoardLayout,
 } from './playAdventureBoardLayout';
+import { PlayAdventureBoardComingSoonSection } from './PlayAdventureBoardComingSoonSection';
 import { PlayAdventureBoardLevelSection } from './PlayAdventureBoardLevelSection';
 import { usePlayAdventureBoardMotion } from './usePlayAdventureBoardMotion';
+import { COMING_SOON_THEMES } from './playAdventureBoardDecorations';
 import type {
     BoardLevelRenderModel,
     BoardLevelViewModel,
     PlayAdventureBoardGame,
+    PlayAdventureBoardTheme,
 } from './playAdventureBoardTypes';
 export type { PlayAdventureBoardGame } from './playAdventureBoardTypes';
 
 interface PlayAdventureBoardProps {
+    theme?: PlayAdventureBoardTheme;
     levelGroups: Array<{
         level: number;
         games: PlayAdventureBoardGame[];
@@ -33,6 +37,7 @@ interface PlayAdventureBoardProps {
 }
 
 export const PlayAdventureBoard: React.FC<PlayAdventureBoardProps> = ({
+    theme = 'math',
     levelGroups,
     selectedGameId,
     currentJelloGameId,
@@ -96,7 +101,7 @@ export const PlayAdventureBoard: React.FC<PlayAdventureBoardProps> = ({
         handleCamelAnimationIteration,
         handleBeeAnimationIteration,
         handleElephantAnimationIteration,
-    } = usePlayAdventureBoardMotion(boardLevels);
+    } = usePlayAdventureBoardMotion(boardLevels, theme);
 
     if (renderBoardLevels.length === 0) {
         return (
@@ -114,6 +119,7 @@ export const PlayAdventureBoard: React.FC<PlayAdventureBoardProps> = ({
             {renderBoardLevels.map((boardLevel, index) => (
                 <PlayAdventureBoardLevelSection
                     key={boardLevel.level}
+                    theme={theme}
                     boardLevel={boardLevel}
                     nextLevel={renderBoardLevels[index + 1]?.level}
                     selectedGameId={selectedGameId}
@@ -136,6 +142,7 @@ export const PlayAdventureBoard: React.FC<PlayAdventureBoardProps> = ({
                     onSelectTile={onSelectTile}
                 />
             ))}
+            {COMING_SOON_THEMES.has(theme) && <PlayAdventureBoardComingSoonSection theme={theme} />}
         </div>
     );
 };

@@ -1065,6 +1065,10 @@ const koBase = {
             level2: '포레스트 월드',
             level3: '데저트 월드',
         },
+        comingSoon: {
+            nextAdventure: '다음 모험',
+            title: '곧 공개',
+        },
         game: {
             playNow: '지금 플레이',
             reset: '처음부터',

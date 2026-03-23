@@ -9,6 +9,8 @@ export interface PlayAdventureBoardGame {
     isMastered: boolean;
 }
 
+export type PlayAdventureBoardTheme = 'math' | 'brain';
+
 export type BoardTileKind = 'path' | 'forest';
 
 export interface BoardTile {
@@ -81,6 +83,20 @@ export interface BoatMotionAssignment {
     animationName: string;
     delay: string;
     duration: string;
+}
+
+export type BrainPulseDirection =
+    | 'horizontal-right'
+    | 'horizontal-left'
+    | 'vertical-down'
+    | 'vertical-up';
+
+export interface BrainPulseDecoration {
+    className: BrainPulseDirection;
+    top: string;
+    left: string;
+    duration: string;
+    delay: string;
 }
 
 export type OverlayMotionKey = 'boat' | 'sailboat' | 'camel' | 'bee' | 'elephant';
