@@ -9,8 +9,10 @@
     --level-board-content-offset-y: 0rem;
     --play-path-top: #ffc542;
     --play-path-bottom: #ffab10;
+    --play-path-inset-shadow: rgba(187, 129, 24, 0.24);
     --play-forest-top: #26d30c;
     --play-forest-bottom: #16b100;
+    --play-tile-inset-shadow: rgba(255, 255, 255, 0.18);
     --play-forest-display: block;
     overflow: hidden;
 }
@@ -22,8 +24,8 @@
 
 .play-board-level.level-1 {
     background: #87CEEB;
-    --play-forest-top: #2ea8ff;
-    --play-forest-bottom: #0f71c6;
+    --play-forest-top: #66c6ff;
+    --play-forest-bottom: #43a0e3;
 }
 
 .play-board-water-decor {
@@ -124,14 +126,15 @@
 
 .play-board-level.level-2 {
     background: #d5f0d8;
-    --play-forest-top: #26d30c;
-    --play-forest-bottom: #16b100;
+    --play-forest-top: #94ee87;
+    --play-forest-bottom: #6fd466;
+    --play-tile-inset-shadow: rgba(79, 152, 72, 0.24);
 }
 
 .play-board-level.level-3 {
     background: #ffe0bd;
-    --play-forest-top: #d2b23e;
-    --play-forest-bottom: #b28715;
+    --play-forest-top: #e5cc79;
+    --play-forest-bottom: #cda84a;
 }
 
 .play-board-level.brain-theme.level-1 {
@@ -864,15 +867,18 @@
     appearance: none;
     cursor: pointer;
     transform: rotate(45deg);
-    box-shadow: inset 0 -6px 0 rgba(255, 255, 255, 0.18);
+    box-shadow: inset 0 -6px 0 var(--play-tile-inset-shadow);
     transition: transform 180ms ease, box-shadow 180ms ease, filter 180ms ease;
 }
 
 .play-board-tile.path {
+    --play-tile-current-inset-shadow: var(--play-path-inset-shadow);
     background: linear-gradient(180deg, var(--play-path-top) 0%, var(--play-path-bottom) 100%);
+    box-shadow: inset 0 -6px 0 var(--play-path-inset-shadow);
 }
 
 .play-board-tile.forest {
+    --play-tile-current-inset-shadow: var(--play-tile-inset-shadow);
     background: linear-gradient(
         180deg,
         var(--play-forest-top, #26d30c) 0%,
@@ -885,7 +891,7 @@
     transform: rotate(45deg) translate3d(0, -0.28rem, 0) scale(1.02);
     filter: brightness(1.03);
     box-shadow:
-        inset 0 -6px 0 rgba(255, 255, 255, 0.18),
+        inset 0 -6px 0 var(--play-tile-current-inset-shadow, var(--play-tile-inset-shadow)),
         0 10px 18px rgba(93, 62, 47, 0.16);
 }
 
@@ -897,7 +903,7 @@
 
 .play-board-tile.blocked:hover {
     transform: rotate(45deg);
-    box-shadow: inset 0 -6px 0 rgba(255, 255, 255, 0.18);
+    box-shadow: inset 0 -6px 0 var(--play-tile-current-inset-shadow, var(--play-tile-inset-shadow));
 }
 
 .play-board-tile.blocked::after {
