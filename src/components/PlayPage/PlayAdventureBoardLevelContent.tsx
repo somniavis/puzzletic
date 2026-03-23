@@ -113,7 +113,7 @@ export const PlayAdventureBoardLevelContent: React.FC<PlayAdventureBoardLevelCon
                                 {renderBoat(activeSailboatMotion, '⛵', 'play-board-sailboat', onSailboatAnimationIteration)}
                                 {renderBoat(activeCamelMotion, '🐫', 'play-board-camel', onCamelAnimationIteration)}
                                 {renderBoat(activeBeeMotion, '🐝', 'play-board-bee', onBeeAnimationIteration)}
-                                {renderBoat(activeElephantMotion, '🐘', 'play-board-elephant', onElephantAnimationIteration)}
+                                {renderBoat(activeElephantMotion, '🐅', 'play-board-elephant', onElephantAnimationIteration)}
                             </button>
                         );
                     })}

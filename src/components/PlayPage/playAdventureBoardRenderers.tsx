@@ -19,6 +19,17 @@ const renderEmojiCluster = (
     </span>
 );
 
+const renderLayeredTreeCluster = (emoji: string, clusterClassName = 'play-board-tree-cluster play-board-tree-depth-cluster') => (
+    <span className={clusterClassName} aria-hidden="true">
+        {(['a', 'b', 'c', 'd'] as const).map((slot) => (
+            <span key={slot} className={`play-board-tree-stack tree-${slot}`}>
+                <span className={`play-board-tree play-board-tree-back tree-${slot}`}>{emoji}</span>
+                <span className={`play-board-tree play-board-tree-front tree-${slot}`}>{emoji}</span>
+            </span>
+        ))}
+    </span>
+);
+
 const renderCenteredEmoji = (emoji: string, className = 'play-board-centered-object') => (
     <span className={className} aria-hidden="true">
         {emoji}
@@ -90,11 +101,11 @@ export const renderBoat = (
                 >
                     🐫
                 </span>
-            ) : emoji === '🐘' ? (
+            ) : emoji === '🐅' ? (
                 <span
                     className={`play-board-elephant-icon ${boatMotion.animationName === 'playBoardBoatRight' ? 'is-flipped' : ''}`}
                 >
-                    🐘
+                    🐅
                 </span>
             ) : emoji === '🐝' ? (
                 <span
@@ -201,9 +212,9 @@ export const renderForestCluster = (
             </span>
         ) : null;
     case 'trees':
-        return renderEmojiCluster('🌳');
+        return renderLayeredTreeCluster('🌳');
     case 'pines':
-        return renderEmojiCluster('🌲');
+        return renderLayeredTreeCluster('🌲');
     case 'sunflowers':
         return renderEmojiCluster('🌻', 'play-board-tree-cluster play-board-flower-cluster');
     case 'tulips':
@@ -215,7 +226,7 @@ export const renderForestCluster = (
     case 'desert-sprouts':
         return renderEmojiCluster('🪾', 'play-board-tree-cluster play-board-desert-cluster');
     case 'cacti':
-        return renderEmojiCluster('🌵', 'play-board-tree-cluster play-board-desert-cluster');
+        return renderLayeredTreeCluster('🌵', 'play-board-tree-cluster play-board-desert-cluster play-board-tree-depth-cluster');
     case 'rocks':
         return renderEmojiCluster('🪨', 'play-board-tree-cluster play-board-desert-cluster');
     case 'scorpions':

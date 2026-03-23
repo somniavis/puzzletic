@@ -44,7 +44,7 @@ export const PlayGameInfoModal: React.FC<PlayGameInfoModalProps> = ({
             role="presentation"
         >
             <div
-                className="play-game-modal-card"
+                className={`play-game-modal-card level-${game.level}`}
                 onClick={(event) => event.stopPropagation()}
                 role="dialog"
                 aria-modal="true"

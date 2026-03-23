@@ -72,7 +72,7 @@ export const getRandomBoatPreset = (tileKeys: string[], exclude?: BoatMotionAssi
 };
 
 export const getOverlayAnimationName = (animationName: string, emoji: string) => {
-    if (emoji === '🐫' || emoji === '🐘') {
+    if (emoji === '🐫' || emoji === '🐅') {
         switch (animationName) {
         case 'playBoardBoatRight':
             return 'playBoardCamelRight';
