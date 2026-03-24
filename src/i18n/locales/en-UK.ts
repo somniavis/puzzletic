@@ -39,6 +39,7 @@ import cellCloneEn from '../../games/math/adventure/level3/CellClone/locales/en-
 import fairShareLocale from "../../games/math/adventure/level3/FairShare/locales/en-UK";
 import donutShopLocale from "../../games/math/adventure/level3/DonutShop/locales/en-UK";
 import chocolateSplitLocale from "../../games/math/adventure/level3/ChocolateSplit/locales/en-UK";
+import riverCrossingLocale from "../../games/math/adventure/level3/RiverCrossing/locales/en-UK";
 import neonMatrixEn from '../../games/math/adventure/level3/NeonMatrix/locales/en-UK';
 import threeLeafCloverLocale from '../../games/math/adventure/level3/ThreeLeafClover/locales/en-UK';
 import hexHiveSixLocale from '../../games/math/adventure/level3/HexHiveSix/locales/en-UK';
@@ -1103,6 +1104,7 @@ export const enUK = {
         'fair-share': fairShareLocale,
         'donut-shop': donutShopLocale,
         'chocolate-split': chocolateSplitLocale,
+        'river-crossing': riverCrossingLocale,
         'neon-matrix': neonMatrixEn,
         'three-leaf-clover': threeLeafCloverLocale,
         'hex-hive-six': hexHiveSixLocale,

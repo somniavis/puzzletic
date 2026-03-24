@@ -50,6 +50,7 @@ const L3_TrollAttack = lazy(() => delayedImport(import('./math/adventure/level3/
 const L3_FairShare = lazy(() => delayedImport(import('./math/adventure/level3/FairShare').then(m => ({ default: m.FairShare }))));
 const L3_DonutShop = lazy(() => delayedImport(import('./math/adventure/level3/DonutShop').then(m => ({ default: m.DonutShop }))));
 const L3_ChocolateSplit = lazy(() => delayedImport(import('./math/adventure/level3/ChocolateSplit').then(m => ({ default: m.ChocolateSplit }))));
+const L3_RiverCrossing = lazy(() => delayedImport(import('./math/adventure/level3/RiverCrossing').then(m => ({ default: m.RiverCrossing }))));
 
 const L1_DeepSeaDive = lazy(() => delayedImport(import('./math/adventure/level2/DeepSeaDive').then(m => ({ default: (props: any) => createElement(m.DeepSeaDive, { ...props, level: 1 }) }))));
 const L2_DeepSeaDive = lazy(() => delayedImport(import('./math/adventure/level2/DeepSeaDive').then(m => ({ default: (props: any) => createElement(m.DeepSeaDive, { ...props, level: 2 }) }))));
@@ -667,6 +668,20 @@ export const GAMES: GameManifest[] = [
         component: L3_ChocolateSplit,
         thumbnail: '🍫',
         tagsKey: 'games.tags.division'
+    },
+    {
+        id: GameIds.MATH_RIVER_CROSSING,
+        title: 'River Crossing',
+        titleKey: 'games.river-crossing.title',
+        subtitle: 'Correct Stepping Stones',
+        subtitleKey: 'games.river-crossing.subtitle',
+        description: 'ㅇㅇㅇ',
+        descriptionKey: 'games.river-crossing.description',
+        category: 'math',
+        level: 3,
+        mode: 'adventure',
+        component: L3_RiverCrossing,
+        thumbnail: '🌉'
     },
     // Front Addition Levels
     {
