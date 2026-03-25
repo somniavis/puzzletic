@@ -3,16 +3,15 @@ import { useSound } from '../../../../contexts/SoundContext';
 import { useAuth } from '../../../../contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
 import {
-    Coins, Flame, Heart, Clock,
-    Download, RotateCcw
+    Coins, Flame, Heart, Clock
 } from 'lucide-react';
-import { toPng } from 'html-to-image';
 import { playButtonSound, playJelloClickSound, playClearSound, playEatingSound, startBackgroundMusic } from '../../../../utils/sound';
 import './Layout0.css';
 import { useGameEngine } from './useGameEngine';
 import { useNurturing } from '../../../../contexts/NurturingContext';
 import { calculateMinigameReward } from '../../../../services/rewardService';
 import type { RewardCalculation, MinigameDifficulty } from '../../../../types/gameMechanics';
+import { GameOverScreen } from '../shared/GameOverScreen';
 
 interface Layout0Props {
     title: string;
@@ -212,21 +211,6 @@ export const Layout0: React.FC<Layout0Props> = ({
     }, [lastEvent]);
 
     const { t } = useTranslation();
-    const gameOverRef = useRef<HTMLDivElement>(null);
-
-
-    const handleDownload = async () => {
-        if (!gameOverRef.current) return;
-        try {
-            const dataUrl = await toPng(gameOverRef.current, { cacheBust: true, pixelRatio: 2 });
-            const link = document.createElement('a');
-            link.download = `${title.replace(/\s+/g, '-').toLowerCase()}-result.png`;
-            link.href = dataUrl;
-            link.click();
-        } catch (err) {
-            console.error('Download failed', err);
-        }
-    };
 
     // Render Start Screen
     if (gameState === 'idle') {
@@ -278,9 +262,6 @@ export const Layout0: React.FC<Layout0Props> = ({
 
     // Render Game Over Screen
     if (gameState === 'gameover') {
-        const earnedXp = rewardResult?.xpEarned || 0;
-        const earnedGro = rewardResult?.groEarned || 0;
-
         return (
             <div className="layout0-container">
                 <header className="layout0-header">
@@ -290,93 +271,18 @@ export const Layout0: React.FC<Layout0Props> = ({
                     </button>
                 </header>
 
-                <div className="overlay-screen start-screen-layout">
-                    {/* Compact Header */}
-                    <div className="game-over-header-compact">
-                        <div className="game-over-icon">
-                            {gameOverReason === 'cleared' ? '🏆' : '🏁'}
-                        </div>
-                        <h1 className="game-over-title">
-                            {gameOverReason === 'cleared' ? (t('common.stageClear') || 'Stage Clear!') : (t('common.gameOver') || 'Game Over!')}
-                        </h1>
-                    </div>
-
-                    <div ref={gameOverRef} className="start-content-scroll custom-scrollbar" style={{ marginTop: '0.5rem' }}>
-                        <div className="result-cards-container">
-
-                            {/* Box 1: Game Stats */}
-                            {/* Box 1: Game Stats */}
-                            <div className="result-card main-stats">
-                                <div className="score-display-wrapper">
-                                    {/* Left Side: ALWAYS Final Score (Big) */}
-                                    <div className="score-display-large">
-                                        <span className="score-label">
-                                            {isNewRecord ? (t('common.newRecord') || 'NEW RECORD!') : (t('common.finalScore') || 'FINAL SCORE')}
-                                        </span>
-                                        <span className={`score-value-huge ${isNewRecord ? 'record-pulse' : ''}`}>
-                                            {score}
-                                        </span>
-                                    </div>
-
-                                    {/* Right Side: ALWAYS Best/Prev Score (Small) */}
-                                    <div className="score-display-sub">
-                                        <span className="sub-score-label">
-                                            {isNewRecord ? (t('common.previousBest') || 'PREV BEST') : (t('common.bestScore') || 'BEST SCORE')}
-                                        </span>
-                                        <span className="sub-score-value">
-                                            {isNewRecord ? prevBest : highScore}
-                                        </span>
-                                    </div>
-                                </div>
-                                <div className="sub-stats-row">
-                                    <div className="sub-stat-item">
-                                        <span className="sub-stat-label">{t('common.bestCombo') || 'BEST STREAK'}</span>
-                                        <span className="sub-stat-value text-orange">
-                                            <Flame size={18} className="text-orange-500" /> {bestCombo}
-                                        </span>
-                                    </div>
-                                    <div className="sub-stat-item">
-                                        <span className="sub-stat-label">{t('common.accuracy').toUpperCase()}</span>
-                                        <span className="sub-stat-value text-blue">
-                                            {/* Display calculated accuracy from render time (or use stats directly if loop risk) */}
-                                            {(() => {
-                                                const total = (stats?.correct || 0) + (stats?.wrong || 0);
-                                                return total > 0 ? Math.round(((stats?.correct || 0) / total) * 100) : 0;
-                                            })()}%
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Box 2: Rewards (Split & Colored) */}
-                            <div className="rewards-grid-split">
-                                <div className="reward-card-split xp">
-                                    <span className="reward-icon">✨</span>
-                                    <span className="reward-amount text-purple">+{earnedXp}</span>
-                                    <span className="reward-label text-purple">XP</span>
-                                </div>
-                                <div className="reward-card-split gro">
-                                    <span className="reward-icon">💰</span>
-                                    <span className="reward-amount text-yellow">+{earnedGro}</span>
-                                    <span className="reward-label text-yellow">GRO</span>
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-
-                    <div className="start-footer-section">
-                        <div className="game-over-buttons">
-                            <button className="restart-btn" onClick={() => { playButtonSound(); startGame(); }} style={{ marginTop: 0, flex: 1 }}>
-                                <RotateCcw size={32} strokeWidth={2.5} />
-                            </button>
-
-                            <button className="download-btn" onClick={() => { playButtonSound(); handleDownload(); }} title="Download Result">
-                                <Download size={32} strokeWidth={2.5} />
-                            </button>
-                        </div>
-                    </div>
-                </div>
+                <GameOverScreen
+                    title={title}
+                    gameOverReason={gameOverReason || 'time_up'}
+                    score={score}
+                    highScore={highScore}
+                    prevBest={prevBest}
+                    isNewRecord={isNewRecord}
+                    bestCombo={bestCombo}
+                    stats={stats}
+                    rewardResult={rewardResult}
+                    onRestart={() => { playButtonSound(); startGame(); }}
+                />
             </div>
         );
     }
