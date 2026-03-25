@@ -1,0 +1,555 @@
+.pizza-pizza-layout2 .layout2-grid-wrapper {
+    min-height: 100%;
+}
+
+.pizza-pizza-layout2 .layout2-game-area {
+    position: relative;
+    background:
+        radial-gradient(circle at top right, rgba(255, 236, 208, 0.82), transparent 26%),
+        linear-gradient(180deg, rgba(255, 250, 241, 0.96) 0%, rgba(255, 237, 214, 0.97) 100%);
+    border-color: rgba(198, 136, 73, 0.36);
+    box-shadow:
+        0 8px 0 rgba(189, 128, 67, 0.32),
+        0 16px 28px rgba(121, 71, 28, 0.14);
+}
+
+.pizza-pizza-card-bg {
+    --pizza-pizza-wall-height: clamp(3.5rem, 12%, 4.5rem);
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    border-radius: inherit;
+    background:
+        radial-gradient(circle at top right, rgba(255, 236, 208, 0.82), transparent 26%),
+        linear-gradient(180deg, rgba(255, 250, 241, 0.96) 0%, rgba(255, 237, 214, 0.97) 100%);
+}
+
+.pizza-pizza-wall-sign {
+    position: absolute;
+    top: clamp(0.55rem, 2.4%, 0.8rem);
+    right: clamp(0.8rem, 3.5%, 1.15rem);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.42rem;
+    padding: 0.34rem 0.58rem;
+    border-radius: 0.8rem;
+    background: linear-gradient(180deg, rgba(255, 250, 244, 0.96) 0%, rgba(236, 224, 215, 0.94) 100%);
+    border: 2px solid rgba(92, 71, 84, 0.28);
+    box-shadow:
+        0 8px 14px rgba(56, 41, 53, 0.16),
+        inset 0 2px 0 rgba(255, 255, 255, 0.68);
+    transform: rotate(8deg);
+    transform-origin: 85% 20%;
+    z-index: 1;
+}
+
+.pizza-pizza-wall-sign::before,
+.pizza-pizza-wall-sign::after {
+    content: '';
+    position: absolute;
+    top: -0.34rem;
+    width: 1px;
+    height: 0.48rem;
+    background: rgba(117, 92, 107, 0.72);
+}
+
+.pizza-pizza-wall-sign::before {
+    left: 0.78rem;
+}
+
+.pizza-pizza-wall-sign::after {
+    right: 0.78rem;
+}
+
+.pizza-pizza-wall-sign-jello {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.15rem;
+    height: 1.15rem;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #8dff8f 0%, #3ad35b 62%, #1e9e3d 100%);
+    box-shadow:
+        inset 0 -1px 0 rgba(18, 104, 39, 0.34),
+        0 1px 2px rgba(33, 91, 48, 0.22);
+    color: transparent;
+    overflow: hidden;
+}
+
+.pizza-pizza-wall-sign-text {
+    font-size: 0.62rem;
+    line-height: 1;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    color: #7b2f44;
+    white-space: nowrap;
+}
+
+.pizza-pizza-card-bg::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: var(--pizza-pizza-wall-height);
+    border-radius: 1rem 1rem 0 0;
+    border-bottom: 2px solid rgba(74, 86, 104, 0.22);
+    box-shadow: inset 0 -4px 0 rgba(82, 96, 116, 0.12);
+    background-color: #d9e1ea;
+    background-image:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.34) 0%, rgba(217, 225, 234, 0.08) 100%),
+        repeating-linear-gradient(0deg, transparent 0 25px, rgba(116, 129, 147, 0.2) 25px 27px),
+        repeating-linear-gradient(90deg, transparent 0 44px, rgba(116, 129, 147, 0.2) 44px 46px),
+        linear-gradient(135deg, rgba(149, 39, 67, 0.12) 0 14%, transparent 14% 100%),
+        radial-gradient(circle at 78% 26%, rgba(255, 255, 255, 0.16) 0 8px, transparent 9px);
+    background-size: 100% 100%, 100% 27px, 46px 100%, 100% 100%, 100% 100%;
+    background-position: 0 0, 0 0, 0 0;
+}
+
+.pizza-pizza-card-bg::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: var(--pizza-pizza-wall-height);
+    border-radius: 1rem 1rem 0 0;
+    background:
+        linear-gradient(90deg, transparent 0 8%, rgba(93, 36, 71, 0.07) 8% 9%, transparent 9% 91%, rgba(93, 36, 71, 0.07) 91% 92%, transparent 92%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.18) 0%, transparent 32%),
+        radial-gradient(circle at 14% 22%, rgba(255, 255, 255, 0.14) 0 7px, transparent 8px),
+        radial-gradient(circle at 84% 28%, rgba(255, 255, 255, 0.12) 0 6px, transparent 7px),
+        radial-gradient(circle at 62% 74%, rgba(255, 255, 255, 0.1) 0 5px, transparent 6px);
+    opacity: 0.88;
+}
+
+.pizza-pizza-layout2 .layout2-sub-header {
+    position: relative;
+    z-index: 1;
+}
+
+.pizza-pizza-layout2 .layout2-sub-header .powerup-row {
+    position: relative;
+    z-index: 1;
+}
+
+.pizza-pizza-stage {
+    width: 100%;
+    height: 100%;
+    padding: 0.85rem 0.85rem 1rem;
+}
+
+.pizza-pizza-shell {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    padding-top: 0;
+}
+
+.pizza-pizza-friends {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    width: 100%;
+    z-index: 1;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    gap: 0.65rem;
+    min-height: 6.95rem;
+    padding-top: 1.2rem;
+}
+
+.pizza-pizza-friend {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    width: 4rem;
+    min-height: 4.8rem;
+    gap: 0;
+    padding-top: 0.2rem;
+}
+
+.pizza-pizza-friend-avatar {
+    order: 1;
+    position: relative;
+    z-index: 3;
+    font-size: 2.45rem;
+    line-height: 1;
+    margin-bottom: -0.18rem;
+    top: 0.18rem;
+    transform: translateY(0);
+    animation: pizza-pizza-friend-float 2.6s ease-in-out infinite;
+}
+
+.pizza-pizza-friend-body {
+    order: 2;
+    position: relative;
+    z-index: 1;
+    width: 1.9rem;
+    height: 1.45rem;
+    border-radius: 1rem;
+    margin-bottom: -0.7rem;
+    background: linear-gradient(
+        180deg,
+        var(--pizza-friend-body-base, #f8efdf) 0%,
+        var(--pizza-friend-body-shade, #eadac2) 100%
+    );
+    box-shadow:
+        inset 0 -1px 0 rgba(120, 90, 60, 0.2),
+        0 2px 3px rgba(60, 40, 20, 0.15);
+}
+
+.pizza-pizza-friend-body::before,
+.pizza-pizza-friend-body::after {
+    content: '';
+    position: absolute;
+    top: 46%;
+    width: 0.6rem;
+    height: 0.6rem;
+    border-radius: 50%;
+    background: var(--pizza-friend-body-base, #f8efdf);
+    border: 1px solid rgba(120, 90, 60, 0.22);
+    transform: translateY(-50%);
+}
+
+.pizza-pizza-friend-body::before {
+    left: -0.12rem;
+}
+
+.pizza-pizza-friend-body::after {
+    right: -0.12rem;
+}
+
+.pizza-pizza-speech-bubble {
+    position: absolute;
+    left: 50%;
+    top: 0.12rem;
+    transform: translateX(-50%);
+    width: max-content;
+    max-width: 90%;
+    padding: 0.72rem 0.88rem;
+    border-radius: 1rem;
+    background: rgba(255, 255, 255, 0.96);
+    color: #7d4518;
+    font-size: 0.88rem;
+    font-weight: 800;
+    line-height: 1.35;
+    text-align: center;
+    box-shadow: 0 10px 22px rgba(121, 71, 28, 0.16);
+}
+
+.pizza-pizza-speech-bubble::after {
+    content: '';
+    position: absolute;
+    left: calc(12.5% - 0.2rem);
+    top: 100%;
+    transform: none;
+    border-width: 0.48rem 0.4rem 0;
+    border-style: solid;
+    border-color: rgba(255, 255, 255, 0.96) transparent transparent;
+}
+
+@keyframes pizza-pizza-friend-float {
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-0.18rem);
+    }
+}
+
+.pizza-pizza-table-wrap {
+    position: absolute;
+    left: 50%;
+    top: 6.9rem;
+    bottom: 5.1rem;
+    isolation: isolate;
+    z-index: 2;
+    display: block;
+    width: calc(90% + 1.7rem);
+    padding: 0 0.18rem 0.7rem;
+    overflow: visible;
+    transform: translateX(-50%);
+}
+
+.pizza-pizza-table-wrap::before,
+.pizza-pizza-table-wrap::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    width: 12px;
+    height: 16px;
+    border-radius: 4px;
+    background: linear-gradient(180deg, #d08a58 0%, #a6613c 100%);
+    border: 2px solid #8b4f31;
+    box-shadow: inset 0 -2px 0 rgba(79, 44, 27, 0.35);
+    pointer-events: none;
+    z-index: 0;
+}
+
+.pizza-pizza-table-wrap::before {
+    left: 12px;
+}
+
+.pizza-pizza-table-wrap::after {
+    right: 12px;
+}
+
+.pizza-pizza-table {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    container-type: size;
+    border-radius: 0.85rem;
+    padding: 0.42rem;
+    background: linear-gradient(180deg, #d8e6ec 0%, #b8cbd6 100%);
+    border: 3px solid #7f96a3;
+    box-shadow:
+        0 10px 20px rgba(56, 73, 86, 0.18),
+        inset 0 2px 0 rgba(244, 250, 253, 0.72),
+        inset 0 -4px 0 rgba(93, 113, 126, 0.34);
+    overflow: visible;
+}
+
+.pizza-pizza-table::before,
+.pizza-pizza-table::after {
+    content: '🍴';
+    position: absolute;
+    top: 0.52rem;
+    font-size: clamp(1.85rem, min(11.4cqw, 11.4cqh), 2.55rem);
+    line-height: 1;
+    opacity: 0.9;
+    transform: rotate(180deg);
+    filter: drop-shadow(0 2px 4px rgba(70, 81, 94, 0.18));
+    pointer-events: none;
+    z-index: 2;
+}
+
+.pizza-pizza-table::before {
+    left: 1.25rem;
+}
+
+.pizza-pizza-table::after {
+    right: 1.25rem;
+}
+
+.pizza-pizza-pizza {
+    position: relative;
+    z-index: 1;
+    width: clamp(14.25rem, min(108cqh, 108cqw), 30.5rem);
+    height: clamp(14.25rem, min(108cqh, 108cqw), 30.5rem);
+    margin: 0 auto;
+    aspect-ratio: 1 / 1;
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    touch-action: none;
+}
+
+.pizza-pizza-pizza-guide {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: min(85cqh, 85cqw);
+    height: min(85cqh, 85cqw);
+    border-radius: 50%;
+    border: 2px solid rgba(149, 101, 58, 0.22);
+    background: radial-gradient(circle, rgba(255, 247, 235, 0.88) 0%, rgba(249, 236, 217, 0.28) 70%, transparent 72%);
+    box-shadow:
+        inset 0 0 0 0.4rem rgba(255, 248, 236, 0.25),
+        0 0.8rem 1.4rem rgba(110, 74, 44, 0.08);
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+}
+
+.pizza-pizza-group-plate {
+    position: absolute;
+    width: clamp(2.3rem, min(16cqw, 16cqh), 3.4rem);
+    height: clamp(5.2rem, min(36cqw, 36cqh), 8.4rem);
+    border-radius: 0.7rem;
+    background: linear-gradient(180deg, rgba(255, 250, 242, 0.97) 0%, rgba(239, 224, 202, 0.95) 100%);
+    border: 2px solid rgba(149, 101, 58, 0.22);
+    box-shadow:
+        inset 0 0.14rem 0 rgba(255, 255, 255, 0.65),
+        0 0.5rem 0.9rem rgba(110, 74, 44, 0.12);
+    z-index: 0;
+    opacity: 0;
+    pointer-events: none;
+    transition:
+        opacity 220ms ease,
+        transform 360ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.pizza-pizza-slice {
+    position: absolute;
+    z-index: 1;
+    width: min(18.2cqw, 18.2cqh);
+    height: min(18.2cqw, 18.2cqh);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+}
+
+.pizza-pizza-slice-token {
+    --pizza-slice-rotate: 0deg;
+    --pizza-slice-scale: 1;
+    --pizza-slice-offset-x: 0%;
+    --pizza-slice-offset-y: 0%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    font-size: min(18.2cqw, 18.2cqh);
+    line-height: 1;
+    transform-origin: 50% 50%;
+    transform: translate(var(--pizza-slice-offset-x), var(--pizza-slice-offset-y))
+        rotate(var(--pizza-slice-rotate))
+        scale(var(--pizza-slice-scale));
+    filter: drop-shadow(0 0.18rem 0.3rem rgba(113, 71, 35, 0.2));
+    transition:
+        transform 360ms cubic-bezier(0.22, 1, 0.36, 1),
+        opacity 220ms ease;
+}
+
+.pizza-pizza-choice-box {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 1.65rem;
+    z-index: 4;
+    display: flex;
+    width: 100%;
+    gap: 0.95rem;
+    box-sizing: border-box;
+}
+
+.pizza-pizza-choice-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+    flex: 1 1 0;
+    padding: 0.82rem 1.28rem;
+    border-radius: 0.95rem;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.96) 0%, rgba(248, 233, 214, 0.98) 100%);
+    border: 2px solid rgba(184, 132, 78, 0.3);
+    box-shadow:
+        0 0.3rem 0 rgba(198, 151, 103, 0.28),
+        0 0.55rem 0.9rem rgba(115, 71, 33, 0.12);
+    color: #8a4d18;
+    font-size: 1.5rem;
+    font-weight: 900;
+    line-height: 1;
+    text-align: center;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+.pizza-pizza-choice-chip-label {
+    display: inline-flex;
+    flex: 1.2 1 auto;
+    align-items: center;
+    justify-content: center;
+    cursor: default;
+    color: #7a4516;
+    font-size: 1.1rem;
+    line-height: 0.95;
+    letter-spacing: -0.01em;
+    white-space: pre-line;
+    text-wrap: balance;
+    pointer-events: none;
+}
+
+.pizza-pizza-choice-chip.is-selected {
+    transform: translateY(-0.12rem);
+    background: linear-gradient(180deg, rgba(255, 220, 92, 0.98) 0%, rgba(241, 156, 39, 0.98) 100%);
+    border-color: rgba(191, 107, 17, 0.85);
+    color: #5f2f00;
+    box-shadow:
+        0 0.4rem 0 rgba(160, 88, 15, 0.34),
+        0 0.7rem 1.05rem rgba(115, 71, 33, 0.22);
+    outline: 3px solid rgba(255, 244, 180, 0.95);
+}
+
+.pizza-pizza-pizza.is-solved {
+    animation: pizza-pizza-success-bounce 0.8s ease;
+}
+
+.pizza-pizza-pizza.is-grouped .pizza-pizza-pizza-guide {
+    opacity: 0;
+}
+
+.pizza-pizza-pizza.is-grouped .pizza-pizza-group-plate {
+    opacity: 1;
+}
+
+.pizza-pizza-pizza.is-solved .pizza-pizza-slice-token {
+    filter:
+        drop-shadow(0 0 0.4rem rgba(255, 225, 121, 0.5))
+        drop-shadow(0 0.2rem 0.35rem rgba(113, 71, 35, 0.18));
+}
+
+.pizza-pizza-pizza.is-failing {
+    animation: pizza-pizza-fail-shake 0.56s ease;
+}
+
+.pizza-pizza-pizza.is-failing .pizza-pizza-slice-token {
+    filter:
+        saturate(0.82)
+        brightness(0.94)
+        drop-shadow(0 0.16rem 0.26rem rgba(113, 71, 35, 0.16));
+}
+
+@keyframes pizza-pizza-success-bounce {
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    35% {
+        transform: scale(1.05);
+    }
+
+    70% {
+        transform: scale(0.98);
+    }
+}
+
+@keyframes pizza-pizza-fail-shake {
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    20% {
+        transform: translateX(-0.35rem);
+    }
+
+    40% {
+        transform: translateX(0.3rem);
+    }
+
+    60% {
+        transform: translateX(-0.2rem);
+    }
+
+    80% {
+        transform: translateX(0.12rem);
+    }
+}

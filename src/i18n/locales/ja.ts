@@ -32,6 +32,7 @@ import cellCloneJa from '../../games/math/adventure/level3/CellClone/locales/ja'
 import fairShareLocale from "../../games/math/adventure/level3/FairShare/locales/ja";
 import donutShopLocale from "../../games/math/adventure/level3/DonutShop/locales/ja";
 import chocolateSplitLocale from "../../games/math/adventure/level3/ChocolateSplit/locales/ja";
+import pizzaPizzaLocale from "../../games/math/adventure/level3/PizzaPizza/locales/ja";
 import riverCrossingLocale from "../../games/math/adventure/level3/RiverCrossing/locales/ja";
 import neonMatrixJa from '../../games/math/adventure/level3/NeonMatrix/locales/ja';
 import threeLeafCloverLocale from '../../games/math/adventure/level3/ThreeLeafClover/locales/ja';
@@ -1849,6 +1850,7 @@ const jaBase = {
         'fair-share': fairShareLocale,
         'donut-shop': donutShopLocale,
         'chocolate-split': chocolateSplitLocale,
+        'pizza-pizza': pizzaPizzaLocale,
         'river-crossing': riverCrossingLocale,
         'neon-matrix': neonMatrixJa,
         'three-leaf-clover': threeLeafCloverLocale,

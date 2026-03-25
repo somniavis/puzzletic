@@ -49,6 +49,7 @@ const L3_ConstellationFinder = lazy(() => delayedImport(import('./math/adventure
 const L3_TrollAttack = lazy(() => delayedImport(import('./math/adventure/level3/TrollAttack').then(m => ({ default: m.TrollAttack }))));
 const L3_FairShare = lazy(() => delayedImport(import('./math/adventure/level3/FairShare').then(m => ({ default: m.FairShare }))));
 const L3_DonutShop = lazy(() => delayedImport(import('./math/adventure/level3/DonutShop').then(m => ({ default: m.DonutShop }))));
+const L3_PizzaPizza = lazy(() => delayedImport(import('./math/adventure/level3/PizzaPizza').then(m => ({ default: m.PizzaPizza }))));
 const L3_ChocolateSplit = lazy(() => delayedImport(import('./math/adventure/level3/ChocolateSplit').then(m => ({ default: m.ChocolateSplit }))));
 const L3_RiverCrossing = lazy(() => delayedImport(import('./math/adventure/level3/RiverCrossing').then(m => ({ default: m.RiverCrossing }))));
 
@@ -652,6 +653,21 @@ export const GAMES: GameManifest[] = [
         mode: 'adventure',
         component: L3_DonutShop,
         thumbnail: '🍩',
+        tagsKey: 'games.tags.division'
+    },
+    {
+        id: GameIds.MATH_PIZZA_PIZZA,
+        title: 'Pizza Pizza',
+        titleKey: 'games.pizza-pizza.title',
+        subtitle: 'How Many for Each?',
+        subtitleKey: 'games.pizza-pizza.subtitle',
+        description: 'ㅇㅇㅇ',
+        descriptionKey: 'games.pizza-pizza.description',
+        category: 'math',
+        level: 3,
+        mode: 'adventure',
+        component: L3_PizzaPizza,
+        thumbnail: '🍕',
         tagsKey: 'games.tags.division'
     },
     {

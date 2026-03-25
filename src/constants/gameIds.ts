@@ -47,6 +47,7 @@ export const GameIds = {
     MATH_FAIR_SHARE: 'math-fair-share',
     MATH_DONUT_SHOP: 'math-donut-shop',
     MATH_CHOCOLATE_SPLIT: 'math-chocolate-split',
+    MATH_PIZZA_PIZZA: 'math-pizza-pizza',
     MATH_RIVER_CROSSING: 'math-river-crossing',
 
     // Math Genius - Front Addition

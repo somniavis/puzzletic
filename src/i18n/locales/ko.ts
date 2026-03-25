@@ -32,6 +32,7 @@ import cellCloneKo from '../../games/math/adventure/level3/CellClone/locales/ko'
 import fairShareLocale from "../../games/math/adventure/level3/FairShare/locales/ko";
 import donutShopLocale from "../../games/math/adventure/level3/DonutShop/locales/ko";
 import chocolateSplitLocale from "../../games/math/adventure/level3/ChocolateSplit/locales/ko";
+import pizzaPizzaLocale from "../../games/math/adventure/level3/PizzaPizza/locales/ko";
 import riverCrossingLocale from "../../games/math/adventure/level3/RiverCrossing/locales/ko";
 import neonMatrixKo from '../../games/math/adventure/level3/NeonMatrix/locales/ko';
 import threeLeafCloverLocale from '../../games/math/adventure/level3/ThreeLeafClover/locales/ko';
@@ -1106,6 +1107,7 @@ const koBase = {
         'fair-share': fairShareLocale,
         'donut-shop': donutShopLocale,
         'chocolate-split': chocolateSplitLocale,
+        'pizza-pizza': pizzaPizzaLocale,
         'river-crossing': riverCrossingLocale,
         'neon-matrix': neonMatrixKo,
         'three-leaf-clover': threeLeafCloverLocale,
