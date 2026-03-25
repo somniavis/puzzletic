@@ -291,7 +291,7 @@ export const ptPT = {
     score: 'Pontuação',
     lives: 'Vidas',
     combo: 'Combo',
-    bestCombo: 'Melhor combo',
+    bestCombo: 'MELHOR COMBO',
     difficulty: 'Dificuldade',
     time: 'Tempo',
     accuracy: 'Precisão',

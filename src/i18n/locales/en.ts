@@ -291,7 +291,7 @@ export const en = {
     score: 'Score',
     lives: 'Lives',
     combo: 'Combo',
-    bestCombo: 'Best Combo',
+    bestCombo: 'BEST COMBO',
     difficulty: 'Difficulty',
     time: 'Time',
     accuracy: 'Accuracy',

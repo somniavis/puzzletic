@@ -291,7 +291,7 @@ export const frFR = {
     score: 'Score',
     lives: 'Vies',
     combo: 'Combo',
-    bestCombo: 'Meilleur combo',
+    bestCombo: 'MEILLEUR COMBO',
     difficulty: 'Difficulté',
     time: 'Temps',
     accuracy: 'Précision',

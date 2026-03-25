@@ -291,7 +291,7 @@ export const esES = {
     score: 'Puntuación',
     lives: 'Vidas',
     combo: 'Combo',
-    bestCombo: 'Mejor combo',
+    bestCombo: 'MEJOR COMBO',
     difficulty: 'Dificultad',
     time: 'Tiempo',
     accuracy: 'Precisión',
