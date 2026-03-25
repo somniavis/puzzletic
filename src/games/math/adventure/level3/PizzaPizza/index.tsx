@@ -25,7 +25,8 @@ const VALID_ROUNDS = [
 ] as const;
 const ROUND_ADVANCE_MS = 1450;
 const FAILURE_RESET_MS = 760;
-const RESULT_REVEAL_MS = 260;
+const CORRECT_RESULT_REVEAL_MS = 260;
+const WRONG_RESULT_REVEAL_MS = 720;
 const POWER_UP_REWARD_TYPES = ['timeFreeze', 'extraLife', 'doubleScore'] as const;
 const PIZZA_EMOJI_TIP_OFFSET = 90;
 const PIZZA_EMOJI_BASE_ROTATION = 25;
@@ -47,6 +48,11 @@ type PizzaRound = {
     sliceCount: number;
     pizzaType: (typeof PIZZA_TYPES)[number];
     animals: string[];
+};
+
+type RoundConfig = {
+    friendCount: number;
+    sliceCount: number;
 };
 
 type AnimalBodyTone = {
@@ -108,9 +114,9 @@ const getGroupedColumnGap = (columnCount: number) => {
     return 18.2;
 };
 
-const getGroupedLayoutMetrics = (friendCount: number, slicesPerFriend: number): GroupedLayoutMetrics => {
-    const rowCount = Math.max(1, slicesPerFriend);
-    const columnCount = Math.max(1, friendCount);
+const getGroupedLayoutMetrics = (sliceCount: number, slicesPerGroup: number): GroupedLayoutMetrics => {
+    const rowCount = Math.max(1, slicesPerGroup);
+    const columnCount = Math.max(1, Math.ceil(sliceCount / rowCount));
     const columnGap = getGroupedColumnGap(columnCount);
     const rowGap = rowCount <= 3 ? 18 : 14.5;
     const totalWidth = (columnCount - 1) * columnGap;
@@ -164,10 +170,7 @@ const createGroupedSlicePositions = (
     });
 };
 
-const createGroupedPlatePositions = (
-    friendCount: number,
-    layout: GroupedLayoutMetrics
-): PlateDisplayPosition[] => {
+const createGroupedPlatePositions = (layout: GroupedLayoutMetrics): PlateDisplayPosition[] => {
     const { columnCount, rowCount, columnGap, startX, startY, totalHeight } = layout;
     const plateY = startY + totalHeight / 2;
     const widthScale = columnCount >= 5 ? 0.88 : columnCount === 4 ? 0.94 : 1;
@@ -175,7 +178,7 @@ const createGroupedPlatePositions = (
     const width = `calc(clamp(2.3rem, min(16cqw, 16cqh), 3.4rem) * ${widthScale})`;
     const height = `calc(clamp(5.2rem, min(36cqw, 36cqh), 8.4rem) * ${heightScale})`;
 
-    return Array.from({ length: friendCount }, (_, index) => ({
+    return Array.from({ length: columnCount }, (_, index) => ({
         x: `${startX + index * columnGap}%`,
         y: `${plateY}%`,
         width,
@@ -186,8 +189,24 @@ const createGroupedPlatePositions = (
 const getAnimalBodyTone = (animal: string): AnimalBodyTone =>
     ANIMAL_BODY_TONES[animal as keyof typeof ANIMAL_BODY_TONES] ?? DEFAULT_ANIMAL_BODY_TONE;
 
-const createRound = (): PizzaRound => {
-    const config = VALID_ROUNDS[randInt(0, VALID_ROUNDS.length - 1)];
+const pickRoundConfig = (previous?: RoundConfig | null): RoundConfig => {
+    if (VALID_ROUNDS.length <= 1) {
+        return VALID_ROUNDS[0];
+    }
+
+    const candidates = previous == null
+        ? VALID_ROUNDS
+        : VALID_ROUNDS.filter(
+            (config) =>
+                config.friendCount !== previous.friendCount ||
+                config.sliceCount !== previous.sliceCount
+        );
+
+    return candidates[randInt(0, candidates.length - 1)];
+};
+
+const createRound = (previous?: RoundConfig | null): PizzaRound => {
+    const config = pickRoundConfig(previous);
     const animals = shuffle(ANIMALS).slice(0, config.friendCount);
     const pizzaType = PIZZA_TYPES[randInt(0, PIZZA_TYPES.length - 1)];
 
@@ -204,6 +223,7 @@ export const PizzaPizza: React.FC<PizzaPizzaProps> = ({ onExit }) => {
     const { t } = useTranslation();
     const engine = useGameEngine({ initialLives: 3, initialTime: 90, maxDifficulty: 1 });
     const resolveTimerRef = React.useRef<number | null>(null);
+    const prevGameStateRef = React.useRef(engine.gameState);
 
     const [round, setRound] = React.useState<PizzaRound>(() => createRound());
     const [isResolving, setIsResolving] = React.useState(false);
@@ -271,8 +291,8 @@ export const PizzaPizza: React.FC<PizzaPizzaProps> = ({ onExit }) => {
             return null;
         }
 
-        return getGroupedLayoutMetrics(round.friendCount, selectedChoice);
-    }, [round.friendCount, selectedChoice]);
+        return getGroupedLayoutMetrics(round.sliceCount, selectedChoice);
+    }, [round.sliceCount, selectedChoice]);
 
     const sliceDisplayPositions = React.useMemo(() => {
         if (groupedLayoutMetrics == null) {
@@ -286,15 +306,24 @@ export const PizzaPizza: React.FC<PizzaPizzaProps> = ({ onExit }) => {
             return [];
         }
 
-        return createGroupedPlatePositions(round.friendCount, groupedLayoutMetrics);
-    }, [groupedLayoutMetrics, round.friendCount]);
+        return createGroupedPlatePositions(groupedLayoutMetrics);
+    }, [groupedLayoutMetrics]);
 
-    const resetForNextRound = React.useCallback(() => {
-        setRound(createRound());
+    const resetBoardState = React.useCallback(() => {
         setIsResolving(false);
         setResolutionState('idle');
         setSelectedChoice(null);
     }, []);
+
+    const resetForNextRound = React.useCallback(() => {
+        setRound((prevRound) =>
+            createRound({
+                friendCount: prevRound.friendCount,
+                sliceCount: prevRound.sliceCount
+            })
+        );
+        resetBoardState();
+    }, [resetBoardState]);
 
     const clearResolveTimer = React.useCallback(() => {
         if (resolveTimerRef.current != null) {
@@ -306,6 +335,30 @@ export const PizzaPizza: React.FC<PizzaPizzaProps> = ({ onExit }) => {
     React.useEffect(() => () => {
         clearResolveTimer();
     }, [clearResolveTimer]);
+
+    React.useEffect(() => {
+        const prevGameState = prevGameStateRef.current;
+
+        if (engine.gameState === 'playing' && (prevGameState === 'idle' || prevGameState === 'gameover')) {
+            setRound((prevRound) =>
+                createRound(
+                    prevGameState === 'gameover'
+                        ? {
+                            friendCount: prevRound.friendCount,
+                            sliceCount: prevRound.sliceCount
+                        }
+                        : null
+                )
+            );
+            resetBoardState();
+        }
+
+        if (engine.gameState === 'idle' || engine.gameState === 'gameover') {
+            clearResolveTimer();
+        }
+
+        prevGameStateRef.current = engine.gameState;
+    }, [clearResolveTimer, engine.gameState, resetBoardState]);
 
     const maybeAwardComboPowerUp = React.useCallback((nextCombo: number) => {
         if (nextCombo > 0 && nextCombo % 3 === 0 && Math.random() > 0.45) {
@@ -343,10 +396,10 @@ export const PizzaPizza: React.FC<PizzaPizzaProps> = ({ onExit }) => {
 
         scheduleResolve(() => {
             if (engine.lives - 1 > 0) {
-                resetForNextRound();
+                resetBoardState();
             }
         }, FAILURE_RESET_MS);
-    }, [engine, maybeAwardComboPowerUp, resetForNextRound, scheduleResolve]);
+    }, [engine, maybeAwardComboPowerUp, resetBoardState, resetForNextRound, scheduleResolve]);
 
     const bubbleText = React.useMemo(
         () => t('games.pizza-pizza.ui.bubbleText', {
@@ -369,9 +422,10 @@ export const PizzaPizza: React.FC<PizzaPizzaProps> = ({ onExit }) => {
 
         setIsResolving(true);
         setSelectedChoice(value);
+        const isCorrect = value === correctChoiceValue;
         scheduleResolve(() => {
-            finishWithResult(value === correctChoiceValue);
-        }, RESULT_REVEAL_MS);
+            finishWithResult(isCorrect);
+        }, isCorrect ? CORRECT_RESULT_REVEAL_MS : WRONG_RESULT_REVEAL_MS);
     }, [correctChoiceValue, engine.gameState, finishWithResult, isResolving, scheduleResolve]);
 
     return (
