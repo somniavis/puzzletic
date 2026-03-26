@@ -51,6 +51,7 @@ const L3_FairShare = lazy(() => delayedImport(import('./math/adventure/level3/Fa
 const L3_DonutShop = lazy(() => delayedImport(import('./math/adventure/level3/DonutShop').then(m => ({ default: m.DonutShop }))));
 const L3_PizzaPizza = lazy(() => delayedImport(import('./math/adventure/level3/PizzaPizza').then(m => ({ default: m.PizzaPizza }))));
 const L3_ChocolateSplit = lazy(() => delayedImport(import('./math/adventure/level3/ChocolateSplit').then(m => ({ default: m.ChocolateSplit }))));
+const L3_ScorpionKing = lazy(() => delayedImport(import('./math/adventure/level3/ScorpionKing').then(m => ({ default: m.ScorpionKing }))));
 const L3_RiverCrossing = lazy(() => delayedImport(import('./math/adventure/level3/RiverCrossing').then(m => ({ default: m.RiverCrossing }))));
 
 const L1_DeepSeaDive = lazy(() => delayedImport(import('./math/adventure/level2/DeepSeaDive').then(m => ({ default: (props: any) => createElement(m.DeepSeaDive, { ...props, level: 1 }) }))));
@@ -177,7 +178,7 @@ export const GAMES: GameManifest[] = [
         id: GameIds.MATH_TENFRAME_ADD,
         title: '10 frame-add',
         titleKey: 'games.ten-frame-add.title',
-        subtitle: 'ㅇㅇㅇ',
+        subtitle: 'How Many Hits?',
         subtitleKey: 'games.ten-frame-add.subtitle',
         description: 'ㅇㅇㅇ',
         descriptionKey: 'games.ten-frame-add.description',
@@ -191,7 +192,7 @@ export const GAMES: GameManifest[] = [
         id: GameIds.MATH_MOLE_WHACK,
         title: 'Mice Whack',
         titleKey: 'games.mole-whack.title',
-        subtitle: 'ㅇㅇㅇ',
+        subtitle: 'How Many Hits?',
         subtitleKey: 'games.mole-whack.subtitle',
         description: 'ㅇㅇㅇ',
         descriptionKey: 'games.mole-whack.description',
@@ -683,6 +684,21 @@ export const GAMES: GameManifest[] = [
         mode: 'adventure',
         component: L3_ChocolateSplit,
         thumbnail: '🍫',
+        tagsKey: 'games.tags.division'
+    },
+    {
+        id: GameIds.MATH_SCORPION_KING,
+        title: 'Scorpion King',
+        titleKey: 'games.scorpion-king.title',
+        subtitle: 'ㅇㅇㅇ',
+        subtitleKey: 'games.scorpion-king.subtitle',
+        description: 'ㅇㅇㅇ',
+        descriptionKey: 'games.scorpion-king.description',
+        category: 'math',
+        level: 3,
+        mode: 'adventure',
+        component: L3_ScorpionKing,
+        thumbnail: '🦂',
         tagsKey: 'games.tags.division'
     },
     {

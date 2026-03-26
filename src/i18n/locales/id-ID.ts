@@ -39,6 +39,7 @@ import cellCloneEn from '../../games/math/adventure/level3/CellClone/locales/id-
 import fairShareLocale from "../../games/math/adventure/level3/FairShare/locales/id-ID";
 import donutShopLocale from "../../games/math/adventure/level3/DonutShop/locales/id-ID";
 import chocolateSplitLocale from "../../games/math/adventure/level3/ChocolateSplit/locales/id-ID";
+import scorpionKingLocale from "../../games/math/adventure/level3/ScorpionKing/locales/id-ID";
 import pizzaPizzaLocale from "../../games/math/adventure/level3/PizzaPizza/locales/id-ID";
 import riverCrossingLocale from "../../games/math/adventure/level3/RiverCrossing/locales/id-ID";
 import neonMatrixEn from '../../games/math/adventure/level3/NeonMatrix/locales/id-ID';
@@ -1105,6 +1106,7 @@ export const idID = {
         'fair-share': fairShareLocale,
         'donut-shop': donutShopLocale,
         'chocolate-split': chocolateSplitLocale,
+        'scorpion-king': scorpionKingLocale,
         'pizza-pizza': pizzaPizzaLocale,
         'river-crossing': riverCrossingLocale,
         'neon-matrix': neonMatrixEn,
