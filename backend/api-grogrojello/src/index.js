@@ -5,6 +5,12 @@
 
 const FIREBASE_DEFAULT_PROJECT_ID = 'grogro-jello-4a53a';
 const FIREBASE_JWKS_URL = 'https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com';
+const ALLOWED_ORIGINS = new Set([
+	'https://grogrojello.com',
+	'https://www.grogrojello.com',
+	'http://localhost:5173',
+]);
+const DEFAULT_ALLOWED_ORIGIN = 'https://grogrojello.com';
 
 let firebaseJwksCache = null;
 let firebaseJwksExpiry = 0;
@@ -203,17 +209,34 @@ const authenticateRequest = async (request, env, uidFromPath) => {
 	}
 };
 
+const getCorsHeaders = (request) => {
+	const requestOrigin = request.headers.get('Origin');
+	const allowedOrigin = requestOrigin && ALLOWED_ORIGINS.has(requestOrigin)
+		? requestOrigin
+		: !requestOrigin
+			? DEFAULT_ALLOWED_ORIGIN
+			: null;
+
+	const headers = {
+		'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+		'Access-Control-Allow-Headers': 'Content-Type, Authorization, Cache-Control',
+		'Vary': 'Origin',
+	};
+
+	if (allowedOrigin) {
+		headers['Access-Control-Allow-Origin'] = allowedOrigin;
+	}
+
+	return headers;
+};
+
 export default {
 	async fetch(request, env) {
 		const url = new URL(request.url);
 		const path = url.pathname;
 
 		// CORS Headers
-		const corsHeaders = {
-			'Access-Control-Allow-Origin': '*',
-			'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-			'Access-Control-Allow-Headers': 'Content-Type, Authorization, Cache-Control',
-		};
+		const corsHeaders = getCorsHeaders(request);
 
 		// Handle OPTIONS (CORS preflight)
 		if (request.method === 'OPTIONS') {

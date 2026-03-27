@@ -76,23 +76,30 @@ export const LoginPage: React.FC = () => {
 
     const handleGoogleLogin = async () => {
         playButtonSound();
-
-        // Detect Mobile/Tablet
-        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        setErrors({});
 
         try {
-            if (isMobile) {
-                // Use Redirect for Mobile/Tablet to avoid popup blockers and context loss
-                setIsRedirecting(true); // Optional: show loading state
-                await signInWithRedirect(auth, googleProvider);
-                // Page will redirect, so no navigation needed here
-            } else {
-                // Use Popup for Desktop
-                await signInWithPopup(auth, googleProvider);
-
-                navigate('/home');
-            }
+            await signInWithPopup(auth, googleProvider);
+            navigate('/home');
         } catch (error: any) {
+            const shouldFallbackToRedirect =
+                error?.code === 'auth/popup-blocked' ||
+                error?.code === 'auth/cancelled-popup-request' ||
+                error?.code === 'auth/operation-not-supported-in-this-environment';
+
+            if (shouldFallbackToRedirect) {
+                try {
+                    setIsRedirecting(true);
+                    await signInWithRedirect(auth, googleProvider);
+                    return;
+                } catch (redirectError: any) {
+                    console.error('Google Login (Redirect fallback) failed:', redirectError);
+                    setIsRedirecting(false);
+                    setErrors({ general: t('auth.errors.googleFailed') });
+                    return;
+                }
+            }
+
             console.error('Google Login failed:', error);
             setIsRedirecting(false);
             if (error.code !== 'auth/popup-closed-by-user') {

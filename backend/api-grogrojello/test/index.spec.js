@@ -192,6 +192,38 @@ describe('Worker auth gate', () => {
 		});
 	});
 
+	it('returns the matching allowed origin in CORS headers', async () => {
+		const request = new Request(`http://example.com/api/users/${userId}`, {
+			method: 'OPTIONS',
+			headers: {
+				Origin: 'https://grogrojello.com',
+			},
+		});
+		const ctx = createExecutionContext();
+		const response = await worker.fetch(request, env, ctx);
+		await waitOnExecutionContext(ctx);
+
+		expect(response.status).toBe(200);
+		expect(response.headers.get('Access-Control-Allow-Origin')).toBe('https://grogrojello.com');
+		expect(response.headers.get('Vary')).toContain('Origin');
+	});
+
+	it('omits Access-Control-Allow-Origin for disallowed origins', async () => {
+		const request = new Request(`http://example.com/api/users/${userId}`, {
+			method: 'OPTIONS',
+			headers: {
+				Origin: 'https://evil.example.com',
+			},
+		});
+		const ctx = createExecutionContext();
+		const response = await worker.fetch(request, env, ctx);
+		await waitOnExecutionContext(ctx);
+
+		expect(response.status).toBe(200);
+		expect(response.headers.get('Access-Control-Allow-Origin')).toBeNull();
+		expect(response.headers.get('Vary')).toContain('Origin');
+	});
+
 	it('upserts premium state on purchase even when user row does not exist', async () => {
 		const now = Math.floor(Date.now() / 1000);
 		const token = await signJwt(privateKey, publicJwk.kid, {

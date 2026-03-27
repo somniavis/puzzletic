@@ -143,17 +143,28 @@ export const SignupPage: React.FC = () => {
         playButtonSound();
         setErrors({});
 
-        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-
         try {
-            if (isMobile) {
-                setIsRedirecting(true);
-                await signInWithRedirect(auth, googleProvider);
-            } else {
-                await signInWithPopup(auth, googleProvider);
-                navigate('/home');
-            }
+            await signInWithPopup(auth, googleProvider);
+            navigate('/home');
         } catch (error: any) {
+            const shouldFallbackToRedirect =
+                error?.code === 'auth/popup-blocked' ||
+                error?.code === 'auth/cancelled-popup-request' ||
+                error?.code === 'auth/operation-not-supported-in-this-environment';
+
+            if (shouldFallbackToRedirect) {
+                try {
+                    setIsRedirecting(true);
+                    await signInWithRedirect(auth, googleProvider);
+                    return;
+                } catch (redirectError: any) {
+                    console.error('Google Signup (Redirect fallback) failed:', redirectError);
+                    setIsRedirecting(false);
+                    setErrors({ general: t('auth.errors.googleFailed') });
+                    return;
+                }
+            }
+
             console.error('Google Signup failed:', error);
             setIsRedirecting(false);
             if (error.code !== 'auth/popup-closed-by-user') {
