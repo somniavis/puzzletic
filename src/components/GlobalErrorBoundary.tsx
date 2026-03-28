@@ -30,8 +30,9 @@ export class GlobalErrorBoundary extends Component<Props, State> {
 
     public render() {
         if (this.state.hasError) {
+            const errorMessage = this.state.error?.message || '';
             const isChunkError = this.state.error?.name === 'ChunkLoadError' ||
-                (this.state.error?.message && /Loading chunk|undefined/i.test(this.state.error.message));
+                /Loading chunk|Failed to fetch dynamically imported module|Importing a module script failed|module script|MIME type of "text\/html"/i.test(errorMessage);
 
             return (
                 <div style={{

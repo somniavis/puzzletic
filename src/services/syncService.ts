@@ -296,8 +296,8 @@ export const syncUserData = async (
 
         // Prepare payload - clean and simple
         const payload = {
-            // User info (email excluded for privacy)
-            email: null,
+            // Persist email so production D1 rows can be traced when investigating account issues.
+            email: user.email || null,
             display_name: user.displayName || state.characterName || 'Player',
 
             // Individual columns (for D1 statistics/dashboard)

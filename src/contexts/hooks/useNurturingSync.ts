@@ -128,6 +128,12 @@ export const useNurturingSync = (user: User | null, guestId: string | null = nul
     const stateRef = useRef(state);
     const lastSyncedStateRef = useRef<string | null>(null);
 
+    const getAccountCreationTime = useCallback((): number | null => {
+        if (!user?.metadata.creationTime) return null;
+        const parsed = new Date(user.metadata.creationTime).getTime();
+        return Number.isFinite(parsed) ? parsed : null;
+    }, [user]);
+
     useEffect(() => {
         stateRef.current = state;
     }, [state]);
@@ -185,6 +191,22 @@ export const useNurturingSync = (user: User | null, guestId: string | null = nul
         fetchUserData(user).then((result) => {
             if (!result.success) {
                 if (result.notFound) {
+                    const createdAt = getAccountCreationTime();
+                    const accountAgeMs = createdAt ? Date.now() - createdAt : null;
+                    const isLikelyNewAccount =
+                        accountAgeMs !== null &&
+                        accountAgeMs >= 0 &&
+                        accountAgeMs < 10 * 60 * 1000;
+
+                    if (!isLikelyNewAccount) {
+                        console.error(
+                            '☁️ Suspicious cloud not found for existing account. Skipping auto-initialization to protect premium and cloud data.',
+                            { uid: user.uid, accountAgeMs }
+                        );
+                        hasLoadedRef.current = true;
+                        return;
+                    }
+
                     console.log('☁️ New user detected.');
                     // Logic: If current local state has data (maybe migrated from guest?), sync it up.
                     // But since we reset state on user switch above, stateRef.current might be empty OR loaded from localStorage(uid).
@@ -388,7 +410,7 @@ export const useNurturingSync = (user: User | null, guestId: string | null = nul
         }).finally(() => {
             setIsGlobalLoading(false);
         });
-    }, [user]);
+    }, [user, getAccountCreationTime]);
 
     // Auto-Save Interval
     useEffect(() => {

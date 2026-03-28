@@ -314,8 +314,8 @@ export const enUK = {
     confirm_reset: 'Are you sure you want to start a new game? Existing data will be lost.',
     goHome: 'Go Home',
     errorBoundary: {
-      updateTitle: 'A new update is available!',
-      updateDesc: 'Please refresh to load the latest version.',
+      updateTitle: 'A new version has been deployed!',
+      updateDesc: 'Please refresh this page to load the latest version.',
       refreshButton: 'Refresh',
       tempErrorTitle: 'A temporary error occurred.',
       tempErrorRetry: 'Try again',
@@ -550,7 +550,7 @@ export const enUK = {
       'pet.timeRemaining': 'Time Remaining',
       'pet.expired': 'Expired',
       'pet.gacha.title': 'Random Pet',
-      'pet.gacha.desc': 'A pet visits for a while and leaves',
+      'pet.gacha.desc': 'A pet comes to visit for a while',
       'pet.gacha.price': '💰 350',
 
       // Pet Names

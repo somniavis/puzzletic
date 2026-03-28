@@ -314,8 +314,8 @@ export const frFR = {
     confirm_reset: 'Voulez-vous vraiment démarrer une nouvelle partie ? Les données existantes seront perdues.',
     goHome: "Retour à l'accueil",
     errorBoundary: {
-      updateTitle: 'Une nouvelle mise à jour est disponible !',
-      updateDesc: 'Veuillez actualiser pour charger la dernière version.',
+      updateTitle: 'Une nouvelle version a été publiée !',
+      updateDesc: 'Actualisez cette page pour charger la dernière version.',
       refreshButton: 'Actualiser',
       tempErrorTitle: 'Une erreur temporaire est survenue.',
       tempErrorRetry: 'Réessayer',
@@ -549,8 +549,8 @@ export const frFR = {
       'pet.partner': 'Partenaire',
       'pet.timeRemaining': 'Temps restant',
       'pet.expired': 'Expiré',
-      'pet.gacha.title': 'Random Pet',
-      'pet.gacha.desc': 'A pet visits for a while and leaves',
+      'pet.gacha.title': 'Animal aléatoire',
+      'pet.gacha.desc': 'Un animal vient te rendre visite pendant un moment',
       'pet.gacha.price': '💰 350',
 
       // Pet Names

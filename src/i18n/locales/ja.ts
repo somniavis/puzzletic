@@ -316,8 +316,8 @@ const jaBase = {
         confirm_reset: '新しいゲームを始めますか？既存データは削除されます。',
         goHome: 'ホームへ',
         errorBoundary: {
-            updateTitle: '新しいアップデートがあります！',
-            updateDesc: '最新バージョンを読み込むために再読み込みしてください。',
+            updateTitle: '新しいバージョンが配信されました！',
+            updateDesc: '最新バージョンを読み込むには、このページを再読み込みしてください。',
             refreshButton: '再読み込み',
             tempErrorTitle: '一時的なエラーが発生しました。',
             tempErrorRetry: '再試行',
@@ -550,7 +550,7 @@ const jaBase = {
             'pet.timeRemaining': '残り時間',
             'pet.expired': '期限切れ',
             'pet.gacha.title': 'ランダムペット',
-            'pet.gacha.desc': 'ペットがしばらく遊びに来て帰ります',
+            'pet.gacha.desc': 'ペットがしばらく遊びに来ます',
             'pet.gacha.price': '💰 350',
 
             // Pet Names

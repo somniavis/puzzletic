@@ -316,8 +316,8 @@ const koBase = {
         confirm_reset: '새 게임을 시작하시겠어요? 기존 데이터는 삭제됩니다.',
         goHome: '홈으로 가기',
         errorBoundary: {
-            updateTitle: '새로운 업데이트가 있어요!',
-            updateDesc: '최신 버전을 불러오기 위해 새로고침해 주세요.',
+            updateTitle: '새 버전이 배포되었어요!',
+            updateDesc: '최신 버전을 불러오려면 이 페이지를 새로고침해 주세요.',
             refreshButton: '새로고침',
             tempErrorTitle: '일시적인 오류가 발생했습니다.',
             tempErrorRetry: '다시 시도',
@@ -552,7 +552,7 @@ const koBase = {
             'pet.timeRemaining': '남은 시간',
             'pet.expired': '만료됨',
             'pet.gacha.title': '랜덤 펫',
-            'pet.gacha.desc': '펫이 잠시 놀러왔다 떠나요.',
+            'pet.gacha.desc': '펫이 잠시동안 놀러와요.',
             'pet.gacha.price': '💰 350',
 
             // Pet Names

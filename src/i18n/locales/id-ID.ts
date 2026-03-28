@@ -314,8 +314,8 @@ export const idID = {
     confirm_reset: 'Yakin ingin memulai game baru? Data yang ada akan hilang.',
     goHome: 'Ke Beranda',
     errorBoundary: {
-      updateTitle: 'Pembaruan baru tersedia!',
-      updateDesc: 'Muat ulang untuk menggunakan versi terbaru.',
+      updateTitle: 'Versi baru sudah dirilis!',
+      updateDesc: 'Muat ulang halaman ini untuk menggunakan versi terbaru.',
       refreshButton: 'Muat ulang',
       tempErrorTitle: 'Terjadi kesalahan sementara.',
       tempErrorRetry: 'Coba lagi',
@@ -550,7 +550,7 @@ export const idID = {
       'pet.timeRemaining': 'Sisa Waktu',
       'pet.expired': 'Berakhir',
       'pet.gacha.title': 'Peliharaan Acak',
-      'pet.gacha.desc': 'Peliharaan datang sebentar lalu pergi',
+      'pet.gacha.desc': 'Peliharaan datang berkunjung untuk sementara waktu',
       'pet.gacha.price': '💰 350',
 
       // Pet Names

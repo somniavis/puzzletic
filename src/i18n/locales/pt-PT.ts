@@ -314,8 +314,8 @@ export const ptPT = {
     confirm_reset: 'Tem a certeza de que quer iniciar um novo jogo? Os dados atuais serão perdidos.',
     goHome: 'Ir para início',
     errorBoundary: {
-      updateTitle: 'Há uma nova atualização disponível!',
-      updateDesc: 'Atualize a página para carregar a versão mais recente.',
+      updateTitle: 'Uma nova versão foi publicada!',
+      updateDesc: 'Atualize esta página para carregar a versão mais recente.',
       refreshButton: 'Atualizar',
       tempErrorTitle: 'Ocorreu um erro temporário.',
       tempErrorRetry: 'Tentar novamente',
@@ -550,7 +550,7 @@ export const ptPT = {
       'pet.timeRemaining': 'Tempo restante',
       'pet.expired': 'Expirado',
       'pet.gacha.title': 'Animal aleatório',
-      'pet.gacha.desc': 'Um animal visita por algum tempo e depois vai-se embora',
+      'pet.gacha.desc': 'Um animal vem visitar-te por algum tempo',
       'pet.gacha.price': '💰 350',
 
       // Pet Names
