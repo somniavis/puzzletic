@@ -1,64 +1,36 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import { en } from './locales/en';
-import { enUK } from './locales/en-UK';
-import { esES } from './locales/es-ES';
-import { ptPT } from './locales/pt-PT';
-import { viVN } from './locales/vi-VN';
-import { idID } from './locales/id-ID';
-import { frFR } from './locales/fr-FR';
 import { ko } from './locales/ko';
-import { ja } from './locales/ja';
 
-const resources = {
+type TranslationResource = Record<string, unknown>;
+
+const staticResources = {
   en: {
     translation: en,
   },
   'en-US': {
     translation: en,
   },
-  'en-UK': {
-    translation: enUK,
-  },
-  es: {
-    translation: esES,
-  },
-  'es-ES': {
-    translation: esES,
-  },
-  pt: {
-    translation: ptPT,
-  },
-  'pt-PT': {
-    translation: ptPT,
-  },
-  vi: {
-    translation: viVN,
-  },
-  'vi-VN': {
-    translation: viVN,
-  },
-  id: {
-    translation: idID,
-  },
-  'id-ID': {
-    translation: idID,
-  },
-  fr: {
-    translation: frFR,
-  },
-  'fr-FR': {
-    translation: frFR,
-  },
   ko: {
     translation: ko,
   },
-  ja: {
-    translation: ja,
-  },
-  'ja-JP': {
-    translation: ja,
-  },
+};
+
+const dynamicResourceLoaders: Record<string, () => Promise<TranslationResource>> = {
+  'en-UK': async () => (await import('./locales/en-UK')).enUK,
+  es: async () => (await import('./locales/es-ES')).esES,
+  'es-ES': async () => (await import('./locales/es-ES')).esES,
+  pt: async () => (await import('./locales/pt-PT')).ptPT,
+  'pt-PT': async () => (await import('./locales/pt-PT')).ptPT,
+  vi: async () => (await import('./locales/vi-VN')).viVN,
+  'vi-VN': async () => (await import('./locales/vi-VN')).viVN,
+  id: async () => (await import('./locales/id-ID')).idID,
+  'id-ID': async () => (await import('./locales/id-ID')).idID,
+  fr: async () => (await import('./locales/fr-FR')).frFR,
+  'fr-FR': async () => (await import('./locales/fr-FR')).frFR,
+  ja: async () => (await import('./locales/ja')).ja,
+  'ja-JP': async () => (await import('./locales/ja')).ja,
 };
 
 const safeStorageGet = (key: string): string | null => {
@@ -85,20 +57,53 @@ const browserLanguage = navigator.language.startsWith('ko')
             ? 'id-ID'
             : navigator.language.startsWith('fr')
               ? 'fr-FR'
-    : navigator.language.startsWith('en-GB')
-      ? 'en-UK'
-    : 'en';
+              : navigator.language.startsWith('en-GB')
+                ? 'en-UK'
+                : 'en';
+
+const requestedLanguage = savedLanguage || browserLanguage;
+const initialLanguage = requestedLanguage in staticResources ? requestedLanguage : 'en';
+
+const ensureLanguageLoaded = async (language: string) => {
+  if (i18n.hasResourceBundle(language, 'translation')) {
+    return;
+  }
+
+  const loader = dynamicResourceLoaders[language];
+  if (!loader) {
+    return;
+  }
+
+  const translation = await loader();
+  i18n.addResourceBundle(language, 'translation', translation, true, true);
+};
 
 i18n
   .use(initReactI18next)
   .init({
-    resources,
-    lng: savedLanguage || browserLanguage,
+    resources: staticResources,
+    lng: initialLanguage,
     fallbackLng: 'en',
     interpolation: {
-      escapeValue: false, // react already safes from xss
+      escapeValue: false,
     },
     debug: true,
   });
+
+const originalChangeLanguage = i18n.changeLanguage.bind(i18n);
+
+i18n.changeLanguage = (async (language: string, callback?: (err: Error | null, t: (key: string) => string) => void) => {
+  try {
+    await ensureLanguageLoaded(language);
+    return originalChangeLanguage(language, callback);
+  } catch (error) {
+    console.error(`[i18n] Failed to load language bundle: ${language}`, error);
+    return originalChangeLanguage('en', callback);
+  }
+}) as typeof i18n.changeLanguage;
+
+if (requestedLanguage !== initialLanguage) {
+  void i18n.changeLanguage(requestedLanguage);
+}
 
 export default i18n;

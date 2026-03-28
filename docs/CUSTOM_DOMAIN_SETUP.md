@@ -27,13 +27,23 @@
 - Cloudflare Worker Custom Domain `https://api.grogrojello.com` 연결 완료
 - 프론트 API 주소를 `https://api.grogrojello.com` 기준으로 정리 완료
 - `VITE_API_BASE_URL` 환경변수 fallback 구조 반영 완료
+- `api.grogrojello.com` 해석 실패 시 `workers.dev` fallback 재시도 안전장치 반영 완료
 - `www.grogrojello.com -> grogrojello.com` Cloudflare Redirect Rule 활성화 완료
+
+추가 운영 점검 완료 항목:
+
+- Cloudflare DNS에서 `api.grogrojello.com` Worker 레코드 정상 확인 완료
+- Cloudflare Edge Certificates에서 `api.grogrojello.com` 인증서 `Active` 확인 완료
+- Worker `Domains & Routes` 에서 `api.grogrojello.com` 연결 유지 확인 완료
+- `https://api.grogrojello.com/` -> `Not Found` 확인 완료
+- `https://api.grogrojello.com/api/users/test` -> 인증 헤더 오류 응답 확인 완료
 
 현재 남아 있는 선택 작업:
 
 - 필요 시 Apple 로그인 실도메인 검증
 - 오픈 시 검색 차단 해제
 - 필요 시 Search Console / Analytics 운영 연동
+- `api.grogrojello.com` 안정화 추이 확인 후 `workers.dev` fallback 제거 검토
 
 ## 1. 현재 구조 요약
 
@@ -283,6 +293,7 @@ Apple Developer Portal의 Service ID 설정에서 아래 값을 점검합니다.
 - 현재 운영 기본값은 `https://api.grogrojello.com`
 - 로컬/preview 환경에서는 `VITE_API_BASE_URL`로 별도 API를 지정할 수 있습니다.
 - 즉, 운영 API와 개발용 API를 분리할 수 있도록 이미 정리된 상태입니다.
+- 브라우저/리졸버 환경에 따라 `api.grogrojello.com` 해석이 일시적으로 실패하면 기존 `workers.dev` 주소로 재시도하는 안전장치가 포함되어 있습니다.
 
 ### C. Worker CORS 정책
 

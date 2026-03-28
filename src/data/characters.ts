@@ -1,5 +1,5 @@
 import type { Character, EvolutionStage } from '../types/character';
-import { CHARACTER_SPECIES, getEvolutionName } from './species';
+import { CHARACTER_SPECIES_CORE, getEvolutionName } from './speciesCore';
 
 // Initial stats for stage 1 characters
 const DEFAULT_STAGE_1_STATS = {
@@ -15,7 +15,7 @@ const DEFAULT_STAGE_1_STATS = {
 
 // Helper function to create a new character from species
 export const createCharacter = (speciesId: string, customName?: string): Character => {
-  const species = CHARACTER_SPECIES[speciesId];
+  const species = CHARACTER_SPECIES_CORE[speciesId];
   if (!species) {
     throw new Error(`Unknown species: ${speciesId}`);
   }

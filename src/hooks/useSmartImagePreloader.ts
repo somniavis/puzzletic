@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
-import { CHARACTER_SPECIES } from '../data/species';
+import { CHARACTER_SPECIES_CORE } from '../data/speciesCore';
+import type { CharacterEvolutionCore } from '../types/character';
 
 /**
  * Smart Image Preloader Hook (Robust Version)
@@ -64,11 +65,11 @@ export const useSmartImagePreloader = (unlockedJellos: Record<string, number[]> 
         };
 
         Object.entries(unlockedJellos).forEach(([speciesId, stages]) => {
-            const species = CHARACTER_SPECIES[speciesId];
+            const species = CHARACTER_SPECIES_CORE[speciesId];
             if (!species) return;
 
             stages.forEach(stage => {
-                const evolution = species.evolutions.find(e => e.stage === stage);
+                const evolution = species.evolutions.find((e: CharacterEvolutionCore) => e.stage === stage);
                 if (evolution && evolution.imageUrl) {
                     loadImageWithRetry(evolution.imageUrl);
                 }

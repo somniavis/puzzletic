@@ -1,5 +1,48 @@
 # 변경 이력 (Changelog)
 
+## 2026-03-28 (Domain Rollout & Bundle Optimization)
+
+### 🌐 신규 도메인 적용 완료 (Production Domain Rollout)
+- 실서비스 대표 도메인을 `https://grogrojello.com` 으로 확정했습니다.
+- `www.grogrojello.com` 은 Cloudflare Redirect Rule로 `grogrojello.com` 으로 canonical 리다이렉트되도록 정리했습니다.
+- Namecheap 네임서버를 Cloudflare로 전환하고, Cloudflare가 권한 DNS를 관리하도록 마이그레이션했습니다.
+- 웹은 `Vercel`, API는 `Cloudflare Worker` 로 역할을 분리한 상태를 유지했습니다.
+- Firebase Authorized Domains에 `grogrojello.com`, `www.grogrojello.com` 을 추가했고, 이메일 로그인/Google 로그인을 실제 도메인에서 재검증했습니다.
+
+### ☁️ API Custom Domain 안정화 (Worker Custom Domain)
+- Worker API를 `https://api.grogrojello.com` 으로 연결했습니다.
+- Cloudflare DNS Worker record, Edge Certificates, Worker `Domains & Routes` 상태를 점검해 커스텀 도메인 연결과 인증서가 `Active` 인 것을 확인했습니다.
+- 운영 API 기본 주소를 `api.grogrojello.com` 으로 전환했습니다.
+- 일부 환경에서 간헐적으로 발생한 `ERR_NAME_NOT_RESOLVED` 에 대비해, `api.grogrojello.com` 실패 시 기존 `workers.dev` 주소로 재시도하는 fallback 안전장치를 추가했습니다.
+
+### 🔒 운영 보호 설정 (Prelaunch Safety)
+- 검색엔진 색인을 막기 위해 `robots.txt`, `meta robots`, `X-Robots-Tag` 를 적용했습니다.
+- Worker CORS 허용 Origin을 `grogrojello.com`, `www.grogrojello.com`, `localhost:5173` 으로 제한했습니다.
+
+### 🚀 초기 번들 최적화 1차 (Route / Locale / Species Split)
+- `PetRoom` 을 정적 import에서 lazy import로 변경해 첫 진입 번들을 줄였습니다.
+- i18n 초기 로드를 영어/한국어만으로 제한하고, 나머지 언어는 동적 import로 전환했습니다.
+- `species` 데이터를 코어/상세로 분리해 초기 진입 경로는 경량 데이터만 직접 사용하도록 정리했습니다.
+  - 새 파일:
+    - `src/data/speciesCore.ts`
+    - `src/data/speciesDetails.ts`
+  - 기존 `src/data/species.ts` 는 두 데이터를 병합해 도감/관리 화면용 전체 API를 계속 제공합니다.
+
+### 📦 번들 크기 결과 (Main Entry)
+- 시작 시점:
+  - 메인 JS 약 `1463KB raw / 460.9KB gzip`
+- `PetRoom` lazy import 적용 후:
+  - 메인 JS 약 `1356.7KB raw / 430.5KB gzip`
+- i18n 동적 로드 적용 후:
+  - 메인 JS 약 `814.9KB raw / 253.7KB gzip`
+- `species` 코어/상세 분리 후:
+  - 메인 JS 약 `807.3KB raw / 251.1KB gzip`
+
+### ✅ 검증 메모
+- `npm run build` 반복 검증 통과
+- 실제 운영 도메인에서 이메일 로그인, Google 로그인, 데이터 불러오기/저장, `www -> apex` 리다이렉트 확인
+- `https://api.grogrojello.com/` 에서 `Not Found`, `https://api.grogrojello.com/api/users/test` 에서 인증 헤더 오류 응답 확인
+
 ## 2026-02-13 (Security Hotfix)
 
 ### 🔐 백엔드 인증/인가 강화 (Worker AuthN/AuthZ)

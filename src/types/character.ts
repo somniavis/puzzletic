@@ -22,15 +22,20 @@ export interface CharacterStats {
 
 export type EvolutionStage = 1 | 2 | 3 | 4 | 5;
 
-export interface CharacterEvolution {
+export interface CharacterEvolutionCore {
   stage: EvolutionStage;
   name: string;
+  imageUrl?: string; // URL for the character image
+}
+
+export interface CharacterEvolutionDetail {
   requiredLevel: number;
   requiredAffection: number;
   description?: string;
-  imageUrl?: string; // URL for the character image
   unlockConditions?: EvolutionConditions; // Conditional evolution requirements (Hidden Stage)
 }
+
+export interface CharacterEvolution extends CharacterEvolutionCore, CharacterEvolutionDetail {}
 
 // Evolution Condition Config
 export interface EvolutionConditions {
@@ -67,12 +72,20 @@ export interface PersonalityConfig {
   description: string;         // 성격 설명
 }
 
-export interface CharacterSpecies {
+export interface CharacterSpeciesCore {
   id: string;
   name: string;
-  description: string;
   personality: PersonalityTrait;  // 캐릭터의 성격
+  evolutions: CharacterEvolutionCore[];
+}
+
+export interface CharacterSpeciesDetail {
+  description: string;
   tags?: string[]; // 캐릭터 태그 (예: [공격력], [불/화염])
+  evolutions: CharacterEvolutionDetail[];
+}
+
+export interface CharacterSpecies extends CharacterSpeciesCore, CharacterSpeciesDetail {
   evolutions: CharacterEvolution[];
 }
 

@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
 import { useNurturing } from '../../../contexts/NurturingContext';
 import type { CharacterAction } from '../../../types/character';
-import { CHARACTER_SPECIES, type CharacterSpeciesId } from '../../../data/species';
+import { CHARACTER_SPECIES_CORE, type CharacterSpeciesId } from '../../../data/speciesCore';
 import { calculateClickResponse, getClickEmotionCategory } from '../../../constants/personality';
 import { playJelloClickSound } from '../../../utils/sound';
 import type { EmotionCategory } from '../../../types/emotion';
@@ -73,7 +73,7 @@ export const usePetInteraction = ({
     const handleCharacterClick = () => {
         playJelloClickSound();
 
-        const species = CHARACTER_SPECIES[speciesId];
+        const species = CHARACTER_SPECIES_CORE[speciesId];
         const personality = species.personality;
         const { happiness, health, fullness } = nurturing.stats;
 

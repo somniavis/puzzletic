@@ -2,6 +2,7 @@ import React from 'react';
 import { useNurturing } from '../../contexts/NurturingContext';
 import { EvolutionAnimation } from '../EvolutionAnimation/EvolutionAnimation';
 import { GraduationAnimation } from '../GraduationAnimation/GraduationAnimation';
+import type { CharacterSpeciesId } from '../../data/speciesCore';
 
 
 export const EvolutionOverlay: React.FC = () => {
@@ -29,7 +30,7 @@ export const EvolutionOverlay: React.FC = () => {
             {isEvolving && speciesId && (
                 <div style={{ pointerEvents: 'auto', position: 'absolute', inset: 0 }}>
                     <EvolutionAnimation
-                        speciesId={speciesId}
+                        speciesId={speciesId as CharacterSpeciesId}
                         newStage={evolutionPhase === 'LEGENDARY_READY' ? 5 : ((evolutionStage + 1) as any)}
                         onComplete={completeEvolutionAnimation}
                     />
@@ -39,7 +40,7 @@ export const EvolutionOverlay: React.FC = () => {
             {isGraduating && speciesId && (
                 <div style={{ pointerEvents: 'auto', position: 'absolute', inset: 0 }}>
                     <GraduationAnimation
-                        speciesId={speciesId}
+                        speciesId={speciesId as CharacterSpeciesId}
                         currentStage={evolutionStage as any}
                         onComplete={() => completeGraduationAnimation(characterName || '')}
                     />

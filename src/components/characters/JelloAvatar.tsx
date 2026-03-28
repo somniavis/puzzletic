@@ -1,6 +1,7 @@
 import React from 'react';
 import type { CharacterComponentProps } from '../../types/character';
-import { CHARACTER_SPECIES } from '../../data/species';
+import { CHARACTER_SPECIES_CORE } from '../../data/speciesCore';
+import type { CharacterEvolutionCore } from '../../types/character';
 import './JelloAvatar.css';
 
 interface JelloAvatarProps extends CharacterComponentProps {
@@ -23,7 +24,7 @@ export const JelloAvatar: React.FC<JelloAvatarProps> = ({
 }) => {
     // Use passed speciesId or fall back to character's speciesId
     const targetSpeciesId = speciesId || character.speciesId;
-    const species = CHARACTER_SPECIES[targetSpeciesId];
+    const species = CHARACTER_SPECIES_CORE[targetSpeciesId];
 
     // If species not found (e.g. invalid ID), render placeholder or nothing
     if (!species) {
@@ -33,7 +34,7 @@ export const JelloAvatar: React.FC<JelloAvatarProps> = ({
 
     // Determine evolution stage (default to 1 if not set)
     const stage = character.evolutionStage || 1;
-    const evolution = species.evolutions.find(e => e.stage === stage);
+    const evolution = species.evolutions.find((e: CharacterEvolutionCore) => e.stage === stage);
     const imageUrl = evolution?.imageUrl;
 
     // Size calculation

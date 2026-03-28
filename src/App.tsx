@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef, Suspense, lazy } from 'react'
 import './App.css'
-import { PetRoom } from './components/PetRoom/PetRoom'
 import { GlobalErrorBoundary } from './components/GlobalErrorBoundary'
 import { AppLoadingOverlay } from './components/common/AppLoadingOverlay'
 
@@ -16,10 +15,11 @@ import { preloadSounds, playJelloClickSound } from './utils/sound'
 // React Router
 import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom'
 
-import { CHARACTER_SPECIES, type CharacterSpeciesId, getEvolutionName } from './data/species';
+import { CHARACTER_SPECIES_CORE, type CharacterSpeciesId, getEvolutionName } from './data/speciesCore';
 import { useSmartImagePreloader } from './hooks/useSmartImagePreloader';
 
 // Lazy Load Pages
+const PetRoom = lazy(() => import('./components/PetRoom/PetRoom'));
 const PlayPage = lazy(() => import('./pages/PlayPage').then(module => ({ default: module.PlayPage })));
 const LoginPage = lazy(() => import('./pages/LoginPage').then(module => ({ default: module.LoginPage })));
 const SignupPage = lazy(() => import('./pages/SignupPage').then(module => ({ default: module.SignupPage })));
@@ -200,7 +200,7 @@ function AppContent() {
     isOpeningRef.current = true;
 
     // Pick a random species dynamically
-    const validSpecies = Object.keys(CHARACTER_SPECIES) as CharacterSpeciesId[];
+    const validSpecies = Object.keys(CHARACTER_SPECIES_CORE) as CharacterSpeciesId[];
     const randomSpecies = validSpecies[Math.floor(Math.random() * validSpecies.length)];
 
     // Create new character

@@ -10,7 +10,7 @@ import { JelloAvatar } from '../../characters/JelloAvatar';
 import { EmotionBubble } from '../../EmotionBubble/EmotionBubble';
 import { useNurturing } from '../../../contexts/NurturingContext';
 import type { Character, CharacterMood, CharacterAction } from '../../../types/character';
-import { CHARACTER_SPECIES } from '../../../data/species';
+import { CHARACTER_SPECIES_CORE } from '../../../data/speciesCore';
 import { ActivePet } from './ActivePet';
 
 interface PetWorldLayerProps {
@@ -75,7 +75,7 @@ export const PetWorldLayer: React.FC<PetWorldLayerProps> = ({
     const { t } = useTranslation();
 
     // Helper to get personality
-    const species = CHARACTER_SPECIES[character.speciesId];
+    const species = CHARACTER_SPECIES_CORE[character.speciesId];
     const personality = species?.personality;
 
     return (
