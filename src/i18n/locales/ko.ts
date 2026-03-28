@@ -1185,7 +1185,7 @@ const koBase = {
         tapHint: '탭! {{current}}/{{max}}',
     },
     dailyRoutine: {
-        title: 'Daily Routine',
+        title: '데일리 루틴',
         claim: '보상 받기',
         claiming: '보상 받는 중...',
         claimed: '오늘 완료',

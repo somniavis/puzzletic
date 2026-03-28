@@ -14,7 +14,7 @@ export interface PlayUiPreferences {
 const STORAGE_KEY_PREFIX = 'puzzleletic_play_ui_v1';
 
 const DEFAULT_PLAY_UI_PREFERENCES: PlayUiPreferences = {
-  playLearnMode: 'learn',
+  playLearnMode: 'play',
   activeTab: 'math',
   mathMode: 'adventure',
   selectedOp: 'ADD',

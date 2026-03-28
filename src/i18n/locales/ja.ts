@@ -1928,7 +1928,7 @@ const jaBase = {
         tapHint: 'タップ! {{current}}/{{max}}',
     },
     dailyRoutine: {
-        title: 'Daily Routine',
+        title: 'デイリールーティン',
         claim: '報酬を受け取る',
         claiming: '受け取り中...',
         claimed: '今日の完了',
