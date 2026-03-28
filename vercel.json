@@ -21,6 +21,10 @@
         {
           "key": "Cross-Origin-Embedder-Policy",
           "value": "unsafe-none"
+        },
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow, noarchive, nosnippet, noimageindex"
         }
       ]
     }
