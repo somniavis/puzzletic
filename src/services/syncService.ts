@@ -7,7 +7,28 @@ import type { User } from 'firebase/auth';
 import type { NurturingPersistentState } from '../types/nurturing';
 import type { DailyRoutineReward } from './dailyRoutineRewardService';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.grogrojello.com';
+const PRIMARY_API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.grogrojello.com';
+const FALLBACK_API_BASE_URL = 'https://api-grogrojello.grogrojello.workers.dev';
+
+const isRetryableNetworkError = (error: unknown): boolean => {
+    if (!(error instanceof Error)) return false;
+    return error.name === 'TypeError' || /failed to fetch/i.test(error.message);
+};
+
+const fetchWithApiFallback = async (path: string, init?: RequestInit): Promise<Response> => {
+    const primaryUrl = `${PRIMARY_API_BASE_URL}${path}`;
+
+    try {
+        return await fetch(primaryUrl, init);
+    } catch (error) {
+        if (!isRetryableNetworkError(error) || PRIMARY_API_BASE_URL === FALLBACK_API_BASE_URL) {
+            throw error;
+        }
+
+        console.warn(`[API] Primary endpoint failed, retrying fallback: ${primaryUrl}`);
+        return fetch(`${FALLBACK_API_BASE_URL}${path}`, init);
+    }
+};
 
 export interface CloudUserData {
     uid: string;
@@ -41,7 +62,7 @@ export type FetchUserResult =
 export const fetchUserData = async (user: User): Promise<FetchUserResult> => {
     try {
         const token = await user.getIdToken();
-        const response = await fetch(`${API_BASE_URL}/api/users/${user.uid}?t=${Date.now()}`, {
+        const response = await fetchWithApiFallback(`/api/users/${user.uid}?t=${Date.now()}`, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -130,7 +151,7 @@ export const purchaseSubscription = async (
 ): Promise<{ success: boolean; is_premium?: number; subscription_end?: number; plan?: string }> => {
     try {
         const token = await user.getIdToken();
-        const response = await fetch(`${API_BASE_URL}/api/users/${user.uid}/purchase`, {
+        const response = await fetchWithApiFallback(`/api/users/${user.uid}/purchase`, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -161,7 +182,7 @@ export const cancelSubscription = async (
 ): Promise<{ success: boolean }> => {
     try {
         const token = await user.getIdToken();
-        const response = await fetch(`${API_BASE_URL}/api/users/${user.uid}/cancel`, {
+        const response = await fetchWithApiFallback(`/api/users/${user.uid}/cancel`, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -192,7 +213,7 @@ export const claimDailyRoutineReward = async (
 ): Promise<ClaimDailyRoutineResult> => {
     try {
         const token = await user.getIdToken();
-        const response = await fetch(`${API_BASE_URL}/api/users/${user.uid}/daily-routine-claim`, {
+        const response = await fetchWithApiFallback(`/api/users/${user.uid}/daily-routine-claim`, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -325,7 +346,7 @@ export const syncUserData = async (
             const timeoutId = setTimeout(() => controller.abort(), 15000);
 
             try {
-                const response = await fetch(`${API_BASE_URL}/api/users/${user.uid}`, {
+                const response = await fetchWithApiFallback(`/api/users/${user.uid}`, {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${token}`, // Token might expire, but usually valid for 1h
