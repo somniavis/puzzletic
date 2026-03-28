@@ -6,13 +6,14 @@
 	"$schema": "node_modules/wrangler/config-schema.json",
 	"name": "api-grogrojello",
 	"main": "src/index.js",
+	"workers_dev": true,
 	"compatibility_date": "2025-12-11",
 	"observability": {
 		"enabled": true
 	},
 	"routes": [
 		{
-			"pattern": "api.grogrojello.com/*",
+			"pattern": "api.grogrojello.com",
 			"custom_domain": true
 		}
 	],
