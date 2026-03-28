@@ -3,20 +3,16 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation, Trans } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
 import { useNurturing } from '../contexts/NurturingContext';
-import { fetchUserData } from '../services/syncService';
 import './ProfilePage.css';
 
 export const ProfilePage: React.FC = () => {
     const navigate = useNavigate();
     const { t } = useTranslation();
     const [showCancelModal, setShowCancelModal] = React.useState(false);
-    const [cloudDebug, setCloudDebug] = React.useState<string>('Not checked yet');
-    const [isCheckingCloud, setIsCheckingCloud] = React.useState(false);
     const { user } = useAuth();
     const { gro, xp, addRewards, maxStats, subscription, purchasePlan, cancelSubscription, debugUnlockAllGames, debugAddStars } = useNurturing();
     const isPremium = subscription.isPremium;
     const isGuest = !user;
-    const shouldShowCloudDebug = !!user?.email && /^test\d+@gmail\.com$/i.test(user.email);
 
     const handleCancelSubscription = async () => {
         const success = await cancelSubscription();
@@ -34,40 +30,6 @@ export const ProfilePage: React.FC = () => {
             } else {
                 alert("Purchase Failed. See console.");
             }
-        }
-    };
-
-    const handleCloudCheck = async () => {
-        if (!user) return;
-        setIsCheckingCloud(true);
-        setCloudDebug('Checking...');
-
-        try {
-            const result = await fetchUserData(user);
-            if (!result.success) {
-                setCloudDebug(`Fetch failed: ${result.error}${result.notFound ? ' (notFound)' : ''}`);
-                return;
-            }
-
-            const gameData = typeof result.data.gameData === 'object' && result.data.gameData
-                ? result.data.gameData
-                : typeof result.data.game_data === 'string'
-                    ? JSON.parse(result.data.game_data)
-                    : result.data.game_data;
-
-            const details = [
-                `premium=${result.data.is_premium ?? 'n/a'}`,
-                `plan=${result.data.subscription_plan ?? 'n/a'}`,
-                `hasCharacter=${gameData?.hasCharacter ?? 'n/a'}`,
-                `species=${gameData?.speciesId ?? 'n/a'}`,
-                `name=${gameData?.characterName ?? 'n/a'}`,
-            ];
-
-            setCloudDebug(details.join(' | '));
-        } catch (error: any) {
-            setCloudDebug(`Check failed: ${error?.message || 'Unknown error'}`);
-        } finally {
-            setIsCheckingCloud(false);
         }
     };
 
@@ -100,11 +62,6 @@ export const ProfilePage: React.FC = () => {
                         <div className="sub-info-left">
                             <span className="sub-title">{t('profile.signedInAs')}</span>
                             <span className="sub-desc">{user?.email || t('profile.guestUser')}</span>
-                            {user?.uid && (
-                                <span className="sub-desc" style={{ fontSize: '0.75rem', opacity: 0.7, wordBreak: 'break-all' }}>
-                                    UID: {user.uid}
-                                </span>
-                            )}
                             {isPremium && subscription.expiryDate && (
                                 <span className="sub-desc" style={{ fontSize: '0.8rem', opacity: 0.8 }}>
                                     Expires: {new Date(subscription.expiryDate).toLocaleDateString()}
@@ -177,21 +134,6 @@ export const ProfilePage: React.FC = () => {
                         📚 {t('profile.myJelloBox')}
                     </button>
                 </section>
-
-                {shouldShowCloudDebug && (
-                    <section className="profile-section" style={{ border: '2px dashed #2563eb', background: '#eff6ff' }}>
-                        <p style={{ margin: 0, color: '#1d4ed8', fontWeight: 800 }}>Cloud Debug</p>
-                        <p style={{ margin: 0, color: '#1e3a8a', fontSize: '0.9rem', wordBreak: 'break-word' }}>{cloudDebug}</p>
-                        <button
-                            className="jello-box-link"
-                            onClick={handleCloudCheck}
-                            disabled={isCheckingCloud}
-                            style={{ opacity: isCheckingCloud ? 0.7 : 1 }}
-                        >
-                            {isCheckingCloud ? 'Checking Cloud...' : 'Check Cloud Restore'}
-                        </button>
-                    </section>
-                )}
 
                 {/* DEBUG Section - Remove before production */}
                 <section className="profile-section" style={{ background: '#ffebee', border: '2px dashed #f44336' }}>
