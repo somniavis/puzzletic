@@ -7,7 +7,7 @@ import type { User } from 'firebase/auth';
 import type { NurturingPersistentState } from '../types/nurturing';
 import type { DailyRoutineReward } from './dailyRoutineRewardService';
 
-const API_BASE_URL = 'https://api-grogrojello.grogrojello.workers.dev';
+const API_BASE_URL = 'https://api.grogrojello.com';
 
 export interface CloudUserData {
     uid: string;

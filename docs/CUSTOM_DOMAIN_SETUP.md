@@ -40,7 +40,7 @@
 - Firebase Auth 도메인: `grogro-jello-4a53a.firebaseapp.com`
 - 데이터 저장: Firebase Realtime Database
 - 백엔드 API: Cloudflare Worker
-- 현재 API 주소: `https://api-grogrojello.grogrojello.workers.dev`
+- 현재 API 주소: `https://api.grogrojello.com`
 
 ## 2. 먼저 결정할 것
 
@@ -115,7 +115,7 @@ HTTPS 강제 자체는 좋은 설정입니다.
 다만 현재 프로젝트에서는:
 
 - 웹 도메인 `grogrojello.com`은 Vercel에서 HTTPS 응답
-- API는 `https://api-grogrojello.grogrojello.workers.dev` 사용
+- API는 `https://api.grogrojello.com` 사용
 
 상태이므로, 가장 먼저 볼 것은 "모든 실제 호출 URL이 이미 HTTPS인지"입니다.
 
@@ -254,7 +254,7 @@ Apple Developer Portal의 Service ID 설정에서 아래 값을 점검합니다.
 
 현재 값:
 
-- `const API_BASE_URL = 'https://api-grogrojello.grogrojello.workers.dev';`
+- `const API_BASE_URL = 'https://api.grogrojello.com';`
 
 의미:
 
