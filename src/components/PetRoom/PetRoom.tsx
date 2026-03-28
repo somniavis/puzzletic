@@ -482,6 +482,8 @@ export const PetRoom: React.FC<PetRoomProps> = ({
           }
           confirmLabel={t('common.yes')}
           cancelLabel={t('common.no')}
+          hideCancelButton={ui.modals.confirmModalType === 'sleep'}
+          showCloseButton={ui.modals.confirmModalType === 'sleep'}
           onConfirm={handleConfirmSleepWake}
           onCancel={() => {
             interactionLockRef.current = true;

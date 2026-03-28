@@ -7,6 +7,8 @@ interface ConfirmModalProps {
     message: string;
     confirmLabel?: string;
     cancelLabel?: string;
+    hideCancelButton?: boolean;
+    showCloseButton?: boolean;
     onConfirm: () => void;
     onCancel: () => void;
 }
@@ -16,6 +18,8 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
     message,
     confirmLabel = 'Yes',
     cancelLabel = 'No',
+    hideCancelButton = false,
+    showCloseButton = false,
     onConfirm,
     onCancel
 }) => {
@@ -46,24 +50,10 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
             >
                 <div className="food-menu-header">
                     <h3>{title}</h3>
-                </div>
-                <div style={{ padding: '2rem 1.5rem', textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-                    <p style={{ fontSize: '1.2rem', fontWeight: '700', color: '#4d3e2f', whiteSpace: 'pre-line', lineHeight: '1.5', margin: 0 }}>{message}</p>
-                    <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
+                    {showCloseButton && (
                         <button
                             type="button"
-                            className="action-btn"
-                            style={{
-                                width: 'auto',
-                                padding: '0.8rem 2rem',
-                                height: 'auto',
-                                background: '#f0f0f0',
-                                borderRadius: '24px',
-                                border: '3px solid #ccc',
-                                boxShadow: '0 4px 0 #999',
-                                color: '#666',
-                                cursor: 'pointer'
-                            }}
+                            className="close-btn"
                             onClick={(e) => {
                                 e.stopPropagation();
                                 handleCancel();
@@ -73,8 +63,40 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
                                 handleCancel();
                             }}
                         >
-                            <span className="action-label" style={{ fontSize: '1.1rem' }}>{cancelLabel}</span>
+                            ✕
                         </button>
+                    )}
+                </div>
+                <div style={{ padding: '2rem 1.5rem', textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+                    <p style={{ fontSize: '1.2rem', fontWeight: '700', color: '#4d3e2f', whiteSpace: 'pre-line', lineHeight: '1.5', margin: 0 }}>{message}</p>
+                    <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
+                        {!hideCancelButton && (
+                            <button
+                                type="button"
+                                className="action-btn"
+                                style={{
+                                    width: 'auto',
+                                    padding: '0.8rem 2rem',
+                                    height: 'auto',
+                                    background: '#f0f0f0',
+                                    borderRadius: '24px',
+                                    border: '3px solid #ccc',
+                                    boxShadow: '0 4px 0 #999',
+                                    color: '#666',
+                                    cursor: 'pointer'
+                                }}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleCancel();
+                                }}
+                                onTouchStart={(e) => {
+                                    e.stopPropagation();
+                                    handleCancel();
+                                }}
+                            >
+                                <span className="action-label" style={{ fontSize: '1.1rem' }}>{cancelLabel}</span>
+                            </button>
+                        )}
                         <button
                             type="button"
                             className="action-btn action-btn--main"
