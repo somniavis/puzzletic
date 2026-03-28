@@ -43,6 +43,17 @@
 - 실제 운영 도메인에서 이메일 로그인, Google 로그인, 데이터 불러오기/저장, `www -> apex` 리다이렉트 확인
 - `https://api.grogrojello.com/` 에서 `Not Found`, `https://api.grogrojello.com/api/users/test` 에서 인증 헤더 오류 응답 확인
 
+### 🛠️ 후속 안정화 및 진단 정리
+- 특정 Safari + 특정 Wi‑Fi 환경에서 `api.grogrojello.com` 접근이 실패하며 premium/기존 캐릭터가 복원되지 않는 사례를 조사했습니다.
+- 운영 D1 직접 조회 결과, `test34@gmail.com` 계정의 premium(`12_months`)과 기존 `game_data`는 정상 보존되어 있었고, 데이터 유실이 아니라 네트워크/DNS 환경 문제로 결론냈습니다.
+- 기존 계정이 일시적인 `notFound` 응답을 받을 때 새 계정처럼 다시 초기화되지 않도록 `useNurturingSync` 보호 로직을 추가했습니다.
+- sync payload에 `email`을 다시 포함해 운영 D1에서 특정 계정 추적이 가능하도록 보강했습니다.
+- 로컬 모바일 테스트를 위해 Worker CORS가 `localhost`뿐 아니라 사설 IP 대역(`172.16-31.x.x`, `192.168.x.x`, `10.x.x.x`)의 Vite dev origin도 허용하도록 확장했습니다.
+- Worker `wrangler.jsonc`를 실제 배포 상태와 맞췄습니다.
+  - `workers_dev = true` 명시
+  - custom domain route를 `api.grogrojello.com` 형태로 수정
+- Cloudflare Worker를 재배포해 `api.grogrojello.com` 과 `api-grogrojello.grogrojello.workers.dev` fallback 둘 다 활성 상태로 유지했습니다.
+
 ## 2026-02-13 (Security Hotfix)
 
 ### 🔐 백엔드 인증/인가 강화 (Worker AuthN/AuthZ)
