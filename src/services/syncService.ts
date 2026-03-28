@@ -7,7 +7,7 @@ import type { User } from 'firebase/auth';
 import type { NurturingPersistentState } from '../types/nurturing';
 import type { DailyRoutineReward } from './dailyRoutineRewardService';
 
-const API_BASE_URL = 'https://api.grogrojello.com';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.grogrojello.com';
 
 export interface CloudUserData {
     uid: string;
