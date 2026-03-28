@@ -11,6 +11,7 @@ const ALLOWED_ORIGINS = new Set([
 	'http://localhost:5173',
 ]);
 const DEFAULT_ALLOWED_ORIGIN = 'https://grogrojello.com';
+const PRIVATE_DEV_ORIGIN_RE = /^http:\/\/(?:(?:localhost)|(?:10(?:\.\d{1,3}){3})|(?:172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})|(?:192\.168(?:\.\d{1,3}){2})):\d+$/;
 
 let firebaseJwksCache = null;
 let firebaseJwksExpiry = 0;
@@ -211,7 +212,8 @@ const authenticateRequest = async (request, env, uidFromPath) => {
 
 const getCorsHeaders = (request) => {
 	const requestOrigin = request.headers.get('Origin');
-	const allowedOrigin = requestOrigin && ALLOWED_ORIGINS.has(requestOrigin)
+	const isAllowedDevOrigin = requestOrigin ? PRIVATE_DEV_ORIGIN_RE.test(requestOrigin) : false;
+	const allowedOrigin = requestOrigin && (ALLOWED_ORIGINS.has(requestOrigin) || isAllowedDevOrigin)
 		? requestOrigin
 		: !requestOrigin
 			? DEFAULT_ALLOWED_ORIGIN

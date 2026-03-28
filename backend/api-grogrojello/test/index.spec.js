@@ -208,6 +208,21 @@ describe('Worker auth gate', () => {
 		expect(response.headers.get('Vary')).toContain('Origin');
 	});
 
+	it('allows private-network Vite dev origins in CORS headers', async () => {
+		const request = new Request(`http://example.com/api/users/${userId}`, {
+			method: 'OPTIONS',
+			headers: {
+				Origin: 'http://172.30.1.91:5174',
+			},
+		});
+		const ctx = createExecutionContext();
+		const response = await worker.fetch(request, env, ctx);
+		await waitOnExecutionContext(ctx);
+
+		expect(response.status).toBe(200);
+		expect(response.headers.get('Access-Control-Allow-Origin')).toBe('http://172.30.1.91:5174');
+	});
+
 	it('omits Access-Control-Allow-Origin for disallowed origins', async () => {
 		const request = new Request(`http://example.com/api/users/${userId}`, {
 			method: 'OPTIONS',
