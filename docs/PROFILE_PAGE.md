@@ -41,6 +41,22 @@ src/
 - Quarterly: $1.15/month (total $3.45)
 - Yearly: $1.00/month (total $12.00) - Best Value badge
 
+### 2-1. Offer Type Segmentation
+- The Pass tab currently switches between `subscription` and `duration` offer copy based on the selected i18n locale.
+- `duration` locales:
+  - `vi`, `vi-VN`
+  - `id`, `id-ID`
+- `subscription` locales:
+  - `en`, `en-US`, `en-UK`
+  - `ko`
+  - `es`, `es-ES`
+  - `fr`, `fr-FR`
+  - `ja`, `ja-JP`
+  - `pt`, `pt-PT`
+  - Any locale outside the duration list
+- This logic lives in `src/pages/ProfilePage.tsx` via `durationOfferLanguages` and `passOfferType`.
+- This is a temporary language-based split, not a real billing-country split yet.
+
 ### 3. Premium Active Animation
 The premium account card uses the same gold shine animation as hidden jellos in the Encyclopedia:
 ```css

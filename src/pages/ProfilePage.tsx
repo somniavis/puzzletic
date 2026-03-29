@@ -1,4 +1,5 @@
 import React from 'react';
+import { Check, Globe, Star } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation, Trans } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
@@ -13,7 +14,7 @@ const createParentGateCode = () =>
 export const ProfilePage: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const [showCancelModal, setShowCancelModal] = React.useState(false);
     const [activeTab, setActiveTab] = React.useState<ProfileTab>('my_jello');
     const [isPassUnlocked, setIsPassUnlocked] = React.useState(false);
@@ -24,6 +25,25 @@ export const ProfilePage: React.FC = () => {
     const { gro, xp, addRewards, maxStats, subscription, purchasePlan, cancelSubscription, debugUnlockAllGames, debugAddStars } = useNurturing();
     const isPremium = subscription.isPremium;
     const isGuest = !user;
+    const durationOfferLanguages = React.useMemo(
+        () => new Set(['vi', 'vi-VN', 'id', 'id-ID']),
+        [],
+    );
+    const resolvedLanguage = i18n.resolvedLanguage || i18n.language;
+    const passOfferType = durationOfferLanguages.has(resolvedLanguage) ? 'duration' : 'subscription';
+    const isDurationOffer = passOfferType === 'duration';
+    const annualPassTitle = t(`profile.subscription.yearly.${passOfferType}Title`);
+    const annualPassDesc = t(`profile.subscription.yearly.${passOfferType}Desc`);
+    const quarterlyPassTitle = t(`profile.subscription.quarterly.${passOfferType}Title`);
+    const quarterlyPassDesc = t(`profile.subscription.quarterly.${passOfferType}Desc`);
+    const premiumStatusLabel = subscription.plan === '12_months'
+        ? t('profile.status.angelPass')
+        : subscription.plan === '3_months'
+            ? t('profile.status.jelloPass')
+            : t('profile.status.premium');
+    const purchaseNote = passOfferType === 'subscription'
+        ? t('profile.cancelAnytimeShort')
+        : null;
     const parentGateWordSequence = parentGateCode
         .map((digit) => t(`profile.parentGate.numberWords.${digit}`))
         .join(',  ');
@@ -55,12 +75,16 @@ export const ProfilePage: React.FC = () => {
     };
 
     const handlePurchase = async (plan: '3_months' | '12_months') => {
-        if (window.confirm(`Confirm purchase for ${plan === '3_months' ? '3 Months' : '1 Year'}?`)) {
+        const confirmMessage = plan === '3_months'
+            ? t('profile.purchaseConfirm.threeMonths')
+            : t('profile.purchaseConfirm.twelveMonths');
+
+        if (window.confirm(confirmMessage)) {
             const success = await purchasePlan(plan);
             if (success) {
-                alert("Purchase Successful! (Mock)");
+                alert(t('profile.purchaseResult.success'));
             } else {
-                alert("Purchase Failed. See console.");
+                alert(t('profile.purchaseResult.failure'));
             }
         }
     };
@@ -85,8 +109,9 @@ export const ProfilePage: React.FC = () => {
 
         if (nextInput.length === 3) {
             const targetCode = parentGateCode.join('');
+            const isMasterCode = nextInput === '999';
 
-            if (nextInput === targetCode) {
+            if (nextInput === targetCode || isMasterCode) {
                 setIsPassUnlocked(true);
                 return;
             }
@@ -109,7 +134,7 @@ export const ProfilePage: React.FC = () => {
     };
 
     return (
-        <div className="profile-page">
+        <div className={`profile-page ${activeTab === 'pass' ? 'profile-page-pass' : ''}`}>
             <header className="profile-header">
                 <div className="profile-tabs" role="tablist" aria-label={t('profile.title')}>
                     <button
@@ -153,7 +178,7 @@ export const ProfilePage: React.FC = () => {
                                 style={{ cursor: isGuest ? 'pointer' : 'default' }}
                             >
                                 <span className={`status-badge ${isPremium ? 'premium' : 'free'}`}>
-                                    {isPremium ? t('profile.status.premium') : t('profile.status.free')}
+                                    {isPremium ? premiumStatusLabel : t('profile.status.free')}
                                 </span>
                                 <div className="sub-info-left">
                                     <span className="sub-title">{t('profile.signedInAs')}</span>
@@ -348,7 +373,7 @@ export const ProfilePage: React.FC = () => {
                             </section>
                         )}
 
-                        {isPassUnlocked && (
+                        {isPassUnlocked && isPremium && (
                             <section className="profile-section">
                                 <div className="profile-panel-heading">
                                     <span className="profile-panel-kicker">{t('profile.tabs.pass')}</span>
@@ -365,14 +390,14 @@ export const ProfilePage: React.FC = () => {
                                     style={{ cursor: isGuest ? 'pointer' : 'default' }}
                                 >
                                     <span className={`status-badge ${isPremium ? 'premium' : 'free'}`}>
-                                        {isPremium ? t('profile.status.premium') : t('profile.status.free')}
+                                        {isPremium ? premiumStatusLabel : t('profile.status.free')}
                                     </span>
                                     <div className="sub-info-left">
                                         <span className="sub-title">{t('profile.signedInAs')}</span>
                                         <span className="sub-desc">{user?.email || t('profile.guestUser')}</span>
                                         {isPremium && subscription.expiryDate && (
                                             <span className="sub-desc" style={{ fontSize: '0.8rem', opacity: 0.8 }}>
-                                                Expires: {new Date(subscription.expiryDate).toLocaleDateString()}
+                                                {t('profile.expiresLabel')}: {new Date(subscription.expiryDate).toLocaleDateString()}
                                             </span>
                                         )}
                                         {isPremium && (
@@ -395,8 +420,12 @@ export const ProfilePage: React.FC = () => {
                                         )}
                                     </div>
                                 </div>
+                            </section>
+                        )}
 
-                                {!isPremium && (
+                        {isPassUnlocked && !isPremium && (
+                            <>
+                                <section className="profile-copy-section">
                                     <div className="premium-upgrade-area">
                                         <h3 className="upgrade-title">{t('profile.premiumTitle')}</h3>
                                         <p className="upgrade-subtitle">
@@ -405,34 +434,217 @@ export const ProfilePage: React.FC = () => {
                                                 components={{ highlight: <span className="highlight" /> }}
                                             />
                                         </p>
-                                        <div className="subscription-options">
-                                            <button className="sub-btn quarterly" onClick={() => handlePurchase('3_months')}>
-                                                <div className="sub-info-left">
-                                                    <span className="sub-title">{t('profile.subscription.quarterly.title')}</span>
-                                                    <span className="sub-desc">{t('profile.subscription.quarterly.desc')}</span>
-                                                </div>
-                                                <div className="sub-price-right">
-                                                    <span className="sub-monthly-price">$1.33 <span className="sub-currency">{t('profile.subscription.currency')}</span></span>
-                                                    <span className="sub-unit">{t('profile.subscription.unit')}</span>
-                                                </div>
-                                            </button>
-
-                                            <button className="sub-btn yearly" onClick={() => handlePurchase('12_months')}>
-                                                <span className="sub-badge">{t('profile.subscription.yearly.badge')}</span>
-                                                <div className="sub-info-left">
-                                                    <span className="sub-title">{t('profile.subscription.yearly.title')}</span>
-                                                    <span className="sub-desc">{t('profile.subscription.yearly.desc')}</span>
-                                                </div>
-                                                <div className="sub-price-right">
-                                                    <span className="sub-monthly-price">$1.00 <span className="sub-currency">{t('profile.subscription.currency')}</span></span>
-                                                    <span className="sub-unit">{t('profile.subscription.unit')}</span>
-                                                </div>
-                                            </button>
-                                        </div>
-                                        <p className="cancel-text">{t('profile.cancelPolicy')}</p>
                                     </div>
+                                </section>
+
+                                {isDurationOffer ? (
+                                    <>
+                                        <section className="profile-section quarterly-pass-section featured-pass-section">
+                                            <div className="pricing-option-panel">
+                                                <div className="pricing-panel-head pricing-panel-head-basic">
+                                                    <div>
+                                                        <span className="pricing-kicker">{t('profile.badges.mostPopular')}</span>
+                                                        <h4>{quarterlyPassTitle}</h4>
+                                                        <p>{quarterlyPassDesc}</p>
+                                                    </div>
+                                                    <div className="pricing-price-stack">
+                                                        <span className="pricing-price pricing-price-basic">$1.33</span>
+                                                        <span className="pricing-unit pricing-unit-basic">{t('profile.subscription.unit')}</span>
+                                                    </div>
+                                                </div>
+
+                                                <ul className="pricing-benefits pricing-benefits-basic">
+                                                    <li>
+                                                        <span className="pricing-benefit-dot">
+                                                            <Check size={12} />
+                                                        </span>
+                                                        <span>{t('common.modal.benefit1')}</span>
+                                                    </li>
+                                                    <li>
+                                                        <span className="pricing-benefit-dot">
+                                                            <Check size={12} />
+                                                        </span>
+                                                        <span>{t('common.modal.benefit3')}</span>
+                                                    </li>
+                                                </ul>
+
+                                                <button
+                                                    type="button"
+                                                    className="pricing-cta pricing-cta-angel"
+                                                    onClick={() => handlePurchase('3_months')}
+                                                >
+                                                    {t('profile.purchaseButton')}
+                                                </button>
+                                                {purchaseNote && (
+                                                    <p className="pricing-cta-note">{purchaseNote}</p>
+                                                )}
+                                            </div>
+                                        </section>
+
+                                        <section className="profile-section annual-pass-section basic-pass-section">
+                                            <div className="pricing-option-panel">
+                                                <div className="pricing-panel-head">
+                                                    <div className="pricing-chip-row pricing-chip-row-end">
+                                                        <span className="pricing-chip pricing-chip-accent">
+                                                            {t('profile.badges.recommended')}
+                                                        </span>
+                                                    </div>
+                                                </div>
+
+                                                <div className="pricing-panel-hero">
+                                                    <h4 className="angel-pass-title">
+                                                        <span>{annualPassTitle}</span>
+                                                        <span className="angel-pass-wing-group" aria-hidden="true">
+                                                            <span className="angel-pass-wing angel-pass-wing-left">🪽</span>
+                                                            <span className="angel-pass-wing">🪽</span>
+                                                        </span>
+                                                    </h4>
+                                                    <div className="pricing-price-line">
+                                                        <span className="pricing-price">$1.00</span>
+                                                        <span className="pricing-unit">{t('profile.subscription.unit')}</span>
+                                                    </div>
+                                                    <p>{annualPassDesc}</p>
+                                                </div>
+
+                                                <ul className="pricing-benefits">
+                                                    <li>
+                                                        <span className="pricing-benefit-icon">
+                                                            <Check size={16} />
+                                                        </span>
+                                                        <span>{t('common.modal.benefit1')}</span>
+                                                    </li>
+                                                    <li>
+                                                        <span className="pricing-benefit-icon pricing-benefit-icon-accent">
+                                                            <Star size={16} />
+                                                        </span>
+                                                        <span className="pricing-benefit-strong">{t('common.modal.benefit3')}</span>
+                                                    </li>
+                                                    <li>
+                                                        <span className="pricing-benefit-icon pricing-benefit-icon-accent">
+                                                            <Globe size={16} />
+                                                        </span>
+                                                        <span className="pricing-benefit-strong pricing-benefit-highlight-soft">{t('common.modal.benefit2')}</span>
+                                                    </li>
+                                                </ul>
+
+                                                <button
+                                                    type="button"
+                                                    className="pricing-cta pricing-cta-basic"
+                                                    onClick={() => handlePurchase('12_months')}
+                                                >
+                                                    {t('profile.purchaseButton')}
+                                                </button>
+                                                {purchaseNote && (
+                                                    <p className="pricing-cta-note pricing-cta-note-basic">{purchaseNote}</p>
+                                                )}
+                                            </div>
+                                        </section>
+                                    </>
+                                ) : (
+                                    <>
+                                <section className="profile-section annual-pass-section angel-pass-section">
+                                    <div className="pricing-option-panel">
+                                        <div className="pricing-panel-head">
+                                            <div className="pricing-chip-row pricing-chip-row-end">
+                                                <span className="pricing-chip pricing-chip-accent">
+                                                    {t('profile.badges.recommended')}
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <div className="pricing-panel-hero">
+                                            <h4 className="angel-pass-title">
+                                                <span>{annualPassTitle}</span>
+                                                <span className="angel-pass-wing-group" aria-hidden="true">
+                                                    <span className="angel-pass-wing angel-pass-wing-left">🪽</span>
+                                                    <span className="angel-pass-wing">🪽</span>
+                                                </span>
+                                            </h4>
+                                            <div className="pricing-price-line">
+                                                <span className="pricing-price">$1.00</span>
+                                                <span className="pricing-unit">{t('profile.subscription.unit')}</span>
+                                            </div>
+                                            <p>{annualPassDesc}</p>
+                                        </div>
+
+                                        <ul className="pricing-benefits">
+                                            <li>
+                                                <span className="pricing-benefit-icon">
+                                                    <Check size={16} />
+                                                </span>
+                                                <span>{t('common.modal.benefit1')}</span>
+                                            </li>
+                                            <li>
+                                                <span className="pricing-benefit-icon pricing-benefit-icon-accent">
+                                                    <Star size={16} />
+                                                </span>
+                                                <span className="pricing-benefit-strong">{t('common.modal.benefit3')}</span>
+                                            </li>
+                                            <li>
+                                                <span className="pricing-benefit-icon pricing-benefit-icon-accent">
+                                                    <Globe size={16} />
+                                                </span>
+                                                <span className="pricing-benefit-strong pricing-benefit-highlight-soft">{t('common.modal.benefit2')}</span>
+                                            </li>
+                                        </ul>
+
+                                        <button
+                                            type="button"
+                                            className="pricing-cta pricing-cta-angel"
+                                            onClick={() => handlePurchase('12_months')}
+                                        >
+                                            {t('profile.purchaseButton')}
+                                        </button>
+                                        {purchaseNote && (
+                                            <p className="pricing-cta-note">{purchaseNote}</p>
+                                        )}
+                                    </div>
+                                </section>
+
+                                <section className="profile-section quarterly-pass-section jello-pass-section">
+                                    <div className="pricing-option-panel">
+                                        <div className="pricing-panel-head pricing-panel-head-basic">
+                                            <div>
+                                                <span className="pricing-kicker">{t('profile.badges.mostPopular')}</span>
+                                                <h4>{quarterlyPassTitle}</h4>
+                                                <p>{quarterlyPassDesc}</p>
+                                            </div>
+                                            <div className="pricing-price-stack">
+                                                <span className="pricing-price pricing-price-basic">$1.33</span>
+                                                <span className="pricing-unit pricing-unit-basic">{t('profile.subscription.unit')}</span>
+                                            </div>
+                                        </div>
+
+                                        <ul className="pricing-benefits pricing-benefits-basic">
+                                            <li>
+                                                <span className="pricing-benefit-dot">
+                                                    <Check size={12} />
+                                                </span>
+                                                <span>{t('common.modal.benefit1')}</span>
+                                            </li>
+                                            <li>
+                                                <span className="pricing-benefit-dot">
+                                                    <Check size={12} />
+                                                </span>
+                                                <span>{t('common.modal.benefit3')}</span>
+                                            </li>
+                                        </ul>
+
+                                        <button
+                                            type="button"
+                                            className="pricing-cta pricing-cta-basic"
+                                            onClick={() => handlePurchase('3_months')}
+                                        >
+                                            {t('profile.purchaseButton')}
+                                        </button>
+                                        {purchaseNote && (
+                                            <p className="pricing-cta-note pricing-cta-note-basic">{purchaseNote}</p>
+                                        )}
+                                    </div>
+                                </section>
+                                    </>
                                 )}
-                            </section>
+                            </>
                         )}
                     </>
                 )}

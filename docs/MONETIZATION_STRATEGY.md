@@ -64,6 +64,80 @@ This feature is currently **PLANNED** but **NOT IMPLEMENTED**.
 
 ---
 
+## 4. Current Pass Offering Segmentation (Temporary)
+## 4. 현재 패스 상품 노출 분기 (임시)
+
+> [!NOTE]
+> The current implementation does **not** segment by billing country yet.
+> For now, the app switches the offer display by the user's selected **language locale**.
+> 현재 구현은 아직 **실제 결제 국가 기준 분기**가 아닙니다.
+> 우선은 사용자의 **선택 언어 로케일**에 따라 상품 표시 형태를 나눕니다.
+
+### Offer Types (상품 타입)
+
+*   **Subscription Offer (구독형)**
+    *   Annual Angel Pass
+    *   Quarterly Jello Pass
+*   **Duration Offer (기간형)**
+    *   12-Month Angel Pass
+    *   3-Month Jello Pass
+
+### Current Locale Groups (현재 로케일 그룹)
+
+#### Duration Offer Locales (기간형 노출 로케일)
+
+*   `vi`, `vi-VN`
+*   `id`, `id-ID`
+
+#### Subscription Offer Locales (구독형 노출 로케일)
+
+*   `en`, `en-US`, `en-UK`
+*   `ko`
+*   `es`, `es-ES`
+*   `fr`, `fr-FR`
+*   `ja`, `ja-JP`
+*   `pt`, `pt-PT`
+*   Any other locale not included in the duration list defaults to subscription.
+    *   기간형 목록에 포함되지 않은 나머지 로케일은 기본적으로 구독형으로 처리합니다.
+
+### Display Priority Rule (카드 우선 노출 규칙)
+
+*   **Subscription Offer UI (구독형 UI)**
+    *   The `Annual Angel Pass` card is shown first as the featured card.
+    *   The `Quarterly Jello Pass` card is shown second as the secondary card.
+*   **Duration Offer UI (기간형 UI)**
+    *   The `3-Month Jello Pass` card is shown first as the featured card.
+    *   The `12-Month Angel Pass` card is shown second as the secondary card.
+*   In duration-offer locales, the two cards do not just swap order.
+    *   The featured color treatment, CTA emphasis, and visual priority are also reversed.
+    *   기간형 로케일에서는 카드 순서만 바뀌는 것이 아니라,
+    *   강조 색상, CTA 스타일, 시각적 우선순위도 함께 반전됩니다.
+
+### Implementation Reference (구현 위치)
+
+*   `src/pages/ProfilePage.tsx`
+    *   `durationOfferLanguages`
+    *   `passOfferType`
+    *   conditional card order / featured card rendering
+*   `src/i18n/locales/*`
+    *   `profile.subscription.yearly.subscriptionTitle`
+    *   `profile.subscription.yearly.durationTitle`
+    *   `profile.subscription.quarterly.subscriptionTitle`
+    *   `profile.subscription.quarterly.durationTitle`
+    *   `profile.oneTimePurchaseNote`
+*   `src/pages/ProfilePage.css`
+    *   featured / secondary card visual styling
+
+### Intent (의도)
+
+*   This is a lightweight first step to adapt pricing presentation by market.
+*   It is intended for **UI exposure only** at this stage.
+*   Actual store product / billing-country based segmentation should be added later if needed.
+    *   현재는 **UI 노출 기준의 1차 분기**입니다.
+    *   추후 필요 시 실제 스토어 상품 또는 결제 국가 기준으로 고도화합니다.
+
+---
+
 ## Appendix: Rejected Options
 ## 부록: 보류된 옵션들
 

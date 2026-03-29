@@ -10,6 +10,10 @@
     font-family: inherit;
 }
 
+.profile-page-pass {
+    background: linear-gradient(180deg, #f4f5f8 0%, #eceff4 100%);
+}
+
 /* Suppress native tap highlight/text selection on Profile page controls */
 .profile-page button,
 .profile-page .jello-box-link {
@@ -155,12 +159,16 @@
 .profile-section {
     background: rgba(255, 255, 255, 0.9);
     border-radius: 20px;
-    padding: 1.3rem;
+    padding: 1.4rem;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
     border: 3px solid #fff;
     display: flex;
     flex-direction: column;
     gap: 0.85rem;
+}
+
+.profile-copy-section {
+    padding: 0.7rem 0 0.1rem;
 }
 
 .profile-section h2 {
@@ -187,8 +195,19 @@
 }
 
 .parent-gate-section {
+    position: relative;
     align-items: center;
     text-align: center;
+    background:
+        radial-gradient(circle at 12% 14%, rgba(211, 238, 223, 0.22), transparent 10%),
+        radial-gradient(circle at 88% 18%, rgba(196, 228, 212, 0.18), transparent 11%),
+        radial-gradient(circle at 18% 86%, rgba(179, 235, 214, 0.18), transparent 12%),
+        radial-gradient(circle at 82% 82%, rgba(164, 214, 255, 0.14), transparent 10%),
+        linear-gradient(180deg, #e7f6ee 0%, #dff2ea 100%);
+    border: 3px solid #d6ecdf;
+    box-shadow:
+        0 10px 22px rgba(105, 138, 116, 0.16),
+        inset 0 1px 0 rgba(255, 255, 255, 0.45);
 }
 
 .parent-gate-section .profile-panel-heading {
@@ -205,16 +224,16 @@
     padding: 0.68rem 1.4rem 0.74rem;
     border-radius: 18px;
     background:
-        radial-gradient(circle at 20% 18%, rgba(255, 234, 196, 0.32), transparent 24%),
-        linear-gradient(180deg, #a56b35 0%, #8f5928 48%, #73431a 100%);
+        radial-gradient(circle at 20% 18%, rgba(230, 255, 243, 0.28), transparent 24%),
+        linear-gradient(180deg, #69b58d 0%, #4f9873 48%, #3b7d5c 100%);
     color: #ffffff !important;
     box-shadow:
-        inset 0 2px 0 rgba(255, 233, 205, 0.36),
-        inset 0 -2px 0 rgba(79, 41, 12, 0.34),
-        0 6px 0 #5d3514,
-        0 10px 16px rgba(73, 44, 20, 0.18);
-    border: 2px solid rgba(113, 64, 25, 0.78);
-    text-shadow: 0 2px 0 rgba(84, 45, 17, 0.7);
+        inset 0 2px 0 rgba(232, 255, 243, 0.34),
+        inset 0 -2px 0 rgba(38, 86, 61, 0.34),
+        0 6px 0 #2f6549,
+        0 10px 16px rgba(49, 91, 67, 0.2);
+    border: 2px solid rgba(50, 101, 73, 0.8);
+    text-shadow: 0 2px 0 rgba(35, 78, 55, 0.72);
     letter-spacing: 0.01em;
     box-sizing: border-box;
 }
@@ -226,8 +245,8 @@
     width: 18px;
     height: 10px;
     border-radius: 0 0 10px 10px;
-    background: #855020;
-    box-shadow: 0 4px 0 #5d3514;
+    background: #45815f;
+    box-shadow: 0 4px 0 #2f6549;
 }
 
 .parent-gate-instruction {
@@ -245,6 +264,7 @@
     font-weight: 900;
     text-transform: lowercase;
     letter-spacing: 0.01em;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.72);
 }
 
 .parent-gate-display {
@@ -258,15 +278,18 @@
     width: 58px;
     height: 58px;
     border-radius: 18px;
-    background: #f3fbf5;
-    border: 3px solid #b8d8bf;
+    background:
+        linear-gradient(180deg, #fffef8 0%, #f5fbf6 100%);
+    border: 3px solid #c8dfcd;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 1.6rem;
     font-weight: 900;
     color: #3a6c4d;
-    box-shadow: 0 5px 0 rgba(90, 156, 125, 0.22);
+    box-shadow:
+        0 5px 0 rgba(90, 156, 125, 0.22),
+        inset 0 1px 0 rgba(255, 255, 255, 0.92);
 }
 
 .parent-gate-error {
@@ -287,12 +310,17 @@
     border: 1px solid rgba(105, 145, 118, 0.22);
     border-radius: 18px;
     padding: 1rem 0;
-    background: linear-gradient(180deg, #ffffff 0%, #eaf6ee 100%);
+    background:
+        radial-gradient(circle at 18% 18%, rgba(221, 241, 228, 0.52), transparent 30%),
+        radial-gradient(circle at 82% 22%, rgba(222, 242, 231, 0.5), transparent 26%),
+        linear-gradient(180deg, #ffffff 0%, #eef8f1 100%);
     color: #3a6c4d;
     font-size: 1.3rem;
     font-weight: 900;
     cursor: pointer;
-    box-shadow: 0 5px 0 #bdd4c4, inset 0 1px 0 rgba(255, 255, 255, 0.78);
+    box-shadow:
+        0 5px 0 #bdd4c4,
+        inset 0 1px 0 rgba(255, 255, 255, 0.86);
 }
 
 .parent-gate-key:active {
@@ -414,21 +442,22 @@
 
 /* Upgrade Prompt Area */
 .upgrade-title {
-    font-size: 1.1rem;
-    color: #3a6c4d;
-    font-weight: 800;
+    font-size: 1.85rem;
+    color: #1b2746;
+    font-weight: 900;
     text-align: center;
-    margin: 0 0 0.5rem 0;
+    margin: 0 0 0.45rem 0;
     white-space: pre-line;
-    line-height: 1.3;
+    line-height: 1.2;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
 }
 
 .upgrade-subtitle {
     font-size: 0.85rem;
-    color: #5a9c7d;
+    color: #4f648f;
     font-weight: 600;
     text-align: center;
-    margin: 0 0 1.2rem 0;
+    margin: 0 0 0.35rem 0;
     line-height: 1.4;
     padding: 0 10px;
     white-space: pre-line;
@@ -451,6 +480,458 @@
     margin-top: 1rem;
     margin-bottom: 0;
     font-weight: 500;
+}
+
+.pricing-showcase {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.pricing-option-panel {
+    padding: 0;
+}
+
+.angel-pass-section,
+.featured-pass-section {
+    position: relative;
+    background: transparent;
+    border: none;
+    overflow: visible;
+    padding-bottom: 1.65rem;
+    box-shadow: none;
+}
+
+.angel-pass-section::before,
+.featured-pass-section::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(circle at 50% 100%, rgba(255, 122, 10, 0.09), transparent 34%),
+        linear-gradient(180deg, #171d34 0%, #141a30 100%);
+    border-radius: 16px;
+    z-index: 0;
+}
+
+.angel-pass-section > *,
+.featured-pass-section > * {
+    position: relative;
+    z-index: 1;
+}
+
+.angel-pass-section .pricing-panel-head h4,
+.angel-pass-section .pricing-panel-hero h4,
+.featured-pass-section .pricing-panel-head h4,
+.featured-pass-section .pricing-panel-head-basic h4,
+.featured-pass-section .pricing-panel-hero h4 {
+    color: #ffffff;
+}
+
+.angel-pass-title {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.angel-pass-wing-group {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.05rem;
+}
+
+.angel-pass-wing {
+    display: inline-block;
+    line-height: 1;
+}
+
+.angel-pass-wing-left {
+    transform: scaleX(-1);
+}
+
+.angel-pass-section .pricing-price,
+.featured-pass-section .pricing-price,
+.featured-pass-section .pricing-price-basic {
+    color: #ffffff;
+}
+
+.angel-pass-section .pricing-panel-hero p,
+.angel-pass-section .pricing-benefits li span:last-child,
+.featured-pass-section .pricing-panel-hero p,
+.featured-pass-section .pricing-panel-head-basic p,
+.featured-pass-section .pricing-benefits li span:last-child,
+.featured-pass-section .pricing-benefits-basic li span:last-child {
+    color: rgba(198, 207, 228, 0.86);
+}
+
+.angel-pass-section .pricing-benefit-strong,
+.featured-pass-section .pricing-benefit-strong {
+    color: #ffffff !important;
+}
+
+.jello-pass-section,
+.basic-pass-section {
+    background:
+        radial-gradient(circle at 88% 16%, rgba(59, 130, 246, 0.06), transparent 16%),
+        radial-gradient(circle at 12% 88%, rgba(251, 146, 60, 0.05), transparent 18%),
+        #ffffff;
+    border: 1px solid #e5e7eb;
+    box-shadow:
+        0 10px 24px rgba(15, 23, 42, 0.06),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.pricing-option-panel h4,
+.pricing-option-panel p {
+    margin: 0;
+}
+
+.pricing-panel-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 0.8rem;
+    margin-bottom: 1rem;
+}
+
+.pricing-chip-row-end {
+    width: 100%;
+    justify-content: flex-end;
+}
+
+.pricing-panel-head-basic {
+    margin-bottom: 1.3rem;
+}
+
+.pricing-chip-row {
+    display: flex;
+    gap: 0.45rem;
+    flex-wrap: wrap;
+}
+
+.pricing-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.38rem 0.72rem;
+    border-radius: 999px;
+    font-size: 0.62rem;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.pricing-chip-accent {
+    background: #ff6a00;
+    color: #ffffff;
+    box-shadow: 0 10px 18px rgba(255, 106, 0, 0.2);
+}
+
+.angel-pass-section .pricing-panel-head,
+.basic-pass-section .pricing-panel-head {
+    position: relative;
+    margin-bottom: 0.14rem;
+    min-height: 1.15rem;
+}
+
+.angel-pass-section .pricing-chip-row-end,
+.basic-pass-section .pricing-chip-row-end {
+    position: absolute;
+    top: -1.4rem;
+    right: -1.4rem;
+    width: auto;
+    z-index: 3;
+}
+
+.angel-pass-section .pricing-chip-accent,
+.basic-pass-section .pricing-chip-accent {
+    padding: 6px 16px;
+    border-radius: 0 16px 0 14px;
+    font-size: 0.85rem;
+    font-weight: 800;
+    letter-spacing: 0;
+    text-transform: uppercase;
+    box-shadow: -2px 2px 0 rgba(0, 0, 0, 0.1);
+}
+
+.pricing-chip-muted {
+    background: rgba(95, 108, 144, 0.26);
+    border: 1px solid rgba(125, 138, 176, 0.14);
+    color: #dbe4f7;
+    backdrop-filter: blur(8px);
+}
+
+.pricing-save-copy {
+    font-size: 0.62rem;
+    font-weight: 900;
+    letter-spacing: 0.12em;
+    color: #0f172a;
+    text-shadow: none;
+}
+
+.pricing-kicker {
+    display: inline-block;
+    margin-bottom: 0.3rem;
+    font-size: 0.62rem;
+    font-weight: 900;
+    letter-spacing: 0.12em;
+    color: #3b82f6;
+}
+
+.pricing-panel-hero {
+    margin-bottom: 1.3rem;
+}
+
+.pricing-panel-hero h4,
+.pricing-option-panel h4 {
+    font-size: 1.45rem;
+    font-weight: 900;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.2rem;
+}
+
+.pricing-option-panel h4 {
+    color: #111827;
+}
+
+.pricing-panel-hero p,
+.pricing-option-panel p {
+    font-size: 0.78rem;
+    font-weight: 600;
+}
+
+.pricing-panel-hero p,
+.pricing-option-panel p {
+    color: #94a3b8;
+}
+
+.pricing-price-line,
+.pricing-price-stack {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.3rem;
+}
+
+.pricing-price-line {
+    margin: 0.18rem 0 0.3rem;
+}
+
+.pricing-price-stack {
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.15rem;
+}
+
+.pricing-price {
+    font-size: 3.15rem;
+    line-height: 0.95;
+    font-weight: 900;
+    letter-spacing: -0.05em;
+}
+
+.pricing-price-basic {
+    font-size: 2.42rem;
+    color: #111827;
+}
+
+.pricing-unit {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: #9ca3af;
+    margin-bottom: 0.28rem;
+}
+
+.pricing-unit-basic {
+    font-size: 0.95rem;
+    margin-bottom: 0;
+}
+
+.pricing-panel-head-basic .pricing-price-stack {
+    padding-top: 0.22rem;
+}
+
+.pricing-panel-head-basic h4 {
+    margin-bottom: 0.2rem;
+}
+
+.pricing-benefits {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    padding: 0;
+    margin: 0 0 1.45rem;
+    list-style: none;
+}
+
+.pricing-benefits li {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    font-size: 0.9rem;
+    color: #475569;
+}
+
+.pricing-benefit-icon,
+.pricing-benefit-dot {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.7rem;
+    height: 1.7rem;
+    border-radius: 999px;
+    background: #1f2937;
+    color: #ffffff;
+}
+
+.pricing-benefit-icon-accent {
+    background: #ff6a00 !important;
+    color: #ffffff !important;
+    box-shadow: 0 0 15px rgba(255, 106, 0, 0.24);
+}
+
+.pricing-benefits li span:last-child {
+    color: #475569;
+}
+
+.pricing-benefit-strong {
+    color: #111827 !important;
+    font-weight: 800;
+}
+
+.pricing-benefit-highlight-soft {
+    display: inline-block;
+    padding: 0.24rem 0.52rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.pricing-benefits-basic {
+    gap: 0.75rem;
+}
+
+.pricing-benefits-basic li {
+    font-size: 0.87rem;
+}
+
+.pricing-benefits-basic li span:last-child {
+    color: #475569;
+    font-weight: 600;
+}
+
+.pricing-benefit-dot {
+    width: 1.35rem;
+    height: 1.35rem;
+    background: #f8fafc;
+    color: #94a3b8;
+    border: 1px solid #e2e8f0;
+}
+
+.featured-pass-section .pricing-kicker {
+    color: #f6c453;
+}
+
+.featured-pass-section .pricing-benefit-dot {
+    background: rgba(103, 117, 151, 0.3);
+    color: #dde8ff;
+    border-color: rgba(160, 176, 214, 0.22);
+}
+
+.pricing-cta {
+    width: 100%;
+    border: 0;
+    cursor: pointer;
+    transition: transform 0.12s ease, filter 0.12s ease, box-shadow 0.12s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.pricing-cta:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.04);
+}
+
+.pricing-cta:active {
+    transform: translateY(4px);
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.18);
+}
+
+.pricing-cta-angel {
+    padding: 1rem 1.1rem;
+    margin-bottom: 0.9rem;
+    border-radius: 1.15rem;
+    background: linear-gradient(180deg, #ff7a0a 0%, #ff6a00 100%);
+    border: 3px solid #ea5b00;
+    color: #ffffff;
+    font-size: 1.03rem;
+    font-weight: 900;
+    box-shadow: 0 5px 0 #d75300, 0 10px 20px rgba(255, 106, 0, 0.24);
+}
+
+.pricing-cta-basic {
+    padding: 0.95rem 1.05rem;
+    margin-bottom: 0.9rem;
+    border-radius: 1rem;
+    background: linear-gradient(180deg, #1f2937 0%, #111827 100%);
+    border: 3px solid #0f172a;
+    color: #f8fafc;
+    font-size: 0.97rem;
+    font-weight: 800;
+    box-shadow: 0 5px 0 #020617, 0 8px 14px rgba(15, 23, 42, 0.16);
+}
+
+.pricing-cta-note {
+    display: block;
+    margin: 0;
+    text-align: center;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: rgba(15, 23, 42, 0.62);
+}
+
+.angel-pass-section .pricing-cta-note,
+.featured-pass-section .pricing-cta-note {
+    color: rgba(128, 142, 177, 0.62);
+    font-weight: 700;
+    text-shadow: none;
+}
+
+.pricing-cta-note-basic {
+    margin-top: 0;
+    color: #94a3b8;
+}
+
+.angel-pass-section .pricing-unit,
+.featured-pass-section .pricing-unit,
+.featured-pass-section .pricing-unit-basic {
+    color: rgba(175, 188, 219, 0.72);
+}
+
+.angel-pass-section .pricing-benefit-icon,
+.featured-pass-section .pricing-benefit-icon {
+    background: rgba(103, 117, 151, 0.3);
+    color: #dde8ff;
+}
+
+.jello-pass-section .pricing-panel-head-basic h4,
+.basic-pass-section .pricing-panel-head-basic h4 {
+    color: #0f172a;
+}
+
+.jello-pass-section .pricing-panel-head-basic p,
+.jello-pass-section .pricing-benefits-basic li span:last-child,
+.basic-pass-section .pricing-panel-head-basic p,
+.basic-pass-section .pricing-benefits-basic li span:last-child {
+    color: #64748b;
+}
+
+.jello-pass-section .pricing-benefit-dot,
+.basic-pass-section .pricing-benefit-dot {
+    background: #f8fafc;
+    color: #64748b;
+    border-color: #e2e8f0;
 }
 
 /* Premium Active View */
