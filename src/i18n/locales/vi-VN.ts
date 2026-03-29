@@ -1065,8 +1065,8 @@ export const viVN = {
                             "🤩 hehe quá!"
                       ],
                       "grumpy": [
-                            "🙀 đừng chọc!!",
-                            "😼 đừng chọc luôn!",
+                            "🙀 đi chỗ khác.",
+                            "😼 im lặng nha.",
                             "👀 đừng chọc quá!"
                       ],
                       "energetic": [
@@ -1229,9 +1229,9 @@ export const viVN = {
                             "🌛 ngáp rồi nè!"
                       ],
                       "grumpy": [
-                            "👿 im lặng đi!",
-                            "🐕 im lặng đi nha!",
-                            "✋ im lặng đi nè!"
+                            "👿 đừng đánh thức!",
+                            "🐕 ..gừ gừ.",
+                            "✋ nghỉ chút nhé."
                       ],
                       "energetic": [
                             "🔌 hết pin rồi!",
@@ -1262,7 +1262,7 @@ export const viVN = {
                       ],
                       "grumpy": [
                             "😑 im lặng đi!!",
-                            "💢 im lặng đi luôn!",
+                            "💢 muốn nghỉ thôi..",
                             "💤 im lặng đi quá!"
                       ],
                       "energetic": [
@@ -1424,9 +1424,9 @@ export const viVN = {
                             "🙈 sợ quá nè!"
                       ],
                       "grumpy": [
-                            "😫 khó chịu quá!",
-                            "😤 khó chịu quá nha!",
-                            "🦁 khó chịu quá nè!"
+                            "😫 lo quá!",
+                            "😤 chờ chút.",
+                            "🦁 gừ gừ."
                       ],
                       "energetic": [
                             "🫢 nguy rồi!",
@@ -1456,7 +1456,7 @@ export const viVN = {
                             "😱 sợ quá quá!"
                       ],
                       "grumpy": [
-                            "🚮 khó chịu quá!!",
+                            "🚮 nguy thật!",
                             "😫 khó chịu quá luôn!",
                             "🤬 khó chịu quá quá!"
                       ],
@@ -1490,9 +1490,9 @@ export const viVN = {
                             "😿 bực quá nè~"
                       ],
                       "grumpy": [
-                            "👉 hứ~",
-                            "🤫 hứ nha~",
-                            "🌩️ hứ nè~"
+                            "👉 không~",
+                            "🤫 im đi~",
+                            "🌩️ dừng lại~"
                       ],
                       "energetic": [
                             "😡 tức quá~",
@@ -1522,13 +1522,13 @@ export const viVN = {
                             "😣 bực quá nè!"
                       ],
                       "grumpy": [
-                            "👿 hứ!",
-                            "🙈 hứ nha!",
-                            "🗯️ hứ nè!"
+                            "👿 bực quá!",
+                            "🙈 đừng nhìn nha!",
+                            "🗯️ giận rồi nè!"
                       ],
                       "energetic": [
                             "👺 tức quá!",
-                            "💢 tức quá nha!",
+                            "💢 bực quá nha!",
                             "🥊 tức quá nè!"
                       ]
                 },
@@ -1539,8 +1539,8 @@ export const viVN = {
                             "💢 giận rồi quá!"
                       ],
                       "playful": [
-                            "🚂 không vui đâu!!",
-                            "🌪️ không vui đâu luôn!",
+                            "🚂 rầm rầm!!",
+                            "🌪️ giận lắm luôn!",
                             "😈 không vui đâu quá!"
                       ],
                       "calm": [
@@ -1554,13 +1554,13 @@ export const viVN = {
                             "👶 bực quá quá!"
                       ],
                       "grumpy": [
-                            "🌋 hứ!!",
-                            "💨 hứ luôn!",
+                            "🌋 giận lắm!!",
+                            "💨 tránh ra luôn!",
                             "😫 hứ quá!"
                       ],
                       "energetic": [
-                            "🔥 tức quá!!",
-                            "🔨 tức quá luôn!",
+                            "🔥 giận lắm!!",
+                            "🔨 áaa luôn!",
                             "🤬 tức quá quá!"
                       ]
                 }

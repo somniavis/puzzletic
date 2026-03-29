@@ -739,11 +739,11 @@ export const enUK = {
       },
       l3: {
         affectionate: ['😿 Forgot me? T.T', '🍂 Lonely..', '😭 Sob'],
-        playful: ['🤪 Messy!', '😈 Won\'t let you be!', '🖌️ Prank time.'],
+        playful: ['🤪 Messy!', '😈 Won\'t let you be!', '🖌️ Pranks?!'],
         calm: ['🌑 Lonely.', '🤐 Silence.', '😶🌫️ Blank.'],
         shy: ['🤧 (Sniffle)', '😨 Scared..', '🌃 Dark..'],
-        grumpy: ['✋ Go away!', '🙉 Noisy.', '👎 Bad mood.'],
-        energetic: ['🌋 Can\'t take it!', '🏃 Gonna run!', '😫 Aaaah!'],
+        grumpy: ['✋ Go away.', '🙉 Quiet.', '👎 Bad mood.'],
+        energetic: ['🌋 Frustrating!', '🏃 Gonna run!', '😫 Aah!'],
       },
     },
     sleepy: {
@@ -760,7 +760,7 @@ export const enUK = {
         playful: ['😴 Snore!', '🤥 Phew..', '💬 Sleep talk..'],
         calm: ['🛌 Deep sleep.', '🌙 Sleeping.', '🤫 Quietly.'],
         shy: ['🛌 (Under blanket)', '😪 ..Zzz', '🌛 Good night..'],
-        grumpy: ['👿 Wake me and else.', '🐕 ..Growl.', '✋ Go away.'],
+        grumpy: ['👿 Don\'t wake me.', '🐕 ..Growl.', '✋ Let me rest.'],
         energetic: ['🔌 Charging!', '📴 Power..off.', '🪫 Drained.'],
       },
       l3: {
@@ -812,7 +812,7 @@ export const enUK = {
         playful: ['🏃 Run!', '📢 Big trouble!', '😱 Aaa!'],
         calm: ['✋ Warning.', '⛔️ Danger.', '↩️ Evacuate.'],
         shy: ['🫨 (Shake)', '📦 Hide..', '🙈 Can\'t look..'],
-        grumpy: ['😫 Annoying.', '😤 Move.', '🦁 Growl.'],
+        grumpy: ['😫 Worried.', '😤 Wait.', '🦁 Growl.'],
         energetic: ['🫢 Surprised!', '🆘 Help!', '🌪️ Crash!'],
       },
       l3: {
@@ -820,7 +820,7 @@ export const enUK = {
         playful: ['😭 Waaa!', '🚑 Help!', '🤱 Mummy!'],
         calm: ['📉 Despair.', '🧩 Out of control.', '❌ The end.'],
         shy: ['🥀 (Faint)', '💦 Crying', '😱 No way..'],
-        grumpy: ['🚮 Ruined!', '😫 Doomed.', '🤬 Ugh!'],
+        grumpy: ['🚮 Trouble!', '😫 Doomed.', '🤬 Ugh!'],
         energetic: ['🤯 Panic!', '🧱 Crash!', '🆘 Help!!'],
       },
     },
@@ -911,12 +911,12 @@ export const enUK = {
       neutral: {
         l1: { affectionate: ['🧸 Bored..', '🥺 Play..', '💧 Sob'], playful: ['🤔 Hmm?', '😈 Hehe?', '💬 Bored..'], calm: ['🤫 Shh.', '😶 ...', '🕊️ Peace.'], shy: ['👀 Glance', '😐 ...', '🐜 Umm..'], grumpy: ['😩 Boring.', '🌬️ Sigh..', '😑 Dul.'], energetic: ['🤸 Itch!', '🚪 Go!', '💣 Boom!'] },
         l2: { affectionate: ['🔭 Look..', '👣 Gone?', '🐕 Wait.'], playful: ['⚡️ Zap!', '👆 Poke.', '📢 Hey!'], calm: ['💭 Think.', '🧘 Zen.', '🍵 Tea.'], shy: ['👉👈 Fidget', '🍃 Alone..', '🔇 Quiet..'], grumpy: ['🌵 Don\'t.', '🛌 Leave.', '😤 Tsh.'], energetic: ['🐜 Itchy!', '💨 Ugh!', '📢 Aah!'] },
-        l3: { affectionate: ['😿 Forgot?', '🍂 Lonely..', '😭 Sob'], playful: ['🤪 Mess!', '😈 Grr!', '🖌️ Prank.'], calm: ['🌑 Lone.', '🤐 Zip.', '😶 Blank.'], shy: ['🤧 Sniff', '😨 Scared..', '🌃 Dark..'], grumpy: ['✋ Away!', '🙉 Loud.', '👎 Bad.'], energetic: ['🌋 Mad!', '🏃 Run!', '😫 Argh!'] },
+        l3: { affectionate: ['😿 Forgot?', '🍂 Lonely..', '😭 Sob'], playful: ['🤪 Mess!', '😈 Grr!', '🖌️ Pranks?!'], calm: ['🌑 Lone.', '🤐 Zip.', '😶 Blank.'], shy: ['🤧 Sniff', '😨 Scared..', '🌃 Dark..'], grumpy: ['✋ Go away.', '🙉 Quiet.', '👎 Bad.'], energetic: ['🌋 Frustrating!', '🏃 Run!', '😫 Aah!'] },
       },
       sleepy: {
         l1: { affectionate: ['🥱 Yawn..', '🎶 Lullaby', '🧸 Hug zZ'], playful: ['🥴 Play..', '🙅 No sleep', '😪 Nod..'], calm: ['🫢 Yawn.', '🛀 Tired.', '🍵 Rest.'], shy: ['😵 Drowsy..', '🛌 Sleep?', '🤤 Drool..'], grumpy: ['💡 Off.', '🚫 Shh.', '💤 Zzz'], energetic: ['🚲 Awake..', '🔋 zZ', '😵 Faint..'] },
-        l2: { affectionate: ['🌈 Dream..', '🐑 Cozy..', '💤 Zzz..'], playful: ['😴 Snore!', '🤥 Phew..', '💬 Murnble..'], calm: ['🛌 Sleep.', '🌙 Deep.', '🤫 Shh.'], shy: ['🛌 Huddle', '😪 Zzz', '🌛 Night..'], grumpy: ['👿 Don\'t.', '🐕 Grr.', '✋ Away.'], energetic: ['🔌 Charge!', '📴 Off.', '🪫 Low.'] },
-        l3: { affectionate: ['🌠 Night..', '💜 Love..', '😴 zZz'], playful: ['💤 Krr..', '🐴 Prr..', '🛌 Thud!'], calm: ['🌑 ...', '😶 ...', '🔇 ...'], shy: ['👶 Zzz..', '🌙 ...', '🫧 zZ..'], grumpy: ['😑 ...', '💢 Don\'t..', '💤 ...'], energetic: ['🪫 ...', '☠️ Dead.', '😵 ...'] },
+        l2: { affectionate: ['🌈 Dream..', '🐑 Cozy..', '💤 Zzz..'], playful: ['😴 Snore!', '🤥 Phew..', '💬 Murnble..'], calm: ['🛌 Sleep.', '🌙 Deep.', '🤫 Shh.'], shy: ['🛌 Huddle', '😪 Zzz', '🌛 Night..'], grumpy: ['👿 Don\'t wake me.', '🐕 Grr.', '✋ Let me rest.'], energetic: ['🔌 Charge!', '📴 Off.', '🪫 Low.'] },
+        l3: { affectionate: ['🌠 Night..', '💜 Love..', '😴 zZz'], playful: ['💤 Krr..', '🐴 Prr..', '🛌 Thud!'], calm: ['🌑 ...', '😶 ...', '🔇 ...'], shy: ['👶 Zzz..', '🌙 ...', '🫧 zZ..'], grumpy: ['😑 ...', '💢 Let me rest..', '💤 ...'], energetic: ['🪫 ...', '☠️ Dead.', '😵 ...'] },
       },
       sick: {
         l1: { affectionate: ['🤕 Ouch..', '🩹 Help..', '🤒 Sick..'], playful: ['😖 Ugh!', '🤥 Fine?', '💥 Ouch!'], calm: ['🌡️ Sick.', '💫 Dizzy.', '🛌 Rest.'], shy: ['😣 Groan..', '😢 Hurt..', '🤧 Sniff..'], grumpy: ['🤦 Oh.', '💢 Pain.', '😔 Sad.'], energetic: ['😵 Why?', '📉 Weak..', '🥴 Stumble'] },
@@ -925,13 +925,13 @@ export const enUK = {
       },
       worried: {
         l1: { affectionate: ['😟 Okay?', '😥 Worry..', '⚠️ Care'], playful: ['😲 Huh?', '💦 Oh no!', '😳 Eh?'], calm: ['🔍 Check.', '⁉️ Problem.', '🛡️ Safe.'], shy: ['😖 Ugh..', '👣 Fidget..', '😢 Sob..'], grumpy: ['😒 What?', '😠 Bad.', '☁️ Ominous.'], energetic: ['🚨 Alert!', '☢️ Danger!', '🚧 Watch!'] },
-        l2: { affectionate: ['😨 Scared..', '🛡️ Protect..', '🥶 Shake..'], playful: ['🏃 Run!', '📢 Trouble!', '😱 Ack!'], calm: ['✋ Careful.', '⛔️ Danger.', '↩️ Avoid.'], shy: ['🫨 Shake', '📦 Hide..', '🙈 Can\'t look'], grumpy: ['😫 Annoy.', '😤 Move.', '🦁 Grr.'], energetic: ['🫢 Ah!', '🆘 Help!', '🌪️ Crash!'] },
-        l3: { affectionate: ['😭 No go..', '💔 Lonely..', '🧟 Scary..'], playful: ['😭 Waa!', '🚑 Help!', '🤱 Mum!'], calm: ['📉 Bad.', '🧩 Hard.', '❌ No.'], shy: ['🥀 Thud', '💦 Tears', '😱 No way..'], grumpy: ['🚮 Mess!', '😫 Ruin.', '🤬 Argh!'], energetic: ['🤯 What!', '🧱 Crash!', '🆘 Help!!'] },
+        l2: { affectionate: ['😨 Scared..', '🛡️ Protect..', '🥶 Shake..'], playful: ['🏃 Run!', '📢 Trouble!', '😱 Ack!'], calm: ['✋ Careful.', '⛔️ Danger.', '↩️ Avoid.'], shy: ['🫨 Shake', '📦 Hide..', '🙈 Can\'t look'], grumpy: ['😫 Worried.', '😤 Wait.', '🦁 Grr.'], energetic: ['🫢 Ah!', '🆘 Help!', '🌪️ Crash!'] },
+        l3: { affectionate: ['😭 No go..', '💔 Lonely..', '🧟 Scary..'], playful: ['😭 Waa!', '🚑 Help!', '🤱 Mum!'], calm: ['📉 Bad.', '🧩 Hard.', '❌ No.'], shy: ['🥀 Thud', '💦 Tears', '😱 No way..'], grumpy: ['🚮 Trouble!', '😫 Ruin.', '🤬 Argh!'], energetic: ['🤯 What!', '🧱 Crash!', '🆘 Help!!'] },
       },
       angry: {
-        l1: { affectionate: ['😤 Hmph!', '😞 Mean!', '😒 Pout'], playful: ['👊 Hah!', '🥊 Pow!', '⚔️ Attack!'], calm: ['😔 Disappoint.', '✋ Stop.', '😐 Unpleasant.'], shy: ['🥺 Sob', '😢 Mean..', '😿 Hate..'], grumpy: ['👉 Go.', '🤫 Shh.', '🌩️ Scold.'], energetic: ['😡 Mad!', '🥋 Fight!', '🦁 Raah!'] },
-        l2: { affectionate: ['😠 Hate!', '🙅 No play!', '🤥 Liar!'], playful: ['💣 Boom!', '🐊 Bite!', '🦖 Rawr!'], calm: ['⚠️ Warn.', '🚫 No.', '🛑 Stop.'], shy: ['😭 Sob', '👋 Go!', '😣 No!'], grumpy: ['👿 Scold?', '🙈 Don\'t look.', '🗯️ No.'], energetic: ['👺 Rage!!', '💢 Angry!', '🥊 Come on!'] },
-        l3: { affectionate: ['😤 Hmph!', '🙈 Hate!', '💢 Hmph!!'], playful: ['🚂 Choo!', '🌪️ Mess!', '😈 Grr!'], calm: ['😑 Over.', '🛑 Stop.', '🔚 End.'], shy: ['🌊 Waa!', '😭 Waa!!', '👶 Waa!'], grumpy: ['🌋 Mad.', '💨 Gone.', '😫 Ugh!'], energetic: ['🔥 Fury!', '🔨 Smash!', '🤬 Rage!'] },
+        l1: { affectionate: ['😤 Hmph!', '😞 Mean!', '😒 Pout'], playful: ['👊 Hah!', '🥊 Pow!', '⚔️ Attack!'], calm: ['😔 Disappoint.', '✋ Stop.', '😐 Unpleasant.'], shy: ['🥺 Sob', '😢 Mean..', '😿 Hate..'], grumpy: ['👉 No.', '🤫 Quiet.', '🌩️ Stop.'], energetic: ['😡 Mad!', '🥋 Fight!', '🦁 Raah!'] },
+        l2: { affectionate: ['😠 Hate!', '🙅 No play!', '🤥 Liar!'], playful: ['💣 Boom!', '🐊 Bite!', '🦖 Rawr!'], calm: ['⚠️ Warn.', '🚫 No.', '🛑 Stop.'], shy: ['😭 Sob', '👋 Go!', '😣 No!'], grumpy: ['👿 Annoying.', '🙈 Don\'t look.', '🗯️ I\'m mad.'], energetic: ['👺 I\'m mad!', '💢 Annoying!', '🥊 Come on!'] },
+        l3: { affectionate: ['😤 Hmph!', '🙈 Hate!', '💢 Hmph!!'], playful: ['🚂 Crash!', '🌪️ So mad!', '😈 Grr!'], calm: ['😑 Over.', '🛑 Stop.', '🔚 End.'], shy: ['🌊 Waa!', '😭 Waa!!', '👶 Waa!'], grumpy: ['🌋 So mad.', '💨 Go away.', '😫 Ugh!'], energetic: ['🔥 Very mad!', '🔨 Aah!', '🤬 Rage!'] },
       },
     },
   },

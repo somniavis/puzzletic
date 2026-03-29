@@ -739,11 +739,11 @@ export const idID = {
       },
       l3: {
         affectionate: ['😿 Lupa aku? T.T', '🍂 Sepi..', '😭 Hiks'],
-        playful: ['🤪 Berantakan!', '😈 Gak bakal kubiarin!', '🖌️ Waktunya iseng.'],
+        playful: ['🤪 Berantakan!', '😈 Gak bakal kubiarin!', '🖌️ Iseng?!'],
         calm: ['🌑 Sendiri.', '🤐 Sunyi.', '😶🌫️ Hampa.'],
         shy: ['🤧 (Snif)', '😨 Takut..', '🌃 Gelap..'],
-        grumpy: ['✋ Sana!', '🙉 Berisik.', '👎 Mood jelek.'],
-        energetic: ['🌋 Udah gak tahan!', '🏃 Mau lari!', '😫 Aaaah!'],
+        grumpy: ['✋ Pergi.', '🙉 Diam.', '👎 Mood jelek.'],
+        energetic: ['🌋 Gerah!', '🏃 Mau lari!', '😫 Aah!'],
       },
     },
     sleepy: {
@@ -760,7 +760,7 @@ export const idID = {
         playful: ['😴 Ngorok!', '🤥 Huh..', '💬 Ngigau..'],
         calm: ['🛌 Tidur nyenyak.', '🌙 Lagi tidur.', '🤫 Pelan-pelan.'],
         shy: ['🛌 (Di bawah selimut)', '😪 ..Zzz', '🌛 Selamat malam..'],
-        grumpy: ['👿 Bangunin berani coba.', '🐕 ..Grrr.', '✋ Pergi.'],
+        grumpy: ['👿 Jangan bangunin.', '🐕 ..Grrr.', '✋ Biarin.'],
         energetic: ['🔌 Lagi ngecas!', '📴 Daya..off.', '🪫 Habis.'],
       },
       l3: {
@@ -820,7 +820,7 @@ export const idID = {
         playful: ['😭 Waaa!', '🚑 Tolong!', '🤱 Mama!'],
         calm: ['📉 Putus asa.', '🧩 Gak terkendali.', '❌ Tamat.'],
         shy: ['🥀 (Pingsan)', '💦 Nangis', '😱 Gak mungkin..'],
-        grumpy: ['🚮 Berantakan!', '😫 Hancur.', '🤬 Duh!'],
+        grumpy: ['🚮 Gawat!', '😫 Hancur.', '🤬 Duh!'],
         energetic: ['🤯 Panik!', '🧱 Brak!', '🆘 Tolong!!'],
       },
     },
@@ -911,12 +911,12 @@ export const idID = {
       neutral: {
         l1: { affectionate: ['🧸 Bosan..', '🥺 Main..', '💧 Hiks'], playful: ['🤔 Hmm?', '😈 Hehe?', '💬 Bosan..'], calm: ['🤫 Sst.', '😶 ...', '🕊️ Tenang.'], shy: ['👀 Lirik', '😐 ...', '🐜 Umm..'], grumpy: ['😩 Bosen.', '🌬️ Huh..', '😑 Gitu.'], energetic: ['🤸 Gatel!', '🚪 Ayo!', '💣 Boom!'] },
         l2: { affectionate: ['🔭 Lihat..', '👣 Hilang?', '🐕 Tunggu.'], playful: ['⚡️ Zap!', '👆 Colet.', '📢 Hei!'], calm: ['💭 Mikir.', '🧘 Tenang.', '🍵 Teh.'], shy: ['👉👈 Gelisah', '🍃 Sendiri..', '🔇 Sunyi..'], grumpy: ['🌵 Jangan.', '🛌 Pergi.', '😤 Tsk.'], energetic: ['🐜 Gatel!', '💨 Duh!', '📢 Aah!'] },
-        l3: { affectionate: ['😿 Lupa ya?', '🍂 Sepi..', '😭 Hiks'], playful: ['🤪 Berantak!', '😈 Grr!', '🖌️ Iseng.'], calm: ['🌑 Sendiri.', '🤐 Diam.', '😶 Kosong.'], shy: ['🤧 Snif', '😨 Takut..', '🌃 Gelap..'], grumpy: ['✋ Sana!', '🙉 Berisik.', '👎 Jelek.'], energetic: ['🌋 Kesel!', '🏃 Lari!', '😫 Aaa!'] },
+        l3: { affectionate: ['😿 Lupa ya?', '🍂 Sepi..', '😭 Hiks'], playful: ['🤪 Berantak!', '😈 Grr!', '🖌️ Iseng?!'], calm: ['🌑 Sendiri.', '🤐 Diam.', '😶 Kosong.'], shy: ['🤧 Snif', '😨 Takut..', '🌃 Gelap..'], grumpy: ['✋ Pergi.', '🙉 Diam.', '👎 Jelek.'], energetic: ['🌋 Gerah!', '🏃 Lari!', '😫 Aah!'] },
       },
       sleepy: {
         l1: { affectionate: ['🥱 Nguap..', '🎶 Nina bobo', '🧸 Peluk zZ'], playful: ['🥴 Main..', '🙅 Belum tidur', '😪 Ngantuk..'], calm: ['🫢 Nguap.', '🛀 Capek.', '🍵 Istirahat.'], shy: ['😵 Ngantuk..', '🛌 Tidur?', '🤤 Ngesot..'], grumpy: ['💡 Mati.', '🚫 Sst.', '💤 Zzz'], energetic: ['🚲 Bangun..', '🔋 zZ', '😵 Pingsan..'] },
-        l2: { affectionate: ['🌈 Mimpi..', '🐑 Nyaman..', '💤 Zzz..'], playful: ['😴 Ngorok!', '🤥 Huh..', '💬 Ngigo..'], calm: ['🛌 Tidur.', '🌙 Nyenyak.', '🤫 Sst.'], shy: ['🛌 Meringkuk', '😪 Zzz', '🌛 Malam..'], grumpy: ['👿 Jangan.', '🐕 Grr.', '✋ Pergi.'], energetic: ['🔌 Ngecas!', '📴 Off.', '🪫 Low.'] },
-        l3: { affectionate: ['🌠 Malam..', '💜 Sayang..', '😴 zZz'], playful: ['💤 Krr..', '🐴 Prr..', '🛌 Dug!'], calm: ['🌑 ...', '😶 ...', '🔇 ...'], shy: ['👶 Zzz..', '🌙 ...', '🫧 zZ..'], grumpy: ['😑 ...', '💢 Jangan..', '💤 ...'], energetic: ['🪫 ...', '☠️ Habis.', '😵 ...'] },
+        l2: { affectionate: ['🌈 Mimpi..', '🐑 Nyaman..', '💤 Zzz..'], playful: ['😴 Ngorok!', '🤥 Huh..', '💬 Ngigo..'], calm: ['🛌 Tidur.', '🌙 Nyenyak.', '🤫 Sst.'], shy: ['🛌 Meringkuk', '😪 Zzz', '🌛 Malam..'], grumpy: ['👿 Jangan bangunin.', '🐕 Grr.', '✋ Biarin.'], energetic: ['🔌 Ngecas!', '📴 Off.', '🪫 Low.'] },
+        l3: { affectionate: ['🌠 Malam..', '💜 Sayang..', '😴 zZz'], playful: ['💤 Krr..', '🐴 Prr..', '🛌 Dug!'], calm: ['🌑 ...', '😶 ...', '🔇 ...'], shy: ['👶 Zzz..', '🌙 ...', '🫧 zZ..'], grumpy: ['😑 ...', '💢 Mau istirahat..', '💤 ...'], energetic: ['🪫 ...', '☠️ Habis.', '😵 ...'] },
       },
       sick: {
         l1: { affectionate: ['🤕 Aduh..', '🩹 Tolong..', '🤒 Sakit..'], playful: ['😖 Ih!', '🤥 Gak apa?', '💥 Aduh!'], calm: ['🌡️ Sakit.', '💫 Pusing.', '🛌 Istirahat.'], shy: ['😣 Uhh..', '😢 Sakit..', '🤧 Snif..'], grumpy: ['🤦 Yah.', '💢 Nyeri.', '😔 Sedih.'], energetic: ['😵 Kenapa?', '📉 Lemas..', '🥴 Oleng'] },
@@ -925,13 +925,13 @@ export const idID = {
       },
       worried: {
         l1: { affectionate: ['😟 Oke?', '😥 Khawatir..', '⚠️ Hati-hati'], playful: ['😲 Hah?', '💦 Waduh!', '😳 Eh?'], calm: ['🔍 Cek.', '⁉️ Masalah.', '🛡️ Aman.'], shy: ['😖 Duh..', '👣 Gelisah..', '😢 Hiks..'], grumpy: ['😒 Apa?', '😠 Jelek.', '☁️ Suram.'], energetic: ['🚨 Waspada!', '☢️ Bahaya!', '🚧 Awas!'] },
-        l2: { affectionate: ['😨 Takut..', '🛡️ Lindungi..', '🥶 Gemetar..'], playful: ['🏃 Lari!', '📢 Gawat!', '😱 Aah!'], calm: ['✋ Pelan.', '⛔️ Bahaya.', '↩️ Hindari.'], shy: ['🫨 Gemetaran', '📦 Sembunyi..', '🙈 Gak berani lihat'], grumpy: ['😫 Kesel.', '😤 Minggir.', '🦁 Grr.'], energetic: ['🫢 Ah!', '🆘 Tolong!', '🌪️ Hancur!'] },
-        l3: { affectionate: ['😭 Jangan..', '💔 Sepi..', '🧟 Serem..'], playful: ['😭 Waa!', '🚑 Tolong!', '🤱 Mama!'], calm: ['📉 Buruk.', '🧩 Susah.', '❌ Gak bisa.'], shy: ['🥀 Jatuh', '💦 Air mata', '😱 Ngeri..'], grumpy: ['🚮 Berantak!', '😫 Rusak.', '🤬 Argh!'], energetic: ['🤯 Apa ini!', '🧱 Brak!', '🆘 Tolong!!'] },
+        l2: { affectionate: ['😨 Takut..', '🛡️ Lindungi..', '🥶 Gemetar..'], playful: ['🏃 Lari!', '📢 Gawat!', '😱 Aah!'], calm: ['✋ Pelan.', '⛔️ Bahaya.', '↩️ Hindari.'], shy: ['🫨 Gemetaran', '📦 Sembunyi..', '🙈 Gak berani lihat'], grumpy: ['😫 Cemas.', '😤 Tunggu.', '🦁 Grr.'], energetic: ['🫢 Ah!', '🆘 Tolong!', '🌪️ Hancur!'] },
+        l3: { affectionate: ['😭 Jangan..', '💔 Sepi..', '🧟 Serem..'], playful: ['😭 Waa!', '🚑 Tolong!', '🤱 Mama!'], calm: ['📉 Buruk.', '🧩 Susah.', '❌ Gak bisa.'], shy: ['🥀 Jatuh', '💦 Air mata', '😱 Ngeri..'], grumpy: ['🚮 Gawat!', '😫 Rusak.', '🤬 Argh!'], energetic: ['🤯 Apa ini!', '🧱 Brak!', '🆘 Tolong!!'] },
       },
       angry: {
-        l1: { affectionate: ['😤 Huh!', '😞 Jahat!', '😒 Cemberut'], playful: ['👊 Hah!', '🥊 Bam!', '⚔️ Serang!'], calm: ['😔 Kecewa.', '✋ Stop.', '😐 Gak enak.'], shy: ['🥺 Hiks', '😢 Jahat..', '😿 Gak suka..'], grumpy: ['👉 Sana.', '🤫 Diam.', '🌩️ Marah.'], energetic: ['😡 Marah!', '🥋 Berantem!', '🦁 Raah!'] },
-        l2: { affectionate: ['😠 Benci!', '🙅 Gak mau main!', '🤥 Bohong!'], playful: ['💣 Boom!', '🐊 Gigit!', '🦖 Rawr!'], calm: ['⚠️ Peringatan.', '🚫 Enggak.', '🛑 Berhenti.'], shy: ['😭 Hiks', '👋 Pergi!', '😣 Nggak!'], grumpy: ['👿 Mau dimarahin?', '🙈 Jangan lihat.', '🗯️ Nggak.'], energetic: ['👺 Ngamuk!!', '💢 Marah!', '🥊 Sini!'] },
-        l3: { affectionate: ['😤 Huh!', '🙈 Gak suka!', '💢 Huh!!'], playful: ['🚂 Tuut!', '🌪️ Berantak!', '😈 Grr!'], calm: ['😑 Udah.', '🛑 Stop.', '🔚 Selesai.'], shy: ['🌊 Waa!', '😭 Waa!!', '👶 Waaa!'], grumpy: ['🌋 Marah.', '💨 Hilang.', '😫 Duh!'], energetic: ['🔥 Murka!', '🔨 Hancurin!', '🤬 Ngamuk!'] },
+        l1: { affectionate: ['😤 Huh!', '😞 Jahat!', '😒 Cemberut'], playful: ['👊 Hah!', '🥊 Bam!', '⚔️ Serang!'], calm: ['😔 Kecewa.', '✋ Stop.', '😐 Gak enak.'], shy: ['🥺 Hiks', '😢 Jahat..', '😿 Gak suka..'], grumpy: ['👉 Nggak.', '🤫 Diam.', '🌩️ Stop.'], energetic: ['😡 Marah!', '🥋 Berantem!', '🦁 Raah!'] },
+        l2: { affectionate: ['😠 Benci!', '🙅 Gak mau main!', '🤥 Bohong!'], playful: ['💣 Boom!', '🐊 Gigit!', '🦖 Rawr!'], calm: ['⚠️ Peringatan.', '🚫 Enggak.', '🛑 Berhenti.'], shy: ['😭 Hiks', '👋 Pergi!', '😣 Nggak!'], grumpy: ['👿 Kesal.', '🙈 Jangan lihat.', '🗯️ Aku marah.'], energetic: ['👺 Marah!', '💢 Kesal!', '🥊 Sini!'] },
+        l3: { affectionate: ['😤 Huh!', '🙈 Gak suka!', '💢 Huh!!'], playful: ['🚂 Brak!', '🌪️ Marah banget!', '😈 Grr!'], calm: ['😑 Udah.', '🛑 Stop.', '🔚 Selesai.'], shy: ['🌊 Waa!', '😭 Waa!!', '👶 Waaa!'], grumpy: ['🌋 Marah banget.', '💨 Sana.', '😫 Duh!'], energetic: ['🔥 Marah banget!', '🔨 Aah!', '🤬 Ngamuk!'] },
       },
     },
   },
