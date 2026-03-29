@@ -188,7 +188,7 @@ export const PremiumPurchaseModal: React.FC<PremiumPurchaseModalProps> = ({ isOp
                         onClick={() => {
                             playButtonSound();
                             onClose();
-                            navigate('/profile');
+                            navigate('/profile?tab=pass');
                         }}
                         style={{
                             background: 'linear-gradient(180deg, #FFD700 0%, #FFA500 100%)',
