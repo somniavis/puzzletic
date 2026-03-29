@@ -54,7 +54,7 @@ export const EmotionBubble: React.FC<EmotionBubbleProps> = ({
         stage && stage <= 2
           ? ['emotions.emoji']
           : stage === 3
-            ? ['emotions.toddler', 'emotions.emoji', 'emotions']
+            ? ['emotions.toddler', 'emotions', 'emotions.emoji']
             : ['emotions'];
 
       for (const rootKey of rootKeys) {

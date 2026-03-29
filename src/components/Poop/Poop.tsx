@@ -3,7 +3,7 @@
  * 똥 오브젝트 렌더링
  */
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Poop as PoopType } from '../../types/nurturing';
 import './Poop.css';
@@ -11,23 +11,31 @@ import './Poop.css';
 interface PoopProps {
   poop: PoopType;
   onClick?: (poopId: string) => void;
+  cleanupTrigger?: number;
 }
 
-export const Poop: React.FC<PoopProps> = ({ poop, onClick }) => {
+export const Poop: React.FC<PoopProps> = ({ poop, onClick, cleanupTrigger }) => {
   const { t } = useTranslation();
   const [isBeingCleaned, setIsBeingCleaned] = useState(false);
 
-  const handleClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
+  const startCleaning = () => {
     if (isBeingCleaned || !onClick) return;
 
-    // 빗자루 애니메이션 시작
     setIsBeingCleaned(true);
 
-    // 애니메이션 후 제거
     setTimeout(() => {
       onClick(poop.id);
     }, 400); // 애니메이션 duration과 맞춤
+  };
+
+  useEffect(() => {
+    if (cleanupTrigger == null) return;
+    startCleaning();
+  }, [cleanupTrigger]);
+
+  const handleClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    startCleaning();
   };
 
   return (

@@ -6,7 +6,13 @@ export type EmotionCategory =
   | 'sleepy'
   | 'sick'
   | 'worried'
-  | 'angry';
+  | 'angry'
+  | 'eat'
+  | 'eat_aftereffect'
+  | 'medicine_pill'
+  | 'medicine_shot'
+  | 'clean_spot'
+  | 'clean_fresh';
 
 export interface EmotionExpression {
   emoji: string;

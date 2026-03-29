@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Bug as BugType } from '../../types/nurturing';
 import './Bug.css';
@@ -6,9 +6,10 @@ import './Bug.css';
 interface BugProps {
   bug: BugType;
   onClick: (bugId: string) => void;
+  cleanupTrigger?: number;
 }
 
-export const Bug: React.FC<BugProps> = ({ bug, onClick }) => {
+export const Bug: React.FC<BugProps> = ({ bug, onClick, cleanupTrigger }) => {
   const { t } = useTranslation();
   const [isBeingSwatted, setIsBeingSwatted] = useState(false);
 
@@ -23,16 +24,24 @@ export const Bug: React.FC<BugProps> = ({ bug, onClick }) => {
     }
   };
 
-  const handleClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
+  const startSwat = () => {
     if (isBeingSwatted) return;
 
     setIsBeingSwatted(true);
 
-    // 애니메이션 후 제거
     setTimeout(() => {
       onClick(bug.id);
     }, 500); // 애니메이션 duration과 맞춤
+  };
+
+  useEffect(() => {
+    if (cleanupTrigger == null) return;
+    startSwat();
+  }, [cleanupTrigger]);
+
+  const handleClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    startSwat();
   };
 
   // 각 벌레의 애니메이션 시작 시간을 랜덤화하여 동기화를 방지

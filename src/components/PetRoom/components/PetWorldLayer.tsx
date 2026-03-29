@@ -33,6 +33,8 @@ interface PetWorldLayerProps {
     isCleaning: boolean;
     isBrushing: boolean;
     activeCleaningToolId: string | null;
+    poopCleanupTarget: { id: string; token: number } | null;
+    bugCleanupTarget: { id: string; token: number } | null;
 
     // Handlers
     onOpenTrainGift: (rect: DOMRect) => void;
@@ -62,6 +64,8 @@ export const PetWorldLayer: React.FC<PetWorldLayerProps> = ({
     isCleaning,
     isBrushing,
     activeCleaningToolId,
+    poopCleanupTarget,
+    bugCleanupTarget,
     onOpenTrainGift,
     onTrainComplete,
     onHouseClick,
@@ -140,12 +144,22 @@ export const PetWorldLayer: React.FC<PetWorldLayerProps> = ({
 
             {/* Poops */}
             {!showGiftBox && nurturing.poops.map((poop) => (
-                <Poop key={poop.id} poop={poop} onClick={() => onPoopClick(poop.id)} />
+                <Poop
+                    key={poop.id}
+                    poop={poop}
+                    onClick={() => onPoopClick(poop.id)}
+                    cleanupTrigger={poopCleanupTarget?.id === poop.id ? poopCleanupTarget.token : undefined}
+                />
             ))}
 
             {/* Bugs */}
             {!showGiftBox && nurturing.bugs.map((bug) => (
-                <Bug key={bug.id} bug={bug} onClick={onBugClick} />
+                <Bug
+                    key={bug.id}
+                    bug={bug}
+                    onClick={onBugClick}
+                    cleanupTrigger={bugCleanupTarget?.id === bug.id ? bugCleanupTarget.token : undefined}
+                />
             ))}
 
             {/* Active Pet */}
@@ -202,8 +216,6 @@ export const PetWorldLayer: React.FC<PetWorldLayerProps> = ({
                     {/* Effect Overlays */}
                     {isShowering && <div className="shower-effect">🚿</div>}
 
-                    {isCleaning && activeCleaningToolId === 'broom' && <div className="cleaning-effect">🧹</div>}
-                    {isCleaning && activeCleaningToolId === 'newspaper' && <div className="cleaning-effect">🗞️</div>}
                     {isCleaning && activeCleaningToolId === 'robot_cleaner' && <div className="cleaning-effect">🖲️</div>}
                     {isCleaning && activeCleaningToolId === 'max_stats' && <div className="cleaning-effect">🌟</div>}
 

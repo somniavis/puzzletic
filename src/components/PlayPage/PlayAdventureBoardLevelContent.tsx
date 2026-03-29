@@ -86,6 +86,7 @@ export const PlayAdventureBoardLevelContent: React.FC<PlayAdventureBoardLevelCon
                         return (
                             <button
                                 key={`tile-${level}-${index}`}
+                                id={`play-board-tile-${level}-${tile.x}-${tile.y}`}
                                 type="button"
                                 className={`play-board-tile ${tile.kind} ${forestClusterVariant ? 'forest-cluster' : ''} ${isTileAccessible ? 'open' : 'blocked'}`}
                                 style={{

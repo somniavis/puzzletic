@@ -1,5 +1,23 @@
 import type { EmotionData } from '../types/emotion';
 
+const buildActionExpressions = (
+  level: 1 | 2 | 3,
+  category:
+    | 'eat'
+    | 'eat_aftereffect'
+    | 'medicine_pill'
+    | 'medicine_shot'
+    | 'clean_spot'
+    | 'clean_fresh',
+  emojis: string[]
+) => ({
+  level,
+  expressions: emojis.map((emoji, index) => ({
+    emoji,
+    messageKey: `emotions.${category}.l${level}.msg${index + 1}`,
+  })),
+});
+
 export const emotionData: EmotionData = {
   joy: [
     {
@@ -218,5 +236,35 @@ export const emotionData: EmotionData = {
       level: 3,
       expressions: [{ emoji: '🤬', messageKey: 'emotions.angry.l3.furious' }],
     },
+  ],
+  eat: [
+    buildActionExpressions(1, 'eat', ['😋', '🍓', '🍭', '🥄', '🍚']),
+    buildActionExpressions(2, 'eat', ['😋', '🍪', '🍔', '🍡', '🥕']),
+    buildActionExpressions(3, 'eat', ['😆', '😋', '🍽️', '✨', '🍚']),
+  ],
+  eat_aftereffect: [
+    buildActionExpressions(1, 'eat_aftereffect', ['😳', '💩', '🤭', '😶‍🌫️', '😯']),
+    buildActionExpressions(2, 'eat_aftereffect', ['😳', '💩', '🤭', '🫢', '😵‍💫']),
+    buildActionExpressions(3, 'eat_aftereffect', ['😳', '💩', '🤭', '🫣', '😮‍💨']),
+  ],
+  medicine_pill: [
+    buildActionExpressions(1, 'medicine_pill', ['💊', '😣', '🤒', '😬', '🥴']),
+    buildActionExpressions(2, 'medicine_pill', ['💊', '😣', '🤢', '😬', '🤒']),
+    buildActionExpressions(3, 'medicine_pill', ['💊', '😣', '😮‍💨', '🤕', '😬']),
+  ],
+  medicine_shot: [
+    buildActionExpressions(1, 'medicine_shot', ['💉', '😳', '😖', '🫣', '😬']),
+    buildActionExpressions(2, 'medicine_shot', ['💉', '😖', '😣', '🫣', '😵']),
+    buildActionExpressions(3, 'medicine_shot', ['💉', '😖', '😤', '🫣', '😮‍💨']),
+  ],
+  clean_spot: [
+    buildActionExpressions(1, 'clean_spot', ['🧹', '🗞️', '✨', '😌', '🫧']),
+    buildActionExpressions(2, 'clean_spot', ['🧹', '🗞️', '✨', '😌', '🌟']),
+    buildActionExpressions(3, 'clean_spot', ['🧹', '🗞️', '✨', '😌', '💨']),
+  ],
+  clean_fresh: [
+    buildActionExpressions(1, 'clean_fresh', ['🚿', '🪥', '✨', '🌿', '🫧']),
+    buildActionExpressions(2, 'clean_fresh', ['🚿', '🪥', '✨', '🌿', '😌']),
+    buildActionExpressions(3, 'clean_fresh', ['🚿', '🪥', '✨', '🌟', '💫']),
   ],
 };

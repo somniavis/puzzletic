@@ -58,6 +58,36 @@ import ticTacToeVi from '../../games/brain/level3/TicTacToe/locales/vi-VN';
 import omokVi from '../../games/brain/level3/Omok/locales/vi-VN';
 
 const emotionEmojiVi = {
+  eat: {
+    l1: { affectionate: ['😋', '🍓', '🍭'], playful: ['😋', '🍔', '😛'], calm: ['🥄', '🍵', '🍚'], shy: ['🐹', '🍪', '😋'], grumpy: ['😐', '🦴', '😑'], energetic: ['🍡', '🍚', '🥕'] },
+    l2: { affectionate: ['😋', '🍓', '🍭'], playful: ['😋', '🍔', '😛'], calm: ['🥄', '🍵', '🍚'], shy: ['🐹', '🍪', '😋'], grumpy: ['😐', '🦴', '😑'], energetic: ['🍡', '🍚', '🥕'] },
+    l3: { affectionate: ['😋', '🍓', '🍭'], playful: ['😋', '🍔', '😛'], calm: ['🥄', '🍵', '🍚'], shy: ['🐹', '🍪', '😋'], grumpy: ['😐', '🦴', '😑'], energetic: ['🍡', '🍚', '🥕'] },
+  },
+  eat_aftereffect: {
+    l1: { affectionate: ['😳', '💩', '🤭'], playful: ['😳', '💩', '😯'], calm: ['😶‍🌫️', '😳', '🤭'], shy: ['🤭', '😳', '🫣'], grumpy: ['😮‍💨', '😑', '💩'], energetic: ['😯', '💨', '💩'] },
+    l2: { affectionate: ['😳', '💩', '🤭'], playful: ['😳', '💩', '😯'], calm: ['😶‍🌫️', '😳', '🤭'], shy: ['🤭', '😳', '🫣'], grumpy: ['😮‍💨', '😑', '💩'], energetic: ['😯', '💨', '💩'] },
+    l3: { affectionate: ['😳', '💩', '🤭'], playful: ['😳', '💩', '😯'], calm: ['😶‍🌫️', '😳', '🤭'], shy: ['🤭', '😳', '🫣'], grumpy: ['😮‍💨', '😑', '💩'], energetic: ['😯', '💨', '💩'] },
+  },
+  medicine_pill: {
+    l1: { affectionate: ['💊', '😣', '🤒'], playful: ['💊', '😬', '🥴'], calm: ['💊', '😮‍💨', '😶'], shy: ['😣', '🫣', '💊'], grumpy: ['😒', '💊', '😤'], energetic: ['💊', '😬', '✨'] },
+    l2: { affectionate: ['💊', '😣', '🤒'], playful: ['💊', '😬', '🥴'], calm: ['💊', '😮‍💨', '😶'], shy: ['😣', '🫣', '💊'], grumpy: ['😒', '💊', '😤'], energetic: ['💊', '😬', '✨'] },
+    l3: { affectionate: ['💊', '😣', '🤒'], playful: ['💊', '😬', '🥴'], calm: ['💊', '😮‍💨', '😶'], shy: ['😣', '🫣', '💊'], grumpy: ['😒', '💊', '😤'], energetic: ['💊', '😬', '✨'] },
+  },
+  medicine_shot: {
+    l1: { affectionate: ['💉', '😳', '😖'], playful: ['💉', '😱', '😬'], calm: ['💉', '😮‍💨', '😶'], shy: ['🫣', '😖', '💉'], grumpy: ['😤', '💉', '😒'], energetic: ['💉', '😤', '✨'] },
+    l2: { affectionate: ['💉', '😳', '😖'], playful: ['💉', '😱', '😬'], calm: ['💉', '😮‍💨', '😶'], shy: ['🫣', '😖', '💉'], grumpy: ['😤', '💉', '😒'], energetic: ['💉', '😤', '✨'] },
+    l3: { affectionate: ['💉', '😳', '😖'], playful: ['💉', '😱', '😬'], calm: ['💉', '😮‍💨', '😶'], shy: ['🫣', '😖', '💉'], grumpy: ['😤', '💉', '😒'], energetic: ['💉', '😤', '✨'] },
+  },
+  clean_spot: {
+    l1: { affectionate: ['🧹', '✨', '😌'], playful: ['🧹', '🗞️', '✨'], calm: ['✨', '😌', '🫧'], shy: ['😌', '✨', '🫧'], grumpy: ['🧹', '😑', '✨'], energetic: ['✨', '🌟', '🧹'] },
+    l2: { affectionate: ['🧹', '✨', '😌'], playful: ['🧹', '🗞️', '✨'], calm: ['✨', '😌', '🫧'], shy: ['😌', '✨', '🫧'], grumpy: ['🧹', '😑', '✨'], energetic: ['✨', '🌟', '🧹'] },
+    l3: { affectionate: ['🧹', '✨', '😌'], playful: ['🧹', '🗞️', '✨'], calm: ['✨', '😌', '🫧'], shy: ['😌', '✨', '🫧'], grumpy: ['🧹', '😑', '✨'], energetic: ['✨', '🌟', '🧹'] },
+  },
+  clean_fresh: {
+    l1: { affectionate: ['🚿', '✨', '🌿'], playful: ['🪥', '✨', '🫧'], calm: ['🌿', '😌', '✨'], shy: ['🫧', '✨', '🌸'], grumpy: ['🪥', '😑', '✨'], energetic: ['🚿', '💫', '✨'] },
+    l2: { affectionate: ['🚿', '✨', '🌿'], playful: ['🪥', '✨', '🫧'], calm: ['🌿', '😌', '✨'], shy: ['🫧', '✨', '🌸'], grumpy: ['🪥', '😑', '✨'], energetic: ['🚿', '💫', '✨'] },
+    l3: { affectionate: ['🚿', '✨', '🌿'], playful: ['🪥', '✨', '🫧'], calm: ['🌿', '😌', '✨'], shy: ['🫧', '✨', '🌸'], grumpy: ['🪥', '😑', '✨'], energetic: ['🚿', '💫', '✨'] },
+  },
   joy: {
     l1: { affectionate: ['😊', '😄', '🙌'], playful: ['😆', '🎶', '😁'], calm: ['😌', '🎵', '👌'], shy: ['☺️', '😳', '😚'], grumpy: ['😒', '😏', '🙄'], energetic: ['✨', '👍', '😲'] },
     l2: { affectionate: ['🥰', '🌈', '🎈'], playful: ['🏃', '⚽️', '🦖'], calm: ['☕️', '🍀', '🍃'], shy: ['😽', '🌸', '🙈'], grumpy: ['😑', '😼', '😮'], energetic: ['🏆', '💪', '🚀'] },
@@ -124,6 +154,54 @@ const moodToneStemsVi: Record<string, Record<string, string>> = {
     shy: 'Hehe...',
     grumpy: 'Đừng chọc nữa',
     energetic: 'Quẩy nào',
+  },
+  eat: {
+    affectionate: 'Ngon quá',
+    playful: 'Nhai nào',
+    calm: 'Ngon nè',
+    shy: 'Ngon ghê',
+    grumpy: 'Cũng được',
+    energetic: 'Ăn nữa',
+  },
+  eat_aftereffect: {
+    affectionate: 'Ơ kìa',
+    playful: 'Ục ục',
+    calm: 'Có tín hiệu',
+    shy: 'Ngại quá',
+    grumpy: 'Lại nữa à',
+    energetic: 'Nhanh lên',
+  },
+  medicine_pill: {
+    affectionate: 'Uống nhé',
+    playful: 'Đắng ghê',
+    calm: 'Từ từ nào',
+    shy: 'Hơi sợ',
+    grumpy: 'Ghét thuốc',
+    energetic: 'Nuốt nào',
+  },
+  medicine_shot: {
+    affectionate: 'Tiêm à',
+    playful: 'Á á',
+    calm: 'Một chút thôi',
+    shy: 'Sợ quá',
+    grumpy: 'Ghét tiêm',
+    energetic: 'Cố lên',
+  },
+  clean_spot: {
+    affectionate: 'Sạch rồi',
+    playful: 'Quét sạch',
+    calm: 'Gọn rồi',
+    shy: 'Đỡ rồi',
+    grumpy: 'Ổn hơn',
+    energetic: 'Xong rồi',
+  },
+  clean_fresh: {
+    affectionate: 'Thơm quá',
+    playful: 'Lấp lánh',
+    calm: 'Sạch ghê',
+    shy: 'Dễ chịu quá',
+    grumpy: 'Ổn rồi',
+    energetic: 'Tươi mới',
   },
   neutral: {
     affectionate: 'Ở đây với mình nhé',

@@ -28,6 +28,8 @@ export const usePetActions = ({
     const [isCleaning, setIsCleaning] = useState(false);
     const [activeCleaningToolId, setActiveCleaningToolId] = useState<string | null>(null);
     const [isSequenceActive, setIsSequenceActive] = useState(false);
+    const [poopCleanupTarget, setPoopCleanupTarget] = useState<{ id: string; token: number } | null>(null);
+    const [bugCleanupTarget, setBugCleanupTarget] = useState<{ id: string; token: number } | null>(null);
 
     // Helper check
     const isActionInProgress =
@@ -43,13 +45,13 @@ export const usePetActions = ({
     const handlePoopClick = (poopId: string, happinessBonus: number = 0) => {
         playCleaningSound();
         nurturing.clickPoop(poopId, happinessBonus);
-        showBubble('joy', 1);
+        showBubble('clean_spot', 1);
     };
 
     const handleBugClick = (bugId: string) => {
         playCleaningSound();
         nurturing.clickBug(bugId);
-        showBubble('joy', 1);
+        showBubble('clean_spot', 1);
     };
 
     const handleFeed = (food: FoodItem, onCloseMenu: () => void) => {
@@ -75,12 +77,12 @@ export const usePetActions = ({
 
                 if (result.success) {
                     setTimeout(() => {
-                        showBubble('playful', 1);
+                        showBubble('eat', 1);
                         onActionChange?.('happy');
 
                         if (result.sideEffects?.poopCreated) {
                             setTimeout(() => {
-                                showBubble('neutral', 1);
+                                showBubble('eat_aftereffect', 1);
                             }, 1500);
                         }
 
@@ -129,12 +131,11 @@ export const usePetActions = ({
 
                 if (result.success) {
                     setTimeout(() => {
-                        showBubble('sick', 1);
+                        showBubble(isSyringe ? 'medicine_shot' : 'medicine_pill', isSyringe ? 2 : 1);
                         onActionChange?.('happy');
 
                         setTimeout(() => {
                             onActionChange?.('idle');
-                            showBubble('joy', 1);
                             setIsSequenceActive(false);
                         }, 2000);
                     }, 500);
@@ -160,9 +161,14 @@ export const usePetActions = ({
                     setIsCleaning(true);
                     setTimeout(() => {
                         const poopToClean = nurturing.poops[0];
-                        if (poopToClean) handlePoopClick(poopToClean.id, 2);
+                        if (poopToClean) {
+                            setPoopCleanupTarget({ id: poopToClean.id, token: Date.now() });
+                        }
                     }, 500);
-                    setTimeout(() => setIsCleaning(false), 1000);
+                    setTimeout(() => {
+                        setIsCleaning(false);
+                        setPoopCleanupTarget(null);
+                    }, 1000);
                 }
                 break;
             case 'newspaper':
@@ -170,14 +176,19 @@ export const usePetActions = ({
                     setIsCleaning(true);
                     setTimeout(() => {
                         const bugToClean = nurturing.bugs[0];
-                        if (bugToClean) handleBugClick(bugToClean.id);
+                        if (bugToClean) {
+                            setBugCleanupTarget({ id: bugToClean.id, token: Date.now() });
+                        }
                         else {
                             playCleaningSound();
                             nurturing.cleanBug();
-                            showBubble('joy', 1);
+                            showBubble('clean_spot', 1);
                         }
                     }, 500);
-                    setTimeout(() => setIsCleaning(false), 1000);
+                    setTimeout(() => {
+                        setIsCleaning(false);
+                        setBugCleanupTarget(null);
+                    }, 1100);
                 }
                 break;
             case 'shower':
@@ -185,7 +196,7 @@ export const usePetActions = ({
                     nurturing.spendGro(tool.price);
                     nurturing.takeShower();
                     playCleaningSound();
-                    showBubble('joy', 2);
+                    showBubble('clean_fresh', 2);
                     setIsShowering(true);
                     setTimeout(() => setIsShowering(false), 3000);
                 } else {
@@ -198,7 +209,7 @@ export const usePetActions = ({
                         setIsCleaning(true);
                         setTimeout(() => playCleaningSound(), 100);
                         const result = nurturing.cleanAll(tool.price);
-                        if (result.success) showBubble('joy', 3);
+                        if (result.success) showBubble('clean_fresh', 3);
                         else showBubble('worried', 2);
                         setTimeout(() => setIsCleaning(false), 2000);
                     } else {
@@ -213,7 +224,7 @@ export const usePetActions = ({
                     nurturing.spendGro(tool.price);
                     nurturing.brushTeeth();
                     playCleaningSound();
-                    showBubble('joy', 2);
+                    showBubble('clean_fresh', 2);
                     setIsBrushing(true);
                     setTimeout(() => setIsBrushing(false), 3000);
                 } else {
@@ -225,7 +236,7 @@ export const usePetActions = ({
                     nurturing.spendGro(tool.price);
                     nurturing.maxStats();
                     playCleaningSound();
-                    showBubble('joy', 3);
+                    showBubble('clean_fresh', 3);
                 } else {
                     showBubble('worried', 2);
                 }
@@ -269,7 +280,9 @@ export const usePetActions = ({
             isBrushing,
             isCleaning,
             activeCleaningToolId,
-            isSequenceActive
+            isSequenceActive,
+            poopCleanupTarget,
+            bugCleanupTarget
         },
         handlers: {
             handleFeed,

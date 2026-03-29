@@ -26,6 +26,75 @@ import { GeniusDashboard } from '../components/PlayPage/GeniusDashboard';
 import { PlayAdventureBoard, type PlayAdventureBoardGame } from '../components/PlayPage/PlayAdventureBoard';
 import { PlayGameInfoModal } from '../components/PlayPage/PlayGameInfoModal';
 import { GameErrorBoundary } from '../components/Game/GameErrorBoundary';
+import { buildBoardLayout } from '../components/PlayPage/playAdventureBoardLayout';
+
+type BoardPositionTab = 'math' | 'brain' | 'sw';
+type StoredBoardTilePosition = {
+    level: number;
+    x: number;
+    y: number;
+};
+
+const getPlayBoardPositionStorageKey = (scopeId: string, tab: BoardPositionTab) =>
+    `play_board_position:${scopeId}:${tab}`;
+
+const loadStoredBoardTilePosition = (scopeId: string | undefined, tab: BoardPositionTab) => {
+    if (!scopeId) return null;
+
+    try {
+        const raw = window.localStorage.getItem(getPlayBoardPositionStorageKey(scopeId, tab));
+        if (!raw) return null;
+        const parsed = JSON.parse(raw) as Partial<StoredBoardTilePosition>;
+        if (
+            typeof parsed.level !== 'number'
+            || typeof parsed.x !== 'number'
+            || typeof parsed.y !== 'number'
+        ) {
+            return null;
+        }
+
+        return {
+            level: parsed.level,
+            x: parsed.x,
+            y: parsed.y,
+        };
+    } catch {
+        return null;
+    }
+};
+
+const saveStoredBoardTilePosition = (
+    scopeId: string | undefined,
+    tab: BoardPositionTab,
+    position: StoredBoardTilePosition
+) => {
+    if (!scopeId) return;
+
+    window.localStorage.setItem(
+        getPlayBoardPositionStorageKey(scopeId, tab),
+        JSON.stringify(position)
+    );
+};
+
+const clearStoredBoardTilePosition = (scopeId: string | undefined, tab: BoardPositionTab) => {
+    if (!scopeId) return;
+    window.localStorage.removeItem(getPlayBoardPositionStorageKey(scopeId, tab));
+};
+
+const getBoardStartPosition = (levelGroups: Array<{ level: number; games: PlayAdventureBoardGame[] }>) => {
+    const firstLevel = levelGroups.find((group) => group.level === 1) ?? levelGroups[0];
+    if (!firstLevel) return null;
+
+    const layout = buildBoardLayout(firstLevel.level, firstLevel.games.length);
+    const startSlot = layout.padSlots[0];
+    if (!startSlot) return null;
+
+    return {
+        level: firstLevel.level,
+        x: startSlot.x,
+        y: startSlot.y,
+    } satisfies StoredBoardTilePosition;
+};
 
 const scrollContainerToCenteredElement = (container: HTMLElement, target: HTMLElement) => {
     const containerRect = container.getBoundingClientRect();
@@ -141,10 +210,57 @@ const PlayPage: React.FC = () => {
         () => mathAdventureLevelGroups.map((group) => `${group.level}:${group.games.length}`).join('|'),
         [mathAdventureLevelGroups]
     );
+    const brainAdventureLevelSignature = useMemo(
+        () => brainAdventureLevelGroups.map((group) => `${group.level}:${group.games.length}`).join('|'),
+        [brainAdventureLevelGroups]
+    );
     const adventureGameStateMap = useMemo(
         () => new Map(adventureGameStates.map((state) => [state.game.id, state])),
         [adventureGameStates]
     );
+    const currentBoardStorageScope = useMemo<BoardPositionTab | null>(() => {
+        if (activeTab === 'brain') return 'brain';
+        if (activeTab === 'math' && mathMode === 'adventure') return 'math';
+        if (activeTab === 'sw') return 'sw';
+        return null;
+    }, [activeTab, mathMode]);
+    const activeBoardLevelGroups = useMemo(
+        () => {
+            if (currentBoardStorageScope === 'brain') return brainAdventureLevelGroups;
+            if (currentBoardStorageScope === 'math') return mathAdventureLevelGroups;
+            return [];
+        },
+        [brainAdventureLevelGroups, currentBoardStorageScope, mathAdventureLevelGroups]
+    );
+    const boardGamePositionMap = useMemo(() => {
+        const nextMap = new Map<string, StoredBoardTilePosition>();
+
+        activeBoardLevelGroups.forEach(({ level, games }) => {
+            const layout = buildBoardLayout(level, games.length);
+            const offset = layout.hasStartPad ? 1 : 0;
+
+            games.forEach((boardGame, index) => {
+                const slot = layout.padSlots[index + offset];
+                if (!slot) return;
+                nextMap.set(boardGame.game.id, { level, x: slot.x, y: slot.y });
+            });
+        });
+
+        return nextMap;
+    }, [activeBoardLevelGroups]);
+    const isValidBoardPosition = React.useCallback((position: StoredBoardTilePosition, board: BoardPositionTab) => {
+        const levelGroups = board === 'brain'
+            ? brainAdventureLevelGroups
+            : board === 'math'
+                ? mathAdventureLevelGroups
+                : [];
+        const targetLevel = levelGroups.find((group) => group.level === position.level);
+        if (!targetLevel) return false;
+
+        const layout = buildBoardLayout(position.level, targetLevel.games.length);
+        return layout.tiles.some((tile) => tile.x === position.x && tile.y === position.y)
+            || layout.padSlots.some((slot) => slot.x === position.x && slot.y === position.y);
+    }, [brainAdventureLevelGroups, mathAdventureLevelGroups]);
 
     const selectedPlayBoardGame = useMemo(() => {
         return selectedPlayBoardGameId ? adventureGameStateMap.get(selectedPlayBoardGameId) ?? null : null;
@@ -163,6 +279,40 @@ const PlayPage: React.FC = () => {
         if (currentBoardGameId || !lastPlayedGameId) return;
         setCurrentBoardGameId(lastPlayedGameId);
     }, [currentBoardGameId, lastPlayedGameId]);
+
+    useEffect(() => {
+        if (!isPlayAdventureMode || !currentBoardStorageScope) return;
+
+        const storedPosition = loadStoredBoardTilePosition(playUiScopeId, currentBoardStorageScope);
+        if (!storedPosition) {
+            const startPosition = getBoardStartPosition(activeBoardLevelGroups);
+            setCurrentBoardTilePosition(startPosition);
+            if (startPosition) {
+                saveStoredBoardTilePosition(playUiScopeId, currentBoardStorageScope, startPosition);
+            }
+            return;
+        }
+
+        if (!isValidBoardPosition(storedPosition, currentBoardStorageScope)) {
+            clearStoredBoardTilePosition(playUiScopeId, currentBoardStorageScope);
+            const startPosition = getBoardStartPosition(activeBoardLevelGroups);
+            setCurrentBoardTilePosition(startPosition);
+            if (startPosition) {
+                saveStoredBoardTilePosition(playUiScopeId, currentBoardStorageScope, startPosition);
+            }
+            return;
+        }
+
+        setCurrentBoardTilePosition(storedPosition);
+    }, [
+        playUiScopeId,
+        isPlayAdventureMode,
+        currentBoardStorageScope,
+        activeBoardLevelGroups,
+        isValidBoardPosition,
+        mathAdventureLevelSignature,
+        brainAdventureLevelSignature,
+    ]);
 
     // Auto-scroll to the last played game in the currently visible layout.
     useEffect(() => {
@@ -253,6 +403,18 @@ const PlayPage: React.FC = () => {
         if (!container) return;
 
         const timeoutId = window.setTimeout(() => {
+            if (currentBoardTilePosition) {
+                const tileElement = document.getElementById(
+                    `play-board-tile-${currentBoardTilePosition.level}-${currentBoardTilePosition.x}-${currentBoardTilePosition.y}`
+                );
+                if (tileElement) {
+                    requestAnimationFrame(() => {
+                        scrollContainerToCenteredElement(container, tileElement);
+                    });
+                    return;
+                }
+            }
+
             if (!lastPlayedGameId) {
                 container.scrollTo({ top: 0, behavior: 'auto' });
                 return;
@@ -270,7 +432,7 @@ const PlayPage: React.FC = () => {
         }, 100);
 
         return () => window.clearTimeout(timeoutId);
-    }, [gameId, isPlayAdventureMode, lastPlayedGameId]);
+    }, [gameId, isPlayAdventureMode, lastPlayedGameId, currentBoardTilePosition]);
 
     // -- Handlers --
     const onTabSelect = (category: GameCategory) => {
@@ -319,11 +481,20 @@ const PlayPage: React.FC = () => {
         const targetGame = adventureGameStateMap.get(gameId);
         if (targetGame?.unlocked && !targetGame.isPremiumLocked) {
             setCurrentBoardGameId(gameId);
+            if (currentBoardStorageScope) {
+                const missionPosition = boardGamePositionMap.get(gameId);
+                if (missionPosition) {
+                    saveStoredBoardTilePosition(playUiScopeId, currentBoardStorageScope, missionPosition);
+                }
+            }
         }
     };
 
     const handleSelectBoardTile = (position: { level: number; x: number; y: number }) => {
         setCurrentBoardTilePosition(position);
+        if (currentBoardStorageScope) {
+            saveStoredBoardTilePosition(playUiScopeId, currentBoardStorageScope, position);
+        }
     };
 
     const handleExitGame = () => {
