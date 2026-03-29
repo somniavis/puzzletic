@@ -166,6 +166,8 @@ export const PetRoom: React.FC<PetRoomProps> = ({
 
   // --- Surprise Train Logic ---
   const [isTrainActive, setIsTrainActive] = useState(false);
+  const [hasPendingStarterTrain, setHasPendingStarterTrain] = useState(() => showGiftBox && !nurturing.characterName);
+  const [isStarterTrainActive, setIsStarterTrainActive] = useState(false);
   const [pendingTrainReward, setPendingTrainReward] = useState<{
     type: 'small' | 'snack' | 'big' | 'dud';
     amount: number;
@@ -175,6 +177,14 @@ export const PetRoom: React.FC<PetRoomProps> = ({
   const [dailyRoutineError, setDailyRoutineError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (showGiftBox && !nurturing.characterName) {
+      setHasPendingStarterTrain(true);
+    }
+  }, [showGiftBox, nurturing.characterName]);
+
+  useEffect(() => {
+    if (hasPendingStarterTrain) return;
+
     const lastTrainTime = parseInt(localStorage.getItem('lastTrainTime') || '0', 10);
     const now = Date.now();
     const COOLDOWN = 30 * 60 * 1000;
@@ -189,11 +199,22 @@ export const PetRoom: React.FC<PetRoomProps> = ({
         }, 2000);
       }
     }
-  }, []);
+  }, [hasPendingStarterTrain]);
 
-  const handleTrainComplete = () => setIsTrainActive(false);
+  const handleTrainComplete = () => {
+    setIsTrainActive(false);
+    setIsStarterTrainActive(false);
+  };
 
   const handleOpenTrainGift = (_: DOMRect) => {
+    if (isStarterTrainActive) {
+      setPendingTrainReward({
+        type: 'small',
+        amount: 10 + Math.floor(Math.random() * 40),
+      });
+      return;
+    }
+
     const rand = Math.random();
     let rewardType: 'small' | 'snack' | 'dud' | 'big' = 'small';
     let amount = 0;
@@ -254,6 +275,15 @@ export const PetRoom: React.FC<PetRoomProps> = ({
   const handleNicknameComplete = (nickname: string) => {
     ui.modals.setShowNicknameModal(false);
     if (nickname) nurturing.setCharacterName(nickname);
+
+    if (nickname && hasPendingStarterTrain) {
+      localStorage.setItem('lastTrainTime', Date.now().toString());
+      setHasPendingStarterTrain(false);
+      setIsStarterTrainActive(true);
+      window.setTimeout(() => {
+        setIsTrainActive(true);
+      }, 1000);
+    }
 
     // Force scroll reset with a slight delay to ensure keyboard is fully dismissed
     setTimeout(() => {
