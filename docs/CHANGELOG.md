@@ -13,7 +13,7 @@
 - Worker API를 `https://api.grogrojello.com` 으로 연결했습니다.
 - Cloudflare DNS Worker record, Edge Certificates, Worker `Domains & Routes` 상태를 점검해 커스텀 도메인 연결과 인증서가 `Active` 인 것을 확인했습니다.
 - 운영 API 기본 주소를 `api.grogrojello.com` 으로 전환했습니다.
-- 일부 환경에서 간헐적으로 발생한 `ERR_NAME_NOT_RESOLVED` 에 대비해, `api.grogrojello.com` 실패 시 기존 `workers.dev` 주소로 재시도하는 fallback 안전장치를 추가했습니다.
+- 운영 API 경로를 `api.grogrojello.com` 단일 기준으로 정리했습니다.
 
 ### 🔒 운영 보호 설정 (Prelaunch Safety)
 - 검색엔진 색인을 막기 위해 `robots.txt`, `meta robots`, `X-Robots-Tag` 를 적용했습니다.
@@ -47,12 +47,14 @@
 - 특정 Safari + 특정 Wi‑Fi 환경에서 `api.grogrojello.com` 접근이 실패하며 premium/기존 캐릭터가 복원되지 않는 사례를 조사했습니다.
 - 운영 D1 직접 조회 결과, `test34@gmail.com` 계정의 premium(`12_months`)과 기존 `game_data`는 정상 보존되어 있었고, 데이터 유실이 아니라 네트워크/DNS 환경 문제로 결론냈습니다.
 - 기존 계정이 일시적인 `notFound` 응답을 받을 때 새 계정처럼 다시 초기화되지 않도록 `useNurturingSync` 보호 로직을 추가했습니다.
+- 이후 하이브리드 저장 흐름과의 충돌을 줄이기 위해, `notFound`이더라도 현재 사용자 로컬 캐시에 의미 있는 데이터가 있으면 그 로컬 데이터를 기준으로 cloud row를 복구하도록 보호 로직을 완화했습니다.
+- 이 완화는 `saveToCloud` / 자동 저장 / 일반 sync 흐름은 그대로 두고, `notFound` 분기 판단만 조정한 것입니다.
 - sync payload에 `email`을 다시 포함해 운영 D1에서 특정 계정 추적이 가능하도록 보강했습니다.
 - 로컬 모바일 테스트를 위해 Worker CORS가 `localhost`뿐 아니라 사설 IP 대역(`172.16-31.x.x`, `192.168.x.x`, `10.x.x.x`)의 Vite dev origin도 허용하도록 확장했습니다.
 - Worker `wrangler.jsonc`를 실제 배포 상태와 맞췄습니다.
   - `workers_dev = true` 명시
   - custom domain route를 `api.grogrojello.com` 형태로 수정
-- Cloudflare Worker를 재배포해 `api.grogrojello.com` 과 `api-grogrojello.grogrojello.workers.dev` fallback 둘 다 활성 상태로 유지했습니다.
+- Cloudflare Worker를 재배포해 `api.grogrojello.com` custom domain 기준 구성을 유지했습니다.
 
 ## 2026-02-13 (Security Hotfix)
 

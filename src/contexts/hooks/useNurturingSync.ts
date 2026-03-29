@@ -58,6 +58,29 @@ const validateStateIntegrity = (currentState: NurturingPersistentState, lastSync
     }
 };
 
+const hasMeaningfulLocalState = (state: NurturingPersistentState): boolean => {
+    if (state.hasCharacter) return true;
+    if ((state.xp || 0) > 0) return true;
+    if ((state.totalCurrencyEarned || 0) > 0) return true;
+    if ((state.totalGameStars || 0) > 0) return true;
+    if ((state.studyCount || 0) > 0) return true;
+    if ((state.characterName || '').trim().length > 0) return true;
+    if ((state.speciesId || '').trim().length > 0) return true;
+    if ((state.hallOfFame?.length || 0) > 0) return true;
+    if (Object.keys(state.gameScores || {}).length > 0) return true;
+    if (Object.keys(state.categoryProgress || {}).length > 0) return true;
+
+    const history = state.history;
+    if (history) {
+        if (Object.keys(history.foodsEaten || {}).length > 0) return true;
+        if (Object.keys(history.gamesPlayed || {}).length > 0) return true;
+        if (Object.keys(history.actionsPerformed || {}).length > 0) return true;
+        if ((history.totalLifetimeGroEarned || 0) > 0) return true;
+    }
+
+    return false;
+};
+
 export const useNurturingSync = (user: User | null, guestId: string | null = null) => {
     const [isGlobalLoading, setIsGlobalLoading] = useState(true);
 
@@ -191,6 +214,25 @@ export const useNurturingSync = (user: User | null, guestId: string | null = nul
         fetchUserData(user).then((result) => {
             if (!result.success) {
                 if (result.notFound) {
+                    const localStateLooksValid = hasMeaningfulLocalState(stateRef.current);
+
+                    if (localStateLooksValid) {
+                        console.warn(
+                            '☁️ Cloud data missing, but valid local cache exists. Restoring cloud from hybrid local state.',
+                            { uid: user.uid }
+                        );
+
+                        syncUserData(user, stateRef.current).then((success) => {
+                            if (success) {
+                                lastSyncedStateRef.current = JSON.stringify(stateRef.current);
+                            } else {
+                                console.error('☁️ Failed to recreate missing cloud entry from local cache.', { uid: user.uid });
+                            }
+                        });
+                        hasLoadedRef.current = true;
+                        return;
+                    }
+
                     const createdAt = getAccountCreationTime();
                     const accountAgeMs = createdAt ? Date.now() - createdAt : null;
                     const isLikelyNewAccount =
@@ -215,11 +257,11 @@ export const useNurturingSync = (user: User | null, guestId: string | null = nul
                     // Note: If we want to support "Guest -> Sign Up" migration, we need to pass that context.
                     // Assuming standard flow:
 
-                    if (stateRef.current.hasCharacter) {
+                    if (hasMeaningfulLocalState(stateRef.current)) {
                         // Check if this data belongs to THIS user (check UID in state? No field for that).
                         // Risk: Uploading previous user's data?
                         // Solution: Since we already loaded `loadNurturingState(user.uid)` in previous useEffect,
-                        // if `hasCharacter` is true, it means we found LOCALLY cached data for THIS user.
+                        // if local state looks meaningful here, it means we found LOCALLY cached data for THIS user.
                         // So it's safe to sync up.
                         console.log('☁️ Syncing local cache to new cloud entry.');
                         syncUserData(user, stateRef.current);
