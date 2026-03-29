@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { playButtonSound } from '../../utils/sound';
 import { useSound } from '../../contexts/SoundContext';
@@ -143,7 +144,7 @@ export const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose }) =
     }
   };
 
-  return (
+  const menuContent = (
     <div className="food-menu-overlay" onClick={handleClose}>
       <div className="food-menu" onClick={(e) => e.stopPropagation()}>
         <div className="food-menu-header">
@@ -387,6 +388,8 @@ export const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose }) =
       </div>
     </div>
   );
+
+  return createPortal(menuContent, document.body);
 };
 
 export default SettingsMenu;

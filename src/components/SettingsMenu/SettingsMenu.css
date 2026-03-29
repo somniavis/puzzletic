@@ -1,5 +1,145 @@
-/* Settings Menu uses the same styles as Food Menu from PetRoom.css */
-/* Additional specific styles only */
+/* Settings menu keeps its own modal base styles so it renders
+   consistently across PlayPage variants without relying on PetRoom CSS. */
+
+.food-menu-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  z-index: 1000;
+}
+
+.food-menu {
+  background: linear-gradient(180deg, #fff9e6 0%, #ffe4b5 100%);
+  border-radius: 24px;
+  border: 6px solid #4d3e2f;
+  box-shadow: 0 8px 0 #3d2e1f, 0 12px 24px rgba(0, 0, 0, 0.5);
+  max-width: 600px;
+  width: 100%;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.food-menu-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem;
+  background: linear-gradient(180deg, #7d5e4f 0%, #6d4e3f 100%);
+  border-bottom: 4px solid #4d3e2f;
+  flex-shrink: 0;
+}
+
+.food-menu-header h3 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #fff9e6;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.close-btn {
+  background: rgba(255, 255, 255, 0.2);
+  border: 3px solid #4d3e2f;
+  border-radius: 12px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1.5rem;
+  color: #fff9e6;
+  transition: all 0.2s ease;
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.3);
+}
+
+.close-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.05);
+}
+
+.close-btn:active {
+  transform: translateY(2px) scale(1.05);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.3);
+}
+
+.food-items-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 1rem;
+  padding: 1.5rem;
+  overflow-y: auto;
+  max-height: 50vh;
+}
+
+.food-item {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  background: linear-gradient(180deg, #ffffff 0%, #f5f5dc 100%);
+  border: 4px solid #8b4513;
+  border-radius: 16px;
+  box-shadow: 0 4px 0 #6b3513, 0 6px 8px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.food-item:hover:not(:disabled) {
+  transform: translateY(-3px);
+  box-shadow: 0 7px 0 #6b3513, 0 9px 12px rgba(0, 0, 0, 0.3);
+}
+
+.food-item:active:not(:disabled) {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 #6b3513, 0 3px 5px rgba(0, 0, 0, 0.2);
+}
+
+.food-item:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  filter: grayscale(0.7);
+}
+
+.food-item-icon {
+  font-size: 3rem;
+  filter: drop-shadow(2px 2px 3px rgba(0, 0, 0, 0.2));
+}
+
+.food-item-name {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #4d3e2f;
+  text-align: center;
+  text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+.food-item-effects {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  justify-content: center;
+}
+
+.food-item-effects .effect {
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+  color: #4d3e2f;
+  background: rgba(139, 69, 19, 0.15);
+  border: 2px solid rgba(139, 69, 19, 0.3);
+  border-radius: 8px;
+  padding: 0.2rem 0.5rem;
+}
 
 .header-left {
   display: flex;
@@ -74,4 +214,56 @@
 .save-success .food-item-name {
   color: #2e7d32;
   font-weight: bold;
+}
+
+@media (max-width: 768px) {
+  .food-menu-header {
+    padding: 1rem;
+  }
+
+  .food-menu-header h3 {
+    font-size: 1.3rem;
+  }
+
+  .food-items-grid {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 0.75rem;
+    padding: 1rem;
+  }
+
+  .food-item {
+    padding: 0.75rem;
+  }
+
+  .food-item-icon {
+    font-size: 2.5rem;
+  }
+
+  .food-item-name {
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .food-items-grid {
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 0.5rem;
+    padding: 0.75rem;
+  }
+
+  .food-item {
+    padding: 0.5rem;
+  }
+
+  .food-item-icon {
+    font-size: 2rem;
+  }
+
+  .food-item-name {
+    font-size: 0.75rem;
+  }
+
+  .food-item-effects .effect {
+    font-size: 0.65rem;
+  }
 }
