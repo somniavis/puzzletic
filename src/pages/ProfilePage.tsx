@@ -183,6 +183,11 @@ export const ProfilePage: React.FC = () => {
                                 <div className="sub-info-left">
                                     <span className="sub-title">{t('profile.signedInAs')}</span>
                                     <span className="sub-desc">{user?.email || t('profile.guestUser')}</span>
+                                    {isPremium && subscription.expiryDate && (
+                                        <span className="sub-desc" style={{ fontSize: '0.8rem', opacity: 0.8 }}>
+                                            {t('profile.expiresLabel')}: {new Date(subscription.expiryDate).toLocaleDateString()}
+                                        </span>
+                                    )}
                                 </div>
                             </div>
                         </section>
