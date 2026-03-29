@@ -6,7 +6,7 @@
 	"$schema": "node_modules/wrangler/config-schema.json",
 	"name": "api-grogrojello",
 	"main": "src/index.js",
-	"workers_dev": true,
+	"workers_dev": false,
 	"compatibility_date": "2025-12-11",
 	"observability": {
 		"enabled": true

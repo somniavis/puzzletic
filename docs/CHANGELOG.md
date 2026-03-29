@@ -52,8 +52,8 @@
 - sync payload에 `email`을 다시 포함해 운영 D1에서 특정 계정 추적이 가능하도록 보강했습니다.
 - 로컬 모바일 테스트를 위해 Worker CORS가 `localhost`뿐 아니라 사설 IP 대역(`172.16-31.x.x`, `192.168.x.x`, `10.x.x.x`)의 Vite dev origin도 허용하도록 확장했습니다.
 - Worker `wrangler.jsonc`를 실제 배포 상태와 맞췄습니다.
-  - `workers_dev = true` 명시
-  - custom domain route를 `api.grogrojello.com` 형태로 수정
+  - `workers_dev = false` 로 정리
+  - custom domain route를 `api.grogrojello.com` 형태로 유지
 - Cloudflare Worker를 재배포해 `api.grogrojello.com` custom domain 기준 구성을 유지했습니다.
 
 ## 2026-02-13 (Security Hotfix)
