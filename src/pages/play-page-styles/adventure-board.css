@@ -857,10 +857,10 @@
 
 .play-board-tile {
     position: absolute;
-    left: calc(var(--tile-x) * var(--tile-step-x));
-    top: calc((var(--tile-y) * var(--tile-step-y)) + var(--board-content-offset-y));
-    width: var(--tile-size);
-    height: var(--tile-size);
+    left: calc((var(--tile-x) * var(--tile-step-x)) + (var(--tile-size) * 0.025));
+    top: calc((var(--tile-y) * var(--tile-step-y)) + var(--board-content-offset-y) + (var(--tile-size) * 0.025));
+    width: calc(var(--tile-size) * 0.95);
+    height: calc(var(--tile-size) * 0.95);
     border: none;
     padding: 0;
     border-radius: 1rem;
@@ -1644,10 +1644,10 @@
 
 .play-mission-pad {
     position: absolute;
-    top: calc((var(--tile-y) * var(--tile-step-y)) + var(--board-content-offset-y));
-    left: calc(var(--tile-x) * var(--tile-step-x));
-    width: var(--tile-size);
-    height: var(--tile-size);
+    top: calc((var(--tile-y) * var(--tile-step-y)) + var(--board-content-offset-y) - (var(--tile-size) * 0.05));
+    left: calc((var(--tile-x) * var(--tile-step-x)) - (var(--tile-size) * 0.05));
+    width: calc(var(--tile-size) * 1.1);
+    height: calc(var(--tile-size) * 1.1);
     border: none;
     background: transparent;
     padding: 0;
