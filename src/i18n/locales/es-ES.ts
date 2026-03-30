@@ -1414,6 +1414,7 @@ export const esES = {
     startButton: 'Comenzar! *',
     saving: 'Guardando...',
     tapHint: 'Toca! {{current}}/{{max}}',
+    holdHint: 'Mantén para nacer',
   },
   dailyRoutine: {
     title: 'Rutina diaria',

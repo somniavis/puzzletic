@@ -1414,6 +1414,7 @@ export const idID = {
     startButton: 'Mulai! ✨',
     saving: 'Menyimpan...',
     tapHint: 'Ketuk! {{current}}/{{max}}',
+    holdHint: 'Tahan untuk menetas',
   },
   dailyRoutine: {
     title: 'Rutinitas Harian',

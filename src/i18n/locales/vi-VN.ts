@@ -1941,6 +1941,7 @@ export const viVN = {
     startButton: 'Bắt đầu!',
     saving: 'Đang lưu...',
     tapHint: 'Chạm! {{current}}/{{max}}',
+    holdHint: 'Nhấn giữ để nở',
   },
   dailyRoutine: {
     title: 'Nhiệm vụ hằng ngày',

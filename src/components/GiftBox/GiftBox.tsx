@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { playButtonSound } from '../../utils/sound';
 import './GiftBox.css';
@@ -10,41 +10,75 @@ interface GiftBoxProps {
 export const GiftBox: React.FC<GiftBoxProps> = ({ onOpen }) => {
     const { t } = useTranslation();
     const [isOpening, setIsOpening] = useState(false);
-    const [taps, setTaps] = useState(0);
+    const [progress, setProgress] = useState(0);
     const isOpeningLock = useRef(false);
-    const MAX_TAPS = 10;
+    const isPressingRef = useRef(false);
+    const rafRef = useRef<number | null>(null);
+    const lastTimestampRef = useRef<number | null>(null);
+    const progressMsRef = useRef(0);
+    const HOLD_TO_OPEN_MS = 1600;
 
-    // Calculate progress for UI: 0 to 100%
-    const progress = Math.min(100, (taps / MAX_TAPS) * 100);
-
-    const handleClick = () => {
-        if (isOpening || isOpeningLock.current) return;
-
-        playButtonSound(); // Play sound on every click
-
-        setTaps(prev => {
-            const newTaps = prev + 1;
-
-            if (newTaps >= MAX_TAPS) {
-                // Trigger Opening
-                if (!isOpeningLock.current) {
-                    isOpeningLock.current = true;
-                    setIsOpening(true);
-
-                    // Play open animation then trigger callback
-                    setTimeout(() => {
-                        onOpen();
-                    }, 800);
-                }
-            }
-            return newTaps;
-        });
+    const stopPress = () => {
+        isPressingRef.current = false;
+        lastTimestampRef.current = null;
+        if (rafRef.current !== null) {
+            window.cancelAnimationFrame(rafRef.current);
+            rafRef.current = null;
+        }
     };
+
+    const triggerOpen = () => {
+        if (isOpeningLock.current) return;
+        isOpeningLock.current = true;
+        setProgress(100);
+        setIsOpening(true);
+
+        window.setTimeout(() => {
+            onOpen();
+        }, 800);
+    };
+
+    const tickProgress = (timestamp: number) => {
+        if (!isPressingRef.current || isOpeningLock.current) return;
+
+        const lastTimestamp = lastTimestampRef.current ?? timestamp;
+        const delta = timestamp - lastTimestamp;
+        lastTimestampRef.current = timestamp;
+
+        progressMsRef.current = Math.min(HOLD_TO_OPEN_MS, progressMsRef.current + delta);
+        const nextProgress = (progressMsRef.current / HOLD_TO_OPEN_MS) * 100;
+        setProgress(nextProgress);
+
+        if (progressMsRef.current >= HOLD_TO_OPEN_MS) {
+            stopPress();
+            triggerOpen();
+            return;
+        }
+
+        rafRef.current = window.requestAnimationFrame(tickProgress);
+    };
+
+    const startPress = (event: React.PointerEvent<HTMLDivElement>) => {
+        event.preventDefault();
+
+        if (isOpening || isOpeningLock.current || isPressingRef.current) return;
+
+        playButtonSound();
+        isPressingRef.current = true;
+        lastTimestampRef.current = null;
+        rafRef.current = window.requestAnimationFrame(tickProgress);
+    };
+
+    useEffect(() => stopPress, []);
 
     return (
         <div
             className={`gift-box ${isOpening ? 'opening' : ''}`}
-            onClick={handleClick}
+            onPointerDown={startPress}
+            onPointerUp={stopPress}
+            onPointerLeave={stopPress}
+            onPointerCancel={stopPress}
+            onContextMenu={(event) => event.preventDefault()}
         >
             {/* Gauge Bar */}
             {!isOpening && (
@@ -80,7 +114,7 @@ export const GiftBox: React.FC<GiftBoxProps> = ({ onOpen }) => {
 
             {!isOpening && (
                 <div className="gift-hint">
-                    {t('giftBox.tapHint', { current: taps, max: MAX_TAPS })}
+                    {t('giftBox.holdHint')}
                 </div>
             )}
         </div>

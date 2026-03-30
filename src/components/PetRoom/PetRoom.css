@@ -187,6 +187,12 @@
   filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.4));
 }
 
+.premium-btn-floating:focus,
+.premium-btn-floating:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+
 .premium-btn-floating:active {
   transform: scale(0.95);
 }

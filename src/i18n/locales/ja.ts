@@ -2160,6 +2160,7 @@ const jaBase = {
         startButton: 'スタート! ✨',
         saving: '保存中...',
         tapHint: 'タップ! {{current}}/{{max}}',
+        holdHint: '長押しでふ化',
     },
     dailyRoutine: {
         title: 'デイリールーティン',

@@ -1414,6 +1414,7 @@ export const frFR = {
     startButton: 'C’est parti ! ✨',
     saving: 'Enregistrement...',
     tapHint: 'Touchez ! {{current}}/{{max}}',
+    holdHint: 'Maintiens pour éclore',
   },
   dailyRoutine: {
     title: 'Routine quotidienne',

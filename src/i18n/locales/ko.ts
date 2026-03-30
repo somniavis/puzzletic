@@ -1417,6 +1417,7 @@ const koBase = {
         startButton: '시작! ✨',
         saving: '저장 중...',
         tapHint: '탭! {{current}}/{{max}}',
+        holdHint: '길게 눌러 부화',
     },
     dailyRoutine: {
         title: '데일리 루틴',

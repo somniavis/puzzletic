@@ -1414,6 +1414,7 @@ export const ptPT = {
     startButton: 'Comecar! *',
     saving: 'A guardar...',
     tapHint: 'Toque! {{current}}/{{max}}',
+    holdHint: 'Mantém para nascer',
   },
   dailyRoutine: {
     title: 'Rotina diária',

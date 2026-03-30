@@ -1414,6 +1414,7 @@ export const en = {
     startButton: 'Start! ✨',
     saving: 'Saving...',
     tapHint: 'Tap! {{current}}/{{max}}',
+    holdHint: 'Hold to hatch',
   },
   dailyRoutine: {
     title: 'Daily Routine',
