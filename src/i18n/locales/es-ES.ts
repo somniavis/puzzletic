@@ -75,7 +75,7 @@ export const esES = {
     cancelConfirmTitle: '¿Cancelar suscripción?',
     cancelConfirmMessage: 'Perderás todos los beneficios Premium de inmediato.\n¿Seguro que quieres cancelarla?',
     cancelSuccess: 'Suscripción cancelada.',
-    upgradePrompt: 'Hazte Premium',
+    upgradePrompt: 'Mejorar',
     premiumTitle: 'Crece con Angel Pass',
     premiumSubtitle: 'Más crecimiento para tu hijo,\nmás esperanza para un niño que lo necesita.',
     impactCard: {

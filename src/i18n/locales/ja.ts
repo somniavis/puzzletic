@@ -73,7 +73,7 @@ const jaBase = {
             premiumLabel: '✨ プレミアム会員',
             freeLabel: '🌱 無料プラン',
         },
-        upgradePrompt: 'プレミアムにアップグレード',
+        upgradePrompt: 'アップグレード',
         premiumTitle: 'Angel Passと一緒に成長しよう',
         premiumSubtitle: 'お子さまにはより大きな成長を、\n支援が必要な子どもにはより大きな希望を。',
         impactCard: {

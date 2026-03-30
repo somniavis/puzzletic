@@ -205,6 +205,15 @@ export const ProfilePage: React.FC = () => {
                                     )}
                                 </div>
                             </div>
+                            {!isPremium && (
+                                <button
+                                    type="button"
+                                    className="account-upgrade-btn"
+                                    onClick={handlePassTabOpen}
+                                >
+                                    {t('profile.upgradePrompt')}
+                                </button>
+                            )}
                         </section>
 
                         <section className="profile-section profile-section-collection">
@@ -667,30 +676,32 @@ export const ProfilePage: React.FC = () => {
                                 </section>
                                     </>
                                 )}
-
-                                <section className="profile-section angel-pass-impact-card">
-                                    <div className="angel-pass-impact-copy">
-                                        <span className="angel-pass-impact-label">{t('profile.impactCard.label')}</span>
-                                        <p className="angel-pass-impact-title">{t('profile.impactCard.title')}</p>
-                                    </div>
-                                    <div className="angel-pass-impact-gallery" aria-hidden="true">
-                                        <span className="angel-pass-impact-orb angel-pass-impact-orb-angel">👼</span>
-                                        {impactImageSeeds.map((seed, index) => (
-                                            <span
-                                                key={`impact-orb-${seed}-${index}`}
-                                                className={`angel-pass-impact-orb angel-pass-impact-orb-${index + 1}`}
-                                            >
-                                                <img
-                                                    src={`https://picsum.photos/seed/user${seed}/100/100`}
-                                                    alt=""
-                                                    loading="lazy"
-                                                    referrerPolicy="no-referrer"
-                                                />
-                                            </span>
-                                        ))}
-                                    </div>
-                                </section>
                             </>
+                        )}
+
+                        {isPassUnlocked && (
+                            <section className="profile-section angel-pass-impact-card">
+                                <div className="angel-pass-impact-copy">
+                                    <span className="angel-pass-impact-label">{t('profile.impactCard.label')}</span>
+                                    <p className="angel-pass-impact-title">{t('profile.impactCard.title')}</p>
+                                </div>
+                                <div className="angel-pass-impact-gallery" aria-hidden="true">
+                                    <span className="angel-pass-impact-orb angel-pass-impact-orb-angel">👼</span>
+                                    {impactImageSeeds.map((seed, index) => (
+                                        <span
+                                            key={`impact-orb-${seed}-${index}`}
+                                            className={`angel-pass-impact-orb angel-pass-impact-orb-${index + 1}`}
+                                        >
+                                            <img
+                                                src={`https://picsum.photos/seed/user${seed}/100/100`}
+                                                alt=""
+                                                loading="lazy"
+                                                referrerPolicy="no-referrer"
+                                            />
+                                        </span>
+                                    ))}
+                                </div>
+                            </section>
                         )}
                     </>
                 )}

@@ -77,7 +77,7 @@ const koBase = {
         cancelConfirmTitle: '구독을 취소하시겠습니까?',
         cancelConfirmMessage: '취소하면 즉시 무료 플랜으로 전환되며,\n프리미엄 혜택(XP 3배 등)을 잃게 됩니다.',
         cancelSuccess: '구독이 취소되었습니다.',
-        upgradePrompt: '프리미엄 업그레이드',
+        upgradePrompt: '업그레이드',
         premiumTitle: '엔젤 패스와 함께 성장해요',
         premiumSubtitle: '우리 아이에겐 더 큰 성장,\n도움이 필요한 아이에겐 더 큰 희망.',
         impactCard: {

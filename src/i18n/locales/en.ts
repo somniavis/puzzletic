@@ -75,7 +75,7 @@ export const en = {
     cancelConfirmTitle: 'Cancel Subscription?',
     cancelConfirmMessage: 'You will lose all Premium benefits immediately.\nAre you sure you want to cancel?',
     cancelSuccess: 'Subscription cancelled.',
-    upgradePrompt: 'Upgrade to Premium',
+    upgradePrompt: 'Upgrade',
     premiumTitle: 'Grow with Angel Pass',
     premiumSubtitle: 'More growth for your child,\nmore hope for a child in need.',
     impactCard: {

@@ -75,7 +75,7 @@ export const idID = {
     cancelConfirmTitle: 'Batalkan langganan?',
     cancelConfirmMessage: 'Anda akan langsung kehilangan semua manfaat Premium.\nYakin ingin membatalkan?',
     cancelSuccess: 'Langganan dibatalkan.',
-    upgradePrompt: 'Tingkatkan ke Premium',
+    upgradePrompt: 'Tingkatkan',
     premiumTitle: 'Tumbuh bersama Angel Pass',
     premiumSubtitle: 'Lebih banyak perkembangan untuk anak Anda,\nlebih banyak harapan untuk anak yang membutuhkan.',
     impactCard: {

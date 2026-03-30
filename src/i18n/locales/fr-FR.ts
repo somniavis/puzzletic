@@ -75,7 +75,7 @@ export const frFR = {
     cancelConfirmTitle: "Annuler l'abonnement ?",
     cancelConfirmMessage: 'Vous perdrez immédiatement tous les avantages Premium.\nVoulez-vous vraiment annuler ?',
     cancelSuccess: 'Abonnement annulé.',
-    upgradePrompt: 'Passer en Premium',
+    upgradePrompt: 'Améliorer',
     premiumTitle: 'Grandissez avec Angel Pass',
     premiumSubtitle: 'Plus de croissance pour votre enfant,\nplus d’espoir pour un enfant dans le besoin.',
     impactCard: {

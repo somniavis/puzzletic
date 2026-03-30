@@ -290,7 +290,7 @@ export const viVN = {
     cancelConfirmTitle: 'Huỷ đăng ký gói?',
     cancelConfirmMessage: 'Bạn sẽ mất ngay tất cả quyền lợi Premium.\nBạn chắc chắn muốn huỷ chứ?',
     cancelSuccess: 'Đã huỷ đăng ký.',
-    upgradePrompt: 'Nâng cấp lên Premium',
+    upgradePrompt: 'Nâng cấp',
     premiumTitle: 'Lon len cung Angel Pass',
     premiumSubtitle: 'Them nhieu phat trien cho con ban,\nthem nhieu hy vong cho mot em nho dang can giup do.',
     impactCard: {

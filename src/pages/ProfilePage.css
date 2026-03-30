@@ -200,6 +200,32 @@
     overflow: hidden;
 }
 
+.account-upgrade-btn {
+    width: 100%;
+    margin-top: 0.08rem;
+    border: 0;
+    border-radius: 0.9rem;
+    padding: 0.58rem 0.9rem;
+    background: linear-gradient(180deg, #ff7a0a 0%, #ff6a00 100%);
+    color: #ffffff;
+    font-size: 0.82rem;
+    font-weight: 900;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    box-shadow: 0 4px 0 #d75300, 0 8px 14px rgba(255, 106, 0, 0.2);
+    transition: transform 0.12s ease, filter 0.12s ease, box-shadow 0.12s ease;
+}
+
+.account-upgrade-btn:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.04);
+}
+
+.account-upgrade-btn:active {
+    transform: translateY(3px);
+    box-shadow: 0 1px 0 #d75300;
+}
+
 .parent-gate-section {
     position: relative;
     align-items: center;
