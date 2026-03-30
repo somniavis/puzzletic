@@ -293,6 +293,10 @@ export const viVN = {
     upgradePrompt: 'Nâng cấp lên Premium',
     premiumTitle: 'Lon len cung Angel Pass',
     premiumSubtitle: 'Them nhieu phat trien cho con ban,\nthem nhieu hy vong cho mot em nho dang can giup do.',
+    impactCard: {
+      label: 'Tac dong toan cau',
+      title: '2.450 thien than dang cung lon len',
+    },
     subscription: {
       quarterly: {
         subscriptionTitle: 'Goi Jello theo quy',
@@ -316,7 +320,8 @@ export const viVN = {
       desc: 'Cảm ơn bạn đã ủng hộ.',
     },
     myJelloBox: 'Bộ sưu tập Jello',
-    profileInfo: 'Account',
+    collectionLabel: 'Bộ sưu tập',
+    profileInfo: 'Tài khoản',
     paymentInfo: 'Thanh toán',
     purchaseButton: 'Mua',
     expiresLabel: 'Het han',

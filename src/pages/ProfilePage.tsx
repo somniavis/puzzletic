@@ -11,6 +11,17 @@ type ProfileTab = 'my_jello' | 'pass';
 const createParentGateCode = () =>
     Array.from({ length: 3 }, () => Math.floor(Math.random() * 9) + 1);
 
+const createUniqueImpactSeeds = () => {
+    const pool = Array.from({ length: 20 }, (_, index) => index + 1);
+
+    for (let index = pool.length - 1; index > 0; index -= 1) {
+        const swapIndex = Math.floor(Math.random() * (index + 1));
+        [pool[index], pool[swapIndex]] = [pool[swapIndex], pool[index]];
+    }
+
+    return pool.slice(0, 3);
+};
+
 export const ProfilePage: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
@@ -44,6 +55,10 @@ export const ProfilePage: React.FC = () => {
     const purchaseNote = passOfferType === 'subscription'
         ? t('profile.cancelAnytimeShort')
         : null;
+    const impactImageSeeds = React.useMemo(
+        () => createUniqueImpactSeeds(),
+        [],
+    );
     const parentGateWordSequence = parentGateCode
         .map((digit) => t(`profile.parentGate.numberWords.${digit}`))
         .join(',  ');
@@ -164,7 +179,7 @@ export const ProfilePage: React.FC = () => {
             <div className="profile-content">
                 {activeTab === 'my_jello' && (
                     <>
-                        <section className="profile-section">
+                        <section className="profile-section profile-section-account">
                             <div className="profile-panel-heading">
                                 <h2>{t('profile.profileInfo')}</h2>
                             </div>
@@ -192,7 +207,10 @@ export const ProfilePage: React.FC = () => {
                             </div>
                         </section>
 
-                        <section className="profile-section">
+                        <section className="profile-section profile-section-collection">
+                            <div className="profile-panel-heading">
+                                <h2>{t('profile.collectionLabel')}</h2>
+                            </div>
                             <button className="jello-box-link" onClick={() => navigate('/jellobox')}>
                                 📚 {t('profile.myJelloBox')}
                             </button>
@@ -649,6 +667,29 @@ export const ProfilePage: React.FC = () => {
                                 </section>
                                     </>
                                 )}
+
+                                <section className="profile-section angel-pass-impact-card">
+                                    <div className="angel-pass-impact-copy">
+                                        <span className="angel-pass-impact-label">{t('profile.impactCard.label')}</span>
+                                        <p className="angel-pass-impact-title">{t('profile.impactCard.title')}</p>
+                                    </div>
+                                    <div className="angel-pass-impact-gallery" aria-hidden="true">
+                                        <span className="angel-pass-impact-orb angel-pass-impact-orb-angel">👼</span>
+                                        {impactImageSeeds.map((seed, index) => (
+                                            <span
+                                                key={`impact-orb-${seed}-${index}`}
+                                                className={`angel-pass-impact-orb angel-pass-impact-orb-${index + 1}`}
+                                            >
+                                                <img
+                                                    src={`https://picsum.photos/seed/user${seed}/100/100`}
+                                                    alt=""
+                                                    loading="lazy"
+                                                    referrerPolicy="no-referrer"
+                                                />
+                                            </span>
+                                        ))}
+                                    </div>
+                                </section>
                             </>
                         )}
                     </>

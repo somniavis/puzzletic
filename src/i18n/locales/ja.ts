@@ -76,6 +76,10 @@ const jaBase = {
         upgradePrompt: 'プレミアムにアップグレード',
         premiumTitle: 'Angel Passと一緒に成長しよう',
         premiumSubtitle: 'お子さまにはより大きな成長を、\n支援が必要な子どもにはより大きな希望を。',
+        impactCard: {
+            label: 'グローバルインパクト',
+            title: '2,450人の天使たちが一緒に歩んでいます',
+        },
         subscription: {
             quarterly: {
                 subscriptionTitle: '四半期Jello Pass',
@@ -103,7 +107,8 @@ const jaBase = {
             desc: 'サポートありがとうございます。',
         },
         myJelloBox: 'マイジェロ図鑑',
-        profileInfo: 'Account',
+        collectionLabel: 'コレクション',
+        profileInfo: 'アカウント',
         paymentInfo: 'お支払い',
         purchaseButton: '購入',
         expiresLabel: '有効期限',

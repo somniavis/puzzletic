@@ -78,6 +78,10 @@ export const esES = {
     upgradePrompt: 'Hazte Premium',
     premiumTitle: 'Crece con Angel Pass',
     premiumSubtitle: 'Más crecimiento para tu hijo,\nmás esperanza para un niño que lo necesita.',
+    impactCard: {
+      label: 'Impacto global',
+      title: '2.450 ángeles están creciendo juntos',
+    },
     subscription: {
       quarterly: {
         subscriptionTitle: 'Jello Pass trimestral',
@@ -101,7 +105,8 @@ export const esES = {
       desc: 'Gracias por tu apoyo.',
     },
     myJelloBox: 'Mi Caja Jello',
-    profileInfo: 'Account',
+    collectionLabel: 'Colección',
+    profileInfo: 'Cuenta',
     paymentInfo: 'Pago',
     purchaseButton: 'Comprar',
     expiresLabel: 'Vence',

@@ -78,6 +78,10 @@ export const idID = {
     upgradePrompt: 'Tingkatkan ke Premium',
     premiumTitle: 'Tumbuh bersama Angel Pass',
     premiumSubtitle: 'Lebih banyak perkembangan untuk anak Anda,\nlebih banyak harapan untuk anak yang membutuhkan.',
+    impactCard: {
+      label: 'Dampak global',
+      title: '2.450 malaikat tumbuh bersama',
+    },
     subscription: {
       quarterly: {
         subscriptionTitle: 'Jello Pass triwulanan',
@@ -101,7 +105,8 @@ export const idID = {
       desc: 'Terima kasih atas dukungan Anda.',
     },
     myJelloBox: 'Kotak Jello Saya',
-    profileInfo: 'Account',
+    collectionLabel: 'Koleksi',
+    profileInfo: 'Akun',
     paymentInfo: 'Pembayaran',
     purchaseButton: 'Beli',
     expiresLabel: 'Berakhir',

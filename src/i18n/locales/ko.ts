@@ -80,6 +80,10 @@ const koBase = {
         upgradePrompt: '프리미엄 업그레이드',
         premiumTitle: '엔젤 패스와 함께 성장해요',
         premiumSubtitle: '우리 아이에겐 더 큰 성장,\n도움이 필요한 아이에겐 더 큰 희망.',
+        impactCard: {
+            label: '글로벌 임팩트',
+            title: '2,450명의 천사들이 함께하고 있어요',
+        },
         subscription: {
             quarterly: {
                 subscriptionTitle: '분기 젤로 패스',
@@ -103,7 +107,8 @@ const koBase = {
             desc: '후원해주셔서 감사합니다.',
         },
         myJelloBox: '마이 젤로 박스',
-        profileInfo: 'Account',
+        collectionLabel: '컬렉션',
+        profileInfo: '계정',
         paymentInfo: '결제',
         purchaseButton: '구매',
         expiresLabel: '만료일',

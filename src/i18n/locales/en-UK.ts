@@ -78,6 +78,10 @@ export const enUK = {
     upgradePrompt: 'Upgrade to Premium',
     premiumTitle: 'Grow with Angel Pass',
     premiumSubtitle: 'More growth for your child,\nmore hope for a child in need.',
+    impactCard: {
+      label: 'Global Impact',
+      title: '2,450 angels are growing together',
+    },
     subscription: {
       quarterly: {
         subscriptionTitle: 'Quarterly Jello Pass',
@@ -101,6 +105,7 @@ export const enUK = {
       desc: 'Thank you for your support.',
     },
     myJelloBox: 'My Jello Box',
+    collectionLabel: 'Collection',
     profileInfo: 'Account',
     paymentInfo: 'Payment',
     purchaseButton: 'Purchase',
