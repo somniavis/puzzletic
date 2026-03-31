@@ -183,6 +183,23 @@
     z-index: 20;
 }
 
+.play-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.star-display {
+    display: flex;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    color: #FFD700;
+    font-size: 1rem;
+    font-weight: 700;
+}
+
 .play-learn-switch {
     display: inline-flex;
     align-items: center;
@@ -310,6 +327,8 @@
     z-index: 1;
     display: flex;
     flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
     gap: 0.1rem;
     padding: 0 0.5rem;
 }
@@ -354,7 +373,8 @@
 
 .retro-play-display {
     position: relative;
-    height: 16.9rem;
+    flex: 1 1 auto;
+    min-height: 13.5rem;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -363,12 +383,22 @@
     margin-top: -0.45rem;
 }
 
+.retro-play-pack-stack {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.18rem;
+    transform: translateY(-1rem);
+}
+
 .retro-play-carousel {
     position: relative;
     width: 100%;
-    height: 100%;
-    transform: translateY(-1.95rem);
+    height: 10.9rem;
     touch-action: pan-y;
+    overflow: visible;
 }
 
 .retro-pack {
@@ -500,21 +530,16 @@
 }
 
 .retro-play-dots {
-    position: absolute;
-    left: 50%;
-    bottom: 3.35rem;
-    transform: translateX(-50%);
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 0.22rem;
-    height: 0;
+    height: auto;
     margin: 0;
     line-height: 0;
     font-size: 0;
     z-index: 2;
     padding: 0;
-    overflow: visible;
 }
 
 .retro-play-dot {
@@ -615,7 +640,7 @@
     position: relative;
     width: min(100%, 31rem);
     margin: 0 auto;
-    aspect-ratio: 4 / 2.08;
+    aspect-ratio: 4 / 1.96;
     border-radius: 2.2rem;
     background: linear-gradient(180deg, #d5d6d9 0%, #bebfc6 100%);
     box-shadow:
@@ -699,7 +724,7 @@
     position: absolute;
     left: 0;
     right: 0;
-    bottom: 2.2rem;
+    bottom: 2.45rem;
     display: flex;
     align-items: flex-end;
     justify-content: space-between;
@@ -773,9 +798,14 @@
 
 .retro-console-action-start {
     min-width: 7.375rem;
-    padding: 1.176rem 1.8125rem;
+    width: max-content;
+    max-width: 100%;
+    flex: 0 0 auto;
+    padding: 1.5288rem 1.8125rem;
     background: linear-gradient(180deg, #b79ddb 0%, #8a71b8 100%);
     color: #faf6ff;
+    font-size: 0.8rem;
+    white-space: nowrap;
     box-shadow:
         inset 0 2px 0 rgba(255, 255, 255, 0.34),
         inset 0 -4px 0 rgba(91, 69, 127, 0.58);
@@ -807,7 +837,7 @@
 .retro-console-brand {
     position: absolute;
     left: 50%;
-    bottom: 0.45rem;
+    bottom: 0.38rem;
     transform: translateX(-50%);
     display: flex;
     align-items: center;
@@ -889,13 +919,14 @@
 
     .retro-console-action-start {
         min-width: 6.4375rem;
-        padding: 1.032rem 1.35rem;
+        padding: 1.3416rem 1.35rem;
+        font-size: 0.7rem;
     }
 }
 
 @media (max-width: 520px) {
     .retro-console-body {
-        aspect-ratio: 4 / 2.18;
+        aspect-ratio: 4 / 2.06;
     }
 
     .retro-console-slot {
@@ -918,7 +949,7 @@
     }
 
     .retro-console-controls {
-        bottom: 1.35rem;
+        bottom: 1.55rem;
         padding: 0 2.35rem;
     }
 
@@ -944,7 +975,8 @@
 
     .retro-console-action-start {
         min-width: 5.6875rem;
-        padding: 0.912rem 1.15rem;
+        padding: 1.1856rem 1.15rem;
+        font-size: 0.7rem;
     }
 
     .retro-console-reset-btn {
@@ -964,7 +996,7 @@
 
 @media (max-width: 420px) {
     .retro-console-body {
-        aspect-ratio: 4 / 2.28;
+        aspect-ratio: 4 / 2.14;
     }
 
     .retro-console-slot {
@@ -974,7 +1006,7 @@
     }
 
     .retro-console-controls {
-        bottom: 1.05rem;
+        bottom: 1.22rem;
         padding: 0 1.8rem;
     }
 
@@ -1002,7 +1034,8 @@
 
     .retro-console-action-start {
         min-width: 5.0625rem;
-        padding: 0.816rem 0.975rem;
+        padding: 1.0608rem 0.975rem;
+        font-size: 0.625rem;
     }
 
     .retro-console-reset-btn {

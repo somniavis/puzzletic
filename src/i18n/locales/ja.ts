@@ -2045,19 +2045,19 @@ const jaBase = {
         retro: {
             systemReady: 'システム準備完了',
             selectCartridge: 'カセットをえらぼう',
-            swipeOrTap: 'スワイプまたはタップで選択',
+            swipeOrTap: 'スワイプ → タップ → スタート!',
             inserting: 'そうちゃく中...',
             nowLoading: 'ロード中...',
             power: 'でんげん',
             start: 'スタート',
-            eject: 'イジェクト',
+            eject: '取り出す',
             reset: 'リセット',
         },
         categories: {
             brain: '脳トレ',
             math: '算数',
             science: '設定',
-            sw: 'プレイ',
+            play: 'プレイ',
         },
         worlds: {
             level1: 'みずのせかい',

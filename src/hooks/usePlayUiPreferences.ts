@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import type { GameCategory } from '../games/types';
 import {
   getDefaultPlayUiPreferences,
@@ -10,50 +10,46 @@ import {
 } from '../services/playUiPreferencesService';
 
 export const usePlayUiPreferences = (scopeId?: string) => {
-  const initialPreferences = useMemo(
-    () => loadPlayUiPreferences(scopeId),
-    [scopeId]
-  );
-
-  const [playLearnMode, setPlayLearnMode] = useState<PlayLearnMode>(initialPreferences.playLearnMode);
-  const [activeTab, setActiveTab] = useState<GameCategory>(initialPreferences.activeTab);
-  const [mathMode, setMathMode] = useState<PlayMathMode>(initialPreferences.mathMode);
-  const [selectedOp, setSelectedOp] = useState<PlayOperator>(initialPreferences.selectedOp);
+  const [preferences, setPreferences] = useState(() => loadPlayUiPreferences(scopeId));
 
   useEffect(() => {
-    const nextPreferences = loadPlayUiPreferences(scopeId);
-    setPlayLearnMode(nextPreferences.playLearnMode);
-    setActiveTab(nextPreferences.activeTab);
-    setMathMode(nextPreferences.mathMode);
-    setSelectedOp(nextPreferences.selectedOp);
+    setPreferences(loadPlayUiPreferences(scopeId));
   }, [scopeId]);
 
   useEffect(() => {
     if (!scopeId) return;
-    savePlayUiPreferences(scopeId, {
-      playLearnMode,
-      activeTab,
-      mathMode,
-      selectedOp,
-    });
-  }, [scopeId, playLearnMode, activeTab, mathMode, selectedOp]);
+    savePlayUiPreferences(scopeId, preferences);
+  }, [scopeId, preferences]);
 
-  const resetPlayUiPreferences = () => {
+  const setPlayLearnMode = useCallback((playLearnMode: PlayLearnMode) => {
+    setPreferences((prev) => ({ ...prev, playLearnMode }));
+  }, []);
+
+  const setActiveTab = useCallback((activeTab: GameCategory) => {
+    setPreferences((prev) => ({ ...prev, activeTab }));
+  }, []);
+
+  const setMathMode = useCallback((mathMode: PlayMathMode) => {
+    setPreferences((prev) => ({ ...prev, mathMode }));
+  }, []);
+
+  const setSelectedOp = useCallback((selectedOp: PlayOperator) => {
+    setPreferences((prev) => ({ ...prev, selectedOp }));
+  }, []);
+
+  const resetPlayUiPreferences = useCallback(() => {
     const defaults = getDefaultPlayUiPreferences();
-    setPlayLearnMode(defaults.playLearnMode);
-    setActiveTab(defaults.activeTab);
-    setMathMode(defaults.mathMode);
-    setSelectedOp(defaults.selectedOp);
-  };
+    setPreferences(defaults);
+  }, []);
 
   return {
-    playLearnMode,
+    playLearnMode: preferences.playLearnMode,
     setPlayLearnMode,
-    activeTab,
+    activeTab: preferences.activeTab,
     setActiveTab,
-    mathMode,
+    mathMode: preferences.mathMode,
     setMathMode,
-    selectedOp,
+    selectedOp: preferences.selectedOp,
     setSelectedOp,
     resetPlayUiPreferences,
   };

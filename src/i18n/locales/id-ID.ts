@@ -1299,8 +1299,8 @@ export const idID = {
     },
     retro: {
       systemReady: 'Sistem siap',
-      selectCartridge: 'Pilih kartrid',
-      swipeOrTap: 'Geser atau ketuk untuk memilih',
+      selectCartridge: 'Pilih Kartrid',
+      swipeOrTap: 'Geser → Ketuk → Mulai!',
       inserting: 'Memasang...',
       nowLoading: 'Memuat...',
       power: 'Daya',
@@ -1312,7 +1312,7 @@ export const idID = {
       brain: 'OTAK',
       math: 'MATEMATIKA',
       science: 'PENGATURAN',
-      sw: 'MAIN',
+      play: 'MAIN',
     },
     worlds: {
       level1: 'Dunia Air',

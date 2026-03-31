@@ -2,10 +2,10 @@ import React from 'react';
 import type { GameCategory } from '../games/types';
 
 export const CATEGORY_ICONS: Record<GameCategory, string> = {
-    math: 'fa-calculator',
-    brain: 'fa-brain',
-    science: 'fa-gear',
-    sw: 'fa-code'
+    math: 'fas fa-calculator',
+    brain: 'fas fa-brain',
+    science: 'fas fa-gear',
+    play: 'fab fa-bilibili'
 };
 
 // Emoji-based icon background colors
@@ -73,7 +73,7 @@ export const getIconBackground = (thumbnail: string | React.ReactNode | undefine
 
 // Custom thumbnail renderer for special cases
 export const renderThumbnail = (thumbnail: string | React.ReactNode | undefined, category: string) => {
-    if (!thumbnail) return <i className={`fas ${CATEGORY_ICONS[category as keyof typeof CATEGORY_ICONS]}`}></i>;
+    if (!thumbnail) return <i className={CATEGORY_ICONS[category as keyof typeof CATEGORY_ICONS]}></i>;
 
     // Quad grid format: "quad:TL,TR,BL,BR" (4-quadrant layout)
     // Example: "quad:🔴,,,🔴" = top-left and bottom-right

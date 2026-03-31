@@ -1,7 +1,7 @@
 import type { ComponentType, ReactNode, LazyExoticComponent } from 'react';
 
 export type GameDifficulty = 1 | 2 | 3 | 4 | 5;
-export type GameCategory = 'brain' | 'math' | 'science' | 'sw';
+export type GameCategory = 'brain' | 'math' | 'science' | 'play';
 
 // Game component props
 export interface GameComponentProps {

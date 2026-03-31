@@ -1300,19 +1300,19 @@ export const ptPT = {
     retro: {
       systemReady: 'Sistema pronto',
       selectCartridge: 'Escolhe um cartucho',
-      swipeOrTap: 'Desliza ou toca para selecionar',
+      swipeOrTap: 'Desliza → Toca → Inicia!',
       inserting: 'A inserir...',
       nowLoading: 'A carregar...',
       power: 'Energia',
       start: 'Iniciar',
-      eject: 'Ejetar',
+      eject: 'Retirar',
       reset: 'Repor',
     },
     categories: {
       brain: 'CÉREBRO',
       math: 'MATH',
       science: 'DEFINICOES',
-      sw: 'JOGAR',
+      play: 'JOGAR',
     },
     worlds: {
       level1: 'Mundo da Água',

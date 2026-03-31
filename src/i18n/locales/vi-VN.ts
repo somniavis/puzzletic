@@ -1827,19 +1827,19 @@ export const viVN = {
     retro: {
       systemReady: 'Hệ thống sẵn sàng',
       selectCartridge: 'Chọn băng trò chơi',
-      swipeOrTap: 'Vuốt hoặc chạm để chọn',
+      swipeOrTap: 'Vuốt → Chạm → Bắt đầu!',
       inserting: 'Đang lắp...',
       nowLoading: 'Đang tải...',
       power: 'Nguồn',
       start: 'Bắt đầu',
-      eject: 'Đẩy ra',
+      eject: 'Lấy ra',
       reset: 'Đặt lại',
     },
     categories: {
       brain: 'TƯ DUY',
       math: 'TOÁN',
       science: 'CÀI ĐẶT',
-      sw: 'CHƠI',
+      play: 'CHƠI',
     },
     worlds: {
       level1: 'Thế Giới Nước',

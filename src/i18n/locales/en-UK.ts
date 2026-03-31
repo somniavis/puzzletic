@@ -1299,8 +1299,8 @@ export const enUK = {
     },
     retro: {
       systemReady: 'System Ready',
-      selectCartridge: 'Select Cartridge',
-      swipeOrTap: 'Swipe or tap to select',
+      selectCartridge: 'Choose a Pack',
+      swipeOrTap: 'Swipe → Tap → Start!',
       inserting: 'Inserting...',
       nowLoading: 'Now Loading...',
       power: 'Power',
@@ -1312,7 +1312,7 @@ export const enUK = {
       brain: 'BRAIN',
       math: 'MATHS',
       science: 'SETTINGS',
-      sw: 'PLAY',
+      play: 'PLAY',
     },
     worlds: {
       level1: 'Water World',

@@ -86,6 +86,11 @@ export const GameIds = {
     // Brain Level 3
     TIC_TAC_TOE: 'tic-tac-toe',
     BRAIN_OMOK: 'brain-omok',
+
+    // Play
+    PLAY_JELLO_COMET: 'play-jello-comet',
+    PLAY_SNACK_SPRINT: 'play-snack-sprint',
+    PLAY_STAR_BRIDGE: 'play-star-bridge',
 } as const;
 
 export type GameId = typeof GameIds[keyof typeof GameIds];

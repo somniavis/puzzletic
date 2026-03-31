@@ -1,0 +1,121 @@
+.standalone-play-shell {
+    min-height: 100dvh;
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+    background:
+        radial-gradient(circle at top, rgba(133, 182, 255, 0.22), transparent 38%),
+        linear-gradient(180deg, #0a1120 0%, #10192d 54%, #090e18 100%);
+    color: #f8fbff;
+}
+
+.standalone-play-shell__panel {
+    width: min(100%, 42rem);
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    padding: 1.35rem 1.15rem 1.5rem;
+    gap: 1rem;
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02));
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+}
+
+.standalone-play-shell__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+}
+
+.standalone-play-shell__title-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.standalone-play-shell__eyebrow {
+    margin: 0;
+    color: rgba(222, 230, 251, 0.72);
+    font-size: 0.72rem;
+    font-weight: 900;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+}
+
+.standalone-play-shell__title {
+    margin: 0;
+    font-size: clamp(1.75rem, 4vw, 2.4rem);
+    font-weight: 1000;
+    line-height: 1;
+    letter-spacing: 0.01em;
+}
+
+.standalone-play-shell__close {
+    border: none;
+    border-radius: 999px;
+    min-width: 2.7rem;
+    height: 2.7rem;
+    background: rgba(255, 255, 255, 0.1);
+    color: #f8fbff;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.standalone-play-shell__hero {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    text-align: center;
+    border-radius: 1.6rem;
+    padding: 1.4rem;
+    background:
+        radial-gradient(circle at top, rgba(255, 255, 255, 0.16), transparent 42%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04));
+    box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.08),
+        0 1rem 2.4rem rgba(4, 7, 15, 0.32);
+}
+
+.standalone-play-shell__badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 5rem;
+    height: 5rem;
+    border-radius: 1.4rem;
+    font-size: 2.2rem;
+    background: rgba(255, 255, 255, 0.14);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.24);
+}
+
+.standalone-play-shell__desc {
+    margin: 0;
+    max-width: 22rem;
+    color: rgba(226, 233, 251, 0.86);
+    font-size: 0.98rem;
+    font-weight: 700;
+    line-height: 1.45;
+}
+
+.standalone-play-shell__note {
+    margin: 0;
+    color: rgba(198, 210, 244, 0.66);
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+@media (max-width: 520px) {
+    .standalone-play-shell__panel {
+        padding: 1rem 0.9rem 1.15rem;
+    }
+
+    .standalone-play-shell__hero {
+        padding: 1.1rem;
+    }
+}

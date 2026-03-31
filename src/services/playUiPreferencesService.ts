@@ -20,7 +20,7 @@ const DEFAULT_PLAY_UI_PREFERENCES: PlayUiPreferences = {
   selectedOp: 'ADD',
 };
 
-const GAME_CATEGORIES: GameCategory[] = ['brain', 'math', 'science', 'sw'];
+const GAME_CATEGORIES: GameCategory[] = ['brain', 'math', 'science', 'play'];
 const PLAY_LEARN_MODES: PlayLearnMode[] = ['play', 'learn'];
 const PLAY_MATH_MODES: PlayMathMode[] = ['adventure', 'genius'];
 const PLAY_OPERATORS: PlayOperator[] = ['ADD', 'SUB', 'MUL', 'DIV'];
@@ -38,14 +38,17 @@ export const loadPlayUiPreferences = (scopeId?: string): PlayUiPreferences => {
     const serialized = localStorage.getItem(getPlayUiPreferencesKey(scopeId));
     if (!serialized) return getDefaultPlayUiPreferences();
 
-    const parsed = JSON.parse(serialized) as Partial<PlayUiPreferences>;
+    const parsed = JSON.parse(serialized) as Record<string, unknown>;
+
+    const rawActiveTab = typeof parsed.activeTab === 'string' ? parsed.activeTab : undefined;
+    const normalizedActiveTab = rawActiveTab === 'sw' ? 'play' : rawActiveTab;
 
     return {
       playLearnMode: PLAY_LEARN_MODES.includes(parsed.playLearnMode as PlayLearnMode)
         ? (parsed.playLearnMode as PlayLearnMode)
         : DEFAULT_PLAY_UI_PREFERENCES.playLearnMode,
-      activeTab: GAME_CATEGORIES.includes(parsed.activeTab as GameCategory)
-        ? (parsed.activeTab as GameCategory)
+      activeTab: GAME_CATEGORIES.includes(normalizedActiveTab as GameCategory)
+        ? (normalizedActiveTab as GameCategory)
         : DEFAULT_PLAY_UI_PREFERENCES.activeTab,
       mathMode: PLAY_MATH_MODES.includes(parsed.mathMode as PlayMathMode)
         ? (parsed.mathMode as PlayMathMode)

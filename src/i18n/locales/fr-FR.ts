@@ -1300,19 +1300,19 @@ export const frFR = {
     retro: {
       systemReady: 'Système prêt',
       selectCartridge: 'Choisis une cartouche',
-      swipeOrTap: 'Glisse ou touche pour sélectionner',
+      swipeOrTap: 'Glisse → Touche → Lance !',
       inserting: 'Insertion...',
       nowLoading: 'Chargement...',
       power: 'Alim.',
       start: 'Démarrer',
-      eject: 'Éjecter',
+      eject: 'Retirer',
       reset: 'Reset',
     },
     categories: {
       brain: 'CERVEAU',
       math: 'MATHS',
       science: 'PARAMETRES',
-      sw: 'JEU',
+      play: 'JEU',
     },
     worlds: {
       level1: "Monde de l'Eau",

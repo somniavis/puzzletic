@@ -1300,19 +1300,19 @@ export const esES = {
     retro: {
       systemReady: 'Sistema listo',
       selectCartridge: 'Elige un cartucho',
-      swipeOrTap: 'Desliza o toca para seleccionar',
+      swipeOrTap: 'Desliza → Toca → ¡Empieza!',
       inserting: 'Insertando...',
       nowLoading: 'Cargando...',
       power: 'Encendido',
       start: 'Iniciar',
-      eject: 'Expulsar',
+      eject: 'Sacar',
       reset: 'Reiniciar',
     },
     categories: {
       brain: 'MENTE',
       math: 'MATH',
       science: 'AJUSTES',
-      sw: 'JUEGO',
+      play: 'JUEGO',
     },
     worlds: {
       level1: 'Mundo del Agua',

@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import type { GameCategory } from '../games/types';
 import { GAMES } from '../games/registry';
 import type { GameScoreValue } from '../types/nurturing';
@@ -28,17 +28,17 @@ export const usePlayPageLogic = ({
     onSelectedOpChange,
 }: UsePlayPageLogicProps) => {
     // -- Handlers --
-    const handleTabSelect = (category: GameCategory) => {
+    const handleTabSelect = useCallback((category: GameCategory) => {
         onActiveTabChange(category);
-    };
+    }, [onActiveTabChange]);
 
-    const handleMathModeSelect = (mode: MathMode) => {
+    const handleMathModeSelect = useCallback((mode: MathMode) => {
         onMathModeChange(mode);
-    };
+    }, [onMathModeChange]);
 
-    const setSelectedOp = (op: Operator) => {
+    const setSelectedOp = useCallback((op: Operator) => {
         onSelectedOpChange(op);
-    };
+    }, [onSelectedOpChange]);
 
     // -- Data Filtering --
     const adventureGames = useMemo(() => {
