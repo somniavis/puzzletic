@@ -1816,16 +1816,30 @@ export const viVN = {
         title: 'Rèn luyện',
         desc: 'Mô-đun luyện tập',
       },
+      play: {
+        desc: 'Thưởng thức các trò chơi vui nhộn',
+      },
       genius: {
         title: 'Tính toán thiên tài',
         desc: "Bí quyết tính nhanh của thiên tài",
       },
     },
+    retro: {
+      systemReady: 'Hệ thống sẵn sàng',
+      selectCartridge: 'Chọn băng trò chơi',
+      swipeOrTap: 'Vuốt hoặc chạm để chọn',
+      inserting: 'Đang lắp...',
+      nowLoading: 'Đang tải...',
+      power: 'Nguồn',
+      start: 'Bắt đầu',
+      eject: 'Đẩy ra',
+      reset: 'Đặt lại',
+    },
     categories: {
       brain: 'TƯ DUY',
       math: 'TOÁN',
       science: 'CÀI ĐẶT',
-      sw: 'LẬP TRÌNH',
+      sw: 'CHƠI',
     },
     worlds: {
       level1: 'Thế Giới Nước',

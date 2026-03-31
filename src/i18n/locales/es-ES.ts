@@ -1289,16 +1289,30 @@ export const esES = {
       training: {
         desc: 'Modulos de entrenamiento',
       },
+      play: {
+        desc: 'Disfruta de juegos divertidos',
+      },
       genius: {
         title: 'Cálculo genio',
         desc: 'El cálculo "secreto" de los genios',
       },
     },
+    retro: {
+      systemReady: 'Sistema listo',
+      selectCartridge: 'Elige un cartucho',
+      swipeOrTap: 'Desliza o toca para seleccionar',
+      inserting: 'Insertando...',
+      nowLoading: 'Cargando...',
+      power: 'Encendido',
+      start: 'Iniciar',
+      eject: 'Expulsar',
+      reset: 'Reiniciar',
+    },
     categories: {
       brain: 'MENTE',
       math: 'MATH',
       science: 'AJUSTES',
-      sw: 'SW',
+      sw: 'JUEGO',
     },
     worlds: {
       level1: 'Mundo del Agua',

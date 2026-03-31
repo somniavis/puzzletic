@@ -1289,16 +1289,30 @@ export const ptPT = {
       training: {
         desc: 'Módulos de treino',
       },
+      play: {
+        desc: 'Desfruta de jogos divertidos',
+      },
       genius: {
         title: 'Cálculo genial',
         desc: "O cálculo 'secreto' dos génios",
       },
     },
+    retro: {
+      systemReady: 'Sistema pronto',
+      selectCartridge: 'Escolhe um cartucho',
+      swipeOrTap: 'Desliza ou toca para selecionar',
+      inserting: 'A inserir...',
+      nowLoading: 'A carregar...',
+      power: 'Energia',
+      start: 'Iniciar',
+      eject: 'Ejetar',
+      reset: 'Repor',
+    },
     categories: {
       brain: 'CÉREBRO',
       math: 'MATH',
       science: 'DEFINICOES',
-      sw: 'SW',
+      sw: 'JOGAR',
     },
     worlds: {
       level1: 'Mundo da Água',

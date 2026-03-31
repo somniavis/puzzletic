@@ -1289,16 +1289,30 @@ export const frFR = {
       training: {
         desc: "Modules d'entraînement",
       },
+      play: {
+        desc: 'Profitez de jeux amusants',
+      },
       genius: {
         title: 'Calcul génie',
         desc: 'Les calculs « secrets » des génies',
       },
     },
+    retro: {
+      systemReady: 'Système prêt',
+      selectCartridge: 'Choisis une cartouche',
+      swipeOrTap: 'Glisse ou touche pour sélectionner',
+      inserting: 'Insertion...',
+      nowLoading: 'Chargement...',
+      power: 'Alim.',
+      start: 'Démarrer',
+      eject: 'Éjecter',
+      reset: 'Reset',
+    },
     categories: {
       brain: 'CERVEAU',
       math: 'MATHS',
       science: 'PARAMETRES',
-      sw: 'SW',
+      sw: 'JEU',
     },
     worlds: {
       level1: "Monde de l'Eau",

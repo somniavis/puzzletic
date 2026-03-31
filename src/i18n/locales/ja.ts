@@ -2034,16 +2034,30 @@ const jaBase = {
             training: {
                 desc: 'トレーニングモジュール',
             },
+            play: {
+                desc: '楽しいゲームを楽しもう',
+            },
             genius: {
                 title: 'ジーニアス計算',
                 desc: "天才たちの「秘密」の計算",
             },
         },
+        retro: {
+            systemReady: 'システム準備完了',
+            selectCartridge: 'カセットをえらぼう',
+            swipeOrTap: 'スワイプまたはタップで選択',
+            inserting: 'そうちゃく中...',
+            nowLoading: 'ロード中...',
+            power: 'でんげん',
+            start: 'スタート',
+            eject: 'イジェクト',
+            reset: 'リセット',
+        },
         categories: {
             brain: '脳トレ',
             math: '算数',
             science: '設定',
-            sw: 'プログラミング',
+            sw: 'プレイ',
         },
         worlds: {
             level1: 'みずのせかい',

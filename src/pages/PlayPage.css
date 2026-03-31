@@ -74,6 +74,13 @@
         linear-gradient(180deg, #e7edf2 0%, #d6dfe6 100%);
 }
 
+.play-page-container.play-page-container-play {
+    background:
+        radial-gradient(circle at 50% 12%, rgba(116, 140, 255, 0.18) 0, transparent 24rem),
+        radial-gradient(circle at 85% 34%, rgba(171, 94, 255, 0.12) 0, transparent 20rem),
+        linear-gradient(180deg, #0d111c 0%, #161c2d 44%, #1e263d 100%);
+}
+
 /* --- Game Loading Wrapper --- */
 .game-wrapper {
     width: 100vw;
@@ -247,7 +254,7 @@
 .hub-content {
     flex: 1;
     overflow-y: auto;
-    padding: 1rem 1.5rem 6rem 1.5rem;
+    padding: 0.5rem 0.75rem 5.5rem 0.75rem;
     /* Bottom padding for nav */
     scrollbar-width: none;
     /* Firefox */
@@ -258,6 +265,754 @@
 .hub-content.hub-content-adventure-board {
     padding-top: 0;
     padding-bottom: 0;
+}
+
+.retro-play-stage {
+    position: relative;
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 1.25rem;
+    padding: 0.2rem 0 0.15rem;
+    overflow: hidden;
+    background: transparent;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+.retro-play-stage-glow {
+    position: absolute;
+    border-radius: 999px;
+    filter: blur(42px);
+    pointer-events: none;
+    opacity: 0.55;
+}
+
+.retro-play-stage-glow-a {
+    top: -1rem;
+    left: 12%;
+    width: 10rem;
+    height: 10rem;
+    background: rgba(122, 201, 255, 0.16);
+}
+
+.retro-play-stage-glow-b {
+    right: 10%;
+    top: 26%;
+    width: 12rem;
+    height: 12rem;
+    background: rgba(176, 117, 255, 0.14);
+}
+
+.retro-play-top {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    padding: 0 0.5rem;
+}
+
+.retro-play-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.35rem;
+    text-align: center;
+}
+
+.retro-play-eyebrow {
+    margin: 0;
+    color: rgba(223, 228, 247, 0.78);
+    font-size: 0.72rem;
+    font-weight: 900;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+}
+
+.retro-play-eyebrow-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2rem;
+    padding: 0.42rem 0.95rem;
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: rgba(228, 232, 244, 0.88);
+}
+
+.retro-play-hint {
+    margin: 0;
+    color: rgba(176, 184, 213, 0.84);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.retro-play-display {
+    position: relative;
+    height: 16.9rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    perspective: 1200px;
+    overflow: visible;
+    margin-top: -0.45rem;
+}
+
+.retro-play-carousel {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform: translateY(-1.95rem);
+    touch-action: pan-y;
+}
+
+.retro-pack {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 9.4rem;
+    height: 10.4rem;
+    margin-left: -4.7rem;
+    margin-top: -5.2rem;
+    border: none;
+    border-radius: 1.3rem 1.3rem 0.5rem 0.5rem;
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.18) 0%, transparent 16%),
+        linear-gradient(180deg, var(--retro-pack-shell) 0%, var(--retro-pack-shell-dark) 100%);
+    box-shadow:
+        inset 0 0 0 2px rgba(255, 255, 255, 0.08),
+        0 1.1rem 1.8rem rgba(8, 10, 18, 0.32);
+    cursor: pointer;
+    transition:
+        transform 220ms ease,
+        opacity 220ms ease,
+        filter 220ms ease,
+        box-shadow 220ms ease;
+    overflow: hidden;
+}
+
+.retro-pack::before {
+    content: '';
+    position: absolute;
+    inset: 0.6rem 0.7rem 2.4rem;
+    border-radius: 0.85rem;
+    background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.24), transparent 58%),
+        linear-gradient(180deg, var(--retro-pack-accent-light) 0%, var(--retro-pack-accent) 100%);
+    box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.16);
+}
+
+.retro-pack.is-center {
+    box-shadow:
+        inset 0 0 0 2px rgba(255, 255, 255, 0.12),
+        0 0 0 1px rgba(255, 255, 255, 0.18),
+        0 1.4rem 2.3rem rgba(8, 10, 18, 0.44),
+        0 0 2.2rem var(--retro-pack-glow);
+}
+
+.retro-pack.is-center:hover:not(:disabled) {
+    transform: translate3d(0, -0.45rem, 0) scale(1.06) rotateY(0deg);
+}
+
+.retro-pack:disabled {
+    cursor: default;
+}
+
+.retro-pack.is-hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.retro-pack-notch {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 44%;
+    height: 1rem;
+    transform: translateX(-50%);
+    border-radius: 0 0 0.8rem 0.8rem;
+    background: rgba(16, 20, 28, 0.28);
+}
+
+.retro-pack-label {
+    position: absolute;
+    inset: 0.95rem 0.95rem 2.95rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 1;
+}
+
+.retro-pack-sticker {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 3.1rem;
+    height: 3.1rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.24);
+    color: var(--retro-pack-ink);
+    font-size: 1.65rem;
+    box-shadow:
+        inset 0 2px 0 rgba(255, 255, 255, 0.34),
+        0 0.5rem 0.9rem rgba(0, 0, 0, 0.16);
+}
+
+.retro-pack-title {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    color: var(--retro-pack-ink);
+    font-size: 0.9rem;
+    font-weight: 1000;
+    line-height: 1.05;
+    letter-spacing: 0.03em;
+    text-align: center;
+    text-transform: uppercase;
+    text-wrap: balance;
+}
+
+.retro-pack-ridges {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 2rem;
+    display: flex;
+    justify-content: center;
+    gap: 0.33rem;
+    padding-top: 0.34rem;
+    background: rgba(0, 0, 0, 0.18);
+}
+
+.retro-pack-ridges span {
+    width: 0.34rem;
+    height: 1.2rem;
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.18);
+}
+
+.retro-play-dots {
+    position: absolute;
+    left: 50%;
+    bottom: 3.35rem;
+    transform: translateX(-50%);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.22rem;
+    height: 0;
+    margin: 0;
+    line-height: 0;
+    font-size: 0;
+    z-index: 2;
+    padding: 0;
+    overflow: visible;
+}
+
+.retro-play-dot {
+    width: 0.24rem;
+    height: 0.24rem;
+    min-width: 0;
+    min-height: 0;
+    padding: 0;
+    flex: 0 0 auto;
+    display: block;
+    appearance: none;
+    -webkit-appearance: none;
+    border: none;
+    border-radius: 999px;
+    background: rgba(148, 156, 184, 0.34);
+    transition: all 160ms ease;
+}
+
+.retro-play-dot.active {
+    width: 0.52rem;
+    background: rgba(244, 247, 255, 0.92);
+}
+
+.retro-play-screen {
+    position: relative;
+    width: min(100%, 26rem);
+    height: 12.6rem;
+    border-radius: 1.35rem;
+    background:
+        linear-gradient(180deg, rgba(9, 11, 17, 0.94), rgba(22, 27, 40, 0.96));
+    box-shadow:
+        inset 0 0 0 3px rgba(92, 100, 128, 0.28),
+        0 1.2rem 2.1rem rgba(4, 7, 15, 0.44);
+    overflow: hidden;
+}
+
+.retro-play-screen-scanlines {
+    position: absolute;
+    inset: 0;
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0 50%, rgba(0, 0, 0, 0.14) 50% 100%),
+        linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 200, 0.02), rgba(64, 151, 255, 0.06));
+    background-size: 100% 3px, 4px 100%;
+    pointer-events: none;
+    opacity: 0.75;
+}
+
+.retro-play-screen-content {
+    position: relative;
+    z-index: 1;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 1rem;
+    text-align: center;
+}
+
+.retro-play-screen-sticker {
+    font-size: 2rem;
+}
+
+.retro-play-screen-content h3 {
+    margin: 0;
+    color: #f8fbff;
+    font-size: 1.45rem;
+    font-weight: 1000;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.retro-play-screen-content p {
+    margin: 0;
+    color: rgba(204, 214, 239, 0.82);
+    font-size: 0.86rem;
+    font-weight: 700;
+}
+
+.retro-play-screen-loading {
+    color: #8cf1a8;
+    font-size: 0.72rem;
+    font-weight: 900;
+    letter-spacing: 0.26em;
+    text-transform: uppercase;
+    animation: retroPulse 1s ease-in-out infinite;
+}
+
+.retro-console-wrap {
+    position: relative;
+    z-index: 1;
+    padding: 0 0.5rem;
+    margin-top: -2.75rem;
+}
+
+.retro-console-body {
+    position: relative;
+    width: min(100%, 31rem);
+    margin: 0 auto;
+    aspect-ratio: 4 / 2.08;
+    border-radius: 2.2rem;
+    background: linear-gradient(180deg, #d5d6d9 0%, #bebfc6 100%);
+    box-shadow:
+        inset 0 2px 0 rgba(255, 255, 255, 0.55),
+        inset 0 -7px 0 rgba(133, 138, 149, 0.52),
+        0 1.6rem 2.6rem rgba(26, 31, 49, 0.28);
+    overflow: hidden;
+}
+
+.retro-console-gloss {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% -10%, rgba(255, 255, 255, 0.42) 0%, transparent 45%);
+    pointer-events: none;
+}
+
+.retro-console-slot {
+    position: absolute;
+    top: 2.15rem;
+    left: 50%;
+    width: 78%;
+    height: 3.2rem;
+    transform: translateX(-50%);
+    border-radius: 999px;
+    background: #80848d;
+    box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.32);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: visible;
+}
+
+.retro-console-slot-mouth {
+    position: relative;
+    width: 93%;
+    height: 0.95rem;
+    border-radius: 999px;
+    background: #181d27;
+    box-shadow: inset 0 2px 3px rgba(255, 255, 255, 0.08);
+    z-index: 2;
+}
+
+.retro-console-insert {
+    position: absolute;
+    width: 52%;
+    height: 2.8rem;
+    top: -2.6rem;
+    border-radius: 0.45rem 0.45rem 0.2rem 0.2rem;
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.22), transparent 18%),
+        linear-gradient(180deg, var(--retro-pack-shell) 0%, var(--retro-pack-shell-dark) 100%);
+    box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.12);
+    z-index: 3;
+}
+
+.retro-console-insert.is-inserting {
+    animation: retroInsertCartridge 850ms ease-in forwards;
+}
+
+.retro-console-insert.is-loaded {
+    top: -0.86rem;
+}
+
+.retro-console-insert-ridges {
+    position: absolute;
+    left: 50%;
+    bottom: 0.42rem;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 0.26rem;
+}
+
+.retro-console-insert-ridges span {
+    width: 0.22rem;
+    height: 0.74rem;
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.22);
+}
+
+.retro-console-controls {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 2.2rem;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    padding: 0 4.25rem;
+}
+
+.retro-console-power-group,
+.retro-console-reset-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.34rem;
+}
+
+.retro-console-switch {
+    width: 2.9rem;
+    height: 4rem;
+    padding: 0.32rem;
+    border-radius: 0.9rem;
+    border: none;
+    background: #b5b7c0;
+    box-shadow:
+        inset 0 2px 0 rgba(255, 255, 255, 0.4),
+        inset 0 -4px 0 rgba(118, 123, 135, 0.52);
+    cursor: pointer;
+}
+
+.retro-console-switch span {
+    display: block;
+    width: 100%;
+    height: 2rem;
+    margin-top: 1.35rem;
+    border-radius: 0.5rem;
+    background: #6d727d;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.18);
+    transition: transform 180ms ease, margin-top 180ms ease, background 180ms ease;
+}
+
+.retro-console-switch.is-on span {
+    margin-top: 0.2rem;
+    background: #7f848f;
+}
+
+.retro-console-led {
+    width: 0.52rem;
+    height: 0.52rem;
+    border-radius: 999px;
+    background: #4d5563;
+}
+
+.retro-console-led.is-on {
+    background: #57d77d;
+    box-shadow: 0 0 10px rgba(87, 215, 125, 0.72);
+}
+
+.retro-console-action {
+    min-width: 4.9rem;
+    padding: 0.88rem 1.2rem;
+    border: none;
+    border-radius: 999px;
+    background: #b9bcc4;
+    color: #6a7079;
+    font-size: 0.64rem;
+    font-weight: 1000;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    box-shadow:
+        inset 0 2px 0 rgba(255, 255, 255, 0.42),
+        inset 0 -4px 0 rgba(121, 126, 138, 0.52);
+}
+
+.retro-console-action-start {
+    min-width: 7.375rem;
+    padding: 1.176rem 1.8125rem;
+    background: linear-gradient(180deg, #b79ddb 0%, #8a71b8 100%);
+    color: #faf6ff;
+    box-shadow:
+        inset 0 2px 0 rgba(255, 255, 255, 0.34),
+        inset 0 -4px 0 rgba(91, 69, 127, 0.58);
+}
+
+.retro-console-reset-btn {
+    width: 2.8rem;
+    height: 2.8rem;
+    border: none;
+    border-radius: 999px;
+    background: #babdc5;
+    color: #727781;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow:
+        inset 0 2px 0 rgba(255, 255, 255, 0.42),
+        inset 0 -4px 0 rgba(121, 126, 138, 0.52);
+}
+
+.retro-console-label {
+    color: #737a84;
+    font-size: 0.52rem;
+    font-weight: 1000;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
+
+.retro-console-brand {
+    position: absolute;
+    left: 50%;
+    bottom: 0.45rem;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 0.28rem;
+    color: #707680;
+    font-size: 0.58rem;
+    font-weight: 1000;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.retro-console-color {
+    width: 0.44rem;
+    height: 0.44rem;
+    border-radius: 999px;
+}
+
+.retro-console-color-red { background: #ff6b66; }
+.retro-console-color-yellow { background: #ffd23f; }
+.retro-console-color-blue { background: #5d96ff; }
+.retro-console-color-green { background: #61cc8a; }
+
+.retro-play-empty-card {
+    background: linear-gradient(180deg, #0f1320 0%, #1a2034 100%);
+    color: #eef3ff;
+}
+
+@keyframes retroInsertCartridge {
+    from {
+        top: -2.6rem;
+    }
+    to {
+        top: -0.86rem;
+    }
+}
+
+@keyframes retroPulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+@media (max-width: 640px) {
+    .retro-play-stage {
+        border-radius: 0;
+        margin: 0;
+    }
+
+    .retro-play-display {
+        height: 16rem;
+    }
+
+    .retro-pack {
+        width: 8rem;
+        height: 8.8rem;
+        margin-left: -4rem;
+        margin-top: -4.4rem;
+    }
+
+    .retro-pack.is-center:hover:not(:disabled) {
+        transform: translate3d(0, -0.35rem, 0) scale(1.04) rotateY(0deg);
+    }
+
+    .retro-pack-title {
+        font-size: 0.82rem;
+    }
+
+    .retro-console-controls {
+        padding: 0 3.1rem;
+    }
+
+    .retro-console-action {
+        min-width: 4.2rem;
+        padding: 0.78rem 0.9rem;
+    }
+
+    .retro-console-action-start {
+        min-width: 6.4375rem;
+        padding: 1.032rem 1.35rem;
+    }
+}
+
+@media (max-width: 520px) {
+    .retro-console-body {
+        aspect-ratio: 4 / 2.18;
+    }
+
+    .retro-console-slot {
+        top: 1.55rem;
+        height: 2.8rem;
+    }
+
+    .retro-console-slot-mouth {
+        height: 0.82rem;
+    }
+
+    .retro-console-insert {
+        width: 52%;
+        height: 2.35rem;
+        top: -2.2rem;
+    }
+
+    .retro-console-insert.is-loaded {
+        top: -0.68rem;
+    }
+
+    .retro-console-controls {
+        bottom: 1.35rem;
+        padding: 0 2.35rem;
+    }
+
+    .retro-console-switch {
+        width: 2.45rem;
+        height: 3.35rem;
+    }
+
+    .retro-console-switch span {
+        height: 1.65rem;
+        margin-top: 1.05rem;
+    }
+
+    .retro-console-switch.is-on span {
+        margin-top: 0.14rem;
+    }
+
+    .retro-console-action {
+        min-width: 3.75rem;
+        padding: 0.66rem 0.78rem;
+        font-size: 0.56rem;
+    }
+
+    .retro-console-action-start {
+        min-width: 5.6875rem;
+        padding: 0.912rem 1.15rem;
+    }
+
+    .retro-console-reset-btn {
+        width: 2.35rem;
+        height: 2.35rem;
+    }
+
+    .retro-console-label {
+        font-size: 0.48rem;
+    }
+
+    .retro-console-brand {
+        bottom: 0.32rem;
+        font-size: 0.52rem;
+    }
+}
+
+@media (max-width: 420px) {
+    .retro-console-body {
+        aspect-ratio: 4 / 2.28;
+    }
+
+    .retro-console-slot {
+        top: 1.3rem;
+        width: 80%;
+        height: 2.45rem;
+    }
+
+    .retro-console-controls {
+        bottom: 1.05rem;
+        padding: 0 1.8rem;
+    }
+
+    .retro-console-power-group,
+    .retro-console-reset-group {
+        gap: 0.22rem;
+    }
+
+    .retro-console-switch {
+        width: 2.15rem;
+        height: 2.95rem;
+        padding: 0.24rem;
+    }
+
+    .retro-console-switch span {
+        height: 1.45rem;
+        margin-top: 0.9rem;
+    }
+
+    .retro-console-action {
+        min-width: 3.3rem;
+        padding: 0.58rem 0.62rem;
+        font-size: 0.5rem;
+    }
+
+    .retro-console-action-start {
+        min-width: 5.0625rem;
+        padding: 0.816rem 0.975rem;
+    }
+
+    .retro-console-reset-btn {
+        width: 2.05rem;
+        height: 2.05rem;
+    }
+
+    .retro-console-brand {
+        font-size: 0.46rem;
+    }
 }
 
 .hub-content.hub-content-brain {

@@ -6,6 +6,7 @@ import { playButtonSound } from '../utils/sound';
 import { useNurturing } from '../contexts/NurturingContext';
 import { GAMES, getGameById } from '../games/registry';
 import type { GameCategory, GameManifest } from '../games/types';
+import { GameIds } from '../constants/gameIds';
 import { isGameUnlocked, parseGameScore, ADVENTURE_UNLOCK_THRESHOLD, GENIUS_UNLOCK_THRESHOLD } from '../utils/progression';
 import { useAuth } from '../contexts/AuthContext';
 import { createCharacter } from '../data/characters';
@@ -28,12 +29,84 @@ import { PlayGameInfoModal } from '../components/PlayPage/PlayGameInfoModal';
 import { GameErrorBoundary } from '../components/Game/GameErrorBoundary';
 import { buildBoardLayout } from '../components/PlayPage/playAdventureBoardLayout';
 
-type BoardPositionTab = 'math' | 'brain' | 'sw';
+type BoardPositionTab = 'math' | 'brain';
 type StoredBoardTilePosition = {
     level: number;
     x: number;
     y: number;
 };
+
+type RetroPlayPhase = 'browse' | 'inserting' | 'loading';
+
+type RetroPlayPackDefinition = {
+    id: string;
+    sticker: string;
+    shell: string;
+    shellDark: string;
+    accent: string;
+    accentLight: string;
+    ink: string;
+    edge: string;
+    glow: string;
+};
+
+const RETRO_PLAY_PACK_DEFINITIONS: RetroPlayPackDefinition[] = [
+    {
+        id: GameIds.MATH_FRUIT_SLICE,
+        sticker: '🍉',
+        shell: '#4f8b4d',
+        shellDark: '#376535',
+        accent: '#8ed06f',
+        accentLight: '#b9e39d',
+        ink: '#17361f',
+        edge: '#d9f0c2',
+        glow: 'rgba(142, 208, 111, 0.35)',
+    },
+    {
+        id: GameIds.MATH_MOLE_WHACK,
+        sticker: '🔨',
+        shell: '#c34d4b',
+        shellDark: '#953230',
+        accent: '#f18a6d',
+        accentLight: '#f7b39d',
+        ink: '#421714',
+        edge: '#ffd2b5',
+        glow: 'rgba(241, 138, 109, 0.34)',
+    },
+    {
+        id: GameIds.COLOR_LINK,
+        sticker: '🎨',
+        shell: '#4767b0',
+        shellDark: '#314a84',
+        accent: '#77a9ff',
+        accentLight: '#aacbff',
+        ink: '#152549',
+        edge: '#dbe6ff',
+        glow: 'rgba(119, 169, 255, 0.34)',
+    },
+    {
+        id: GameIds.MAZE_ESCAPE,
+        sticker: '🗺️',
+        shell: '#7f5aac',
+        shellDark: '#5f3f84',
+        accent: '#b58bf7',
+        accentLight: '#d1b5ff',
+        ink: '#2e1845',
+        edge: '#eee0ff',
+        glow: 'rgba(181, 139, 247, 0.34)',
+    },
+    {
+        id: GameIds.BRAIN_OMOK,
+        sticker: '⚫',
+        shell: '#4f6777',
+        shellDark: '#3a4e5b',
+        accent: '#94b3c9',
+        accentLight: '#bfd3e0',
+        ink: '#1a2730',
+        edge: '#d8e6ef',
+        glow: 'rgba(148, 179, 201, 0.34)',
+    },
+];
 
 const getPlayBoardPositionStorageKey = (scopeId: string, tab: BoardPositionTab) =>
     `play_board_position:${scopeId}:${tab}`;
@@ -109,6 +182,20 @@ const scrollContainerToCenteredElement = (container: HTMLElement, target: HTMLEl
     });
 };
 
+const getRetroCarouselOffset = (index: number, activeIndex: number, total: number) => {
+    let delta = index - activeIndex;
+    const half = Math.floor(total / 2);
+    if (delta > half) delta -= total;
+    if (delta < -half) delta += total;
+    return delta;
+};
+
+const getLocalizedGameTitle = (game: GameManifest, t: ReturnType<typeof useTranslation>['t']) =>
+    game.titleKey ? t(game.titleKey) : game.title;
+
+const getLocalizedGameSubtitle = (game: GameManifest, t: ReturnType<typeof useTranslation>['t']) =>
+    game.subtitleKey ? t(game.subtitleKey) : (game.subtitle || '');
+
 const PlayPage: React.FC = () => {
     const navigate = useNavigate();
     const { gameId } = useParams();
@@ -162,11 +249,35 @@ const PlayPage: React.FC = () => {
     const [selectedPlayBoardGameId, setSelectedPlayBoardGameId] = React.useState<string | null>(null);
     const [currentBoardGameId, setCurrentBoardGameId] = React.useState<string | null>(null);
     const [currentBoardTilePosition, setCurrentBoardTilePosition] = React.useState<{ level: number; x: number; y: number } | null>(null);
+    const [retroActiveIndex, setRetroActiveIndex] = React.useState(0);
+    const [retroSelectedGameId, setRetroSelectedGameId] = React.useState<string | null>(null);
+    const [retroPhase, setRetroPhase] = React.useState<RetroPlayPhase>('browse');
+    const [retroPowerOn, setRetroPowerOn] = React.useState(true);
     const hubContentRef = React.useRef<HTMLDivElement | null>(null);
+    const retroInsertTimeoutRef = React.useRef<number | null>(null);
+    const retroSwipeStartRef = React.useRef<{ x: number; y: number } | null>(null);
     const isPlayAdventureMode = playLearnMode === 'play'
         && ((activeTab === 'math' && mathMode === 'adventure') || activeTab === 'brain');
+    const isRetroPlayTab = activeTab === 'sw';
 
     const activeGame = gameId ? getGameById(gameId) : null;
+    const retroPlayPacks = useMemo(() => {
+        return RETRO_PLAY_PACK_DEFINITIONS.map((definition) => {
+            const game = getGameById(definition.id);
+            if (!game) return null;
+
+            return {
+                ...definition,
+                game,
+                title: getLocalizedGameTitle(game, t),
+                subtitle: getLocalizedGameSubtitle(game, t),
+            };
+        }).filter((item): item is NonNullable<typeof item> => item !== null);
+    }, [t]);
+    const retroSelectedPack = useMemo(
+        () => retroPlayPacks.find((pack) => pack.game.id === retroSelectedGameId) ?? null,
+        [retroPlayPacks, retroSelectedGameId]
+    );
     const adventureGameStates = useMemo<PlayAdventureBoardGame[]>(() => {
         return adventureGames.map((game) => {
             const scoreValue = gameScores?.[game.id];
@@ -221,7 +332,6 @@ const PlayPage: React.FC = () => {
     const currentBoardStorageScope = useMemo<BoardPositionTab | null>(() => {
         if (activeTab === 'brain') return 'brain';
         if (activeTab === 'math' && mathMode === 'adventure') return 'math';
-        if (activeTab === 'sw') return 'sw';
         return null;
     }, [activeTab, mathMode]);
     const activeBoardLevelGroups = useMemo(
@@ -279,6 +389,25 @@ const PlayPage: React.FC = () => {
         if (currentBoardGameId || !lastPlayedGameId) return;
         setCurrentBoardGameId(lastPlayedGameId);
     }, [currentBoardGameId, lastPlayedGameId]);
+
+    useEffect(() => {
+        return () => {
+            if (retroInsertTimeoutRef.current) {
+                window.clearTimeout(retroInsertTimeoutRef.current);
+            }
+        };
+    }, []);
+
+    useEffect(() => {
+        if (isRetroPlayTab) return;
+        setRetroPhase('browse');
+        setRetroSelectedGameId(null);
+        setRetroPowerOn(false);
+        if (retroInsertTimeoutRef.current) {
+            window.clearTimeout(retroInsertTimeoutRef.current);
+            retroInsertTimeoutRef.current = null;
+        }
+    }, [isRetroPlayTab]);
 
     useEffect(() => {
         if (!isPlayAdventureMode || !currentBoardStorageScope) return;
@@ -495,6 +624,92 @@ const PlayPage: React.FC = () => {
         if (currentBoardStorageScope) {
             saveStoredBoardTilePosition(playUiScopeId, currentBoardStorageScope, position);
         }
+    };
+
+    const handleRetroPackSelection = (index: number) => {
+        if (retroPhase !== 'browse') return;
+        const pack = retroPlayPacks[index];
+        if (!pack) return;
+
+        if (index !== retroActiveIndex) {
+            playButtonSound();
+            setRetroActiveIndex(index);
+            return;
+        }
+
+        playButtonSound();
+        setRetroPowerOn(true);
+        setRetroSelectedGameId(pack.game.id);
+        setRetroPhase('inserting');
+
+        if (retroInsertTimeoutRef.current) {
+            window.clearTimeout(retroInsertTimeoutRef.current);
+        }
+
+        retroInsertTimeoutRef.current = window.setTimeout(() => {
+            setRetroPhase('loading');
+            retroInsertTimeoutRef.current = null;
+        }, 900);
+    };
+
+    const moveRetroCarousel = (direction: 'prev' | 'next') => {
+        if (retroPhase !== 'browse' || retroPlayPacks.length <= 1) return;
+        playButtonSound();
+        setRetroActiveIndex((prev) => {
+            if (direction === 'next') {
+                return (prev + 1) % retroPlayPacks.length;
+            }
+            return (prev - 1 + retroPlayPacks.length) % retroPlayPacks.length;
+        });
+    };
+
+    const handleRetroSwipeStart = (clientX: number, clientY: number) => {
+        retroSwipeStartRef.current = { x: clientX, y: clientY };
+    };
+
+    const handleRetroSwipeEnd = (clientX: number, clientY: number) => {
+        const start = retroSwipeStartRef.current;
+        retroSwipeStartRef.current = null;
+        if (!start) return;
+
+        const deltaX = clientX - start.x;
+        const deltaY = clientY - start.y;
+
+        if (Math.abs(deltaX) < 36 || Math.abs(deltaX) <= Math.abs(deltaY)) return;
+
+        if (deltaX < 0) {
+            moveRetroCarousel('next');
+        } else {
+            moveRetroCarousel('prev');
+        }
+    };
+
+    const resetRetroLauncher = (options?: { keepPowerOn?: boolean }) => {
+        if (retroInsertTimeoutRef.current) {
+            window.clearTimeout(retroInsertTimeoutRef.current);
+            retroInsertTimeoutRef.current = null;
+        }
+        setRetroPhase('browse');
+        setRetroSelectedGameId(null);
+        if (!options?.keepPowerOn) {
+            setRetroPowerOn(false);
+        }
+    };
+
+    const handleRetroReset = () => {
+        playButtonSound();
+        resetRetroLauncher({ keepPowerOn: true });
+    };
+
+    const handleRetroPowerToggle = () => {
+        playButtonSound();
+        setRetroPowerOn((prev) => {
+            const next = !prev;
+            if (!next) {
+                resetRetroLauncher();
+            }
+            return next;
+        });
     };
 
     const handleExitGame = () => {
@@ -777,6 +992,203 @@ const PlayPage: React.FC = () => {
         </div >
     );
 
+    const renderRetroPlayLauncher = () => {
+        if (!retroPlayPacks.length) {
+            return (
+                <div className="play-board-empty">
+                    <div className="play-board-empty-card retro-play-empty-card">
+                        <span className="play-board-empty-icon">🎮</span>
+                        <h3>{t('play.categories.sw')}</h3>
+                        <p>{t('play.sections.play.desc')}</p>
+                    </div>
+                </div>
+            );
+        }
+
+        return (
+            <div className="retro-play-stage">
+                <div className="retro-play-stage-glow retro-play-stage-glow-a" aria-hidden="true" />
+                <div className="retro-play-stage-glow retro-play-stage-glow-b" aria-hidden="true" />
+
+                <div className="retro-play-top">
+                    <div className="retro-play-header">
+                        <p className="retro-play-eyebrow retro-play-eyebrow-pill">{t('play.retro.selectCartridge')}</p>
+                        <p className="retro-play-hint">
+                            {retroPhase === 'browse'
+                                ? t('play.retro.swipeOrTap')
+                                : retroPhase === 'inserting'
+                                    ? t('play.retro.inserting')
+                                    : t('play.retro.nowLoading')}
+                        </p>
+                    </div>
+
+                    <div className="retro-play-display">
+                        {retroPhase === 'loading' && retroSelectedPack ? (
+                            <div className="retro-play-screen">
+                                <div className="retro-play-screen-scanlines" aria-hidden="true" />
+                                <div className="retro-play-screen-content">
+                                    <span className="retro-play-screen-sticker">{retroSelectedPack.sticker}</span>
+                                    <h3>{retroSelectedPack.title}</h3>
+                                    {retroSelectedPack.subtitle && <p>{retroSelectedPack.subtitle}</p>}
+                                    <span className="retro-play-screen-loading">{t('play.retro.nowLoading')}</span>
+                                </div>
+                            </div>
+                        ) : (
+                            <div
+                                className="retro-play-carousel"
+                                aria-label={t('play.retro.selectCartridge')}
+                                onTouchStart={(event) => {
+                                    const touch = event.changedTouches[0];
+                                    if (!touch) return;
+                                    handleRetroSwipeStart(touch.clientX, touch.clientY);
+                                }}
+                                onTouchEnd={(event) => {
+                                    const touch = event.changedTouches[0];
+                                    if (!touch) return;
+                                    handleRetroSwipeEnd(touch.clientX, touch.clientY);
+                                }}
+                                onPointerDown={(event) => {
+                                    if (event.pointerType !== 'mouse') {
+                                        handleRetroSwipeStart(event.clientX, event.clientY);
+                                    }
+                                }}
+                                onPointerUp={(event) => {
+                                    if (event.pointerType !== 'mouse') {
+                                        handleRetroSwipeEnd(event.clientX, event.clientY);
+                                    }
+                                }}
+                                onPointerCancel={() => {
+                                    retroSwipeStartRef.current = null;
+                                }}
+                            >
+                                {retroPlayPacks.map((pack, index) => {
+                                    const offset = getRetroCarouselOffset(index, retroActiveIndex, retroPlayPacks.length);
+                                    const isCenter = offset === 0;
+                                    const hidden = Math.abs(offset) > 2;
+                                    const depth = Math.abs(offset);
+                                    const translateX = offset * 122;
+                                    const translateY = depth * 12;
+                                    const scale = 1 - depth * 0.23;
+                                    const rotateY = offset * 28;
+
+                                    return (
+                                        <button
+                                            key={pack.game.id}
+                                            type="button"
+                                            className={`retro-pack ${isCenter ? 'is-center' : ''} ${hidden ? 'is-hidden' : ''}`}
+                                            style={{
+                                                ['--retro-pack-shell' as string]: pack.shell,
+                                                ['--retro-pack-shell-dark' as string]: pack.shellDark,
+                                                ['--retro-pack-accent' as string]: pack.accent,
+                                                ['--retro-pack-accent-light' as string]: pack.accentLight,
+                                                ['--retro-pack-ink' as string]: pack.ink,
+                                                ['--retro-pack-edge' as string]: pack.edge,
+                                                ['--retro-pack-glow' as string]: pack.glow,
+                                                transform: `translate3d(${translateX}px, ${translateY}px, 0) scale(${scale}) rotateY(${rotateY}deg)`,
+                                                opacity: String(1 - depth * 0.26),
+                                                filter: `saturate(${1 - depth * 0.35})`,
+                                                zIndex: String(10 - depth),
+                                            }}
+                                            onClick={() => handleRetroPackSelection(index)}
+                                            aria-pressed={isCenter}
+                                            aria-label={pack.title}
+                                            disabled={retroPhase !== 'browse'}
+                                        >
+                                            <span className="retro-pack-notch" aria-hidden="true" />
+                                            <span className="retro-pack-label">
+                                                <span className="retro-pack-sticker" aria-hidden="true">{pack.sticker}</span>
+                                                <span className="retro-pack-title">{pack.title}</span>
+                                            </span>
+                                            <span className="retro-pack-ridges" aria-hidden="true">
+                                                {Array.from({ length: 8 }).map((_, ridgeIndex) => (
+                                                    <span key={ridgeIndex} />
+                                                ))}
+                                            </span>
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        )}
+                    </div>
+
+                    <div className="retro-play-dots" aria-label={t('play.retro.selectCartridge')}>
+                        {retroPlayPacks.map((pack, index) => (
+                            <button
+                                key={pack.game.id}
+                                type="button"
+                                className={`retro-play-dot ${retroActiveIndex === index ? 'active' : ''}`}
+                                onClick={() => handleRetroPackSelection(index)}
+                                disabled={retroPhase !== 'browse'}
+                                aria-label={pack.title}
+                            />
+                        ))}
+                    </div>
+                </div>
+
+                <div className="retro-console-wrap">
+                    <div className="retro-console-body">
+                        <div className="retro-console-gloss" aria-hidden="true" />
+                        <div className="retro-console-slot">
+                            <div className="retro-console-slot-mouth" />
+                            {retroSelectedPack && (
+                                <div
+                                    className={`retro-console-insert ${retroPhase === 'inserting' ? 'is-inserting' : retroPhase === 'loading' ? 'is-loaded' : ''}`}
+                                    style={{
+                                        ['--retro-pack-shell' as string]: retroSelectedPack.shell,
+                                        ['--retro-pack-shell-dark' as string]: retroSelectedPack.shellDark,
+                                        ['--retro-pack-accent' as string]: retroSelectedPack.accent,
+                                        ['--retro-pack-accent-light' as string]: retroSelectedPack.accentLight,
+                                        ['--retro-pack-edge' as string]: retroSelectedPack.edge,
+                                    }}
+                                    aria-hidden="true"
+                                >
+                                    <span className="retro-console-insert-ridges">
+                                        {Array.from({ length: 6 }).map((_, ridgeIndex) => (
+                                            <span key={ridgeIndex} />
+                                        ))}
+                                    </span>
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="retro-console-controls">
+                            <div className="retro-console-power-group">
+                                <button
+                                    type="button"
+                                    className={`retro-console-switch ${retroPowerOn ? 'is-on' : ''}`}
+                                    onClick={handleRetroPowerToggle}
+                                    aria-pressed={retroPowerOn}
+                                    aria-label={t('play.retro.power')}
+                                >
+                                    <span />
+                                </button>
+                                <div className={`retro-console-led ${retroPowerOn ? 'is-on' : ''}`} />
+                                <span className="retro-console-label">{t('play.retro.power')}</span>
+                            </div>
+                            <button type="button" className="retro-console-action retro-console-action-start" onClick={handleRetroReset}>
+                                {t('play.retro.start')}
+                            </button>
+                            <div className="retro-console-reset-group">
+                                <button type="button" className="retro-console-reset-btn" onClick={handleRetroReset}>
+                                    <i className="fas fa-rotate-left" aria-hidden="true" />
+                                </button>
+                                <span className="retro-console-label">{t('play.retro.reset')}</span>
+                            </div>
+                        </div>
+
+                        <div className="retro-console-brand" aria-hidden="true">
+                            <span className="retro-console-color retro-console-color-red" />
+                            <span className="retro-console-color retro-console-color-yellow" />
+                            <span className="retro-console-color retro-console-color-blue" />
+                            <span className="retro-console-color retro-console-color-green" />
+                            <span>JELLO COM</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    };
+
     const renderPlayModeContent = () => {
         if (activeTab === 'math') {
             return mathMode === 'adventure' ? (
@@ -842,8 +1254,16 @@ const PlayPage: React.FC = () => {
         );
     }
 
+    const pageContent = activeTab === 'sw'
+        ? renderRetroPlayLauncher()
+        : playLearnMode === 'play'
+            ? renderPlayModeContent()
+            : activeTab === 'math'
+                ? (mathMode === 'adventure' ? renderAdventureSection() : renderGeniusSection())
+                : renderAdventureSection();
+
     return (
-        <div className={`play-page-container ${activeTab === 'brain' ? 'play-page-container-brain' : ''}`}>
+        <div className={`play-page-container ${activeTab === 'brain' ? 'play-page-container-brain' : ''} ${activeTab === 'sw' ? 'play-page-container-play' : ''}`}>
             {renderHeader()}
 
             {activeTab === 'math' && renderMathModeSwitcher()}
@@ -852,16 +1272,7 @@ const PlayPage: React.FC = () => {
                 ref={hubContentRef}
                 className={`hub-content ${playLearnMode === 'play' && (activeTab === 'math' || activeTab === 'brain') ? 'hub-content-adventure-board' : ''} ${activeTab === 'brain' ? 'hub-content-brain' : ''}`}
             >
-                {playLearnMode === 'play' ? (
-                    renderPlayModeContent()
-                ) : (
-                    activeTab === 'math' ? (
-                        mathMode === 'adventure' ? renderAdventureSection() : renderGeniusSection()
-                    ) : (
-                        // Other tabs reuse the adventure/category layout logic
-                        renderAdventureSection()
-                    )
-                )}
+                {pageContent}
             </div>
 
             {renderBottomNav()}

@@ -1291,16 +1291,30 @@ const koBase = {
             training: {
                 desc: '트레이닝 모듈',
             },
+            play: {
+                desc: '재미있는 게임을 즐겨보세요',
+            },
             genius: {
                 title: '지니어스 연산',
                 desc: "천재들의 '비밀' 계산법",
             },
         },
+        retro: {
+            systemReady: '시스템 준비 완료',
+            selectCartridge: '게임 팩 선택',
+            swipeOrTap: '스와이프 또는 탭하여 선택',
+            inserting: '삽입 중...',
+            nowLoading: '불러오는 중...',
+            power: '전원',
+            start: '시작',
+            eject: '배출',
+            reset: '리셋',
+        },
         categories: {
             brain: '두뇌',
             math: '수학',
             science: '설정',
-            sw: '코딩',
+            sw: '놀이',
         },
         worlds: {
             level1: '워터 월드',

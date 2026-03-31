@@ -1289,16 +1289,30 @@ export const idID = {
       training: {
         desc: 'Modul latihan',
       },
+      play: {
+        desc: 'Nikmati permainan seru',
+      },
       genius: {
         title: 'Hitung Jenius',
         desc: "Rahasia hitung para jenius",
       },
     },
+    retro: {
+      systemReady: 'Sistem siap',
+      selectCartridge: 'Pilih kartrid',
+      swipeOrTap: 'Geser atau ketuk untuk memilih',
+      inserting: 'Memasang...',
+      nowLoading: 'Memuat...',
+      power: 'Daya',
+      start: 'Mulai',
+      eject: 'Keluarkan',
+      reset: 'Reset',
+    },
     categories: {
       brain: 'OTAK',
       math: 'MATEMATIKA',
       science: 'PENGATURAN',
-      sw: 'PEMROGRAMAN',
+      sw: 'MAIN',
     },
     worlds: {
       level1: 'Dunia Air',

@@ -1289,16 +1289,30 @@ export const enUK = {
       training: {
         desc: 'Training modules',
       },
+      play: {
+        desc: 'Enjoy fun games',
+      },
       genius: {
         title: 'Genius Calc',
         desc: "The 'Secret' Calculation of Geniuses",
       },
     },
+    retro: {
+      systemReady: 'System Ready',
+      selectCartridge: 'Select Cartridge',
+      swipeOrTap: 'Swipe or tap to select',
+      inserting: 'Inserting...',
+      nowLoading: 'Now Loading...',
+      power: 'Power',
+      start: 'Start',
+      eject: 'Eject',
+      reset: 'Reset',
+    },
     categories: {
       brain: 'BRAIN',
       math: 'MATHS',
       science: 'SETTINGS',
-      sw: 'SW',
+      sw: 'PLAY',
     },
     worlds: {
       level1: 'Water World',
