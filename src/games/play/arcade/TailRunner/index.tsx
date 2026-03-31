@@ -316,13 +316,13 @@ export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
 
             context.clearRect(0, 0, width, height);
 
-            context.fillStyle = '#102038';
+            context.fillStyle = '#93c86f';
             context.fillRect(0, 0, width, height);
 
             context.save();
             context.translate(-cameraX, -cameraY);
 
-            context.strokeStyle = 'rgba(181, 207, 250, 0.08)';
+            context.strokeStyle = 'rgba(71, 112, 54, 0.12)';
             context.lineWidth = 1;
             for (let x = 0; x <= TAIL_RUNNER_WORLD_SIZE; x += TAIL_RUNNER_GRID_SIZE) {
                 context.beginPath();
@@ -337,7 +337,7 @@ export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
                 context.stroke();
             }
 
-            context.strokeStyle = 'rgba(255, 255, 255, 0.26)';
+            context.strokeStyle = 'rgba(235, 251, 224, 0.22)';
             context.lineWidth = 10;
             context.strokeRect(0, 0, TAIL_RUNNER_WORLD_SIZE, TAIL_RUNNER_WORLD_SIZE);
 
@@ -346,10 +346,10 @@ export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
                 context.translate(entity.x, entity.y);
                 context.beginPath();
                 context.fillStyle = entity.type === 'obstacle'
-                    ? 'rgba(255, 120, 120, 0.18)'
+                    ? 'rgba(255, 149, 149, 0.2)'
                     : entity.type === 'coin'
-                        ? 'rgba(255, 215, 115, 0.16)'
-                        : 'rgba(180, 240, 170, 0.16)';
+                        ? 'rgba(247, 232, 170, 0.2)'
+                        : 'rgba(175, 221, 187, 0.22)';
                 context.arc(0, 0, entity.radius + 10, 0, Math.PI * 2);
                 context.fill();
                 context.font = `${entity.radius * 1.5}px system-ui, Apple Color Emoji, Segoe UI Emoji, sans-serif`;
@@ -374,7 +374,7 @@ export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
             context.translate(state.playerX, state.playerY);
             context.rotate(state.playerAngle);
             context.beginPath();
-            context.fillStyle = '#7cc7ff';
+            context.fillStyle = 'rgba(130, 178, 143, 0.38)';
             context.moveTo(TAIL_RUNNER_PLAYER_RADIUS + 12, 0);
             context.lineTo(-TAIL_RUNNER_PLAYER_RADIUS + 2, -12);
             context.lineTo(-TAIL_RUNNER_PLAYER_RADIUS + 2, 12);
@@ -501,12 +501,6 @@ export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
                                     disableAnimation
                                 />
                             </div>
-
-                            <div className="tail-runner__avatar-tail">
-                                <span>🐣</span>
-                                <span>🦊</span>
-                                <span>💰</span>
-                            </div>
                         </div>
                         {gamePhase === 'start' && (
                             <div className="tail-runner__start-screen">
@@ -530,9 +524,6 @@ export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
                                 </div>
                             </div>
                         )}
-                        <p className="tail-runner__camera-label">
-                            {t(`${GAME_LOCALE_KEY}.worldLabel`, { size: TAIL_RUNNER_WORLD_SIZE })}
-                        </p>
                         <div className="tail-runner__touch-controls">
                             <button
                                 type="button"
@@ -544,7 +535,6 @@ export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
                                 disabled={gamePhase !== 'playing'}
                             >
                                 <span className="tail-runner__touch-icon">↺</span>
-                                <span>{t(`${GAME_LOCALE_KEY}.touchLeft`)}</span>
                             </button>
                             <button
                                 type="button"
@@ -556,7 +546,6 @@ export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
                                 disabled={gamePhase !== 'playing'}
                             >
                                 <span className="tail-runner__touch-icon">⚡</span>
-                                <span>{t(`${GAME_LOCALE_KEY}.touchBoost`)}</span>
                             </button>
                             <button
                                 type="button"
@@ -568,7 +557,6 @@ export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
                                 disabled={gamePhase !== 'playing'}
                             >
                                 <span className="tail-runner__touch-icon">↻</span>
-                                <span>{t(`${GAME_LOCALE_KEY}.touchRight`)}</span>
                             </button>
                         </div>
                     </div>

@@ -5,9 +5,9 @@
     align-items: stretch;
     justify-content: center;
     background:
-        radial-gradient(circle at top, rgba(113, 177, 255, 0.2), transparent 34%),
-        linear-gradient(180deg, #06101e 0%, #0b1730 52%, #08111e 100%);
-    color: #f8fbff;
+        radial-gradient(circle at top, rgba(201, 232, 209, 0.28), transparent 34%),
+        linear-gradient(180deg, #eef6ef 0%, #dbe9df 54%, #edf5ef 100%);
+    color: #234233;
 }
 
 .tail-runner__panel {
@@ -44,19 +44,19 @@
     min-height: var(--tail-runner-header-box-height);
     border-radius: 0.9rem;
     padding: 0.26rem 0.8rem;
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.08));
-    border: 1px solid rgba(255, 255, 255, 0.16);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(234, 245, 237, 0.96));
+    border: 1px solid rgba(191, 214, 198, 0.86);
     box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.18),
-        0 0.28rem 0 rgba(9, 18, 34, 0.72),
-        0 0.8rem 1.4rem rgba(3, 7, 15, 0.18);
+        inset 0 1px 0 rgba(255, 255, 255, 0.72),
+        0 0.28rem 0 rgba(153, 180, 161, 0.9),
+        0 0.8rem 1.4rem rgba(112, 142, 121, 0.18);
     display: flex;
     flex-direction: column;
     gap: 0.08rem;
 }
 
 .tail-runner__header-stat-label {
-    color: rgba(206, 220, 247, 0.72);
+    color: rgba(84, 116, 92, 0.86);
     font-size: 0.65rem;
     font-weight: 900;
     letter-spacing: 0.12em;
@@ -73,10 +73,10 @@
 .tail-runner__close {
     width: 2.7rem;
     min-height: var(--tail-runner-header-box-height);
-    border: 1px solid rgba(255, 255, 255, 0.16);
+    border: 1px solid rgba(191, 214, 198, 0.86);
     border-radius: 0.9rem;
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.08));
-    color: #f8fbff;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(234, 245, 237, 0.96));
+    color: #234233;
     cursor: pointer;
     display: inline-flex;
     align-items: center;
@@ -86,9 +86,9 @@
     line-height: 1;
     margin-top: 0;
     box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.18),
-        0 0.28rem 0 rgba(9, 18, 34, 0.72),
-        0 0.8rem 1.4rem rgba(3, 7, 15, 0.18);
+        inset 0 1px 0 rgba(255, 255, 255, 0.72),
+        0 0.28rem 0 rgba(153, 180, 161, 0.9),
+        0 0.8rem 1.4rem rgba(112, 142, 121, 0.18);
 }
 
 .tail-runner__close i {
@@ -106,9 +106,9 @@
 .tail-runner__close:active {
     transform: translateY(0.18rem);
     box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.14),
-        0 0.1rem 0 rgba(9, 18, 34, 0.78),
-        0 0.35rem 0.8rem rgba(3, 7, 15, 0.18);
+        inset 0 1px 0 rgba(255, 255, 255, 0.58),
+        0 0.1rem 0 rgba(153, 180, 161, 0.96),
+        0 0.35rem 0.8rem rgba(112, 142, 121, 0.16);
 }
 
 .tail-runner__hero {
@@ -126,11 +126,11 @@
     height: 100%;
     border-radius: 1.8rem;
     background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.03)),
-        linear-gradient(180deg, #102038 0%, #122948 100%);
+        linear-gradient(180deg, rgba(244, 255, 239, 0.32), rgba(231, 247, 221, 0.18)),
+        linear-gradient(180deg, #9fd27f 0%, #7fbc63 100%);
     box-shadow:
-        inset 0 0 0 1px rgba(255, 255, 255, 0.08),
-        0 1.1rem 2.6rem rgba(3, 7, 15, 0.36);
+        inset 0 0 0 1px rgba(244, 255, 238, 0.28),
+        0 1.1rem 2.6rem rgba(97, 131, 78, 0.2);
     touch-action: none;
 }
 
@@ -156,41 +156,14 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 7rem;
-    height: 7rem;
+    width: 4.9rem;
+    height: 4.9rem;
     border-radius: 999px;
-    background: rgba(255, 255, 255, 0.12);
-    box-shadow:
-        0 0 0 10px rgba(255, 255, 255, 0.04),
-        0 0 0 22px rgba(126, 169, 255, 0.08);
+    background: transparent;
 }
 
 .tail-runner__avatar-glow {
-    position: absolute;
-    inset: -0.8rem;
-    border-radius: 999px;
-    border: 2px dashed rgba(179, 214, 255, 0.36);
-}
-
-.tail-runner__avatar-tail {
-    position: absolute;
-    left: calc(50% + 4rem);
-    top: 50%;
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    transform: translateY(-50%);
-}
-
-.tail-runner__avatar-tail span {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 2.2rem;
-    height: 2.2rem;
-    border-radius: 999px;
-    background: rgba(255, 255, 255, 0.12);
-    font-size: 1.1rem;
+    display: none;
 }
 
 .tail-runner__start-screen {
@@ -200,7 +173,7 @@
     align-items: center;
     justify-content: center;
     padding: 1rem;
-    background: rgba(5, 10, 18, 0.58);
+    background: rgba(202, 217, 205, 0.56);
     backdrop-filter: blur(6px);
 }
 
@@ -214,12 +187,12 @@
     border-radius: 1.4rem;
     padding: 1.2rem 1rem;
     background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.09));
-    border: 1px solid rgba(255, 255, 255, 0.16);
+        linear-gradient(180deg, rgba(255, 255, 255, 0.84), rgba(236, 246, 239, 0.95));
+    border: 1px solid rgba(196, 217, 202, 0.86);
     box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.22),
-        0 0.36rem 0 rgba(11, 20, 36, 0.82),
-        0 1.1rem 2.2rem rgba(0, 0, 0, 0.24);
+        inset 0 1px 0 rgba(255, 255, 255, 0.76),
+        0 0.36rem 0 rgba(160, 184, 167, 0.92),
+        0 1.1rem 2.2rem rgba(120, 147, 129, 0.2);
 }
 
 .tail-runner__start-card h2,
@@ -233,7 +206,7 @@
 }
 
 .tail-runner__start-card p {
-    color: rgba(223, 234, 255, 0.8);
+    color: rgba(80, 109, 89, 0.84);
     font-size: 0.92rem;
     line-height: 1.45;
 }
@@ -262,19 +235,6 @@
         0 0.45rem 0.8rem rgba(16, 66, 151, 0.28);
 }
 
-.tail-runner__camera-label {
-    position: absolute;
-    left: 50%;
-    bottom: 5.9rem;
-    transform: translateX(-50%);
-    color: rgba(223, 234, 255, 0.72);
-    font-size: 0.74rem;
-    font-weight: 900;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    white-space: nowrap;
-}
-
 .tail-runner__touch-controls {
     position: absolute;
     left: 1rem;
@@ -289,10 +249,10 @@
 .tail-runner__touch-btn {
     border: none;
     border-radius: 1.1rem;
-    padding: 0.8rem 0.7rem;
+    padding: 1rem 0.7rem;
     background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.08));
-    color: #f8fbff;
+        linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(235, 246, 238, 0.96));
+    color: #234233;
     font-size: 0.82rem;
     font-weight: 900;
     display: flex;
@@ -301,9 +261,13 @@
     justify-content: center;
     gap: 0.3rem;
     box-shadow:
-        inset 0 0 0 1px rgba(255, 255, 255, 0.08),
-        0 0.9rem 1.4rem rgba(3, 7, 15, 0.18);
+        inset 0 0 0 1px rgba(255, 255, 255, 0.34),
+        0 0.9rem 1.4rem rgba(130, 156, 138, 0.18);
     touch-action: manipulation;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .tail-runner__touch-btn:active {
@@ -316,7 +280,7 @@
 
 .tail-runner__touch-btn--boost {
     background:
-        linear-gradient(180deg, rgba(135, 205, 255, 0.22), rgba(88, 147, 245, 0.16));
+        linear-gradient(180deg, rgba(224, 244, 229, 0.92), rgba(190, 227, 201, 0.96));
 }
 
 .tail-runner__touch-icon {
@@ -335,8 +299,8 @@
     border-radius: 1.5rem;
     padding: 1rem;
     background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04));
-    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+        linear-gradient(180deg, rgba(255, 255, 255, 0.68), rgba(236, 246, 239, 0.94));
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.34);
 }
 
 .tail-runner__card h2,
@@ -351,7 +315,7 @@
 }
 
 .tail-runner__card p {
-    color: rgba(225, 233, 250, 0.78);
+    color: rgba(77, 106, 86, 0.82);
     font-size: 0.92rem;
     line-height: 1.45;
 }
@@ -365,13 +329,13 @@
 .tail-runner__stat {
     border-radius: 1rem;
     padding: 0.8rem 0.85rem;
-    background: rgba(255, 255, 255, 0.06);
+    background: rgba(255, 255, 255, 0.42);
 }
 
 .tail-runner__stat-label {
     display: block;
     margin-bottom: 0.2rem;
-    color: rgba(196, 209, 239, 0.68);
+    color: rgba(88, 119, 97, 0.7);
     font-size: 0.72rem;
     font-weight: 900;
     letter-spacing: 0.12em;
@@ -392,7 +356,7 @@
 }
 
 .tail-runner__controls li {
-    color: rgba(229, 236, 250, 0.82);
+    color: rgba(56, 84, 65, 0.84);
     font-size: 0.9rem;
     font-weight: 700;
 }
@@ -401,7 +365,7 @@
     position: fixed;
     inset: 0;
     z-index: 30;
-    background: rgba(5, 10, 18, 0.68);
+    background: rgba(190, 205, 193, 0.6);
     backdrop-filter: blur(8px);
     display: flex;
     align-items: center;
@@ -414,12 +378,12 @@
     border-radius: 1.35rem;
     padding: 1rem;
     background:
-        linear-gradient(180deg, rgba(36, 59, 97, 0.98), rgba(14, 27, 47, 0.98));
-    border: 1px solid rgba(255, 255, 255, 0.14);
+        linear-gradient(180deg, rgba(246, 251, 247, 0.98), rgba(229, 240, 232, 0.98));
+    border: 1px solid rgba(194, 216, 201, 0.9);
     box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.18),
-        0 0.34rem 0 rgba(7, 14, 26, 0.9),
-        0 1.4rem 3rem rgba(0, 0, 0, 0.35);
+        inset 0 1px 0 rgba(255, 255, 255, 0.76),
+        0 0.34rem 0 rgba(160, 184, 167, 0.92),
+        0 1.4rem 3rem rgba(120, 147, 129, 0.24);
 }
 
 .tail-runner__modal-head {
@@ -439,17 +403,17 @@
 .tail-runner__modal-close {
     width: 2rem;
     height: 2rem;
-    border: 1px solid rgba(255, 255, 255, 0.14);
+    border: 1px solid rgba(194, 216, 201, 0.86);
     border-radius: 0.7rem;
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.08));
-    color: #f8fbff;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(234, 245, 237, 0.96));
+    color: #234233;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.18),
-        0 0.18rem 0 rgba(8, 16, 30, 0.88);
+        inset 0 1px 0 rgba(255, 255, 255, 0.72),
+        0 0.18rem 0 rgba(160, 184, 167, 0.92);
 }
 
 .tail-runner__controls--modal {
@@ -482,10 +446,6 @@
         border-radius: 0.82rem;
     }
 
-    .tail-runner__camera-label {
-        bottom: 5.3rem;
-    }
-
     .tail-runner__touch-controls {
         left: 0.75rem;
         right: 0.75rem;
@@ -495,7 +455,7 @@
 
     .tail-runner__touch-btn {
         border-radius: 1rem;
-        padding: 0.72rem 0.5rem;
+        padding: 0.9rem 0.5rem;
         font-size: 0.76rem;
     }
 }
