@@ -66,6 +66,9 @@ export interface TailRunnerState {
     playerY: number;
     playerAngle: number;
     playerSpeed: number;
+    shieldCharges: number;
+    shieldTimer: number;
+    boostSpawnTimer: number;
     tail: TailRunnerTailSegment[];
     entities: TailRunnerEntity[];
     barriers: TailRunnerBarrier[];

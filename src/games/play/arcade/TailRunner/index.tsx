@@ -8,6 +8,8 @@ import { JelloAvatar } from '../../../../components/characters/JelloAvatar';
 import { playClearSound, playEatingSound } from '../../../../utils/sound';
 import {
     TAIL_RUNNER_BASE_SPEED,
+    TAIL_RUNNER_BOOST_SPAWN_MAX_TIME,
+    TAIL_RUNNER_BOOST_SPAWN_MIN_TIME,
     TAIL_RUNNER_BOOST_SPEED,
     TAIL_RUNNER_BARRIER_LENGTHS,
     TAIL_RUNNER_BARRIER_THICKNESS,
@@ -17,6 +19,7 @@ import {
     TAIL_RUNNER_DEFAULT_TAIL_EMOJI,
     TAIL_RUNNER_ENEMY_MAX_TAIL_COUNT,
     TAIL_RUNNER_ENEMY_MIN_TAIL_COUNT,
+    TAIL_RUNNER_ENEMY_PER_STEP,
     TAIL_RUNNER_ENEMY_RADIUS,
     TAIL_RUNNER_ENEMY_SCORE_STEP,
     TAIL_RUNNER_ENEMY_SPEED,
@@ -38,10 +41,14 @@ import {
     TAIL_RUNNER_MAX_EXTRA_FOOD,
     TAIL_RUNNER_MAX_EXTRA_OBSTACLE,
     TAIL_RUNNER_MAX_EXTRA_TYRANNO,
+    TAIL_RUNNER_MAX_SHIELD_CHARGES,
     TAIL_RUNNER_OBSTACLE_EMOJIS,
     TAIL_RUNNER_OBSTACLE_PENALTY,
     TAIL_RUNNER_OBSTACLE_SCORE_STEP,
     TAIL_RUNNER_PLAYER_RADIUS,
+    TAIL_RUNNER_SHIELD_DURATION,
+    TAIL_RUNNER_SHIELD_GEM_BONUS,
+    TAIL_RUNNER_SHIELD_SPEED_MULTIPLIER,
     TAIL_RUNNER_TAIL_SPACING,
     TAIL_RUNNER_TYRANNO_ALERT_TIME,
     TAIL_RUNNER_TYRANNO_CHARGE_SPEED,
@@ -73,6 +80,9 @@ type TailRunnerHudState = {
     positionX: number;
     positionY: number;
     highScore: number;
+    shieldCharges: number;
+    shieldActive: boolean;
+    shieldWarning: boolean;
 };
 
 type TailRunnerScoreBurst = {
@@ -117,6 +127,7 @@ const GEM_TIER_WEIGHTS: Array<{ tier: TailRunnerGemTier; weight: number }> = [
 
 const clamp = (value: number, min: number, max: number) => Math.max(min, Math.min(max, value));
 const randomIntBetween = (min: number, max: number) => Math.floor(randomBetween(min, max + 1));
+const rollNextBoostSpawnTimer = () => randomBetween(TAIL_RUNNER_BOOST_SPAWN_MIN_TIME, TAIL_RUNNER_BOOST_SPAWN_MAX_TIME);
 
 const pickGemTier = (): TailRunnerGemTier => {
     const roll = Math.random();
@@ -270,6 +281,9 @@ const createRandomEntity = (
             scoreValue: TAIL_RUNNER_GEM_SCORES[coinTier],
         };
     }
+    if (type === 'boost') {
+        return createEntity(type, x, y, '⚡', 18);
+    }
     return createEntity(type, x, y, pickRandom(TAIL_RUNNER_OBSTACLE_EMOJIS), 22);
 };
 
@@ -291,13 +305,30 @@ const createInitialTyrannos = (playerX: number, playerY: number) => (
     Array.from({ length: TAIL_RUNNER_INITIAL_TYRANNO_COUNT }, () => createTyrannoEnemy(playerX, playerY))
 );
 
-const getDifficultyTargets = (score: number): TailRunnerDifficultyTargets => ({
+const createNearbyBoostEntity = (playerX: number, playerY: number) => {
+    const angle = randomBetween(0, Math.PI * 2);
+    const distance = randomBetween(90, 140);
+    const x = clamp(
+        playerX + Math.cos(angle) * distance,
+        TAIL_RUNNER_ENTITY_RESPAWN_PADDING,
+        TAIL_RUNNER_WORLD_SIZE - TAIL_RUNNER_ENTITY_RESPAWN_PADDING
+    );
+    const y = clamp(
+        playerY + Math.sin(angle) * distance,
+        TAIL_RUNNER_ENTITY_RESPAWN_PADDING,
+        TAIL_RUNNER_WORLD_SIZE - TAIL_RUNNER_ENTITY_RESPAWN_PADDING
+    );
+    return createEntity('boost', x, y, '⚡', 18);
+};
+
+const getDifficultyTargets = (score: number, shieldActive = false): TailRunnerDifficultyTargets => ({
     food:
         TAIL_RUNNER_INITIAL_FOOD_COUNT
         + Math.min(TAIL_RUNNER_MAX_EXTRA_FOOD, Math.floor(score / TAIL_RUNNER_FOOD_SCORE_STEP)),
     coin:
         TAIL_RUNNER_INITIAL_COIN_COUNT
-        + Math.min(TAIL_RUNNER_MAX_EXTRA_COIN, Math.floor(score / TAIL_RUNNER_COIN_SCORE_STEP)),
+        + Math.min(TAIL_RUNNER_MAX_EXTRA_COIN, Math.floor(score / TAIL_RUNNER_COIN_SCORE_STEP))
+        + (shieldActive ? TAIL_RUNNER_SHIELD_GEM_BONUS : 0),
     obstacle:
         TAIL_RUNNER_INITIAL_OBSTACLE_COUNT
         + Math.min(TAIL_RUNNER_MAX_EXTRA_OBSTACLE, Math.floor(score / TAIL_RUNNER_OBSTACLE_SCORE_STEP)),
@@ -306,17 +337,42 @@ const getDifficultyTargets = (score: number): TailRunnerDifficultyTargets => ({
         + Math.min(TAIL_RUNNER_MAX_EXTRA_BARRIER, Math.floor(score / TAIL_RUNNER_BARRIER_SCORE_STEP)),
     enemy:
         TAIL_RUNNER_INITIAL_ENEMY_COUNT
-        + Math.min(TAIL_RUNNER_MAX_EXTRA_ENEMY, Math.floor(score / TAIL_RUNNER_ENEMY_SCORE_STEP)),
+        + Math.min(
+            TAIL_RUNNER_MAX_EXTRA_ENEMY,
+            Math.floor(score / TAIL_RUNNER_ENEMY_SCORE_STEP) * TAIL_RUNNER_ENEMY_PER_STEP
+        ),
     tyranno:
         TAIL_RUNNER_INITIAL_TYRANNO_COUNT
         + Math.min(TAIL_RUNNER_MAX_EXTRA_TYRANNO, Math.floor(score / TAIL_RUNNER_TYRANNO_SCORE_STEP)),
 });
 
 const reconcileDifficultyTargets = (state: ReturnType<typeof createInitialTailRunnerState>) => {
-    const targets = getDifficultyTargets(state.score);
-    const foodCount = state.entities.filter((entity) => entity.type === 'food').length;
-    const coinCount = state.entities.filter((entity) => entity.type === 'coin').length;
-    const obstacleCount = state.entities.filter((entity) => entity.type === 'obstacle').length;
+    const targets = getDifficultyTargets(state.score, state.shieldTimer > 0);
+    const foodEntities = state.entities.filter((entity) => entity.type === 'food');
+    const coinEntities = state.entities.filter((entity) => entity.type === 'coin');
+    const obstacleEntities = state.entities.filter((entity) => entity.type === 'obstacle');
+    const boostEntities = state.entities.filter((entity) => entity.type === 'boost');
+    const foodCount = foodEntities.length;
+    const coinCount = coinEntities.length;
+    const obstacleCount = obstacleEntities.length;
+
+    if (coinCount > targets.coin) {
+        let removeCount = coinCount - targets.coin;
+        state.entities = state.entities.filter((entity) => {
+            if (entity.type !== 'coin' || removeCount <= 0) return true;
+            removeCount -= 1;
+            return false;
+        });
+    }
+
+    if (boostEntities.length > 1) {
+        let removeCount = boostEntities.length - 1;
+        state.entities = state.entities.filter((entity) => {
+            if (entity.type !== 'boost' || removeCount <= 0) return true;
+            removeCount -= 1;
+            return false;
+        });
+    }
 
     for (let index = foodCount; index < targets.food; index += 1) {
         state.entities.push(createRandomEntity('food', state.playerX, state.playerY));
@@ -345,6 +401,9 @@ const buildHudState = (state: ReturnType<typeof createInitialTailRunnerState>): 
     positionX: Math.round(state.playerX),
     positionY: Math.round(state.playerY),
     highScore: state.highScore,
+    shieldCharges: state.shieldCharges,
+    shieldActive: state.shieldTimer > 0,
+    shieldWarning: state.shieldTimer > 0 && state.shieldTimer <= 120,
 });
 
 const updateEnemySnake = (enemy: TailRunnerEnemySnake, deltaMultiplier: number): TailRunnerEnemySnake => {
@@ -558,6 +617,9 @@ export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
         positionX: TAIL_RUNNER_WORLD_SIZE / 2,
         positionY: TAIL_RUNNER_WORLD_SIZE / 2,
         highScore: 0,
+        shieldCharges: 0,
+        shieldActive: false,
+        shieldWarning: false,
     });
 
     const runnerCharacter = useMemo(() => {
@@ -639,6 +701,15 @@ export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
         setHudState(buildHudState(stateRef.current));
     }, []);
 
+    const activateShield = useCallback(() => {
+        if (gamePhase !== 'playing') return;
+        const state = stateRef.current;
+        if (state.shieldCharges <= 0 || state.shieldTimer > 0) return;
+        state.shieldCharges -= 1;
+        state.shieldTimer = TAIL_RUNNER_SHIELD_DURATION;
+        syncHudState(true);
+    }, [gamePhase, syncHudState]);
+
     const finishGame = useCallback(() => {
         const state = stateRef.current;
         state.isGameOver = true;
@@ -702,6 +773,17 @@ export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
             const state = stateRef.current;
             const input = inputRef.current;
             const deltaMultiplier = Math.min(deltaMs / 16.6667, 1.8);
+            state.boostSpawnTimer -= deltaMultiplier;
+            state.shieldTimer = Math.max(0, state.shieldTimer - deltaMultiplier);
+            const shieldActive = state.shieldTimer > 0;
+
+            const hasBoostEntity = state.entities.some((entity) => entity.type === 'boost');
+            if (!hasBoostEntity && state.shieldCharges < TAIL_RUNNER_MAX_SHIELD_CHARGES && state.boostSpawnTimer <= 0) {
+                state.entities.push(createRandomEntity('boost', state.playerX, state.playerY));
+                state.boostSpawnTimer = rollNextBoostSpawnTimer();
+            } else if (state.shieldCharges >= TAIL_RUNNER_MAX_SHIELD_CHARGES && state.boostSpawnTimer <= 0) {
+                state.boostSpawnTimer = 90;
+            }
 
             state.bursts = state.bursts
                 .map((burst) => ({
@@ -718,7 +800,10 @@ export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
             if (input.left) state.playerAngle -= TAIL_RUNNER_TURN_SPEED * deltaMultiplier;
             if (input.right) state.playerAngle += TAIL_RUNNER_TURN_SPEED * deltaMultiplier;
 
-            state.playerSpeed = input.boost ? TAIL_RUNNER_BOOST_SPEED : TAIL_RUNNER_BASE_SPEED;
+            const currentBaseSpeed = input.boost ? TAIL_RUNNER_BOOST_SPEED : TAIL_RUNNER_BASE_SPEED;
+            state.playerSpeed = shieldActive
+                ? currentBaseSpeed * TAIL_RUNNER_SHIELD_SPEED_MULTIPLIER
+                : currentBaseSpeed;
             state.playerX += Math.cos(state.playerAngle) * state.playerSpeed * deltaMultiplier;
             state.playerY += Math.sin(state.playerAngle) * state.playerSpeed * deltaMultiplier;
 
@@ -728,16 +813,20 @@ export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
                 || state.playerX > TAIL_RUNNER_WORLD_SIZE
                 || state.playerY > TAIL_RUNNER_WORLD_SIZE;
 
-            if (isOutOfBounds) {
+            if (isOutOfBounds && !shieldActive) {
                 finishGame();
                 return;
+            }
+            if (shieldActive) {
+                state.playerX = clamp(state.playerX, 0, TAIL_RUNNER_WORLD_SIZE);
+                state.playerY = clamp(state.playerY, 0, TAIL_RUNNER_WORLD_SIZE);
             }
 
             const hitBarrier = state.barriers.some((barrier) =>
                 collidesWithBarrier(state.playerX, state.playerY, TAIL_RUNNER_PLAYER_RADIUS, barrier)
             );
 
-            if (hitBarrier) {
+            if (hitBarrier && !shieldActive) {
                 finishGame();
                 return;
             }
@@ -755,7 +844,7 @@ export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
                 Math.hypot(tyranno.x - state.playerX, tyranno.y - state.playerY) <= TAIL_RUNNER_TYRANNO_RADIUS + TAIL_RUNNER_PLAYER_RADIUS
             ));
 
-            if (hitEnemy || hitTyranno) {
+            if ((hitEnemy || hitTyranno) && !shieldActive) {
                 finishGame();
                 return;
             }
@@ -799,6 +888,16 @@ export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
                     playClearSound(0.46);
                     triggerScoreBurst(gainedScore);
                     return createRandomEntity('coin', state.playerX, state.playerY);
+                }
+
+                if (entity.type === 'boost') {
+                    state.shieldCharges = Math.min(TAIL_RUNNER_MAX_SHIELD_CHARGES, state.shieldCharges + 1);
+                    state.boostSpawnTimer = rollNextBoostSpawnTimer();
+                    return createRandomEntity('food', state.playerX, state.playerY);
+                }
+
+                if (shieldActive) {
+                    return createRandomEntity('obstacle', state.playerX, state.playerY);
                 }
 
                 state.score = Math.max(0, state.score - TAIL_RUNNER_OBSTACLE_PENALTY);
@@ -1026,6 +1125,30 @@ export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
                     drawGemEntity(context, entity);
                     return;
                 }
+                if (entity.type === 'boost') {
+                    context.save();
+                    context.translate(entity.x, entity.y);
+                    const boostGlow = context.createRadialGradient(0, 0, 0, 0, 0, entity.radius + 15);
+                    boostGlow.addColorStop(0, 'rgba(255, 248, 191, 0.96)');
+                    boostGlow.addColorStop(0.55, 'rgba(255, 214, 79, 0.76)');
+                    boostGlow.addColorStop(1, 'rgba(255, 190, 54, 0)');
+                    context.fillStyle = boostGlow;
+                    context.beginPath();
+                    context.arc(0, 0, entity.radius + 15, 0, Math.PI * 2);
+                    context.fill();
+
+                    context.fillStyle = 'rgba(255, 241, 173, 0.92)';
+                    context.beginPath();
+                    context.arc(0, 0, entity.radius + 7, 0, Math.PI * 2);
+                    context.fill();
+
+                    context.font = `${entity.radius * 1.55}px system-ui, Apple Color Emoji, Segoe UI Emoji, sans-serif`;
+                    context.textAlign = 'center';
+                    context.textBaseline = 'middle';
+                    context.fillText('⚡', 0, 0);
+                    context.restore();
+                    return;
+                }
 
                 context.save();
                 context.translate(entity.x, entity.y);
@@ -1093,7 +1216,9 @@ export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
         clearInputs();
         const nextState = createInitialTailRunnerState();
         nextState.highScore = bestScoreRef.current;
+        nextState.boostSpawnTimer = rollNextBoostSpawnTimer();
         nextState.entities = createInitialEntities(nextState.playerX, nextState.playerY);
+        nextState.entities.push(createNearbyBoostEntity(nextState.playerX, nextState.playerY));
         nextState.barriers = createInitialBarriers(nextState.playerX, nextState.playerY);
         nextState.enemies = createInitialEnemies(nextState.playerX, nextState.playerY);
         nextState.tyrannos = createInitialTyrannos(nextState.playerX, nextState.playerY);
@@ -1173,8 +1298,14 @@ export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
                     >
                         <canvas ref={canvasRef} className="tail-runner__canvas" />
                         <div className="tail-runner__player-overlay" aria-hidden="true">
-                            <div className="tail-runner__avatar-core">
+                            <div className={`tail-runner__avatar-core${hudState.shieldActive ? ' tail-runner__avatar-core--shielded' : ''}`}>
                                 <div className="tail-runner__avatar-glow" aria-hidden="true" />
+                                {hudState.shieldActive && (
+                                    <div className={`tail-runner__shield-ring${hudState.shieldWarning ? ' tail-runner__shield-ring--warning' : ''}`} aria-hidden="true">
+                                        <span className="tail-runner__shield-ring-beam tail-runner__shield-ring-beam--one" />
+                                        <span className="tail-runner__shield-ring-beam tail-runner__shield-ring-beam--two" />
+                                    </div>
+                                )}
                                 <div className="tail-runner__heart-layer" aria-hidden="true">
                                     {heartBursts.map((burstId) => (
                                         <span key={burstId} className="tail-runner__heart-burst">♥️</span>
@@ -1227,14 +1358,15 @@ export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
                             </button>
                             <button
                                 type="button"
-                                className="tail-runner__touch-btn tail-runner__touch-btn--boost"
-                                onPointerDown={() => setInputPressed('boost', true)}
-                                onPointerUp={() => setInputPressed('boost', false)}
-                                onPointerCancel={() => setInputPressed('boost', false)}
-                                onPointerLeave={() => setInputPressed('boost', false)}
-                                disabled={gamePhase !== 'playing'}
+                                className={`tail-runner__touch-btn tail-runner__touch-btn--boost${hudState.shieldActive ? ' tail-runner__touch-btn--active' : ''}`}
+                                onClick={activateShield}
+                                disabled={gamePhase !== 'playing' || hudState.shieldCharges <= 0 || hudState.shieldActive}
+                                aria-label={t(`${GAME_LOCALE_KEY}.shieldButton`, { count: hudState.shieldCharges })}
                             >
                                 <span className="tail-runner__touch-icon">⚡</span>
+                                {hudState.shieldCharges > 0 && (
+                                    <span className="tail-runner__touch-badge">{hudState.shieldCharges}</span>
+                                )}
                             </button>
                             <button
                                 type="button"
@@ -1290,6 +1422,7 @@ export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
                                 <li>{t(`${GAME_LOCALE_KEY}.controlsAuto`)}</li>
                                 <li>{t(`${GAME_LOCALE_KEY}.controlsTurn`)}</li>
                                 <li>{t(`${GAME_LOCALE_KEY}.controlsBoost`)}</li>
+                                <li>{t(`${GAME_LOCALE_KEY}.controlsShield`)}</li>
                                 <li>{t(`${GAME_LOCALE_KEY}.controlsTouch`)}</li>
                             </ul>
                         </div>
@@ -1320,6 +1453,7 @@ export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
                             <li>{t(`${GAME_LOCALE_KEY}.controlsAuto`)}</li>
                             <li>{t(`${GAME_LOCALE_KEY}.controlsTurn`)}</li>
                             <li>{t(`${GAME_LOCALE_KEY}.controlsBoost`)}</li>
+                            <li>{t(`${GAME_LOCALE_KEY}.controlsShield`)}</li>
                             <li>{t(`${GAME_LOCALE_KEY}.controlsTouch`)}</li>
                         </ul>
                     </div>
