@@ -17,6 +17,7 @@ export default {
     controlsTurn: '왼쪽 / 오른쪽으로 회전',
     controlsBoost: '스페이스로 부스트 사용',
     controlsShield: '번개를 모으고 아래 버튼으로 보호막 발동',
+    controlsMagnet: '자석을 먹으면 주변 보석이 자동으로 끌려옵니다',
     controlsTouch: '아래 버튼으로 방향 전환과 보호막 사용',
     shieldButton: '번개 보호막 {{count}}개',
     touchLeft: '왼쪽',

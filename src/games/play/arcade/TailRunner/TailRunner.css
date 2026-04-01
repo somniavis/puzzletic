@@ -168,6 +168,19 @@
     display: none;
 }
 
+.tail-runner__magnet-ring {
+    position: absolute;
+    inset: -0.55rem;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-end;
+    font-size: 1rem;
+    line-height: 1;
+    opacity: 0.84;
+    pointer-events: none;
+    animation: tail-runner-magnet-orbit 1.9s ease-in-out infinite;
+}
+
 .tail-runner__shield-ring {
     position: absolute;
     inset: -0.55rem;
@@ -269,6 +282,17 @@
 
     64% {
         transform: translateY(0.01rem) scale(0.99, 1.01);
+    }
+}
+
+@keyframes tail-runner-magnet-orbit {
+    0%,
+    100% {
+        transform: translate3d(0, 0, 0) rotate(-8deg);
+    }
+
+    50% {
+        transform: translate3d(0.12rem, -0.18rem, 0) rotate(10deg);
     }
 }
 

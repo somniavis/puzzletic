@@ -1,4 +1,4 @@
-export type TailRunnerEntityType = 'food' | 'coin' | 'obstacle' | 'boost';
+export type TailRunnerEntityType = 'food' | 'coin' | 'obstacle' | 'boost' | 'magnet';
 export type TailRunnerGemTier = 'diamond' | 'gold' | 'berry';
 
 export interface TailRunnerEntity {
@@ -69,6 +69,8 @@ export interface TailRunnerState {
     shieldCharges: number;
     shieldTimer: number;
     boostSpawnTimer: number;
+    magnetTimer: number;
+    magnetSpawnTimer: number;
     tail: TailRunnerTailSegment[];
     entities: TailRunnerEntity[];
     barriers: TailRunnerBarrier[];

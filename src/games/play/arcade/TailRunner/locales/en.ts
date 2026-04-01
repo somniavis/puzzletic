@@ -17,6 +17,7 @@ export default {
     controlsTurn: 'Left / Right to turn',
     controlsBoost: 'Press Space to boost',
     controlsShield: 'Collect lightning and tap the button below to shield up',
+    controlsMagnet: 'Collect magnets to pull nearby gems toward you',
     controlsTouch: 'Use the buttons below to turn and trigger the shield',
     shieldButton: 'Lightning shield {{count}}',
     touchLeft: 'Left',

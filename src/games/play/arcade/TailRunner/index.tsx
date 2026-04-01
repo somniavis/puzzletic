@@ -42,6 +42,11 @@ import {
     TAIL_RUNNER_MAX_EXTRA_OBSTACLE,
     TAIL_RUNNER_MAX_EXTRA_TYRANNO,
     TAIL_RUNNER_MAX_SHIELD_CHARGES,
+    TAIL_RUNNER_MAGNET_DURATION,
+    TAIL_RUNNER_MAGNET_PULL_SPEED,
+    TAIL_RUNNER_MAGNET_RADIUS,
+    TAIL_RUNNER_MAGNET_SPAWN_MAX_TIME,
+    TAIL_RUNNER_MAGNET_SPAWN_MIN_TIME,
     TAIL_RUNNER_OBSTACLE_EMOJIS,
     TAIL_RUNNER_OBSTACLE_PENALTY,
     TAIL_RUNNER_OBSTACLE_SCORE_STEP,
@@ -83,11 +88,17 @@ type TailRunnerHudState = {
     shieldCharges: number;
     shieldActive: boolean;
     shieldWarning: boolean;
+    magnetActive: boolean;
 };
 
 type TailRunnerScoreBurst = {
     id: number;
     label: string;
+};
+
+type TailRunnerEmojiSprite = {
+    canvas: HTMLCanvasElement;
+    size: number;
 };
 
 type TailRunnerDifficultyTargets = {
@@ -128,6 +139,123 @@ const GEM_TIER_WEIGHTS: Array<{ tier: TailRunnerGemTier; weight: number }> = [
 const clamp = (value: number, min: number, max: number) => Math.max(min, Math.min(max, value));
 const randomIntBetween = (min: number, max: number) => Math.floor(randomBetween(min, max + 1));
 const rollNextBoostSpawnTimer = () => randomBetween(TAIL_RUNNER_BOOST_SPAWN_MIN_TIME, TAIL_RUNNER_BOOST_SPAWN_MAX_TIME);
+const rollNextMagnetSpawnTimer = () => randomBetween(TAIL_RUNNER_MAGNET_SPAWN_MIN_TIME, TAIL_RUNNER_MAGNET_SPAWN_MAX_TIME);
+const tailRunnerEmojiSpriteCache = new Map<string, TailRunnerEmojiSprite>();
+let tailRunnerOuterPatternCache: CanvasPattern | null = null;
+
+const getTailRunnerEmojiSprite = (
+    emoji: string,
+    fontSize: number,
+    facing: -1 | 1 = 1
+): TailRunnerEmojiSprite | null => {
+    if (typeof document === 'undefined' || typeof window === 'undefined') return null;
+
+    const key = `${emoji}:${fontSize}:${facing}`;
+    const cached = tailRunnerEmojiSpriteCache.get(key);
+    if (cached) return cached;
+
+    const size = Math.ceil(fontSize * 1.7);
+    const pixelRatio = Math.max(2, Math.ceil(window.devicePixelRatio || 1));
+    const canvas = document.createElement('canvas');
+    canvas.width = size * pixelRatio;
+    canvas.height = size * pixelRatio;
+
+    const spriteContext = canvas.getContext('2d');
+    if (!spriteContext) return null;
+
+    spriteContext.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+    spriteContext.clearRect(0, 0, size, size);
+    spriteContext.font = `${fontSize}px system-ui, Apple Color Emoji, Segoe UI Emoji, sans-serif`;
+    spriteContext.textAlign = 'center';
+    spriteContext.textBaseline = 'middle';
+
+    spriteContext.save();
+    spriteContext.translate(size / 2, size / 2);
+    if (facing === -1) {
+        spriteContext.scale(-1, 1);
+    }
+    spriteContext.fillText(emoji, 0, 0);
+    spriteContext.restore();
+
+    const sprite = { canvas, size };
+    tailRunnerEmojiSpriteCache.set(key, sprite);
+    return sprite;
+};
+
+const drawTailRunnerEmojiSprite = (
+    context: CanvasRenderingContext2D,
+    emoji: string,
+    x: number,
+    y: number,
+    fontSize: number,
+    facing: -1 | 1 = 1
+) => {
+    const sprite = getTailRunnerEmojiSprite(emoji, fontSize, facing);
+    if (!sprite) {
+        context.save();
+        context.font = `${fontSize}px system-ui, Apple Color Emoji, Segoe UI Emoji, sans-serif`;
+        context.textAlign = 'center';
+        context.textBaseline = 'middle';
+        context.translate(x, y);
+        if (facing === -1) {
+            context.scale(-1, 1);
+        }
+        context.fillText(emoji, 0, 0);
+        context.restore();
+        return;
+    }
+
+    context.drawImage(
+        sprite.canvas,
+        Math.round(x - sprite.size / 2),
+        Math.round(y - sprite.size / 2),
+        sprite.size,
+        sprite.size
+    );
+};
+
+const getTailRunnerOuterPattern = (context: CanvasRenderingContext2D) => {
+    if (tailRunnerOuterPatternCache) return tailRunnerOuterPatternCache;
+    if (typeof document === 'undefined' || typeof window === 'undefined') return null;
+
+    const tile = document.createElement('canvas');
+    const size = 168;
+    const pixelRatio = Math.max(2, Math.ceil(window.devicePixelRatio || 1));
+    tile.width = size * pixelRatio;
+    tile.height = size * pixelRatio;
+
+    const tileContext = tile.getContext('2d');
+    if (!tileContext) return null;
+
+    tileContext.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+    tileContext.clearRect(0, 0, size, size);
+    tileContext.fillStyle = '#5f8a4f';
+    tileContext.fillRect(0, 0, size, size);
+
+    const bubbles = [
+        { x: 24, y: 22, r: 16, fill: 'rgba(212, 240, 200, 0.10)', shine: 'rgba(243, 255, 236, 0.08)' },
+        { x: 92, y: 34, r: 26, fill: 'rgba(71, 109, 56, 0.18)', shine: 'rgba(243, 255, 236, 0.06)' },
+        { x: 136, y: 78, r: 18, fill: 'rgba(212, 240, 200, 0.10)', shine: 'rgba(243, 255, 236, 0.08)' },
+        { x: 52, y: 102, r: 28, fill: 'rgba(71, 109, 56, 0.18)', shine: 'rgba(243, 255, 236, 0.06)' },
+        { x: 118, y: 136, r: 20, fill: 'rgba(212, 240, 200, 0.10)', shine: 'rgba(243, 255, 236, 0.08)' },
+        { x: 24, y: 146, r: 12, fill: 'rgba(71, 109, 56, 0.18)', shine: 'rgba(243, 255, 236, 0.06)' },
+    ];
+
+    bubbles.forEach(({ x, y, r, fill, shine }) => {
+        tileContext.beginPath();
+        tileContext.fillStyle = fill;
+        tileContext.arc(x, y, r, 0, Math.PI * 2);
+        tileContext.fill();
+
+        tileContext.beginPath();
+        tileContext.fillStyle = shine;
+        tileContext.arc(x - r * 0.22, y - r * 0.26, Math.max(4, r * 0.28), 0, Math.PI * 2);
+        tileContext.fill();
+    });
+
+    tailRunnerOuterPatternCache = context.createPattern(tile, 'repeat');
+    return tailRunnerOuterPatternCache;
+};
 
 const pickGemTier = (): TailRunnerGemTier => {
     const roll = Math.random();
@@ -284,6 +412,9 @@ const createRandomEntity = (
     if (type === 'boost') {
         return createEntity(type, x, y, '⚡', 18);
     }
+    if (type === 'magnet') {
+        return createEntity(type, x, y, '🧲', 20);
+    }
     return createEntity(type, x, y, pickRandom(TAIL_RUNNER_OBSTACLE_EMOJIS), 22);
 };
 
@@ -305,20 +436,46 @@ const createInitialTyrannos = (playerX: number, playerY: number) => (
     Array.from({ length: TAIL_RUNNER_INITIAL_TYRANNO_COUNT }, () => createTyrannoEnemy(playerX, playerY))
 );
 
-const createNearbyBoostEntity = (playerX: number, playerY: number) => {
-    const angle = randomBetween(0, Math.PI * 2);
-    const distance = randomBetween(90, 140);
-    const x = clamp(
-        playerX + Math.cos(angle) * distance,
-        TAIL_RUNNER_ENTITY_RESPAWN_PADDING,
-        TAIL_RUNNER_WORLD_SIZE - TAIL_RUNNER_ENTITY_RESPAWN_PADDING
-    );
-    const y = clamp(
-        playerY + Math.sin(angle) * distance,
-        TAIL_RUNNER_ENTITY_RESPAWN_PADDING,
-        TAIL_RUNNER_WORLD_SIZE - TAIL_RUNNER_ENTITY_RESPAWN_PADDING
-    );
-    return createEntity('boost', x, y, '⚡', 18);
+const countTailRunnerEntities = (entities: TailRunnerEntity[]) => {
+    const counts: Record<TailRunnerEntityType, number> = {
+        food: 0,
+        coin: 0,
+        obstacle: 0,
+        boost: 0,
+        magnet: 0,
+    };
+
+    entities.forEach((entity) => {
+        counts[entity.type] += 1;
+    });
+
+    return counts;
+};
+
+const trimEntitiesByType = (
+    entities: TailRunnerEntity[],
+    type: TailRunnerEntityType,
+    keepCount: number
+) => {
+    let seen = 0;
+    return entities.filter((entity) => {
+        if (entity.type !== type) return true;
+        seen += 1;
+        return seen <= keepCount;
+    });
+};
+
+const fillEntitiesToTarget = (
+    entities: TailRunnerEntity[],
+    type: Extract<TailRunnerEntityType, 'food' | 'coin' | 'obstacle'>,
+    currentCount: number,
+    targetCount: number,
+    playerX: number,
+    playerY: number
+) => {
+    for (let index = currentCount; index < targetCount; index += 1) {
+        entities.push(createRandomEntity(type, playerX, playerY));
+    }
 };
 
 const getDifficultyTargets = (score: number, shieldActive = false): TailRunnerDifficultyTargets => ({
@@ -348,41 +505,17 @@ const getDifficultyTargets = (score: number, shieldActive = false): TailRunnerDi
 
 const reconcileDifficultyTargets = (state: ReturnType<typeof createInitialTailRunnerState>) => {
     const targets = getDifficultyTargets(state.score, state.shieldTimer > 0);
-    const foodEntities = state.entities.filter((entity) => entity.type === 'food');
-    const coinEntities = state.entities.filter((entity) => entity.type === 'coin');
-    const obstacleEntities = state.entities.filter((entity) => entity.type === 'obstacle');
-    const boostEntities = state.entities.filter((entity) => entity.type === 'boost');
-    const foodCount = foodEntities.length;
-    const coinCount = coinEntities.length;
-    const obstacleCount = obstacleEntities.length;
 
-    if (coinCount > targets.coin) {
-        let removeCount = coinCount - targets.coin;
-        state.entities = state.entities.filter((entity) => {
-            if (entity.type !== 'coin' || removeCount <= 0) return true;
-            removeCount -= 1;
-            return false;
-        });
-    }
+    state.entities = trimEntitiesByType(state.entities, 'coin', targets.coin);
+    state.entities = trimEntitiesByType(state.entities, 'boost', 1);
+    state.entities = trimEntitiesByType(state.entities, 'magnet', 1);
 
-    if (boostEntities.length > 1) {
-        let removeCount = boostEntities.length - 1;
-        state.entities = state.entities.filter((entity) => {
-            if (entity.type !== 'boost' || removeCount <= 0) return true;
-            removeCount -= 1;
-            return false;
-        });
-    }
+    const entityCounts = countTailRunnerEntities(state.entities);
 
-    for (let index = foodCount; index < targets.food; index += 1) {
-        state.entities.push(createRandomEntity('food', state.playerX, state.playerY));
-    }
-    for (let index = coinCount; index < targets.coin; index += 1) {
-        state.entities.push(createRandomEntity('coin', state.playerX, state.playerY));
-    }
-    for (let index = obstacleCount; index < targets.obstacle; index += 1) {
-        state.entities.push(createRandomEntity('obstacle', state.playerX, state.playerY));
-    }
+    fillEntitiesToTarget(state.entities, 'food', entityCounts.food, targets.food, state.playerX, state.playerY);
+    fillEntitiesToTarget(state.entities, 'coin', entityCounts.coin, targets.coin, state.playerX, state.playerY);
+    fillEntitiesToTarget(state.entities, 'obstacle', entityCounts.obstacle, targets.obstacle, state.playerX, state.playerY);
+
     for (let index = state.barriers.length; index < targets.barrier; index += 1) {
         state.barriers.push(createBarrier(state.playerX, state.playerY));
     }
@@ -404,6 +537,7 @@ const buildHudState = (state: ReturnType<typeof createInitialTailRunnerState>): 
     shieldCharges: state.shieldCharges,
     shieldActive: state.shieldTimer > 0,
     shieldWarning: state.shieldTimer > 0 && state.shieldTimer <= 120,
+    magnetActive: state.magnetTimer > 0,
 });
 
 const updateEnemySnake = (enemy: TailRunnerEnemySnake, deltaMultiplier: number): TailRunnerEnemySnake => {
@@ -594,6 +728,152 @@ const drawGemEntity = (
     context.restore();
 };
 
+const drawBurstEntity = (context: CanvasRenderingContext2D, burst: TailRunnerBurst) => {
+    const progress = 1 - burst.life / burst.maxLife;
+    context.save();
+    context.globalAlpha = Math.max(0, burst.life / burst.maxLife);
+    context.translate(burst.x, burst.y - progress * 26);
+    context.font = `${26 + progress * 6}px system-ui, Apple Color Emoji, Segoe UI Emoji, sans-serif`;
+    context.textAlign = 'center';
+    context.textBaseline = 'middle';
+    context.fillText(burst.emoji, 0, 0);
+    context.restore();
+};
+
+const drawPowerItemEntity = (
+    context: CanvasRenderingContext2D,
+    entity: TailRunnerEntity,
+    emoji: string,
+    glowStops: Array<[number, string]>,
+    fillColor?: string
+) => {
+    context.save();
+    context.translate(entity.x, entity.y);
+    const glow = context.createRadialGradient(0, 0, 0, 0, 0, entity.radius + 16);
+    glowStops.forEach(([offset, color]) => glow.addColorStop(offset, color));
+    context.fillStyle = glow;
+    context.beginPath();
+    context.arc(0, 0, entity.radius + 14, 0, Math.PI * 2);
+    context.fill();
+
+    if (fillColor) {
+        context.fillStyle = fillColor;
+        context.beginPath();
+        context.arc(0, 0, entity.radius + 7, 0, Math.PI * 2);
+        context.fill();
+    }
+
+    context.font = `${Math.max(28, entity.radius * 1.55)}px system-ui, Apple Color Emoji, Segoe UI Emoji, sans-serif`;
+    context.textAlign = 'center';
+    context.textBaseline = 'middle';
+    context.fillText(emoji, 0, emoji === '🧲' ? 1 : 0);
+    context.restore();
+};
+
+const drawCircularEmojiEntity = (context: CanvasRenderingContext2D, entity: TailRunnerEntity) => {
+    context.save();
+    context.translate(entity.x, entity.y);
+    context.beginPath();
+    context.fillStyle = entity.type === 'obstacle'
+        ? 'rgba(255, 149, 149, 0.9)'
+        : 'rgba(175, 221, 187, 0.9)';
+    context.arc(0, 0, entity.radius + 10, 0, Math.PI * 2);
+    context.fill();
+    context.font = `${entity.radius * 1.5}px system-ui, Apple Color Emoji, Segoe UI Emoji, sans-serif`;
+    context.textAlign = 'center';
+    context.textBaseline = 'middle';
+    context.scale(entity.facing, 1);
+    context.fillText(entity.emoji, 0, 0);
+    context.restore();
+};
+
+const drawEnemySnakeScreen = (
+    context: CanvasRenderingContext2D,
+    enemy: TailRunnerEnemySnake,
+    toScreenX: (worldX: number) => number,
+    toScreenY: (worldY: number) => number
+) => {
+    enemy.tail.forEach((segment) => {
+        context.save();
+        context.globalAlpha = 1;
+        context.filter = 'none';
+        drawTailRunnerEmojiSprite(
+            context,
+            segment.emoji,
+            toScreenX(segment.x),
+            toScreenY(segment.y),
+            24,
+            segment.facing
+        );
+        context.restore();
+    });
+
+    context.save();
+    context.globalAlpha = 1;
+    context.filter = 'none';
+    drawTailRunnerEmojiSprite(
+        context,
+        '👿',
+        toScreenX(enemy.x),
+        toScreenY(enemy.y),
+        32,
+        Math.cos(enemy.angle) < 0 ? -1 : 1
+    );
+    context.restore();
+};
+
+const drawTyrannoScreen = (
+    context: CanvasRenderingContext2D,
+    tyranno: TailRunnerTyrannoEnemy,
+    frameNow: number,
+    toScreenX: (worldX: number) => number,
+    toScreenY: (worldY: number) => number
+) => {
+    const wobbleSeed = frameNow / 140 + tyranno.x * 0.002 + tyranno.y * 0.0015;
+    const wobbleStrength = tyranno.phase === 'charge' ? 0.2 : tyranno.phase === 'alert' ? 0.12 : 0.08;
+    const wobbleAngle = Math.sin(wobbleSeed) * wobbleStrength;
+    const wobbleOffsetY = Math.sin(wobbleSeed * 1.8) * (tyranno.phase === 'charge' ? 1.6 : 1);
+
+    context.save();
+    context.globalAlpha = 1;
+    context.filter = 'none';
+    context.translate(toScreenX(tyranno.x), toScreenY(tyranno.y + wobbleOffsetY));
+    context.rotate(wobbleAngle);
+    drawTailRunnerEmojiSprite(context, '🦖', 0, 0, 68, -tyranno.facing as -1 | 1);
+
+    if (tyranno.phase === 'alert' || tyranno.phase === 'charge') {
+        context.save();
+        context.globalAlpha = 1;
+        context.filter = 'none';
+        drawTailRunnerEmojiSprite(context, '💢', 8, -26, 18, 1);
+        context.restore();
+    }
+
+    context.restore();
+};
+
+const drawPlayerTailScreen = (
+    context: CanvasRenderingContext2D,
+    tail: ReturnType<typeof createInitialTailRunnerState>['tail'],
+    toScreenX: (worldX: number) => number,
+    toScreenY: (worldY: number) => number
+) => {
+    tail.forEach((segment) => {
+        context.save();
+        context.globalAlpha = 1;
+        context.filter = 'none';
+        drawTailRunnerEmojiSprite(
+            context,
+            segment.emoji,
+            toScreenX(segment.x),
+            toScreenY(segment.y),
+            26,
+            segment.facing
+        );
+        context.restore();
+    });
+};
+
 export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
     const { t, i18n } = useTranslation();
     const { speciesId, evolutionStage, characterName } = useNurturing();
@@ -620,6 +900,7 @@ export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
         shieldCharges: 0,
         shieldActive: false,
         shieldWarning: false,
+        magnetActive: false,
     });
 
     const runnerCharacter = useMemo(() => {
@@ -775,7 +1056,10 @@ export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
             const deltaMultiplier = Math.min(deltaMs / 16.6667, 1.8);
             state.boostSpawnTimer -= deltaMultiplier;
             state.shieldTimer = Math.max(0, state.shieldTimer - deltaMultiplier);
+            state.magnetSpawnTimer -= deltaMultiplier;
+            state.magnetTimer = Math.max(0, state.magnetTimer - deltaMultiplier);
             const shieldActive = state.shieldTimer > 0;
+            const magnetActive = state.magnetTimer > 0;
 
             const hasBoostEntity = state.entities.some((entity) => entity.type === 'boost');
             if (!hasBoostEntity && state.shieldCharges < TAIL_RUNNER_MAX_SHIELD_CHARGES && state.boostSpawnTimer <= 0) {
@@ -785,12 +1069,24 @@ export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
                 state.boostSpawnTimer = 90;
             }
 
-            state.bursts = state.bursts
-                .map((burst) => ({
-                    ...burst,
-                    life: burst.life - deltaMultiplier,
-                }))
-                .filter((burst) => burst.life > 0);
+            const hasMagnetEntity = state.entities.some((entity) => entity.type === 'magnet');
+            if (!hasMagnetEntity && !magnetActive && state.magnetSpawnTimer <= 0) {
+                state.entities.push(createRandomEntity('magnet', state.playerX, state.playerY));
+                state.magnetSpawnTimer = rollNextMagnetSpawnTimer();
+            }
+
+            const nextBursts: TailRunnerBurst[] = [];
+            for (let index = 0; index < state.bursts.length; index += 1) {
+                const burst = state.bursts[index];
+                const nextLife = burst.life - deltaMultiplier;
+                if (nextLife > 0) {
+                    nextBursts.push({
+                        ...burst,
+                        life: nextLife,
+                    });
+                }
+            }
+            state.bursts = nextBursts;
 
             state.enemies = state.enemies.map((enemy) => updateEnemySnake(enemy, deltaMultiplier));
             state.tyrannos = state.tyrannos.map((tyranno) => (
@@ -864,9 +1160,36 @@ export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
                 };
             });
 
-            state.entities = state.entities.map((entity) => {
+            const nextEntities: TailRunnerEntity[] = [];
+            for (let index = 0; index < state.entities.length; index += 1) {
+                let entity = state.entities[index];
+
+                if (magnetActive && entity.type === 'coin') {
+                    const dx = state.playerX - entity.x;
+                    const dy = state.playerY - entity.y;
+                    const distance = Math.hypot(dx, dy);
+
+                    if (distance > 0 && distance <= TAIL_RUNNER_MAGNET_RADIUS) {
+                        const pullStep = Math.min(
+                            distance,
+                            TAIL_RUNNER_MAGNET_PULL_SPEED
+                            * deltaMultiplier
+                            * (1 + (TAIL_RUNNER_MAGNET_RADIUS - distance) / TAIL_RUNNER_MAGNET_RADIUS)
+                        );
+
+                        entity = {
+                            ...entity,
+                            x: entity.x + (dx / distance) * pullStep,
+                            y: entity.y + (dy / distance) * pullStep,
+                        };
+                    }
+                }
+
                 const distance = Math.hypot(entity.x - state.playerX, entity.y - state.playerY);
-                if (distance > entity.radius + TAIL_RUNNER_PLAYER_RADIUS) return entity;
+                if (distance > entity.radius + TAIL_RUNNER_PLAYER_RADIUS) {
+                    nextEntities.push(entity);
+                    continue;
+                }
 
                 if (entity.type === 'food') {
                     state.score += TAIL_RUNNER_FOOD_SCORE;
@@ -879,7 +1202,8 @@ export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
                         emoji: entity.emoji || TAIL_RUNNER_DEFAULT_TAIL_EMOJI,
                         facing: entity.facing,
                     });
-                    return createRandomEntity('food', state.playerX, state.playerY);
+                    nextEntities.push(createRandomEntity('food', state.playerX, state.playerY));
+                    continue;
                 }
 
                 if (entity.type === 'coin') {
@@ -887,17 +1211,28 @@ export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
                     state.score += gainedScore;
                     playClearSound(0.46);
                     triggerScoreBurst(gainedScore);
-                    return createRandomEntity('coin', state.playerX, state.playerY);
+                    nextEntities.push(createRandomEntity('coin', state.playerX, state.playerY));
+                    continue;
                 }
 
                 if (entity.type === 'boost') {
                     state.shieldCharges = Math.min(TAIL_RUNNER_MAX_SHIELD_CHARGES, state.shieldCharges + 1);
                     state.boostSpawnTimer = rollNextBoostSpawnTimer();
-                    return createRandomEntity('food', state.playerX, state.playerY);
+                    nextEntities.push(createRandomEntity('food', state.playerX, state.playerY));
+                    continue;
+                }
+
+                if (entity.type === 'magnet') {
+                    state.magnetTimer = TAIL_RUNNER_MAGNET_DURATION;
+                    state.magnetSpawnTimer = rollNextMagnetSpawnTimer();
+                    playClearSound(0.38);
+                    nextEntities.push(createRandomEntity('food', state.playerX, state.playerY));
+                    continue;
                 }
 
                 if (shieldActive) {
-                    return createRandomEntity('obstacle', state.playerX, state.playerY);
+                    nextEntities.push(createRandomEntity('obstacle', state.playerX, state.playerY));
+                    continue;
                 }
 
                 state.score = Math.max(0, state.score - TAIL_RUNNER_OBSTACLE_PENALTY);
@@ -914,32 +1249,45 @@ export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
                     const removedTail = state.tail.slice(nextLength);
                     state.tail = state.tail.slice(0, nextLength);
                     state.bursts.push(...removedTail.map((segment) => createBurst(segment.x, segment.y)));
-                    return createRandomEntity('obstacle', state.playerX, state.playerY);
+                    nextEntities.push(createRandomEntity('obstacle', state.playerX, state.playerY));
+                    continue;
                 }
 
                 finishGame();
-                return entity;
-            });
+                nextEntities.push(entity);
+                state.entities = nextEntities;
+                return;
+            }
+            state.entities = nextEntities;
 
             state.highScore = Math.max(state.highScore, state.score);
             reconcileDifficultyTargets(state);
             syncHudState();
         };
 
-        const draw = () => {
+        const draw = (frameNow: number) => {
             const state = stateRef.current;
             const width = canvas.clientWidth;
             const height = canvas.clientHeight;
             const cameraX = state.playerX - width / 2;
             const cameraY = state.playerY - height / 2;
+            const toScreenX = (worldX: number) => Math.round(worldX - cameraX);
+            const toScreenY = (worldY: number) => Math.round(worldY - cameraY);
 
             context.clearRect(0, 0, width, height);
 
-            context.fillStyle = '#93c86f';
+            const outerPattern = getTailRunnerOuterPattern(context);
+            context.fillStyle = outerPattern ?? '#5f8a4f';
             context.fillRect(0, 0, width, height);
 
             context.save();
             context.translate(-cameraX, -cameraY);
+
+            const worldGradient = context.createLinearGradient(0, 0, 0, TAIL_RUNNER_WORLD_SIZE);
+            worldGradient.addColorStop(0, '#9fd27f');
+            worldGradient.addColorStop(1, '#7fbc63');
+            context.fillStyle = worldGradient;
+            context.fillRect(0, 0, TAIL_RUNNER_WORLD_SIZE, TAIL_RUNNER_WORLD_SIZE);
 
             context.strokeStyle = 'rgba(71, 112, 54, 0.12)';
             context.lineWidth = 1;
@@ -956,9 +1304,19 @@ export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
                 context.stroke();
             }
 
+            context.fillStyle = 'rgba(66, 96, 43, 0.34)';
+            context.fillRect(0, 0, TAIL_RUNNER_WORLD_SIZE, 14);
+            context.fillRect(0, TAIL_RUNNER_WORLD_SIZE - 14, TAIL_RUNNER_WORLD_SIZE, 14);
+            context.fillRect(0, 0, 14, TAIL_RUNNER_WORLD_SIZE);
+            context.fillRect(TAIL_RUNNER_WORLD_SIZE - 14, 0, 14, TAIL_RUNNER_WORLD_SIZE);
+
+            context.strokeStyle = 'rgba(42, 66, 27, 0.72)';
+            context.lineWidth = 6;
+            context.strokeRect(3, 3, TAIL_RUNNER_WORLD_SIZE - 6, TAIL_RUNNER_WORLD_SIZE - 6);
+
             context.strokeStyle = 'rgba(235, 251, 224, 0.22)';
-            context.lineWidth = 10;
-            context.strokeRect(0, 0, TAIL_RUNNER_WORLD_SIZE, TAIL_RUNNER_WORLD_SIZE);
+            context.lineWidth = 2;
+            context.strokeRect(14, 14, TAIL_RUNNER_WORLD_SIZE - 28, TAIL_RUNNER_WORLD_SIZE - 28);
 
             state.barriers.forEach((barrier) => {
                 context.save();
@@ -1051,74 +1409,7 @@ export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
                 context.restore();
             });
 
-            state.enemies.forEach((enemy) => {
-                enemy.tail.forEach((segment, index) => {
-                    context.save();
-                    context.globalAlpha = Math.max(0.55, 0.92 - index * 0.06);
-                    context.translate(segment.x, segment.y);
-                    context.scale(segment.facing, 1);
-                    context.font = '24px system-ui, Apple Color Emoji, Segoe UI Emoji, sans-serif';
-                    context.textAlign = 'center';
-                    context.textBaseline = 'middle';
-                    context.fillText(segment.emoji, 0, 0);
-                    context.restore();
-                });
-
-                context.save();
-                context.translate(enemy.x, enemy.y);
-                context.scale(Math.cos(enemy.angle) < 0 ? -1 : 1, 1);
-                context.font = '32px system-ui, Apple Color Emoji, Segoe UI Emoji, sans-serif';
-                context.textAlign = 'center';
-                context.textBaseline = 'middle';
-                context.fillText('👿', 0, 0);
-                context.restore();
-            });
-
-            state.tyrannos.forEach((tyranno) => {
-                const wobbleSeed = performance.now() / 140 + tyranno.x * 0.002 + tyranno.y * 0.0015;
-                const wobbleStrength = tyranno.phase === 'charge' ? 0.2 : tyranno.phase === 'alert' ? 0.12 : 0.08;
-                const wobbleAngle = Math.sin(wobbleSeed) * wobbleStrength;
-                const wobbleOffsetY = Math.sin(wobbleSeed * 1.8) * (tyranno.phase === 'charge' ? 1.6 : 1);
-
-                context.save();
-                context.translate(tyranno.x, tyranno.y + wobbleOffsetY);
-                context.rotate(wobbleAngle);
-                context.scale(-tyranno.facing, 1);
-                context.font = '68px system-ui, Apple Color Emoji, Segoe UI Emoji, sans-serif';
-                context.textAlign = 'center';
-                context.textBaseline = 'middle';
-
-                context.save();
-                context.translate(-2, 2);
-                context.globalAlpha = 0.22;
-                context.filter = 'grayscale(1) brightness(0.72)';
-                context.fillText('🦖', 0, 0);
-                context.restore();
-
-                context.fillText('🦖', 0, 0);
-
-                if (tyranno.phase === 'alert' || tyranno.phase === 'charge') {
-                    context.save();
-                    context.globalAlpha = tyranno.phase === 'charge' ? 1 : 0.9;
-                    context.font = '18px system-ui, Apple Color Emoji, Segoe UI Emoji, sans-serif';
-                    context.fillText('💢', 8, -26);
-                    context.restore();
-                }
-
-                context.restore();
-            });
-
-            state.bursts.forEach((burst) => {
-                const progress = 1 - burst.life / burst.maxLife;
-                context.save();
-                context.globalAlpha = Math.max(0, burst.life / burst.maxLife);
-                context.translate(burst.x, burst.y - progress * 26);
-                context.font = `${26 + progress * 6}px system-ui, Apple Color Emoji, Segoe UI Emoji, sans-serif`;
-                context.textAlign = 'center';
-                context.textBaseline = 'middle';
-                context.fillText(burst.emoji, 0, 0);
-                context.restore();
-            });
+            state.bursts.forEach((burst) => drawBurstEntity(context, burst));
 
             state.entities.forEach((entity) => {
                 if (entity.type === 'coin') {
@@ -1126,55 +1417,34 @@ export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
                     return;
                 }
                 if (entity.type === 'boost') {
-                    context.save();
-                    context.translate(entity.x, entity.y);
-                    const boostGlow = context.createRadialGradient(0, 0, 0, 0, 0, entity.radius + 15);
-                    boostGlow.addColorStop(0, 'rgba(255, 248, 191, 0.96)');
-                    boostGlow.addColorStop(0.55, 'rgba(255, 214, 79, 0.76)');
-                    boostGlow.addColorStop(1, 'rgba(255, 190, 54, 0)');
-                    context.fillStyle = boostGlow;
-                    context.beginPath();
-                    context.arc(0, 0, entity.radius + 15, 0, Math.PI * 2);
-                    context.fill();
-
-                    context.fillStyle = 'rgba(255, 241, 173, 0.92)';
-                    context.beginPath();
-                    context.arc(0, 0, entity.radius + 7, 0, Math.PI * 2);
-                    context.fill();
-
-                    context.font = `${entity.radius * 1.55}px system-ui, Apple Color Emoji, Segoe UI Emoji, sans-serif`;
-                    context.textAlign = 'center';
-                    context.textBaseline = 'middle';
-                    context.fillText('⚡', 0, 0);
-                    context.restore();
+                    drawPowerItemEntity(
+                        context,
+                        entity,
+                        '⚡',
+                        [
+                            [0, 'rgba(255, 248, 191, 0.96)'],
+                            [0.55, 'rgba(255, 214, 79, 0.76)'],
+                            [1, 'rgba(255, 190, 54, 0)'],
+                        ],
+                        'rgba(255, 241, 173, 0.92)'
+                    );
+                    return;
+                }
+                if (entity.type === 'magnet') {
+                    drawPowerItemEntity(
+                        context,
+                        entity,
+                        '🧲',
+                        [
+                            [0, 'rgba(255, 242, 209, 0.95)'],
+                            [0.52, 'rgba(255, 140, 140, 0.42)'],
+                            [1, 'rgba(255, 140, 140, 0)'],
+                        ]
+                    );
                     return;
                 }
 
-                context.save();
-                context.translate(entity.x, entity.y);
-                context.beginPath();
-                context.fillStyle = entity.type === 'obstacle'
-                    ? 'rgba(255, 149, 149, 0.9)'
-                    : 'rgba(175, 221, 187, 0.9)';
-                context.arc(0, 0, entity.radius + 10, 0, Math.PI * 2);
-                context.fill();
-                context.font = `${entity.radius * 1.5}px system-ui, Apple Color Emoji, Segoe UI Emoji, sans-serif`;
-                context.textAlign = 'center';
-                context.textBaseline = 'middle';
-                context.scale(entity.facing, 1);
-                context.fillText(entity.emoji, 0, 0);
-                context.restore();
-            });
-
-            state.tail.forEach((segment) => {
-                context.save();
-                context.translate(segment.x, segment.y);
-                context.scale(segment.facing, 1);
-                context.font = '26px system-ui, Apple Color Emoji, Segoe UI Emoji, sans-serif';
-                context.textAlign = 'center';
-                context.textBaseline = 'middle';
-                context.fillText(segment.emoji, 0, 0);
-                context.restore();
+                drawCircularEmojiEntity(context, entity);
             });
 
             context.save();
@@ -1190,6 +1460,10 @@ export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
             context.restore();
 
             context.restore();
+
+            state.enemies.forEach((enemy) => drawEnemySnakeScreen(context, enemy, toScreenX, toScreenY));
+            state.tyrannos.forEach((tyranno) => drawTyrannoScreen(context, tyranno, frameNow, toScreenX, toScreenY));
+            drawPlayerTailScreen(context, state.tail, toScreenX, toScreenY);
         };
 
         const loop = (now: number) => {
@@ -1197,7 +1471,7 @@ export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
             const deltaMs = now - previousTime;
             previousTime = now;
             update(deltaMs);
-            draw();
+            draw(now);
             animationFrameRef.current = window.requestAnimationFrame(loop);
         };
 
@@ -1217,8 +1491,8 @@ export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
         const nextState = createInitialTailRunnerState();
         nextState.highScore = bestScoreRef.current;
         nextState.boostSpawnTimer = rollNextBoostSpawnTimer();
+        nextState.magnetSpawnTimer = rollNextMagnetSpawnTimer();
         nextState.entities = createInitialEntities(nextState.playerX, nextState.playerY);
-        nextState.entities.push(createNearbyBoostEntity(nextState.playerX, nextState.playerY));
         nextState.barriers = createInitialBarriers(nextState.playerX, nextState.playerY);
         nextState.enemies = createInitialEnemies(nextState.playerX, nextState.playerY);
         nextState.tyrannos = createInitialTyrannos(nextState.playerX, nextState.playerY);
@@ -1300,7 +1574,8 @@ export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
                         <div className="tail-runner__player-overlay" aria-hidden="true">
                             <div className={`tail-runner__avatar-core${hudState.shieldActive ? ' tail-runner__avatar-core--shielded' : ''}`}>
                                 <div className="tail-runner__avatar-glow" aria-hidden="true" />
-                                {hudState.shieldActive && (
+                                {gamePhase === 'playing' && hudState.magnetActive && <div className="tail-runner__magnet-ring" aria-hidden="true">🧲</div>}
+                                {gamePhase === 'playing' && hudState.shieldActive && (
                                     <div className={`tail-runner__shield-ring${hudState.shieldWarning ? ' tail-runner__shield-ring--warning' : ''}`} aria-hidden="true">
                                         <span className="tail-runner__shield-ring-beam tail-runner__shield-ring-beam--one" />
                                         <span className="tail-runner__shield-ring-beam tail-runner__shield-ring-beam--two" />
@@ -1423,6 +1698,7 @@ export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
                                 <li>{t(`${GAME_LOCALE_KEY}.controlsTurn`)}</li>
                                 <li>{t(`${GAME_LOCALE_KEY}.controlsBoost`)}</li>
                                 <li>{t(`${GAME_LOCALE_KEY}.controlsShield`)}</li>
+                                <li>{t(`${GAME_LOCALE_KEY}.controlsMagnet`)}</li>
                                 <li>{t(`${GAME_LOCALE_KEY}.controlsTouch`)}</li>
                             </ul>
                         </div>
@@ -1454,6 +1730,7 @@ export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
                             <li>{t(`${GAME_LOCALE_KEY}.controlsTurn`)}</li>
                             <li>{t(`${GAME_LOCALE_KEY}.controlsBoost`)}</li>
                             <li>{t(`${GAME_LOCALE_KEY}.controlsShield`)}</li>
+                            <li>{t(`${GAME_LOCALE_KEY}.controlsMagnet`)}</li>
                             <li>{t(`${GAME_LOCALE_KEY}.controlsTouch`)}</li>
                         </ul>
                     </div>

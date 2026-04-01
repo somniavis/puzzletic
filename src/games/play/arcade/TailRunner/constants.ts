@@ -9,8 +9,13 @@ export const TAIL_RUNNER_SHIELD_SPEED_MULTIPLIER = 1.5;
 export const TAIL_RUNNER_SHIELD_DURATION = 540;
 export const TAIL_RUNNER_SHIELD_GEM_BONUS = 10;
 export const TAIL_RUNNER_MAX_SHIELD_CHARGES = 3;
-export const TAIL_RUNNER_BOOST_SPAWN_MIN_TIME = 420;
-export const TAIL_RUNNER_BOOST_SPAWN_MAX_TIME = 760;
+export const TAIL_RUNNER_BOOST_SPAWN_MIN_TIME = 660;
+export const TAIL_RUNNER_BOOST_SPAWN_MAX_TIME = 1080;
+export const TAIL_RUNNER_MAGNET_DURATION = 420;
+export const TAIL_RUNNER_MAGNET_RADIUS = 260;
+export const TAIL_RUNNER_MAGNET_PULL_SPEED = 10.5;
+export const TAIL_RUNNER_MAGNET_SPAWN_MIN_TIME = 780;
+export const TAIL_RUNNER_MAGNET_SPAWN_MAX_TIME = 1320;
 export const TAIL_RUNNER_TAIL_SPACING = 8;
 export const TAIL_RUNNER_GRID_SIZE = 120;
 export const TAIL_RUNNER_HISTORY_LIMIT = 400;
@@ -136,6 +141,8 @@ export const createInitialTailRunnerState = (): TailRunnerState => ({
     shieldCharges: 0,
     shieldTimer: 0,
     boostSpawnTimer: 0,
+    magnetTimer: 0,
+    magnetSpawnTimer: 0,
     tail: [],
     entities: [],
     barriers: [],
