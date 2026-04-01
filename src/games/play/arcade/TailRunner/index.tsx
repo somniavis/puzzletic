@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNurturing } from '../../../../contexts/NurturingContext';
+import i18nCore from '../../../../i18n/config';
 import { createCharacter } from '../../../../data/characters';
 import type { EvolutionStage } from '../../../../types/character';
 import type { GameComponentProps } from '../../../types';
@@ -24,6 +25,7 @@ import {
     TAIL_RUNNER_ENEMY_SCORE_STEP,
     TAIL_RUNNER_ENEMY_SPEED,
     TAIL_RUNNER_ENTITY_RESPAWN_PADDING,
+    TAIL_RUNNER_FIRST_TAIL_SPACING,
     TAIL_RUNNER_FOOD_EMOJIS,
     TAIL_RUNNER_FOOD_SCORE,
     TAIL_RUNNER_FOOD_SCORE_STEP,
@@ -73,15 +75,88 @@ import type { TailRunnerBarrier, TailRunnerBurst, TailRunnerEnemySnake, TailRunn
 import './TailRunner.css';
 import manifestEn from './locales/en';
 import manifestEnUk from './locales/en-UK';
+import manifestEsEs from './locales/es-ES';
+import manifestFrFr from './locales/fr-FR';
+import manifestIdId from './locales/id-ID';
+import manifestJa from './locales/ja';
 import manifestKo from './locales/ko';
+import manifestPtPt from './locales/pt-PT';
+import manifestViVn from './locales/vi-VN';
 
-const GAME_LOCALE_KEY = 'games.play-jello-comet';
 const TAIL_RUNNER_HUD_SYNC_INTERVAL_MS = 100;
+const TAIL_RUNNER_MAX_RENDER_PIXEL_RATIO = 2;
+const TAIL_RUNNER_POWERUP_VISUAL_GUARD_FRAMES = 8;
+
+const TAIL_RUNNER_LOCALE_BUNDLES = {
+    en: { translation: { games: { 'play-jello-comet': manifestEn } } },
+    'en-UK': { translation: { games: { 'play-jello-comet': manifestEnUk } } },
+    'es-ES': { translation: { games: { 'play-jello-comet': manifestEsEs } } },
+    'fr-FR': { translation: { games: { 'play-jello-comet': manifestFrFr } } },
+    'id-ID': { translation: { games: { 'play-jello-comet': manifestIdId } } },
+    ja: { translation: { games: { 'play-jello-comet': manifestJa } } },
+    ko: { translation: { games: { 'play-jello-comet': manifestKo } } },
+    'pt-PT': { translation: { games: { 'play-jello-comet': manifestPtPt } } },
+    'vi-VN': { translation: { games: { 'play-jello-comet': manifestViVn } } },
+} as const;
+
+Object.keys(TAIL_RUNNER_LOCALE_BUNDLES).forEach((lang) => {
+    i18nCore.addResourceBundle(
+        lang,
+        'translation',
+        TAIL_RUNNER_LOCALE_BUNDLES[lang as keyof typeof TAIL_RUNNER_LOCALE_BUNDLES].translation,
+        true,
+        true
+    );
+});
+
+const TAIL_RUNNER_LOCALE_MANIFESTS = {
+    en: manifestEn,
+    'en-UK': manifestEnUk,
+    'es-ES': manifestEsEs,
+    'fr-FR': manifestFrFr,
+    'id-ID': manifestIdId,
+    ja: manifestJa,
+    ko: manifestKo,
+    'pt-PT': manifestPtPt,
+    'vi-VN': manifestViVn,
+} as const;
+
+const resolveTailRunnerLocale = (language?: string): keyof typeof TAIL_RUNNER_LOCALE_MANIFESTS => {
+    if (!language) return 'en';
+    if (language === 'en-UK' || language === 'es-ES' || language === 'fr-FR' || language === 'id-ID' || language === 'pt-PT' || language === 'vi-VN') {
+        return language;
+    }
+    if (language.startsWith('ko')) return 'ko';
+    if (language.startsWith('ja')) return 'ja';
+    if (language.startsWith('es')) return 'es-ES';
+    if (language.startsWith('fr')) return 'fr-FR';
+    if (language.startsWith('id')) return 'id-ID';
+    if (language.startsWith('pt')) return 'pt-PT';
+    if (language.startsWith('vi')) return 'vi-VN';
+    if (language.startsWith('en-GB')) return 'en-UK';
+    return 'en';
+};
+
+const getTailRunnerLocaleValue = (manifest: Record<string, unknown>, key: string): unknown => (
+    key.split('.').reduce<unknown>((accumulator, part) => {
+        if (!accumulator || typeof accumulator !== 'object') return undefined;
+        return (accumulator as Record<string, unknown>)[part];
+    }, manifest)
+);
+
+const formatTailRunnerLocaleString = (
+    template: string,
+    values?: Record<string, string | number>
+) => {
+    if (!values) return template;
+    return template.replace(/\{\{\s*(\w+)\s*\}\}/g, (_, key: string) => String(values[key] ?? ''));
+};
 
 type TailRunnerHudState = {
     score: number;
     speed: number;
     tailLength: number;
+    bestTail: number;
     positionX: number;
     positionY: number;
     highScore: number;
@@ -94,6 +169,11 @@ type TailRunnerHudState = {
 type TailRunnerScoreBurst = {
     id: number;
     label: string;
+};
+
+type TailRunnerGameOverHighlights = {
+    score: boolean;
+    tail: boolean;
 };
 
 type TailRunnerEmojiSprite = {
@@ -143,6 +223,11 @@ const rollNextMagnetSpawnTimer = () => randomBetween(TAIL_RUNNER_MAGNET_SPAWN_MI
 const tailRunnerEmojiSpriteCache = new Map<string, TailRunnerEmojiSprite>();
 let tailRunnerOuterPatternCache: CanvasPattern | null = null;
 
+const getTailRunnerRenderPixelRatio = () => {
+    if (typeof window === 'undefined') return 1;
+    return Math.min(TAIL_RUNNER_MAX_RENDER_PIXEL_RATIO, Math.max(1, window.devicePixelRatio || 1));
+};
+
 const getTailRunnerEmojiSprite = (
     emoji: string,
     fontSize: number,
@@ -155,7 +240,7 @@ const getTailRunnerEmojiSprite = (
     if (cached) return cached;
 
     const size = Math.ceil(fontSize * 1.7);
-    const pixelRatio = Math.max(2, Math.ceil(window.devicePixelRatio || 1));
+    const pixelRatio = getTailRunnerRenderPixelRatio();
     const canvas = document.createElement('canvas');
     canvas.width = size * pixelRatio;
     canvas.height = size * pixelRatio;
@@ -220,7 +305,7 @@ const getTailRunnerOuterPattern = (context: CanvasRenderingContext2D) => {
 
     const tile = document.createElement('canvas');
     const size = 168;
-    const pixelRatio = Math.max(2, Math.ceil(window.devicePixelRatio || 1));
+    const pixelRatio = getTailRunnerRenderPixelRatio();
     tile.width = size * pixelRatio;
     tile.height = size * pixelRatio;
 
@@ -256,6 +341,36 @@ const getTailRunnerOuterPattern = (context: CanvasRenderingContext2D) => {
     tailRunnerOuterPatternCache = context.createPattern(tile, 'repeat');
     return tailRunnerOuterPatternCache;
 };
+
+const getTailRunnerHistoryOffset = (index: number) => TAIL_RUNNER_FIRST_TAIL_SPACING + (index * TAIL_RUNNER_TAIL_SPACING);
+
+const getTailRunnerHistoryPoint = (
+    history: Array<{ x: number; y: number }>,
+    offset: number,
+    fallback: { x: number; y: number }
+) => {
+    if (history.length === 0) return fallback;
+
+    const lowerIndex = Math.floor(offset);
+    const upperIndex = Math.min(history.length - 1, lowerIndex + 1);
+    const lowerPoint = history[Math.min(history.length - 1, lowerIndex)] || fallback;
+    const upperPoint = history[upperIndex] || lowerPoint;
+    const mix = clamp(offset - lowerIndex, 0, 1);
+
+    return {
+        x: lowerPoint.x + (upperPoint.x - lowerPoint.x) * mix,
+        y: lowerPoint.y + (upperPoint.y - lowerPoint.y) * mix,
+    };
+};
+
+const smoothTailRunnerPoint = (
+    current: { x: number; y: number },
+    target: { x: number; y: number },
+    factor: number
+) => ({
+    x: current.x + (target.x - current.x) * factor,
+    y: current.y + (target.y - current.y) * factor,
+});
 
 const pickGemTier = (): TailRunnerGemTier => {
     const roll = Math.random();
@@ -531,6 +646,7 @@ const buildHudState = (state: ReturnType<typeof createInitialTailRunnerState>): 
     score: state.score,
     speed: state.playerSpeed,
     tailLength: state.tail.length,
+    bestTail: state.bestTail,
     positionX: Math.round(state.playerX),
     positionY: Math.round(state.playerY),
     highScore: state.highScore,
@@ -576,11 +692,20 @@ const updateEnemySnake = (enemy: TailRunnerEnemySnake, deltaMultiplier: number):
         turnDrift: nextTurnDrift,
         history,
         tail: enemy.tail.map((segment, index) => {
-            const point = history[(index + 1) * TAIL_RUNNER_TAIL_SPACING] || history[history.length - 1] || { x: nextX, y: nextY };
+            const point = getTailRunnerHistoryPoint(
+                history,
+                getTailRunnerHistoryOffset(index),
+                { x: nextX, y: nextY }
+            );
+            const smoothedPoint = smoothTailRunnerPoint(
+                segment,
+                point,
+                index === 0 ? 0.58 : 0.5
+            );
             return {
                 ...segment,
-                x: point.x,
-                y: point.y,
+                x: smoothedPoint.x,
+                y: smoothedPoint.y,
                 facing,
             };
         }),
@@ -740,6 +865,28 @@ const drawBurstEntity = (context: CanvasRenderingContext2D, burst: TailRunnerBur
     context.restore();
 };
 
+const drawRoundedRectPath = (
+    context: CanvasRenderingContext2D,
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    radius: number
+) => {
+    const safeRadius = Math.max(0, Math.min(radius, width / 2, height / 2));
+    context.beginPath();
+    context.moveTo(x + safeRadius, y);
+    context.lineTo(x + width - safeRadius, y);
+    context.quadraticCurveTo(x + width, y, x + width, y + safeRadius);
+    context.lineTo(x + width, y + height - safeRadius);
+    context.quadraticCurveTo(x + width, y + height, x + width - safeRadius, y + height);
+    context.lineTo(x + safeRadius, y + height);
+    context.quadraticCurveTo(x, y + height, x, y + height - safeRadius);
+    context.lineTo(x, y + safeRadius);
+    context.quadraticCurveTo(x, y, x + safeRadius, y);
+    context.closePath();
+};
+
 const drawPowerItemEntity = (
     context: CanvasRenderingContext2D,
     entity: TailRunnerEntity,
@@ -875,7 +1022,7 @@ const drawPlayerTailScreen = (
 };
 
 export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
-    const { t, i18n } = useTranslation();
+    const { i18n } = useTranslation();
     const { speciesId, evolutionStage, characterName } = useNurturing();
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const stageRef = useRef<HTMLDivElement | null>(null);
@@ -884,16 +1031,23 @@ export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
     const inputRef = useRef({ left: false, right: false, boost: false });
     const historyRef = useRef<{ x: number; y: number }[]>([]);
     const bestScoreRef = useRef(0);
+    const bestTailRef = useRef(0);
     const lastHudSyncRef = useRef(0);
     const steerPointerIdRef = useRef<number | null>(null);
+    const powerupVisualGuardFramesRef = useRef(0);
     const [gamePhase, setGamePhase] = useState<'start' | 'playing' | 'gameOver'>('start');
     const [isHelpOpen, setIsHelpOpen] = useState(false);
     const [heartBursts, setHeartBursts] = useState<number[]>([]);
     const [scoreBursts, setScoreBursts] = useState<TailRunnerScoreBurst[]>([]);
+    const [gameOverHighlights, setGameOverHighlights] = useState<TailRunnerGameOverHighlights>({
+        score: false,
+        tail: false,
+    });
     const [hudState, setHudState] = useState<TailRunnerHudState>({
         score: 0,
         speed: TAIL_RUNNER_BASE_SPEED,
         tailLength: 0,
+        bestTail: 0,
         positionX: TAIL_RUNNER_WORLD_SIZE / 2,
         positionY: TAIL_RUNNER_WORLD_SIZE / 2,
         highScore: 0,
@@ -902,9 +1056,12 @@ export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
         shieldWarning: false,
         magnetActive: false,
     });
-    const liveShieldActive = gamePhase === 'playing' && stateRef.current.shieldTimer > 0;
+    const canShowPowerupVisuals = gamePhase === 'playing' && powerupVisualGuardFramesRef.current <= 0;
+    const liveShieldActive = canShowPowerupVisuals && stateRef.current.shieldTimer > 0;
     const liveShieldWarning = liveShieldActive && stateRef.current.shieldTimer <= 120;
-    const liveMagnetActive = gamePhase === 'playing' && stateRef.current.magnetTimer > 0;
+    const liveMagnetActive = canShowPowerupVisuals && stateRef.current.magnetTimer > 0;
+    const isScoreBeyondBest = gamePhase === 'playing' && hudState.score > bestScoreRef.current;
+    const isTailBeyondBest = gamePhase === 'playing' && hudState.tailLength > bestTailRef.current;
 
     const runnerCharacter = useMemo(() => {
         const safeSpeciesId = speciesId || 'yellowJello';
@@ -916,23 +1073,75 @@ export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
         return character;
     }, [characterName, evolutionStage, speciesId]);
 
+    const tailRunnerLocale = useMemo(
+        () => resolveTailRunnerLocale(i18n.resolvedLanguage || i18n.language),
+        [i18n.language, i18n.resolvedLanguage]
+    );
+
+    const tailRunnerMessages = useMemo(
+        () => TAIL_RUNNER_LOCALE_MANIFESTS[tailRunnerLocale] ?? manifestEn,
+        [tailRunnerLocale]
+    );
+
+    const gt = useCallback((key: string, values?: Record<string, string | number>) => {
+        const localized = getTailRunnerLocaleValue(tailRunnerMessages as Record<string, unknown>, key);
+        const fallback = getTailRunnerLocaleValue(manifestEn as Record<string, unknown>, key);
+        const template = typeof localized === 'string'
+            ? localized
+            : typeof fallback === 'string'
+                ? fallback
+                : key;
+        return formatTailRunnerLocaleString(template, values);
+    }, [tailRunnerMessages]);
+
     useEffect(() => {
-        const newResources = {
-            en: { translation: { games: { 'play-jello-comet': manifestEn } } },
-            'en-UK': { translation: { games: { 'play-jello-comet': manifestEnUk } } },
-            ko: { translation: { games: { 'play-jello-comet': manifestKo } } },
+        if (typeof window === 'undefined') return;
+
+        const warmup = () => {
+            const allTailEmojis = Array.from(new Set([
+                ...TAIL_RUNNER_FOOD_EMOJIS,
+                TAIL_RUNNER_DEFAULT_TAIL_EMOJI,
+                '🪨',
+                '👿',
+                '🦖',
+                '💢',
+            ]));
+
+            allTailEmojis.forEach((emoji) => {
+                getTailRunnerEmojiSprite(emoji, 26, 1);
+                getTailRunnerEmojiSprite(emoji, 26, -1);
+            });
+            getTailRunnerEmojiSprite('🪨', 24, 1);
+            getTailRunnerEmojiSprite('🪨', 24, -1);
+            getTailRunnerEmojiSprite('👿', 32, 1);
+            getTailRunnerEmojiSprite('👿', 32, -1);
+            getTailRunnerEmojiSprite('🦖', 68, 1);
+            getTailRunnerEmojiSprite('🦖', 68, -1);
+            getTailRunnerEmojiSprite('💢', 18, 1);
         };
 
-        Object.keys(newResources).forEach((lang) => {
-            i18n.addResourceBundle(
-                lang,
-                'translation',
-                newResources[lang as keyof typeof newResources].translation,
-                true,
-                true
-            );
-        });
-    }, [i18n]);
+        let idleId: number | null = null;
+        let timeoutId: number | null = null;
+        const idleWindow = window as Window & {
+            requestIdleCallback?: (callback: IdleRequestCallback, options?: IdleRequestOptions) => number;
+            cancelIdleCallback?: (handle: number) => void;
+        };
+
+        if (typeof idleWindow.requestIdleCallback === 'function') {
+            idleId = idleWindow.requestIdleCallback(warmup, { timeout: 600 });
+        } else {
+            timeoutId = window.setTimeout(warmup, 120);
+        }
+
+        return () => {
+            if (typeof idleWindow.cancelIdleCallback === 'function' && idleId !== null) {
+                idleWindow.cancelIdleCallback(idleId);
+            }
+            if (timeoutId !== null) {
+                window.clearTimeout(timeoutId);
+            }
+        };
+    }, []);
 
     const clearInputs = useCallback(() => {
         inputRef.current.left = false;
@@ -996,9 +1205,17 @@ export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
 
     const finishGame = useCallback(() => {
         const state = stateRef.current;
+        const wasBestScore = state.score > bestScoreRef.current;
+        const wasBestTail = state.tail.length > bestTailRef.current;
         state.isGameOver = true;
         state.highScore = Math.max(state.highScore, state.score);
+        state.bestTail = Math.max(state.bestTail, state.tail.length);
         bestScoreRef.current = state.highScore;
+        bestTailRef.current = state.bestTail;
+        setGameOverHighlights({
+            score: wasBestScore,
+            tail: wasBestTail,
+        });
         syncHudState(true);
         setGamePhase('gameOver');
     }, [syncHudState]);
@@ -1043,9 +1260,10 @@ export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
 
         const resizeCanvas = () => {
             const { width, height } = canvas.getBoundingClientRect();
-            canvas.width = Math.max(1, Math.floor(width * window.devicePixelRatio));
-            canvas.height = Math.max(1, Math.floor(height * window.devicePixelRatio));
-            context.setTransform(window.devicePixelRatio, 0, 0, window.devicePixelRatio, 0, 0);
+            const pixelRatio = getTailRunnerRenderPixelRatio();
+            canvas.width = Math.max(1, Math.floor(width * pixelRatio));
+            canvas.height = Math.max(1, Math.floor(height * pixelRatio));
+            context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
         };
 
         resizeCanvas();
@@ -1057,6 +1275,9 @@ export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
             const state = stateRef.current;
             const input = inputRef.current;
             const deltaMultiplier = Math.min(deltaMs / 16.6667, 1.8);
+            if (powerupVisualGuardFramesRef.current > 0) {
+                powerupVisualGuardFramesRef.current -= 1;
+            }
             state.boostSpawnTimer -= deltaMultiplier;
             state.shieldTimer = Math.max(0, state.shieldTimer - deltaMultiplier);
             state.magnetSpawnTimer -= deltaMultiplier;
@@ -1154,12 +1375,20 @@ export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
             }
 
             state.tail = state.tail.map((segment, index) => {
-                const point = historyRef.current[(index + 1) * TAIL_RUNNER_TAIL_SPACING] || historyRef.current[historyRef.current.length - 1];
-                if (!point) return segment;
+                const point = getTailRunnerHistoryPoint(
+                    historyRef.current,
+                    getTailRunnerHistoryOffset(index),
+                    { x: state.playerX, y: state.playerY }
+                );
+                const smoothedPoint = smoothTailRunnerPoint(
+                    segment,
+                    point,
+                    index === 0 ? 0.62 : 0.52
+                );
                 return {
                     ...segment,
-                    x: point.x,
-                    y: point.y,
+                    x: smoothedPoint.x,
+                    y: smoothedPoint.y,
                 };
             });
 
@@ -1198,13 +1427,14 @@ export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
                     state.score += TAIL_RUNNER_FOOD_SCORE;
                     playEatingSound(0.42);
                     triggerHeartBurst();
-                    const tailPoint = historyRef.current[(state.tail.length + 1) * TAIL_RUNNER_TAIL_SPACING] || historyRef.current[historyRef.current.length - 1] || { x: state.playerX, y: state.playerY };
+                    const tailPoint = historyRef.current[getTailRunnerHistoryOffset(state.tail.length)] || historyRef.current[historyRef.current.length - 1] || { x: state.playerX, y: state.playerY };
                     state.tail.push({
                         x: tailPoint.x,
                         y: tailPoint.y,
                         emoji: entity.emoji || TAIL_RUNNER_DEFAULT_TAIL_EMOJI,
                         facing: entity.facing,
                     });
+                    state.bestTail = Math.max(state.bestTail, state.tail.length);
                     nextEntities.push(createRandomEntity('food', state.playerX, state.playerY));
                     continue;
                 }
@@ -1264,6 +1494,7 @@ export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
             state.entities = nextEntities;
 
             state.highScore = Math.max(state.highScore, state.score);
+            state.bestTail = Math.max(state.bestTail, state.tail.length);
             reconcileDifficultyTargets(state);
             syncHudState();
         };
@@ -1334,13 +1565,11 @@ export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
                 barrierGradient.addColorStop(1, 'rgba(128, 86, 48, 0.98)');
 
                 context.fillStyle = barrierGradient;
-                context.beginPath();
-                context.roundRect(barrier.x, barrier.y, barrier.width, barrier.height, 12);
+                drawRoundedRectPath(context, barrier.x, barrier.y, barrier.width, barrier.height, 12);
                 context.fill();
 
                 context.save();
-                context.beginPath();
-                context.roundRect(barrier.x, barrier.y, barrier.width, barrier.height, 12);
+                drawRoundedRectPath(context, barrier.x, barrier.y, barrier.width, barrier.height, 12);
                 context.clip();
 
                 context.fillStyle = 'rgba(255, 237, 196, 0.16)';
@@ -1406,8 +1635,7 @@ export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
 
                 context.strokeStyle = 'rgba(86, 57, 30, 0.34)';
                 context.lineWidth = 1.5;
-                context.beginPath();
-                context.roundRect(barrier.x + 0.75, barrier.y + 0.75, barrier.width - 1.5, barrier.height - 1.5, 11);
+                drawRoundedRectPath(context, barrier.x + 0.75, barrier.y + 0.75, barrier.width - 1.5, barrier.height - 1.5, 11);
                 context.stroke();
                 context.restore();
             });
@@ -1491,8 +1719,13 @@ export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
 
     const startGame = () => {
         clearInputs();
+        setGameOverHighlights({
+            score: false,
+            tail: false,
+        });
         const nextState = createInitialTailRunnerState();
         nextState.highScore = bestScoreRef.current;
+        nextState.bestTail = bestTailRef.current;
         nextState.boostSpawnTimer = rollNextBoostSpawnTimer();
         nextState.magnetSpawnTimer = rollNextMagnetSpawnTimer();
         nextState.entities = createInitialEntities(nextState.playerX, nextState.playerY);
@@ -1500,6 +1733,7 @@ export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
         nextState.enemies = createInitialEnemies(nextState.playerX, nextState.playerY);
         nextState.tyrannos = createInitialTyrannos(nextState.playerX, nextState.playerY);
         stateRef.current = nextState;
+        powerupVisualGuardFramesRef.current = TAIL_RUNNER_POWERUP_VISUAL_GUARD_FRAMES;
         historyRef.current = [];
         lastHudSyncRef.current = 0;
         setHudState(buildHudState(nextState));
@@ -1528,18 +1762,30 @@ export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
         <div className="tail-runner">
             <div className="tail-runner__panel">
                 <header className="tail-runner__header">
-                    <div className="tail-runner__header-stats" aria-label="Game stats">
+                    <div className="tail-runner__header-stats" aria-label={gt('headerStatsLabel')}>
                         <div className="tail-runner__header-stat">
-                            <span className="tail-runner__header-stat-label">{t(`${GAME_LOCALE_KEY}.stats.tail`)}</span>
-                            <strong className="tail-runner__header-stat-value">{hudState.tailLength}</strong>
+                            <span className="tail-runner__header-stat-label">
+                                <span>{gt('stats.score')}</span>
+                                <span className="tail-runner__header-stat-label-separator">/</span>
+                                <span className="tail-runner__header-stat-label-best">{gt('stats.best')}</span>
+                            </span>
+                            <strong className="tail-runner__header-stat-value">
+                                <span className={isScoreBeyondBest ? 'tail-runner__header-stat-current--highlight' : undefined}>{hudState.score}</span>
+                                <span className="tail-runner__header-stat-separator">/</span>
+                                <span className="tail-runner__header-stat-best">{hudState.highScore}</span>
+                            </strong>
                         </div>
                         <div className="tail-runner__header-stat">
-                            <span className="tail-runner__header-stat-label">{t(`${GAME_LOCALE_KEY}.stats.score`)}</span>
-                            <strong className="tail-runner__header-stat-value">{hudState.score}</strong>
-                        </div>
-                        <div className="tail-runner__header-stat">
-                            <span className="tail-runner__header-stat-label">{t(`${GAME_LOCALE_KEY}.stats.best`)}</span>
-                            <strong className="tail-runner__header-stat-value">{hudState.highScore}</strong>
+                            <span className="tail-runner__header-stat-label">
+                                <span>{gt('stats.tail')}</span>
+                                <span className="tail-runner__header-stat-label-separator">/</span>
+                                <span className="tail-runner__header-stat-label-best">{gt('stats.best')}</span>
+                            </span>
+                            <strong className="tail-runner__header-stat-value">
+                                <span className={isTailBeyondBest ? 'tail-runner__header-stat-current--highlight' : undefined}>{hudState.tailLength}</span>
+                                <span className="tail-runner__header-stat-separator">/</span>
+                                <span className="tail-runner__header-stat-best">{hudState.bestTail}</span>
+                            </strong>
                         </div>
                     </div>
                     <div className="tail-runner__header-actions">
@@ -1547,7 +1793,7 @@ export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
                             type="button"
                             className="tail-runner__close tail-runner__help"
                             onClick={() => setIsHelpOpen(true)}
-                            aria-label={t(`${GAME_LOCALE_KEY}.controlsTitle`)}
+                            aria-label={gt('controlsTitle')}
                         >
                             <span className="tail-runner__help-mark">?</span>
                         </button>
@@ -1555,7 +1801,7 @@ export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
                         type="button"
                         className="tail-runner__close"
                         onClick={onExit}
-                        aria-label={t('common.close')}
+                        aria-label={gt('closeButton')}
                     >
                         <i className="fas fa-xmark" aria-hidden="true" />
                     </button>
@@ -1566,7 +1812,7 @@ export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
                     <div
                         ref={stageRef}
                         className="tail-runner__stage"
-                        aria-label={t(`${GAME_LOCALE_KEY}.stageLabel`)}
+                        aria-label={gt('stageLabel')}
                         onPointerDown={handleStagePointerDown}
                         onPointerMove={handleStagePointerMove}
                         onPointerUp={handleStagePointerUp}
@@ -1602,22 +1848,87 @@ export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
                         </div>
                         {gamePhase === 'start' && (
                             <div className="tail-runner__start-screen">
-                                <div className="tail-runner__start-card">
-                                    <h2>{t(`${GAME_LOCALE_KEY}.startTitle`)}</h2>
-                                    <p>{t(`${GAME_LOCALE_KEY}.startDescription`)}</p>
-                                    <button type="button" className="tail-runner__start-btn" onClick={startGame}>
-                                        {t(`${GAME_LOCALE_KEY}.startButton`)}
+                                <div className="tail-runner__start-card tail-runner__start-card--welcome">
+                                    <div className="tail-runner__start-icon-shell" aria-hidden="true">
+                                        <div className="tail-runner__start-icon-bubble">
+                                            <JelloAvatar
+                                                character={runnerCharacter}
+                                                speciesId={runnerCharacter.speciesId}
+                                                responsive
+                                                disableAnimation
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="tail-runner__start-copy">
+                                        <h2>{gt('startTitle')}</h2>
+                                        <p>{gt('startDescription')}</p>
+                                    </div>
+                                    <button type="button" className="tail-runner__start-btn tail-runner__start-btn--hero" onClick={startGame}>
+                                        {gt('startButton')}
                                     </button>
+                                    <div className="tail-runner__start-guide" aria-hidden="true">
+                                        <div className="tail-runner__start-guide-item">
+                                            <div className="tail-runner__start-guide-keys">
+                                                <kbd>↺</kbd>
+                                                <kbd>↻</kbd>
+                                            </div>
+                                            <span>{gt('controlsTurnShort')}</span>
+                                        </div>
+                                        <div className="tail-runner__start-guide-item">
+                                            <div className="tail-runner__start-guide-keys">
+                                                <kbd>⚡</kbd>
+                                                <kbd>SPACE</kbd>
+                                            </div>
+                                            <span>{gt('controlsShieldShort')}</span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         )}
                         {gamePhase === 'gameOver' && (
                             <div className="tail-runner__start-screen">
-                                <div className="tail-runner__start-card">
-                                    <h2>{t(`${GAME_LOCALE_KEY}.gameOverTitle`)}</h2>
-                                    <p>{t(`${GAME_LOCALE_KEY}.gameOverDescription`, { score: hudState.score })}</p>
-                                    <button type="button" className="tail-runner__start-btn" onClick={startGame}>
-                                        {t(`${GAME_LOCALE_KEY}.retryButton`)}
+                                <div className="tail-runner__start-card tail-runner__start-card--gameover">
+                                    <div className="tail-runner__gameover-icon-shell" aria-hidden="true">
+                                        <div className="tail-runner__gameover-icon-bubble">💥</div>
+                                    </div>
+                                    <div className="tail-runner__start-copy">
+                                        <h2>{gt('gameOverTitle')}</h2>
+                                    </div>
+                                    <div className="tail-runner__gameover-records">
+                                        <div className={`tail-runner__gameover-record-card${gameOverHighlights.score ? ' tail-runner__gameover-record-card--highlight' : ''}`}>
+                                            {gameOverHighlights.score && (
+                                                <span className="tail-runner__gameover-record-badge">
+                                                    {gt('newBest')}
+                                                </span>
+                                            )}
+                                            <span className="tail-runner__gameover-record-label">
+                                                {gt('stats.score')} / {gt('stats.best')}
+                                            </span>
+                                            <strong className="tail-runner__gameover-record-value">
+                                                <span>{hudState.score}</span>
+                                                <span className="tail-runner__gameover-record-separator">/</span>
+                                                <span className="tail-runner__gameover-record-best">{hudState.highScore}</span>
+                                            </strong>
+                                        </div>
+                                        <div className={`tail-runner__gameover-record-card tail-runner__gameover-record-card--tail${gameOverHighlights.tail ? ' tail-runner__gameover-record-card--highlight' : ''}`}>
+                                            {gameOverHighlights.tail && (
+                                                <span className="tail-runner__gameover-record-badge">
+                                                    {gt('newBest')}
+                                                </span>
+                                            )}
+                                            <span className="tail-runner__gameover-record-label">
+                                                {gt('stats.tail')} / {gt('stats.best')}
+                                            </span>
+                                            <strong className="tail-runner__gameover-record-value">
+                                                <span>{hudState.tailLength}</span>
+                                                <span className="tail-runner__gameover-record-separator">/</span>
+                                                <span className="tail-runner__gameover-record-best">{hudState.bestTail}</span>
+                                            </strong>
+                                        </div>
+                                    </div>
+                                    <button type="button" className="tail-runner__start-btn tail-runner__start-btn--gameover" onClick={startGame}>
+                                        <i className="fas fa-rotate-right" aria-hidden="true" />
+                                        {gt('retryButton')}
                                     </button>
                                 </div>
                             </div>
@@ -1639,7 +1950,7 @@ export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
                                 className={`tail-runner__touch-btn tail-runner__touch-btn--boost${liveShieldActive ? ' tail-runner__touch-btn--active' : ''}`}
                                 onClick={activateShield}
                                 disabled={gamePhase !== 'playing' || hudState.shieldCharges <= 0 || liveShieldActive}
-                                aria-label={t(`${GAME_LOCALE_KEY}.shieldButton`, { count: hudState.shieldCharges })}
+                                aria-label={gt('shieldButton', { count: hudState.shieldCharges })}
                             >
                                 <span className="tail-runner__touch-icon">⚡</span>
                                 {hudState.shieldCharges > 0 && (
@@ -1663,46 +1974,46 @@ export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
                     <div className="tail-runner__sidebar">
                         <div className="tail-runner__card">
                             <h2>{runnerCharacter.name}</h2>
-                            <p>{t(`${GAME_LOCALE_KEY}.currentJelloDescription`)}</p>
+                            <p>{gt('currentJelloDescription')}</p>
                         </div>
 
                         <div className="tail-runner__stats">
                             <div className="tail-runner__stat">
-                                <span className="tail-runner__stat-label">{t(`${GAME_LOCALE_KEY}.stats.speed`)}</span>
+                                <span className="tail-runner__stat-label">{gt('stats.speed')}</span>
                                 <span className="tail-runner__stat-value">{hudState.speed.toFixed(1)}</span>
                             </div>
                             <div className="tail-runner__stat">
-                                <span className="tail-runner__stat-label">{t(`${GAME_LOCALE_KEY}.stats.boost`)}</span>
+                                <span className="tail-runner__stat-label">{gt('stats.boost')}</span>
                                 <span className="tail-runner__stat-value">{TAIL_RUNNER_BOOST_SPEED}</span>
                             </div>
                             <div className="tail-runner__stat">
-                                <span className="tail-runner__stat-label">{t(`${GAME_LOCALE_KEY}.stats.score`)}</span>
+                                <span className="tail-runner__stat-label">{gt('stats.score')}</span>
                                 <span className="tail-runner__stat-value">{hudState.score}</span>
                             </div>
                             <div className="tail-runner__stat">
-                                <span className="tail-runner__stat-label">{t(`${GAME_LOCALE_KEY}.stats.tail`)}</span>
+                                <span className="tail-runner__stat-label">{gt('stats.tail')}</span>
                                 <span className="tail-runner__stat-value">{hudState.tailLength}</span>
                             </div>
                             <div className="tail-runner__stat">
-                                <span className="tail-runner__stat-label">{t(`${GAME_LOCALE_KEY}.stats.best`)}</span>
+                                <span className="tail-runner__stat-label">{gt('stats.best')}</span>
                                 <span className="tail-runner__stat-value">{hudState.highScore}</span>
                             </div>
                         </div>
 
                         <div className="tail-runner__card">
-                            <h3>{t(`${GAME_LOCALE_KEY}.currentPositionTitle`)}</h3>
-                            <p>{t(`${GAME_LOCALE_KEY}.currentPositionValue`, { x: hudState.positionX, y: hudState.positionY })}</p>
+                            <h3>{gt('currentPositionTitle')}</h3>
+                            <p>{gt('currentPositionValue', { x: hudState.positionX, y: hudState.positionY })}</p>
                         </div>
 
                         <div className="tail-runner__card">
-                            <h3>{t(`${GAME_LOCALE_KEY}.controlsTitle`)}</h3>
+                            <h3>{gt('controlsTitle')}</h3>
                             <ul className="tail-runner__controls">
-                                <li>{t(`${GAME_LOCALE_KEY}.controlsAuto`)}</li>
-                                <li>{t(`${GAME_LOCALE_KEY}.controlsTurn`)}</li>
-                                <li>{t(`${GAME_LOCALE_KEY}.controlsBoost`)}</li>
-                                <li>{t(`${GAME_LOCALE_KEY}.controlsShield`)}</li>
-                                <li>{t(`${GAME_LOCALE_KEY}.controlsMagnet`)}</li>
-                                <li>{t(`${GAME_LOCALE_KEY}.controlsTouch`)}</li>
+                                <li>{gt('controlsAuto')}</li>
+                                <li>{gt('controlsTurn')}</li>
+                                <li>{gt('controlsBoost')}</li>
+                                <li>{gt('controlsShield')}</li>
+                                <li>{gt('controlsMagnet')}</li>
+                                <li>{gt('controlsTouch')}</li>
                             </ul>
                         </div>
                     </div>
@@ -1714,27 +2025,27 @@ export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
                         className="tail-runner__modal"
                         role="dialog"
                         aria-modal="true"
-                        aria-label={t(`${GAME_LOCALE_KEY}.controlsTitle`)}
+                        aria-label={gt('controlsTitle')}
                         onClick={(event) => event.stopPropagation()}
                     >
                         <div className="tail-runner__modal-head">
-                            <h3>{t(`${GAME_LOCALE_KEY}.controlsTitle`)}</h3>
+                            <h3>{gt('controlsTitle')}</h3>
                             <button
                                 type="button"
                                 className="tail-runner__modal-close"
                                 onClick={() => setIsHelpOpen(false)}
-                                aria-label={t('common.close')}
+                                aria-label={gt('closeButton')}
                             >
                                 <i className="fas fa-xmark" aria-hidden="true" />
                             </button>
                         </div>
                         <ul className="tail-runner__controls tail-runner__controls--modal">
-                            <li>{t(`${GAME_LOCALE_KEY}.controlsAuto`)}</li>
-                            <li>{t(`${GAME_LOCALE_KEY}.controlsTurn`)}</li>
-                            <li>{t(`${GAME_LOCALE_KEY}.controlsBoost`)}</li>
-                            <li>{t(`${GAME_LOCALE_KEY}.controlsShield`)}</li>
-                            <li>{t(`${GAME_LOCALE_KEY}.controlsMagnet`)}</li>
-                            <li>{t(`${GAME_LOCALE_KEY}.controlsTouch`)}</li>
+                            <li>{gt('controlsAuto')}</li>
+                            <li>{gt('controlsTurn')}</li>
+                            <li>{gt('controlsBoost')}</li>
+                            <li>{gt('controlsShield')}</li>
+                            <li>{gt('controlsMagnet')}</li>
+                            <li>{gt('controlsTouch')}</li>
                         </ul>
                     </div>
                 </div>

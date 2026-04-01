@@ -81,4 +81,5 @@ export interface TailRunnerState {
     isGameOver: boolean;
     isStarted: boolean;
     highScore: number;
+    bestTail: number;
 }

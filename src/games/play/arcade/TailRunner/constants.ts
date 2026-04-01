@@ -16,7 +16,8 @@ export const TAIL_RUNNER_MAGNET_RADIUS = 260;
 export const TAIL_RUNNER_MAGNET_PULL_SPEED = 10.5;
 export const TAIL_RUNNER_MAGNET_SPAWN_MIN_TIME = 780;
 export const TAIL_RUNNER_MAGNET_SPAWN_MAX_TIME = 1320;
-export const TAIL_RUNNER_TAIL_SPACING = 8;
+export const TAIL_RUNNER_TAIL_SPACING = 9;
+export const TAIL_RUNNER_FIRST_TAIL_SPACING = 12;
 export const TAIL_RUNNER_GRID_SIZE = 120;
 export const TAIL_RUNNER_HISTORY_LIMIT = 400;
 export const TAIL_RUNNER_ENTITY_RESPAWN_PADDING = 140;
@@ -153,4 +154,5 @@ export const createInitialTailRunnerState = (): TailRunnerState => ({
     isGameOver: false,
     isStarted: false,
     highScore: 0,
+    bestTail: 0,
 });
