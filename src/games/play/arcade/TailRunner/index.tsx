@@ -902,6 +902,9 @@ export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
         shieldWarning: false,
         magnetActive: false,
     });
+    const liveShieldActive = gamePhase === 'playing' && stateRef.current.shieldTimer > 0;
+    const liveShieldWarning = liveShieldActive && stateRef.current.shieldTimer <= 120;
+    const liveMagnetActive = gamePhase === 'playing' && stateRef.current.magnetTimer > 0;
 
     const runnerCharacter = useMemo(() => {
         const safeSpeciesId = speciesId || 'yellowJello';
@@ -1572,11 +1575,11 @@ export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
                     >
                         <canvas ref={canvasRef} className="tail-runner__canvas" />
                         <div className="tail-runner__player-overlay" aria-hidden="true">
-                            <div className={`tail-runner__avatar-core${hudState.shieldActive ? ' tail-runner__avatar-core--shielded' : ''}`}>
+                            <div className={`tail-runner__avatar-core${liveShieldActive ? ' tail-runner__avatar-core--shielded' : ''}`}>
                                 <div className="tail-runner__avatar-glow" aria-hidden="true" />
-                                {gamePhase === 'playing' && hudState.magnetActive && <div className="tail-runner__magnet-ring" aria-hidden="true">🧲</div>}
-                                {gamePhase === 'playing' && hudState.shieldActive && (
-                                    <div className={`tail-runner__shield-ring${hudState.shieldWarning ? ' tail-runner__shield-ring--warning' : ''}`} aria-hidden="true">
+                                {liveMagnetActive && <div className="tail-runner__magnet-ring" aria-hidden="true">🧲</div>}
+                                {liveShieldActive && (
+                                    <div className={`tail-runner__shield-ring${liveShieldWarning ? ' tail-runner__shield-ring--warning' : ''}`} aria-hidden="true">
                                         <span className="tail-runner__shield-ring-beam tail-runner__shield-ring-beam--one" />
                                         <span className="tail-runner__shield-ring-beam tail-runner__shield-ring-beam--two" />
                                     </div>
@@ -1633,9 +1636,9 @@ export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
                             </button>
                             <button
                                 type="button"
-                                className={`tail-runner__touch-btn tail-runner__touch-btn--boost${hudState.shieldActive ? ' tail-runner__touch-btn--active' : ''}`}
+                                className={`tail-runner__touch-btn tail-runner__touch-btn--boost${liveShieldActive ? ' tail-runner__touch-btn--active' : ''}`}
                                 onClick={activateShield}
-                                disabled={gamePhase !== 'playing' || hudState.shieldCharges <= 0 || hudState.shieldActive}
+                                disabled={gamePhase !== 'playing' || hudState.shieldCharges <= 0 || liveShieldActive}
                                 aria-label={t(`${GAME_LOCALE_KEY}.shieldButton`, { count: hudState.shieldCharges })}
                             >
                                 <span className="tail-runner__touch-icon">⚡</span>
