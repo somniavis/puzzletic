@@ -12,6 +12,7 @@
     -webkit-user-select: none;
     -webkit-touch-callout: none;
     -webkit-tap-highlight-color: transparent;
+    -webkit-user-drag: none;
 }
 
 .tail-runner,
@@ -20,6 +21,7 @@
     -webkit-user-select: none;
     -webkit-touch-callout: none;
     -webkit-tap-highlight-color: transparent;
+    -webkit-user-drag: none;
 }
 
 .tail-runner__panel {

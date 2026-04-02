@@ -83,3 +83,14 @@ export interface TailRunnerState {
     highScore: number;
     bestTail: number;
 }
+
+export interface TailRunnerHudState {
+    score: number;
+    speed: number;
+    tailLength: number;
+    bestTail: number;
+    positionX: number;
+    positionY: number;
+    highScore: number;
+    shieldCharges: number;
+}
