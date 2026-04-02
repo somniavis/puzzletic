@@ -6,7 +6,7 @@ export default {
     closeButton: 'Đóng',
     startTitle: 'Tail Runner',
     startDescription: 'Chạy cùng Jello của bạn và làm chiếc đuôi dài ra.',
-    startButton: 'Bắt đầu chạy',
+    startButton: 'Bắt đầu',
     gameOverTitle: 'Thua cuộc',
     gameOverDescription: 'Điểm cuối {{score}}. Hãy né chướng ngại vật và ở trong khu vực.',
     newBest: 'MỚI',

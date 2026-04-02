@@ -6,7 +6,7 @@ export default {
     closeButton: '閉じる',
     startTitle: 'Tail Runner',
     startDescription: 'ジェロと一緒に走って、しっぽをもっと長く伸ばしましょう。',
-    startButton: 'ランスタート',
+    startButton: 'スタート',
     gameOverTitle: 'ゲームオーバー',
     gameOverDescription: '最終スコア {{score}}。障害物を避けてワールド内にとどまりましょう。',
     newBest: 'NEW',

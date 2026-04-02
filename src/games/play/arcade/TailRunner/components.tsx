@@ -138,8 +138,13 @@ export const TailRunnerStartScreen: React.FC<StartScreenProps> = ({ gt, runnerCh
                 <h2>{gt('startTitle')}</h2>
                 <p>{gt('startDescription')}</p>
             </div>
-            <button type="button" className="tail-runner__start-btn tail-runner__start-btn--hero" onClick={onStart}>
-                {gt('startButton')}
+            <button
+                type="button"
+                className="tail-runner__start-btn tail-runner__start-btn--hero"
+                onClick={onStart}
+                aria-label={gt('startButton')}
+            >
+                <i className="fas fa-play" aria-hidden="true" />
             </button>
             <div className="tail-runner__start-guide" aria-hidden="true">
                 <div className="tail-runner__start-guide-item">

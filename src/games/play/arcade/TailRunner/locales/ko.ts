@@ -6,7 +6,7 @@ export default {
     closeButton: '닫기',
     startTitle: '테일 러너',
     startDescription: '젤로와 함께 달리며 꼬리를 길게 키워보세요.',
-    startButton: '달리기 시작',
+    startButton: '시작',
     gameOverTitle: '게임 오버',
     gameOverDescription: '최종 점수 {{score}}점. 장애물을 피하고 월드 안에 머무르세요.',
     newBest: '신기록',

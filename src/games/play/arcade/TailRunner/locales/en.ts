@@ -6,7 +6,7 @@ export default {
     closeButton: 'Close',
     startTitle: 'Tail Runner',
     startDescription: 'Run with your Jello and grow a longer tail.',
-    startButton: 'Start Run',
+    startButton: 'Start',
     gameOverTitle: 'Game Over',
     gameOverDescription: 'Final score {{score}}. Dodge obstacles and stay inside the world.',
     newBest: 'NEW',

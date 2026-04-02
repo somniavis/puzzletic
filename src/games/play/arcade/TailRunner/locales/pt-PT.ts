@@ -6,7 +6,7 @@ export default {
     closeButton: 'Fechar',
     startTitle: 'Tail Runner',
     startDescription: 'Corre com o teu Jello e faz crescer uma cauda mais longa.',
-    startButton: 'Começar corrida',
+    startButton: 'Iniciar',
     gameOverTitle: 'Fim de jogo',
     gameOverDescription: 'Pontuação final {{score}}. Desvia-te dos obstáculos e mantém-te dentro do mundo.',
     newBest: 'NOVO',

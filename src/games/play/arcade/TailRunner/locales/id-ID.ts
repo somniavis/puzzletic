@@ -6,7 +6,7 @@ export default {
     closeButton: 'Tutup',
     startTitle: 'Tail Runner',
     startDescription: 'Berlari bersama Jello-mu dan tumbuhkan ekor yang lebih panjang.',
-    startButton: 'Mulai lari',
+    startButton: 'Mulai',
     gameOverTitle: 'Permainan berakhir',
     gameOverDescription: 'Skor akhir {{score}}. Hindari rintangan dan tetap di dalam area.',
     newBest: 'BARU',
