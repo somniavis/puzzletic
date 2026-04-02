@@ -1302,10 +1302,11 @@ export const ptPT = {
       selectCartridge: 'Escolhe um cartucho',
       swipeOrTap: 'Desliza → Toca → Inicia!',
       inserting: 'A inserir...',
-      nowLoading: 'A carregar...',
+      nowLoading: 'Carregado',
       power: 'Energia',
       start: 'Iniciar',
       eject: 'Retirar',
+      insertPackFirst: 'Insere um cartucho primeiro',
       reset: 'Repor',
     },
     categories: {
@@ -1329,6 +1330,9 @@ export const ptPT = {
       noGames: 'Mais jogos em breve!',
       unlock: {
         reason: 'Domine completamente {{game}} para desbloquear',
+      },
+      gameTitles: {
+        tailRunner: 'TAIL RUNNER',
       },
     },
   },

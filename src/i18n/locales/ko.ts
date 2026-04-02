@@ -1304,10 +1304,11 @@ const koBase = {
             selectCartridge: '게임 팩 선택',
             swipeOrTap: '스와이프 → 탭 → 시작!',
             inserting: '삽입 중...',
-            nowLoading: '불러오는 중...',
+            nowLoading: '로딩 완료',
             power: '전원',
             start: '시작',
             eject: '꺼내기',
+            insertPackFirst: '팩을 삽입해주세요',
             reset: '리셋',
         },
         categories: {
@@ -1331,6 +1332,9 @@ const koBase = {
             noGames: '새로운 게임이 준비 중입니다!',
             unlock: {
                 reason: '{{game}} 마스터 등급 달성 시 해금',
+            },
+            gameTitles: {
+                tailRunner: '테일 러너',
             },
         },
     },

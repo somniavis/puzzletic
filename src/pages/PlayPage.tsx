@@ -163,11 +163,17 @@ const getRetroCarouselOffset = (index: number, activeIndex: number, total: numbe
     return delta;
 };
 
-const getLocalizedGameTitle = (game: GameManifest, t: ReturnType<typeof useTranslation>['t']) =>
-    game.titleKey ? t(game.titleKey) : game.title;
+const getLocalizedGameTitle = (game: GameManifest, t: ReturnType<typeof useTranslation>['t']) => {
+    if (!game.titleKey) return game.title;
+    const localized = t(game.titleKey);
+    return localized === game.titleKey ? game.title : localized;
+};
 
-const getLocalizedGameSubtitle = (game: GameManifest, t: ReturnType<typeof useTranslation>['t']) =>
-    game.subtitleKey ? t(game.subtitleKey) : (game.subtitle || '');
+const getLocalizedGameSubtitle = (game: GameManifest, t: ReturnType<typeof useTranslation>['t']) => {
+    if (!game.subtitleKey) return game.subtitle || '';
+    const localized = t(game.subtitleKey);
+    return localized === game.subtitleKey ? (game.subtitle || '') : localized;
+};
 
 const PlayPage: React.FC = () => {
     const navigate = useNavigate();
@@ -226,8 +232,10 @@ const PlayPage: React.FC = () => {
     const [retroSelectedGameId, setRetroSelectedGameId] = React.useState<string | null>(null);
     const [retroPhase, setRetroPhase] = React.useState<RetroPlayPhase>('browse');
     const [retroPowerOn, setRetroPowerOn] = React.useState(true);
+    const [retroStartToastVisible, setRetroStartToastVisible] = React.useState(false);
     const hubContentRef = React.useRef<HTMLDivElement | null>(null);
     const retroInsertTimeoutRef = React.useRef<number | null>(null);
+    const retroStartToastTimeoutRef = React.useRef<number | null>(null);
     const retroSwipeStartRef = React.useRef<{ x: number; y: number } | null>(null);
     const isPlayAdventureMode = playLearnMode === 'play'
         && ((activeTab === 'math' && mathMode === 'adventure') || activeTab === 'brain');
@@ -256,6 +264,7 @@ const PlayPage: React.FC = () => {
         power: t('play.retro.power'),
         start: t('play.retro.start'),
         eject: t('play.retro.eject'),
+        insertPackFirst: t('play.retro.insertPackFirst'),
     }), [t]);
     const retroHintLabel = useMemo(() => {
         if (retroPhase === 'browse') return retroUiText.swipeHint;
@@ -399,8 +408,13 @@ const PlayPage: React.FC = () => {
             window.clearTimeout(retroInsertTimeoutRef.current);
             retroInsertTimeoutRef.current = null;
         }
+        if (retroStartToastTimeoutRef.current) {
+            window.clearTimeout(retroStartToastTimeoutRef.current);
+            retroStartToastTimeoutRef.current = null;
+        }
         setRetroPhase('browse');
         setRetroSelectedGameId(null);
+        setRetroStartToastVisible(false);
         if (!options?.keepPowerOn) {
             setRetroPowerOn(false);
         }
@@ -470,7 +484,19 @@ const PlayPage: React.FC = () => {
     }, [resetRetroLauncher]);
 
     const handleRetroStart = useCallback(() => {
-        if (!retroPowerOn || retroPhase !== 'loading' || !retroSelectedPack) return;
+        if (!retroSelectedPack || retroPhase === 'browse' || retroPhase === 'inserting') {
+            playButtonSound();
+            setRetroStartToastVisible(true);
+            if (retroStartToastTimeoutRef.current) {
+                window.clearTimeout(retroStartToastTimeoutRef.current);
+            }
+            retroStartToastTimeoutRef.current = window.setTimeout(() => {
+                setRetroStartToastVisible(false);
+                retroStartToastTimeoutRef.current = null;
+            }, 1700);
+            return;
+        }
+        if (!retroPowerOn || retroPhase !== 'loading') return;
         playButtonSound();
         navigate(`/play/${retroSelectedPack.game.id}`);
     }, [navigate, retroPhase, retroPowerOn, retroSelectedPack]);
@@ -496,6 +522,9 @@ const PlayPage: React.FC = () => {
         return () => {
             if (retroInsertTimeoutRef.current) {
                 window.clearTimeout(retroInsertTimeoutRef.current);
+            }
+            if (retroStartToastTimeoutRef.current) {
+                window.clearTimeout(retroStartToastTimeoutRef.current);
             }
         };
     }, []);
@@ -1125,6 +1154,11 @@ const PlayPage: React.FC = () => {
                 </div>
 
                 <div className="retro-console-wrap">
+                    {retroStartToastVisible && (
+                        <div className="retro-start-toast" role="status" aria-live="polite">
+                            {retroUiText.insertPackFirst}
+                        </div>
+                    )}
                     <div className="retro-console-body">
                         <div className="retro-console-gloss" aria-hidden="true" />
                         <div className="retro-console-slot">
@@ -1168,7 +1202,8 @@ const PlayPage: React.FC = () => {
                                 type="button"
                                 className="retro-console-action retro-console-action-start"
                                 onClick={handleRetroStart}
-                                disabled={!retroPowerOn || retroPhase !== 'loading' || !retroSelectedPack}
+                                disabled={!retroPowerOn}
+                                aria-disabled={!retroPowerOn}
                             >
                                 {retroUiText.start}
                             </button>

@@ -1302,10 +1302,11 @@ export const idID = {
       selectCartridge: 'Pilih Kartrid',
       swipeOrTap: 'Geser → Ketuk → Mulai!',
       inserting: 'Memasang...',
-      nowLoading: 'Memuat...',
+      nowLoading: 'Muat selesai',
       power: 'Daya',
       start: 'Mulai',
       eject: 'Keluarkan',
+      insertPackFirst: 'Masukkan kartrid dulu',
       reset: 'Reset',
     },
     categories: {
@@ -1329,6 +1330,9 @@ export const idID = {
       noGames: 'Game baru akan segera hadir!',
       unlock: {
         reason: 'Capai tingkat mahir di {{game}} untuk membuka',
+      },
+      gameTitles: {
+        tailRunner: 'TAIL RUNNER',
       },
     },
   },

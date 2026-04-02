@@ -1,10 +1,10 @@
 export default {
-    title: 'テイルランナー',
+    title: 'Tail Runner',
     eyebrow: 'プレイアーケード',
     stageLabel: 'テイルランナーのゲームステージ',
     headerStatsLabel: 'ゲーム記録',
     closeButton: '閉じる',
-    startTitle: 'テイルランナー',
+    startTitle: 'Tail Runner',
     startDescription: 'ジェロと一緒に走って、しっぽをもっと長く伸ばしましょう。',
     startButton: 'ランスタート',
     gameOverTitle: 'ゲームオーバー',

@@ -21,6 +21,7 @@ export const PLAY_GAMES: PlayGameManifest[] = [
         title: 'Tail Runner',
         description: 'Run, grow your tail, and survive the world.',
         subtitle: 'Run with your Jello',
+        titleKey: 'play.gameTitles.tailRunner',
         category: 'play' as const,
         level: 1 as const,
         component: PlayTailRunner,

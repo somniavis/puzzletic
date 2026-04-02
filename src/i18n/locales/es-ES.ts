@@ -1302,10 +1302,11 @@ export const esES = {
       selectCartridge: 'Elige un cartucho',
       swipeOrTap: 'Desliza → Toca → ¡Empieza!',
       inserting: 'Insertando...',
-      nowLoading: 'Cargando...',
+      nowLoading: 'Carga completa',
       power: 'Encendido',
       start: 'Iniciar',
       eject: 'Sacar',
+      insertPackFirst: 'Inserta un cartucho primero',
       reset: 'Reiniciar',
     },
     categories: {
@@ -1329,6 +1330,9 @@ export const esES = {
       noGames: '¡Pronto habrá más juegos!',
       unlock: {
         reason: 'Domina por completo {{game}} para desbloquearlo',
+      },
+      gameTitles: {
+        tailRunner: 'TAIL RUNNER',
       },
     },
   },

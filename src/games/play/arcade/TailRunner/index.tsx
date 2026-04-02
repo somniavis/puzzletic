@@ -234,14 +234,13 @@ export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
             if (event.key === 'ArrowRight' || event.key.toLowerCase() === 'd') inputRef.current.right = true;
             if (event.code === 'Space') {
                 event.preventDefault();
-                inputRef.current.boost = true;
+                activateShield();
             }
         };
 
         const handleKeyUp = (event: KeyboardEvent) => {
             if (event.key === 'ArrowLeft' || event.key.toLowerCase() === 'a') inputRef.current.left = false;
             if (event.key === 'ArrowRight' || event.key.toLowerCase() === 'd') inputRef.current.right = false;
-            if (event.code === 'Space') inputRef.current.boost = false;
         };
 
         window.addEventListener('keydown', handleKeyDown);
@@ -251,7 +250,7 @@ export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
             window.removeEventListener('keydown', handleKeyDown);
             window.removeEventListener('keyup', handleKeyUp);
         };
-    }, []);
+    }, [activateShield]);
 
     useEffect(() => {
         if (gamePhase !== 'playing') {

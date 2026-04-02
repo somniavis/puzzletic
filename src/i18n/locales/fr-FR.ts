@@ -1302,10 +1302,11 @@ export const frFR = {
       selectCartridge: 'Choisis une cartouche',
       swipeOrTap: 'Glisse → Touche → Lance !',
       inserting: 'Insertion...',
-      nowLoading: 'Chargement...',
+      nowLoading: 'Chargement terminé',
       power: 'Alim.',
       start: 'Démarrer',
       eject: 'Retirer',
+      insertPackFirst: 'Insérez une cartouche',
       reset: 'Reset',
     },
     categories: {
@@ -1329,6 +1330,9 @@ export const frFR = {
       noGames: 'D’autres jeux arrivent bientôt !',
       unlock: {
         reason: 'Maîtrisez totalement {{game}} pour débloquer',
+      },
+      gameTitles: {
+        tailRunner: 'TAIL RUNNER',
       },
     },
   },

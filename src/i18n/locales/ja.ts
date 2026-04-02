@@ -2047,10 +2047,11 @@ const jaBase = {
             selectCartridge: 'カセットをえらぼう',
             swipeOrTap: 'スワイプ → タップ → スタート!',
             inserting: 'そうちゃく中...',
-            nowLoading: 'ロード中...',
+            nowLoading: 'ロード完了',
             power: 'でんげん',
             start: 'スタート',
             eject: '取り出す',
+            insertPackFirst: 'カセットを入れてください',
             reset: 'リセット',
         },
         categories: {
@@ -2074,6 +2075,9 @@ const jaBase = {
             noGames: '新しいゲームを準備中！',
             unlock: {
                 reason: '{{game}}のマスターランク達成で解禁',
+            },
+            gameTitles: {
+                tailRunner: 'TAIL RUNNER',
             },
         },
     },

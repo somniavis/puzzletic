@@ -1302,10 +1302,11 @@ export const enUK = {
       selectCartridge: 'Choose a Pack',
       swipeOrTap: 'Swipe → Tap → Start!',
       inserting: 'Inserting...',
-      nowLoading: 'Now Loading...',
+      nowLoading: 'Loaded',
       power: 'Power',
       start: 'Start',
       eject: 'Eject',
+      insertPackFirst: 'Please insert a pack',
       reset: 'Reset',
     },
     categories: {
@@ -1329,6 +1330,9 @@ export const enUK = {
       noGames: 'More games coming soon!',
       unlock: {
         reason: 'Complete mastery of {{game}} to unlock',
+      },
+      gameTitles: {
+        tailRunner: 'TAIL RUNNER',
       },
     },
   },

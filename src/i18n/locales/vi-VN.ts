@@ -1829,10 +1829,11 @@ export const viVN = {
       selectCartridge: 'Chọn băng trò chơi',
       swipeOrTap: 'Vuốt → Chạm → Bắt đầu!',
       inserting: 'Đang lắp...',
-      nowLoading: 'Đang tải...',
+      nowLoading: 'Đã tải xong',
       power: 'Nguồn',
       start: 'Bắt đầu',
       eject: 'Lấy ra',
+      insertPackFirst: 'Hãy lắp băng trò chơi trước',
       reset: 'Đặt lại',
     },
     categories: {
@@ -1856,6 +1857,9 @@ export const viVN = {
       noGames: 'Sắp có thêm trò chơi!',
       unlock: {
         reason: 'Hoàn thành thuần thục {{game}} để mở khóa',
+      },
+      gameTitles: {
+        tailRunner: 'TAIL RUNNER',
       },
     },
   },
