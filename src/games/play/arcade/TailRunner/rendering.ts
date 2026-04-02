@@ -22,6 +22,7 @@ const isTailRunnerIosWebKit = () => {
     const isWebKit = /WebKit/i.test(userAgent);
     return isAppleMobile && isWebKit;
 };
+const getTailRunnerTailEmojiFontSize = () => 24;
 
 export const getTailRunnerRenderPixelRatio = () => {
     if (typeof window === 'undefined') return 1;
@@ -314,6 +315,7 @@ export const drawEnemySnakeScreen = (
     toScreenX: (worldX: number) => number,
     toScreenY: (worldY: number) => number
 ) => {
+    const tailFontSize = getTailRunnerTailEmojiFontSize();
     enemy.tail.forEach((segment) => {
         context.save();
         context.globalAlpha = 1;
@@ -323,7 +325,7 @@ export const drawEnemySnakeScreen = (
             segment.emoji,
             toScreenX(segment.x),
             toScreenY(segment.y),
-            24,
+            tailFontSize,
             segment.facing
         );
         context.restore();
@@ -379,6 +381,7 @@ export const drawPlayerTailScreen = (
     toScreenX: (worldX: number) => number,
     toScreenY: (worldY: number) => number
 ) => {
+    const tailFontSize = getTailRunnerTailEmojiFontSize();
     tail.forEach((segment) => {
         context.save();
         context.globalAlpha = 1;
@@ -388,7 +391,7 @@ export const drawPlayerTailScreen = (
             segment.emoji,
             toScreenX(segment.x),
             toScreenY(segment.y),
-            24,
+            tailFontSize,
             segment.facing
         );
         context.restore();

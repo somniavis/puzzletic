@@ -24,6 +24,14 @@ const randomBetween = (min: number, max: number) => min + Math.random() * (max -
 const pickRandom = <T,>(items: readonly T[]): T => items[Math.floor(Math.random() * items.length)];
 const randomIntBetween = (min: number, max: number) => Math.floor(randomBetween(min, max + 1));
 
+const isTailRunnerWindowsChromium = () => {
+    if (typeof navigator === 'undefined') return false;
+    const userAgent = navigator.userAgent;
+    const isWindows = /Windows/i.test(userAgent);
+    const isChromium = /Chrome|Chromium|Edg/i.test(userAgent);
+    return isWindows && isChromium;
+};
+
 const GEM_TIER_WEIGHTS: Array<{ tier: TailRunnerGemTier; weight: number }> = [
     { tier: 'diamond', weight: 0.18 },
     { tier: 'gold', weight: 0.34 },
@@ -55,8 +63,10 @@ const createEntity = (
     facing,
 });
 
-export const getTailRunnerHistoryOffset = (index: number) =>
-    constants.TAIL_RUNNER_FIRST_TAIL_SPACING + (index * constants.TAIL_RUNNER_TAIL_SPACING);
+export const getTailRunnerHistoryOffset = (index: number) => {
+    const spacingMultiplier = isTailRunnerWindowsChromium() ? 1.65 : 1;
+    return (constants.TAIL_RUNNER_FIRST_TAIL_SPACING + (index * constants.TAIL_RUNNER_TAIL_SPACING)) * spacingMultiplier;
+};
 
 export const getTailRunnerHistoryPoint = (
     history: Array<{ x: number; y: number }>,

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { playButtonSound } from '../../utils/sound';
 import './GiftBox.css';
@@ -11,21 +11,10 @@ export const GiftBox: React.FC<GiftBoxProps> = ({ onOpen }) => {
     const { t } = useTranslation();
     const [isOpening, setIsOpening] = useState(false);
     const [progress, setProgress] = useState(0);
+    const [tapCount, setTapCount] = useState(0);
     const isOpeningLock = useRef(false);
-    const isPressingRef = useRef(false);
-    const rafRef = useRef<number | null>(null);
-    const lastTimestampRef = useRef<number | null>(null);
-    const progressMsRef = useRef(0);
-    const HOLD_TO_OPEN_MS = 1600;
-
-    const stopPress = () => {
-        isPressingRef.current = false;
-        lastTimestampRef.current = null;
-        if (rafRef.current !== null) {
-            window.cancelAnimationFrame(rafRef.current);
-            rafRef.current = null;
-        }
-    };
+    const lastTapTimestampRef = useRef(0);
+    const REQUIRED_TAPS = 4;
 
     const triggerOpen = () => {
         if (isOpeningLock.current) return;
@@ -38,46 +27,42 @@ export const GiftBox: React.FC<GiftBoxProps> = ({ onOpen }) => {
         }, 800);
     };
 
-    const tickProgress = (timestamp: number) => {
-        if (!isPressingRef.current || isOpeningLock.current) return;
+    const registerTap = () => {
+        if (isOpening || isOpeningLock.current) return;
 
-        const lastTimestamp = lastTimestampRef.current ?? timestamp;
-        const delta = timestamp - lastTimestamp;
-        lastTimestampRef.current = timestamp;
-
-        progressMsRef.current = Math.min(HOLD_TO_OPEN_MS, progressMsRef.current + delta);
-        const nextProgress = (progressMsRef.current / HOLD_TO_OPEN_MS) * 100;
-        setProgress(nextProgress);
-
-        if (progressMsRef.current >= HOLD_TO_OPEN_MS) {
-            stopPress();
-            triggerOpen();
-            return;
-        }
-
-        rafRef.current = window.requestAnimationFrame(tickProgress);
-    };
-
-    const startPress = (event: React.PointerEvent<HTMLDivElement>) => {
-        event.preventDefault();
-
-        if (isOpening || isOpeningLock.current || isPressingRef.current) return;
+        const now = Date.now();
+        if (now - lastTapTimestampRef.current < 220) return;
+        lastTapTimestampRef.current = now;
 
         playButtonSound();
-        isPressingRef.current = true;
-        lastTimestampRef.current = null;
-        rafRef.current = window.requestAnimationFrame(tickProgress);
+        const nextTapCount = Math.min(REQUIRED_TAPS, tapCount + 1);
+        setTapCount(nextTapCount);
+        setProgress((nextTapCount / REQUIRED_TAPS) * 100);
+
+        if (nextTapCount >= REQUIRED_TAPS) {
+            triggerOpen();
+        }
     };
 
-    useEffect(() => stopPress, []);
+    const handleTap = (event?: React.SyntheticEvent<HTMLDivElement>) => {
+        event?.preventDefault();
+        registerTap();
+    };
 
     return (
         <div
             className={`gift-box ${isOpening ? 'opening' : ''}`}
-            onPointerDown={startPress}
-            onPointerUp={stopPress}
-            onPointerLeave={stopPress}
-            onPointerCancel={stopPress}
+            role="button"
+            tabIndex={0}
+            onPointerUp={handleTap}
+            onTouchEnd={handleTap}
+            onMouseUp={handleTap}
+            onClick={handleTap}
+            onKeyDown={(event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                    handleTap(event);
+                }
+            }}
             onContextMenu={(event) => event.preventDefault()}
         >
             {/* Gauge Bar */}
@@ -114,7 +99,7 @@ export const GiftBox: React.FC<GiftBoxProps> = ({ onOpen }) => {
 
             {!isOpening && (
                 <div className="gift-hint">
-                    {t('giftBox.holdHint')}
+                    {t('giftBox.tapHint')}
                 </div>
             )}
         </div>

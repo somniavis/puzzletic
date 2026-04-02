@@ -209,12 +209,12 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 4.9rem;
-    height: 4.9rem;
+    width: 4.4rem;
+    height: 4.4rem;
     border-radius: 999px;
     background: transparent;
     transform-origin: center bottom;
-    animation: tail-runner-jello-bob 2.8s ease-in-out infinite;
+    animation: tail-runner-jello-bob 2.45s ease-in-out infinite;
 }
 
 .tail-runner__avatar-glow {
@@ -321,20 +321,24 @@
         transform: translateY(0) scale(1, 1);
     }
 
-    18% {
-        transform: translateY(0.02rem) scale(1.03, 0.97);
+    16% {
+        transform: translateY(0.05rem) scale(1.07, 0.93);
     }
 
-    32% {
-        transform: translateY(0.06rem) scale(0.97, 1.04);
+    30% {
+        transform: translateY(0.13rem) scale(0.91, 1.12);
     }
 
-    48% {
-        transform: translateY(-0.02rem) scale(1.01, 0.99);
+    46% {
+        transform: translateY(-0.03rem) scale(1.04, 0.97);
     }
 
-    64% {
-        transform: translateY(0.01rem) scale(0.99, 1.01);
+    62% {
+        transform: translateY(0.08rem) scale(0.95, 1.07);
+    }
+
+    78% {
+        transform: translateY(-0.02rem) scale(1.03, 0.98);
     }
 }
 

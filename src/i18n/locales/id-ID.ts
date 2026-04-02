@@ -1436,7 +1436,7 @@ export const idID = {
     saveError: 'Nama panggilan gagal disimpan. Coba lagi.',
     startButton: 'Mulai! ✨',
     saving: 'Menyimpan...',
-    tapHint: 'Ketuk! {{current}}/{{max}}',
+    tapHint: 'Ketuk beberapa kali!',
     holdHint: 'Tahan untuk menetas',
   },
   dailyRoutine: {

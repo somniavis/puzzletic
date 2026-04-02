@@ -1436,7 +1436,7 @@ export const esES = {
     saveError: 'No se pudo guardar el apodo. Intentalo de nuevo.',
     startButton: 'Comenzar! *',
     saving: 'Guardando...',
-    tapHint: 'Toca! {{current}}/{{max}}',
+    tapHint: 'Toca varias veces!',
     holdHint: 'Mantén para nacer',
   },
   dailyRoutine: {

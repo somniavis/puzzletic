@@ -1436,7 +1436,7 @@ export const enUK = {
     saveError: 'Could not save nickname. Please try again.',
     startButton: 'Start! ✨',
     saving: 'Saving...',
-    tapHint: 'Tap! {{current}}/{{max}}',
+    tapHint: 'Tap several times!',
     holdHint: 'Hold to hatch',
   },
   dailyRoutine: {

@@ -1436,7 +1436,7 @@ export const frFR = {
     saveError: "Impossible d'enregistrer le pseudo. Réessayez.",
     startButton: 'C’est parti ! ✨',
     saving: 'Enregistrement...',
-    tapHint: 'Touchez ! {{current}}/{{max}}',
+    tapHint: 'Touchez plusieurs fois !',
     holdHint: 'Maintiens pour éclore',
   },
   dailyRoutine: {

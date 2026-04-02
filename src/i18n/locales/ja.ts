@@ -2182,7 +2182,7 @@ const jaBase = {
         saveError: '名前を保存できませんでした。もう一度お試しください。',
         startButton: 'スタート! ✨',
         saving: '保存中...',
-        tapHint: 'タップ! {{current}}/{{max}}',
+    tapHint: '何度かタップしてね！',
         holdHint: '長押しでふ化',
     },
     dailyRoutine: {

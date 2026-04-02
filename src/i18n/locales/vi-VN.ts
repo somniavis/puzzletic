@@ -1963,7 +1963,7 @@ export const viVN = {
     saveError: 'Không thể lưu tên. Vui lòng thử lại.',
     startButton: 'Bắt đầu!',
     saving: 'Đang lưu...',
-    tapHint: 'Chạm! {{current}}/{{max}}',
+    tapHint: 'Chạm nhiều lần nhé!',
     holdHint: 'Nhấn giữ để nở',
   },
   dailyRoutine: {

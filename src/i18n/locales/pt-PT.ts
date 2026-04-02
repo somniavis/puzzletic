@@ -1436,7 +1436,7 @@ export const ptPT = {
     saveError: 'Nao foi possivel guardar o apelido. Tenta novamente.',
     startButton: 'Comecar! *',
     saving: 'A guardar...',
-    tapHint: 'Toque! {{current}}/{{max}}',
+    tapHint: 'Toque várias vezes!',
     holdHint: 'Mantém para nascer',
   },
   dailyRoutine: {

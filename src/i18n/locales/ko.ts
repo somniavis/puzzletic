@@ -1439,7 +1439,7 @@ const koBase = {
         saveError: '이름을 저장하지 못했어요. 다시 시도해주세요.',
         startButton: '시작! ✨',
         saving: '저장 중...',
-        tapHint: '탭! {{current}}/{{max}}',
+        tapHint: '여러번 탭해요!',
         holdHint: '길게 눌러 부화',
     },
     dailyRoutine: {
