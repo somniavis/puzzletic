@@ -7,7 +7,7 @@ export const TAIL_RUNNER_BASE_SPEED = 3.5;
 export const TAIL_RUNNER_BOOST_SPEED = 6;
 export const TAIL_RUNNER_SHIELD_SPEED_MULTIPLIER = 1.5;
 export const TAIL_RUNNER_SHIELD_DURATION = 540;
-export const TAIL_RUNNER_SHIELD_GEM_BONUS = 10;
+export const TAIL_RUNNER_SHIELD_GEM_BONUS = 20;
 export const TAIL_RUNNER_MAX_SHIELD_CHARGES = 3;
 export const TAIL_RUNNER_BOOST_SPAWN_MIN_TIME = 660;
 export const TAIL_RUNNER_BOOST_SPAWN_MAX_TIME = 1080;
@@ -22,7 +22,7 @@ export const TAIL_RUNNER_GRID_SIZE = 120;
 export const TAIL_RUNNER_HISTORY_LIMIT = 400;
 export const TAIL_RUNNER_ENTITY_RESPAWN_PADDING = 140;
 export const TAIL_RUNNER_INITIAL_FOOD_COUNT = 28;
-export const TAIL_RUNNER_INITIAL_COIN_COUNT = 12;
+export const TAIL_RUNNER_INITIAL_COIN_COUNT = 24;
 export const TAIL_RUNNER_INITIAL_OBSTACLE_COUNT = 14;
 export const TAIL_RUNNER_INITIAL_BARRIER_COUNT = 9;
 export const TAIL_RUNNER_INITIAL_ENEMY_COUNT = 3;
@@ -35,7 +35,7 @@ export const TAIL_RUNNER_ENEMY_SCORE_STEP = 520;
 export const TAIL_RUNNER_ENEMY_PER_STEP = 2;
 export const TAIL_RUNNER_TYRANNO_SCORE_STEP = 1200;
 export const TAIL_RUNNER_MAX_EXTRA_FOOD = 4;
-export const TAIL_RUNNER_MAX_EXTRA_COIN = 2;
+export const TAIL_RUNNER_MAX_EXTRA_COIN = 4;
 export const TAIL_RUNNER_MAX_EXTRA_OBSTACLE = 9;
 export const TAIL_RUNNER_MAX_EXTRA_BARRIER = 3;
 export const TAIL_RUNNER_MAX_EXTRA_ENEMY = 5;
@@ -103,9 +103,9 @@ export const TAIL_RUNNER_FOOD_EMOJIS = [
 export const TAIL_RUNNER_OBSTACLE_EMOJIS = ['🔥', '💣', '🧨'] as const;
 
 export const TAIL_RUNNER_GEM_SCORES: Record<TailRunnerGemTier, number> = {
-    diamond: 60,
-    gold: 35,
-    berry: 15,
+    diamond: 30,
+    gold: 18,
+    berry: 8,
 };
 
 export const TAIL_RUNNER_GEM_COLORS: Record<TailRunnerGemTier, {
