@@ -43,6 +43,12 @@ import './TailRunner.css';
 
 const TAIL_RUNNER_HUD_SYNC_INTERVAL_MS = 100;
 const TAIL_RUNNER_POWERUP_VISUAL_GUARD_FRAMES = 8;
+const TAIL_RUNNER_STAGE_IGNORE_SELECTORS = [
+    '.tail-runner__touch-controls',
+    '.play-arcade-game__start-overlay',
+    '.play-arcade-game__game-over-overlay',
+    'button',
+] as const;
 
 type TailRunnerScoreBurst = {
     id: number;
@@ -118,17 +124,16 @@ export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
         [gameOverHighlights.score, gameOverHighlights.tail, safeEvolutionStage]
     );
     const shouldUseDomMovingEmojiOverlay = useMemo(() => isTailRunnerIpadSafari(), []);
+    const stageIgnoreSelectors = useMemo(
+        () => [...TAIL_RUNNER_STAGE_IGNORE_SELECTORS],
+        []
+    );
 
     usePreventArcadeBrowserGestures({
         rootRef,
         stageRef,
         controlsRef: touchControlsRef,
-        stageIgnoreSelectors: [
-            '.tail-runner__touch-controls',
-            '.play-arcade-game__start-overlay',
-            '.play-arcade-game__game-over-overlay',
-            'button',
-        ],
+        stageIgnoreSelectors,
     });
 
     useEffect(() => {
@@ -231,6 +236,12 @@ export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
         setHudState(buildHudState(stateRef.current));
     }, []);
 
+    const handleGuardFrameTick = useCallback(() => {
+        if (powerupVisualGuardFramesRef.current > 0) {
+            powerupVisualGuardFramesRef.current -= 1;
+        }
+    }, []);
+
     const activateShield = useCallback(() => {
         if (gamePhase !== 'playing') return;
         const state = stateRef.current;
@@ -325,11 +336,7 @@ export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
         animationFrameRef,
         gamePhase,
         shouldUseDomMovingEmojiOverlay,
-        onGuardFrameTick: () => {
-            if (powerupVisualGuardFramesRef.current > 0) {
-                powerupVisualGuardFramesRef.current -= 1;
-            }
-        },
+        onGuardFrameTick: handleGuardFrameTick,
         onFinishGame: finishGame,
         onHeartBurst: triggerHeartBurst,
         onScoreBurst: triggerScoreBurst,

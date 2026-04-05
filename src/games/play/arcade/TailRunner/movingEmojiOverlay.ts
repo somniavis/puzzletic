@@ -12,6 +12,55 @@ type SyncMovingEmojiOverlayParams = {
     frameNow: number;
 };
 
+const OVERLAY_CULL_MARGIN = 96;
+const TAIL_EMOJI_RENDER_SIZE = 40;
+const FOOD_EMOJI_RENDER_SIZE = 60;
+const ENEMY_HEAD_RENDER_SIZE = 34;
+const TYRANNO_RENDER_SIZE = 68;
+const ALERT_RENDER_SIZE = 18;
+const IPAD_TAIL_GAP_COMPRESSION = 0.25;
+
+const isVisibleInViewport = (
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    size: number
+) => (
+    x + size >= -OVERLAY_CULL_MARGIN
+    && y + size >= -OVERLAY_CULL_MARGIN
+    && x - size <= width + OVERLAY_CULL_MARGIN
+    && y - size <= height + OVERLAY_CULL_MARGIN
+);
+
+const getCompressedTailScreenPositions = (
+    tail: Array<{ x: number; y: number }>,
+    head: { x: number; y: number },
+    cameraX: number,
+    cameraY: number
+) => {
+    const positions: Array<{ x: number; y: number }> = [];
+    let previous = {
+        x: head.x - cameraX,
+        y: head.y - cameraY,
+    };
+
+    tail.forEach((segment) => {
+        const raw = {
+            x: segment.x - cameraX,
+            y: segment.y - cameraY,
+        };
+        const compressed = {
+            x: previous.x + (raw.x - previous.x) * IPAD_TAIL_GAP_COMPRESSION,
+            y: previous.y + (raw.y - previous.y) * IPAD_TAIL_GAP_COMPRESSION,
+        };
+        positions.push(compressed);
+        previous = compressed;
+    });
+
+    return positions;
+};
+
 const upsertEmojiNode = (
     overlay: HTMLDivElement,
     nodeMap: Map<string, HTMLImageElement>,
@@ -37,20 +86,33 @@ const upsertEmojiNode = (
         nodeMap.set(key, node);
     }
 
-    const normalizedEmoji = fontSize === 24 ? mapTailRunnerIpadTailEmoji(emoji) : emoji;
+    const normalizedEmoji = kind === 'food' || fontSize <= TAIL_EMOJI_RENDER_SIZE
+        ? mapTailRunnerIpadTailEmoji(emoji)
+        : emoji;
     const nextSrc = getTailRunnerIpadEmojiAssetSrc(normalizedEmoji);
     if (node.src !== nextSrc) {
         node.src = nextSrc;
     }
 
-    const renderSize = kind === 'food' ? 60 : fontSize;
-    node.classList.toggle('tail-runner__moving-emoji--food', kind === 'food');
-    node.style.left = `${x - renderSize * 0.5}px`;
-    node.style.top = `${y - renderSize * 0.5}px`;
-    node.style.fontSize = `${fontSize}px`;
-    node.style.width = `${renderSize}px`;
-    node.style.height = `${renderSize}px`;
-    node.style.transform = 'translateZ(0)';
+    const renderSize = kind === 'food' ? FOOD_EMOJI_RENDER_SIZE : fontSize;
+    const isFood = kind === 'food';
+    const nextTranslate = `translate3d(${x - renderSize * 0.5}px, ${y - renderSize * 0.5}px, 0)`;
+
+    node.classList.toggle('tail-runner__moving-emoji--food', isFood);
+
+    if (node.dataset.size !== String(renderSize)) {
+        node.style.width = `${renderSize}px`;
+        node.style.height = `${renderSize}px`;
+        node.dataset.size = String(renderSize);
+    }
+
+    if (node.dataset.kind !== kind) {
+        node.dataset.kind = kind;
+    }
+
+    if (node.style.transform !== nextTranslate) {
+        node.style.transform = nextTranslate;
+    }
 };
 
 export const clearTailRunnerMovingEmojiOverlay = (nodeMap: Map<string, HTMLImageElement>) => {
@@ -73,63 +135,93 @@ export const syncTailRunnerMovingEmojiOverlay = ({
     const cameraY = state.playerY - height / 2;
     const activeKeys = new Set<string>();
 
+    const playerTailPositions = getCompressedTailScreenPositions(
+        state.tail,
+        { x: state.playerX, y: state.playerY },
+        cameraX,
+        cameraY
+    );
+
     state.tail.forEach((segment, index) => {
+        const screenX = playerTailPositions[index]?.x ?? segment.x - cameraX;
+        const screenY = playerTailPositions[index]?.y ?? segment.y - cameraY;
+        if (!isVisibleInViewport(screenX, screenY, width, height, TAIL_EMOJI_RENDER_SIZE)) return;
         upsertEmojiNode(
             overlay,
             nodeMap,
             activeKeys,
             `player-tail-${index}`,
             segment.emoji,
-            segment.x - cameraX,
-            segment.y - cameraY,
-            24
+            screenX,
+            screenY,
+            TAIL_EMOJI_RENDER_SIZE
         );
     });
 
     state.entities.forEach((entity) => {
         if (entity.type !== 'food') return;
+        const screenX = entity.x - cameraX;
+        const screenY = entity.y - cameraY;
+        if (!isVisibleInViewport(screenX, screenY, width, height, FOOD_EMOJI_RENDER_SIZE)) return;
         upsertEmojiNode(
             overlay,
             nodeMap,
             activeKeys,
             `food-${entity.id}`,
             mapTailRunnerIpadTailEmoji(entity.emoji || TAIL_RUNNER_DEFAULT_TAIL_EMOJI),
-            entity.x - cameraX,
-            entity.y - cameraY,
-            24,
+            screenX,
+            screenY,
+            TAIL_EMOJI_RENDER_SIZE,
             'food'
         );
     });
 
     state.enemies.forEach((enemy) => {
+        const enemyTailPositions = getCompressedTailScreenPositions(
+            enemy.tail,
+            { x: enemy.x, y: enemy.y },
+            cameraX,
+            cameraY
+        );
+
         enemy.tail.forEach((segment, index) => {
+            const screenX = enemyTailPositions[index]?.x ?? segment.x - cameraX;
+            const screenY = enemyTailPositions[index]?.y ?? segment.y - cameraY;
+            if (!isVisibleInViewport(screenX, screenY, width, height, TAIL_EMOJI_RENDER_SIZE)) return;
             upsertEmojiNode(
                 overlay,
                 nodeMap,
                 activeKeys,
                 `enemy-tail-${enemy.id}-${index}`,
                 segment.emoji,
-                segment.x - cameraX,
-                segment.y - cameraY,
-                24
+                screenX,
+                screenY,
+                TAIL_EMOJI_RENDER_SIZE
             );
         });
 
+        const enemyHeadX = enemy.x - cameraX;
+        const enemyHeadY = enemy.y - cameraY;
+        if (!isVisibleInViewport(enemyHeadX, enemyHeadY, width, height, ENEMY_HEAD_RENDER_SIZE)) return;
         upsertEmojiNode(
             overlay,
             nodeMap,
             activeKeys,
             `enemy-head-${enemy.id}`,
             '👿',
-            enemy.x - cameraX,
-            enemy.y - cameraY,
-            32
+            enemyHeadX,
+            enemyHeadY,
+            ENEMY_HEAD_RENDER_SIZE
         );
     });
 
     state.tyrannos.forEach((tyranno) => {
         const wobbleSeed = frameNow / 140 + tyranno.x * 0.002 + tyranno.y * 0.0015;
         const wobbleOffsetY = Math.sin(wobbleSeed * 1.8) * (tyranno.phase === 'charge' ? 1.6 : 1);
+        const tyrannoX = tyranno.x - cameraX;
+        const tyrannoY = tyranno.y + wobbleOffsetY - cameraY;
+
+        if (!isVisibleInViewport(tyrannoX, tyrannoY, width, height, TYRANNO_RENDER_SIZE)) return;
 
         upsertEmojiNode(
             overlay,
@@ -137,9 +229,9 @@ export const syncTailRunnerMovingEmojiOverlay = ({
             activeKeys,
             `tyranno-${tyranno.id}`,
             '🦖',
-            tyranno.x - cameraX,
-            tyranno.y + wobbleOffsetY - cameraY,
-            68
+            tyrannoX,
+            tyrannoY,
+            TYRANNO_RENDER_SIZE
         );
 
         if (tyranno.phase === 'alert' || tyranno.phase === 'charge') {
@@ -149,9 +241,9 @@ export const syncTailRunnerMovingEmojiOverlay = ({
                 activeKeys,
                 `tyranno-alert-${tyranno.id}`,
                 '💢',
-                tyranno.x + 8 - cameraX,
-                tyranno.y - 26 + wobbleOffsetY - cameraY,
-                18
+                tyrannoX + 8,
+                tyrannoY - 26,
+                ALERT_RENDER_SIZE
             );
         }
     });

@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import type React from 'react';
 import { getTailRunnerRenderPixelRatio } from './rendering';
 import { drawTailRunnerFrame, updateTailRunnerState } from './engine';
@@ -35,6 +35,29 @@ export const useTailRunnerGameLoop = ({
     onSyncHud,
     onSyncMovingEmojiOverlay,
 }: UseTailRunnerGameLoopParams) => {
+    const onGuardFrameTickRef = useRef(onGuardFrameTick);
+    const onFinishGameRef = useRef(onFinishGame);
+    const onHeartBurstRef = useRef(onHeartBurst);
+    const onScoreBurstRef = useRef(onScoreBurst);
+    const onSyncHudRef = useRef(onSyncHud);
+    const onSyncMovingEmojiOverlayRef = useRef(onSyncMovingEmojiOverlay);
+
+    useEffect(() => {
+        onGuardFrameTickRef.current = onGuardFrameTick;
+        onFinishGameRef.current = onFinishGame;
+        onHeartBurstRef.current = onHeartBurst;
+        onScoreBurstRef.current = onScoreBurst;
+        onSyncHudRef.current = onSyncHud;
+        onSyncMovingEmojiOverlayRef.current = onSyncMovingEmojiOverlay;
+    }, [
+        onFinishGame,
+        onGuardFrameTick,
+        onHeartBurst,
+        onScoreBurst,
+        onSyncHud,
+        onSyncMovingEmojiOverlay,
+    ]);
+
     useEffect(() => {
         const canvas = canvasRef.current;
         if (!canvas || gamePhase !== 'playing') return undefined;
@@ -61,11 +84,11 @@ export const useTailRunnerGameLoop = ({
                 input: inputRef.current,
                 history: historyRef.current,
                 deltaMs,
-                onGuardFrameTick,
-                onFinishGame,
-                onHeartBurst,
-                onScoreBurst,
-                onSyncHud,
+                onGuardFrameTick: onGuardFrameTickRef.current,
+                onFinishGame: onFinishGameRef.current,
+                onHeartBurst: onHeartBurstRef.current,
+                onScoreBurst: onScoreBurstRef.current,
+                onSyncHud: onSyncHudRef.current,
             });
         };
 
@@ -79,7 +102,7 @@ export const useTailRunnerGameLoop = ({
                 hideMovingEmojiActors: shouldUseDomMovingEmojiOverlay,
                 hideFoodEmojiEntities: shouldUseDomMovingEmojiOverlay,
             });
-            onSyncMovingEmojiOverlay(frameNow);
+            onSyncMovingEmojiOverlayRef.current(frameNow);
         };
 
         const loop = (now: number) => {
@@ -106,12 +129,6 @@ export const useTailRunnerGameLoop = ({
         gamePhase,
         historyRef,
         inputRef,
-        onFinishGame,
-        onGuardFrameTick,
-        onHeartBurst,
-        onScoreBurst,
-        onSyncHud,
-        onSyncMovingEmojiOverlay,
         shouldUseDomMovingEmojiOverlay,
         stateRef,
     ]);

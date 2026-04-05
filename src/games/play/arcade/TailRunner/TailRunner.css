@@ -328,12 +328,15 @@
 
 .tail-runner__moving-emoji {
     position: absolute;
-    will-change: left, top;
+    left: 0;
+    top: 0;
+    will-change: transform;
     object-fit: contain;
     image-rendering: auto;
     pointer-events: none;
     user-select: none;
     -webkit-user-drag: none;
+    transform: translate3d(0, 0, 0);
 }
 
 .tail-runner__moving-emoji--food {

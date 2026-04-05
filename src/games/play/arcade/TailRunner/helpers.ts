@@ -45,6 +45,24 @@ export const isTailRunnerIpadSafari = () => {
     return isSafari && (isLegacyIpad || isModernIpad);
 };
 
+export const isTailRunnerIpadDevice = () => {
+    if (typeof navigator === 'undefined') return false;
+    const userAgent = navigator.userAgent;
+    const isLegacyIpad = /iPad/i.test(userAgent);
+    const isModernIpad =
+        /Macintosh/i.test(userAgent) &&
+        typeof navigator.maxTouchPoints === 'number' &&
+        navigator.maxTouchPoints > 1;
+
+    return isLegacyIpad || isModernIpad;
+};
+
+const isTailRunnerIpadChromium = () => {
+    if (typeof navigator === 'undefined') return false;
+    const userAgent = navigator.userAgent;
+    return isTailRunnerIpadDevice() && /CriOS|EdgiOS|OPiOS|YaBrowser/i.test(userAgent);
+};
+
 const GEM_TIER_WEIGHTS: Array<{ tier: TailRunnerGemTier; weight: number }> = [
     { tier: 'diamond', weight: 0.18 },
     { tier: 'gold', weight: 0.34 },
@@ -78,7 +96,14 @@ const createEntity = (
 
 export const getTailRunnerHistoryOffset = (index: number) => {
     const spacingMultiplier = isTailRunnerWindowsChromium() ? 1.65 : 1;
-    return (constants.TAIL_RUNNER_FIRST_TAIL_SPACING + (index * constants.TAIL_RUNNER_TAIL_SPACING)) * spacingMultiplier;
+    const ipadMultiplier = isTailRunnerIpadSafari()
+        ? 1.14
+        : isTailRunnerIpadChromium()
+            ? 0.62
+            : 1;
+    return (constants.TAIL_RUNNER_FIRST_TAIL_SPACING + (index * constants.TAIL_RUNNER_TAIL_SPACING))
+        * spacingMultiplier
+        * ipadMultiplier;
 };
 
 export const getTailRunnerHistoryPoint = (
@@ -108,28 +133,6 @@ export const smoothTailRunnerPoint = (
     x: current.x + (target.x - current.x) * factor,
     y: current.y + (target.y - current.y) * factor,
 });
-
-export const appendTailRunnerHistorySamples = (
-    history: Array<{ x: number; y: number }>,
-    from: { x: number; y: number },
-    to: { x: number; y: number }
-) => {
-    const dx = to.x - from.x;
-    const dy = to.y - from.y;
-    const distance = Math.hypot(dx, dy);
-    const sampleStep = Math.max(2.4, constants.TAIL_RUNNER_TAIL_SPACING * 0.45);
-    const steps = Math.max(1, Math.ceil(distance / sampleStep));
-
-    for (let step = 1; step <= steps; step += 1) {
-        const progress = step / steps;
-        history.unshift({
-            x: from.x + (dx * progress),
-            y: from.y + (dy * progress),
-        });
-    }
-
-    history.length = Math.min(history.length, constants.TAIL_RUNNER_HISTORY_LIMIT);
-};
 
 const pickGemTier = (): TailRunnerGemTier => {
     const roll = Math.random();

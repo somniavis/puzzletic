@@ -23,6 +23,19 @@ const isTailRunnerIosWebKit = () => {
     const isWebKit = /WebKit/i.test(userAgent);
     return isAppleMobile && isWebKit;
 };
+
+const isTailRunnerIpadWebKit = () => {
+    const userAgent = getTailRunnerUserAgent();
+    const isWebKit = /WebKit/i.test(userAgent);
+    const isLegacyIpad = /iPad/i.test(userAgent);
+    const isModernIpad =
+        /Macintosh/i.test(userAgent)
+        && typeof navigator !== 'undefined'
+        && typeof navigator.maxTouchPoints === 'number'
+        && navigator.maxTouchPoints > 1;
+
+    return isWebKit && (isLegacyIpad || isModernIpad);
+};
 const getTailRunnerTailEmojiFontSize = () => 24;
 
 export const getTailRunnerRenderPixelRatio = () => {
@@ -41,7 +54,8 @@ export const getTailRunnerEmojiSprite = (
     const cached = tailRunnerEmojiSpriteCache.get(key);
     if (cached) return cached;
 
-    const size = Math.ceil(fontSize * 1.7);
+    const spriteScale = isTailRunnerIpadWebKit() ? 1.25 : 1.7;
+    const size = Math.ceil(fontSize * spriteScale);
     const pixelRatio = isTailRunnerIosWebKit()
         ? Math.max(2, Math.min(3, window.devicePixelRatio || 1))
         : getTailRunnerRenderPixelRatio();
@@ -279,16 +293,12 @@ export const drawPowerItemEntity = (
     context.arc(0, 0, entity.radius + 14, 0, Math.PI * 2);
     context.fill();
 
-    context.fillStyle = fillColor || 'rgba(255, 255, 255, 0.94)';
-    context.beginPath();
-    context.arc(0, 0, entity.radius + 7, 0, Math.PI * 2);
-    context.fill();
-
-    context.strokeStyle = 'rgba(255, 255, 255, 0.78)';
-    context.lineWidth = 1.8;
-    context.beginPath();
-    context.arc(0, 0, entity.radius + 6.2, 0, Math.PI * 2);
-    context.stroke();
+    if (fillColor) {
+        context.fillStyle = fillColor;
+        context.beginPath();
+        context.arc(0, 0, entity.radius + 7, 0, Math.PI * 2);
+        context.fill();
+    }
 
     context.font = `${Math.max(28, entity.radius * 1.55)}px system-ui, Apple Color Emoji, Segoe UI Emoji, sans-serif`;
     context.textAlign = 'center';
