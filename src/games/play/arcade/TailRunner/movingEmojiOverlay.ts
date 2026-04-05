@@ -70,7 +70,7 @@ const upsertEmojiNode = (
     x: number,
     y: number,
     fontSize: number,
-    kind: 'default' | 'food' = 'default'
+    kind: 'default' | 'food' | 'head' | 'boss' | 'alert' = 'default'
 ) => {
     activeKeys.add(key);
 
@@ -96,9 +96,15 @@ const upsertEmojiNode = (
 
     const renderSize = kind === 'food' ? FOOD_EMOJI_RENDER_SIZE : fontSize;
     const isFood = kind === 'food';
+    const isHead = kind === 'head';
+    const isBoss = kind === 'boss';
+    const isAlert = kind === 'alert';
     const nextTranslate = `translate3d(${x - renderSize * 0.5}px, ${y - renderSize * 0.5}px, 0)`;
 
     node.classList.toggle('tail-runner__moving-emoji--food', isFood);
+    node.classList.toggle('tail-runner__moving-emoji--head', isHead);
+    node.classList.toggle('tail-runner__moving-emoji--boss', isBoss);
+    node.classList.toggle('tail-runner__moving-emoji--alert', isAlert);
 
     if (node.dataset.size !== String(renderSize)) {
         node.style.width = `${renderSize}px`;
@@ -211,7 +217,8 @@ export const syncTailRunnerMovingEmojiOverlay = ({
             '👿',
             enemyHeadX,
             enemyHeadY,
-            ENEMY_HEAD_RENDER_SIZE
+            ENEMY_HEAD_RENDER_SIZE,
+            'head'
         );
     });
 
@@ -231,7 +238,8 @@ export const syncTailRunnerMovingEmojiOverlay = ({
             '🦖',
             tyrannoX,
             tyrannoY,
-            TYRANNO_RENDER_SIZE
+            TYRANNO_RENDER_SIZE,
+            'boss'
         );
 
         if (tyranno.phase === 'alert' || tyranno.phase === 'charge') {
@@ -243,7 +251,8 @@ export const syncTailRunnerMovingEmojiOverlay = ({
                 '💢',
                 tyrannoX + 8,
                 tyrannoY - 26,
-                ALERT_RENDER_SIZE
+                ALERT_RENDER_SIZE,
+                'alert'
             );
         }
     });

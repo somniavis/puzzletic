@@ -300,6 +300,12 @@ export const drawPowerItemEntity = (
         context.fill();
     }
 
+    context.strokeStyle = 'rgba(255, 255, 255, 0.72)';
+    context.lineWidth = 1.5;
+    context.beginPath();
+    context.arc(0, 0, entity.radius + 7, 0, Math.PI * 2);
+    context.stroke();
+
     context.font = `${Math.max(28, entity.radius * 1.55)}px system-ui, Apple Color Emoji, Segoe UI Emoji, sans-serif`;
     context.textAlign = 'center';
     context.textBaseline = 'middle';

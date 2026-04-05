@@ -337,6 +337,7 @@
     user-select: none;
     -webkit-user-drag: none;
     transform: translate3d(0, 0, 0);
+    z-index: 1;
 }
 
 .tail-runner__moving-emoji--food {
@@ -347,6 +348,15 @@
     box-shadow:
         inset 0 1px 0 rgba(255, 255, 255, 0.38),
         0 3px 10px rgba(76, 113, 82, 0.18);
+}
+
+.tail-runner__moving-emoji--head,
+.tail-runner__moving-emoji--boss {
+    z-index: 3;
+}
+
+.tail-runner__moving-emoji--alert {
+    z-index: 4;
 }
 
 .tail-runner__player-overlay {
