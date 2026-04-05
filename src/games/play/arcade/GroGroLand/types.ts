@@ -32,9 +32,13 @@ export type GroGroLandActor = {
 export type GroGroLandEnemy = GroGroLandActor & {
     emoji: string;
     personality: GroGroLandEnemyPersonality;
-    aiMode: 'patrol' | 'expand' | 'return';
+    aiMode: 'patrol' | 'expand' | 'arc' | 'return';
     decisionCooldown: number;
     expandFrames: number;
+    arcFrames: number;
+    arcTurnDirection: -1 | 1;
+    arcTargetDirection: number | null;
+    returnTarget: { x: number; y: number } | null;
 };
 
 export type GroGroLandGem = {

@@ -179,6 +179,10 @@ const createEnemy = (
         aiMode: 'patrol',
         decisionCooldown: config.patrolCooldown + (index * config.patrolVariance),
         expandFrames: 0,
+        arcFrames: 0,
+        arcTurnDirection: index % 2 === 0 ? 1 : -1,
+        arcTargetDirection: null,
+        returnTarget: null,
     };
 };
 
@@ -795,6 +799,10 @@ export const resetEnemyTerritory = (
     enemy.aiMode = 'patrol';
     enemy.decisionCooldown = 80 + (enemyIndex * 18);
     enemy.expandFrames = 0;
+    enemy.arcFrames = 0;
+    enemy.arcTurnDirection = enemyIndex % 2 === 0 ? 1 : -1;
+    enemy.arcTargetDirection = null;
+    enemy.returnTarget = null;
 
     claimRect(
         state.grid,

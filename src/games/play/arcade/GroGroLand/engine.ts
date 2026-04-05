@@ -1,6 +1,7 @@
 import {
     GROGRO_LAND_ENEMY_PERSONALITY_CONFIG,
     GROGRO_LAND_PLAYER_OWNER_ID,
+    GROGRO_LAND_START_TERRITORY_SIZE,
     GROGRO_LAND_TURN_SPEED,
     GROGRO_LAND_WORLD_HEIGHT,
     GROGRO_LAND_WORLD_WIDTH,
@@ -25,6 +26,56 @@ import type { GroGroLandState } from './types';
 type EngineCallbacks = {
     onFinishGame: () => void;
     onPlayerCapture: (collectedItem: boolean) => void;
+};
+
+const getEnemyReturnTarget = (enemy: GroGroLandState['enemies'][number]) => {
+    if (enemy.returnTarget) return enemy.returnTarget;
+    if (enemy.captureExitPoint) return enemy.captureExitPoint;
+    return { x: enemy.spawnX, y: enemy.spawnY };
+};
+
+const clampWorldPoint = (x: number, y: number) => ({
+    x: Math.max(
+        GROGRO_LAND_START_TERRITORY_SIZE,
+        Math.min(GROGRO_LAND_WORLD_WIDTH - GROGRO_LAND_START_TERRITORY_SIZE, x)
+    ),
+    y: Math.max(
+        GROGRO_LAND_START_TERRITORY_SIZE,
+        Math.min(GROGRO_LAND_WORLD_HEIGHT - GROGRO_LAND_START_TERRITORY_SIZE, y)
+    ),
+});
+
+const getEnemyReentryTarget = (
+    enemy: GroGroLandState['enemies'][number],
+    returnEntryOffset: number
+) => {
+    if (!enemy.captureExitPoint) {
+        return { x: enemy.spawnX, y: enemy.spawnY };
+    }
+
+    const baseDx = enemy.captureExitPoint.x - enemy.spawnX;
+    const baseDy = enemy.captureExitPoint.y - enemy.spawnY;
+    const distance = Math.hypot(baseDx, baseDy) || 1;
+    const unitDx = baseDx / distance;
+    const unitDy = baseDy / distance;
+    const perpendicularX = -unitDy * enemy.arcTurnDirection;
+    const perpendicularY = unitDx * enemy.arcTurnDirection;
+    const forwardPull = Math.min(returnEntryOffset * 0.45, distance * 0.35);
+
+    return clampWorldPoint(
+        enemy.spawnX + (perpendicularX * returnEntryOffset) - (unitDx * forwardPull),
+        enemy.spawnY + (perpendicularY * returnEntryOffset) - (unitDy * forwardPull)
+    );
+};
+
+const beginEnemyReturn = (
+    enemy: GroGroLandState['enemies'][number],
+    returnEntryOffset: number
+) => {
+    enemy.aiMode = 'return';
+    enemy.arcFrames = 0;
+    enemy.arcTargetDirection = null;
+    enemy.returnTarget = getEnemyReentryTarget(enemy, returnEntryOffset);
 };
 
 const clearDuelPair = (state: GroGroLandState, actorId: string, opponentId: string | null) => {
@@ -102,6 +153,10 @@ const updateEnemy = (
         if (enemy.decisionCooldown <= 0) {
             enemy.aiMode = 'expand';
             enemy.expandFrames = personalityConfig.expandFrames + Math.floor(Math.random() * personalityConfig.expandVariance);
+            enemy.arcFrames = personalityConfig.arcFrames + Math.floor(Math.random() * personalityConfig.arcVariance);
+            enemy.arcTurnDirection = Math.random() < 0.5 ? -1 : 1;
+            enemy.arcTargetDirection = null;
+            enemy.returnTarget = null;
             enemy.decisionCooldown = personalityConfig.decisionCooldown;
             enemy.direction += enemyIndex % 2 === 0 ? -0.9 : 0.9;
         }
@@ -115,7 +170,14 @@ const updateEnemy = (
     } else if (enemy.aiMode === 'expand') {
         enemy.expandFrames -= deltaMultiplier;
         if (enemy.expandFrames <= 0) {
-            enemy.aiMode = 'return';
+            beginEnemyReturn(enemy, personalityConfig.returnEntryOffset);
+        } else if (
+            enemy.arcFrames > 0 &&
+            enemy.expandFrames <= enemy.arcFrames &&
+            enemy.status === 'drawing'
+        ) {
+            enemy.aiMode = 'arc';
+            enemy.arcTargetDirection = enemy.direction + (enemy.arcTurnDirection * personalityConfig.arcTurnAngle);
         } else if (enemy.decisionCooldown <= 0) {
             enemy.direction += (Math.random() - 0.5) * personalityConfig.turnJitter;
             enemy.decisionCooldown = personalityConfig.decisionCooldown;
@@ -125,11 +187,33 @@ const updateEnemy = (
             steerGroGroLandActorToward(enemy, itemDirection, GROGRO_LAND_TURN_SPEED * 0.9 * deltaMultiplier);
             enemy.expandFrames = Math.max(enemy.expandFrames, 24);
         }
+    } else if (enemy.aiMode === 'arc') {
+        enemy.arcFrames -= deltaMultiplier;
+        if (enemy.arcTargetDirection !== null) {
+            steerGroGroLandActorToward(
+                enemy,
+                enemy.arcTargetDirection,
+                GROGRO_LAND_TURN_SPEED * 0.92 * deltaMultiplier
+            );
+        }
+        if (enemy.arcFrames <= 0) {
+            beginEnemyReturn(enemy, personalityConfig.returnEntryOffset);
+        }
     } else if (enemy.aiMode === 'return') {
-        const targetDirection = Math.atan2(enemy.spawnY - enemy.y, enemy.spawnX - enemy.x);
+        const returnTarget = getEnemyReturnTarget(enemy);
+        const targetDirection = Math.atan2(returnTarget.y - enemy.y, returnTarget.x - enemy.x);
         steerGroGroLandActorToward(enemy, targetDirection, GROGRO_LAND_TURN_SPEED * 0.9 * deltaMultiplier);
+        const targetDx = returnTarget.x - enemy.x;
+        const targetDy = returnTarget.y - enemy.y;
+        if ((targetDx * targetDx) + (targetDy * targetDy) < (90 * 90)) {
+            enemy.returnTarget = enemy.captureExitPoint
+                ? { ...enemy.captureExitPoint }
+                : { x: enemy.spawnX, y: enemy.spawnY };
+        }
         if (isInsideOwnTerritory) {
             enemy.aiMode = 'patrol';
+            enemy.returnTarget = null;
+            enemy.arcTargetDirection = null;
             enemy.decisionCooldown = personalityConfig.patrolCooldown + Math.floor(Math.random() * personalityConfig.patrolVariance);
         }
     }
@@ -143,9 +227,10 @@ const updateEnemy = (
     };
 
     if (enemy.status === 'drawing' && wouldHitOwnTrail(enemy.direction)) {
-        const targetDirection = Math.atan2(enemy.spawnY - enemy.y, enemy.spawnX - enemy.x);
+        const returnTarget = getEnemyReturnTarget(enemy);
+        const targetDirection = Math.atan2(returnTarget.y - enemy.y, returnTarget.x - enemy.x);
         steerGroGroLandActorToward(enemy, targetDirection, GROGRO_LAND_TURN_SPEED * personalityConfig.avoidTurnBoost * deltaMultiplier);
-        enemy.aiMode = 'return';
+        beginEnemyReturn(enemy, personalityConfig.returnEntryOffset);
 
         if (wouldHitOwnTrail(enemy.direction)) {
             const alternateDirections = [
@@ -173,7 +258,7 @@ const updateEnemy = (
         enemy.direction += Math.PI * 0.72;
         enemy.x = Math.max(16, Math.min(GROGRO_LAND_WORLD_WIDTH - 16, enemy.x));
         enemy.y = Math.max(16, Math.min(GROGRO_LAND_WORLD_HEIGHT - 16, enemy.y));
-        enemy.aiMode = 'return';
+        beginEnemyReturn(enemy, personalityConfig.returnEntryOffset);
         return;
     }
 
@@ -201,6 +286,9 @@ const updateEnemy = (
             resolveReturnDuel(state, enemy.id, callbacks);
             if (state.phase !== 'playing' || state.enemies[enemyIndex]?.status === 'dead') return;
             enemy.aiMode = 'patrol';
+            enemy.returnTarget = null;
+            enemy.arcTargetDirection = null;
+            enemy.arcFrames = 0;
             enemy.decisionCooldown = personalityConfig.returnCooldown + Math.floor(Math.random() * personalityConfig.returnVariance);
         }
     }
