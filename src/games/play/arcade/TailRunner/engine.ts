@@ -298,6 +298,7 @@ type DrawParams = {
     canvas: HTMLCanvasElement;
     state: TailRunnerState;
     frameNow: number;
+    hidePlayerTail?: boolean;
 };
 
 export const drawTailRunnerFrame = ({
@@ -305,6 +306,7 @@ export const drawTailRunnerFrame = ({
     canvas,
     state,
     frameNow,
+    hidePlayerTail = false,
 }: DrawParams) => {
     const width = canvas.clientWidth;
     const height = canvas.clientHeight;
@@ -499,5 +501,7 @@ export const drawTailRunnerFrame = ({
 
     state.enemies.forEach((enemy) => drawEnemySnakeScreen(context, enemy, toScreenX, toScreenY));
     state.tyrannos.forEach((tyranno) => drawTyrannoScreen(context, tyranno, frameNow, toScreenX, toScreenY));
-    drawPlayerTailScreen(context, state.tail, toScreenX, toScreenY);
+    if (!hidePlayerTail) {
+        drawPlayerTailScreen(context, state.tail, toScreenX, toScreenY);
+    }
 };

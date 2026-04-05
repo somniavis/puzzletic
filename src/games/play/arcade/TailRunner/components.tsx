@@ -1,6 +1,11 @@
 import React from 'react';
 import { JelloAvatar } from '../../../../components/characters/JelloAvatar';
 import type { Character } from '../../../../types/character';
+import {
+    PlayArcadeGameOverOverlay,
+    PlayArcadeHeader,
+    PlayArcadeStartOverlay,
+} from '../../shared/PlayArcadeUI';
 import type { TailRunnerHudState } from './types';
 
 type TranslateFn = (key: string, values?: Record<string, string | number>) => string;
@@ -10,7 +15,6 @@ type HeaderProps = {
     hudState: TailRunnerHudState;
     isScoreBeyondBest: boolean;
     isTailBeyondBest: boolean;
-    onOpenHelp: () => void;
     onExit: () => void;
 };
 
@@ -19,55 +23,29 @@ export const TailRunnerHeader: React.FC<HeaderProps> = ({
     hudState,
     isScoreBeyondBest,
     isTailBeyondBest,
-    onOpenHelp,
     onExit,
 }) => (
-    <header className="tail-runner__header">
-        <div className="tail-runner__header-stats" aria-label={gt('headerStatsLabel')}>
-            <div className="tail-runner__header-stat">
-                <span className="tail-runner__header-stat-label">
-                    <span>{gt('stats.score')}</span>
-                    <span className="tail-runner__header-stat-label-separator">/</span>
-                    <span className="tail-runner__header-stat-label-best">{gt('stats.best')}</span>
-                </span>
-                <strong className="tail-runner__header-stat-value">
-                    <span className={isScoreBeyondBest ? 'tail-runner__header-stat-current--highlight' : undefined}>{hudState.score}</span>
-                    <span className="tail-runner__header-stat-separator">/</span>
-                    <span className="tail-runner__header-stat-best">{hudState.highScore}</span>
-                </strong>
-            </div>
-            <div className="tail-runner__header-stat">
-                <span className="tail-runner__header-stat-label">
-                    <span>{gt('stats.tail')}</span>
-                    <span className="tail-runner__header-stat-label-separator">/</span>
-                    <span className="tail-runner__header-stat-label-best">{gt('stats.best')}</span>
-                </span>
-                <strong className="tail-runner__header-stat-value">
-                    <span className={isTailBeyondBest ? 'tail-runner__header-stat-current--highlight' : undefined}>{hudState.tailLength}</span>
-                    <span className="tail-runner__header-stat-separator">/</span>
-                    <span className="tail-runner__header-stat-best">{hudState.bestTail}</span>
-                </strong>
-            </div>
-        </div>
-        <div className="tail-runner__header-actions">
-            <button
-                type="button"
-                className="tail-runner__close tail-runner__help"
-                onClick={onOpenHelp}
-                aria-label={gt('controlsTitle')}
-            >
-                <span className="tail-runner__help-mark">?</span>
-            </button>
-            <button
-                type="button"
-                className="tail-runner__close"
-                onClick={onExit}
-                aria-label={gt('closeButton')}
-            >
-                <i className="fas fa-xmark" aria-hidden="true" />
-            </button>
-        </div>
-    </header>
+    <PlayArcadeHeader
+        statsAriaLabel={gt('headerStatsLabel')}
+        closeLabel={gt('closeButton')}
+        onExit={onExit}
+        stats={[
+            {
+                label: gt('stats.score'),
+                bestLabel: gt('stats.best'),
+                current: hudState.score,
+                best: hudState.highScore,
+                highlightCurrent: isScoreBeyondBest,
+            },
+            {
+                label: gt('stats.tail'),
+                bestLabel: gt('stats.best'),
+                current: hudState.tailLength,
+                best: hudState.bestTail,
+                highlightCurrent: isTailBeyondBest,
+            },
+        ]}
+    />
 );
 
 type OverlayProps = {
@@ -122,54 +100,38 @@ type StartScreenProps = {
 };
 
 export const TailRunnerStartScreen: React.FC<StartScreenProps> = ({ gt, runnerCharacter, onStart }) => (
-    <div className="tail-runner__start-screen">
-        <div className="tail-runner__start-card tail-runner__start-card--welcome">
-            <div className="tail-runner__start-icon-shell" aria-hidden="true">
-                <div className="tail-runner__start-icon-bubble">
-                    <JelloAvatar
-                        character={runnerCharacter}
-                        speciesId={runnerCharacter.speciesId}
-                        responsive
-                        disableAnimation
-                    />
-                </div>
-            </div>
-            <div className="tail-runner__start-copy">
-                <h2>{gt('startTitle')}</h2>
-                <p>{gt('startDescription')}</p>
-            </div>
-            <button
-                type="button"
-                className="tail-runner__start-btn tail-runner__start-btn--hero"
-                onClick={onStart}
-                aria-label={gt('startButton')}
-            >
-                <i className="fas fa-play" aria-hidden="true" />
-            </button>
-            <div className="tail-runner__start-guide" aria-hidden="true">
-                <div className="tail-runner__start-guide-item">
-                    <div className="tail-runner__start-guide-keys">
-                        <kbd>←</kbd>
-                        <kbd>→</kbd>
-                    </div>
-                    <span>{gt('controlsTurnShort')}</span>
-                </div>
-                <div className="tail-runner__start-guide-item">
-                    <div className="tail-runner__start-guide-keys">
-                        <kbd>⚡</kbd>
-                        <kbd>SPACE</kbd>
-                    </div>
-                    <span>{gt('controlsShieldShort')}</span>
-                </div>
-            </div>
-        </div>
-    </div>
+    <PlayArcadeStartOverlay
+        title={gt('startTitle')}
+        description={gt('startDescription')}
+        actionLabel={gt('startButton')}
+        onAction={onStart}
+        iconOnly
+        visual={(
+            <JelloAvatar
+                character={runnerCharacter}
+                speciesId={runnerCharacter.speciesId}
+                responsive
+                disableAnimation
+            />
+        )}
+        guides={[
+            {
+                keys: ['←', '→'],
+                text: gt('controlsTurnShort'),
+            },
+            {
+                keys: ['⚡', 'SPACE'],
+                text: gt('controlsShieldShort'),
+            },
+        ]}
+    />
 );
 
 type GameOverScreenProps = {
     gt: TranslateFn;
     hudState: TailRunnerHudState;
     gameOverHighlights: { score: boolean; tail: boolean };
+    rewards: { xp: number; gro: number };
     onRetry: () => void;
 };
 
@@ -177,54 +139,46 @@ export const TailRunnerGameOverScreen: React.FC<GameOverScreenProps> = ({
     gt,
     hudState,
     gameOverHighlights,
+    rewards,
     onRetry,
 }) => (
-    <div className="tail-runner__start-screen">
-        <div className="tail-runner__start-card tail-runner__start-card--gameover">
-            <div className="tail-runner__gameover-icon-shell" aria-hidden="true">
-                <div className="tail-runner__gameover-icon-bubble">💥</div>
-            </div>
-            <div className="tail-runner__start-copy">
-                <h2>{gt('gameOverTitle')}</h2>
-            </div>
-            <div className="tail-runner__gameover-records">
-                <div className={`tail-runner__gameover-record-card${gameOverHighlights.score ? ' tail-runner__gameover-record-card--highlight' : ''}`}>
-                    {gameOverHighlights.score && (
-                        <span className="tail-runner__gameover-record-badge">
-                            {gt('newBest')}
-                        </span>
-                    )}
-                    <span className="tail-runner__gameover-record-label">
-                        {gt('stats.score')} / {gt('stats.best')}
-                    </span>
-                    <strong className="tail-runner__gameover-record-value">
-                        <span>{hudState.score}</span>
-                        <span className="tail-runner__gameover-record-separator">/</span>
-                        <span className="tail-runner__gameover-record-best">{hudState.highScore}</span>
-                    </strong>
-                </div>
-                <div className={`tail-runner__gameover-record-card tail-runner__gameover-record-card--tail${gameOverHighlights.tail ? ' tail-runner__gameover-record-card--highlight' : ''}`}>
-                    {gameOverHighlights.tail && (
-                        <span className="tail-runner__gameover-record-badge">
-                            {gt('newBest')}
-                        </span>
-                    )}
-                    <span className="tail-runner__gameover-record-label">
-                        {gt('stats.tail')} / {gt('stats.best')}
-                    </span>
-                    <strong className="tail-runner__gameover-record-value">
-                        <span>{hudState.tailLength}</span>
-                        <span className="tail-runner__gameover-record-separator">/</span>
-                        <span className="tail-runner__gameover-record-best">{hudState.bestTail}</span>
-                    </strong>
-                </div>
-            </div>
-            <button type="button" className="tail-runner__start-btn tail-runner__start-btn--gameover" onClick={onRetry}>
-                <i className="fas fa-rotate-right" aria-hidden="true" />
-                {gt('retryButton')}
-            </button>
-        </div>
-    </div>
+    <PlayArcadeGameOverOverlay
+        title={gt('gameOverTitle')}
+        retryLabel={gt('retryButton')}
+        onRetry={onRetry}
+        iconOnly
+        records={[
+            {
+                label: `${gt('stats.score')} / ${gt('stats.best')}`,
+                current: hudState.score,
+                best: hudState.highScore,
+                highlighted: gameOverHighlights.score,
+                badgeText: gt('newBest'),
+            },
+            {
+                label: `${gt('stats.tail')} / ${gt('stats.best')}`,
+                current: hudState.tailLength,
+                best: hudState.bestTail,
+                highlighted: gameOverHighlights.tail,
+                badgeText: gt('newBest'),
+                tone: 'secondary',
+            },
+        ]}
+        rewards={[
+                {
+                    icon: '✨',
+                    label: 'XP',
+                    value: `+${rewards.xp}`,
+                    tone: 'xp',
+                },
+                {
+                    icon: '💰',
+                    label: 'GRO',
+                    value: `+${rewards.gro}`,
+                    tone: 'gro',
+            },
+        ]}
+    />
 );
 
 type TouchControlsProps = {

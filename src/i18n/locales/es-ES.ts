@@ -1333,6 +1333,7 @@ export const esES = {
       },
       gameTitles: {
         tailRunner: 'TAIL RUNNER',
+        groGroLand: 'GROGRO LAND',
       },
     },
   },

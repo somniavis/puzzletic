@@ -53,6 +53,44 @@ These values drive the cartridge appearance in the retro launcher.
   - its own CSS
   - its own state model
 
+## Reward Policy
+
+`Play` tab arcade games do not use the standard math-game difficulty flow directly, so their reward baseline is mapped from the current Jello evolution stage.
+
+- Reward source table:
+  - `src/constants/gameMechanics.ts`
+  - uses `DIFFICULTY_REWARDS`
+- Reward calculator:
+  - `src/games/play/shared/playArcadeRewards.ts`
+
+### Mapping Rule
+
+- Jello stage 1 -> difficulty 1 reward baseline
+- Jello stage 2 -> difficulty 2 reward baseline
+- Jello stage 3 -> difficulty 3 reward baseline
+- Jello stage 4 -> difficulty 4 reward baseline
+- Jello stage 5 -> difficulty 5 reward baseline
+
+### Arcade Adjustment
+
+- `Play` tab rewards use the math-game baseline at `0.8x`
+- This keeps learning games more rewarding than arcade/play games
+
+### Best Bonus
+
+- If the run sets a new `best` record, the final reward gets `1.2x`
+- Tail Runner:
+  - applied when score best or tail best is updated
+- GroGro Land:
+  - applied when best land percent is exceeded
+
+### Current Integration
+
+- Tail Runner:
+  - reward display and payout are both wired to the shared calculator
+- GroGro Land:
+  - reward display and payout are both wired to the shared calculator
+
 ## Current Starter Games
 
 - `Jello Comet`

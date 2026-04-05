@@ -1335,6 +1335,7 @@ const koBase = {
             },
             gameTitles: {
                 tailRunner: '테일 러너',
+                groGroLand: '그로그로 랜드',
             },
         },
     },

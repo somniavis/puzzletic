@@ -12,7 +12,7 @@ const delayedImport = <T,>(importPromise: Promise<T>): Promise<T> => {
 };
 
 const PlayTailRunner = lazy(() => delayedImport(import('./arcade/TailRunner')));
-const PlaySnackSprint = lazy(() => delayedImport(import('./arcade/SnackSprint')));
+const PlayGroGroLand = lazy(() => delayedImport(import('./arcade/GroGroLand')));
 const PlayStarBridge = lazy(() => delayedImport(import('./arcade/StarBridge')));
 
 export const PLAY_GAMES: PlayGameManifest[] = [
@@ -38,23 +38,24 @@ export const PLAY_GAMES: PlayGameManifest[] = [
         },
     },
     {
-        id: GameIds.PLAY_SNACK_SPRINT,
-        title: 'Snack Sprint',
-        description: 'Standalone runner-style play game slot.',
-        subtitle: 'Dash for snacks',
+        id: GameIds.PLAY_GROGRO_LAND,
+        title: 'GroGro Land',
+        description: 'Grow a colorful world in a dedicated play-land.',
+        subtitle: 'Grow your land',
+        titleKey: 'play.game.gameTitles.groGroLand',
         category: 'play' as const,
         level: 1 as const,
-        component: PlaySnackSprint,
+        component: PlayGroGroLand,
         launcher: {
             order: 2,
-            sticker: '🍓',
-            shell: '#c34d4b',
-            shellDark: '#953230',
-            accent: '#f18a6d',
-            accentLight: '#f7b39d',
-            ink: '#421714',
-            edge: '#ffd2b5',
-            glow: 'rgba(241, 138, 109, 0.34)',
+            sticker: '🗺️',
+            shell: '#5f89d8',
+            shellDark: '#3e5fa7',
+            accent: '#89c8ff',
+            accentLight: '#c5e6ff',
+            ink: '#19345f',
+            edge: '#eef7ff',
+            glow: 'rgba(137, 200, 255, 0.34)',
         },
     },
     {

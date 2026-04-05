@@ -1333,6 +1333,7 @@ export const idID = {
       },
       gameTitles: {
         tailRunner: 'TAIL RUNNER',
+        groGroLand: 'GROGRO LAND',
       },
     },
   },

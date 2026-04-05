@@ -15,9 +15,10 @@ type TailRunnerEmojiSprite = {
 const tailRunnerEmojiSpriteCache = new Map<string, TailRunnerEmojiSprite>();
 let tailRunnerOuterPatternCache: CanvasPattern | null = null;
 
+const getTailRunnerUserAgent = () => (typeof navigator === 'undefined' ? '' : navigator.userAgent);
+
 const isTailRunnerIosWebKit = () => {
-    if (typeof navigator === 'undefined') return false;
-    const userAgent = navigator.userAgent;
+    const userAgent = getTailRunnerUserAgent();
     const isAppleMobile = /iP(ad|hone|od)/.test(userAgent);
     const isWebKit = /WebKit/i.test(userAgent);
     return isAppleMobile && isWebKit;
@@ -53,7 +54,7 @@ export const getTailRunnerEmojiSprite = (
 
     spriteContext.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
     spriteContext.clearRect(0, 0, size, size);
-    spriteContext.font = `${fontSize}px system-ui, Apple Color Emoji, Segoe UI Emoji, sans-serif`;
+    spriteContext.font = `${fontSize}px Apple Color Emoji, Segoe UI Emoji, system-ui, sans-serif`;
     spriteContext.textAlign = 'center';
     spriteContext.textBaseline = 'middle';
 
@@ -82,7 +83,7 @@ export const drawTailRunnerEmojiSprite = (
     // Other platforms keep direct text rendering because it preserves more natural spacing.
     if (!isTailRunnerIosWebKit()) {
         context.save();
-        context.font = `${fontSize}px system-ui, Apple Color Emoji, Segoe UI Emoji, sans-serif`;
+        context.font = `${fontSize}px Apple Color Emoji, Segoe UI Emoji, system-ui, sans-serif`;
         context.textAlign = 'center';
         context.textBaseline = 'middle';
         context.translate(x, y);
@@ -97,7 +98,7 @@ export const drawTailRunnerEmojiSprite = (
     const sprite = getTailRunnerEmojiSprite(emoji, fontSize, facing);
     if (!sprite) {
         context.save();
-        context.font = `${fontSize}px system-ui, Apple Color Emoji, Segoe UI Emoji, sans-serif`;
+        context.font = `${fontSize}px Apple Color Emoji, Segoe UI Emoji, system-ui, sans-serif`;
         context.textAlign = 'center';
         context.textBaseline = 'middle';
         context.translate(x, y);
@@ -113,8 +114,8 @@ export const drawTailRunnerEmojiSprite = (
     context.imageSmoothingEnabled = false;
     context.drawImage(
         sprite.canvas,
-        Math.round(x - sprite.size / 2),
-        Math.round(y - sprite.size / 2),
+        x - sprite.size / 2,
+        y - sprite.size / 2,
         sprite.size,
         sprite.size
     );

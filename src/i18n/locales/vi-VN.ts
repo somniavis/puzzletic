@@ -1860,6 +1860,7 @@ export const viVN = {
       },
       gameTitles: {
         tailRunner: 'TAIL RUNNER',
+        groGroLand: 'GROGRO LAND',
       },
     },
   },

@@ -13,7 +13,7 @@ import {
     TAIL_RUNNER_WORLD_SIZE,
     createInitialTailRunnerState,
 } from './constants';
-import type { TailRunnerHudState } from './types';
+import type { TailRunnerHudState, TailRunnerTailSegment } from './types';
 import { createTailRunnerTranslator } from './i18n';
 import {
     buildHudState,
@@ -33,10 +33,16 @@ import {
     TailRunnerStartScreen,
     TailRunnerTouchControls,
 } from './components';
+import { calculatePlayArcadeReward } from '../../shared/playArcadeRewards';
 import './TailRunner.css';
 
 const TAIL_RUNNER_HUD_SYNC_INTERVAL_MS = 100;
 const TAIL_RUNNER_POWERUP_VISUAL_GUARD_FRAMES = 8;
+const isTailRunnerIpadSafari = () => {
+    if (typeof navigator === 'undefined') return false;
+    const userAgent = navigator.userAgent;
+    return /iPad/i.test(userAgent) && /Safari/i.test(userAgent) && !/CriOS|FxiOS|EdgiOS/i.test(userAgent);
+};
 
 type TailRunnerScoreBurst = {
     id: number;
@@ -48,9 +54,14 @@ type TailRunnerGameOverHighlights = {
     tail: boolean;
 };
 
+type TailRunnerDomTailSegment = TailRunnerTailSegment & {
+    screenX: number;
+    screenY: number;
+};
+
 export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
     const { i18n } = useTranslation();
-    const { speciesId, evolutionStage, characterName } = useNurturing();
+    const { speciesId, evolutionStage, characterName, addRewards } = useNurturing();
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const stageRef = useRef<HTMLDivElement | null>(null);
     const stateRef = useRef(createInitialTailRunnerState());
@@ -66,10 +77,12 @@ export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
     const [isHelpOpen, setIsHelpOpen] = useState(false);
     const [heartBursts, setHeartBursts] = useState<number[]>([]);
     const [scoreBursts, setScoreBursts] = useState<TailRunnerScoreBurst[]>([]);
+    const [domTailSegments, setDomTailSegments] = useState<TailRunnerDomTailSegment[]>([]);
     const [gameOverHighlights, setGameOverHighlights] = useState<TailRunnerGameOverHighlights>({
         score: false,
         tail: false,
     });
+    const rewardGrantedRef = useRef(false);
     const [hudState, setHudState] = useState<TailRunnerHudState>({
         score: 0,
         speed: TAIL_RUNNER_BASE_SPEED,
@@ -101,6 +114,12 @@ export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
         () => createTailRunnerTranslator(i18n.resolvedLanguage || i18n.language),
         [i18n.language, i18n.resolvedLanguage]
     );
+    const safeEvolutionStage = Math.min(5, Math.max(1, evolutionStage || 1)) as EvolutionStage;
+    const tailRunnerRewards = useMemo(
+        () => calculatePlayArcadeReward(safeEvolutionStage, gameOverHighlights.score || gameOverHighlights.tail),
+        [gameOverHighlights.score, gameOverHighlights.tail, safeEvolutionStage]
+    );
+    const shouldUseDomTailOverlay = useMemo(() => isTailRunnerIpadSafari(), []);
 
     useEffect(() => {
         if (typeof window === 'undefined') return;
@@ -259,6 +278,22 @@ export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
     }, [clearInputs, gamePhase]);
 
     useEffect(() => {
+        if (gamePhase !== 'playing' || !shouldUseDomTailOverlay) {
+            setDomTailSegments([]);
+        }
+    }, [gamePhase, shouldUseDomTailOverlay]);
+
+    useEffect(() => {
+        if (gamePhase !== 'gameOver') {
+            rewardGrantedRef.current = false;
+            return;
+        }
+        if (rewardGrantedRef.current) return;
+        rewardGrantedRef.current = true;
+        addRewards(tailRunnerRewards.xp, tailRunnerRewards.gro);
+    }, [addRewards, gamePhase, tailRunnerRewards.gro, tailRunnerRewards.xp]);
+
+    useEffect(() => {
         const canvas = canvasRef.current;
         if (!canvas || gamePhase !== 'playing') return;
 
@@ -302,7 +337,22 @@ export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
                 canvas,
                 state: stateRef.current,
                 frameNow,
+                hidePlayerTail: shouldUseDomTailOverlay,
             });
+
+            if (shouldUseDomTailOverlay) {
+                const width = canvas.clientWidth;
+                const height = canvas.clientHeight;
+                const cameraX = stateRef.current.playerX - width / 2;
+                const cameraY = stateRef.current.playerY - height / 2;
+                setDomTailSegments(
+                    stateRef.current.tail.map((segment) => ({
+                        ...segment,
+                        screenX: segment.x - cameraX,
+                        screenY: segment.y - cameraY,
+                    }))
+                );
+            }
         };
 
         const loop = (now: number) => {
@@ -323,10 +373,11 @@ export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
                 animationFrameRef.current = null;
             }
         };
-    }, [finishGame, gamePhase, syncHudState, triggerHeartBurst, triggerScoreBurst]);
+    }, [finishGame, gamePhase, shouldUseDomTailOverlay, syncHudState, triggerHeartBurst, triggerScoreBurst]);
 
     const startGame = () => {
         clearInputs();
+        rewardGrantedRef.current = false;
         setGameOverHighlights({
             score: false,
             tail: false,
@@ -337,6 +388,7 @@ export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
         historyRef.current = [];
         lastHudSyncRef.current = 0;
         setHudState(buildHudState(nextState));
+        setDomTailSegments([]);
         setGamePhase('playing');
     };
 
@@ -364,24 +416,23 @@ export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
 
     return (
         <div
-            className="tail-runner"
+            className="play-arcade-game tail-runner"
             onContextMenu={preventDefaultEvent}
             onDragStart={preventDefaultEvent}
         >
-            <div className="tail-runner__panel">
+            <div className="play-arcade-game__panel tail-runner__panel">
                 <TailRunnerHeader
                     gt={gt}
                     hudState={hudState}
                     isScoreBeyondBest={isScoreBeyondBest}
                     isTailBeyondBest={isTailBeyondBest}
-                    onOpenHelp={() => setIsHelpOpen(true)}
                     onExit={onExit}
                 />
 
-                <section className="tail-runner__hero">
+                <section className="play-arcade-game__hero tail-runner__hero">
                     <div
                         ref={stageRef}
-                        className="tail-runner__stage"
+                        className="play-arcade-game__stage tail-runner__stage"
                         aria-label={gt('stageLabel')}
                         onPointerDown={handleStagePointerDown}
                         onPointerMove={handleStagePointerMove}
@@ -392,6 +443,23 @@ export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
                         onDragStart={preventDefaultEvent}
                     >
                         <canvas ref={canvasRef} className="tail-runner__canvas" />
+                        {shouldUseDomTailOverlay && domTailSegments.length > 0 && (
+                            <div className="tail-runner__tail-dom-overlay" aria-hidden="true">
+                                {domTailSegments.map((segment, index) => (
+                                    <span
+                                        key={`${index}-${segment.screenX}-${segment.screenY}-${segment.emoji}`}
+                                        className="tail-runner__tail-dom-segment"
+                                        style={{
+                                            left: `${segment.screenX}px`,
+                                            top: `${segment.screenY}px`,
+                                            transform: `translate(-50%, -50%) scaleX(${segment.facing})`,
+                                        }}
+                                    >
+                                        {segment.emoji}
+                                    </span>
+                                ))}
+                            </div>
+                        )}
                         <TailRunnerPlayerOverlay
                             runnerCharacter={runnerCharacter}
                             liveShieldActive={liveShieldActive}
@@ -412,6 +480,7 @@ export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
                                 gt={gt}
                                 hudState={hudState}
                                 gameOverHighlights={gameOverHighlights}
+                                rewards={tailRunnerRewards}
                                 onRetry={startGame}
                             />
                         )}
