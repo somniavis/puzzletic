@@ -142,6 +142,15 @@ const updateEnemy = (
         return Math.atan2(nearestItem.y - enemy.y, nearestItem.x - enemy.x);
     };
 
+    const getPlayerPressureDirection = () => {
+        if (personalityConfig.playerPressureRadius <= 0 || state.player.status === 'dead') return null;
+        const dx = state.player.x - enemy.x;
+        const dy = state.player.y - enemy.y;
+        const distanceSq = (dx * dx) + (dy * dy);
+        if (distanceSq > personalityConfig.playerPressureRadius * personalityConfig.playerPressureRadius) return null;
+        return Math.atan2(dy, dx);
+    };
+
     tickActorEffectTimers(enemy, deltaMultiplier);
     if (enemy.freezeTimer > 0) return;
 
@@ -167,6 +176,17 @@ const updateEnemy = (
                 enemy.decisionCooldown = 8;
             }
         }
+        const playerPressureDirection = getPlayerPressureDirection();
+        if (playerPressureDirection !== null) {
+            steerGroGroLandActorToward(
+                enemy,
+                playerPressureDirection,
+                GROGRO_LAND_TURN_SPEED * personalityConfig.playerPressureTurn * deltaMultiplier
+            );
+            if (isInsideOwnTerritory && enemy.decisionCooldown > 6) {
+                enemy.decisionCooldown = 6;
+            }
+        }
     } else if (enemy.aiMode === 'expand') {
         enemy.expandFrames -= deltaMultiplier;
         if (enemy.expandFrames <= 0) {
@@ -187,6 +207,15 @@ const updateEnemy = (
             steerGroGroLandActorToward(enemy, itemDirection, GROGRO_LAND_TURN_SPEED * 0.9 * deltaMultiplier);
             enemy.expandFrames = Math.max(enemy.expandFrames, 24);
         }
+        const playerPressureDirection = getPlayerPressureDirection();
+        if (playerPressureDirection !== null) {
+            steerGroGroLandActorToward(
+                enemy,
+                playerPressureDirection,
+                GROGRO_LAND_TURN_SPEED * personalityConfig.playerPressureTurn * deltaMultiplier
+            );
+            enemy.expandFrames = Math.max(enemy.expandFrames, 46);
+        }
     } else if (enemy.aiMode === 'arc') {
         enemy.arcFrames -= deltaMultiplier;
         if (enemy.arcTargetDirection !== null) {
@@ -194,6 +223,14 @@ const updateEnemy = (
                 enemy,
                 enemy.arcTargetDirection,
                 GROGRO_LAND_TURN_SPEED * 0.92 * deltaMultiplier
+            );
+        }
+        const playerPressureDirection = getPlayerPressureDirection();
+        if (playerPressureDirection !== null) {
+            steerGroGroLandActorToward(
+                enemy,
+                playerPressureDirection,
+                GROGRO_LAND_TURN_SPEED * personalityConfig.playerPressureTurn * 0.54 * deltaMultiplier
             );
         }
         if (enemy.arcFrames <= 0) {
@@ -219,11 +256,19 @@ const updateEnemy = (
     }
 
     const wouldHitOwnTrail = (direction: number) => {
-        if (enemy.status !== 'drawing' || enemy.trail.length <= 10) return false;
+        if (
+            enemy.status !== 'drawing' ||
+            enemy.trail.length <= personalityConfig.selfAvoidMinTrailPoints
+        ) return false;
         const nextSpeed = getGroGroLandActorSpeed(enemy);
         const nextX = enemy.x + (Math.cos(direction) * nextSpeed);
         const nextY = enemy.y + (Math.sin(direction) * nextSpeed);
-        return isPointTouchingTrail(nextX, nextY, enemy.trail.slice(0, -6), 8);
+        return isPointTouchingTrail(
+            nextX,
+            nextY,
+            enemy.trail.slice(0, -6),
+            personalityConfig.selfAvoidHitRadius
+        );
     };
 
     if (enemy.status === 'drawing' && wouldHitOwnTrail(enemy.direction)) {
