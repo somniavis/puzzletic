@@ -57,6 +57,7 @@ export const TAIL_RUNNER_FOOD_SCORE = 10;
 export const TAIL_RUNNER_OBSTACLE_PENALTY = 30;
 export const TAIL_RUNNER_BURST_LIFE = 32;
 export const TAIL_RUNNER_DEFAULT_TAIL_EMOJI = '🐾';
+export const TAIL_RUNNER_IPAD_TAIL_EMOJI_SET = ['🐒', '🐕', '🦝', '🐈', '🐅', '🦌', '🐄', '🐇', '🦔', '🦅'] as const;
 
 export const TAIL_RUNNER_FOOD_EMOJIS = [
     '🐒',

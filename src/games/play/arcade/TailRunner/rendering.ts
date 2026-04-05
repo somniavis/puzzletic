@@ -279,12 +279,16 @@ export const drawPowerItemEntity = (
     context.arc(0, 0, entity.radius + 14, 0, Math.PI * 2);
     context.fill();
 
-    if (fillColor) {
-        context.fillStyle = fillColor;
-        context.beginPath();
-        context.arc(0, 0, entity.radius + 7, 0, Math.PI * 2);
-        context.fill();
-    }
+    context.fillStyle = fillColor || 'rgba(255, 255, 255, 0.94)';
+    context.beginPath();
+    context.arc(0, 0, entity.radius + 7, 0, Math.PI * 2);
+    context.fill();
+
+    context.strokeStyle = 'rgba(255, 255, 255, 0.78)';
+    context.lineWidth = 1.8;
+    context.beginPath();
+    context.arc(0, 0, entity.radius + 6.2, 0, Math.PI * 2);
+    context.stroke();
 
     context.font = `${Math.max(28, entity.radius * 1.55)}px system-ui, Apple Color Emoji, Segoe UI Emoji, sans-serif`;
     context.textAlign = 'center';

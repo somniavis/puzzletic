@@ -188,6 +188,7 @@ type TouchControlsProps = {
     shieldCharges: number;
     onSetInputPressed: (key: 'left' | 'right' | 'boost', value: boolean) => void;
     onActivateShield: () => void;
+    controlsRef?: React.RefObject<HTMLDivElement | null>;
 };
 
 export const TailRunnerTouchControls: React.FC<TouchControlsProps> = ({
@@ -197,15 +198,34 @@ export const TailRunnerTouchControls: React.FC<TouchControlsProps> = ({
     shieldCharges,
     onSetInputPressed,
     onActivateShield,
+    controlsRef,
 }) => (
-    <div className="tail-runner__touch-controls">
+    <div ref={controlsRef} className="tail-runner__touch-controls">
         <button
             type="button"
             className="tail-runner__touch-btn"
-            onPointerDown={() => onSetInputPressed('left', true)}
-            onPointerUp={() => onSetInputPressed('left', false)}
-            onPointerCancel={() => onSetInputPressed('left', false)}
-            onPointerLeave={() => onSetInputPressed('left', false)}
+            onTouchStart={(event) => event.preventDefault()}
+            onTouchMove={(event) => event.preventDefault()}
+            onTouchEnd={(event) => event.preventDefault()}
+            onTouchCancel={(event) => event.preventDefault()}
+            onPointerDown={(event) => {
+                event.preventDefault();
+                onSetInputPressed('left', true);
+            }}
+            onPointerUp={(event) => {
+                event.preventDefault();
+                onSetInputPressed('left', false);
+            }}
+            onPointerCancel={(event) => {
+                event.preventDefault();
+                onSetInputPressed('left', false);
+            }}
+            onPointerLeave={(event) => {
+                event.preventDefault();
+                onSetInputPressed('left', false);
+            }}
+            onContextMenu={(event) => event.preventDefault()}
+            onDragStart={(event) => event.preventDefault()}
             disabled={gamePhase !== 'playing'}
         >
             <span className="tail-runner__touch-icon">←</span>
@@ -213,7 +233,16 @@ export const TailRunnerTouchControls: React.FC<TouchControlsProps> = ({
         <button
             type="button"
             className={`tail-runner__touch-btn tail-runner__touch-btn--boost${liveShieldActive ? ' tail-runner__touch-btn--active' : ''}`}
-            onClick={onActivateShield}
+            onTouchStart={(event) => event.preventDefault()}
+            onTouchMove={(event) => event.preventDefault()}
+            onTouchEnd={(event) => event.preventDefault()}
+            onTouchCancel={(event) => event.preventDefault()}
+            onPointerDown={(event) => {
+                event.preventDefault();
+                onActivateShield();
+            }}
+            onContextMenu={(event) => event.preventDefault()}
+            onDragStart={(event) => event.preventDefault()}
             disabled={gamePhase !== 'playing' || shieldCharges <= 0 || liveShieldActive}
             aria-label={gt('shieldButton', { count: shieldCharges })}
         >
@@ -225,10 +254,28 @@ export const TailRunnerTouchControls: React.FC<TouchControlsProps> = ({
         <button
             type="button"
             className="tail-runner__touch-btn"
-            onPointerDown={() => onSetInputPressed('right', true)}
-            onPointerUp={() => onSetInputPressed('right', false)}
-            onPointerCancel={() => onSetInputPressed('right', false)}
-            onPointerLeave={() => onSetInputPressed('right', false)}
+            onTouchStart={(event) => event.preventDefault()}
+            onTouchMove={(event) => event.preventDefault()}
+            onTouchEnd={(event) => event.preventDefault()}
+            onTouchCancel={(event) => event.preventDefault()}
+            onPointerDown={(event) => {
+                event.preventDefault();
+                onSetInputPressed('right', true);
+            }}
+            onPointerUp={(event) => {
+                event.preventDefault();
+                onSetInputPressed('right', false);
+            }}
+            onPointerCancel={(event) => {
+                event.preventDefault();
+                onSetInputPressed('right', false);
+            }}
+            onPointerLeave={(event) => {
+                event.preventDefault();
+                onSetInputPressed('right', false);
+            }}
+            onContextMenu={(event) => event.preventDefault()}
+            onDragStart={(event) => event.preventDefault()}
             disabled={gamePhase !== 'playing'}
         >
             <span className="tail-runner__touch-icon">→</span>

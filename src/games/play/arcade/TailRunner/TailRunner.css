@@ -24,6 +24,17 @@
     -webkit-user-drag: none;
 }
 
+.tail-runner img,
+.tail-runner svg,
+.tail-runner canvas,
+.tail-runner [role="img"] {
+    user-select: none !important;
+    -webkit-user-select: none !important;
+    -webkit-touch-callout: none !important;
+    -webkit-user-drag: none !important;
+    pointer-events: none;
+}
+
 .tail-runner__panel {
     width: min(100%, 42rem);
     min-height: 100dvh;
@@ -307,19 +318,32 @@
     display: block;
 }
 
-.tail-runner__tail-dom-overlay {
+.tail-runner__moving-emoji-overlay {
     position: absolute;
     inset: 0;
     pointer-events: none;
     z-index: 1;
+    contain: layout paint style;
 }
 
-.tail-runner__tail-dom-segment {
+.tail-runner__moving-emoji {
     position: absolute;
-    font-family: Apple Color Emoji, Segoe UI Emoji, system-ui, sans-serif;
-    font-size: 24px;
-    line-height: 1;
-    will-change: transform, left, top;
+    will-change: left, top;
+    object-fit: contain;
+    image-rendering: auto;
+    pointer-events: none;
+    user-select: none;
+    -webkit-user-drag: none;
+}
+
+.tail-runner__moving-emoji--food {
+    box-sizing: border-box;
+    padding: 14px;
+    border-radius: 999px;
+    background: rgba(175, 221, 187, 0.9);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.38),
+        0 3px 10px rgba(76, 113, 82, 0.18);
 }
 
 .tail-runner__player-overlay {
@@ -957,6 +981,7 @@
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 0.65rem;
     z-index: 2;
+    touch-action: none;
 }
 
 .tail-runner__touch-btn {
@@ -978,11 +1003,12 @@
         inset 0 -1px 0 rgba(122, 151, 131, 0.28),
         0 0.3rem 0 rgba(129, 156, 138, 0.82),
         0 0.95rem 1.45rem rgba(90, 118, 103, 0.22);
-    touch-action: manipulation;
+    touch-action: none;
     user-select: none;
     -webkit-user-select: none;
     -webkit-touch-callout: none;
     -webkit-tap-highlight-color: transparent;
+    -webkit-user-drag: none;
 }
 
 .tail-runner__touch-btn:active {
@@ -1029,6 +1055,10 @@
 .tail-runner__touch-icon {
     font-size: 1.15rem;
     line-height: 1;
+    pointer-events: none;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
 }
 
 .tail-runner__touch-badge {
@@ -1049,6 +1079,10 @@
     box-shadow:
         inset 0 1px 0 rgba(255, 255, 255, 0.88),
         0 0.12rem 0.28rem rgba(143, 116, 26, 0.18);
+    pointer-events: none;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
 }
 
 .tail-runner__sidebar {

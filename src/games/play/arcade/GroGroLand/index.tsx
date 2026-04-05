@@ -12,47 +12,38 @@ import {
     PlayArcadeStartOverlay,
 } from '../../shared/PlayArcadeUI';
 import { calculatePlayArcadeReward } from '../../shared/playArcadeRewards';
+import { usePreventArcadeBrowserGestures } from '../../shared/usePreventArcadeBrowserGestures';
 import type { GameComponentProps } from '../../../types';
 import {
-    GROGRO_LAND_ENEMY_PERSONALITY_CONFIG,
     GROGRO_LAND_STATUS_BADGE_FADE_FRAMES,
-    GROGRO_LAND_PLAYER_OWNER_ID,
-    GROGRO_LAND_TURN_SPEED,
-    GROGRO_LAND_WORLD_HEIGHT,
-    GROGRO_LAND_WORLD_WIDTH,
 } from './constants';
 import {
     GROGRO_LAND_TIMINGS,
-    appendTrailPoint,
     buildGroGroLandHudState,
-    captureTrailBoundingArea,
     createInitialGroGroLandState,
-    doTrailsOverlap,
-    eliminateEnemyFromGame,
-    getGroGroLandActorSpeed,
-    getOwnerAtWorldPosition,
     hasBoostWarning,
-    hasLostCaptureAnchor,
-    isGroGroLandOutOfBounds,
-    isPointTouchingTrail,
-    refreshGroGroLandMetrics,
-    collectOwnedGroGroLandItems,
     seedGroGroLandItems,
-    steerGroGroLandActorToward,
-    tickActorEffectTimers,
     tickGroGroLandCaptureEffects,
     tickGroGroLandItems,
+    refreshGroGroLandMetrics,
 } from './helpers';
 import { createGroGroLandTranslator } from './i18n';
 import { drawGroGroLandScene } from './rendering';
 import type { GroGroLandHudState } from './types';
+import {
+    resolveGroGroLandTrailCollisions,
+    updateGroGroLandEnemies,
+    updateGroGroLandPlayer,
+} from './engine';
 import './GroGroLand.css';
 
 export const GroGroLand: React.FC<GameComponentProps> = ({ onExit }) => {
     const { i18n } = useTranslation();
     const { speciesId, evolutionStage, characterName, addRewards } = useNurturing();
+    const rootRef = useRef<HTMLDivElement | null>(null);
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const stageRef = useRef<HTMLDivElement | null>(null);
+    const touchControlsRef = useRef<HTMLDivElement | null>(null);
     const playerOverlayRef = useRef<HTMLDivElement | null>(null);
     const enemyOverlayRefs = useRef<Array<HTMLDivElement | null>>([]);
     const stateRef = useRef(createInitialGroGroLandState());
@@ -109,6 +100,17 @@ export const GroGroLand: React.FC<GameComponentProps> = ({ onExit }) => {
         () => calculatePlayArcadeReward(safeEvolutionStage, gameOverWasBest),
         [gameOverWasBest, safeEvolutionStage]
     );
+
+    usePreventArcadeBrowserGestures({
+        rootRef,
+        stageRef,
+        controlsRef: touchControlsRef,
+        stageIgnoreSelectors: [
+            '.play-arcade-game__start-overlay',
+            '.play-arcade-game__game-over-overlay',
+            'button',
+        ],
+    });
 
     const getActorStatusBadges = (boostTimer: number, slowTimer: number, freezeTimer: number) => {
         const badges: Array<{ emoji: string; fading: boolean }> = [];
@@ -194,270 +196,6 @@ export const GroGroLand: React.FC<GameComponentProps> = ({ onExit }) => {
         addRewards(gameOverRewards.xp, gameOverRewards.gro);
     }, [addRewards, gameOverRewards.gro, gameOverRewards.xp, gamePhase]);
 
-    const clearDuelPair = (actorId: string, opponentId: string | null) => {
-        const state = stateRef.current;
-        const actors = [state.player, ...state.enemies];
-        const actor = actors.find((candidate) => candidate.id === actorId);
-        if (actor) actor.duelWithId = null;
-        if (!opponentId) return;
-        const opponent = actors.find((candidate) => candidate.id === opponentId);
-        if (opponent?.duelWithId === actorId) {
-            opponent.duelWithId = null;
-        }
-    };
-
-    const resolveReturnDuel = (winnerId: string) => {
-        const state = stateRef.current;
-        const winner = winnerId === state.player.id
-            ? state.player
-            : state.enemies.find((enemy) => enemy.id === winnerId);
-        if (!winner?.duelWithId) return;
-
-        const loserId = winner.duelWithId;
-        clearDuelPair(winnerId, loserId);
-
-        if (loserId === state.player.id) {
-            finishGame();
-            return;
-        }
-
-        const loserIndex = state.enemies.findIndex((enemy) => enemy.id === loserId);
-        if (loserIndex >= 0) {
-            eliminateEnemyFromGame(state, loserIndex);
-            refreshGroGroLandMetrics(state);
-        }
-    };
-
-    const resolveTrailCollisions = () => {
-        const state = stateRef.current;
-        const player = state.player;
-
-        if (player.status === 'drawing' && player.trail.length > 10 && isPointTouchingTrail(player.x, player.y, player.trail.slice(0, -6), 8)) {
-            finishGame();
-            return;
-        }
-
-        const drawingActors = [
-            state.player,
-            ...state.enemies.filter((enemy) => enemy.status === 'drawing'),
-        ].filter((actor) => actor.status === 'drawing');
-
-        for (let leftIndex = 0; leftIndex < drawingActors.length; leftIndex += 1) {
-            const leftActor = drawingActors[leftIndex];
-            if (leftActor.duelWithId) continue;
-
-            for (let rightIndex = leftIndex + 1; rightIndex < drawingActors.length; rightIndex += 1) {
-                const rightActor = drawingActors[rightIndex];
-                if (rightActor.duelWithId) continue;
-                if (!doTrailsOverlap(leftActor.trail, rightActor.trail, 12)) continue;
-
-                leftActor.duelWithId = rightActor.id;
-                rightActor.duelWithId = leftActor.id;
-                break;
-            }
-        }
-    };
-
-    const updateEnemy = (enemyIndex: number, deltaMultiplier: number) => {
-        const state = stateRef.current;
-        const enemy = state.enemies[enemyIndex];
-        if (!enemy || enemy.status === 'dead') return;
-        const personalityConfig = GROGRO_LAND_ENEMY_PERSONALITY_CONFIG[enemy.personality];
-        const findNearestItemDirection = (searchRadius: number) => {
-            let nearestItem: { x: number; y: number } | null = null;
-            let nearestDistanceSq = searchRadius * searchRadius;
-
-            for (let index = 0; index < state.items.length; index += 1) {
-                const item = state.items[index];
-                const dx = item.x - enemy.x;
-                const dy = item.y - enemy.y;
-                const distanceSq = (dx * dx) + (dy * dy);
-                if (distanceSq > nearestDistanceSq) continue;
-                nearestDistanceSq = distanceSq;
-                nearestItem = item;
-            }
-
-            if (!nearestItem) return null;
-            return Math.atan2(nearestItem.y - enemy.y, nearestItem.x - enemy.x);
-        };
-
-        tickActorEffectTimers(enemy, deltaMultiplier);
-        if (enemy.freezeTimer > 0) {
-            return;
-        }
-
-        enemy.decisionCooldown -= deltaMultiplier;
-        const ownerAtEnemy = getOwnerAtWorldPosition(state.grid, state.cols, state.rows, enemy.x, enemy.y);
-        const isInsideOwnTerritory = ownerAtEnemy === enemy.ownerId;
-
-        if (enemy.aiMode === 'patrol') {
-            if (enemy.decisionCooldown <= 0) {
-                enemy.aiMode = 'expand';
-                enemy.expandFrames = personalityConfig.expandFrames + Math.floor(Math.random() * personalityConfig.expandVariance);
-                enemy.decisionCooldown = personalityConfig.decisionCooldown;
-                enemy.direction += enemyIndex % 2 === 0 ? -0.9 : 0.9;
-            }
-            const itemDirection = findNearestItemDirection(320);
-            if (itemDirection !== null) {
-                steerGroGroLandActorToward(enemy, itemDirection, GROGRO_LAND_TURN_SPEED * 0.68 * deltaMultiplier);
-                if (isInsideOwnTerritory && enemy.decisionCooldown > 8) {
-                    enemy.decisionCooldown = 8;
-                }
-            }
-        } else if (enemy.aiMode === 'expand') {
-            enemy.expandFrames -= deltaMultiplier;
-            if (enemy.expandFrames <= 0) {
-                enemy.aiMode = 'return';
-            } else if (enemy.decisionCooldown <= 0) {
-                enemy.direction += (Math.random() - 0.5) * personalityConfig.turnJitter;
-                enemy.decisionCooldown = personalityConfig.decisionCooldown;
-            }
-            const itemDirection = findNearestItemDirection(420);
-            if (itemDirection !== null) {
-                steerGroGroLandActorToward(enemy, itemDirection, GROGRO_LAND_TURN_SPEED * 0.9 * deltaMultiplier);
-                enemy.expandFrames = Math.max(enemy.expandFrames, 24);
-            }
-        } else if (enemy.aiMode === 'return') {
-            const targetDirection = Math.atan2(enemy.spawnY - enemy.y, enemy.spawnX - enemy.x);
-            steerGroGroLandActorToward(enemy, targetDirection, GROGRO_LAND_TURN_SPEED * 0.9 * deltaMultiplier);
-            if (isInsideOwnTerritory) {
-                enemy.aiMode = 'patrol';
-                enemy.decisionCooldown = personalityConfig.patrolCooldown + Math.floor(Math.random() * personalityConfig.patrolVariance);
-            }
-        }
-
-        const wouldHitOwnTrail = (direction: number) => {
-            if (enemy.status !== 'drawing' || enemy.trail.length <= 10) return false;
-            const nextSpeed = getGroGroLandActorSpeed(enemy);
-            const nextX = enemy.x + (Math.cos(direction) * nextSpeed);
-            const nextY = enemy.y + (Math.sin(direction) * nextSpeed);
-            return isPointTouchingTrail(nextX, nextY, enemy.trail.slice(0, -6), 8);
-        };
-
-        if (enemy.status === 'drawing' && wouldHitOwnTrail(enemy.direction)) {
-            const targetDirection = Math.atan2(enemy.spawnY - enemy.y, enemy.spawnX - enemy.x);
-            steerGroGroLandActorToward(enemy, targetDirection, GROGRO_LAND_TURN_SPEED * personalityConfig.avoidTurnBoost * deltaMultiplier);
-            enemy.aiMode = 'return';
-
-            if (wouldHitOwnTrail(enemy.direction)) {
-                const alternateDirections = [
-                    enemy.direction + 0.9,
-                    enemy.direction - 0.9,
-                    enemy.direction + 1.35,
-                    enemy.direction - 1.35,
-                ];
-                for (let index = 0; index < alternateDirections.length; index += 1) {
-                    if (!wouldHitOwnTrail(alternateDirections[index])) {
-                        enemy.direction = alternateDirections[index];
-                        break;
-                    }
-                }
-            }
-        }
-
-        const previousEnemyX = enemy.x;
-        const previousEnemyY = enemy.y;
-        const enemySpeed = getGroGroLandActorSpeed(enemy);
-        enemy.x += Math.cos(enemy.direction) * enemySpeed * deltaMultiplier;
-        enemy.y += Math.sin(enemy.direction) * enemySpeed * deltaMultiplier;
-
-        if (isGroGroLandOutOfBounds(enemy.x, enemy.y)) {
-            enemy.direction += Math.PI * 0.72;
-            enemy.x = Math.max(16, Math.min(GROGRO_LAND_WORLD_WIDTH - 16, enemy.x));
-            enemy.y = Math.max(16, Math.min(GROGRO_LAND_WORLD_HEIGHT - 16, enemy.y));
-            enemy.aiMode = 'return';
-            return;
-        }
-
-        const ownerAfterMove = getOwnerAtWorldPosition(state.grid, state.cols, state.rows, enemy.x, enemy.y);
-        const reenteredOwnTerritory = ownerAfterMove === enemy.ownerId;
-
-        if (enemy.status === 'safe' && !reenteredOwnTerritory) {
-            enemy.status = 'drawing';
-            enemy.captureExitPoint = { x: previousEnemyX, y: previousEnemyY };
-            enemy.trail = [
-                { x: previousEnemyX, y: previousEnemyY },
-                { x: enemy.x, y: enemy.y },
-            ];
-        } else if (enemy.status === 'drawing') {
-            appendTrailPoint(enemy);
-            if (hasLostCaptureAnchor(state.grid, state.cols, state.rows, enemy)) {
-                eliminateEnemyFromGame(state, enemyIndex);
-                refreshGroGroLandMetrics(state);
-                return;
-            }
-            if (reenteredOwnTerritory && enemy.trail.length > 1) {
-                captureTrailBoundingArea(state, enemy);
-                collectOwnedGroGroLandItems(state, enemy);
-                refreshGroGroLandMetrics(state);
-                resolveReturnDuel(enemy.id);
-                if (state.phase !== 'playing' || state.enemies[enemyIndex]?.status === 'dead') return;
-                enemy.aiMode = 'patrol';
-                enemy.decisionCooldown = personalityConfig.returnCooldown + Math.floor(Math.random() * personalityConfig.returnVariance);
-            }
-        }
-    };
-
-    const updateEnemies = (deltaMultiplier: number) => {
-        const enemyCount = stateRef.current.enemies.length;
-        for (let index = 0; index < enemyCount; index += 1) {
-            updateEnemy(index, deltaMultiplier);
-        }
-    };
-
-    const updatePlayer = (deltaMultiplier: number) => {
-        const state = stateRef.current;
-        const player = state.player;
-
-        tickActorEffectTimers(player, deltaMultiplier);
-
-        if (inputRef.current.left) player.direction -= GROGRO_LAND_TURN_SPEED * deltaMultiplier;
-        if (inputRef.current.right) player.direction += GROGRO_LAND_TURN_SPEED * deltaMultiplier;
-
-        const previousPlayerX = player.x;
-        const previousPlayerY = player.y;
-        const playerSpeed = getGroGroLandActorSpeed(player);
-        player.x += Math.cos(player.direction) * playerSpeed * deltaMultiplier;
-        player.y += Math.sin(player.direction) * playerSpeed * deltaMultiplier;
-
-        if (isGroGroLandOutOfBounds(player.x, player.y)) {
-            finishGame();
-            return;
-        }
-
-        const ownerAtPlayer = getOwnerAtWorldPosition(state.grid, state.cols, state.rows, player.x, player.y);
-        const isOwnTerritory = ownerAtPlayer === GROGRO_LAND_PLAYER_OWNER_ID;
-
-        if (player.status === 'safe' && !isOwnTerritory) {
-            player.status = 'drawing';
-            player.captureExitPoint = { x: previousPlayerX, y: previousPlayerY };
-            player.trail = [
-                { x: previousPlayerX, y: previousPlayerY },
-                { x: player.x, y: player.y },
-            ];
-            return;
-        }
-
-        if (player.status === 'drawing') {
-            appendTrailPoint(player);
-            if (hasLostCaptureAnchor(state.grid, state.cols, state.rows, player)) {
-                finishGame();
-                return;
-            }
-            if (isOwnTerritory && player.trail.length > 1) {
-                captureTrailBoundingArea(state, player);
-                playEatingSound(0.42);
-                if (collectOwnedGroGroLandItems(state, player)) {
-                    playClearSound(0.46);
-                }
-                refreshGroGroLandMetrics(state);
-                triggerHeartBurst();
-                resolveReturnDuel(player.id);
-                if (state.phase !== 'playing') return;
-            }
-        }
-    };
-
     useEffect(() => {
         const canvas = canvasRef.current;
         if (!canvas) return undefined;
@@ -496,36 +234,6 @@ export const GroGroLand: React.FC<GameComponentProps> = ({ onExit }) => {
     }, [runnerImageUrl]);
 
     useEffect(() => {
-        const stage = stageRef.current;
-        if (!stage) return undefined;
-
-        const shouldIgnoreTarget = (target: EventTarget | null) => {
-            if (!(target instanceof HTMLElement)) return false;
-            return Boolean(
-                target.closest('.grogro-land__touch-controls') ||
-                target.closest('.play-arcade-game__start-overlay') ||
-                target.closest('.play-arcade-game__game-over-overlay') ||
-                target.closest('button')
-            );
-        };
-
-        const blockGesture = (event: Event) => {
-            if (shouldIgnoreTarget(event.target)) return;
-            event.preventDefault();
-        };
-
-        stage.addEventListener('gesturestart', blockGesture, { passive: false });
-        stage.addEventListener('touchstart', blockGesture, { passive: false });
-        stage.addEventListener('touchmove', blockGesture, { passive: false });
-
-        return () => {
-            stage.removeEventListener('gesturestart', blockGesture);
-            stage.removeEventListener('touchstart', blockGesture);
-            stage.removeEventListener('touchmove', blockGesture);
-        };
-    }, []);
-
-    useEffect(() => {
         drawScene();
     }, [gamePhase]);
 
@@ -544,9 +252,18 @@ export const GroGroLand: React.FC<GameComponentProps> = ({ onExit }) => {
             lastFrameTimeRef.current = now;
             const deltaMultiplier = Math.min(deltaMs / 16.6667, 1.8);
 
-            updatePlayer(deltaMultiplier);
-            updateEnemies(deltaMultiplier);
-            resolveTrailCollisions();
+            updateGroGroLandPlayer(stateRef.current, inputRef.current, deltaMultiplier, {
+                onFinishGame: finishGame,
+                onPlayerCapture: (collectedItem) => {
+                    playEatingSound(0.42);
+                    if (collectedItem) {
+                        playClearSound(0.46);
+                    }
+                    triggerHeartBurst();
+                },
+            });
+            updateGroGroLandEnemies(stateRef.current, deltaMultiplier, { onFinishGame: finishGame });
+            resolveGroGroLandTrailCollisions(stateRef.current, { onFinishGame: finishGame });
             tickGroGroLandItems(stateRef.current, deltaMultiplier);
             tickGroGroLandCaptureEffects(stateRef.current, deltaMultiplier);
             drawScene();
@@ -623,9 +340,12 @@ export const GroGroLand: React.FC<GameComponentProps> = ({ onExit }) => {
 
     return (
         <div
+            ref={rootRef}
             className="play-arcade-game grogro-land"
             onContextMenu={preventDefaultEvent}
             onDragStart={preventDefaultEvent}
+            onCopy={preventDefaultEvent}
+            onCut={preventDefaultEvent}
         >
             {runnerImageUrl ? (
                 <img
@@ -749,14 +469,32 @@ export const GroGroLand: React.FC<GameComponentProps> = ({ onExit }) => {
                         )}
 
                         {gamePhase === 'playing' && (
-                            <div className="grogro-land__touch-controls">
+                            <div ref={touchControlsRef} className="grogro-land__touch-controls">
                                 <button
                                     type="button"
                                     className="grogro-land__touch-button grogro-land__touch-button--left"
-                                    onPointerDown={() => { setInputPressed('left', true); }}
-                                    onPointerUp={() => { setInputPressed('left', false); }}
-                                    onPointerLeave={() => { setInputPressed('left', false); }}
-                                    onPointerCancel={() => { setInputPressed('left', false); }}
+                                    onTouchStart={preventDefaultEvent}
+                                    onTouchMove={preventDefaultEvent}
+                                    onTouchEnd={preventDefaultEvent}
+                                    onTouchCancel={preventDefaultEvent}
+                                    onPointerDown={(event) => {
+                                        event.preventDefault();
+                                        setInputPressed('left', true);
+                                    }}
+                                    onPointerUp={(event) => {
+                                        event.preventDefault();
+                                        setInputPressed('left', false);
+                                    }}
+                                    onPointerLeave={(event) => {
+                                        event.preventDefault();
+                                        setInputPressed('left', false);
+                                    }}
+                                    onPointerCancel={(event) => {
+                                        event.preventDefault();
+                                        setInputPressed('left', false);
+                                    }}
+                                    onContextMenu={preventDefaultEvent}
+                                    onDragStart={preventDefaultEvent}
                                     aria-label={gt('touchLeft')}
                                 >
                                     ←
@@ -764,10 +502,28 @@ export const GroGroLand: React.FC<GameComponentProps> = ({ onExit }) => {
                                 <button
                                     type="button"
                                     className="grogro-land__touch-button grogro-land__touch-button--right"
-                                    onPointerDown={() => { setInputPressed('right', true); }}
-                                    onPointerUp={() => { setInputPressed('right', false); }}
-                                    onPointerLeave={() => { setInputPressed('right', false); }}
-                                    onPointerCancel={() => { setInputPressed('right', false); }}
+                                    onTouchStart={preventDefaultEvent}
+                                    onTouchMove={preventDefaultEvent}
+                                    onTouchEnd={preventDefaultEvent}
+                                    onTouchCancel={preventDefaultEvent}
+                                    onPointerDown={(event) => {
+                                        event.preventDefault();
+                                        setInputPressed('right', true);
+                                    }}
+                                    onPointerUp={(event) => {
+                                        event.preventDefault();
+                                        setInputPressed('right', false);
+                                    }}
+                                    onPointerLeave={(event) => {
+                                        event.preventDefault();
+                                        setInputPressed('right', false);
+                                    }}
+                                    onPointerCancel={(event) => {
+                                        event.preventDefault();
+                                        setInputPressed('right', false);
+                                    }}
+                                    onContextMenu={preventDefaultEvent}
+                                    onDragStart={preventDefaultEvent}
                                     aria-label={gt('touchRight')}
                                 >
                                     →

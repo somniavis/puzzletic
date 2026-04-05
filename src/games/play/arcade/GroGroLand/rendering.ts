@@ -13,6 +13,15 @@ type DrawSceneParams = {
     state: GroGroLandState;
 };
 
+type CameraViewport = {
+    viewportWidth: number;
+    viewportHeight: number;
+    cameraX: number;
+    cameraY: number;
+    worldScreenX: number;
+    worldScreenY: number;
+};
+
 const drawOwnerContours = (
     context: CanvasRenderingContext2D,
     ownerId: number,
@@ -148,15 +157,7 @@ const drawTrail = (
     context.stroke();
 };
 
-export const drawGroGroLandScene = ({
-    canvas,
-    playerOverlay,
-    enemyOverlays,
-    state,
-}: DrawSceneParams) => {
-    const context = canvas.getContext('2d');
-    if (!context) return;
-
+const getCameraViewport = (canvas: HTMLCanvasElement, state: GroGroLandState): CameraViewport => {
     const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
     const viewportWidth = canvas.width / dpr;
     const viewportHeight = canvas.height / dpr;
@@ -174,22 +175,41 @@ export const drawGroGroLandScene = ({
             state.player.y - (viewportHeight / 2)
         )
     );
-    const worldScreenX = -cameraX;
-    const worldScreenY = -cameraY;
-    const playerScreenX = state.player.x - cameraX;
-    const playerScreenY = state.player.y - cameraY;
 
-    if (playerOverlay) {
-        playerOverlay.style.left = `${playerScreenX}px`;
-        playerOverlay.style.top = `${playerScreenY}px`;
-        playerOverlay.classList.toggle(
-            'grogro-land__player-overlay--warning',
-            state.player.boostTimer > 0 && state.player.boostTimer <= GROGRO_LAND_BOOST_WARNING_FRAMES
-        );
-    }
+    return {
+        viewportWidth,
+        viewportHeight,
+        cameraX,
+        cameraY,
+        worldScreenX: -cameraX,
+        worldScreenY: -cameraY,
+    };
+};
 
+const syncPlayerOverlay = (
+    overlay: HTMLDivElement | null,
+    state: GroGroLandState,
+    cameraX: number,
+    cameraY: number
+) => {
+    if (!overlay) return;
+
+    overlay.style.left = `${state.player.x - cameraX}px`;
+    overlay.style.top = `${state.player.y - cameraY}px`;
+    overlay.classList.toggle(
+        'grogro-land__player-overlay--warning',
+        state.player.boostTimer > 0 && state.player.boostTimer <= GROGRO_LAND_BOOST_WARNING_FRAMES
+    );
+};
+
+const syncEnemyOverlays = (
+    overlays: Array<HTMLDivElement | null>,
+    state: GroGroLandState,
+    cameraX: number,
+    cameraY: number
+) => {
     state.enemies.forEach((enemy, index) => {
-        const overlay = enemyOverlays[index];
+        const overlay = overlays[index];
         if (!overlay) return;
 
         if (enemy.status === 'dead') {
@@ -205,7 +225,15 @@ export const drawGroGroLandScene = ({
             enemy.boostTimer > 0 && enemy.boostTimer <= GROGRO_LAND_BOOST_WARNING_FRAMES
         );
     });
+};
 
+const drawWorldBackdrop = (
+    context: CanvasRenderingContext2D,
+    viewportWidth: number,
+    viewportHeight: number,
+    worldScreenX: number,
+    worldScreenY: number
+) => {
     context.clearRect(0, 0, viewportWidth, viewportHeight);
     context.fillStyle = '#31435f';
     context.fillRect(0, 0, viewportWidth, viewportHeight);
@@ -218,6 +246,7 @@ export const drawGroGroLandScene = ({
         context.arc(bubbleX, bubbleY, bubbleSize, 0, Math.PI * 2);
         context.fill();
     }
+
     context.fillStyle = '#fffdf7';
     context.fillRect(worldScreenX, worldScreenY, GROGRO_LAND_WORLD_WIDTH, GROGRO_LAND_WORLD_HEIGHT);
 
@@ -244,20 +273,30 @@ export const drawGroGroLandScene = ({
         GROGRO_LAND_WORLD_WIDTH - 28,
         GROGRO_LAND_WORLD_HEIGHT - 28
     );
+};
 
-    const tileSize = GROGRO_LAND_WORLD_WIDTH / state.cols;
+const buildOwnerPaletteMap = (state: GroGroLandState) => {
     const ownerPaletteMap = new Map<number, typeof state.player.colors>();
     ownerPaletteMap.set(state.player.ownerId, state.player.colors);
     state.enemies.forEach((enemy) => {
         if (enemy.status === 'dead') return;
         ownerPaletteMap.set(enemy.ownerId, enemy.colors);
     });
+    return ownerPaletteMap;
+};
 
-    const startCol = Math.max(0, Math.floor(cameraX / tileSize) - 1);
-    const endCol = Math.min(state.cols - 1, Math.ceil((cameraX + viewportWidth) / tileSize) + 1);
-    const startRow = Math.max(0, Math.floor(cameraY / tileSize) - 1);
-    const endRow = Math.min(state.rows - 1, Math.ceil((cameraY + viewportHeight) / tileSize) + 1);
-
+const drawTerritoryFill = (
+    context: CanvasRenderingContext2D,
+    state: GroGroLandState,
+    ownerPaletteMap: Map<number, typeof state.player.colors>,
+    startCol: number,
+    endCol: number,
+    startRow: number,
+    endRow: number,
+    tileSize: number,
+    cameraX: number,
+    cameraY: number
+) => {
     context.save();
     context.globalAlpha = 0.45;
     for (let row = startRow; row <= endRow; row += 1) {
@@ -276,27 +315,15 @@ export const drawGroGroLandScene = ({
         }
     }
     context.restore();
+};
 
-    ownerPaletteMap.forEach((palette, ownerId) => {
-        drawOwnerContours(
-            context,
-            ownerId,
-            palette.edge,
-            palette.fill,
-            ownerId === state.player.ownerId ? 3.5 : 3,
-            startCol,
-            endCol,
-            startRow,
-            endRow,
-            tileSize,
-            cameraX,
-            cameraY,
-            state.cols,
-            state.rows,
-            state.grid
-        );
-    });
-
+const drawCaptureEffects = (
+    context: CanvasRenderingContext2D,
+    state: GroGroLandState,
+    ownerPaletteMap: Map<number, typeof state.player.colors>,
+    cameraX: number,
+    cameraY: number
+) => {
     state.captureEffects.forEach((effect) => {
         const palette = ownerPaletteMap.get(effect.ownerId);
         if (!palette || effect.points.length < 2) return;
@@ -320,13 +347,16 @@ export const drawGroGroLandScene = ({
         context.stroke();
         context.restore();
     });
+};
 
-    drawTrail(context, state.player.trail, state.player.colors.trail, 6, cameraX, cameraY);
-    state.enemies.forEach((enemy) => {
-        if (enemy.status === 'dead') return;
-        drawTrail(context, enemy.trail, enemy.colors.trail, 5, cameraX, cameraY);
-    });
-
+const drawPickups = (
+    context: CanvasRenderingContext2D,
+    state: GroGroLandState,
+    viewportWidth: number,
+    viewportHeight: number,
+    cameraX: number,
+    cameraY: number
+) => {
     state.gems.forEach((gem) => {
         const worldX = gem.x - cameraX;
         const worldY = gem.y - cameraY;
@@ -356,4 +386,77 @@ export const drawGroGroLandScene = ({
         context.fillText(item.emoji, worldX, worldY + 1);
         context.restore();
     });
+};
+
+export const drawGroGroLandScene = ({
+    canvas,
+    playerOverlay,
+    enemyOverlays,
+    state,
+}: DrawSceneParams) => {
+    const context = canvas.getContext('2d');
+    if (!context) return;
+
+    const {
+        viewportWidth,
+        viewportHeight,
+        cameraX,
+        cameraY,
+        worldScreenX,
+        worldScreenY,
+    } = getCameraViewport(canvas, state);
+
+    syncPlayerOverlay(playerOverlay, state, cameraX, cameraY);
+    syncEnemyOverlays(enemyOverlays, state, cameraX, cameraY);
+    drawWorldBackdrop(context, viewportWidth, viewportHeight, worldScreenX, worldScreenY);
+
+    const tileSize = GROGRO_LAND_WORLD_WIDTH / state.cols;
+    const ownerPaletteMap = buildOwnerPaletteMap(state);
+
+    const startCol = Math.max(0, Math.floor(cameraX / tileSize) - 1);
+    const endCol = Math.min(state.cols - 1, Math.ceil((cameraX + viewportWidth) / tileSize) + 1);
+    const startRow = Math.max(0, Math.floor(cameraY / tileSize) - 1);
+    const endRow = Math.min(state.rows - 1, Math.ceil((cameraY + viewportHeight) / tileSize) + 1);
+
+    drawTerritoryFill(
+        context,
+        state,
+        ownerPaletteMap,
+        startCol,
+        endCol,
+        startRow,
+        endRow,
+        tileSize,
+        cameraX,
+        cameraY
+    );
+
+    ownerPaletteMap.forEach((palette, ownerId) => {
+        drawOwnerContours(
+            context,
+            ownerId,
+            palette.edge,
+            palette.fill,
+            ownerId === state.player.ownerId ? 3.5 : 3,
+            startCol,
+            endCol,
+            startRow,
+            endRow,
+            tileSize,
+            cameraX,
+            cameraY,
+            state.cols,
+            state.rows,
+            state.grid
+        );
+    });
+
+    drawCaptureEffects(context, state, ownerPaletteMap, cameraX, cameraY);
+
+    drawTrail(context, state.player.trail, state.player.colors.trail, 6, cameraX, cameraY);
+    state.enemies.forEach((enemy) => {
+        if (enemy.status === 'dead') return;
+        drawTrail(context, enemy.trail, enemy.colors.trail, 5, cameraX, cameraY);
+    });
+    drawPickups(context, state, viewportWidth, viewportHeight, cameraX, cameraY);
 };

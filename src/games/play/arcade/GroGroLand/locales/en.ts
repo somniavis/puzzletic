@@ -23,8 +23,6 @@ export default {
         land: 'Land',
         myLand: 'Mine',
         enemyLand: 'Enemy {{index}}',
-        rank: 'Rank',
-        score: 'Score',
         best: 'Best',
     },
 } as const;

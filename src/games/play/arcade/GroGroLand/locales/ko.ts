@@ -23,8 +23,6 @@ export default {
         land: '영토',
         myLand: '내 땅',
         enemyLand: '적{{index}}',
-        rank: '순위',
-        score: '점수',
         best: '최고',
     },
 } as const;

@@ -13,17 +13,16 @@ import {
     TAIL_RUNNER_WORLD_SIZE,
     createInitialTailRunnerState,
 } from './constants';
-import type { TailRunnerHudState, TailRunnerTailSegment } from './types';
+import type { TailRunnerHudState } from './types';
 import { createTailRunnerTranslator } from './i18n';
 import {
     buildHudState,
     createPreparedTailRunnerState,
+    isTailRunnerIpadSafari,
 } from './helpers';
 import {
     getTailRunnerEmojiSprite,
-    getTailRunnerRenderPixelRatio,
 } from './rendering';
-import { drawTailRunnerFrame, updateTailRunnerState } from './engine';
 import {
     TailRunnerGameOverScreen,
     TailRunnerHeader,
@@ -33,16 +32,17 @@ import {
     TailRunnerStartScreen,
     TailRunnerTouchControls,
 } from './components';
+import {
+    clearTailRunnerMovingEmojiOverlay,
+    syncTailRunnerMovingEmojiOverlay,
+} from './movingEmojiOverlay';
+import { useTailRunnerGameLoop } from './useTailRunnerGameLoop';
 import { calculatePlayArcadeReward } from '../../shared/playArcadeRewards';
+import { usePreventArcadeBrowserGestures } from '../../shared/usePreventArcadeBrowserGestures';
 import './TailRunner.css';
 
 const TAIL_RUNNER_HUD_SYNC_INTERVAL_MS = 100;
 const TAIL_RUNNER_POWERUP_VISUAL_GUARD_FRAMES = 8;
-const isTailRunnerIpadSafari = () => {
-    if (typeof navigator === 'undefined') return false;
-    const userAgent = navigator.userAgent;
-    return /iPad/i.test(userAgent) && /Safari/i.test(userAgent) && !/CriOS|FxiOS|EdgiOS/i.test(userAgent);
-};
 
 type TailRunnerScoreBurst = {
     id: number;
@@ -54,14 +54,10 @@ type TailRunnerGameOverHighlights = {
     tail: boolean;
 };
 
-type TailRunnerDomTailSegment = TailRunnerTailSegment & {
-    screenX: number;
-    screenY: number;
-};
-
 export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
     const { i18n } = useTranslation();
     const { speciesId, evolutionStage, characterName, addRewards } = useNurturing();
+    const rootRef = useRef<HTMLDivElement | null>(null);
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const stageRef = useRef<HTMLDivElement | null>(null);
     const stateRef = useRef(createInitialTailRunnerState());
@@ -73,11 +69,13 @@ export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
     const lastHudSyncRef = useRef(0);
     const steerPointerIdRef = useRef<number | null>(null);
     const powerupVisualGuardFramesRef = useRef(0);
+    const movingEmojiOverlayRef = useRef<HTMLDivElement | null>(null);
+    const movingEmojiNodeMapRef = useRef<Map<string, HTMLImageElement>>(new Map());
+    const touchControlsRef = useRef<HTMLDivElement | null>(null);
     const [gamePhase, setGamePhase] = useState<'start' | 'playing' | 'gameOver'>('start');
     const [isHelpOpen, setIsHelpOpen] = useState(false);
     const [heartBursts, setHeartBursts] = useState<number[]>([]);
     const [scoreBursts, setScoreBursts] = useState<TailRunnerScoreBurst[]>([]);
-    const [domTailSegments, setDomTailSegments] = useState<TailRunnerDomTailSegment[]>([]);
     const [gameOverHighlights, setGameOverHighlights] = useState<TailRunnerGameOverHighlights>({
         score: false,
         tail: false,
@@ -119,7 +117,19 @@ export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
         () => calculatePlayArcadeReward(safeEvolutionStage, gameOverHighlights.score || gameOverHighlights.tail),
         [gameOverHighlights.score, gameOverHighlights.tail, safeEvolutionStage]
     );
-    const shouldUseDomTailOverlay = useMemo(() => isTailRunnerIpadSafari(), []);
+    const shouldUseDomMovingEmojiOverlay = useMemo(() => isTailRunnerIpadSafari(), []);
+
+    usePreventArcadeBrowserGestures({
+        rootRef,
+        stageRef,
+        controlsRef: touchControlsRef,
+        stageIgnoreSelectors: [
+            '.tail-runner__touch-controls',
+            '.play-arcade-game__start-overlay',
+            '.play-arcade-game__game-over-overlay',
+            'button',
+        ],
+    });
 
     useEffect(() => {
         if (typeof window === 'undefined') return;
@@ -277,11 +287,25 @@ export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
         }
     }, [clearInputs, gamePhase]);
 
+    const clearMovingEmojiOverlay = useCallback(() => {
+        clearTailRunnerMovingEmojiOverlay(movingEmojiNodeMapRef.current);
+    }, []);
+
     useEffect(() => {
-        if (gamePhase !== 'playing' || !shouldUseDomTailOverlay) {
-            setDomTailSegments([]);
-        }
-    }, [gamePhase, shouldUseDomTailOverlay]);
+        if (gamePhase === 'playing' && shouldUseDomMovingEmojiOverlay) return;
+        clearMovingEmojiOverlay();
+    }, [clearMovingEmojiOverlay, gamePhase, shouldUseDomMovingEmojiOverlay]);
+
+    const syncMovingEmojiOverlay = useCallback((frameNow: number) => {
+        if (!shouldUseDomMovingEmojiOverlay) return;
+        syncTailRunnerMovingEmojiOverlay({
+            overlay: movingEmojiOverlayRef.current,
+            nodeMap: movingEmojiNodeMapRef.current,
+            stage: stageRef.current,
+            state: stateRef.current,
+            frameNow,
+        });
+    }, [shouldUseDomMovingEmojiOverlay]);
 
     useEffect(() => {
         if (gamePhase !== 'gameOver') {
@@ -293,87 +317,25 @@ export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
         addRewards(tailRunnerRewards.xp, tailRunnerRewards.gro);
     }, [addRewards, gamePhase, tailRunnerRewards.gro, tailRunnerRewards.xp]);
 
-    useEffect(() => {
-        const canvas = canvasRef.current;
-        if (!canvas || gamePhase !== 'playing') return;
-
-        const context = canvas.getContext('2d');
-        if (!context) return;
-
-        const resizeCanvas = () => {
-            const { width, height } = canvas.getBoundingClientRect();
-            const pixelRatio = getTailRunnerRenderPixelRatio();
-            canvas.width = Math.max(1, Math.floor(width * pixelRatio));
-            canvas.height = Math.max(1, Math.floor(height * pixelRatio));
-            context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
-        };
-
-        resizeCanvas();
-        window.addEventListener('resize', resizeCanvas);
-
-        let previousTime = performance.now();
-
-        const update = (deltaMs: number) => {
-            updateTailRunnerState({
-                state: stateRef.current,
-                input: inputRef.current,
-                history: historyRef.current,
-                deltaMs,
-                onGuardFrameTick: () => {
-                    if (powerupVisualGuardFramesRef.current > 0) {
-                        powerupVisualGuardFramesRef.current -= 1;
-                    }
-                },
-                onFinishGame: finishGame,
-                onHeartBurst: triggerHeartBurst,
-                onScoreBurst: triggerScoreBurst,
-                onSyncHud: syncHudState,
-            });
-        };
-
-        const draw = (frameNow: number) => {
-            drawTailRunnerFrame({
-                context,
-                canvas,
-                state: stateRef.current,
-                frameNow,
-                hidePlayerTail: shouldUseDomTailOverlay,
-            });
-
-            if (shouldUseDomTailOverlay) {
-                const width = canvas.clientWidth;
-                const height = canvas.clientHeight;
-                const cameraX = stateRef.current.playerX - width / 2;
-                const cameraY = stateRef.current.playerY - height / 2;
-                setDomTailSegments(
-                    stateRef.current.tail.map((segment) => ({
-                        ...segment,
-                        screenX: segment.x - cameraX,
-                        screenY: segment.y - cameraY,
-                    }))
-                );
+    useTailRunnerGameLoop({
+        canvasRef,
+        stateRef,
+        historyRef,
+        inputRef,
+        animationFrameRef,
+        gamePhase,
+        shouldUseDomMovingEmojiOverlay,
+        onGuardFrameTick: () => {
+            if (powerupVisualGuardFramesRef.current > 0) {
+                powerupVisualGuardFramesRef.current -= 1;
             }
-        };
-
-        const loop = (now: number) => {
-            if (stateRef.current.isGameOver) return;
-            const deltaMs = now - previousTime;
-            previousTime = now;
-            update(deltaMs);
-            draw(now);
-            animationFrameRef.current = window.requestAnimationFrame(loop);
-        };
-
-        animationFrameRef.current = window.requestAnimationFrame(loop);
-
-        return () => {
-            window.removeEventListener('resize', resizeCanvas);
-            if (animationFrameRef.current) {
-                window.cancelAnimationFrame(animationFrameRef.current);
-                animationFrameRef.current = null;
-            }
-        };
-    }, [finishGame, gamePhase, shouldUseDomTailOverlay, syncHudState, triggerHeartBurst, triggerScoreBurst]);
+        },
+        onFinishGame: finishGame,
+        onHeartBurst: triggerHeartBurst,
+        onScoreBurst: triggerScoreBurst,
+        onSyncHud: syncHudState,
+        onSyncMovingEmojiOverlay: syncMovingEmojiOverlay,
+    });
 
     const startGame = () => {
         clearInputs();
@@ -388,7 +350,7 @@ export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
         historyRef.current = [];
         lastHudSyncRef.current = 0;
         setHudState(buildHudState(nextState));
-        setDomTailSegments([]);
+        clearMovingEmojiOverlay();
         setGamePhase('playing');
     };
 
@@ -416,9 +378,12 @@ export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
 
     return (
         <div
+            ref={rootRef}
             className="play-arcade-game tail-runner"
             onContextMenu={preventDefaultEvent}
             onDragStart={preventDefaultEvent}
+            onCopy={preventDefaultEvent}
+            onCut={preventDefaultEvent}
         >
             <div className="play-arcade-game__panel tail-runner__panel">
                 <TailRunnerHeader
@@ -443,22 +408,8 @@ export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
                         onDragStart={preventDefaultEvent}
                     >
                         <canvas ref={canvasRef} className="tail-runner__canvas" />
-                        {shouldUseDomTailOverlay && domTailSegments.length > 0 && (
-                            <div className="tail-runner__tail-dom-overlay" aria-hidden="true">
-                                {domTailSegments.map((segment, index) => (
-                                    <span
-                                        key={`${index}-${segment.screenX}-${segment.screenY}-${segment.emoji}`}
-                                        className="tail-runner__tail-dom-segment"
-                                        style={{
-                                            left: `${segment.screenX}px`,
-                                            top: `${segment.screenY}px`,
-                                            transform: `translate(-50%, -50%) scaleX(${segment.facing})`,
-                                        }}
-                                    >
-                                        {segment.emoji}
-                                    </span>
-                                ))}
-                            </div>
+                        {shouldUseDomMovingEmojiOverlay && (
+                            <div ref={movingEmojiOverlayRef} className="tail-runner__moving-emoji-overlay" aria-hidden="true" />
                         )}
                         <TailRunnerPlayerOverlay
                             runnerCharacter={runnerCharacter}
@@ -485,6 +436,7 @@ export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
                             />
                         )}
                         <TailRunnerTouchControls
+                            controlsRef={touchControlsRef}
                             gt={gt}
                             gamePhase={gamePhase}
                             liveShieldActive={liveShieldActive}

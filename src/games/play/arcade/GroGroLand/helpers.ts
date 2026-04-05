@@ -182,14 +182,6 @@ const createEnemy = (
     };
 };
 
-export const calculateOwnedTileCount = (grid: Uint16Array, ownerId: number) => {
-    let count = 0;
-    for (let index = 0; index < grid.length; index += 1) {
-        if (grid[index] === ownerId) count += 1;
-    }
-    return count;
-};
-
 const calculateOwnerTileCounts = (grid: Uint16Array, ownerIds: number[]) => {
     const counts = new Map<number, number>();
     ownerIds.forEach((ownerId) => {
@@ -205,7 +197,7 @@ const calculateOwnerTileCounts = (grid: Uint16Array, ownerIds: number[]) => {
     return counts;
 };
 
-const calculateStateMetrics = (state: GroGroLandState) => {
+export const calculateGroGroLandMetrics = (state: GroGroLandState) => {
     const ownerIds = [GROGRO_LAND_PLAYER_OWNER_ID, ...state.enemies.map((enemy) => enemy.ownerId)];
     const counts = calculateOwnerTileCounts(state.grid, ownerIds);
     const totalTiles = state.grid.length;
@@ -221,6 +213,17 @@ const calculateStateMetrics = (state: GroGroLandState) => {
         playerLandPercent,
         enemyLandPercents,
     };
+};
+
+export const applyGroGroLandMetrics = (
+    state: GroGroLandState,
+    metrics = calculateGroGroLandMetrics(state)
+) => {
+    state.score = metrics.playerTiles;
+    state.bestScore = Math.max(state.bestScore, metrics.playerTiles);
+    state.landPercent = metrics.playerLandPercent;
+    state.bestLandPercent = Math.max(state.bestLandPercent, metrics.playerLandPercent);
+    return metrics;
 };
 
 export const replaceOwnerTiles = (grid: Uint16Array, fromOwnerId: number, toOwnerId: number) => {
@@ -286,30 +289,36 @@ export const createInitialGroGroLandState = (
         );
     });
 
-    const ownedTiles = calculateOwnedTileCount(grid, GROGRO_LAND_PLAYER_OWNER_ID);
-    const landPercent = Number(((ownedTiles / grid.length) * 100).toFixed(1));
-
-    return {
-        phase: 'start',
+    const initialState = {
+        phase: 'start' as const,
         player,
         enemies,
         grid,
         bombVoidMask: new Uint8Array(cols * rows),
         cols,
         rows,
-        score: ownedTiles,
-        bestScore: Math.max(bestScore, ownedTiles),
-        landPercent,
-        bestLandPercent: Math.max(bestLandPercent, landPercent),
+        score: 0,
+        bestScore,
+        landPercent: 0,
+        bestLandPercent,
         gems: [],
         items: [],
         itemSpawnCooldown: getItemSpawnCooldown(),
         captureEffects: [],
     };
+    const metrics = applyGroGroLandMetrics(initialState as GroGroLandState);
+
+    return {
+        ...initialState,
+        score: metrics.playerTiles,
+        bestScore: Math.max(bestScore, metrics.playerTiles),
+        landPercent: metrics.playerLandPercent,
+        bestLandPercent: Math.max(bestLandPercent, metrics.playerLandPercent),
+    };
 };
 
 export const buildGroGroLandHudState = (state: GroGroLandState): GroGroLandHudState => {
-    const metrics = calculateStateMetrics(state);
+    const metrics = calculateGroGroLandMetrics(state);
     return {
         score: state.score,
         bestScore: state.bestScore,
@@ -758,11 +767,7 @@ export const tickGroGroLandCaptureEffects = (state: GroGroLandState, tickAmount 
 };
 
 export const refreshGroGroLandMetrics = (state: GroGroLandState) => {
-    const metrics = calculateStateMetrics(state);
-    state.score = metrics.playerTiles;
-    state.bestScore = Math.max(state.bestScore, state.score);
-    state.landPercent = metrics.playerLandPercent;
-    state.bestLandPercent = Math.max(state.bestLandPercent, metrics.playerLandPercent);
+    applyGroGroLandMetrics(state);
 };
 
 export const isGroGroLandOutOfBounds = (x: number, y: number) => (

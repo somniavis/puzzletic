@@ -23,8 +23,6 @@ export default {
         land: '土地',
         myLand: '自分の土地',
         enemyLand: '相手{{index}}',
-        rank: '順位',
-        score: 'スコア',
         best: '最高',
     },
 } as const;

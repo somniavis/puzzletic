@@ -23,8 +23,6 @@ export default {
         land: 'Dat',
         myLand: 'Dat cua toi',
         enemyLand: 'Doi thu {{index}}',
-        rank: 'Hang',
-        score: 'Diem',
         best: 'Cao nhat',
     },
 } as const;

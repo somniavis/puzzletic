@@ -7,7 +7,6 @@ import {
     TAIL_RUNNER_FOOD_SCORE,
     TAIL_RUNNER_GEM_SCORES,
     TAIL_RUNNER_GRID_SIZE,
-    TAIL_RUNNER_HISTORY_LIMIT,
     TAIL_RUNNER_MAGNET_DURATION,
     TAIL_RUNNER_MAGNET_PULL_SPEED,
     TAIL_RUNNER_MAGNET_RADIUS,
@@ -20,6 +19,7 @@ import {
     TAIL_RUNNER_WORLD_SIZE,
 } from './constants';
 import {
+    appendTailRunnerHistorySamples,
     clamp,
     collidesWithBarrier,
     createBurst,
@@ -118,6 +118,8 @@ export const updateTailRunnerState = ({
     state.playerSpeed = shieldActive
         ? currentBaseSpeed * TAIL_RUNNER_SHIELD_SPEED_MULTIPLIER
         : currentBaseSpeed;
+    const previousPlayerX = state.playerX;
+    const previousPlayerY = state.playerY;
     state.playerX += Math.cos(state.playerAngle) * state.playerSpeed * deltaMultiplier;
     state.playerY += Math.sin(state.playerAngle) * state.playerSpeed * deltaMultiplier;
 
@@ -163,10 +165,11 @@ export const updateTailRunnerState = ({
         return;
     }
 
-    history.unshift({ x: state.playerX, y: state.playerY });
-    if (history.length > TAIL_RUNNER_HISTORY_LIMIT) {
-        history.length = TAIL_RUNNER_HISTORY_LIMIT;
-    }
+    appendTailRunnerHistorySamples(
+        history,
+        { x: previousPlayerX, y: previousPlayerY },
+        { x: state.playerX, y: state.playerY }
+    );
 
     state.tail = state.tail.map((segment, index) => {
         const point = getTailRunnerHistoryPoint(
@@ -299,6 +302,8 @@ type DrawParams = {
     state: TailRunnerState;
     frameNow: number;
     hidePlayerTail?: boolean;
+    hideMovingEmojiActors?: boolean;
+    hideFoodEmojiEntities?: boolean;
 };
 
 export const drawTailRunnerFrame = ({
@@ -307,6 +312,8 @@ export const drawTailRunnerFrame = ({
     state,
     frameNow,
     hidePlayerTail = false,
+    hideMovingEmojiActors = false,
+    hideFoodEmojiEntities = false,
 }: DrawParams) => {
     const width = canvas.clientWidth;
     const height = canvas.clientHeight;
@@ -450,6 +457,9 @@ export const drawTailRunnerFrame = ({
     state.bursts.forEach((burst) => drawBurstEntity(context, burst));
 
     state.entities.forEach((entity) => {
+        if (hideFoodEmojiEntities && entity.type === 'food') {
+            return;
+        }
         if (entity.type === 'coin') {
             drawGemEntity(context, entity);
             return;
@@ -474,10 +484,11 @@ export const drawTailRunnerFrame = ({
                 entity,
                 '🧲',
                 [
-                    [0, 'rgba(255, 242, 209, 0.95)'],
-                    [0.52, 'rgba(255, 140, 140, 0.42)'],
-                    [1, 'rgba(255, 140, 140, 0)'],
-                ]
+                    [0, 'rgba(255, 236, 228, 0.9)'],
+                    [0.55, 'rgba(255, 164, 164, 0.34)'],
+                    [1, 'rgba(255, 164, 164, 0)'],
+                ],
+                'rgba(255, 248, 250, 0.96)'
             );
             return;
         }
@@ -499,8 +510,10 @@ export const drawTailRunnerFrame = ({
 
     context.restore();
 
-    state.enemies.forEach((enemy) => drawEnemySnakeScreen(context, enemy, toScreenX, toScreenY));
-    state.tyrannos.forEach((tyranno) => drawTyrannoScreen(context, tyranno, frameNow, toScreenX, toScreenY));
+    if (!hideMovingEmojiActors) {
+        state.enemies.forEach((enemy) => drawEnemySnakeScreen(context, enemy, toScreenX, toScreenY));
+        state.tyrannos.forEach((tyranno) => drawTyrannoScreen(context, tyranno, frameNow, toScreenX, toScreenY));
+    }
     if (!hidePlayerTail) {
         drawPlayerTailScreen(context, state.tail, toScreenX, toScreenY);
     }

@@ -23,8 +23,6 @@ export default {
         land: 'Wilayah',
         myLand: 'Wilayahku',
         enemyLand: 'Musuh {{index}}',
-        rank: 'Peringkat',
-        score: 'Skor',
         best: 'Terbaik',
     },
 } as const;

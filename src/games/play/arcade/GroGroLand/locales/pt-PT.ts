@@ -23,8 +23,6 @@ export default {
         land: 'Terreno',
         myLand: 'Meu terreno',
         enemyLand: 'Inimigo {{index}}',
-        rank: 'Classificação',
-        score: 'Pontuação',
         best: 'Melhor',
     },
 } as const;

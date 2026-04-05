@@ -32,6 +32,19 @@ const isTailRunnerWindowsChromium = () => {
     return isWindows && isChromium;
 };
 
+export const isTailRunnerIpadSafari = () => {
+    if (typeof navigator === 'undefined') return false;
+    const userAgent = navigator.userAgent;
+    const isSafari = /Safari/i.test(userAgent) && !/CriOS|FxiOS|EdgiOS|OPiOS|YaBrowser/i.test(userAgent);
+    const isLegacyIpad = /iPad/i.test(userAgent);
+    const isModernIpad =
+        /Macintosh/i.test(userAgent) &&
+        typeof navigator.maxTouchPoints === 'number' &&
+        navigator.maxTouchPoints > 1;
+
+    return isSafari && (isLegacyIpad || isModernIpad);
+};
+
 const GEM_TIER_WEIGHTS: Array<{ tier: TailRunnerGemTier; weight: number }> = [
     { tier: 'diamond', weight: 0.18 },
     { tier: 'gold', weight: 0.34 },
@@ -95,6 +108,28 @@ export const smoothTailRunnerPoint = (
     x: current.x + (target.x - current.x) * factor,
     y: current.y + (target.y - current.y) * factor,
 });
+
+export const appendTailRunnerHistorySamples = (
+    history: Array<{ x: number; y: number }>,
+    from: { x: number; y: number },
+    to: { x: number; y: number }
+) => {
+    const dx = to.x - from.x;
+    const dy = to.y - from.y;
+    const distance = Math.hypot(dx, dy);
+    const sampleStep = Math.max(2.4, constants.TAIL_RUNNER_TAIL_SPACING * 0.45);
+    const steps = Math.max(1, Math.ceil(distance / sampleStep));
+
+    for (let step = 1; step <= steps; step += 1) {
+        const progress = step / steps;
+        history.unshift({
+            x: from.x + (dx * progress),
+            y: from.y + (dy * progress),
+        });
+    }
+
+    history.length = Math.min(history.length, constants.TAIL_RUNNER_HISTORY_LIMIT);
+};
 
 const pickGemTier = (): TailRunnerGemTier => {
     const roll = Math.random();
@@ -247,7 +282,10 @@ export const createRandomEntity = (
     }
 
     if (type === 'food') {
-        return createEntity(type, x, y, pickRandom(constants.TAIL_RUNNER_FOOD_EMOJIS), 20, Math.random() < 0.5 ? -1 : 1);
+        const foodEmojiPool = isTailRunnerIpadSafari()
+            ? constants.TAIL_RUNNER_IPAD_TAIL_EMOJI_SET
+            : constants.TAIL_RUNNER_FOOD_EMOJIS;
+        return createEntity(type, x, y, pickRandom(foodEmojiPool), 20, Math.random() < 0.5 ? -1 : 1);
     }
     if (type === 'coin') {
         const coinTier = pickGemTier();
