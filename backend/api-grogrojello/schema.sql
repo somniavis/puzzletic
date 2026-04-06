@@ -23,3 +23,11 @@ CREATE TABLE daily_routine_claims (
   claimed_at INTEGER NOT NULL,
   PRIMARY KEY (uid, date_key)
 );
+
+CREATE TABLE api_rate_limits (
+  key TEXT PRIMARY KEY,
+  count INTEGER NOT NULL DEFAULT 0,
+  window_start INTEGER NOT NULL,
+  last_seen INTEGER NOT NULL,
+  blocked_until INTEGER NOT NULL DEFAULT 0
+);

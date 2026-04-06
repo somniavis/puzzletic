@@ -1,5 +1,40 @@
 # 변경 이력 (Changelog)
 
+## 2026-04-06 (API Abuse Hardening)
+
+### 🔒 API 남용 방어 1차/2차/3차 적용
+- Cloudflare Worker에 다층 rate limit을 추가했습니다.
+  - pre-auth (`IP + path uid`)
+  - post-auth (`uid`)
+  - auth failure 누적 차단
+  - sync cooldown
+- 요청 비용을 줄이기 위해 Worker에 조기 차단 계층을 추가했습니다.
+  - invalid method → `405`
+  - unknown subpath → `404`
+  - non-json required POST → `415`
+  - oversized body → `413`
+- 클라이언트 sync 계층을 coalescing/retry 방식으로 보강했습니다.
+  - 짧은 시간 연속 sync를 1회 업로드로 병합
+  - `429 Retry-After` 자동 재시도
+  - 로그인 복원은 `forceFresh`로 최신 cloud를 우선 조회
+  - logout 전 cloud save 실패 시 로그아웃 중단
+
+### 👀 보안 관측성 강화
+- Worker에 structured security logging을 추가했습니다.
+- 주요 로그 이벤트:
+  - `cors_origin_denied`
+  - `invalid_api_path`
+  - `request_shape_rejected`
+  - `auth_rejected`
+  - `rate_limit_hit`
+  - `abnormal_value_rejected`
+- CORS는 브라우저 origin 정책일 뿐 직접 호출 방어가 아니라는 점을 문서에 명시했습니다.
+
+### 🛡️ 게임 데이터 조작 방어
+- Worker sync 저장 전에 `level`, `xp`, `gro`, `star`, `current_land`, `inventory`에 대해 라이트 타입 검증을 적용했습니다.
+- `star` 급증 제한과 신규 유저 초기값 제한을 추가해 별/진행도 비정상 증폭을 차단했습니다.
+- 프로덕션 빌드에서는 Profile 페이지 디버그 패널과 `debugAddStars`, `debugUnlockAllGames` 동작을 비활성화했습니다.
+
 ## 2026-03-28 (Domain Rollout & Bundle Optimization)
 
 ### 🌐 신규 도메인 적용 완료 (Production Domain Rollout)

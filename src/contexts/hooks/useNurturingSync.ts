@@ -211,7 +211,7 @@ export const useNurturingSync = (user: User | null, guestId: string | null = nul
         setIsGlobalLoading(true);
         console.log('☁️ Fetching cloud data for user:', user.uid);
 
-        fetchUserData(user).then((result) => {
+        fetchUserData(user, { forceFresh: true }).then((result) => {
             if (!result.success) {
                 if (result.notFound) {
                     const localStateLooksValid = hasMeaningfulLocalState(stateRef.current);

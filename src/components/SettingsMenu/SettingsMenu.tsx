@@ -134,7 +134,11 @@ export const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose }) =
     playButtonSound();
     try {
       // "Safe Save": Sync before logging out
-      await saveToCloud();
+      const success = await saveToCloud();
+      if (!success) {
+        window.alert('Cloud save failed. Please try again before logging out.');
+        return;
+      }
 
       await logout();
       onClose();

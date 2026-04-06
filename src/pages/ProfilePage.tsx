@@ -8,6 +8,8 @@ import './ProfilePage.css';
 
 type ProfileTab = 'my_jello' | 'pass';
 
+const ENABLE_DEBUG_ACTIONS = import.meta.env.DEV;
+
 const createParentGateCode = () =>
     Array.from({ length: 3 }, () => Math.floor(Math.random() * 9) + 1);
 
@@ -225,138 +227,140 @@ export const ProfilePage: React.FC = () => {
                             </button>
                         </section>
 
-                        <section className="profile-section" style={{ background: '#ffebee', border: '2px dashed #f44336' }}>
-                            <p style={{ color: '#c62828', fontWeight: 'bold', marginBottom: '0.5rem' }}>🔧 DEBUG MODE (GRO: {gro} | XP: {xp})</p>
-                            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                                <button
-                                    style={{
-                                        background: '#4CAF50',
-                                        color: 'white',
-                                        padding: '12px 24px',
-                                        borderRadius: '12px',
-                                        border: 'none',
-                                        fontWeight: 'bold',
-                                        cursor: 'pointer',
-                                        flex: 1
-                                    }}
-                                    onClick={() => {
-                                        addRewards(0, 150);
-                                        alert(`✅ Added 150 GRO!\nNew total: ${gro + 150}`);
-                                    }}
-                                >
-                                    💰 +150 GRO
-                                </button>
-                                <button
-                                    style={{
-                                        background: '#2196F3',
-                                        color: 'white',
-                                        padding: '12px 24px',
-                                        borderRadius: '12px',
-                                        border: 'none',
-                                        fontWeight: 'bold',
-                                        cursor: 'pointer',
-                                        flex: 1
-                                    }}
-                                    onClick={() => {
-                                        addRewards(500, 0);
-                                        alert(`✅ Added 500 XP!\nNew total: ${xp + 500}`);
-                                    }}
-                                >
-                                    ⭐ +500 XP
-                                </button>
-                                <button
-                                    style={{
-                                        background: '#FFC107',
-                                        color: 'black',
-                                        padding: '12px 24px',
-                                        borderRadius: '12px',
-                                        border: 'none',
-                                        fontWeight: 'bold',
-                                        cursor: 'pointer',
-                                        flex: 1
-                                    }}
-                                    onClick={() => {
-                                        if (typeof debugAddStars === 'function') {
-                                            debugAddStars(1001);
-                                        } else {
-                                            alert("Debug function not ready yet");
-                                        }
-                                    }}
-                                >
-                                    🌟 +1001 Stars
-                                </button>
-                                <button
-                                    style={{
-                                        background: '#9C27B0',
-                                        color: 'white',
-                                        padding: '12px 24px',
-                                        borderRadius: '12px',
-                                        border: 'none',
-                                        fontWeight: 'bold',
-                                        cursor: 'pointer',
-                                        flex: 1
-                                    }}
-                                    onClick={() => {
-                                        const result = maxStats();
-                                        alert(result.message);
-                                    }}
-                                >
-                                    🌟 Max Stats
-                                </button>
-                                <button
-                                    style={{
-                                        background: '#607D8B',
-                                        color: 'white',
-                                        padding: '12px 24px',
-                                        borderRadius: '12px',
-                                        border: 'none',
-                                        fontWeight: 'bold',
-                                        cursor: 'pointer',
-                                        flex: 1
-                                    }}
-                                    onClick={() => navigate('/debug/layouts')}
-                                >
-                                    🎨 Layout Preview
-                                </button>
-                                <button
-                                    style={{
-                                        background: '#FF9800',
-                                        color: 'white',
-                                        padding: '12px 24px',
-                                        borderRadius: '12px',
-                                        border: 'none',
-                                        fontWeight: 'bold',
-                                        cursor: 'pointer',
-                                        flex: 1
-                                    }}
-                                    onClick={() => {
-                                        localStorage.setItem('FORCE_TRAIN', 'true');
-                                        alert("🚂 Train Queued! Go back to Pet Room.");
-                                    }}
-                                >
-                                    🚂 Call Train
-                                </button>
-                                <button
-                                    style={{
-                                        background: '#FF5722',
-                                        color: 'white',
-                                        padding: '12px 24px',
-                                        borderRadius: '12px',
-                                        border: 'none',
-                                        fontWeight: 'bold',
-                                        cursor: 'pointer',
-                                        flex: 1
-                                    }}
-                                    onClick={() => {
-                                        if (confirm("Unlock ALL games for testing?")) {
-                                            debugUnlockAllGames();
-                                        }
-                                    }}
-                                >
-                                    🔓 Unlock All
-                                </button>
-                            </div>
-                        </section>
+                        {ENABLE_DEBUG_ACTIONS && (
+                            <section className="profile-section" style={{ background: '#ffebee', border: '2px dashed #f44336' }}>
+                                <p style={{ color: '#c62828', fontWeight: 'bold', marginBottom: '0.5rem' }}>🔧 DEBUG MODE (GRO: {gro} | XP: {xp})</p>
+                                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                                    <button
+                                        style={{
+                                            background: '#4CAF50',
+                                            color: 'white',
+                                            padding: '12px 24px',
+                                            borderRadius: '12px',
+                                            border: 'none',
+                                            fontWeight: 'bold',
+                                            cursor: 'pointer',
+                                            flex: 1
+                                        }}
+                                        onClick={() => {
+                                            addRewards(0, 150);
+                                            alert(`✅ Added 150 GRO!\nNew total: ${gro + 150}`);
+                                        }}
+                                    >
+                                        💰 +150 GRO
+                                    </button>
+                                    <button
+                                        style={{
+                                            background: '#2196F3',
+                                            color: 'white',
+                                            padding: '12px 24px',
+                                            borderRadius: '12px',
+                                            border: 'none',
+                                            fontWeight: 'bold',
+                                            cursor: 'pointer',
+                                            flex: 1
+                                        }}
+                                        onClick={() => {
+                                            addRewards(500, 0);
+                                            alert(`✅ Added 500 XP!\nNew total: ${xp + 500}`);
+                                        }}
+                                    >
+                                        ⭐ +500 XP
+                                    </button>
+                                    <button
+                                        style={{
+                                            background: '#FFC107',
+                                            color: 'black',
+                                            padding: '12px 24px',
+                                            borderRadius: '12px',
+                                            border: 'none',
+                                            fontWeight: 'bold',
+                                            cursor: 'pointer',
+                                            flex: 1
+                                        }}
+                                        onClick={() => {
+                                            if (typeof debugAddStars === 'function') {
+                                                debugAddStars(1001);
+                                            } else {
+                                                alert("Debug function not ready yet");
+                                            }
+                                        }}
+                                    >
+                                        🌟 +1001 Stars
+                                    </button>
+                                    <button
+                                        style={{
+                                            background: '#9C27B0',
+                                            color: 'white',
+                                            padding: '12px 24px',
+                                            borderRadius: '12px',
+                                            border: 'none',
+                                            fontWeight: 'bold',
+                                            cursor: 'pointer',
+                                            flex: 1
+                                        }}
+                                        onClick={() => {
+                                            const result = maxStats();
+                                            alert(result.message);
+                                        }}
+                                    >
+                                        🌟 Max Stats
+                                    </button>
+                                    <button
+                                        style={{
+                                            background: '#607D8B',
+                                            color: 'white',
+                                            padding: '12px 24px',
+                                            borderRadius: '12px',
+                                            border: 'none',
+                                            fontWeight: 'bold',
+                                            cursor: 'pointer',
+                                            flex: 1
+                                        }}
+                                        onClick={() => navigate('/debug/layouts')}
+                                    >
+                                        🎨 Layout Preview
+                                    </button>
+                                    <button
+                                        style={{
+                                            background: '#FF9800',
+                                            color: 'white',
+                                            padding: '12px 24px',
+                                            borderRadius: '12px',
+                                            border: 'none',
+                                            fontWeight: 'bold',
+                                            cursor: 'pointer',
+                                            flex: 1
+                                        }}
+                                        onClick={() => {
+                                            localStorage.setItem('FORCE_TRAIN', 'true');
+                                            alert("🚂 Train Queued! Go back to Pet Room.");
+                                        }}
+                                    >
+                                        🚂 Call Train
+                                    </button>
+                                    <button
+                                        style={{
+                                            background: '#FF5722',
+                                            color: 'white',
+                                            padding: '12px 24px',
+                                            borderRadius: '12px',
+                                            border: 'none',
+                                            fontWeight: 'bold',
+                                            cursor: 'pointer',
+                                            flex: 1
+                                        }}
+                                        onClick={() => {
+                                            if (confirm("Unlock ALL games for testing?")) {
+                                                debugUnlockAllGames();
+                                            }
+                                        }}
+                                    >
+                                        🔓 Unlock All
+                                    </button>
+                                </div>
+                            </section>
+                        )}
                     </>
                 )}
 

@@ -69,6 +69,15 @@ Cloudflare Worker는 모든 사용자 데이터 API 요청에 대해 Firebase ID
 - Firebase ID Token 검증은 **요청 주체 검증**
 - JWK는 `Cache-Control max-age` 기반 캐시를 사용해 검증 오버헤드를 최소화
 
+### CORS와 저장 아키텍처의 관계
+- CORS는 브라우저 출처 정책이며, 하이브리드 저장 아키텍처의 데이터 정합성 보장 장치가 아닙니다.
+- 실제 저장 보호는 아래 계층이 담당합니다.
+  - Firebase ID Token 검증
+  - server-side rate limit
+  - request-shape validation
+  - sync queue / retry / local fallback
+- 즉, `L3 Cloud` 보호는 CORS가 아니라 **서버 검증 + 동기화 제어 계층**이 담당합니다.
+
 ---
 
 ## 데이터 흐름 (Data Flow)

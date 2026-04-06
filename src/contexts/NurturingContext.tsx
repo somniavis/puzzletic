@@ -155,6 +155,8 @@ interface NurturingProviderProps {
   children: React.ReactNode;
 }
 
+const ENABLE_DEBUG_ACTIONS = import.meta.env.DEV;
+
 export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }) => {
   const { user, guestId, isGuest } = useAuth();
   const dailyRoutineScopeId = user?.uid || guestId || undefined;
@@ -367,6 +369,11 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
   }, [refreshDailyRoutineForToday]);
 
   const debugUnlockAllGames = useCallback(() => {
+    if (!ENABLE_DEBUG_ACTIONS) {
+      console.warn('Debug actions are disabled outside development builds.');
+      return;
+    }
+
     setState((currentState) => {
       const newCategoryProgress = { ...currentState.categoryProgress };
       const categories = ['math-adventure', 'math-genius', 'brain-adventure'];
@@ -385,6 +392,11 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
   }, [setState]);
 
   const debugAddStars = useCallback((amount: number) => {
+    if (!ENABLE_DEBUG_ACTIONS) {
+      console.warn('Debug actions are disabled outside development builds.');
+      return;
+    }
+
     setState((currentState) => {
       const newStars = (currentState.totalGameStars || 0) + amount;
       alert(`✅ Added ${amount} Stars!\nNew total: ${newStars}`);

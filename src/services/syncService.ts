@@ -8,9 +8,65 @@ import type { NurturingPersistentState } from '../types/nurturing';
 import type { DailyRoutineReward } from './dailyRoutineRewardService';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.grogrojello.com';
+const CLIENT_SYNC_COOLDOWN_MS = 2200;
+const MAX_SERVER_RATE_LIMIT_WAIT_MS = 15000;
+const FETCH_USER_CACHE_TTL_MS = 5000;
 
 const fetchFromApi = (path: string, init?: RequestInit): Promise<Response> => {
     return fetch(`${API_BASE_URL}${path}`, init);
+};
+
+type FetchUserCacheEntry = {
+    expiresAt: number;
+    result: FetchUserResult;
+};
+type FetchUserOptions = {
+    forceFresh?: boolean;
+};
+
+type SyncQueueEntry = {
+    inFlight: boolean;
+    lastAttemptAt: number;
+    nextAllowedAt: number;
+    pendingState: NurturingPersistentState | null;
+    waiters: Array<(success: boolean) => void>;
+    timer: ReturnType<typeof setTimeout> | null;
+    user: User;
+};
+
+type SyncRequestResult =
+    | { success: true }
+    | { success: false; retryable: boolean; retryAfterMs?: number };
+
+const syncQueue = new Map<string, SyncQueueEntry>();
+const fetchUserInflight = new Map<string, Promise<FetchUserResult>>();
+const fetchUserCache = new Map<string, FetchUserCacheEntry>();
+
+const invalidateFetchUserCache = (uid: string) => {
+    fetchUserCache.delete(uid);
+};
+
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+const resolveWaiters = (waiters: Array<(success: boolean) => void>, success: boolean) => {
+    for (const resolve of waiters) {
+        resolve(success);
+    }
+};
+
+const parseRetryAfterMs = (response: Response, json?: any): number => {
+    const retryAfterHeader = response.headers.get('Retry-After');
+    const retryAfterSeconds = retryAfterHeader ? Number(retryAfterHeader) : NaN;
+    if (Number.isFinite(retryAfterSeconds) && retryAfterSeconds > 0) {
+        return retryAfterSeconds * 1000;
+    }
+
+    const retryAfterBody = Number(json?.retryAfterSeconds);
+    if (Number.isFinite(retryAfterBody) && retryAfterBody > 0) {
+        return retryAfterBody * 1000;
+    }
+
+    return CLIENT_SYNC_COOLDOWN_MS;
 };
 
 export interface CloudUserData {
@@ -42,7 +98,23 @@ export type FetchUserResult =
     | { success: true; data: CloudUserData }
     | { success: false; error: string; notFound?: boolean };
 
-export const fetchUserData = async (user: User): Promise<FetchUserResult> => {
+export const fetchUserData = async (user: User, options: FetchUserOptions = {}): Promise<FetchUserResult> => {
+    if (options.forceFresh) {
+        invalidateFetchUserCache(user.uid);
+    }
+
+    const cached = fetchUserCache.get(user.uid);
+    const now = Date.now();
+    if (!options.forceFresh && cached && cached.expiresAt > now) {
+        return cached.result;
+    }
+
+    const inflight = fetchUserInflight.get(user.uid);
+    if (inflight) {
+        return inflight;
+    }
+
+    const requestPromise = (async (): Promise<FetchUserResult> => {
     try {
         const token = await user.getIdToken();
         const response = await fetchFromApi(`/api/users/${user.uid}?t=${Date.now()}`, {
@@ -60,14 +132,30 @@ export const fetchUserData = async (user: User): Promise<FetchUserResult> => {
 
         const json = await response.json();
         if (json.found) {
-            return { success: true, data: json.data };
+            const result = { success: true, data: json.data } as const;
+            fetchUserCache.set(user.uid, {
+                expiresAt: Date.now() + FETCH_USER_CACHE_TTL_MS,
+                result,
+            });
+            return result;
         } else {
-            return { success: false, error: 'User not found in cloud', notFound: true };
+            const result = { success: false, error: 'User not found in cloud', notFound: true } as const;
+            fetchUserCache.set(user.uid, {
+                expiresAt: Date.now() + 1000,
+                result,
+            });
+            return result;
         }
     } catch (error: any) {
         console.warn('Failed to fetch cloud data:', error);
         return { success: false, error: error.message || 'Unknown error' };
+    } finally {
+        fetchUserInflight.delete(user.uid);
     }
+    })();
+
+    fetchUserInflight.set(user.uid, requestPromise);
+    return requestPromise;
 }
 
 /**
@@ -123,6 +211,194 @@ const compactStateForSync = (state: NurturingPersistentState): any => {
     return compactState;
 };
 
+const buildSyncPayload = (user: User, state: NurturingPersistentState) => {
+    const payload = {
+        email: user.email || null,
+        display_name: user.displayName || state.characterName || 'Player',
+        level: state.evolutionStage || 1,
+        xp: state.xp || 0,
+        gro: state.gro || 0,
+        star: state.totalGameStars || 0,
+        current_land: state.currentLand || 'default_ground',
+        current_house_id: state.currentHouseId || 'tent',
+        inventory: state.inventory || [],
+        game_data: JSON.stringify(sanitizeForD1(compactStateForSync(state))),
+        created_at: user.metadata.creationTime
+            ? new Date(user.metadata.creationTime).getTime()
+            : Date.now(),
+    };
+
+    return sanitizeForD1(payload);
+};
+
+const performSyncRequest = async (
+    user: User,
+    state: NurturingPersistentState
+): Promise<SyncRequestResult> => {
+    try {
+        const payload = buildSyncPayload(user, state);
+
+        let attempt = 0;
+        const MAX_ATTEMPTS = 2;
+
+        while (attempt < MAX_ATTEMPTS) {
+            attempt++;
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 15000);
+
+            try {
+                const token = await user.getIdToken();
+                const response = await fetchFromApi(`/api/users/${user.uid}`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(payload),
+                    keepalive: true,
+                    signal: controller.signal,
+                });
+
+                clearTimeout(timeoutId);
+
+                if (response.status === 429) {
+                    let json: any = null;
+                    try {
+                        json = await response.json();
+                    } catch {
+                        json = null;
+                    }
+
+                    const retryAfterMs = Math.min(
+                        parseRetryAfterMs(response, json),
+                        MAX_SERVER_RATE_LIMIT_WAIT_MS
+                    );
+                    console.warn(`☁️ Sync rate-limited. Retrying after ${retryAfterMs}ms.`);
+                    return { success: false, retryable: true, retryAfterMs };
+                }
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.warn(`☁️ Sync attempt ${attempt} failed: ${response.status} ${errorText}`);
+                    throw new Error(`Sync Error: ${response.status} - ${errorText}`);
+                }
+
+                const json = await response.json();
+                if (attempt > 1) {
+                    console.log('✅ Sync succeeded on retry!');
+                }
+                if (json.success) {
+                    return { success: true };
+                }
+
+                return { success: false, retryable: false };
+            } catch (error: any) {
+                clearTimeout(timeoutId);
+
+                if (error.name === 'AbortError') {
+                    console.warn(`☁️ Sync attempt ${attempt} timed out after 15s`);
+                } else {
+                    console.warn(`☁️ Sync attempt ${attempt} error:`, error.message);
+                }
+
+                if (attempt >= MAX_ATTEMPTS) {
+                    console.error('❌ All sync attempts failed.');
+                    return { success: false, retryable: false };
+                }
+
+                await sleep(1000);
+            }
+        }
+
+        return { success: false, retryable: false };
+    } catch (error: any) {
+        console.error('☁️ Sync error details:', error?.message || error);
+        return { success: false, retryable: false };
+    }
+};
+
+const scheduleSyncFlush = (uid: string, delayMs = 0) => {
+    const entry = syncQueue.get(uid);
+    if (!entry || entry.inFlight) return;
+
+    if (entry.timer) {
+        clearTimeout(entry.timer);
+    }
+
+    entry.timer = setTimeout(() => {
+        entry.timer = null;
+        void flushSyncQueue(uid);
+    }, Math.max(0, delayMs));
+};
+
+const flushSyncQueue = async (uid: string): Promise<void> => {
+    const entry = syncQueue.get(uid);
+    if (!entry || entry.inFlight || !entry.pendingState) return;
+
+    const now = Date.now();
+    const waitMs = Math.max(0, entry.nextAllowedAt - now);
+    if (waitMs > 0) {
+        scheduleSyncFlush(uid, waitMs);
+        return;
+    }
+
+    const stateToSync = entry.pendingState;
+    const batchWaiters = entry.waiters.splice(0);
+    entry.pendingState = null;
+    entry.inFlight = true;
+
+    const result = await performSyncRequest(entry.user, stateToSync);
+
+    entry.inFlight = false;
+
+    if (result.success) {
+        const completedAt = Date.now();
+        entry.lastAttemptAt = completedAt;
+        entry.nextAllowedAt = completedAt + CLIENT_SYNC_COOLDOWN_MS;
+        invalidateFetchUserCache(uid);
+        resolveWaiters(batchWaiters, true);
+    } else if (result.retryable) {
+        entry.pendingState = entry.pendingState || stateToSync;
+        entry.waiters = batchWaiters.concat(entry.waiters);
+        entry.nextAllowedAt = Date.now() + Math.max(result.retryAfterMs || CLIENT_SYNC_COOLDOWN_MS, CLIENT_SYNC_COOLDOWN_MS);
+        scheduleSyncFlush(uid, entry.nextAllowedAt - Date.now());
+        return;
+    } else {
+        resolveWaiters(batchWaiters, false);
+    }
+
+    if (entry.pendingState) {
+        scheduleSyncFlush(uid, Math.max(0, entry.nextAllowedAt - Date.now()));
+        return;
+    }
+
+    if (!entry.inFlight && entry.waiters.length === 0) {
+        syncQueue.delete(uid);
+    }
+};
+
+const enqueueSync = (user: User, state: NurturingPersistentState): Promise<boolean> => {
+    const existingEntry = syncQueue.get(user.uid);
+    const entry: SyncQueueEntry = existingEntry || {
+        inFlight: false,
+        lastAttemptAt: 0,
+        nextAllowedAt: 0,
+        pendingState: null,
+        waiters: [],
+        timer: null,
+        user,
+    };
+
+    entry.user = user;
+    entry.pendingState = state;
+    syncQueue.set(user.uid, entry);
+
+    return new Promise((resolve) => {
+        entry.waiters.push(resolve);
+        scheduleSyncFlush(user.uid, 0);
+    });
+};
+
 
 /**
  * Purchase Subscription
@@ -149,6 +425,7 @@ export const purchaseSubscription = async (
         }
 
         const json = await response.json();
+        invalidateFetchUserCache(user.uid);
         return json;
     } catch (error: any) {
         console.error('Purchase failed:', error);
@@ -179,6 +456,7 @@ export const cancelSubscription = async (
         }
 
         const json = await response.json();
+        invalidateFetchUserCache(user.uid);
         return json;
     } catch (error: any) {
         console.error('Cancellation failed:', error);
@@ -222,6 +500,7 @@ export const claimDailyRoutineReward = async (
             };
         }
 
+        invalidateFetchUserCache(user.uid);
         return {
             success: true,
             reward: json.reward,
@@ -274,110 +553,5 @@ export const syncUserData = async (
     user: User,
     state: NurturingPersistentState
 ): Promise<boolean> => {
-    try {
-        const token = await user.getIdToken();
-
-        // Prepare payload - clean and simple
-        const payload = {
-            // Persist email so production D1 rows can be traced when investigating account issues.
-            email: user.email || null,
-            display_name: user.displayName || state.characterName || 'Player',
-
-            // Individual columns (for D1 statistics/dashboard)
-            level: state.evolutionStage || 1,
-            xp: state.xp || 0,
-            gro: state.gro || 0,
-            star: state.totalGameStars || 0,
-            current_land: state.currentLand || 'default_ground',
-            /* 
-             * Redundancy: explicitly send house_id even if column doesn't exist yet, 
-             * to ensure it's debuggable in network tab.
-             */
-            current_house_id: state.currentHouseId || 'tent',
-            inventory: state.inventory || [],
-
-            // Full game state (source of truth for restoration)
-            // Compact format: poop/bug arrays -> counts (Hybrid Storage v2.1)
-            // Must sanitize to convert undefined → null (D1 requirement)
-            game_data: JSON.stringify(sanitizeForD1(compactStateForSync(state))),
-
-            // Timestamps
-            created_at: user.metadata.creationTime
-                ? new Date(user.metadata.creationTime).getTime()
-                : Date.now(),
-        };
-
-
-
-        // Sanitize entire payload to remove any undefined values
-        const sanitizedPayload = sanitizeForD1(payload);
-
-        // Debug: Log the exact payload being sent (Mask email for privacy)
-        const logPayload = { ...sanitizedPayload };
-        if (logPayload.email) logPayload.email = '*** (hidden) ***';
-
-
-        // Retry Logic: Attempt up to 2 times to handle Cold Starts or Transient Network Issues
-        let attempt = 0;
-        const MAX_ATTEMPTS = 2;
-
-        while (attempt < MAX_ATTEMPTS) {
-            attempt++;
-
-            // increased timeout to 15s for cold starts
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 15000);
-
-            try {
-                const response = await fetchFromApi(`/api/users/${user.uid}`, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${token}`, // Token might expire, but usually valid for 1h
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(sanitizedPayload),
-                    keepalive: true,
-                    signal: controller.signal,
-                });
-
-                clearTimeout(timeoutId);
-
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    // If 5xx error, it might be worth retrying. If 4xx, probably not (auth, bad request).
-                    // But for simplicity, we treat non-ok as failure to retry if possible.
-                    console.warn(`☁️ Sync attempt ${attempt} failed: ${response.status} ${errorText}`);
-                    throw new Error(`Sync Error: ${response.status} - ${errorText}`);
-                }
-
-                const json = await response.json();
-                if (attempt > 1) {
-                    console.log('✅ Sync succeeded on retry!');
-                }
-                return json.success;
-
-            } catch (error: any) {
-                clearTimeout(timeoutId);
-
-                if (error.name === 'AbortError') {
-                    console.warn(`☁️ Sync attempt ${attempt} timed out after 15s`);
-                } else {
-                    console.warn(`☁️ Sync attempt ${attempt} error:`, error.message);
-                }
-
-                if (attempt >= MAX_ATTEMPTS) {
-                    console.error('❌ All sync attempts failed.');
-                    return false;
-                }
-
-                // Wait 1s before retry
-                await new Promise(resolve => setTimeout(resolve, 1000));
-            }
-        }
-
-        return false;
-    } catch (error: any) {
-        console.error('☁️ Sync error details:', error?.message || error);
-        return false;
-    }
+    return enqueueSync(user, state);
 };

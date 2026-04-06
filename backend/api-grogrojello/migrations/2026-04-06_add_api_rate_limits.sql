@@ -1,0 +1,7 @@
+CREATE TABLE IF NOT EXISTS api_rate_limits (
+  key TEXT PRIMARY KEY,
+  count INTEGER NOT NULL DEFAULT 0,
+  window_start INTEGER NOT NULL,
+  last_seen INTEGER NOT NULL,
+  blocked_until INTEGER NOT NULL DEFAULT 0
+);

@@ -79,6 +79,7 @@ describe('Worker auth gate', () => {
 	beforeEach(async () => {
 		await env.DB.prepare('DROP TABLE IF EXISTS users').run();
 		await env.DB.prepare('DROP TABLE IF EXISTS daily_routine_claims').run();
+		await env.DB.prepare('DROP TABLE IF EXISTS api_rate_limits').run();
 		await env.DB.prepare(`
 			CREATE TABLE users (
 				uid TEXT PRIMARY KEY,
@@ -104,6 +105,15 @@ describe('Worker auth gate', () => {
 				date_key TEXT NOT NULL,
 				claimed_at INTEGER NOT NULL,
 				PRIMARY KEY (uid, date_key)
+			)
+		`).run();
+		await env.DB.prepare(`
+			CREATE TABLE api_rate_limits (
+				key TEXT PRIMARY KEY,
+				count INTEGER NOT NULL DEFAULT 0,
+				window_start INTEGER NOT NULL,
+				last_seen INTEGER NOT NULL,
+				blocked_until INTEGER NOT NULL DEFAULT 0
 			)
 		`).run();
 	});
@@ -192,6 +202,218 @@ describe('Worker auth gate', () => {
 		});
 	});
 
+	it('rate limits repeated authenticated GET requests for the same user', async () => {
+		const nowMs = Date.now();
+		await env.DB.prepare(`
+			INSERT INTO users (uid, email, display_name, level, xp, gro, star, current_land, inventory, game_data, created_at, last_synced_at, is_premium, subscription_end, subscription_plan)
+			VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+		`).bind(
+			userId,
+			'test@example.com',
+			'Tester',
+			2,
+			100,
+			50,
+			10,
+			'default_ground',
+			JSON.stringify([]),
+			JSON.stringify({ hasCharacter: true }),
+			nowMs,
+			nowMs,
+			0,
+			0,
+			null
+		).run();
+
+		const now = Math.floor(Date.now() / 1000);
+		const token = await signJwt(privateKey, publicJwk.kid, {
+			iss: `https://securetoken.google.com/${PROJECT_ID}`,
+			aud: PROJECT_ID,
+			sub: userId,
+			iat: now - 30,
+			exp: now + 3600,
+			auth_time: now - 30,
+		});
+
+		await withMockedJwks(publicJwk, async () => {
+			let lastResponse;
+			for (let i = 0; i < 7; i++) {
+				const request = new Request(`http://example.com/api/users/${userId}`, {
+					headers: {
+						Authorization: `Bearer ${token}`,
+						'CF-Connecting-IP': '203.0.113.10',
+					},
+				});
+				const ctx = createExecutionContext();
+				lastResponse = await worker.fetch(request, env, ctx);
+				await waitOnExecutionContext(ctx);
+			}
+
+			expect(lastResponse.status).toBe(429);
+			expect(lastResponse.headers.get('Retry-After')).toBeTruthy();
+			const body = await lastResponse.json();
+			expect(body.reason).toBe('user_rate_limit');
+		});
+	});
+
+	it('applies cooldown to repeated sync writes', async () => {
+		const now = Math.floor(Date.now() / 1000);
+		const token = await signJwt(privateKey, publicJwk.kid, {
+			iss: `https://securetoken.google.com/${PROJECT_ID}`,
+			aud: PROJECT_ID,
+			sub: userId,
+			iat: now - 30,
+			exp: now + 3600,
+			auth_time: now - 30,
+		});
+
+		const payload = {
+			email: 'test@example.com',
+			display_name: 'Tester',
+			level: 1,
+			xp: 0,
+			gro: 0,
+			star: 0,
+			current_land: 'default_ground',
+			inventory: [],
+			game_data: JSON.stringify({ hasCharacter: false }),
+			created_at: Date.now(),
+		};
+
+		await withMockedJwks(publicJwk, async () => {
+			const firstRequest = new Request(`http://example.com/api/users/${userId}`, {
+				method: 'POST',
+				headers: {
+					Authorization: `Bearer ${token}`,
+					'Content-Type': 'application/json',
+					'CF-Connecting-IP': '203.0.113.11',
+				},
+				body: JSON.stringify(payload),
+			});
+			const firstCtx = createExecutionContext();
+			const firstResponse = await worker.fetch(firstRequest, env, firstCtx);
+			await waitOnExecutionContext(firstCtx);
+			expect(firstResponse.status).toBe(200);
+
+			const secondRequest = new Request(`http://example.com/api/users/${userId}`, {
+				method: 'POST',
+				headers: {
+					Authorization: `Bearer ${token}`,
+					'Content-Type': 'application/json',
+					'CF-Connecting-IP': '203.0.113.11',
+				},
+				body: JSON.stringify(payload),
+			});
+			const secondCtx = createExecutionContext();
+			const secondResponse = await worker.fetch(secondRequest, env, secondCtx);
+			await waitOnExecutionContext(secondCtx);
+
+			expect(secondResponse.status).toBe(429);
+			const body = await secondResponse.json();
+			expect(body.reason).toBe('action_cooldown');
+		});
+	});
+
+	it('rejects abnormal star jumps during sync', async () => {
+		const nowMs = Date.now();
+		await env.DB.prepare(`
+			INSERT INTO users (uid, email, display_name, level, xp, gro, star, current_land, inventory, game_data, created_at, last_synced_at, is_premium, subscription_end, subscription_plan)
+			VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+		`).bind(
+			userId,
+			'test@example.com',
+			'Tester',
+			2,
+			100,
+			50,
+			10,
+			'default_ground',
+			JSON.stringify(['apple']),
+			JSON.stringify({
+				xp: 100,
+				gro: 50,
+				totalGameStars: 10,
+				evolutionStage: 2,
+				currentLand: 'default_ground',
+				inventory: ['apple'],
+			}),
+			nowMs,
+			nowMs,
+			0,
+			0,
+			null
+		).run();
+
+		const now = Math.floor(Date.now() / 1000);
+		const token = await signJwt(privateKey, publicJwk.kid, {
+			iss: `https://securetoken.google.com/${PROJECT_ID}`,
+			aud: PROJECT_ID,
+			sub: userId,
+			iat: now - 30,
+			exp: now + 3600,
+			auth_time: now - 30,
+		});
+
+		const payload = {
+			email: 'test@example.com',
+			display_name: 'Tester',
+			level: 2,
+			xp: 120,
+			gro: 70,
+			star: 80,
+			current_land: 'default_ground',
+			inventory: ['apple'],
+			game_data: JSON.stringify({
+				xp: 120,
+				gro: 70,
+				totalGameStars: 80,
+				evolutionStage: 2,
+				currentLand: 'default_ground',
+				inventory: ['apple'],
+			}),
+			created_at: nowMs,
+		};
+
+		await withMockedJwks(publicJwk, async () => {
+			const request = new Request(`http://example.com/api/users/${userId}`, {
+				method: 'POST',
+				headers: {
+					Authorization: `Bearer ${token}`,
+					'Content-Type': 'application/json',
+					'CF-Connecting-IP': '203.0.113.22',
+				},
+				body: JSON.stringify(payload),
+			});
+			const ctx = createExecutionContext();
+			const response = await worker.fetch(request, env, ctx);
+			await waitOnExecutionContext(ctx);
+
+			expect(response.status).toBe(400);
+			const body = await response.json();
+			expect(body.error).toContain('Abnormal star gain');
+		});
+	});
+
+	it('blocks repeated authentication failures from the same IP and uid', async () => {
+		const requestFactory = () => new Request(`http://example.com/api/users/${userId}`, {
+			headers: {
+				Authorization: 'Bearer invalid.token.value',
+				'CF-Connecting-IP': '203.0.113.12',
+			},
+		});
+
+		let lastResponse;
+		for (let i = 0; i < 6; i++) {
+			const ctx = createExecutionContext();
+			lastResponse = await worker.fetch(requestFactory(), env, ctx);
+			await waitOnExecutionContext(ctx);
+		}
+
+		expect(lastResponse.status).toBe(429);
+		const body = await lastResponse.json();
+		expect(body.reason).toBe('auth_failure_limit');
+	});
+
 	it('returns the matching allowed origin in CORS headers', async () => {
 		const request = new Request(`http://example.com/api/users/${userId}`, {
 			method: 'OPTIONS',
@@ -206,6 +428,33 @@ describe('Worker auth gate', () => {
 		expect(response.status).toBe(200);
 		expect(response.headers.get('Access-Control-Allow-Origin')).toBe('https://grogrojello.com');
 		expect(response.headers.get('Vary')).toContain('Origin');
+	});
+
+	it('rejects unsupported methods before auth', async () => {
+		const request = new Request(`http://example.com/api/users/${userId}`, {
+			method: 'DELETE',
+		});
+		const ctx = createExecutionContext();
+		const response = await worker.fetch(request, env, ctx);
+		await waitOnExecutionContext(ctx);
+
+		expect(response.status).toBe(405);
+		expect(response.headers.get('Allow')).toBe('GET, POST, OPTIONS');
+	});
+
+	it('rejects non-json post bodies before auth', async () => {
+		const request = new Request(`http://example.com/api/users/${userId}`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'text/plain',
+			},
+			body: 'bad body',
+		});
+		const ctx = createExecutionContext();
+		const response = await worker.fetch(request, env, ctx);
+		await waitOnExecutionContext(ctx);
+
+		expect(response.status).toBe(415);
 	});
 
 	it('allows private-network Vite dev origins in CORS headers', async () => {

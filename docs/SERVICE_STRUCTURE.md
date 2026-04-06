@@ -31,12 +31,35 @@ User management is handled via Firebase Authentication.
 - All `/api/users/:uid*` endpoints require `Authorization: Bearer <Firebase ID Token>`.
 - Worker verifies token signature (Google Secure Token JWK) and core claims (`iss`, `aud`, `exp`, `iat`, `sub`).
 - Authorization rule: `token.sub` must match path `:uid` (`403 UID mismatch` if different).
+- Worker applies server-side abuse controls before/around auth:
+  - request-shape rejection (`405`, `404`, `415`, `413`)
+  - rate limiting (`pre-auth`, `post-auth`, `auth failure`, `cooldown`)
 - Applies to:
   - `GET /api/users/:uid`
   - `POST /api/users/:uid`
   - `POST /api/users/:uid/purchase`
   - `POST /api/users/:uid/cancel`
 - Existing abnormal value checks (e.g. XP/GRO delta limits) remain as a secondary guard; token verification is the primary guard.
+
+### CORS Responsibility Boundary
+- Worker CORS is a browser-origin policy control, not a server-to-server attack defense.
+- A stolen Firebase ID token can still be used from non-browser clients unless server-side auth/rate-limit checks block it.
+- Therefore CORS allowlists are maintained for browser safety, while actual abuse prevention relies on auth validation, rate limits, request-shape validation, and monitoring.
+
+### Security Observability
+- Worker emits structured security logs for:
+  - denied origins
+  - invalid API paths / invalid request shapes
+  - auth rejection
+  - rate-limit hits
+  - abnormal XP/GRO delta rejection
+- Recommended fields to watch in production:
+  - `requestId`
+  - `ip`
+  - `uid`
+  - `routeGroup`
+  - `type`
+  - `retryAfterMs`
 
 ### Subscription Schema Requirement (D1)
 - Premium APIs require DB columns: `is_premium`, `subscription_end`, `subscription_plan`.
