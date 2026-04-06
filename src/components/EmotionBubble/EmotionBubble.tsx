@@ -33,6 +33,7 @@ export const EmotionBubble: React.FC<EmotionBubbleProps> = ({
   stage,
 }) => {
   const { t } = useTranslation();
+  const usesEmojiOnlyRoot = ['eat', 'eat_aftereffect', 'medicine_pill', 'medicine_shot', 'clean_spot', 'clean_fresh'].includes(category);
 
   // 1. Calculate Random Values only once per instance (or when dependencies change)
   const { position, expression, message } = useMemo(() => {
@@ -51,7 +52,7 @@ export const EmotionBubble: React.FC<EmotionBubbleProps> = ({
       // 3: toddler -> emoji -> default
       // 4-5: default
       const rootKeys =
-        stage && stage <= 2
+        usesEmojiOnlyRoot || (stage && stage <= 2)
           ? ['emotions.emoji']
           : stage === 3
             ? ['emotions.toddler', 'emotions', 'emotions.emoji']
@@ -79,7 +80,7 @@ export const EmotionBubble: React.FC<EmotionBubbleProps> = ({
     }
 
     return { position: pos, expression: expr, message: msg };
-  }, [category, level, personality, stage, t]);
+  }, [category, level, personality, stage, t, usesEmojiOnlyRoot]);
 
   if (!expression) {
     return null;
