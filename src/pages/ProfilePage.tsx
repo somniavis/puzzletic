@@ -282,7 +282,7 @@ export const ProfilePage: React.FC = () => {
                                             if (typeof debugAddStars === 'function') {
                                                 debugAddStars(1001);
                                             } else {
-                                                alert("Debug function not ready yet");
+                                                alert('Debug function not ready yet');
                                             }
                                         }}
                                     >
@@ -334,7 +334,7 @@ export const ProfilePage: React.FC = () => {
                                         }}
                                         onClick={() => {
                                             localStorage.setItem('FORCE_TRAIN', 'true');
-                                            alert("🚂 Train Queued! Go back to Pet Room.");
+                                            alert('🚂 Train Queued! Go back to Pet Room.');
                                         }}
                                     >
                                         🚂 Call Train
@@ -351,7 +351,7 @@ export const ProfilePage: React.FC = () => {
                                             flex: 1
                                         }}
                                         onClick={() => {
-                                            if (confirm("Unlock ALL games for testing?")) {
+                                            if (confirm('Unlock ALL games for testing?')) {
                                                 debugUnlockAllGames();
                                             }
                                         }}
@@ -361,6 +361,7 @@ export const ProfilePage: React.FC = () => {
                                 </div>
                             </section>
                         )}
+
                     </>
                 )}
 

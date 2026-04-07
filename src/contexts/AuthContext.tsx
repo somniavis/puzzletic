@@ -12,6 +12,7 @@ interface AuthContextType {
     isGuest: boolean;
     guestId: string | null;
     loginAsGuest: () => void;
+    isAdmin: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -41,6 +42,19 @@ const safeStorageRemove = (key: string) => {
     }
 };
 
+const getAdminEmailAllowlist = (): string[] => {
+    const raw = import.meta.env.VITE_ADMIN_EMAILS;
+
+    if (typeof raw !== 'string') {
+        return [];
+    }
+
+    return raw
+        .split(',')
+        .map((email) => email.trim().toLowerCase())
+        .filter(Boolean);
+};
+
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
@@ -54,6 +68,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const [guestId, setGuestId] = useState<string | null>(() => {
         return safeStorageGet('puzzleletic_guest_id');
     });
+    const [isAdmin, setIsAdmin] = useState(false);
 
     // Removed redundant useEffect for guestId loading
     // useEffect(() => { ... }, []);
@@ -63,10 +78,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             auth,
             (currentUser) => {
                 setUser(currentUser);
+                const adminEmails = getAdminEmailAllowlist();
+                const normalizedEmail = currentUser?.email?.toLowerCase() ?? '';
+
+                setIsAdmin(Boolean(normalizedEmail && adminEmails.includes(normalizedEmail)));
+
                 if (currentUser) {
                     // If logged in, we are NOT a guest. Clear guest flag.
                     setIsGuest(false);
                     safeStorageRemove('puzzleletic_is_guest_active');
+                } else {
+                    setIsAdmin(false);
                 }
                 // If no user, isGuest state persists from localStorage initialization
                 setLoading(false);
@@ -153,11 +175,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const logout = async () => {
         await firebaseSignOut(auth);
         setIsGuest(false); // Reset guest state on logout
+        setIsAdmin(false);
         safeStorageRemove('puzzleletic_is_guest_active');
     };
 
     return (
-        <AuthContext.Provider value={{ user, loading, logout, isGuest, guestId, loginAsGuest }}>
+        <AuthContext.Provider value={{ user, loading, logout, isGuest, guestId, loginAsGuest, isAdmin }}>
             {children}
         </AuthContext.Provider>
     );

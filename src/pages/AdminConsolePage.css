@@ -1,0 +1,182 @@
+.admin-console-page {
+    min-height: 100vh;
+    min-height: 100dvh;
+    padding: 24px;
+    background:
+        radial-gradient(circle at top left, rgba(249, 217, 73, 0.2), transparent 26%),
+        linear-gradient(180deg, #f4efe3 0%, #e7dfcf 100%);
+    color: #2f2419;
+}
+
+.admin-console-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 24px;
+    border: 3px solid #6f5842;
+    border-radius: 28px;
+    background: rgba(255, 250, 241, 0.94);
+    box-shadow: 0 14px 36px rgba(62, 43, 22, 0.12);
+}
+
+.admin-console-kicker {
+    margin: 0 0 8px;
+    font-size: 0.82rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #8a5a25;
+}
+
+.admin-console-header h1 {
+    margin: 0;
+    font-size: clamp(1.8rem, 4vw, 3rem);
+}
+
+.admin-console-subtitle {
+    margin: 10px 0 0;
+    max-width: 52rem;
+    line-height: 1.5;
+    color: #5f4a38;
+}
+
+.admin-console-header-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 10px;
+}
+
+.admin-console-identity {
+    padding: 10px 14px;
+    border-radius: 999px;
+    background: #f4dfb2;
+    font-weight: 700;
+}
+
+.admin-console-close {
+    border: 0;
+    border-radius: 14px;
+    padding: 12px 16px;
+    background: #2f2419;
+    color: #fff9f0;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.admin-console-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 18px 0 22px;
+}
+
+.admin-console-link {
+    padding: 10px 14px;
+    border-radius: 999px;
+    background: rgba(255, 250, 241, 0.82);
+    border: 2px solid rgba(111, 88, 66, 0.22);
+    color: #4b3723;
+    text-decoration: none;
+    font-weight: 700;
+}
+
+.admin-console-link.active {
+    background: #8a5a25;
+    color: white;
+    border-color: #8a5a25;
+}
+
+.admin-console-home,
+.admin-console-content {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.admin-console-panel {
+    padding: 20px;
+    border-radius: 22px;
+    background: rgba(255, 252, 246, 0.92);
+    border: 2px solid rgba(111, 88, 66, 0.14);
+}
+
+.admin-console-panel h2 {
+    margin: 0 0 12px;
+}
+
+.admin-console-list {
+    margin: 0;
+    padding-left: 20px;
+    line-height: 1.6;
+}
+
+.admin-console-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+}
+
+.admin-console-actions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+}
+
+.admin-console-note {
+    margin: 0 0 14px;
+    color: #6f5842;
+}
+
+.admin-console-button {
+    border: 0;
+    border-radius: 16px;
+    padding: 14px 16px;
+    background: #2f2419;
+    color: #fff9f0;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.admin-console-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.admin-tool-card {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 20px;
+    border-radius: 22px;
+    background: linear-gradient(180deg, #fffaf1 0%, #f7eddd 100%);
+    border: 2px solid rgba(111, 88, 66, 0.12);
+    text-decoration: none;
+    color: inherit;
+    box-shadow: 0 10px 24px rgba(62, 43, 22, 0.08);
+}
+
+.admin-tool-card h3,
+.admin-tool-card p {
+    margin: 0;
+}
+
+.admin-tool-card span {
+    margin-top: auto;
+    font-weight: 800;
+    color: #8a5a25;
+}
+
+@media (max-width: 720px) {
+    .admin-console-page {
+        padding: 16px;
+    }
+
+    .admin-console-header {
+        flex-direction: column;
+    }
+
+    .admin-console-header-actions {
+        align-items: stretch;
+    }
+}

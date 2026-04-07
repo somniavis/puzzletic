@@ -29,6 +29,7 @@ const EncyclopediaPage = lazy(() => import('./pages/EncyclopediaPage').then(modu
 const ProfilePage = lazy(() => import('./pages/ProfilePage').then(module => ({ default: module.ProfilePage })));
 const SharePage = lazy(() => import('./pages/SharePage').then(module => ({ default: module.SharePage })));
 const DebugLayoutPreview = lazy(() => import('./pages/DebugLayoutPreview').then(module => ({ default: module.DebugLayoutPreview })));
+const AdminConsolePage = lazy(() => import('./pages/AdminConsolePage').then(module => ({ default: module.AdminConsolePage })));
 
 const LandingPage = lazy(() => import('./pages/LandingPage').then(module => ({ default: module.LandingPage })));
 
@@ -41,6 +42,15 @@ const ProtectedRoute = ({ children }: { children: React.ReactElement }) => {
 
   // Allow if User is logged in OR is a Guest
   if (!user && !isGuest) return <Navigate to="/" replace />;
+
+  return children;
+};
+
+const AdminRoute = ({ children }: { children: React.ReactElement }) => {
+  const { user, isGuest, isAdmin, loading } = useAuth();
+  if (loading) return <AppLoadingOverlay />;
+  if (!user && !isGuest) return <Navigate to="/" replace />;
+  if (!user || isGuest || !isAdmin) return <Navigate to="/room" replace />;
 
   return children;
 };
@@ -266,7 +276,7 @@ function AppContent() {
         } />
 
         <Route path="/stats" element={
-          <ProtectedRoute>
+          <AdminRoute>
             <StatsPage
               character={character}
               selectedSpeciesId={selectedSpeciesId}
@@ -275,13 +285,13 @@ function AppContent() {
               onMoodChange={handleMoodChange}
               onActionChange={handleActionChange}
             />
-          </ProtectedRoute>
+          </AdminRoute>
         } />
 
         <Route path="/gallery" element={
-          <ProtectedRoute>
+          <AdminRoute>
             <GalleryPage onCharacterSelect={handleCharacterSelect} />
-          </ProtectedRoute>
+          </AdminRoute>
         } />
 
         <Route path="/jellobox" element={
@@ -301,6 +311,25 @@ function AppContent() {
             <DebugLayoutPreview />
           </ProtectedRoute>
         } />
+
+        <Route path="/admin" element={
+          <AdminRoute>
+            <AdminConsolePage />
+          </AdminRoute>
+        }>
+          <Route path="gallery" element={<GalleryPage onCharacterSelect={handleCharacterSelect} />} />
+          <Route path="layouts" element={<DebugLayoutPreview />} />
+          <Route path="stats" element={
+            <StatsPage
+              character={character}
+              selectedSpeciesId={selectedSpeciesId}
+              mood={mood}
+              action={action}
+              onMoodChange={handleMoodChange}
+              onActionChange={handleActionChange}
+            />
+          } />
+        </Route>
 
         {/* Default Redirect */}
         <Route path="*" element={<Navigate to="/" replace />} />

@@ -8,6 +8,7 @@ import { CLEANING_TOOLS, type CleaningTool } from '../../../types/cleaning';
 import { SHOP_ITEMS, SHOP_CATEGORIES, PET_ITEMS, type ShopCategory, type ShopItem } from '../../../types/shop';
 import { playButtonSound } from '../../../utils/sound';
 import { useNurturing } from '../../../contexts/NurturingContext';
+import { useAuth } from '../../../contexts/AuthContext';
 import type { CharacterAction } from '../../../types/character';
 
 interface PetRoomMenusProps {
@@ -125,9 +126,25 @@ export const PetRoomMenus: React.FC<PetRoomMenusProps> = ({
     flyingFood
 }) => {
     const { t } = useTranslation();
+    const { isAdmin } = useAuth();
 
     const filteredFoods = useMemo(() => FOOD_ITEMS.filter(food => food.category === selectedFoodCategory), [selectedFoodCategory]);
-    const filteredShopItems = useMemo(() => SHOP_ITEMS.filter(item => item.category === selectedShopCategory), [selectedShopCategory]);
+    const filteredShopItems = useMemo(
+        () =>
+            SHOP_ITEMS.filter((item) => {
+                if (item.category !== selectedShopCategory) {
+                    return false;
+                }
+
+                // Keep internal land templates out of the player-facing shop for non-admin accounts.
+                if (item.id === 'layout1_template' && !isAdmin) {
+                    return false;
+                }
+
+                return true;
+            }),
+        [isAdmin, selectedShopCategory]
+    );
 
     return (
         <>

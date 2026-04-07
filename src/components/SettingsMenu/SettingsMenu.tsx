@@ -20,7 +20,7 @@ export const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose }) =
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const { settings, toggleBgm, toggleSfx } = useSound();
-  const { logout } = useAuth();
+  const { logout, isAdmin } = useAuth();
   const { saveToCloud } = useNurturing();
   const [currentView, setCurrentView] = useState<MenuView>('main');
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'success' | 'error' | 'cooldown'>('idle');
@@ -120,13 +120,19 @@ export const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose }) =
 
   const handleNavigateToGallery = () => {
     playButtonSound();
-    navigate('/gallery');
+    navigate('/admin/gallery');
     onClose();
   };
 
   const handleNavigateToStats = () => {
     playButtonSound();
-    navigate('/stats');
+    navigate('/admin/stats');
+    onClose();
+  };
+
+  const handleNavigateToAdminConsole = () => {
+    playButtonSound();
+    navigate('/admin');
     onClose();
   };
 
@@ -198,10 +204,12 @@ export const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose }) =
               <span className="food-item-name">{t('settings.language.title')}</span>
             </button>
 
-            <button className="food-item" onClick={handleAdminClick}>
-              <span className="food-item-icon">🔧</span>
-              <span className="food-item-name">{t('settings.admin.title')}</span>
-            </button>
+            {isAdmin && (
+              <button className="food-item" onClick={handleAdminClick}>
+                <span className="food-item-icon">🔧</span>
+                <span className="food-item-name">{t('settings.admin.title')}</span>
+              </button>
+            )}
 
             <button className="food-item" onClick={handleLogout}>
               <span className="food-item-icon">🚪</span>
@@ -378,6 +386,11 @@ export const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose }) =
         {/* Admin Submenu */}
         {currentView === 'admin' && (
           <div className="food-items-grid">
+            <button className="food-item" onClick={handleNavigateToAdminConsole}>
+              <span className="food-item-icon">🧰</span>
+              <span className="food-item-name">{t('settings.admin.title')}</span>
+            </button>
+
             <button className="food-item" onClick={handleNavigateToGallery}>
               <span className="food-item-icon">🖼️</span>
               <span className="food-item-name">{t('settings.admin.gallery')}</span>

@@ -26,8 +26,8 @@ export const StatsPage: React.FC<StatsPageProps> = ({
     return (
         <>
             <div className="page-nav">
-                <button onClick={() => navigate('/home')}>🏠 Home</button>
-                <button onClick={() => navigate('/gallery')}>🖼️ Gallery</button>
+                <button onClick={() => navigate('/admin')}>🧰 Admin</button>
+                <button onClick={() => navigate('/admin/gallery')}>🖼️ Gallery</button>
             </div>
             <div className="app">
                 <div className="app-header">

@@ -22,7 +22,7 @@ export const DebugLayoutPreview: React.FC = () => {
             { icon: '👆', title: 'Tap', description: 'Tap the correct answer' },
             { icon: '⚡', title: 'Fast', description: 'Answer quickly for bonus' }
         ],
-        onExit: () => navigate('/profile'), // Return to profile
+        onExit: () => navigate('/admin'), // Return to admin console
         engine: engine
     };
 

@@ -13,8 +13,8 @@ export const GalleryPage: React.FC<GalleryPageProps> = ({ onCharacterSelect }) =
     return (
         <>
             <div className="page-nav">
-                <button onClick={() => navigate('/home')}>🏠 Home</button>
-                <button onClick={() => navigate('/stats')}>📊 Stats</button>
+                <button onClick={() => navigate('/admin')}>🧰 Admin</button>
+                <button onClick={() => navigate('/admin/stats')}>📊 Stats</button>
             </div>
             <CharacterAdmin onCharacterSelect={onCharacterSelect} />
         </>
