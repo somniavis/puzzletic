@@ -155,11 +155,10 @@ interface NurturingProviderProps {
   children: React.ReactNode;
 }
 
-const ENABLE_DEBUG_ACTIONS = import.meta.env.DEV;
-
 export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }) => {
-  const { user, guestId, isGuest } = useAuth();
+  const { user, guestId, isGuest, isAdmin } = useAuth();
   const dailyRoutineScopeId = user?.uid || guestId || undefined;
+  const debugActionsEnabled = import.meta.env.DEV || isAdmin;
 
 
 
@@ -369,7 +368,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
   }, [refreshDailyRoutineForToday]);
 
   const debugUnlockAllGames = useCallback(() => {
-    if (!ENABLE_DEBUG_ACTIONS) {
+    if (!debugActionsEnabled) {
       console.warn('Debug actions are disabled outside development builds.');
       return;
     }
@@ -389,10 +388,10 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
       alert('✅ All Games Unlocked! (Debug Mode)');
       return { ...currentState, categoryProgress: newCategoryProgress };
     });
-  }, [setState]);
+  }, [debugActionsEnabled, setState]);
 
   const debugAddStars = useCallback((amount: number) => {
-    if (!ENABLE_DEBUG_ACTIONS) {
+    if (!debugActionsEnabled) {
       console.warn('Debug actions are disabled outside development builds.');
       return;
     }
@@ -405,7 +404,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
         totalGameStars: newStars
       };
     });
-  }, [setState]);
+  }, [debugActionsEnabled, setState]);
 
   // Need to implement resetGame properly with imports
 

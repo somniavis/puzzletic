@@ -25,10 +25,10 @@ const tools = [
 export const AdminConsolePage: React.FC = () => {
     const location = useLocation();
     const navigate = useNavigate();
-    const { user } = useAuth();
+    const { user, isAdmin } = useAuth();
     const { gro, xp, addRewards, maxStats, debugAddStars, debugUnlockAllGames } = useNurturing();
     const isIndex = location.pathname === '/admin';
-    const debugActionsEnabled = import.meta.env.DEV;
+    const debugActionsEnabled = import.meta.env.DEV || isAdmin;
 
     return (
         <div className="admin-console-page">
@@ -91,7 +91,7 @@ export const AdminConsolePage: React.FC = () => {
                         </p>
                         {!debugActionsEnabled && (
                             <p className="admin-console-note">
-                                Debug mutation actions are disabled outside development builds.
+                                Debug mutation actions are disabled for non-admin production sessions.
                             </p>
                         )}
                         <div className="admin-console-actions">

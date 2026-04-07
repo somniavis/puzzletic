@@ -8,8 +8,6 @@ import './ProfilePage.css';
 
 type ProfileTab = 'my_jello' | 'pass';
 
-const ENABLE_DEBUG_ACTIONS = import.meta.env.DEV;
-
 const createParentGateCode = () =>
     Array.from({ length: 3 }, () => Math.floor(Math.random() * 9) + 1);
 
@@ -34,8 +32,9 @@ export const ProfilePage: React.FC = () => {
     const [parentGateCode, setParentGateCode] = React.useState<number[]>(() => createParentGateCode());
     const [parentGateInput, setParentGateInput] = React.useState('');
     const [parentGateError, setParentGateError] = React.useState('');
-    const { user } = useAuth();
+    const { user, isAdmin } = useAuth();
     const { gro, xp, addRewards, maxStats, subscription, purchasePlan, cancelSubscription, debugUnlockAllGames, debugAddStars } = useNurturing();
+    const showDebugMode = import.meta.env.DEV || isAdmin;
     const isPremium = subscription.isPremium;
     const isGuest = !user;
     const durationOfferLanguages = React.useMemo(
@@ -227,7 +226,7 @@ export const ProfilePage: React.FC = () => {
                             </button>
                         </section>
 
-                        {ENABLE_DEBUG_ACTIONS && (
+                        {showDebugMode && (
                             <section className="profile-section" style={{ background: '#ffebee', border: '2px dashed #f44336' }}>
                                 <p style={{ color: '#c62828', fontWeight: 'bold', marginBottom: '0.5rem' }}>🔧 DEBUG MODE (GRO: {gro} | XP: {xp})</p>
                                 <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
