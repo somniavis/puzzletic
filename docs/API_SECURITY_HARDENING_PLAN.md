@@ -435,6 +435,188 @@ Rate Limit 다음 단계입니다.
 
 ---
 
+## Phase 5. Cloudflare Free 플랜 Edge 차단
+
+이 단계는 "요청이 Worker와 D1까지 들어오기 전에 Cloudflare edge에서 먼저 잘라내기" 위한 운영 보안 단계입니다.
+
+### 적용 상태
+
+- 적용 완료: 2026-04-08
+- Cloudflare Dashboard 수동 설정 반영 완료
+- 대상 플랜: Cloudflare Free
+
+### 왜 필요한가
+
+현재 Worker 내부 방어는 잘 들어가 있지만, 공격 요청이 Worker까지 도달하면 아래 비용이 이미 발생합니다.
+
+- Worker 실행 비용
+- Firebase JWT 검증 비용
+- `api_rate_limits` D1 read/write 비용
+
+즉, Worker 내부 rate limit은 중요하지만 "과다 청구 방지" 관점에서는 충분조건이 아닙니다.
+가장 좋은 다음 단계는 edge에서 먼저 비정상 요청을 차단하는 것입니다.
+
+### Free 플랜 제약
+
+Cloudflare Free 플랜 기준으로 현실적으로 활용하는 범위는 아래입니다.
+
+1. Rate limiting rule: 1개
+2. Custom rules: 최대 5개
+3. Free Managed Ruleset: 기본 배포 상태 활용
+
+따라서 Free 플랜에서는 "가장 비싼 경로 1개에 집중"하는 전략이 적절합니다.
+
+### 핵심 원칙
+
+1. edge rule은 Worker보다 느슨하게
+
+- Free 플랜의 edge rule은 IP 기준만 보므로 NAT/학교/가정 공유망 오탐 가능성이 있습니다.
+- 따라서 Worker 내부 `uid` 기반 제한보다 더 느슨한 threshold로 시작합니다.
+
+2. 가장 비싼 경로 우선
+
+- `GET /api/users/:uid` 보다
+- `POST /api/users/:uid` 계열이 Worker CPU + D1 write 비용이 큽니다.
+
+따라서 Free 플랜의 유일한 rate limiting rule은 `POST /api/users/*`에 배정합니다.
+
+3. 초기 액션은 플랜 UI 기준으로 보수적으로 선택
+
+- 일부 Free 플랜 UI에서는 `Managed Challenge` 대신 `Block` 중심으로 제공될 수 있습니다.
+- 이 경우 threshold를 더 느슨하게 두고 짧은 차단 시간으로 운영을 시작합니다.
+
+### 적용 계획
+
+#### 1. Edge Rate Limiting Rule 1개
+
+대상:
+
+- `POST https://api.grogrojello.com/api/users/*`
+
+목표:
+
+- 대량 반복 sync/write 공격이 Worker까지 도달하기 전에 1차 완화
+
+권장 조건:
+
+```text
+http.host eq "api.grogrojello.com"
+and http.request.method eq "POST"
+and starts_with(http.request.uri.path, "/api/users/")
+```
+
+설계 초기값:
+
+- 기준: IP
+- 임계값: `10초 동안 15회`
+- 액션: `Managed Challenge`
+
+설계 이유:
+
+- Worker 내부 `userSync pre-auth 10초 4회`보다 더 느슨하게 두어 NAT 환경 오탐을 줄임
+- 그래도 명백한 단기 폭주 트래픽은 edge에서 먼저 흡수 가능
+
+실제 적용값:
+
+- rule name: `api-users-post-edge-protect`
+- 기준: IP
+- 임계값: `10초 동안 30회`
+- 액션: `Block`
+- duration: `10 seconds`
+
+실제 적용 이유:
+
+- 현재 Free 플랜 UI에서 rate limiting action이 `Block` 중심으로 노출
+- duration 선택지가 `10 seconds`로 제한되어 있어 짧은 차단 시간 기준으로 시작
+- `30/10초`는 정상 사용자를 거의 건드리지 않으면서 단기 폭주만 우선 완화하는 보수적 설정
+
+#### 2. Custom Rule 1: 비정상 메서드 차단
+
+대상:
+
+- `/api/users/*` 경로의 허용되지 않은 메서드
+
+권장 조건:
+
+```text
+http.host eq "api.grogrojello.com"
+and starts_with(http.request.uri.path, "/api/users/")
+and not http.request.method in {"GET" "POST" "OPTIONS"}
+```
+
+권장 액션:
+
+- `Block`
+
+설계 이유:
+
+- Worker까지 도달하기 전에 명백한 잡음 요청 제거
+- 정상 브라우저/API 플로우에 영향이 거의 없음
+
+실제 적용 상태:
+
+- 적용 완료: 2026-04-08
+- rule name: `block-invalid-api-methods`
+- action: `Block`
+
+#### 3. Custom Rule 2: 보안 관측용 예비 룰
+
+Free 플랜에서는 rule 개수가 적으므로, 나머지 custom rule은 즉시 배포보다 예비 슬롯으로 남겨두는 것이 좋습니다.
+
+후보 예시:
+
+- 특정 국가 차단이 필요할 때 임시 `Block`
+- 특정 ASN/IP 대역 차단
+- `POST /api/users/*`에 대해 비정상적인 `User-Agent` 패턴 `Managed Challenge`
+
+### Worker 내부 방어와의 역할 분리
+
+#### Cloudflare edge
+
+- 대량/분산 요청 1차 차단
+- Worker 및 D1 비용 절감
+- 명백한 비정상 메서드/폭주 트래픽 조기 차단
+
+#### Worker 내부
+
+- UID 기준 rate limit
+- auth failure 누적
+- cooldown
+- 정상 사용자 동기화와 하이브리드 스토리지 정합성 유지
+
+즉, edge는 대문 보안이고 Worker는 실내 보안입니다.
+
+### 예상 효과
+
+- Worker 실행 수 감소
+- `api_rate_limits` D1 read/write 감소
+- 분산형 원가 유발 공격에 대한 방어력 상승
+- Free 플랜에서도 비용 대비 효율적인 과다 청구 리스크 완화
+
+### 실제 적용 후 기대 효과 정리
+
+1. `/api/users/*`에 대한 비정상 메서드는 Worker 이전에 즉시 차단
+2. `POST /api/users/*` 단기 폭주 요청은 Cloudflare edge에서 1차 차단
+3. edge를 통과한 요청만 Worker 내부 `pre-auth/post-auth/cooldown` 방어가 처리
+4. Worker CPU, JWT 검증, D1 rate limit read/write 비용을 이전보다 더 줄일 수 있음
+5. 단일 탈취 토큰 남용뿐 아니라 짧은 시간 반복형 비용 유발 공격에 대한 저항성이 상승
+
+### 적용 시 주의점
+
+1. Free 플랜의 IP 기준 edge limit는 NAT 환경에서 오탐 가능성이 있음
+2. 따라서 초기는 `Managed Challenge`로 시작하는 것이 안전
+3. 실제 정상 사용자 `429` 또는 challenge 증가가 보이면 threshold를 완화
+4. 트래픽 규모가 늘면 Pro 플랜에서 경로별 rule 세분화로 확장
+
+### 다음 단계
+
+1. Security Analytics / WAF Events로 false positive 관측
+2. 필요하면 `30/10초` 기준을 상향
+3. 정상 사용자가 edge block에 걸리지 않는지 1~3일 확인
+4. 사용량 증가 시 Pro 플랜으로 업그레이드 후 rule 분리
+
+---
+
 ## 구현 우선순위
 
 이번 작업은 아래 순서로 진행합니다.
@@ -444,6 +626,7 @@ Rate Limit 다음 단계입니다.
 3. 엔드포인트별 요청 비용 절감 작업
 4. CORS 역할 재정의 및 운영 로그 보강
 5. 게임 데이터 조작 방어 적용
+6. Cloudflare Free 플랜 edge 차단 적용
 
 ---
 
@@ -460,6 +643,130 @@ Rate Limit 다음 단계입니다.
 - `src/contexts/AuthContext.tsx`
 - `docs/SERVICE_STRUCTURE.md`
 - `docs/HYBRID_STORAGE_ARCHITECTURE.md`
+
+---
+
+## 운영 반영 체크리스트
+
+이 섹션은 위 하드닝 내용을 실제 운영에 반영하고 점검하기 위한 실행 체크리스트입니다.
+
+### 현재 운영 반영 상태
+
+- D1 `api_rate_limits` 마이그레이션 적용 완료
+- Cloudflare Worker 배포 완료
+- Cloudflare Free 플랜 edge rule 적용 완료
+  - `api-users-post-edge-protect`
+  - `block-invalid-api-methods`
+
+### 사전 확인
+
+1. 로컬 Worker 테스트 통과
+   - `cd backend/api-grogrojello`
+   - `npx vitest run --reporter=verbose`
+2. 프론트 빌드 통과
+   - `npm run build`
+3. 운영 Worker 설정 확인
+   - custom domain: `api.grogrojello.com`
+   - D1 binding: `DB`
+   - `FIREBASE_PROJECT_ID` 확인
+
+### 운영 적용 순서
+
+1. D1 마이그레이션 적용
+   - `backend/api-grogrojello/migrations/2026-04-06_add_api_rate_limits.sql`
+2. Worker 배포
+   - `cd backend/api-grogrojello`
+   - `npm run deploy`
+3. Cloudflare Free 플랜 rule 적용
+   - Rate limiting rule: `api-users-post-edge-protect`
+   - Custom rule: `block-invalid-api-methods`
+
+### 현재 운영 기준값
+
+#### Worker 내부
+
+- `userRead`
+  - pre-auth: `10초 8회`, `1분 20회`
+  - post-auth: `10초 6회`, `1분 15회`
+- `userSync`
+  - pre-auth: `10초 4회`, `1분 10회`
+  - post-auth: `10초 3회`, `1분 8회`
+  - cooldown: `약 2초`
+- `dailyRoutineClaim`
+  - pre-auth: `10초 2회`, `1분 3회`
+  - post-auth: `10초 2회`, `1분 3회`
+- `auth failure`
+  - `1분 5회`
+  - `15분 12회`
+
+#### Cloudflare Free Edge
+
+- rate limiting rule
+  - path: `POST /api/users/*`
+  - 기준: `IP`
+  - threshold: `10초 30회`
+  - action: `Block`
+  - duration: `10 seconds`
+- custom rule
+  - path: `/api/users/*`
+  - condition: `GET`, `POST`, `OPTIONS` 외 메서드
+  - action: `Block`
+
+### 배포 직후 스모크 테스트
+
+1. 인증 게이트
+   - `https://api.grogrojello.com/api/users/test` 무인증 호출 시 `401`
+2. 정상 사용자 흐름
+   - 로그인 후 cloud 복원
+   - 일반 저장 1회
+   - logout 직전 저장
+   - 다른 세션 또는 다른 기기에서 복원
+3. rate limit 흐름
+   - 짧은 시간 반복 저장 시도
+   - 과도한 경우 `429` 또는 edge block 확인
+
+### 운영 로그 확인
+
+정상 범주:
+
+- 소량의 `auth_rejected`
+- 드문 `cors_origin_denied`
+
+주의 범주:
+
+- 특정 `ip`에서 반복되는 `auth_rejected`
+- 특정 `uid`에 집중되는 `rate_limit_hit`
+- 반복적인 `request_shape_rejected`
+- `abnormal_value_rejected`
+- Cloudflare Security Events에서 edge block 증가
+
+### 사용자 영향 모니터링
+
+1. 로그인 후 cloud 복원 지연
+2. save 실패 증가
+3. logout 직전 저장 실패 증가
+4. 신규 계정 초기화 지연
+5. daily routine claim 실패 증가
+6. 정상 플레이 후 cloud 저장 누락 증가
+7. 정상 사용자가 edge block에 자주 걸리는지
+
+### 롤백/완화 기준
+
+아래 중 하나면 즉시 완화 또는 재조정을 검토합니다.
+
+1. 정상 사용자 `429` 비율 급증
+2. logout 직전 저장 실패 반복
+3. 로그인 복원 실패 다수 보고
+4. 정상 사용자 sync가 `abnormal_value_rejected`로 반복 차단
+5. 정상 사용자가 Cloudflare edge block에 반복적으로 걸림
+
+완화 방법:
+
+1. Worker rate limit 수치 상향
+2. cooldown 완화
+3. structured log 범위 축소
+4. `abnormal_value_rejected` 기준 재조정
+5. Cloudflare edge threshold 완화
 
 ---
 

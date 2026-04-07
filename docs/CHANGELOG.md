@@ -35,6 +35,17 @@
 - `star` 급증 제한과 신규 유저 초기값 제한을 추가해 별/진행도 비정상 증폭을 차단했습니다.
 - 프로덕션 빌드에서는 Profile 페이지 디버그 패널과 `debugAddStars`, `debugUnlockAllGames` 동작을 비활성화했습니다.
 
+### ☁️ Cloudflare Free Edge 방어 계획 정리
+- Cloudflare Free 플랜 기준으로 적용 가능한 edge rate limiting / custom rule 운영안을 문서화했습니다.
+- Free 플랜에서는 rule 1개를 `POST /api/users/*`에 집중하고, Worker 내부 rate limit은 2차 방어로 유지하는 전략으로 정리했습니다.
+- 운영 체크리스트에 Cloudflare Dashboard 수동 적용 순서와 false positive 관측 항목을 추가했습니다.
+
+### 🧱 Cloudflare Free Edge 방어 적용 완료
+- Cloudflare Security rules에 `block-invalid-api-methods` custom rule을 적용했습니다.
+- Cloudflare Rate limiting rules에 `api-users-post-edge-protect` rule을 적용했습니다.
+- 현재 운영값은 `POST /api/users/*`에 대해 `IP 기준 10초 30회 초과 시 10초 Block`입니다.
+- 이로써 비정상 메서드는 Worker 이전에 차단되고, 반복 sync 폭주는 Cloudflare edge에서 1차 차단된 뒤 Worker 내부 rate limit이 2차 방어를 수행하는 구조가 됐습니다.
+
 ## 2026-03-28 (Domain Rollout & Bundle Optimization)
 
 ### 🌐 신규 도메인 적용 완료 (Production Domain Rollout)
