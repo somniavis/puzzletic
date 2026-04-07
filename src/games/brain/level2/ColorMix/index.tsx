@@ -29,7 +29,19 @@ const GAME_ID = GameIds.COLOR_MIX;
 const SUCCESS_THRESHOLD = 80;
 const EMPTY_PALETTE_HEX = '#f8fafc';
 
-type PaintId = 'red' | 'yellow' | 'blue' | 'green' | 'black' | 'white';
+type PaintId =
+    | 'red'
+    | 'yellow'
+    | 'blue'
+    | 'green'
+    | 'orange'
+    | 'purple'
+    | 'pink'
+    | 'sky'
+    | 'lime'
+    | 'brown'
+    | 'black'
+    | 'white';
 type FruitType = 'apple' | 'orange' | 'banana' | 'grape' | 'strawberry' | 'peach' | 'melon';
 
 interface PaintDefinition {
@@ -44,8 +56,7 @@ interface FruitVariant {
     fruitType: FruitType;
     fruitLabel: string;
     targetHex: string;
-    requiredPaints: readonly PaintId[];
-    candidatePaints: readonly PaintId[];
+    requiredPaints: readonly [PaintId, PaintId];
 }
 
 interface RoundDefinition extends FruitVariant {
@@ -69,18 +80,17 @@ interface FruitDefinition {
     fruitLabel: string;
 }
 
-interface ColorRecipe {
-    targetHex: string,
-    requiredPaints: readonly PaintId[],
-    candidatePaints: readonly PaintId[],
-    difficultyTier: 'basic' | 'ratio',
-}
-
 const PAINTS: Record<PaintId, PaintDefinition> = {
     red: { id: 'red', label: 'Red', hex: '#ef4444', strength: 1.08, textColor: '#ffffff' },
     yellow: { id: 'yellow', label: 'Yellow', hex: '#facc15', strength: 0.94, textColor: '#1f2937' },
     blue: { id: 'blue', label: 'Blue', hex: '#3b82f6', strength: 1.05, textColor: '#ffffff' },
     green: { id: 'green', label: 'Green', hex: '#22c55e', strength: 1.02, textColor: '#ffffff' },
+    orange: { id: 'orange', label: 'Orange', hex: '#fb923c', strength: 1, textColor: '#ffffff' },
+    purple: { id: 'purple', label: 'Purple', hex: '#8b5cf6', strength: 1.02, textColor: '#ffffff' },
+    pink: { id: 'pink', label: 'Pink', hex: '#ec4899', strength: 0.98, textColor: '#ffffff' },
+    sky: { id: 'sky', label: 'Sky', hex: '#38bdf8', strength: 0.95, textColor: '#ffffff' },
+    lime: { id: 'lime', label: 'Lime', hex: '#84cc16', strength: 0.96, textColor: '#1f2937' },
+    brown: { id: 'brown', label: 'Brown', hex: '#92400e', strength: 1.08, textColor: '#ffffff' },
     black: { id: 'black', label: 'Black', hex: '#0f172a', strength: 1.28, textColor: '#ffffff' },
     white: { id: 'white', label: 'White', hex: '#f8fafc', strength: 0.82, textColor: '#334155' },
 };
@@ -108,38 +118,56 @@ const shuffleItems = <T,>(items: readonly T[]) => {
     return next;
 };
 
-const createPaintChoices = (requiredPaints: readonly PaintId[], candidatePaints: readonly PaintId[]) => {
-    const uniqueRequired = Array.from(new Set(requiredPaints));
-    const fillerSource = shuffleItems(
-        candidatePaints.filter((paintId) => !uniqueRequired.includes(paintId))
-    );
-    const fallbackSource = shuffleItems(
-        ALL_PAINT_IDS.filter((paintId) => !uniqueRequired.includes(paintId) && !candidatePaints.includes(paintId))
-    );
+const buildPaintSet = (requiredPaints: readonly [PaintId, PaintId]) => {
+    const fillers = shuffleItems(
+        ALL_PAINT_IDS.filter((paintId) => !requiredPaints.includes(paintId))
+    ).slice(0, 2);
 
-    const selected = [...uniqueRequired];
-    [...fillerSource, ...fallbackSource].forEach((paintId) => {
-        if (selected.length >= 4 || selected.includes(paintId)) return;
-        selected.push(paintId);
-    });
-
-    return shuffleItems(selected.slice(0, 4));
+    return shuffleItems([...requiredPaints, ...fillers]);
 };
 
-const createRound = (difficultyPhase: 'basic' | 'mixed' = 'mixed'): RoundDefinition => {
+const getPaintCombinationKey = (paintIds: readonly [PaintId, PaintId]) => (
+    [...paintIds].sort().join('-')
+);
+
+const createRound = (previousCombinationKey?: string | null): RoundDefinition => {
+    let attempts = 0;
+
+    while (attempts < 12) {
+        const fruit = randomItem(FRUITS);
+        const paints = shuffleItems(ALL_PAINT_IDS).slice(0, 4) as PaintId[];
+        const requiredPaints = shuffleItems(paints).slice(0, 2) as [PaintId, PaintId];
+        const combinationKey = getPaintCombinationKey(requiredPaints);
+
+        if (combinationKey === previousCombinationKey) {
+            attempts += 1;
+            continue;
+        }
+
+        const targetHex = mixPaintsWeighted(requiredPaints);
+
+        return {
+            fruitType: fruit.fruitType,
+            fruitLabel: fruit.fruitLabel,
+            targetHex,
+            requiredPaints,
+            paints: buildPaintSet(requiredPaints),
+            id: `${fruit.fruitLabel}-${targetHex}-${requiredPaints.join('-')}-${Math.random().toString(36).slice(2, 8)}`
+        };
+    }
+
     const fruit = randomItem(FRUITS);
-    const recipePool = difficultyPhase === 'basic'
-        ? BASIC_COLOR_RECIPES
-        : COLOR_RECIPES;
-    const recipe = randomItem(recipePool);
+    const paints = shuffleItems(ALL_PAINT_IDS).slice(0, 4) as PaintId[];
+    const requiredPaints = shuffleItems(paints).slice(0, 2) as [PaintId, PaintId];
+    const targetHex = mixPaintsWeighted(requiredPaints);
+
     return {
         fruitType: fruit.fruitType,
         fruitLabel: fruit.fruitLabel,
-        targetHex: recipe.targetHex,
-        requiredPaints: recipe.requiredPaints,
-        candidatePaints: recipe.candidatePaints,
-        paints: createPaintChoices(recipe.requiredPaints, recipe.candidatePaints),
-        id: `${fruit.fruitLabel}-${recipe.targetHex}-${Math.random().toString(36).slice(2, 8)}`
+        targetHex,
+        requiredPaints,
+        paints: buildPaintSet(requiredPaints),
+        id: `${fruit.fruitLabel}-${targetHex}-${requiredPaints.join('-')}-${Math.random().toString(36).slice(2, 8)}`
     };
 };
 
@@ -238,53 +266,6 @@ const mixPaintsWeighted = (paintIds: PaintId[]) => {
     });
 };
 
-const TWO_PAINT_RECIPE_PAIRS: readonly [PaintId, PaintId][] = [
-    ['red', 'yellow'],
-    ['red', 'blue'],
-    ['blue', 'yellow'],
-    ['yellow', 'green'],
-    ['blue', 'green'],
-    ['red', 'green'],
-    ['red', 'white'],
-    ['yellow', 'white'],
-    ['blue', 'white'],
-    ['green', 'white'],
-    ['red', 'black'],
-    ['yellow', 'black'],
-    ['blue', 'black'],
-    ['green', 'black'],
-    ['white', 'black'],
-];
-
-const TWO_PAINT_COUNT_PATTERNS: readonly [number, number][] = [
-    [1, 1],
-    [2, 1],
-    [1, 2],
-    [3, 1],
-    [1, 3],
-    [2, 2],
-    [3, 2],
-    [2, 3],
-];
-
-const COLOR_RECIPES: readonly ColorRecipe[] = TWO_PAINT_RECIPE_PAIRS.flatMap(([firstPaint, secondPaint]) => {
-    return TWO_PAINT_COUNT_PATTERNS.map(([firstCount, secondCount]) => {
-        const requiredPaints = [
-            ...Array.from({ length: firstCount }, () => firstPaint),
-            ...Array.from({ length: secondCount }, () => secondPaint),
-        ] as PaintId[];
-
-        return {
-            targetHex: mixPaintsWeighted(requiredPaints),
-            requiredPaints,
-            candidatePaints: ALL_PAINT_IDS,
-            difficultyTier: firstCount === 1 && secondCount === 1 ? 'basic' : 'ratio',
-        };
-    });
-});
-
-const BASIC_COLOR_RECIPES = COLOR_RECIPES.filter((recipe) => recipe.difficultyTier === 'basic');
-
 const calculateMatchPercent = (targetHex: string, mixedHex: string) => {
     const target = hexToOklab(targetHex);
     const mixed = hexToOklab(mixedHex);
@@ -316,10 +297,10 @@ const getFruitSvgMarkup = (fruitType: FruitType, color: string) => {
         return cachedMarkup;
     }
 
-    const light = mixHex(color, '#ffffff', 0.28);
-    const lighter = mixHex(color, '#ffffff', 0.45);
-    const dark = mixHex(color, '#000000', 0.18);
-    const darker = mixHex(color, '#000000', 0.32);
+    const light = mixHex(color, '#ffffff', 0.14);
+    const lighter = mixHex(color, '#ffffff', 0.24);
+    const dark = mixHex(color, '#000000', 0.1);
+    const darker = mixHex(color, '#000000', 0.18);
 
     let markup = '';
 
@@ -338,8 +319,8 @@ const getFruitSvgMarkup = (fruitType: FruitType, color: string) => {
         });
     } else if (fruitType === 'banana') {
         markup = replaceFillColors(bananaAsset, {
-            '#FFE8B6': lighter,
-            '#FFD983': light,
+            '#FFE8B6': light,
+            '#FFD983': color,
             '#FFCC4D': color,
         });
     } else if (fruitType === 'strawberry') {
@@ -356,9 +337,9 @@ const getFruitSvgMarkup = (fruitType: FruitType, color: string) => {
         });
     } else if (fruitType === 'melon') {
         markup = replaceFillColors(melonAsset, {
-            '#A6D388': light,
+            '#A6D388': color,
             '#77B255': color,
-            '#5C913B': darker,
+            '#5C913B': dark,
         });
     } else {
         markup = replaceFillColors(grapesAsset, {
@@ -422,11 +403,8 @@ export default function ColorMix({ onExit }: ColorMixProps) {
     });
     const { submitAnswer, registerEvent } = engine;
 
-    const totalResolvedRounds = engine.stats.correct + engine.stats.wrong;
-    const difficultyPhase: 'basic' | 'mixed' = totalResolvedRounds < 3 ? 'basic' : 'mixed';
-    const difficultyPhaseRef = useRef<'basic' | 'mixed'>(difficultyPhase);
-
-    const [round, setRound] = useState<RoundDefinition>(() => createRound('basic'));
+    const [round, setRound] = useState<RoundDefinition>(() => createRound());
+    const previousCombinationKeyRef = useRef<string | null>(getPaintCombinationKey(round.requiredPaints));
     const [palettePaints, setPalettePaints] = useState<PaintId[]>([]);
     const [matchResult, setMatchResult] = useState<MatchResult | null>(null);
     const [resolvedRoundId, setResolvedRoundId] = useState<string | null>(null);
@@ -444,11 +422,7 @@ export default function ColorMix({ onExit }: ColorMixProps) {
     const isResultVisible = matchResult !== null;
     const isPlaying = engine.gameState === 'playing';
     const areControlsLocked = !isPlaying || isResolvingMatch || isResultVisible;
-    const canCheckAnswer = isPlaying && palettePaints.length > 0 && !isResolvingMatch && !isResultVisible;
-
-    useEffect(() => {
-        difficultyPhaseRef.current = difficultyPhase;
-    }, [difficultyPhase]);
+    const canCheckAnswer = isPlaying && palettePaints.length === 2 && !isResolvingMatch && !isResultVisible;
 
     const clearResolutionTimers = useCallback(() => {
         if (feedbackTimerRef.current !== null) {
@@ -516,12 +490,15 @@ export default function ColorMix({ onExit }: ColorMixProps) {
 
     const moveToNextRound = useCallback(() => {
         clearResolutionTimers();
-        setRound(createRound(difficultyPhaseRef.current));
+        const nextRound = createRound(previousCombinationKeyRef.current);
+        previousCombinationKeyRef.current = getPaintCombinationKey(nextRound.requiredPaints);
+        setRound(nextRound);
         resetRoundProgress();
     }, [clearResolutionTimers, resetRoundProgress]);
 
     const handleAddPaint = (paintId: PaintId, event?: MouseEvent<HTMLButtonElement>) => {
         if (areControlsLocked) return;
+        if (palettePaints.includes(paintId) || palettePaints.length >= 2) return;
         event?.currentTarget.blur();
         const nextPaints = [...palettePaints, paintId];
         const nextMixedHex = mixPaintsWeighted(nextPaints);
