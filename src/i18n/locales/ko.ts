@@ -52,6 +52,7 @@ import mazeEscapeKo from '../../games/brain/level1/MazeEscape/locales/ko.ts';
 import wildLinkKo from '../../games/brain/level2/WildLink/locales/ko.ts';
 import pairUpConnectKo from '../../games/brain/level2/PairUpConnect/locales/ko.ts';
 import animalBanquetKo from '../../games/brain/level2/AnimalBanquet/locales/ko';
+import colorMixKo from '../../games/brain/level2/ColorMix/locales/ko';
 import signalHunterKo from '../../games/brain/level2/SignalHunter/locales/ko';
 import mazeHunterKo from '../../games/brain/level2/MazeHunter/locales/ko';
 import ticTacToeKo from '../../games/brain/level3/TicTacToe/locales/ko';
@@ -1386,6 +1387,7 @@ const koBase = {
         'maze-escape': mazeEscapeKo,
         'wild-link': wildLinkKo,
         'pair-up-connect': pairUpConnectKo,
+        'color-mix': colorMixKo,
         'signal-hunter': signalHunterKo,
         'block-tower': blockTowerKo,
         sharpshooter: sharpshooterKo,

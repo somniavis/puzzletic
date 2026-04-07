@@ -26,6 +26,7 @@ import pairUpTwinEn from '../../games/brain/level1/PairUpTwin/locales/en-UK';
 import wildLinkEn from '../../games/brain/level2/WildLink/locales/en-UK';
 import pairUpConnectEn from '../../games/brain/level2/PairUpConnect/locales/en-UK';
 import animalBanquetEn from '../../games/brain/level2/AnimalBanquet/locales/en-UK';
+import colorMixEn from '../../games/brain/level2/ColorMix/locales/en-UK';
 import ufoInvasionEn from '../../games/math/adventure/level2/UFOInvasion/locales/en-UK';
 import cargoTrainEn from '../../games/math/adventure/level2/CargoTrain/locales/en-UK.ts';
 import rocketLauncherEn from '../../games/math/adventure/level2/RocketLauncher/locales/en-UK';
@@ -1384,6 +1385,7 @@ export const enUK = {
     'wild-link': wildLinkEn,
     'pair-up-connect': pairUpConnectEn,
     'animal-banquet': animalBanquetEn,
+    'color-mix': colorMixEn,
     'math-level2-ufo-invasion': ufoInvasionEn,
     'maze-escape': mazeEscapeEn,
     'maze-hunter': mazeHunterEn,

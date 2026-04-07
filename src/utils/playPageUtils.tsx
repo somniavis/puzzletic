@@ -50,6 +50,7 @@ export const getIconBackground = (thumbnail: string | React.ReactNode | undefine
         '🧩': '#d1fae5', // emerald-100
         '🐒': '#fef9c3', // yellow-100
         '🍽️': '#fef3c7', // amber-100
+        '🎨': '#fce7f3', // pink-100
         '🔍': '#dbeafe', // blue-100
         '📡': '#ccfbf1', // teal-100
         '🐾': '#ffedd5', // orange-100 (Maze Hunter - distinct from amber)

@@ -26,6 +26,7 @@ import pairUpTwinEn from '../../games/brain/level1/PairUpTwin/locales/es-ES';
 import wildLinkEn from '../../games/brain/level2/WildLink/locales/es-ES';
 import pairUpConnectEn from '../../games/brain/level2/PairUpConnect/locales/es-ES';
 import animalBanquetEn from '../../games/brain/level2/AnimalBanquet/locales/es-ES';
+import colorMixEn from '../../games/brain/level2/ColorMix/locales/es-ES';
 import ufoInvasionEn from '../../games/math/adventure/level2/UFOInvasion/locales/es-ES';
 import cargoTrainEn from '../../games/math/adventure/level2/CargoTrain/locales/es-ES.ts';
 import rocketLauncherEn from '../../games/math/adventure/level2/RocketLauncher/locales/es-ES';
@@ -1384,6 +1385,7 @@ export const esES = {
     'wild-link': wildLinkEn,
     'pair-up-connect': pairUpConnectEn,
     'animal-banquet': animalBanquetEn,
+    'color-mix': colorMixEn,
     'math-level2-ufo-invasion': ufoInvasionEn,
     'maze-escape': mazeEscapeEn,
     'maze-hunter': mazeHunterEn,

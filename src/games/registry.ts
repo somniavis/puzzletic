@@ -77,6 +77,7 @@ const L1_MazeEscape = lazy(() => delayedImport(import('./brain/level1/MazeEscape
 // Brain Level 2 (mixed exports)
 const L2_WildLink = lazy(() => delayedImport(import('./brain/level2/WildLink'))); // default export
 const L2_AnimalBanquet = lazy(() => delayedImport(import('./brain/level2/AnimalBanquet'))); // default export
+const L2_ColorMix = lazy(() => delayedImport(import('./brain/level2/ColorMix'))); // default export
 const L2_PairUpConnect = lazy(() => delayedImport(import('./brain/level2/PairUpConnect'))); // default export
 const L2_MazeHunter = lazy(() => delayedImport(import('./brain/level2/MazeHunter'))); // default export
 const L2_SignalHunter = lazy(() => delayedImport(import('./brain/level2/SignalHunter').then(m => ({ default: m.SignalHunter })))); // named export
@@ -941,6 +942,20 @@ export const GAMES: GameManifest[] = [
         component: L2_AnimalBanquet,
         thumbnail: '🍽️',
         tagsKey: 'games.tags.workingMemory'
+    },
+    {
+        id: GameIds.COLOR_MIX,
+        title: 'Color Mix',
+        titleKey: 'games.color-mix.title',
+        subtitle: 'Blend the colors!',
+        subtitleKey: 'games.color-mix.subtitle',
+        description: 'Mix colors in the layout-ready game area.',
+        descriptionKey: 'games.color-mix.description',
+        category: 'brain',
+        level: 2,
+        component: L2_ColorMix,
+        thumbnail: '🎨',
+        tagsKey: 'games.tags.observation'
     },
     {
         id: GameIds.PAIR_UP_CONNECT,

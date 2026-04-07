@@ -52,6 +52,7 @@ import mazeEscapeJa from '../../games/brain/level1/MazeEscape/locales/ja';
 import wildLinkJa from '../../games/brain/level2/WildLink/locales/ja';
 import pairUpConnectJa from '../../games/brain/level2/PairUpConnect/locales/ja';
 import animalBanquetJa from '../../games/brain/level2/AnimalBanquet/locales/ja';
+import colorMixJa from '../../games/brain/level2/ColorMix/locales/ja';
 import signalHunterJa from '../../games/brain/level2/SignalHunter/locales/ja';
 import mazeHunterJa from '../../games/brain/level2/MazeHunter/locales/ja';
 import ticTacToeJa from '../../games/brain/level3/TicTacToe/locales/ja';
@@ -2129,6 +2130,7 @@ const jaBase = {
         'maze-escape': mazeEscapeJa,
         'wild-link': wildLinkJa,
         'pair-up-connect': pairUpConnectJa,
+        'color-mix': colorMixJa,
         'signal-hunter': signalHunterJa,
         'block-tower': blockTowerJa,
         sharpshooter: sharpshooterJa,

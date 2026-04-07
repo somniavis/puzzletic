@@ -77,6 +77,7 @@ export const GameIds = {
     // Brain Level 2
     WILD_LINK: 'wild-link',
     ANIMAL_BANQUET: 'animal-banquet',
+    COLOR_MIX: 'color-mix',
     PAIR_UP_CONNECT: 'pair-up-connect',
     MAZE_HUNTER: 'maze-hunter',
     SIGNAL_HUNTER: 'signal-hunter',

@@ -26,6 +26,7 @@ import pairUpTwinEn from '../../games/brain/level1/PairUpTwin/locales/id-ID';
 import wildLinkEn from '../../games/brain/level2/WildLink/locales/id-ID';
 import pairUpConnectEn from '../../games/brain/level2/PairUpConnect/locales/id-ID';
 import animalBanquetEn from '../../games/brain/level2/AnimalBanquet/locales/id-ID';
+import colorMixEn from '../../games/brain/level2/ColorMix/locales/id-ID';
 import ufoInvasionEn from '../../games/math/adventure/level2/UFOInvasion/locales/id-ID';
 import cargoTrainEn from '../../games/math/adventure/level2/CargoTrain/locales/id-ID.ts';
 import rocketLauncherEn from '../../games/math/adventure/level2/RocketLauncher/locales/id-ID';
@@ -1384,6 +1385,7 @@ export const idID = {
     'wild-link': wildLinkEn,
     'pair-up-connect': pairUpConnectEn,
     'animal-banquet': animalBanquetEn,
+    'color-mix': colorMixEn,
     'math-level2-ufo-invasion': ufoInvasionEn,
     'maze-escape': mazeEscapeEn,
     'maze-hunter': mazeHunterEn,

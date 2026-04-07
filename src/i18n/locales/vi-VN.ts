@@ -26,6 +26,7 @@ import pairUpTwinVi from '../../games/brain/level1/PairUpTwin/locales/vi-VN';
 import wildLinkVi from '../../games/brain/level2/WildLink/locales/vi-VN';
 import pairUpConnectVi from '../../games/brain/level2/PairUpConnect/locales/vi-VN';
 import animalBanquetVi from '../../games/brain/level2/AnimalBanquet/locales/vi-VN';
+import colorMixVi from '../../games/brain/level2/ColorMix/locales/vi-VN';
 import ufoInvasionVi from '../../games/math/adventure/level2/UFOInvasion/locales/vi-VN';
 import cargoTrainVi from '../../games/math/adventure/level2/CargoTrain/locales/vi-VN.ts';
 import rocketLauncherVi from '../../games/math/adventure/level2/RocketLauncher/locales/vi-VN';
@@ -1911,6 +1912,7 @@ export const viVN = {
     'wild-link': wildLinkVi,
     'pair-up-connect': pairUpConnectVi,
     'animal-banquet': animalBanquetVi,
+    'color-mix': colorMixVi,
     'math-level2-ufo-invasion': ufoInvasionVi,
     'maze-escape': mazeEscapeVi,
     'maze-hunter': mazeHunterVi,

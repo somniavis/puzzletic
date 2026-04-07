@@ -26,6 +26,7 @@ import pairUpTwinPt from '../../games/brain/level1/PairUpTwin/locales/pt-PT';
 import wildLinkPt from '../../games/brain/level2/WildLink/locales/pt-PT';
 import pairUpConnectPt from '../../games/brain/level2/PairUpConnect/locales/pt-PT';
 import animalBanquetPt from '../../games/brain/level2/AnimalBanquet/locales/pt-PT';
+import colorMixPt from '../../games/brain/level2/ColorMix/locales/pt-PT';
 import ufoInvasionPt from '../../games/math/adventure/level2/UFOInvasion/locales/pt-PT';
 import cargoTrainPt from '../../games/math/adventure/level2/CargoTrain/locales/pt-PT.ts';
 import rocketLauncherPt from '../../games/math/adventure/level2/RocketLauncher/locales/pt-PT';
@@ -1384,6 +1385,7 @@ export const ptPT = {
     'wild-link': wildLinkPt,
     'pair-up-connect': pairUpConnectPt,
     'animal-banquet': animalBanquetPt,
+    'color-mix': colorMixPt,
     'math-level2-ufo-invasion': ufoInvasionPt,
     'maze-escape': mazeEscapePt,
     'maze-hunter': mazeHunterPt,

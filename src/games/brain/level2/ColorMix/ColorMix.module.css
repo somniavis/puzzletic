@@ -1,0 +1,669 @@
+.colorMixLayout {
+    --color-mix-panel: rgba(255, 248, 240, 0.9);
+    --color-mix-border: rgba(154, 52, 18, 0.16);
+    --color-mix-text: #431407;
+    --color-mix-subtle: #9a3412;
+    --color-mix-shadow: 0 18px 36px rgba(120, 53, 15, 0.18);
+    --color-mix-palette-paint-inset: 34%;
+    --color-mix-palette-paint-end: 12%;
+    --color-mix-palette-paint-top: 22%;
+    --color-mix-palette-paint-bottom: 18%;
+    --color-mix-action-button-font: clamp(1.45rem, 3.8cqh, 1.7rem);
+    --color-mix-paint-button-shadow:
+        inset 0 2px 0 rgba(255, 255, 255, 0.96),
+        0 6px 0 rgba(148, 163, 184, 0.9),
+        0 10px 16px rgba(51, 65, 85, 0.18);
+    --color-mix-paint-button-shadow-pressed:
+        inset 0 2px 0 rgba(255, 255, 255, 0.86),
+        0 2px 0 rgba(148, 163, 184, 0.9),
+        0 5px 10px rgba(51, 65, 85, 0.14);
+}
+
+.colorMixGame {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    display: grid;
+    grid-template-rows: 1fr 1.172fr 0.608fr;
+    gap: 0.1rem;
+}
+
+.zone {
+    min-height: 0;
+    border-radius: 1.45rem;
+    background: var(--color-mix-panel);
+    border: 1px solid var(--color-mix-border);
+    box-shadow: var(--color-mix-shadow);
+    backdrop-filter: blur(10px);
+    overflow: hidden;
+}
+
+.targetZone {
+    display: grid;
+    grid-template-rows: 1fr;
+    padding: clamp(0.7rem, 2cqh, 1rem);
+    min-height: 0;
+}
+
+.targetCard {
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+}
+
+.targetCardResolved {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+    align-items: center;
+    justify-items: stretch;
+}
+
+.fruitStage {
+    width: auto;
+    max-width: 100%;
+    height: 100%;
+    min-height: 0;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    align-self: stretch;
+}
+
+.fruitStageResolved {
+    width: 100%;
+    justify-self: start;
+    place-items: center start;
+    padding-left: 0.2rem;
+    animation: fruitSlideLeft 420ms ease-out forwards;
+}
+
+.fruitSvg {
+    width: auto;
+    height: 100%;
+    max-height: 100%;
+    max-width: none;
+    display: grid;
+    place-items: center;
+    filter: none;
+}
+
+.fruitSvg svg {
+    display: block;
+    width: auto;
+    height: 100%;
+    max-height: 100%;
+    max-width: none;
+}
+
+/*
+Keep legacy Safari-friendly sizing:
+- wrapper follows height
+- inner svg also follows height
+*/
+
+.fruitSvg {
+    min-width: 0;
+    min-height: 0;
+    max-height: 100%;
+    filter: none;
+}
+
+.matchReveal {
+    display: grid;
+    align-content: center;
+    justify-items: center;
+    gap: 0.18rem;
+    min-width: 0;
+    height: 100%;
+    padding: 0.25rem 0 0.25rem 0.25rem;
+    animation: matchRevealIn 380ms ease-out;
+}
+
+.matchRevealLabel {
+    font-size: clamp(0.9rem, 2.6cqh, 1.15rem);
+    font-weight: 800;
+    color: #7c2d12;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.matchRevealValue {
+    font-size: clamp(2rem, 7cqh, 3rem);
+    line-height: 0.95;
+    font-weight: 950;
+    color: #431407;
+}
+
+.matchRevealFeedback {
+    font-size: clamp(1.5rem, 5cqh, 2.4rem);
+    line-height: 1;
+}
+
+.matchRevealSuccess .matchRevealValue {
+    color: #065f46;
+}
+
+.matchRevealSuccess .matchRevealFeedback {
+    animation: matchSuccessBurst 720ms ease-out;
+}
+
+.matchRevealFail .matchRevealValue {
+    color: #b91c1c;
+}
+
+.matchRevealFail .matchRevealFeedback {
+    animation: matchFailShake 720ms ease-out;
+}
+
+.paletteZone {
+    padding: 0.2rem;
+    display: flex;
+    align-items: stretch;
+    justify-content: stretch;
+    min-height: 0;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    backdrop-filter: none;
+    position: relative;
+    z-index: 3;
+    overflow: hidden;
+}
+
+.paletteHeaderMinimal {
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+    align-items: center;
+    gap: clamp(0.6rem, 1.4cqh, 0.9rem);
+    overflow: hidden;
+}
+
+.paletteShell {
+    min-width: 0;
+    min-height: 0;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    align-self: stretch;
+    width: 100%;
+    height: 100%;
+    position: relative;
+    z-index: 4;
+    padding-top: clamp(0.2rem, 0.8cqh, 0.35rem);
+    padding-bottom: clamp(0.1rem, 0.4cqh, 0.2rem);
+}
+
+.paletteActionPanel {
+    min-height: 0;
+    height: 100%;
+    display: grid;
+    place-items: center;
+    align-self: stretch;
+    padding-left: clamp(0.2rem, 0.8cqh, 0.45rem);
+}
+
+.paletteWell {
+    width: min(100%, 18rem);
+    height: min(clamp(7.7rem, 27cqh, 10.7rem), calc(100% - 0.3rem));
+    max-height: 100%;
+    position: relative;
+    background: transparent;
+    box-shadow: none;
+    z-index: 5;
+}
+
+.paletteBase {
+    position: absolute;
+    inset: 0;
+    z-index: 8;
+    border-radius: 36% 44% 38% 44% / 44% 42% 48% 40%;
+    background:
+        radial-gradient(circle at 30% 28%, rgba(255, 255, 255, 0.96) 0%, rgba(255, 255, 255, 0.96) 22%, rgba(255, 250, 245, 0.96) 58%, rgba(253, 242, 232, 0.98) 100%);
+    border: 3px solid rgba(255, 255, 255, 0.98);
+    box-shadow:
+        inset 0 4px 0 rgba(255, 255, 255, 0.92),
+        inset 0 -7px 0 rgba(251, 146, 60, 0.14),
+        0 8px 0 rgba(194, 65, 12, 0.2),
+        0 18px 22px rgba(67, 20, 7, 0.12);
+}
+
+.paletteThumbHole {
+    position: absolute;
+    z-index: 9;
+    left: 14%;
+    top: 27%;
+    width: 16%;
+    height: 16%;
+    aspect-ratio: 1 / 1;
+    border-radius: 50%;
+    background:
+        radial-gradient(circle at 42% 38%, rgba(234, 88, 12, 0.12) 0%, rgba(154, 52, 18, 0.18) 55%, rgba(120, 53, 15, 0.24) 100%);
+    box-shadow:
+        inset 0 4px 8px rgba(67, 20, 7, 0.16),
+        0 1px 0 rgba(255, 255, 255, 0.65);
+}
+
+.paletteAppliedPaint {
+    position: absolute;
+    left: var(--color-mix-palette-paint-inset);
+    right: var(--color-mix-palette-paint-end);
+    top: var(--color-mix-palette-paint-top);
+    bottom: var(--color-mix-palette-paint-bottom);
+    z-index: 15;
+    border-radius: 38% 44% 40% 42% / 44% 40% 50% 42%;
+    box-shadow:
+        inset 0 4px 0 rgba(255, 255, 255, 0.24),
+        inset 0 -10px 14px rgba(67, 20, 7, 0.22),
+        0 4px 10px rgba(67, 20, 7, 0.12);
+    transition: background-color 220ms ease-out, opacity 180ms ease-out;
+    pointer-events: none;
+    filter: saturate(1.08);
+}
+
+.paletteBrushOverlay {
+    position: absolute;
+    left: 72%;
+    top: 44%;
+    z-index: 30;
+    font-size: clamp(4rem, 10.4cqh, 5.8rem);
+    line-height: 1;
+    transform: translate(-50%, -50%) rotate(-18deg);
+    transform-origin: center;
+    text-shadow:
+        0 2px 0 rgba(255, 255, 255, 0.45),
+        0 6px 12px rgba(15, 23, 42, 0.28);
+    filter: saturate(1.05);
+    pointer-events: none;
+    animation: paletteBrushOverlaySweep 700ms ease-out forwards;
+}
+
+.palettePaintPool {
+    position: absolute;
+    z-index: 10;
+    left: var(--color-mix-palette-paint-inset);
+    right: var(--color-mix-palette-paint-end);
+    top: var(--color-mix-palette-paint-top);
+    bottom: var(--color-mix-palette-paint-bottom);
+    border-radius: 38% 44% 40% 42% / 44% 40% 50% 42%;
+    box-shadow:
+        inset 0 4px 0 rgba(255, 255, 255, 0.3),
+        inset 0 -8px 14px rgba(67, 20, 7, 0.12),
+        0 8px 14px rgba(67, 20, 7, 0.08);
+    overflow: hidden;
+    position: relative;
+    transition: background-color 220ms ease-out;
+}
+
+.palettePaintStroke {
+    position: absolute;
+    display: block;
+    left: 8%;
+    top: 24%;
+    width: 68%;
+    height: 34%;
+    z-index: 18;
+    border-radius: 48% 52% 45% 55% / 55% 42% 58% 45%;
+    background: var(--stroke-color, #f97316);
+    border: 2px solid rgba(255, 255, 255, 0.22);
+    box-shadow:
+        inset 0 5px 0 rgba(255, 255, 255, 0.28),
+        inset 0 -12px 16px rgba(67, 20, 7, 0.26),
+        0 6px 12px rgba(67, 20, 7, 0.2),
+        0 0 0 1px rgba(67, 20, 7, 0.08);
+    opacity: 1;
+    animation: paletteStrokeSweep 480ms ease-out forwards;
+    pointer-events: none;
+}
+
+.paletteBrushSweep {
+    display: none;
+}
+
+.palettePaintHighlight {
+    position: absolute;
+    z-index: 19;
+    top: 14%;
+    left: 12%;
+    width: 42%;
+    height: 24%;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.28);
+    filter: blur(2px);
+}
+
+.paletteActions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    justify-content: center;
+    align-self: center;
+    justify-self: center;
+    min-height: 100%;
+    width: 100%;
+    max-width: 8rem;
+}
+
+.actionButton {
+    border: none;
+    border-radius: 999px;
+    padding: 1rem 0.78rem;
+    font-size: var(--color-mix-action-button-font);
+    font-weight: 800;
+    cursor: pointer;
+    transition: transform 0.15s ease, opacity 0.15s ease;
+    line-height: 1;
+    min-height: 3.4rem;
+}
+
+.actionButton:disabled {
+    cursor: default;
+    opacity: 0.45;
+}
+
+.resetButton {
+    background: rgba(255, 248, 240, 0.94);
+    color: #9a3412;
+    box-shadow:
+        inset 0 2px 0 rgba(255, 255, 255, 0.88),
+        0 4px 0 rgba(251, 146, 60, 0.28);
+}
+
+.checkButton {
+    background: linear-gradient(180deg, #14b8a6 0%, #0f766e 100%);
+    color: #ffffff;
+    box-shadow:
+        inset 0 2px 0 rgba(255, 255, 255, 0.24),
+        0 4px 0 rgba(15, 118, 110, 0.42);
+}
+
+.paintZone {
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 0;
+    background: rgba(255, 255, 255, 0.98);
+    border: 3px solid rgba(255, 255, 255, 0.96);
+    box-shadow:
+        inset 0 2px 0 rgba(255, 255, 255, 0.98),
+        0 6px 0 rgba(203, 213, 225, 0.95),
+        0 12px 18px rgba(51, 65, 85, 0.14);
+    position: relative;
+    z-index: 1;
+}
+
+.paintBox {
+    --paint-gap: clamp(0.2rem, 0.6cqh, 0.35rem);
+    width: 100%;
+    height: 100%;
+    max-height: 100%;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--paint-gap);
+    overflow: hidden;
+    align-items: center;
+    justify-items: center;
+    position: relative;
+    z-index: 2;
+}
+
+.paintButton {
+    aspect-ratio: 1 / 1;
+    box-sizing: border-box;
+    min-width: 0;
+    min-height: 0;
+    width: auto;
+    height: 87%;
+    max-width: 100%;
+    max-height: 87%;
+    border: 1.2px solid rgba(255, 255, 255, 0.98);
+    border-radius: 999px;
+    padding: 0;
+    display: grid;
+    place-items: center;
+    background: linear-gradient(180deg, #fffdfa 0%, #fff7ed 100%);
+    box-shadow: var(--color-mix-paint-button-shadow);
+    cursor: pointer;
+    transition: transform 0.14s ease, filter 0.14s ease, opacity 0.14s ease, box-shadow 0.14s ease;
+    overflow: hidden;
+    position: relative;
+    z-index: 3;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.paintButton:disabled {
+    cursor: default;
+    opacity: 0.55;
+}
+
+.paintButton:focus,
+.paintButton:focus-visible {
+    outline: none;
+}
+
+.paintButtonPressed {
+    animation: paintButtonBounce 220ms ease-out;
+}
+
+.paintButtonCore {
+    display: block;
+    width: 82%;
+    height: 82%;
+    border-radius: 999px;
+    background: var(--paint-fill, #cbd5e1);
+    box-shadow:
+        inset 0 4px 0 rgba(255, 255, 255, 0.34),
+        inset 0 -8px 10px rgba(67, 20, 7, 0.16);
+    position: relative;
+}
+
+.paintButtonCore::after {
+    content: '';
+    position: absolute;
+    top: 12%;
+    left: 18%;
+    width: 40%;
+    height: 24%;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.32);
+    filter: blur(1px);
+}
+
+@keyframes paletteStrokeSweep {
+    0% {
+        transform: translateX(0) rotate(-8deg) scale(0.72);
+        opacity: 0.95;
+    }
+    20% {
+        opacity: 1;
+    }
+    55% {
+        opacity: 1;
+    }
+    100% {
+        transform: translateX(26%) rotate(8deg) scale(1.08);
+        opacity: 0.78;
+    }
+}
+
+@keyframes fruitSlideLeft {
+    0% {
+        transform: translateX(14%);
+    }
+    100% {
+        transform: translateX(0);
+    }
+}
+
+@keyframes matchRevealIn {
+    0% {
+        opacity: 0;
+        transform: translateX(12%) scale(0.92);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+    }
+}
+
+@keyframes matchSuccessBurst {
+    0% {
+        transform: scale(0.7) rotate(-14deg);
+        opacity: 0;
+    }
+    30% {
+        transform: scale(1.2) rotate(8deg);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1) rotate(0deg);
+        opacity: 1;
+    }
+}
+
+@keyframes matchFailShake {
+    0% {
+        transform: translateX(0) scale(0.8);
+        opacity: 0;
+    }
+    25% {
+        transform: translateX(-10%) scale(1.05);
+        opacity: 1;
+    }
+    50% {
+        transform: translateX(10%) scale(1);
+    }
+    75% {
+        transform: translateX(-6%) scale(1.02);
+    }
+    100% {
+        transform: translateX(0) scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes paletteBrushSweep {
+    0% {
+        opacity: 0.2;
+        transform: translate(-10%, -60%) rotate(-24deg) scale(0.9);
+    }
+    35% {
+        opacity: 1;
+        transform: translate(-85%, -52%) rotate(-14deg) scale(1.02);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(-150%, -42%) rotate(-2deg) scale(0.98);
+    }
+}
+
+@keyframes paletteBrushOverlaySweep {
+    0% {
+        opacity: 0.15;
+        transform: translate(-8%, -62%) rotate(-24deg) scale(0.92);
+    }
+    35% {
+        opacity: 1;
+        transform: translate(-86%, -54%) rotate(-14deg) scale(1.02);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(-150%, -42%) rotate(-2deg) scale(0.98);
+    }
+}
+
+@keyframes paintButtonBounce {
+    0% {
+        transform: translateY(0) scale(1);
+        box-shadow: var(--color-mix-paint-button-shadow);
+    }
+    45% {
+        transform: translateY(5px) scale(0.95);
+        box-shadow: var(--color-mix-paint-button-shadow-pressed);
+    }
+    100% {
+        transform: translateY(0) scale(1);
+        box-shadow: var(--color-mix-paint-button-shadow);
+    }
+}
+
+@media (hover: hover) {
+    .paintButton:hover:not(:disabled),
+    .actionButton:hover:not(:disabled) {
+        transform: translateY(-1px);
+    }
+}
+
+@media (max-width: 640px) {
+    .paletteHeaderMinimal {
+        grid-template-columns: minmax(0, 1.8fr) minmax(0, 1fr);
+        gap: 0.7rem;
+    }
+
+    .paletteWell {
+        width: min(100%, 15rem);
+        height: 9.2rem;
+        height: clamp(7.8rem, 27cqh, 10rem);
+    }
+
+    .actionButton {
+        padding: 0.92rem 0.7rem;
+        min-height: 3.1rem;
+        font-size: 1.5rem;
+    }
+}
+
+@supports not (height: 1cqh) {
+    .colorMixGame {
+        grid-template-rows: 1fr 1.2fr 0.62fr;
+    }
+
+    .targetZone {
+        padding: 0.85rem;
+    }
+
+    .paletteHeaderMinimal {
+        gap: 0.75rem;
+    }
+
+    .paletteShell {
+        padding-top: 0.3rem;
+        padding-bottom: 0.15rem;
+    }
+
+    .paletteActionPanel {
+        padding-left: 0.35rem;
+    }
+
+    .paletteWell {
+        height: min(10rem, calc(100% - 0.3rem));
+    }
+
+    .paletteBrushOverlay {
+        font-size: 4.8rem;
+    }
+
+    .paintBox {
+        --paint-gap: 0.3rem;
+    }
+}
+
+@supports not (aspect-ratio: 1 / 1) {
+    .paletteThumbHole {
+        width: 16%;
+        height: 16%;
+    }
+
+    .paintButton {
+        width: 87%;
+        height: 87%;
+    }
+}
