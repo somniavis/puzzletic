@@ -356,7 +356,7 @@ const getFruitSvgMarkup = (fruitType: FruitType, color: string) => {
 
 const FruitSvg = ({ fruitType, color }: { fruitType: FruitType; color: string; }) => {
     return (
-        <span
+        <div
             className={styles.fruitSvg}
             aria-hidden="true"
             dangerouslySetInnerHTML={{ __html: getFruitSvgMarkup(fruitType, color) }}
