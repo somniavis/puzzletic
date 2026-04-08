@@ -34,7 +34,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1rem;
+    padding: 0.85rem 1rem 1rem;
     position: absolute;
     top: 0;
     left: 0;
@@ -57,15 +57,19 @@
     background: rgba(255, 255, 255, 0.3);
     backdrop-filter: blur(4px);
     border: none;
-    border-radius: 12px;
-    padding: 0.75rem;
-    min-width: 44px;
-    min-height: 44px;
+    border-radius: 8px;
+    padding: 0.5rem;
+    min-width: 35px;
+    min-height: 35px;
     cursor: pointer;
-    transition: background 0.2s;
+    transition: background 0.2s, transform 0.12s ease, box-shadow 0.12s ease;
     display: flex;
     align-items: center;
     justify-content: center;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.45),
+        0 2px 0 rgba(148, 163, 184, 0.45),
+        0 4px 8px rgba(15, 23, 42, 0.08);
     -webkit-tap-highlight-color: transparent;
     -webkit-touch-callout: none;
     user-select: none;
@@ -80,6 +84,14 @@
     background: rgba(255, 255, 255, 0.5);
 }
 
+.icon-btn:active {
+    transform: translateY(1px);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.35),
+        0 1px 0 rgba(148, 163, 184, 0.38),
+        0 2px 5px rgba(15, 23, 42, 0.08);
+}
+
 .icon-btn:focus,
 .icon-btn:focus-visible,
 .icon-btn:active {
@@ -91,7 +103,7 @@
 .layout0-dashboard {
     max-width: 37.5rem;
     /* 600px to match start screen */
-    margin: 4.5rem auto 1rem;
+    margin: 4.05rem auto 0.8rem;
     padding: 0 1rem;
     z-index: 10;
 }
@@ -106,28 +118,19 @@
     background: rgba(255, 255, 255, 0.4);
     backdrop-filter: blur(8px);
     border-radius: 0.75rem;
-    padding: 0.5rem;
+    padding: 0.5rem 0.5rem;
     text-align: center;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
-    /* Align to top to match labels */
+    justify-content: center;
     align-items: center;
     transition: flex 0.2s;
     /* Smooth sizing changes */
 }
 
 .stat-label {
-    font-size: 0.75rem;
-    color: #475569;
-    /* slate-600 */
-    margin-bottom: 0.25rem;
-    height: 1rem;
-    /* Fixed height for alignment */
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: none;
 }
 
 .layout0-dashboard .stat-value {
@@ -139,13 +142,13 @@
     align-items: center;
     justify-content: center;
     gap: 0.25rem;
-    height: 1.75rem;
-    /* Fixed height for alignment */
-}
+    min-height: 1.6rem;
+    line-height: 1;
+    }
 
 /* Game Area */
 .layout0-game-area {
-    margin: 0 1rem 1rem;
+    margin: 0 1rem 0;
     max-width: 37.5rem;
     /* 600px to match start screen */
     flex: 1;
@@ -207,7 +210,7 @@
 
 .start-header-section {
     flex-shrink: 0;
-    padding: 2.5rem 2rem 1rem;
+    padding: 1.8rem 2rem 0.45rem;
     /* Top padding to account for main header */
     text-align: center;
     background: transparent;
@@ -217,6 +220,7 @@
     font-size: 1.25rem;
     color: #475569;
     font-weight: 600;
+    margin: 0;
 }
 
 .start-content-scroll {
@@ -599,7 +603,7 @@
 
 .start-footer-section {
     flex-shrink: 0;
-    padding: 1.5rem;
+    padding: 0.75rem 1.5rem 1.5rem;
     background: transparent;
     width: 100%;
     max-width: 600px;
@@ -608,6 +612,11 @@
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
+}
+
+.start-footer-section .start-btn,
+.start-footer-section .restart-btn {
+    margin-top: 0;
 }
 
 .game-over-jello-section {
@@ -760,7 +769,7 @@
     font-size: 2rem;
     font-weight: 800;
     color: #1e293b;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.15rem;
 }
 
 /* Timer Bar */

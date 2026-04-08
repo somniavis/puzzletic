@@ -7,6 +7,7 @@ interface HeaderProps {
     onExit: () => void;
     onToggleBgm: () => void;
     className?: string; // Allow custom styling extensions if needed
+    showTitle?: boolean;
 }
 
 export const GameLayoutHeader: React.FC<HeaderProps> = ({
@@ -14,14 +15,15 @@ export const GameLayoutHeader: React.FC<HeaderProps> = ({
     bgmEnabled,
     onExit,
     onToggleBgm,
-    className
+    className,
+    showTitle = true
 }) => {
     return (
         <header className={`layout1-header ${className || ''}`}>
             {/* Note: We reuse 'layout1-header' class for compatibility or we can rename to general 'game-header' in CSS */}
-            <button className="icon-btn" onClick={() => { playButtonSound(); onExit(); }} style={{ fontSize: '1.5rem' }}>🔙</button>
-            <div className="header-title">{title}</div>
-            <button className="icon-btn" onClick={() => { playButtonSound(); onToggleBgm(); }} style={{ fontSize: '1.5rem' }}>
+            <button type="button" className="icon-btn" onClick={() => { playButtonSound(); onExit(); }} style={{ fontSize: '1rem' }}>🔙</button>
+            {showTitle && <div className="header-title">{title}</div>}
+            <button type="button" className="icon-btn" onClick={() => { playButtonSound(); onToggleBgm(); }} style={{ fontSize: '1rem' }}>
                 {bgmEnabled ? '🎵' : '🔇'}
             </button>
         </header>

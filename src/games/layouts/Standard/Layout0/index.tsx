@@ -2,9 +2,6 @@ import React, { useRef } from 'react';
 import { useSound } from '../../../../contexts/SoundContext';
 import { useAuth } from '../../../../contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
-import {
-    Coins, Flame, Heart, Clock
-} from 'lucide-react';
 import { playButtonSound, playJelloClickSound, playClearSound, playEatingSound, startBackgroundMusic } from '../../../../utils/sound';
 import './Layout0.css';
 import { useGameEngine } from './useGameEngine';
@@ -12,6 +9,8 @@ import { useNurturing } from '../../../../contexts/NurturingContext';
 import { calculateMinigameReward } from '../../../../services/rewardService';
 import type { RewardCalculation, MinigameDifficulty } from '../../../../types/gameMechanics';
 import { GameOverScreen } from '../shared/GameOverScreen';
+import { GameLayoutHeader } from '../shared/GameLayoutHeader';
+import { GameLayoutDashboard } from '../shared/GameLayoutDashboard';
 
 interface Layout0Props {
     title: string;
@@ -216,12 +215,14 @@ export const Layout0: React.FC<Layout0Props> = ({
     if (gameState === 'idle') {
         return (
             <div className="layout0-container">
-                <header className="layout0-header">
-                    <button className="icon-btn" onClick={() => { playButtonSound(); onExit(); }} style={{ fontSize: '1.5rem' }}>🔙</button>
-                    <button className="icon-btn" onClick={() => { playButtonSound(); toggleBgm(); }} style={{ fontSize: '1.5rem' }}>
-                        {settings.bgmEnabled ? '🎵' : '🔇'}
-                    </button>
-                </header>
+                <GameLayoutHeader
+                    title={title}
+                    bgmEnabled={settings.bgmEnabled}
+                    onExit={onExit}
+                    onToggleBgm={toggleBgm}
+                    className="layout0-header"
+                    showTitle={false}
+                />
 
                 <div className="overlay-screen start-screen-layout">
                     <div className="start-header-section">
@@ -264,12 +265,14 @@ export const Layout0: React.FC<Layout0Props> = ({
     if (gameState === 'gameover') {
         return (
             <div className="layout0-container">
-                <header className="layout0-header">
-                    <button className="icon-btn" onClick={() => { playButtonSound(); onExit(); }} style={{ fontSize: '1.5rem' }}>🔙</button>
-                    <button className="icon-btn" onClick={() => { playButtonSound(); toggleBgm(); }} style={{ fontSize: '1.5rem' }}>
-                        {settings.bgmEnabled ? '🎵' : '🔇'}
-                    </button>
-                </header>
+                <GameLayoutHeader
+                    title={title}
+                    bgmEnabled={settings.bgmEnabled}
+                    onExit={onExit}
+                    onToggleBgm={toggleBgm}
+                    className="layout0-header"
+                    showTitle={false}
+                />
 
                 <GameOverScreen
                     title={title}
@@ -290,43 +293,21 @@ export const Layout0: React.FC<Layout0Props> = ({
     // Render Playing State
     return (
         <div className="layout0-container">
-            <header className="layout0-header">
-                <button className="icon-btn" onClick={() => { playButtonSound(); onExit(); }} style={{ fontSize: '1.5rem' }}>🔙</button>
-                <div className="header-title">{title}</div>
-                <button className="icon-btn" onClick={() => { playButtonSound(); toggleBgm(); }} style={{ fontSize: '1.5rem' }}>
-                    {settings.bgmEnabled ? '🎵' : '🔇'}
-                </button>
-            </header>
+            <GameLayoutHeader
+                title={title}
+                bgmEnabled={settings.bgmEnabled}
+                onExit={onExit}
+                onToggleBgm={toggleBgm}
+                className="layout0-header"
+            />
 
-            <div className="layout0-dashboard">
-                <div className="stats-grid-row">
-                    <div className="stat-card score-card">
-                        <div className="stat-label">{t('common.score')}</div>
-                        <div className="stat-value"><Coins size={16} className="text-yellow-500" /> {score}</div>
-                    </div>
-                    <div className="stat-card lives-card">
-                        <div className="stat-label">{t('common.lives')}</div>
-                        <div className="stat-value">
-                            {[...Array(3)].map((_, i) => (
-                                <Heart key={i} size={16}
-                                    fill={i < lives ? "#ef4444" : "none"}
-                                    color={i < lives ? "#ef4444" : "#cbd5e1"}
-                                />
-                            ))}
-                        </div>
-                    </div>
-                    <div className="stat-card combo-card">
-                        <div className="stat-label">{t('common.combo')}</div>
-                        <div className="stat-value"><Flame size={16} className="text-orange-500" /> {combo}</div>
-                    </div>
-                    <div className="stat-card time-card">
-                        <div className="stat-label">{t('common.time')}</div>
-                        <div className="stat-value" style={{ color: timeLeft < 10 ? '#ef4444' : '#1e293b' }}>
-                            <Clock size={16} /> {timeLeft}
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <GameLayoutDashboard
+                score={score}
+                lives={lives}
+                combo={combo}
+                timeLeft={timeLeft}
+                className="layout0-dashboard"
+            />
 
             <main className="layout0-game-area">
                 <div className="content-wrapper">
