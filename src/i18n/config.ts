@@ -5,15 +5,27 @@ import { ko } from './locales/ko';
 
 type TranslationResource = Record<string, unknown>;
 
+const normalizeTranslationResource = (translation: TranslationResource): TranslationResource => {
+  const normalized: TranslationResource = { ...translation };
+  const common = normalized.common as Record<string, unknown> | undefined;
+  const commonGame = common?.game as Record<string, unknown> | undefined;
+
+  if (commonGame && !normalized.game) {
+    normalized.game = commonGame;
+  }
+
+  return normalized;
+};
+
 const staticResources = {
   en: {
-    translation: en,
+    translation: normalizeTranslationResource(en),
   },
   'en-US': {
-    translation: en,
+    translation: normalizeTranslationResource(en),
   },
   ko: {
-    translation: ko,
+    translation: normalizeTranslationResource(ko),
   },
 };
 
@@ -74,7 +86,7 @@ const ensureLanguageLoaded = async (language: string) => {
     return;
   }
 
-  const translation = await loader();
+  const translation = normalizeTranslationResource(await loader());
   i18n.addResourceBundle(language, 'translation', translation, true, true);
 };
 

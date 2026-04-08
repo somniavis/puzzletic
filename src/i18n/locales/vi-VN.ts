@@ -1854,7 +1854,7 @@ export const viVN = {
     },
     game: {
       playNow: 'Chơi ngay',
-      reset: 'Bắt đầu lại',
+      reset: 'Thử lại',
       noGames: 'Sắp có thêm trò chơi!',
       unlock: {
         reason: 'Hoàn thành thuần thục {{game}} để mở khóa',
@@ -1863,6 +1863,18 @@ export const viVN = {
         tailRunner: 'TAIL RUNNER',
         groGroLand: 'GROGRO LAND',
       },
+    },
+  },
+  game: {
+    playNow: 'Chơi ngay',
+    reset: 'Thử lại',
+    noGames: 'Sẽ sớm có thêm trò chơi mới!',
+    unlock: {
+      reason: 'Hoàn thành bậc thầy của {{game}} để mở khóa',
+    },
+    gameTitles: {
+      tailRunner: 'TAIL RUNNER',
+      groGroLand: 'GROGRO LAND',
     },
   },
   games: {

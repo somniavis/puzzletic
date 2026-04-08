@@ -1,7 +1,10 @@
 export default {
-    title: 'Color Mix',
+    title: 'Paint Mix',
     subtitle: 'Pha mau sac nao!',
     description: 'Pha mau de khop voi mau muc tieu cua trai cay.',
+    ui: {
+        selectTwoColorsHint: 'Chon hai mau!'
+    },
     powerups: {
         timeFreeze: 'Dong Bang Thoi Gian',
         extraLife: 'Them Mang',

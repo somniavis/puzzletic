@@ -1327,7 +1327,7 @@ export const ptPT = {
     },
     game: {
       playNow: 'Jogar agora',
-      reset: 'Recomeçar',
+      reset: 'Tentar novamente',
       noGames: 'Mais jogos em breve!',
       unlock: {
         reason: 'Domine completamente {{game}} para desbloquear',
@@ -1336,6 +1336,18 @@ export const ptPT = {
         tailRunner: 'TAIL RUNNER',
         groGroLand: 'GROGRO LAND',
       },
+    },
+  },
+  game: {
+    playNow: 'Jogar agora',
+    reset: 'Tentar novamente',
+    noGames: 'Mais jogos em breve!',
+    unlock: {
+      reason: 'Domine completamente {{game}} para desbloquear',
+    },
+    gameTitles: {
+      tailRunner: 'TAIL RUNNER',
+      groGroLand: 'GROGRO LAND',
     },
   },
   games: {

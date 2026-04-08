@@ -1327,7 +1327,7 @@ export const esES = {
     },
     game: {
       playNow: 'Jugar ahora',
-      reset: 'Empezar de nuevo',
+      reset: 'Intentar de nuevo',
       noGames: '¡Pronto habrá más juegos!',
       unlock: {
         reason: 'Domina por completo {{game}} para desbloquearlo',
@@ -1336,6 +1336,18 @@ export const esES = {
         tailRunner: 'TAIL RUNNER',
         groGroLand: 'GROGRO LAND',
       },
+    },
+  },
+  game: {
+    playNow: 'Jugar ahora',
+    reset: 'Intentar de nuevo',
+    noGames: '¡Pronto habrá más juegos!',
+    unlock: {
+      reason: 'Domina por completo {{game}} para desbloquearlo',
+    },
+    gameTitles: {
+      tailRunner: 'TAIL RUNNER',
+      groGroLand: 'GROGRO LAND',
     },
   },
   games: {

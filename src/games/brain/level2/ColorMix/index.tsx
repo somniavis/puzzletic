@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState, type MouseEvent } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type MouseEvent, type MutableRefObject } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Layout2 } from '../../../layouts/Standard/Layout2';
@@ -24,6 +24,7 @@ import manifest_ko from './locales/ko';
 import manifest_pt_PT from './locales/pt-PT';
 import manifest_vi_VN from './locales/vi-VN';
 import styles from './ColorMix.module.css';
+import { primeFeedbackSoundsSilently } from '../../../../utils/sound';
 
 const GAME_ID = GameIds.COLOR_MIX;
 const SUCCESS_THRESHOLD = 80;
@@ -80,6 +81,14 @@ interface FruitDefinition {
     fruitLabel: string;
 }
 
+type TranslationBundle = {
+    translation: {
+        games: {
+            'color-mix': unknown;
+        };
+    };
+};
+
 const PAINTS: Record<PaintId, PaintDefinition> = {
     red: { id: 'red', label: 'Red', hex: '#ef4444', strength: 1.08, textColor: '#ffffff' },
     yellow: { id: 'yellow', label: 'Yellow', hex: '#facc15', strength: 0.94, textColor: '#1f2937' },
@@ -107,6 +116,18 @@ const FRUITS: readonly FruitDefinition[] = [
     { fruitType: 'melon', fruitLabel: 'Melon' },
 ];
 
+const LOCALE_MANIFESTS: Record<string, TranslationBundle> = {
+    en: { translation: { games: { 'color-mix': manifest_en } } },
+    'en-UK': { translation: { games: { 'color-mix': manifest_en_UK } } },
+    'es-ES': { translation: { games: { 'color-mix': manifest_es_ES } } },
+    'fr-FR': { translation: { games: { 'color-mix': manifest_fr_FR } } },
+    'id-ID': { translation: { games: { 'color-mix': manifest_id_ID } } },
+    ja: { translation: { games: { 'color-mix': manifest_ja } } },
+    ko: { translation: { games: { 'color-mix': manifest_ko } } },
+    'pt-PT': { translation: { games: { 'color-mix': manifest_pt_PT } } },
+    'vi-VN': { translation: { games: { 'color-mix': manifest_vi_VN } } },
+};
+
 const randomItem = <T,>(items: readonly T[]) => items[Math.floor(Math.random() * items.length)];
 
 const shuffleItems = <T,>(items: readonly T[]) => {
@@ -130,32 +151,11 @@ const getPaintCombinationKey = (paintIds: readonly [PaintId, PaintId]) => (
     [...paintIds].sort().join('-')
 );
 
-const createRound = (previousCombinationKey?: string | null): RoundDefinition => {
-    let attempts = 0;
+const createRoundId = (fruitLabel: string, targetHex: string, requiredPaints: readonly [PaintId, PaintId]) => (
+    `${fruitLabel}-${targetHex}-${requiredPaints.join('-')}-${Math.random().toString(36).slice(2, 8)}`
+);
 
-    while (attempts < 12) {
-        const fruit = randomItem(FRUITS);
-        const paints = shuffleItems(ALL_PAINT_IDS).slice(0, 4) as PaintId[];
-        const requiredPaints = shuffleItems(paints).slice(0, 2) as [PaintId, PaintId];
-        const combinationKey = getPaintCombinationKey(requiredPaints);
-
-        if (combinationKey === previousCombinationKey) {
-            attempts += 1;
-            continue;
-        }
-
-        const targetHex = mixPaintsWeighted(requiredPaints);
-
-        return {
-            fruitType: fruit.fruitType,
-            fruitLabel: fruit.fruitLabel,
-            targetHex,
-            requiredPaints,
-            paints: buildPaintSet(requiredPaints),
-            id: `${fruit.fruitLabel}-${targetHex}-${requiredPaints.join('-')}-${Math.random().toString(36).slice(2, 8)}`
-        };
-    }
-
+const buildRoundCandidate = (): RoundDefinition => {
     const fruit = randomItem(FRUITS);
     const paints = shuffleItems(ALL_PAINT_IDS).slice(0, 4) as PaintId[];
     const requiredPaints = shuffleItems(paints).slice(0, 2) as [PaintId, PaintId];
@@ -167,8 +167,19 @@ const createRound = (previousCombinationKey?: string | null): RoundDefinition =>
         targetHex,
         requiredPaints,
         paints: buildPaintSet(requiredPaints),
-        id: `${fruit.fruitLabel}-${targetHex}-${requiredPaints.join('-')}-${Math.random().toString(36).slice(2, 8)}`
+        id: createRoundId(fruit.fruitLabel, targetHex, requiredPaints),
     };
+};
+
+const createRound = (previousCombinationKey?: string | null): RoundDefinition => {
+    for (let attempts = 0; attempts < 12; attempts += 1) {
+        const candidate = buildRoundCandidate();
+        if (getPaintCombinationKey(candidate.requiredPaints) !== previousCombinationKey) {
+            return candidate;
+        }
+    }
+
+    return buildRoundCandidate();
 };
 
 const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
@@ -354,13 +365,25 @@ const getFruitSvgMarkup = (fruitType: FruitType, color: string) => {
     return markup;
 };
 
+const toSvgDataUrl = (markup: string) => `data:image/svg+xml;charset=utf-8,${encodeURIComponent(markup)}`;
+
 const FruitSvg = ({ fruitType, color }: { fruitType: FruitType; color: string; }) => {
+    const imageSrc = useMemo(
+        () => toSvgDataUrl(getFruitSvgMarkup(fruitType, color)),
+        [fruitType, color]
+    );
+
     return (
-        <div
-            className={styles.fruitSvg}
-            aria-hidden="true"
-            dangerouslySetInnerHTML={{ __html: getFruitSvgMarkup(fruitType, color) }}
-        />
+        <div className={styles.fruitSvg} aria-hidden="true">
+            <img
+                src={imageSrc}
+                alt=""
+                className={styles.fruitSvgImage}
+                draggable={false}
+                loading="eager"
+                decoding="sync"
+            />
+        </div>
     );
 };
 
@@ -374,23 +397,11 @@ export default function ColorMix({ onExit }: ColorMixProps) {
     const handleExit = onExit || (() => navigate(-1));
 
     useEffect(() => {
-        const newResources = {
-            en: { translation: { games: { 'color-mix': manifest_en } } },
-            'en-UK': { translation: { games: { 'color-mix': manifest_en_UK } } },
-            'es-ES': { translation: { games: { 'color-mix': manifest_es_ES } } },
-            'fr-FR': { translation: { games: { 'color-mix': manifest_fr_FR } } },
-            'id-ID': { translation: { games: { 'color-mix': manifest_id_ID } } },
-            ja: { translation: { games: { 'color-mix': manifest_ja } } },
-            ko: { translation: { games: { 'color-mix': manifest_ko } } },
-            'pt-PT': { translation: { games: { 'color-mix': manifest_pt_PT } } },
-            'vi-VN': { translation: { games: { 'color-mix': manifest_vi_VN } } },
-        } as const;
-
-        Object.keys(newResources).forEach((lang) => {
+        Object.keys(LOCALE_MANIFESTS).forEach((lang) => {
             i18n.addResourceBundle(
                 lang,
                 'translation',
-                newResources[lang as keyof typeof newResources].translation,
+                LOCALE_MANIFESTS[lang].translation,
                 true,
                 true
             );
@@ -412,9 +423,14 @@ export default function ColorMix({ onExit }: ColorMixProps) {
     const [brushAnimation, setBrushAnimation] = useState<BrushAnimationState | null>(null);
     const [displayedPaletteHex, setDisplayedPaletteHex] = useState('#f8fafc');
     const [isResolvingMatch, setIsResolvingMatch] = useState(false);
+    const [showPaintHint, setShowPaintHint] = useState(false);
     const handledResolutionIdRef = useRef<string | null>(null);
     const feedbackTimerRef = useRef<number | null>(null);
     const transitionTimerRef = useRef<number | null>(null);
+    const hasShownHintRef = useRef(false);
+    const hintTimerRef = useRef<number | null>(null);
+    const wasPlayingRef = useRef(false);
+    const audioPrimedRef = useRef(false);
 
     const mixedHex = useMemo(() => mixPaintsWeighted(palettePaints), [palettePaints]);
     const hasPaintOnPalette = palettePaints.length > 0;
@@ -424,24 +440,21 @@ export default function ColorMix({ onExit }: ColorMixProps) {
     const areControlsLocked = !isPlaying || isResolvingMatch || isResultVisible;
     const canCheckAnswer = isPlaying && palettePaints.length === 2 && !isResolvingMatch && !isResultVisible;
 
-    const clearResolutionTimers = useCallback(() => {
-        if (feedbackTimerRef.current !== null) {
-            window.clearTimeout(feedbackTimerRef.current);
-            feedbackTimerRef.current = null;
-        }
-
-        if (transitionTimerRef.current !== null) {
-            window.clearTimeout(transitionTimerRef.current);
-            transitionTimerRef.current = null;
+    const clearTimerRef = useCallback((timerRef: MutableRefObject<number | null>) => {
+        if (timerRef.current !== null) {
+            window.clearTimeout(timerRef.current);
+            timerRef.current = null;
         }
     }, []);
+
+    const clearResolutionTimers = useCallback(() => {
+        clearTimerRef(feedbackTimerRef);
+        clearTimerRef(transitionTimerRef);
+    }, [clearTimerRef]);
 
     const clearFeedbackTimer = useCallback(() => {
-        if (feedbackTimerRef.current !== null) {
-            window.clearTimeout(feedbackTimerRef.current);
-            feedbackTimerRef.current = null;
-        }
-    }, []);
+        clearTimerRef(feedbackTimerRef);
+    }, [clearTimerRef]);
 
     const resetRoundProgress = useCallback(() => {
         setPalettePaints([]);
@@ -478,10 +491,49 @@ export default function ColorMix({ onExit }: ColorMixProps) {
         clearResolutionTimers();
     }, [clearResolutionTimers]);
 
+    useEffect(() => {
+        if (isPlaying && !wasPlayingRef.current) {
+            hasShownHintRef.current = false;
+            setShowPaintHint(false);
+            clearTimerRef(hintTimerRef);
+        }
+        wasPlayingRef.current = isPlaying;
+    }, [clearTimerRef, isPlaying]);
+
+    useEffect(() => {
+        if (!isPlaying || hasShownHintRef.current) return;
+
+        const isFirstQuestion =
+            engine.score === 0 &&
+            engine.stats.correct === 0 &&
+            engine.stats.wrong === 0;
+
+        if (!isFirstQuestion) return;
+
+        hasShownHintRef.current = true;
+        setShowPaintHint(true);
+        hintTimerRef.current = window.setTimeout(() => {
+            setShowPaintHint(false);
+            hintTimerRef.current = null;
+        }, 1800);
+    }, [engine.score, engine.stats.correct, engine.stats.wrong, isPlaying]);
+
+    useEffect(() => {
+        return () => {
+            clearTimerRef(hintTimerRef);
+        };
+    }, [clearTimerRef]);
+
     const resetPalette = useCallback(() => {
         clearResolutionTimers();
         resetRoundProgress();
     }, [clearResolutionTimers, resetRoundProgress]);
+
+    const primeAudioOnce = useCallback(() => {
+        if (audioPrimedRef.current) return;
+        audioPrimedRef.current = true;
+        primeFeedbackSoundsSilently();
+    }, []);
 
     const retryCurrentRound = useCallback(() => {
         clearResolutionTimers();
@@ -496,9 +548,10 @@ export default function ColorMix({ onExit }: ColorMixProps) {
         resetRoundProgress();
     }, [clearResolutionTimers, resetRoundProgress]);
 
-    const handleAddPaint = (paintId: PaintId, event?: MouseEvent<HTMLButtonElement>) => {
+    const handleAddPaint = useCallback((paintId: PaintId, event?: MouseEvent<HTMLButtonElement>) => {
         if (areControlsLocked) return;
         if (palettePaints.includes(paintId) || palettePaints.length >= 2) return;
+        primeAudioOnce();
         event?.currentTarget.blur();
         const nextPaints = [...palettePaints, paintId];
         const nextMixedHex = mixPaintsWeighted(nextPaints);
@@ -511,9 +564,9 @@ export default function ColorMix({ onExit }: ColorMixProps) {
         setPalettePaints(nextPaints);
         setDisplayedPaletteHex(nextMixedHex);
         setMatchResult(null);
-    };
+    }, [areControlsLocked, palettePaints, primeAudioOnce]);
 
-    const handleCheck = () => {
+    const handleCheck = useCallback(() => {
         if (!canCheckAnswer) return;
 
         const percent = calculateMatchPercent(round.targetHex, mixedHex);
@@ -522,7 +575,7 @@ export default function ColorMix({ onExit }: ColorMixProps) {
         setMatchResult({ percent, success });
         setResolvedRoundId(round.id);
         setIsResolvingMatch(true);
-    };
+    }, [canCheckAnswer, mixedHex, round.id, round.targetHex]);
 
     useEffect(() => {
         if ((engine.gameState === 'idle' || engine.gameState === 'gameover') && resolvedRoundId !== null) {
@@ -725,6 +778,11 @@ export default function ColorMix({ onExit }: ColorMixProps) {
 
                 <section className={`${styles.zone} ${styles.paintZone}`}>
                     <div className={styles.paintBox}>
+                        {showPaintHint && (
+                            <div className={styles.paintHintOverlay} aria-hidden="true">
+                                <span className={styles.paintHintText}>{t('games.color-mix.ui.selectTwoColorsHint')}</span>
+                            </div>
+                        )}
                         {availablePaints.map((paint) => (
                                 <button
                                     key={paint.id}
@@ -751,7 +809,7 @@ export default function ColorMix({ onExit }: ColorMixProps) {
 // eslint-disable-next-line react-refresh/only-export-components
 export const manifest: GameManifest = {
     id: GameIds.COLOR_MIX,
-    title: 'Color Mix',
+    title: 'Paint Mix',
     titleKey: 'games.color-mix.title',
     subtitle: 'Blend the colors!',
     subtitleKey: 'games.color-mix.subtitle',

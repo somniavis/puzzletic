@@ -945,7 +945,7 @@ export const GAMES: GameManifest[] = [
     },
     {
         id: GameIds.COLOR_MIX,
-        title: 'Color Mix',
+        title: 'Paint Mix',
         titleKey: 'games.color-mix.title',
         subtitle: 'Blend the colors!',
         subtitleKey: 'games.color-mix.subtitle',

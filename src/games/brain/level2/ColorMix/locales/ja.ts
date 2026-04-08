@@ -1,7 +1,10 @@
 export default {
-    title: 'カラー ミックス',
+    title: 'ペイントミックス',
     subtitle: '色をまぜよう！',
     description: '絵の具をまぜて、フルーツの目標カラーに合わせよう。',
+    ui: {
+        selectTwoColorsHint: '2つのカラーを選ぼう！'
+    },
     powerups: {
         timeFreeze: '時間停止',
         extraLife: 'ライフ追加',

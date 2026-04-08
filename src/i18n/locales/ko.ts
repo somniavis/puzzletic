@@ -1329,7 +1329,7 @@ const koBase = {
         },
         game: {
             playNow: '지금 플레이',
-            reset: '처음부터',
+            reset: '다시하기',
             noGames: '새로운 게임이 준비 중입니다!',
             unlock: {
                 reason: '{{game}} 마스터 등급 달성 시 해금',
@@ -1338,6 +1338,18 @@ const koBase = {
                 tailRunner: '테일 러너',
                 groGroLand: '그로그로 랜드',
             },
+        },
+    },
+    game: {
+        playNow: '지금 플레이',
+        reset: '다시하기',
+        noGames: '새로운 게임이 준비 중입니다!',
+        unlock: {
+            reason: '{{game}} 마스터 등급 달성 시 해금',
+        },
+        gameTitles: {
+            tailRunner: '테일 러너',
+            groGroLand: '그로그로 랜드',
         },
     },
     games: {

@@ -1,7 +1,10 @@
 export default {
-    title: 'Color Mix',
+    title: 'Paint Mix',
     subtitle: 'Blend the colors!',
     description: 'Mix paint colors to match each fruit target.',
+    ui: {
+        selectTwoColorsHint: 'Pick two colors!'
+    },
     powerups: {
         timeFreeze: 'Time Freeze',
         extraLife: 'Extra Life',

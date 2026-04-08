@@ -2072,7 +2072,7 @@ const jaBase = {
         },
         game: {
             playNow: '今すぐプレイ',
-            reset: 'はじめから',
+            reset: 'もういちど',
             noGames: '新しいゲームを準備中！',
             unlock: {
                 reason: '{{game}}のマスターランク達成で解禁',
@@ -2081,6 +2081,18 @@ const jaBase = {
                 tailRunner: 'TAIL RUNNER',
                 groGroLand: 'GROGRO LAND',
             },
+        },
+    },
+    game: {
+        playNow: '今すぐプレイ',
+        reset: 'もういちど',
+        noGames: '新しいゲームを準備中です！',
+        unlock: {
+            reason: '{{game}}をマスターすると解放',
+        },
+        gameTitles: {
+            tailRunner: 'テイルランナー',
+            groGroLand: 'グログロランド',
         },
     },
     games: {

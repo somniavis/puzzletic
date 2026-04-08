@@ -1327,7 +1327,7 @@ export const idID = {
     },
     game: {
       playNow: 'Main Sekarang',
-      reset: 'Mulai dari awal',
+      reset: 'Coba lagi',
       noGames: 'Game baru akan segera hadir!',
       unlock: {
         reason: 'Capai tingkat mahir di {{game}} untuk membuka',
@@ -1336,6 +1336,18 @@ export const idID = {
         tailRunner: 'TAIL RUNNER',
         groGroLand: 'GROGRO LAND',
       },
+    },
+  },
+  game: {
+    playNow: 'Main Sekarang',
+    reset: 'Coba lagi',
+    noGames: 'Game baru akan segera hadir!',
+    unlock: {
+      reason: 'Capai tingkat mahir di {{game}} untuk membuka',
+    },
+    gameTitles: {
+      tailRunner: 'TAIL RUNNER',
+      groGroLand: 'GROGRO LAND',
     },
   },
   games: {

@@ -1327,7 +1327,7 @@ export const frFR = {
     },
     game: {
       playNow: 'Jouer',
-      reset: 'Recommencer',
+      reset: 'Réessayer',
       noGames: 'D’autres jeux arrivent bientôt !',
       unlock: {
         reason: 'Maîtrisez totalement {{game}} pour débloquer',
@@ -1336,6 +1336,18 @@ export const frFR = {
         tailRunner: 'TAIL RUNNER',
         groGroLand: 'GROGRO LAND',
       },
+    },
+  },
+  game: {
+    playNow: 'Jouer',
+    reset: 'Réessayer',
+    noGames: 'D’autres jeux arrivent bientôt !',
+    unlock: {
+      reason: 'Maîtrisez totalement {{game}} pour débloquer',
+    },
+    gameTitles: {
+      tailRunner: 'TAIL RUNNER',
+      groGroLand: 'GROGRO LAND',
     },
   },
   games: {

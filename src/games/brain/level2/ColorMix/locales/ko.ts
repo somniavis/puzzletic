@@ -1,7 +1,10 @@
 export default {
-    title: '컬러 믹스',
+    title: '페인트 믹스',
     subtitle: '색을 섞어봐요!',
     description: '물감을 섞어 과일 목표 색상과 맞춰 보세요.',
+    ui: {
+        selectTwoColorsHint: '두개의 컬러 선택!'
+    },
     powerups: {
         timeFreeze: '시간 정지',
         extraLife: '추가 생명',

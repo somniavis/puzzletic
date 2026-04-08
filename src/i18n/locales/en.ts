@@ -1327,7 +1327,7 @@ export const en = {
     },
     game: {
       playNow: 'Play Now',
-      reset: 'Start Over',
+      reset: 'Try Again',
       noGames: 'More games coming soon!',
       unlock: {
         reason: 'Complete mastery of {{game}} to unlock',
@@ -1336,6 +1336,18 @@ export const en = {
         tailRunner: 'TAIL RUNNER',
         groGroLand: 'GROGRO LAND',
       },
+    },
+  },
+  game: {
+    playNow: 'Play Now',
+    reset: 'Try Again',
+    noGames: 'More games coming soon!',
+    unlock: {
+      reason: 'Complete mastery of {{game}} to unlock',
+    },
+    gameTitles: {
+      tailRunner: 'TAIL RUNNER',
+      groGroLand: 'GROGRO LAND',
     },
   },
   games: {

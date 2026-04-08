@@ -1,7 +1,10 @@
 export default {
-    title: 'Color Mix',
+    title: 'Paint Mix',
     subtitle: 'Campur warnanya!',
     description: 'Campur cat untuk mencocokkan warna target buah.',
+    ui: {
+        selectTwoColorsHint: 'Pilih dua warna!'
+    },
     powerups: {
         timeFreeze: 'Bekukan Waktu',
         extraLife: 'Nyawa Tambahan',

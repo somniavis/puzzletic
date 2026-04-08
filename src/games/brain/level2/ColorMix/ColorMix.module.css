@@ -98,6 +98,16 @@
     flex: 0 0 auto;
 }
 
+.fruitSvgImage {
+    display: block;
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    flex: 0 0 auto;
+    object-fit: contain;
+}
+
 /*
 Keep legacy Safari-friendly sizing:
 - wrapper follows height
@@ -268,9 +278,9 @@ Keep legacy Safari-friendly sizing:
 .paletteBrushOverlay {
     position: absolute;
     left: 72%;
-    top: 44%;
+    top: 35%;
     z-index: 30;
-    font-size: clamp(4rem, 10.4cqh, 5.8rem);
+    font-size: 4.5rem;
     line-height: 1;
     transform: translate(-50%, -50%) rotate(-18deg);
     transform-origin: center;
@@ -411,6 +421,26 @@ Keep legacy Safari-friendly sizing:
     justify-items: center;
     position: relative;
     z-index: 2;
+}
+
+.paintHintOverlay {
+    position: absolute;
+    inset: 0;
+    z-index: 6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.96);
+    pointer-events: auto;
+    animation: paintHintFade 1800ms ease-out forwards;
+}
+
+.paintHintText {
+    color: #1f2937;
+    font-size: clamp(0.95rem, 2.6cqh, 1.15rem);
+    font-weight: 800;
+    text-align: center;
+    letter-spacing: 0.01em;
 }
 
 .paintButton {
@@ -594,6 +624,25 @@ Keep legacy Safari-friendly sizing:
     }
 }
 
+@keyframes paintHintFade {
+    0% {
+        opacity: 0;
+        transform: translateY(8px) scale(0.96);
+    }
+    16% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+    82% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-4px) scale(0.98);
+    }
+}
+
 @media (hover: hover) {
     .paintButton:hover:not(:disabled),
     .actionButton:hover:not(:disabled) {
@@ -647,7 +696,7 @@ Keep legacy Safari-friendly sizing:
     }
 
     .paletteBrushOverlay {
-        font-size: 4.8rem;
+        font-size: 4.5rem;
     }
 
     .paintBox {

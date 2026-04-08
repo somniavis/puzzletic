@@ -120,22 +120,6 @@ export const PetWorldLayer: React.FC<PetWorldLayerProps> = ({
                 </div>
             )}
 
-            {/* Death UI Overlay */}
-            {nurturing.abandonmentStatus.level === 'abandoned' && (
-                <div className="death-overlay">
-                    <div className="death-container">
-                        <div className="ghost">👻</div>
-                        <div className="tombstone">🪦</div>
-                    </div>
-                    <div className="death-message">
-                        {t('abandonment.abandoned')}
-                    </div>
-                    <button className="reset-btn" onClick={nurturing.resetGame}>
-                        {t('game.reset')}
-                    </button>
-                </div>
-            )}
-
             <RoomBackground
                 background={nurturing.currentLand}
                 showGiftBox={showGiftBox}

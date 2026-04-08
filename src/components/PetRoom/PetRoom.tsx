@@ -473,6 +473,22 @@ export const PetRoom: React.FC<PetRoomProps> = ({
         onOpenSettings={() => ui.menus.setShowSettingsMenu(true)}
       />
 
+      {nurturing.abandonmentStatus.level === 'abandoned' && createPortal(
+        <div className="death-overlay" role="dialog" aria-modal="true" aria-labelledby="death-overlay-message">
+          <div className="death-container">
+            <div className="ghost">👻</div>
+            <div className="tombstone">🪦</div>
+          </div>
+          <div className="death-message" id="death-overlay-message">
+            {t('abandonment.abandoned')}
+          </div>
+          <button className="reset-btn" onClick={nurturing.resetGame}>
+            {t('game.reset')}
+          </button>
+        </div>,
+        document.body
+      )}
+
       {/* Modals */}
       {ui.modals.showNicknameModal && (
         <GiftBoxModal onComplete={handleNicknameComplete} />
