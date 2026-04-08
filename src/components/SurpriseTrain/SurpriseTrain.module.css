@@ -45,10 +45,39 @@
     position: absolute;
     top: -20px;
     left: 10px;
-    font-size: 2.5rem;
     z-index: 3;
     animation: bounce 1s infinite alternate ease-in-out;
     cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    outline: none;
+    caret-color: transparent;
+    color: transparent;
+    width: 2.5rem;
+    height: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.giftBox:focus,
+.giftBox:focus-visible,
+.giftBox:active {
+    outline: none;
+    box-shadow: none;
+}
+
+.giftBox::before {
+    content: '🎁';
+    font-size: 2.5rem;
+    line-height: 1;
+    color: initial;
+    pointer-events: none;
 }
 
 /* Smoke Effect */

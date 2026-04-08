@@ -46,6 +46,11 @@ export const SurpriseTrain: React.FC<SurpriseTrainProps> = ({
         onOpenGift(rect);
     };
 
+    const suppressSelection = (e: React.MouseEvent | React.PointerEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+    };
+
     const handleTrainClick = () => {
         // Choo Choo sound could go here
         onTrainClick?.();
@@ -76,9 +81,13 @@ export const SurpriseTrain: React.FC<SurpriseTrainProps> = ({
                 <div className={styles.wagon}>
                     🚃
                     {hasGift && (
-                        <div className={styles.giftBox} onClick={handleBoxClick}>
-                            🎁
-                        </div>
+                        <div
+                            className={styles.giftBox}
+                            onClick={handleBoxClick}
+                            onMouseDown={suppressSelection}
+                            onPointerDown={suppressSelection}
+                            aria-label="Gift box"
+                        />
                     )}
                 </div>
 

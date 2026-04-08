@@ -43,6 +43,9 @@ export const EvolutionControls: React.FC<EvolutionControlsProps> = ({
                     disabled={isActionInProgress}
                     title={t('actions.evolve')}
                 >
+                    <span className="evolution-btn-glass-mask" aria-hidden="true">
+                        <span className="evolution-btn-glass" />
+                    </span>
                     <span className="action-icon">💫</span>
                     <span className="btn-text">{t('actions.evolve')}</span>
                 </button>

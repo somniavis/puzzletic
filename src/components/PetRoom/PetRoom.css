@@ -1601,6 +1601,9 @@
   box-shadow: 0 5px 0 #b4761f, 0 8px 12px rgba(0, 0, 0, 0.3);
   transition: all 0.2s ease;
   animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
 }
 
 /* Specific Style for Evolution Button (Very Light/Pale Gold) */
@@ -1609,6 +1612,54 @@
   background: linear-gradient(180deg, #FFFFFA 0%, #FFF59D 100%);
   border-color: #d4a01f;
   /* Slightly lighter border to match */
+  box-shadow:
+    0 5px 0 #9b6d14,
+    0 9px 14px rgba(113, 75, 9, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.82);
+}
+
+.evolution-btn.type-evolution::before {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  border-radius: 15px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0.16) 32%, rgba(255, 255, 255, 0.03) 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.evolution-btn-glass-mask {
+  position: absolute;
+  inset: 7px;
+  border-radius: 13px;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.evolution-btn-glass {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -52%;
+  width: 62%;
+  background:
+    linear-gradient(180deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.42) 12%,
+      rgba(255, 255, 255, 0.98) 48%,
+      rgba(255, 255, 255, 0.36) 78%,
+      rgba(255, 255, 255, 0) 100%);
+  transform: rotate(18deg);
+  opacity: 1;
+  pointer-events: none;
+  z-index: 0;
+  animation: evolutionGlassSweep 2.8s ease-in-out infinite;
+  filter: blur(0.25px);
+  mix-blend-mode: screen;
+  border-radius: 11px;
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.22);
 }
 
 /* Ensure hover brightness applies to both */
@@ -1621,11 +1672,11 @@
 
 /* Adjust hover shadow color for light button if needed, but gold shadow is fine */
 .evolution-btn.type-evolution:hover {
-  box-shadow: 0 7px 0 #d4a01f, 0 10px 16px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 7px 0 #9b6d14, 0 11px 18px rgba(113, 75, 9, 0.28);
 }
 
 .evolution-btn.type-evolution:active {
-  box-shadow: 0 2px 0 #d4a01f, 0 4px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 0 #9b6d14, 0 4px 8px rgba(113, 75, 9, 0.18);
 }
 
 .evolution-btn:active {
@@ -1636,6 +1687,8 @@
 .evolution-btn .action-icon {
   font-size: 1.5rem;
   filter: drop-shadow(1px 1px 1px rgba(0, 0, 0, 0.2));
+  position: relative;
+  z-index: 2;
 }
 
 .evolution-btn .btn-text {
@@ -1644,6 +1697,8 @@
   color: #4d3e2f;
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.3);
   letter-spacing: -0.02em;
+  position: relative;
+  z-index: 2;
 }
 
 @media (max-width: 768px) {
@@ -1672,6 +1727,27 @@
   to {
     transform: scale(1);
     opacity: 1;
+  }
+}
+
+@keyframes evolutionGlassSweep {
+  0% {
+    left: -52%;
+    opacity: 0;
+  }
+
+  10% {
+    opacity: 1;
+  }
+
+  48% {
+    left: 104%;
+    opacity: 0;
+  }
+
+  100% {
+    left: 104%;
+    opacity: 0;
   }
 }
 
