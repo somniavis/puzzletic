@@ -1,3 +1,94 @@
-import en from './en';
-
-export default en;
+export default {
+    title: 'Jello Knight',
+    headerStatsLabel: 'Jello Knight status',
+    closeButton: 'Exit Jello Knight',
+    joystickAriaLabel: 'Movement joystick',
+    startTitle: 'Jello Knight',
+    startDescription: 'Survive the arena, gather XP and rescue animals, and keep pushing your score higher as enemy waves, walls, and battlefield pressure rise together.',
+    startButton: 'Start Run',
+    startGuides: {
+        labels: {
+            hud: 'HUD',
+            move: 'MOVE',
+            elite: 'ELITE',
+        },
+        hud: 'Life, XP, and score stay visible along the top.',
+        move: 'Desktop uses the arrow keys, while mobile uses the bottom-right joystick.',
+        elite: 'Elite enemies are dangerous, but defeating them drops a large burst of rescue orbs and XP.',
+    },
+    announcements: {
+        dangerTitle: 'Wave {{tier}}',
+        dangerDetail: 'Enemy pressure and arena threats are rising.',
+        rangedTitle: 'Ranged Threat',
+        rangedDetail: 'Precision shooters are entering the field.',
+        eliteTitle: 'Elite Incoming',
+        eliteDetail: 'A high-reward elite has entered the arena.',
+    },
+    levelUp: {
+        eyebrow: 'Level Up',
+        title: 'GET A SKILL',
+        unlockReady: 'Unlock',
+    },
+    gameOver: {
+        title: 'Run Results',
+        retryButton: 'Play Again',
+        newBest: 'New Best',
+        records: {
+            score: 'Score',
+            survival: 'Survival',
+            coins: 'Coins',
+            peakDanger: 'Peak Wave',
+            peakDangerValue: 'Wave {{tier}}',
+        },
+        rewards: {
+            xp: 'XP',
+            gro: 'Gro',
+        },
+    },
+    header: {
+        score: 'Score',
+        best: 'Best',
+    },
+    upgrades: {
+        orb_damage: {
+            title: 'Orb Power',
+        },
+        orb_count: {
+            title: 'Orb Count',
+        },
+        orb_speed: {
+            title: 'Orb Spin',
+        },
+        orb_radius: {
+            title: 'Orb Radius',
+        },
+        orb_crit: {
+            title: 'Orb Critical',
+        },
+        bomb_unlock: {
+            title: 'Bomb Drop',
+            description: 'Unlock the bomb skill.',
+        },
+        bomb_chance: {
+            title: 'Bomb Chance',
+        },
+        bomb_interval: {
+            title: 'Bomb Interval',
+        },
+        bomb_radius: {
+            title: 'Bomb Radius',
+        },
+        bomb_crit: {
+            title: 'Bomb Critical',
+        },
+        player_hp: {
+            title: 'Life',
+        },
+        player_defense: {
+            title: 'Defence',
+        },
+        player_speed: {
+            title: 'Move Speed',
+        },
+    },
+};

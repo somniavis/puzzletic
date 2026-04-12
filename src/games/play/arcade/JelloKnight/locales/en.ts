@@ -7,6 +7,11 @@ export default {
     startDescription: 'Survive the arena, gather XP and rescue animals, and keep your score climbing as enemy waves, walls, and pressure rise together.',
     startButton: 'Start Run',
     startGuides: {
+        labels: {
+            hud: 'HUD',
+            move: 'MOVE',
+            elite: 'ELITE',
+        },
         hud: 'Life, XP, and score stay visible at the top.',
         move: 'Desktop movement works with arrow keys, and mobile uses the bottom-right joystick.',
         elite: 'Elite enemies are dangerous, but rescuing them drops a big burst of score items and XP.',

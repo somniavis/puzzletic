@@ -7,6 +7,11 @@ export default {
     startDescription: '아레나를 생존하며 XP와 구조 오브를 모으고, 적 웨이브와 벽, 전장 압박이 함께 상승하는 흐름 속에서 점수를 끌어올리세요.',
     startButton: '시작',
     startGuides: {
+        labels: {
+            hud: 'HUD',
+            move: 'MOVE',
+            elite: 'ELITE',
+        },
         hud: '상단에서 라이프, XP, 점수를 바로 확인할 수 있습니다.',
         move: '데스크톱은 방향키로, 모바일은 우하단 조이스틱으로 이동합니다.',
         elite: '엘리트 적은 위험하지만, 쓰러뜨리면 많은 구조 오브와 XP를 획득할 수 있습니다.',
@@ -21,7 +26,7 @@ export default {
     },
     levelUp: {
         eyebrow: '레벨 업',
-        title: '업그레이드 하나를 선택하세요',
+        title: 'GET A SKILL',
         unlockReady: '해금',
     },
     gameOver: {

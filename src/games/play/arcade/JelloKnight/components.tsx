@@ -564,9 +564,9 @@ export const JelloKnightStartOverlay: React.FC<StartProps> = ({ gt, onStart }) =
         onAction={onStart}
         visual={<span className="jello-knight__start-visual">🫧⚔️</span>}
         guides={[
-            { keys: ['HUD'], text: gt('startGuides.hud') },
-            { keys: ['WASD'], text: gt('startGuides.move') },
-            { keys: ['ELITE'], text: gt('startGuides.elite') },
+            { keys: [gt('startGuides.labels.hud')], text: gt('startGuides.hud') },
+            { keys: [gt('startGuides.labels.move')], text: gt('startGuides.move') },
+            { keys: [gt('startGuides.labels.elite')], text: gt('startGuides.elite') },
         ]}
     />
 );
