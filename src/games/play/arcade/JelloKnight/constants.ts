@@ -3,7 +3,12 @@ import type { ChaserEnemy, FencePost, GroundPatch, JelloKnightHudState, Obstacle
 
 export const FIELD_SIZE = 3000;
 export const MAX_WAVE = 100;
-export const WAVE_DURATION_MS = 8000;
+export const WAVE_DURATION_RULES = [
+    { waveStart: 1, waveEnd: 30, durationMs: 15000 },
+    { waveStart: 31, waveEnd: 60, durationMs: 13000 },
+    { waveStart: 61, waveEnd: 80, durationMs: 10000 },
+    { waveStart: 81, waveEnd: 100, durationMs: 8000 },
+] as const;
 export const PLAYER_SIZE = 52;
 export const PLAYER_RADIUS = PLAYER_SIZE / 2;
 export const MAX_SKILL_LEVEL = 5;

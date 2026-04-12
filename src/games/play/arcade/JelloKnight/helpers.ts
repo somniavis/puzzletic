@@ -26,7 +26,7 @@ import {
     PLAYER_MOVE_SPEED_LEVELS,
     RANGED_ENEMY_VARIANTS,
     RESCUE_ANIMALS,
-    WAVE_DURATION_MS,
+    WAVE_DURATION_RULES,
     XP_ORB_SCORE_VALUE,
     BOMB_RADIUS_LEVELS,
 } from './constants';
@@ -297,9 +297,28 @@ const getWeightedVariant = <T extends { enemyType: string }>(
     return variants[variants.length - 1];
 };
 
-export const getWaveIndex = (elapsedMs: number) => (
-    clamp(1 + Math.floor(elapsedMs / WAVE_DURATION_MS), 1, MAX_WAVE)
-);
+export const getWaveIndex = (elapsedMs: number) => {
+    const safeElapsedMs = Math.max(0, elapsedMs);
+    let accumulatedMs = 0;
+
+    for (const rule of WAVE_DURATION_RULES) {
+        const waveCount = rule.waveEnd - rule.waveStart + 1;
+        const bandDurationMs = waveCount * rule.durationMs;
+
+        if (safeElapsedMs < accumulatedMs + bandDurationMs) {
+            const bandElapsedMs = safeElapsedMs - accumulatedMs;
+            return clamp(
+                rule.waveStart + Math.floor(bandElapsedMs / rule.durationMs),
+                rule.waveStart,
+                rule.waveEnd
+            );
+        }
+
+        accumulatedMs += bandDurationMs;
+    }
+
+    return MAX_WAVE;
+};
 
 export const getWaveVisualTier = (waveIndex: number) => (
     clamp(1 + Math.floor((waveIndex - 1) / 20), 1, 5)

@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { PlayArcadeHeaderStat } from '../../shared/PlayArcadeUI';
+import { playBombExplodeSynth, playQuietOrbHitSynth, primePlaySynthSfx } from '../../shared/playSynthSfx';
 import {
     playClearSound,
     playEatingSound,
@@ -729,6 +730,7 @@ export const useJelloKnightGame = ({
                     ...resolveCircleCircleSeparation(nextEnemy, ENEMY_CONTACT_RADIUS, nextPosition, PLAYER_RADIUS),
                 };
 
+                const hpBeforeOrbitHit = nextEnemy.hp;
                 nextEnemy = applyOrbitContactDamage(
                     nextEnemy,
                     ENEMY_RADIUS,
@@ -736,6 +738,9 @@ export const useJelloKnightGame = ({
                     orbitDamageRef.current,
                     orbitCritMultiplierRef.current
                 );
+                if (nextEnemy.hp < hpBeforeOrbitHit) {
+                    playQuietOrbHitSynth(0.3, 90);
+                }
 
                 if (Math.hypot(nextEnemy.x - nextPosition.x, nextEnemy.y - nextPosition.y) <= ENEMY_CONTACT_RADIUS + PLAYER_RADIUS) {
                     applyPlayerDamage(nextEnemy.contactDamage, lastEnemyContactDamageTimeRef);
@@ -804,6 +809,7 @@ export const useJelloKnightGame = ({
                     ...resolveCircleCircleSeparation(nextRangedEnemy, nextRangedEnemy.contactRadius, nextPosition, PLAYER_RADIUS),
                 };
 
+                const hpBeforeOrbitHit = nextRangedEnemy.hp;
                 nextRangedEnemy = applyOrbitContactDamage(
                     nextRangedEnemy,
                     RANGED_ENEMY_RADIUS,
@@ -811,6 +817,9 @@ export const useJelloKnightGame = ({
                     orbitDamageRef.current,
                     orbitCritMultiplierRef.current
                 );
+                if (nextRangedEnemy.hp < hpBeforeOrbitHit) {
+                    playQuietOrbHitSynth(0.3, 90);
+                }
 
                 if (nextRangedEnemy.hp <= 0) {
                     addDropsForDefeat({
@@ -941,6 +950,7 @@ export const useJelloKnightGame = ({
                         : currentElite.facing,
             };
 
+            const hpBeforeOrbitHit = nextElite.hp;
             nextElite = applyOrbitContactDamage(
                 nextElite,
                 ELITE_RADIUS,
@@ -948,6 +958,9 @@ export const useJelloKnightGame = ({
                 orbitDamageRef.current,
                 orbitCritMultiplierRef.current
             );
+            if (nextElite.hp < hpBeforeOrbitHit) {
+                playQuietOrbHitSynth(0.34, 90);
+            }
 
             if (Math.hypot(nextElite.x - nextPosition.x, nextElite.y - nextPosition.y) <= nextElite.contactRadius + PLAYER_RADIUS) {
                 applyPlayerDamage(nextElite.contactDamage, lastEliteContactDamageTimeRef);
@@ -1015,7 +1028,8 @@ export const useJelloKnightGame = ({
 
             const applyPlayerDamage = (
                 rawDamage: number,
-                lastDamageRef: React.MutableRefObject<number>
+                lastDamageRef: React.MutableRefObject<number>,
+                hitSound: 'jello' | 'quiet-orb' = 'jello'
             ) => {
                 if (elapsedMs - lastDamageRef.current < CONTACT_DAMAGE_COOLDOWN_MS) return false;
                 lastDamageRef.current = elapsedMs;
@@ -1023,7 +1037,11 @@ export const useJelloKnightGame = ({
                 const tookDamage = nextHp < hpRef.current;
                 hpRef.current = nextHp;
                 if (tookDamage) {
-                    playJelloClickSound(0.42);
+                    if (hitSound === 'quiet-orb') {
+                        playQuietOrbHitSynth(0.38, 140);
+                    } else {
+                        playJelloClickSound(0.42);
+                    }
                 }
                 triggerDamageFlash();
                 return true;
@@ -1175,6 +1193,7 @@ export const useJelloKnightGame = ({
                         radius: bombRadiusRef.current,
                         expiresAtMs: elapsedMs + BOMB_BLAST_VISUAL_MS,
                     });
+                    playBombExplodeSynth(0.58, 110);
 
                     const survivingEnemies: ChaserEnemy[] = [];
                     for (const enemy of enemiesRef.current) {
@@ -1262,7 +1281,7 @@ export const useJelloKnightGame = ({
                 if (
                     Math.hypot(movedProjectile.x - nextPosition.x, movedProjectile.y - nextPosition.y) <= ENEMY_PROJECTILE_RADIUS + PLAYER_RADIUS - 10
                 ) {
-                    applyPlayerDamage(movedProjectile.damage, lastProjectileDamageTimeRef);
+                    applyPlayerDamage(movedProjectile.damage, lastProjectileDamageTimeRef, 'quiet-orb');
                     continue;
                 }
 
@@ -1376,6 +1395,7 @@ export const useJelloKnightGame = ({
 
     const startRun = useCallback(() => {
         primeFeedbackSoundsSilently();
+        primePlaySynthSfx();
         resetRunRefs();
         resetRunState();
         setGamePhase('playing');
