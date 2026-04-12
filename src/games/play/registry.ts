@@ -12,6 +12,7 @@ const delayedImport = <T,>(importPromise: Promise<T>): Promise<T> => {
 };
 
 const PlayTailRunner = lazy(() => delayedImport(import('./arcade/TailRunner')));
+const PlayJelloKnight = lazy(() => delayedImport(import('./arcade/JelloKnight')));
 const PlayGroGroLand = lazy(() => delayedImport(import('./arcade/GroGroLand')));
 const PlayStarBridge = lazy(() => delayedImport(import('./arcade/StarBridge')));
 
@@ -38,6 +39,26 @@ export const PLAY_GAMES: PlayGameManifest[] = [
         },
     },
     {
+        id: GameIds.PLAY_JELLO_KNIGHT,
+        title: 'Jello Knight',
+        description: 'Endless survival prototype with your Jello hero.',
+        subtitle: 'Orbit, dodge, and grow',
+        category: 'play' as const,
+        level: 1 as const,
+        component: PlayJelloKnight,
+        launcher: {
+            order: 2,
+            sticker: '⚔️',
+            shell: '#4f6fc7',
+            shellDark: '#364f92',
+            accent: '#8cbaff',
+            accentLight: '#cfe2ff',
+            ink: '#152447',
+            edge: '#eef4ff',
+            glow: 'rgba(140, 186, 255, 0.34)',
+        },
+    },
+    {
         id: GameIds.PLAY_GROGRO_LAND,
         title: 'GroGro Land',
         description: 'Grow a colorful world in a dedicated play-land.',
@@ -47,7 +68,7 @@ export const PLAY_GAMES: PlayGameManifest[] = [
         level: 1 as const,
         component: PlayGroGroLand,
         launcher: {
-            order: 2,
+            order: 3,
             sticker: '🗺️',
             shell: '#5f89d8',
             shellDark: '#3e5fa7',
@@ -67,7 +88,7 @@ export const PLAY_GAMES: PlayGameManifest[] = [
         level: 1 as const,
         component: PlayStarBridge,
         launcher: {
-            order: 3,
+            order: 4,
             sticker: '🌌',
             shell: '#4767b0',
             shellDark: '#314a84',

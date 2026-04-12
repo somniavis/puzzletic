@@ -11,6 +11,19 @@
 
 const SOUND_BASE_URL = 'https://pub-1411335941ed4406b5f667f40e04a814.r2.dev/sound';
 
+const sfxGateTimestamps = new Map<string, number>();
+
+const shouldAllowSfx = (gateKey: string, minIntervalMs: number): boolean => {
+  if (minIntervalMs <= 0) return true;
+  const now = typeof performance !== 'undefined' ? performance.now() : Date.now();
+  const lastPlayedAt = sfxGateTimestamps.get(gateKey) ?? -Infinity;
+  if (now - lastPlayedAt < minIntervalMs) {
+    return false;
+  }
+  sfxGateTimestamps.set(gateKey, now);
+  return true;
+};
+
 export const SOUNDS = {
   buttonClick: `${SOUND_BASE_URL}/game%20sound/button_sound1.mp3`,
   jelloClick1: `${SOUND_BASE_URL}/jellosound/jellosound-1.mp3`,
@@ -356,6 +369,7 @@ export const playSound = (soundUrl: string, volume: number = 0.5): void => {
  */
 export const playButtonSound = (volume: number = 0.5): void => {
   if (!isSfxEnabled()) return;
+  if (!shouldAllowSfx('button', 60)) return;
   soundManager.play(SOUNDS.buttonClick, volume);
 };
 
@@ -366,6 +380,7 @@ export const playButtonSound = (volume: number = 0.5): void => {
  */
 export const playJelloClickSound = (volume: number = 0.5): void => {
   if (!isSfxEnabled()) return;
+  if (!shouldAllowSfx('jello-click', 140)) return;
   const jelloSounds = [SOUNDS.jelloClick1, SOUNDS.jelloClick2, SOUNDS.jelloClick3];
   const randomSound = jelloSounds[Math.floor(Math.random() * jelloSounds.length)];
   soundManager.play(randomSound, volume);
@@ -377,6 +392,7 @@ export const playJelloClickSound = (volume: number = 0.5): void => {
  */
 export const playEatingSound = (volume: number = 0.5): void => {
   if (!isSfxEnabled()) return;
+  if (!shouldAllowSfx('eating', 120)) return;
   soundManager.play(SOUNDS.eating, volume);
 };
 
@@ -387,6 +403,7 @@ export const playEatingSound = (volume: number = 0.5): void => {
  */
 export const playCleaningSound = (volume: number = 0.5): void => {
   if (!isSfxEnabled()) return;
+  if (!shouldAllowSfx('cleaning', 100)) return;
   soundManager.play(SOUNDS.cleaning, volume);
 };
 
@@ -396,6 +413,7 @@ export const playCleaningSound = (volume: number = 0.5): void => {
  */
 export const playClearSound = (volume: number = 0.5): void => {
   if (!isSfxEnabled()) return;
+  if (!shouldAllowSfx('clear', 180)) return;
   // Using cleaning sound as clear sound for now
   soundManager.play(SOUNDS.cleaning, volume);
 };
@@ -440,6 +458,7 @@ export const setBackgroundMusicVolume = (volume: number): void => {
  */
 export const playPlopSound = (volume: number = 0.5): void => {
   if (!isSfxEnabled()) return;
+  if (!shouldAllowSfx('plop', 120)) return;
   // TODO: Add specific plop sound to SOUNDS
   soundManager.play(SOUNDS.eating, volume);
 };

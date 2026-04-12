@@ -750,3 +750,15 @@ Vite 환경변수는 빌드 시 반영되므로,
 `빠른 초기 운영용`
 이며,
 향후에는 `Firebase custom claims + 서버 검증` 방식으로 전환하는 것이 목표입니다.
+
+### 현재 지정 계정 메모
+
+현재 테스트/운영 마스터 어드민으로 사용할 계정은 아래로 통일합니다.
+
+- `grogrojello.dev@gmail.com`
+
+운영 원칙:
+
+- 기존 `master@grogrojello.com` 계정은 마스터 어드민 allowlist 에서 제거
+- 테스트/운영 환경 모두 `VITE_ADMIN_EMAILS=grogrojello.dev@gmail.com` 기준으로 맞춤
+- 로컬 개발 환경도 동일 이메일 기준으로 맞춤

@@ -1309,7 +1309,7 @@ const PlayPage: React.FC = () => {
 
             <div
                 ref={hubContentRef}
-                className={`hub-content ${playLearnMode === 'play' && (activeTab === 'math' || activeTab === 'brain') ? 'hub-content-adventure-board' : ''} ${activeTab === 'brain' ? 'hub-content-brain' : ''}`}
+                className={`hub-content ${isPlayAdventureMode ? 'hub-content-adventure-board' : ''} ${activeTab === 'brain' ? 'hub-content-brain' : ''}`}
             >
                 {pageContent}
             </div>

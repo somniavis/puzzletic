@@ -210,13 +210,14 @@ export const ScorpionKing: React.FC<ScorpionKingProps> = ({ onExit }) => {
                 const nextRound = createScorpionKingRound(difficultyLevelRef.current, previousRoundKeyRef.current);
                 previousRoundKeyRef.current = nextRound.key;
                 startRound(nextRound);
+                beginEnemyAttackLoop(nextRound);
                 setArenaCurtainState('opening');
                 curtainTimerRef.current = window.setTimeout(() => {
                     setArenaCurtainState('idle');
                 }, CURTAIN_OPEN_MS);
             }, CURTAIN_HOLD_MS);
         }, CURTAIN_CLOSE_MS);
-    }, [startRound]);
+    }, [beginEnemyAttackLoop, startRound]);
 
     const maybeAwardComboPowerUp = React.useCallback((nextCombo: number) => {
         if (nextCombo > 0 && nextCombo % 3 === 0 && Math.random() > 0.45) {

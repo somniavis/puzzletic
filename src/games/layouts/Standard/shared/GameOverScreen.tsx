@@ -4,7 +4,7 @@ import { Flame, Download, RotateCcw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { toPng } from 'html-to-image';
 import { playButtonSound, playJelloClickSound } from '../../../../utils/sound';
-import { useNurturing } from '../../../../contexts/NurturingContext';
+import { useOptionalNurturing } from '../../../../contexts/NurturingContext';
 import { createCharacter } from '../../../../data/characters';
 import { JelloAvatar } from '../../../../components/characters/JelloAvatar';
 import type { RewardCalculation } from '../../../../types/gameMechanics';
@@ -47,7 +47,7 @@ export const GameOverScreen: React.FC<GameOverProps> = ({
     onRestart
 }) => {
     const { t } = useTranslation();
-    const nurturing = useNurturing();
+    const nurturing = useOptionalNurturing();
     const gameOverRef = useRef<HTMLDivElement>(null);
     const jelloResetTimerRef = useRef<number | null>(null);
     const [jelloAction, setJelloAction] = useState<CharacterAction>('idle');
@@ -99,14 +99,14 @@ export const GameOverScreen: React.FC<GameOverProps> = ({
     };
 
     const currentJello = useMemo(() => {
-        const id = nurturing.speciesId || 'yellowJello';
+        const id = nurturing?.speciesId || 'yellowJello';
         const char = createCharacter(id);
-        char.evolutionStage = Math.min(5, Math.max(1, nurturing.evolutionStage || 1)) as EvolutionStage;
-        if (nurturing.characterName) {
+        char.evolutionStage = Math.min(5, Math.max(1, nurturing?.evolutionStage || 1)) as EvolutionStage;
+        if (nurturing?.characterName) {
             char.name = nurturing.characterName;
         }
         return { id, char };
-    }, [nurturing.characterName, nurturing.evolutionStage, nurturing.speciesId]);
+    }, [nurturing?.characterName, nurturing?.evolutionStage, nurturing?.speciesId]);
 
     const jelloLaneClassName = useMemo(() => {
         const classes = ['game-over-jello-lane'];

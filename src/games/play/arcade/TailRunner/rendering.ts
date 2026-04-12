@@ -6,6 +6,12 @@ import type {
     TailRunnerState,
     TailRunnerTyrannoEnemy,
 } from './types';
+import {
+    PLAY_SHARED_GEM_GLOW_RADIUS,
+    PLAY_SHARED_GEM_LINE_SETS,
+    PLAY_SHARED_GEM_OUTER_POINTS,
+    PLAY_SHARED_GEM_TOP_POINTS,
+} from '../../shared/gemVisuals';
 
 type TailRunnerEmojiSprite = {
     canvas: HTMLCanvasElement;
@@ -186,56 +192,57 @@ export const drawGemEntity = (
     const tier = entity.coinTier ?? 'berry';
     const palette = constants.TAIL_RUNNER_GEM_COLORS[tier];
     const size = entity.radius + 3;
+    const toCanvasPoint = (point: { x: number; y: number }) => ({
+        x: point.x * size,
+        y: point.y * size,
+    });
+    const traceClosedShape = (points: Array<{ x: number; y: number }>) => {
+        points.forEach((point, index) => {
+            const canvasPoint = toCanvasPoint(point);
+            if (index === 0) {
+                context.moveTo(canvasPoint.x, canvasPoint.y);
+            } else {
+                context.lineTo(canvasPoint.x, canvasPoint.y);
+            }
+        });
+        context.closePath();
+    };
 
     context.save();
     context.translate(entity.x, entity.y);
 
     context.beginPath();
     context.fillStyle = palette.glow;
-    context.arc(0, 0, entity.radius + 10, 0, Math.PI * 2);
+    context.arc(0, 0, Math.max(entity.radius + 10, PLAY_SHARED_GEM_GLOW_RADIUS), 0, Math.PI * 2);
     context.fill();
 
     context.beginPath();
-    context.moveTo(0, -size);
-    context.lineTo(size * 0.72, -size * 0.2);
-    context.lineTo(size * 0.46, size * 0.84);
-    context.lineTo(0, size * 1.12);
-    context.lineTo(-size * 0.46, size * 0.84);
-    context.lineTo(-size * 0.72, -size * 0.2);
-    context.closePath();
+    traceClosedShape(PLAY_SHARED_GEM_OUTER_POINTS);
     context.fillStyle = palette.body;
     context.fill();
 
     context.beginPath();
-    context.moveTo(0, -size);
-    context.lineTo(size * 0.54, -size * 0.32);
-    context.lineTo(0, 0.1 * size);
-    context.lineTo(-size * 0.54, -size * 0.32);
-    context.closePath();
+    traceClosedShape(PLAY_SHARED_GEM_TOP_POINTS);
     context.fillStyle = palette.top;
     context.fill();
 
     context.strokeStyle = palette.edge;
     context.lineWidth = 2;
     context.beginPath();
-    context.moveTo(0, -size);
-    context.lineTo(size * 0.72, -size * 0.2);
-    context.lineTo(size * 0.46, size * 0.84);
-    context.lineTo(0, size * 1.12);
-    context.lineTo(-size * 0.46, size * 0.84);
-    context.lineTo(-size * 0.72, -size * 0.2);
-    context.closePath();
+    traceClosedShape(PLAY_SHARED_GEM_OUTER_POINTS);
     context.stroke();
 
     context.beginPath();
-    context.moveTo(-size * 0.54, -size * 0.32);
-    context.lineTo(0, 0.1 * size);
-    context.lineTo(size * 0.54, -size * 0.32);
-    context.moveTo(0, -size);
-    context.lineTo(0, 0.1 * size);
-    context.moveTo(-size * 0.38, size * 0.82);
-    context.lineTo(0, 0.1 * size);
-    context.lineTo(size * 0.38, size * 0.82);
+    PLAY_SHARED_GEM_LINE_SETS.forEach((lineSet) => {
+        lineSet.forEach((point, index) => {
+            const canvasPoint = toCanvasPoint(point);
+            if (index === 0) {
+                context.moveTo(canvasPoint.x, canvasPoint.y);
+            } else {
+                context.lineTo(canvasPoint.x, canvasPoint.y);
+            }
+        });
+    });
     context.strokeStyle = 'rgba(255,255,255,0.58)';
     context.lineWidth = 1.4;
     context.stroke();

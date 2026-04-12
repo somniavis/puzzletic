@@ -9,9 +9,15 @@ const normalizeTranslationResource = (translation: TranslationResource): Transla
   const normalized: TranslationResource = { ...translation };
   const common = normalized.common as Record<string, unknown> | undefined;
   const commonGame = common?.game as Record<string, unknown> | undefined;
+  const shop = normalized.shop as Record<string, unknown> | undefined;
+  const shopCategories = shop?.categories as Record<string, unknown> | undefined;
 
   if (commonGame && !normalized.game) {
     normalized.game = commonGame;
+  }
+
+  if (common && !common.pet && typeof shopCategories?.pet === 'string') {
+    common.pet = shopCategories.pet;
   }
 
   return normalized;
