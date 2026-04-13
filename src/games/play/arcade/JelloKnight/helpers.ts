@@ -4,7 +4,6 @@ import {
     BOMB_CRIT_MULTIPLIER_LEVELS,
     BOMB_DROP_CHANCE_LEVELS,
     BOMB_DROP_INTERVAL_LEVELS,
-    ELITE_ENEMY_VARIANTS,
     FIELD_SIZE,
     GEM_SCORE_VALUES,
     HEART_HEAL_VALUE,
@@ -14,7 +13,6 @@ import {
     LEVEL_UP_CARD_COUNT,
     MAX_WAVE,
     MAX_SKILL_LEVEL,
-    MELEE_ENEMY_VARIANTS,
     OBSTACLE_SET,
     ORBIT_COUNT_LEVELS,
     ORBIT_CRIT_MULTIPLIER_LEVELS,
@@ -24,12 +22,15 @@ import {
     PLAYER_DEFENSE_LEVELS,
     PLAYER_MAX_HP_LEVELS,
     PLAYER_MOVE_SPEED_LEVELS,
-    RANGED_ENEMY_VARIANTS,
     RESCUE_ANIMALS,
-    WAVE_DURATION_RULES,
     XP_ORB_SCORE_VALUE,
     BOMB_RADIUS_LEVELS,
 } from './constants';
+import {
+    ELITE_ENEMY_VARIANTS,
+    MELEE_ENEMY_VARIANTS,
+    RANGED_ENEMY_VARIANTS,
+} from './enemyBehaviors';
 import type {
     ChaserEnemy,
     EliteEnemy,
@@ -48,6 +49,8 @@ type TranslateFn = (key: string, values?: Record<string, string | number>) => st
 type WaveStatBand = {
     waveStart: number;
     waveEnd: number;
+    killTargetStart: number;
+    killTargetEnd: number;
     meleeSpawnStart: number;
     meleeSpawnEnd: number;
     meleeMaxStart: number;
@@ -67,16 +70,16 @@ type RatioBand<T extends string> = {
 };
 
 const WAVE_STAT_BANDS: WaveStatBand[] = [
-    { waveStart: 1, waveEnd: 10, meleeSpawnStart: 1180, meleeSpawnEnd: 1080, meleeMaxStart: 6, meleeMaxEnd: 8, rangedChanceStart: 0, rangedChanceEnd: 0, rangedMaxStart: 0, rangedMaxEnd: 0, eliteChanceStart: 0, eliteChanceEnd: 0 },
-    { waveStart: 11, waveEnd: 20, meleeSpawnStart: 1060, meleeSpawnEnd: 960, meleeMaxStart: 8, meleeMaxEnd: 10, rangedChanceStart: 0.15, rangedChanceEnd: 0.30, rangedMaxStart: 1, rangedMaxEnd: 2, eliteChanceStart: 0, eliteChanceEnd: 0 },
-    { waveStart: 21, waveEnd: 30, meleeSpawnStart: 940, meleeSpawnEnd: 860, meleeMaxStart: 10, meleeMaxEnd: 12, rangedChanceStart: 0.35, rangedChanceEnd: 0.50, rangedMaxStart: 2, rangedMaxEnd: 3, eliteChanceStart: 0, eliteChanceEnd: 0 },
-    { waveStart: 31, waveEnd: 40, meleeSpawnStart: 840, meleeSpawnEnd: 760, meleeMaxStart: 12, meleeMaxEnd: 14, rangedChanceStart: 0.55, rangedChanceEnd: 0.70, rangedMaxStart: 3, rangedMaxEnd: 4, eliteChanceStart: 0.10, eliteChanceEnd: 0.18 },
-    { waveStart: 41, waveEnd: 50, meleeSpawnStart: 740, meleeSpawnEnd: 680, meleeMaxStart: 14, meleeMaxEnd: 16, rangedChanceStart: 0.72, rangedChanceEnd: 0.82, rangedMaxStart: 4, rangedMaxEnd: 4, eliteChanceStart: 0.18, eliteChanceEnd: 0.26 },
-    { waveStart: 51, waveEnd: 60, meleeSpawnStart: 660, meleeSpawnEnd: 620, meleeMaxStart: 16, meleeMaxEnd: 18, rangedChanceStart: 0.82, rangedChanceEnd: 0.88, rangedMaxStart: 4, rangedMaxEnd: 5, eliteChanceStart: 0.28, eliteChanceEnd: 0.38 },
-    { waveStart: 61, waveEnd: 70, meleeSpawnStart: 610, meleeSpawnEnd: 580, meleeMaxStart: 18, meleeMaxEnd: 20, rangedChanceStart: 0.88, rangedChanceEnd: 0.92, rangedMaxStart: 5, rangedMaxEnd: 5, eliteChanceStart: 0.40, eliteChanceEnd: 0.52 },
-    { waveStart: 71, waveEnd: 80, meleeSpawnStart: 570, meleeSpawnEnd: 550, meleeMaxStart: 20, meleeMaxEnd: 21, rangedChanceStart: 0.92, rangedChanceEnd: 0.96, rangedMaxStart: 5, rangedMaxEnd: 6, eliteChanceStart: 0.54, eliteChanceEnd: 0.66 },
-    { waveStart: 81, waveEnd: 90, meleeSpawnStart: 545, meleeSpawnEnd: 530, meleeMaxStart: 21, meleeMaxEnd: 22, rangedChanceStart: 0.96, rangedChanceEnd: 1, rangedMaxStart: 6, rangedMaxEnd: 6, eliteChanceStart: 0.68, eliteChanceEnd: 0.82 },
-    { waveStart: 91, waveEnd: 100, meleeSpawnStart: 528, meleeSpawnEnd: 520, meleeMaxStart: 22, meleeMaxEnd: 24, rangedChanceStart: 1, rangedChanceEnd: 1, rangedMaxStart: 6, rangedMaxEnd: 6, eliteChanceStart: 0.84, eliteChanceEnd: 1 },
+    { waveStart: 1, waveEnd: 10, killTargetStart: 8, killTargetEnd: 12, meleeSpawnStart: 1180, meleeSpawnEnd: 1080, meleeMaxStart: 6, meleeMaxEnd: 8, rangedChanceStart: 0, rangedChanceEnd: 0, rangedMaxStart: 0, rangedMaxEnd: 0, eliteChanceStart: 0, eliteChanceEnd: 0 },
+    { waveStart: 11, waveEnd: 20, killTargetStart: 12, killTargetEnd: 16, meleeSpawnStart: 1060, meleeSpawnEnd: 960, meleeMaxStart: 8, meleeMaxEnd: 10, rangedChanceStart: 0.15, rangedChanceEnd: 0.30, rangedMaxStart: 1, rangedMaxEnd: 2, eliteChanceStart: 0.06, eliteChanceEnd: 0.12 },
+    { waveStart: 21, waveEnd: 30, killTargetStart: 16, killTargetEnd: 20, meleeSpawnStart: 940, meleeSpawnEnd: 860, meleeMaxStart: 10, meleeMaxEnd: 12, rangedChanceStart: 0.35, rangedChanceEnd: 0.50, rangedMaxStart: 2, rangedMaxEnd: 3, eliteChanceStart: 0.14, eliteChanceEnd: 0.20 },
+    { waveStart: 31, waveEnd: 40, killTargetStart: 20, killTargetEnd: 25, meleeSpawnStart: 840, meleeSpawnEnd: 760, meleeMaxStart: 12, meleeMaxEnd: 14, rangedChanceStart: 0.55, rangedChanceEnd: 0.70, rangedMaxStart: 3, rangedMaxEnd: 4, eliteChanceStart: 0.22, eliteChanceEnd: 0.30 },
+    { waveStart: 41, waveEnd: 50, killTargetStart: 25, killTargetEnd: 30, meleeSpawnStart: 740, meleeSpawnEnd: 680, meleeMaxStart: 14, meleeMaxEnd: 16, rangedChanceStart: 0.72, rangedChanceEnd: 0.82, rangedMaxStart: 4, rangedMaxEnd: 4, eliteChanceStart: 0.32, eliteChanceEnd: 0.42 },
+    { waveStart: 51, waveEnd: 60, killTargetStart: 30, killTargetEnd: 36, meleeSpawnStart: 660, meleeSpawnEnd: 620, meleeMaxStart: 16, meleeMaxEnd: 18, rangedChanceStart: 0.82, rangedChanceEnd: 0.88, rangedMaxStart: 4, rangedMaxEnd: 5, eliteChanceStart: 0.44, eliteChanceEnd: 0.54 },
+    { waveStart: 61, waveEnd: 70, killTargetStart: 36, killTargetEnd: 42, meleeSpawnStart: 610, meleeSpawnEnd: 580, meleeMaxStart: 18, meleeMaxEnd: 20, rangedChanceStart: 0.88, rangedChanceEnd: 0.92, rangedMaxStart: 5, rangedMaxEnd: 5, eliteChanceStart: 0.40, eliteChanceEnd: 0.52 },
+    { waveStart: 71, waveEnd: 80, killTargetStart: 42, killTargetEnd: 49, meleeSpawnStart: 570, meleeSpawnEnd: 550, meleeMaxStart: 20, meleeMaxEnd: 21, rangedChanceStart: 0.92, rangedChanceEnd: 0.96, rangedMaxStart: 5, rangedMaxEnd: 6, eliteChanceStart: 0.54, eliteChanceEnd: 0.66 },
+    { waveStart: 81, waveEnd: 90, killTargetStart: 49, killTargetEnd: 57, meleeSpawnStart: 545, meleeSpawnEnd: 530, meleeMaxStart: 21, meleeMaxEnd: 22, rangedChanceStart: 0.96, rangedChanceEnd: 1, rangedMaxStart: 6, rangedMaxEnd: 6, eliteChanceStart: 0.68, eliteChanceEnd: 0.82 },
+    { waveStart: 91, waveEnd: 100, killTargetStart: 57, killTargetEnd: 66, meleeSpawnStart: 528, meleeSpawnEnd: 520, meleeMaxStart: 22, meleeMaxEnd: 24, rangedChanceStart: 1, rangedChanceEnd: 1, rangedMaxStart: 6, rangedMaxEnd: 6, eliteChanceStart: 0.84, eliteChanceEnd: 1 },
 ];
 
 const MELEE_RATIO_BANDS: Array<RatioBand<ChaserEnemy['enemyType']>> = [
@@ -96,9 +99,11 @@ const RANGED_RATIO_BANDS: Array<RatioBand<RangedEnemy['enemyType']>> = [
 ];
 
 const ELITE_RATIO_BANDS: Array<RatioBand<EliteEnemy['enemyType']>> = [
-    { waveStart: 31, waveEnd: 50, values: { brute: 70, stinger: 30 } },
-    { waveStart: 51, waveEnd: 70, values: { brute: 60, stinger: 40 } },
-    { waveStart: 71, waveEnd: 100, values: { brute: 50, stinger: 50 } },
+    { waveStart: 11, waveEnd: 25, values: { brute: 100, stinger: 0, weaver: 0 } },
+    { waveStart: 26, waveEnd: 40, values: { brute: 62, stinger: 23, weaver: 15 } },
+    { waveStart: 41, waveEnd: 60, values: { brute: 46, stinger: 30, weaver: 24 } },
+    { waveStart: 61, waveEnd: 80, values: { brute: 38, stinger: 32, weaver: 30 } },
+    { waveStart: 81, waveEnd: 100, values: { brute: 34, stinger: 33, weaver: 33 } },
 ];
 
 export const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
@@ -297,35 +302,17 @@ const getWeightedVariant = <T extends { enemyType: string }>(
     return variants[variants.length - 1];
 };
 
-export const getWaveIndex = (elapsedMs: number) => {
-    const safeElapsedMs = Math.max(0, elapsedMs);
-    let accumulatedMs = 0;
-
-    for (const rule of WAVE_DURATION_RULES) {
-        const waveCount = rule.waveEnd - rule.waveStart + 1;
-        const bandDurationMs = waveCount * rule.durationMs;
-
-        if (safeElapsedMs < accumulatedMs + bandDurationMs) {
-            const bandElapsedMs = safeElapsedMs - accumulatedMs;
-            return clamp(
-                rule.waveStart + Math.floor(bandElapsedMs / rule.durationMs),
-                rule.waveStart,
-                rule.waveEnd
-            );
-        }
-
-        accumulatedMs += bandDurationMs;
-    }
-
-    return MAX_WAVE;
+export const getWaveTargetKillCount = (waveIndex: number) => {
+    const band = getWaveStatBand(waveIndex);
+    return Math.round(lerp(
+        band.killTargetStart,
+        band.killTargetEnd,
+        getBandProgress(waveIndex, band.waveStart, band.waveEnd)
+    ));
 };
 
 export const getWaveVisualTier = (waveIndex: number) => (
     clamp(1 + Math.floor((waveIndex - 1) / 20), 1, 5)
-);
-
-export const getWaveAnnouncementStep = (waveIndex: number) => (
-    clamp(1 + Math.floor((waveIndex - 1) / 10), 1, Math.ceil(MAX_WAVE / 10))
 );
 
 export const getEnemySpawnInterval = (waveIndex: number) => {
@@ -402,15 +389,22 @@ export const createSpawnEnemy = (id: number, elapsedMs: number, waveIndex: numbe
     };
 };
 
-export const createEliteEnemy = (id: number, elapsedMs: number, waveIndex: number): EliteEnemy => {
+export const createEliteEnemy = (
+    id: number,
+    elapsedMs: number,
+    waveIndex: number,
+    forcedEnemyType?: EliteEnemy['enemyType']
+): EliteEnemy => {
     const angle = ((id * 0.91) + (elapsedMs / 1200)) % (Math.PI * 2);
     const radius = FIELD_SIZE / 2 - 260;
     const ratioBand = getRatioBand(ELITE_RATIO_BANDS, waveIndex);
-    const variant = getWeightedVariant(
-        ELITE_ENEMY_VARIANTS,
-        (entry) => ratioBand.values[entry.enemyType] ?? 0,
-        id * 23 + Math.floor(elapsedMs / 700),
-    );
+    const variant = forcedEnemyType
+        ? ELITE_ENEMY_VARIANTS.find((entry) => entry.enemyType === forcedEnemyType) ?? ELITE_ENEMY_VARIANTS[0]
+        : getWeightedVariant(
+            ELITE_ENEMY_VARIANTS,
+            (entry) => ratioBand.values[entry.enemyType] ?? 0,
+            id * 23 + Math.floor(elapsedMs / 700),
+        );
     const initialDashReadyAtMs = elapsedMs + variant.dashCooldownMinMs + ((id * 173) % Math.max(1, variant.dashCooldownMaxMs - variant.dashCooldownMinMs));
 
     return {
@@ -438,6 +432,8 @@ export const createEliteEnemy = (id: number, elapsedMs: number, waveIndex: numbe
         dashUntilMs: null,
         dashDirectionX: 0,
         dashDirectionY: 0,
+        lastWebShotAtMs: elapsedMs,
+        renderAngleDeg: (Math.cos(angle) >= 0 ? 0 : 180),
         facing: Math.cos(angle) >= 0 ? 'right' : 'left',
     };
 };
@@ -561,6 +557,7 @@ const pickRandomOptions = <T,>(pool: T[], count: number) => {
 export const buildUpgradeOptions = (
     upgradeLevels: UpgradeLevels,
     bombUnlocked: boolean,
+    playerLevel: number,
     gt: TranslateFn
 ): UpgradeOption[] => {
     const buildSkillOption = (optionId: SkillUpgradeId): UpgradeOption | null => {
@@ -604,7 +601,9 @@ export const buildUpgradeOptions = (
             buildSkillOption('bomb_radius'),
             buildSkillOption('bomb_crit'),
         ].filter(Boolean) as UpgradeOption[]
-        : [bombUnlockOption];
+        : playerLevel >= 3
+            ? [bombUnlockOption]
+            : [];
 
     const survivalPool = [
         buildSkillOption('player_hp'),
@@ -674,10 +673,15 @@ export const resolveCircleObstacleCollisions = (
     radius: number,
     obstacles: Obstacle[],
     padding = 0
-) => obstacles.reduce(
-    (resolvedPosition, obstacle) => resolveCircleRectCollision(resolvedPosition, radius, obstacle, padding),
-    position
-);
+) => {
+    let resolvedPosition = position;
+
+    for (let index = 0; index < obstacles.length; index += 1) {
+        resolvedPosition = resolveCircleRectCollision(resolvedPosition, radius, obstacles[index], padding);
+    }
+
+    return resolvedPosition;
+};
 
 export const moveCircleWithObstacleSlide = (
     currentPosition: Vector2,
@@ -725,17 +729,32 @@ export const moveCircleWithObstacleSlide = (
         y: currentPosition.y - deltaX,
     });
 
-    const candidates = [direct, slideX, slideY, tangentLeft, tangentRight]
-        .filter((candidate) => candidate.movedDistanceSq > 0.0001)
-        .sort((a, b) => {
-            if (Math.abs(a.correctionDistanceSq - b.correctionDistanceSq) > 0.0001) {
-                return a.correctionDistanceSq - b.correctionDistanceSq;
-            }
-            return a.targetDistanceSq - b.targetDistanceSq;
-        });
+    let bestCandidate: ReturnType<typeof resolveAndMeasure> | null = null;
+    const candidates = [slideX, slideY, tangentLeft, tangentRight];
 
-    if (candidates.length > 0) {
-        return candidates[0].position;
+    for (let index = 0; index < candidates.length; index += 1) {
+        const candidate = candidates[index];
+        if (candidate.movedDistanceSq <= 0.0001) continue;
+
+        if (!bestCandidate) {
+            bestCandidate = candidate;
+            continue;
+        }
+
+        if (Math.abs(candidate.correctionDistanceSq - bestCandidate.correctionDistanceSq) > 0.0001) {
+            if (candidate.correctionDistanceSq < bestCandidate.correctionDistanceSq) {
+                bestCandidate = candidate;
+            }
+            continue;
+        }
+
+        if (candidate.targetDistanceSq < bestCandidate.targetDistanceSq) {
+            bestCandidate = candidate;
+        }
+    }
+
+    if (bestCandidate) {
+        return bestCandidate.position;
     }
 
     return direct.position;
@@ -771,13 +790,19 @@ export const resolveCircleCircleSeparation = (
     };
 };
 
+export const getCameraPositionFromViewport = (
+    playerPosition: Vector2,
+    viewportWidth: number,
+    viewportHeight: number
+): Vector2 => ({
+    x: clamp(playerPosition.x - viewportWidth / 2, 0, Math.max(0, FIELD_SIZE - viewportWidth)),
+    y: clamp(playerPosition.y - viewportHeight / 2, 0, Math.max(0, FIELD_SIZE - viewportHeight)),
+});
+
 export const getCameraPosition = (playerPosition: Vector2, stage: HTMLDivElement | null): Vector2 => {
     const stageRect = stage?.getBoundingClientRect();
     const viewportWidth = stageRect?.width ?? 0;
     const viewportHeight = stageRect?.height ?? 0;
 
-    return {
-        x: clamp(playerPosition.x - viewportWidth / 2, 0, Math.max(0, FIELD_SIZE - viewportWidth)),
-        y: clamp(playerPosition.y - viewportHeight / 2, 0, Math.max(0, FIELD_SIZE - viewportHeight)),
-    };
+    return getCameraPositionFromViewport(playerPosition, viewportWidth, viewportHeight);
 };

@@ -108,6 +108,7 @@ export const JelloKnight: React.FC<GameComponentProps> = ({ onExit }) => {
                 spawnSignals={game.spawnSignals}
                 stageMoodStyle={game.stageMoodStyle}
                 stageRef={game.stageRef}
+                webZones={game.webZones}
                 xpPickups={game.xpPickups}
             />
 

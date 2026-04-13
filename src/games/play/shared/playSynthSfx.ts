@@ -118,25 +118,59 @@ export const playBombExplodeSynth = (volume = 0.7, minIntervalMs = 120): void =>
         const normalizedVolume = Math.max(0, Math.min(1, volume));
 
         const osc = audioCtx.createOscillator();
+        const oscTail = audioCtx.createOscillator();
         const filter = audioCtx.createBiquadFilter();
+        const tailFilter = audioCtx.createBiquadFilter();
         const gainNode = audioCtx.createGain();
+        const tailGain = audioCtx.createGain();
+        const delayNode = audioCtx.createDelay(0.4);
+        const feedbackGain = audioCtx.createGain();
+        const delayTone = audioCtx.createBiquadFilter();
 
         osc.type = 'sawtooth';
+        oscTail.type = 'triangle';
+
         filter.type = 'lowpass';
-        filter.frequency.setValueAtTime(800, now);
+        filter.frequency.setValueAtTime(900, now);
+        filter.frequency.exponentialRampToValueAtTime(360, now + 0.38);
+
+        tailFilter.type = 'lowpass';
+        tailFilter.frequency.setValueAtTime(640, now);
+
+        delayTone.type = 'lowpass';
+        delayTone.frequency.setValueAtTime(520, now);
+        delayNode.delayTime.setValueAtTime(0.12, now);
+        feedbackGain.gain.setValueAtTime(0.22, now);
 
         osc.connect(filter);
         filter.connect(gainNode);
         gainNode.connect(audioCtx.destination);
 
-        osc.frequency.setValueAtTime(150, now);
-        osc.frequency.exponentialRampToValueAtTime(50, now + 0.3);
+        gainNode.connect(delayNode);
+        delayNode.connect(delayTone);
+        delayTone.connect(audioCtx.destination);
+        delayTone.connect(feedbackGain);
+        feedbackGain.connect(delayNode);
 
-        gainNode.gain.setValueAtTime(1 * normalizedVolume, now);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+        oscTail.connect(tailFilter);
+        tailFilter.connect(tailGain);
+        tailGain.connect(audioCtx.destination);
+
+        osc.frequency.setValueAtTime(150, now);
+        osc.frequency.exponentialRampToValueAtTime(48, now + 0.34);
+        oscTail.frequency.setValueAtTime(95, now + 0.02);
+        oscTail.frequency.exponentialRampToValueAtTime(42, now + 0.42);
+
+        gainNode.gain.setValueAtTime(0.9 * normalizedVolume, now);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.34);
+
+        tailGain.gain.setValueAtTime(0.22 * normalizedVolume, now + 0.02);
+        tailGain.gain.exponentialRampToValueAtTime(0.001, now + 0.48);
 
         osc.start(now);
-        osc.stop(now + 0.3);
+        osc.stop(now + 0.36);
+        oscTail.start(now);
+        oscTail.stop(now + 0.5);
     } catch (error) {
         console.warn('Bomb explode synth playback failed:', error);
     }

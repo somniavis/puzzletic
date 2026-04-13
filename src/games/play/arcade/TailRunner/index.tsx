@@ -38,6 +38,7 @@ import {
 } from './movingEmojiOverlay';
 import { useTailRunnerGameLoop } from './useTailRunnerGameLoop';
 import { calculatePlayArcadeReward } from '../../shared/playArcadeRewards';
+import { primePlaySynthSfx } from '../../shared/playSynthSfx';
 import { usePreventArcadeBrowserGestures } from '../../shared/usePreventArcadeBrowserGestures';
 import './TailRunner.css';
 
@@ -345,6 +346,7 @@ export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
     });
 
     const startGame = () => {
+        primePlaySynthSfx();
         clearInputs();
         rewardGrantedRef.current = false;
         setGameOverHighlights({

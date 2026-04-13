@@ -40,27 +40,33 @@ export const applyOrbitContactDamage = <T extends {
     orbitCritMultiplier: number
 ): T => {
     let isTouchingOrbit = false;
-    let nextTarget = target;
+    let nextHp = target.hp;
+    let orbContactReady = target.orbContactReady;
+    const overlapDistanceSq = (targetRadius + (ORBIT_SIZE / 2)) ** 2;
 
     for (const orbPosition of orbitPositions) {
-        if (nextTarget.hp <= 0) break;
-        const isOverlapping = Math.hypot(nextTarget.x - orbPosition.x, nextTarget.y - orbPosition.y) <= targetRadius + (ORBIT_SIZE / 2);
+        if (nextHp <= 0) break;
+        const deltaX = target.x - orbPosition.x;
+        const deltaY = target.y - orbPosition.y;
+        const isOverlapping = ((deltaX * deltaX) + (deltaY * deltaY)) <= overlapDistanceSq;
         if (!isOverlapping) continue;
         isTouchingOrbit = true;
-        if (!nextTarget.orbContactReady) continue;
-        nextTarget = {
-            ...nextTarget,
-            hp: nextTarget.hp - rollOrbitContactDamage(orbitDamage, orbitCritMultiplier),
-            orbContactReady: false,
-        };
+        if (!orbContactReady) continue;
+        nextHp -= rollOrbitContactDamage(orbitDamage, orbitCritMultiplier);
+        orbContactReady = false;
     }
 
-    if (!isTouchingOrbit && !nextTarget.orbContactReady) {
-        nextTarget = {
-            ...nextTarget,
-            orbContactReady: true,
-        };
+    if (!isTouchingOrbit && !orbContactReady) {
+        orbContactReady = true;
     }
 
-    return nextTarget;
+    if (nextHp === target.hp && orbContactReady === target.orbContactReady) {
+        return target;
+    }
+
+    return {
+        ...target,
+        hp: nextHp,
+        orbContactReady,
+    };
 };

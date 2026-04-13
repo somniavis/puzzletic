@@ -1,4 +1,5 @@
 import { playClearSound, playEatingSound } from '../../../../utils/sound';
+import { playBombExplodeSynth, playQuietOrbHitSynth } from '../../shared/playSynthSfx';
 import {
     TAIL_RUNNER_BASE_SPEED,
     TAIL_RUNNER_BOOST_SPEED,
@@ -141,6 +142,7 @@ export const updateTailRunnerState = ({
     );
 
     if (hitBarrier && !shieldActive) {
+        playQuietOrbHitSynth(0.34, 90);
         onFinishGame();
         return;
     }
@@ -159,6 +161,7 @@ export const updateTailRunnerState = ({
     ));
 
     if ((hitEnemy || hitTyranno) && !shieldActive) {
+        playBombExplodeSynth(0.54, 120);
         onFinishGame();
         return;
     }
@@ -266,10 +269,13 @@ export const updateTailRunnerState = ({
         if (state.tail.length > 0) {
             let nextLength = state.tail.length;
             if (entity.emoji === '🔥') {
+                playQuietOrbHitSynth(0.34, 90);
                 nextLength = Math.max(0, state.tail.length - 1);
             } else if (entity.emoji === '💣') {
+                playQuietOrbHitSynth(0.34, 90);
                 nextLength = Math.floor(state.tail.length / 2);
             } else if (entity.emoji === '🧨') {
+                playBombExplodeSynth(0.54, 120);
                 nextLength = 0;
             }
 

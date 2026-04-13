@@ -19,15 +19,17 @@ import {
     BOMB_FALL_DELAY_MS,
     BOMB_RADIUS_LEVELS,
     CONTACT_DAMAGE_COOLDOWN_MS,
+    DAMAGE_FLASH_DURATION_MS,
+    DAMAGE_FLASH_MAX_OPACITY,
     ELITE_RADIUS,
     ELITE_SPAWN_INTERVAL_MS,
     ENEMY_PROJECTILE_RADIUS,
-    ENEMY_CONTACT_RADIUS,
     ENEMY_RADIUS,
     FIELD_SIZE,
     INITIAL_HUD_STATE,
     INITIAL_PLAYER_POSITION,
     JOYSTICK_MAX_RADIUS,
+    MAX_WAVE,
     OBSTACLE_ENEMY_PADDING,
     OBSTACLE_PLAYER_PADDING,
     ORBIT_COUNT_LEVELS,
@@ -39,6 +41,7 @@ import {
     ORBIT_ROTATION_SPEED,
     ORBIT_SPEED_LEVELS,
     PICKUP_COLLECT_RADIUS,
+    PICKUP_SPAWN_GRACE_MS,
     PLAYER_DEFENSE_LEVELS,
     PLAYER_MAX_HP,
     PLAYER_MAX_HP_LEVELS,
@@ -50,8 +53,26 @@ import {
     SIGNAL_DURATION_MS,
     SPECIES_ORB_COLORS,
     VISUAL_SYNC_INTERVAL_MS,
+    WAVE_TRANSITION_DELAY_MS,
+    WEB_ZONE_HP,
+    WEB_ZONE_MAX_COUNT,
+    WEB_ZONE_ORBIT_HIT_COOLDOWN_MS,
+    WEB_ZONE_RADIUS,
+    WEB_ZONE_SLOW_MULTIPLIER,
+    WEB_ZONE_TOUCH_DEBUFF_MS,
+    WEB_ZONE_TOUCH_SLOW_MULTIPLIER,
+    WEB_SHOT_INTERVAL_MS,
+    WEB_SHOT_MAX_DISTANCE,
+    WEB_SHOT_MIN_DISTANCE,
     XP_PICKUP_VALUE,
 } from './constants';
+import {
+    ELITE_ORBIT_HIT_RADIUS_BY_TYPE,
+    ENEMY_CONTACT_RADIUS,
+    ENEMY_ORBIT_HIT_RADIUS_BY_TYPE,
+    getEliteMovementVector,
+    RANGED_ORBIT_HIT_RADIUS_BY_TYPE,
+} from './enemyBehaviors';
 import {
     buildUpgradeOptions,
     clamp,
@@ -60,7 +81,7 @@ import {
     createRangedEnemy,
     createSpawnEnemy,
     getActiveObstacles,
-    getCameraPosition,
+    getCameraPositionFromViewport,
     getEnemyMaxCount,
     getEnemySpawnInterval,
     getEnemySpeedBonus,
@@ -68,8 +89,7 @@ import {
     getVectorLength,
     getRangedMaxCount,
     getRangedSpawnChance,
-    getWaveAnnouncementStep,
-    getWaveIndex,
+    getWaveTargetKillCount,
     getWaveVisualTier,
     getXpToNextLevel,
     moveCircleWithObstacleSlide,
@@ -84,8 +104,14 @@ import {
 } from './gameplayUtils';
 import { applyUpgradeSelection } from './upgradeUtils';
 import {
+    buildEliteRenderSnapshot,
+    buildEnemyRenderSnapshot,
+    buildPickupRenderSnapshot,
+    buildProjectileRenderSnapshot,
+    buildRangedEnemyRenderSnapshot,
     getRunnerMotionStyleVars,
     getStageMoodStyleVars,
+    buildWebZoneRenderSnapshot,
 } from './viewModelUtils';
 import type {
     BombBlast,
@@ -93,18 +119,25 @@ import type {
     ChaserEnemy,
     EliteEnemy,
     EnemyProjectile,
+    EnemyRenderItem,
+    EliteRenderItem,
     JelloKnightAnnouncement,
     JelloKnightHudState,
     JelloKnightPhaseOverlay,
     Obstacle,
+    PickupRenderItem,
     RangedEnemy,
+    RangedEnemyRenderItem,
     RunnerMotion,
     UpgradeLevels,
     SpawnSignal,
     UpgradeOption,
     UpgradeOptionId,
     Vector2,
+    WebZone,
+    WebZoneRenderItem,
     XpPickup,
+    ProjectileRenderItem,
 } from './types';
 
 export const useJelloKnightGame = ({
@@ -118,6 +151,18 @@ export const useJelloKnightGame = ({
     onReward: (wasBest: boolean, score: number, elapsedMs: number) => void;
     rewards: { xp: number; gro: number };
 }) => {
+    const isWithinRadius = (
+        ax: number,
+        ay: number,
+        bx: number,
+        by: number,
+        radius: number
+    ) => {
+        const dx = ax - bx;
+        const dy = ay - by;
+        return ((dx * dx) + (dy * dy)) <= (radius * radius);
+    };
+
     const rootRef = useRef<HTMLDivElement | null>(null);
     const stageRef = useRef<HTMLDivElement | null>(null);
     const controlsRef = useRef<HTMLDivElement | null>(null);
@@ -129,6 +174,7 @@ export const useJelloKnightGame = ({
     const lastFrameTimeRef = useRef<number | null>(null);
     const lastVisualSyncTimeRef = useRef<number>(0);
     const lastPlayerVisualSyncTimeRef = useRef<number>(0);
+    const stageViewportSizeRef = useRef<{ width: number; height: number }>({ width: 0, height: 0 });
     const rewardGrantedRef = useRef(false);
     const joystickPointerIdRef = useRef<number | null>(null);
     const keyboardInputRef = useRef({ up: false, down: false, left: false, right: false });
@@ -139,6 +185,7 @@ export const useJelloKnightGame = ({
     const rangedEnemiesRef = useRef<RangedEnemy[]>([]);
     const eliteEnemyRef = useRef<EliteEnemy | null>(null);
     const projectilesRef = useRef<EnemyProjectile[]>([]);
+    const webZonesRef = useRef<WebZone[]>([]);
     const bombStrikesRef = useRef<BombStrike[]>([]);
     const bombBlastsRef = useRef<BombBlast[]>([]);
     const xpPickupsRef = useRef<XpPickup[]>([]);
@@ -175,13 +222,25 @@ export const useJelloKnightGame = ({
     const lastEnemyContactDamageTimeRef = useRef<number>(-CONTACT_DAMAGE_COOLDOWN_MS);
     const lastEliteContactDamageTimeRef = useRef<number>(-CONTACT_DAMAGE_COOLDOWN_MS);
     const lastProjectileDamageTimeRef = useRef<number>(-CONTACT_DAMAGE_COOLDOWN_MS);
-    const lastWaveAnnouncementStepRef = useRef<number>(1);
+    const lastAnnouncedWaveRef = useRef<number>(0);
     const lastObstacleTierRef = useRef<number>(0);
     const lastRangedAnnouncementAtRef = useRef<number>(-RANGED_ENEMY_SPAWN_INTERVAL_MS);
     const announcementExpiresAtRef = useRef<number>(0);
     const damageFlashUntilRef = useRef<number>(0);
+    const playerWebSlowUntilMsRef = useRef<number>(0);
+    const waveIndexRef = useRef<number>(1);
+    const waveKillCountRef = useRef<number>(0);
+    const waveTargetKillCountRef = useRef<number>(getWaveTargetKillCount(1));
+    const nextWaveAdvanceAtMsRef = useRef<number | null>(null);
     const nextSignalIdRef = useRef<number>(1);
     const nextAnnouncementIdRef = useRef<number>(1);
+    const nextWebZoneIdRef = useRef<number>(1);
+    const enemyRenderSnapshotRef = useRef<EnemyRenderItem[]>([]);
+    const rangedEnemyRenderSnapshotRef = useRef<RangedEnemyRenderItem[]>([]);
+    const eliteRenderSnapshotRef = useRef<EliteRenderItem | null>(null);
+    const projectileRenderSnapshotRef = useRef<ProjectileRenderItem[]>([]);
+    const webZoneRenderSnapshotRef = useRef<WebZoneRenderItem[]>([]);
+    const pickupRenderSnapshotRef = useRef<PickupRenderItem[]>([]);
 
     const [gamePhase, setGamePhase] = useState<JelloKnightPhaseOverlay>('start');
     const [hudState, setHudState] = useState<JelloKnightHudState>(INITIAL_HUD_STATE);
@@ -193,13 +252,14 @@ export const useJelloKnightGame = ({
     const [cameraPosition, setCameraPosition] = useState<Vector2>({ x: 0, y: 0 });
     const [joystickVector, setJoystickVector] = useState<Vector2>({ x: 0, y: 0 });
     const [orbitPositions, setOrbitPositions] = useState<Vector2[]>([]);
-    const [enemies, setEnemies] = useState<ChaserEnemy[]>([]);
-    const [rangedEnemies, setRangedEnemies] = useState<RangedEnemy[]>([]);
-    const [eliteEnemy, setEliteEnemy] = useState<EliteEnemy | null>(null);
-    const [projectiles, setProjectiles] = useState<EnemyProjectile[]>([]);
+    const [enemies, setEnemies] = useState<EnemyRenderItem[]>([]);
+    const [rangedEnemies, setRangedEnemies] = useState<RangedEnemyRenderItem[]>([]);
+    const [eliteEnemy, setEliteEnemy] = useState<EliteRenderItem | null>(null);
+    const [projectiles, setProjectiles] = useState<ProjectileRenderItem[]>([]);
+    const [webZones, setWebZones] = useState<WebZoneRenderItem[]>([]);
     const [bombStrikes, setBombStrikes] = useState<BombStrike[]>([]);
     const [bombBlasts, setBombBlasts] = useState<BombBlast[]>([]);
-    const [xpPickups, setXpPickups] = useState<XpPickup[]>([]);
+    const [xpPickups, setXpPickups] = useState<PickupRenderItem[]>([]);
     const [upgradeOptions, setUpgradeOptions] = useState<UpgradeOption[]>([]);
     const [orbitDamage, setOrbitDamage] = useState<number>(ORBIT_DAMAGE);
     const [playerMaxHp, setPlayerMaxHp] = useState<number>(PLAYER_MAX_HP_LEVELS[0]);
@@ -215,8 +275,21 @@ export const useJelloKnightGame = ({
     const [damageFlashOpacity, setDamageFlashOpacity] = useState(0);
 
     useEffect(() => {
+        const syncStageViewport = () => {
+            const stageRect = stageRef.current?.getBoundingClientRect();
+            stageViewportSizeRef.current = {
+                width: stageRect?.width ?? 0,
+                height: stageRect?.height ?? 0,
+            };
+        };
+
         const handleResize = () => {
-            setCameraPosition(getCameraPosition(playerPositionRef.current, stageRef.current));
+            syncStageViewport();
+            setCameraPosition(getCameraPositionFromViewport(
+                playerPositionRef.current,
+                stageViewportSizeRef.current.width,
+                stageViewportSizeRef.current.height
+            ));
         };
 
         handleResize();
@@ -239,6 +312,11 @@ export const useJelloKnightGame = ({
         joystickInputRef.current = { x: 0, y: 0 };
         setJoystickVector({ x: 0, y: 0 });
     }, []);
+
+    const getEnemyDisplayName = useCallback(
+        (enemyType: string) => gt(`enemyNames.${enemyType}`),
+        [gt]
+    );
 
     const resetRunRefs = useCallback(() => {
         rewardGrantedRef.current = false;
@@ -278,11 +356,16 @@ export const useJelloKnightGame = ({
         lastEnemyContactDamageTimeRef.current = -CONTACT_DAMAGE_COOLDOWN_MS;
         lastEliteContactDamageTimeRef.current = -CONTACT_DAMAGE_COOLDOWN_MS;
         lastProjectileDamageTimeRef.current = -CONTACT_DAMAGE_COOLDOWN_MS;
-        lastWaveAnnouncementStepRef.current = 1;
+        lastAnnouncedWaveRef.current = 0;
         lastObstacleTierRef.current = 0;
         lastRangedAnnouncementAtRef.current = -RANGED_ENEMY_SPAWN_INTERVAL_MS;
         announcementExpiresAtRef.current = 0;
         damageFlashUntilRef.current = 0;
+        playerWebSlowUntilMsRef.current = 0;
+        waveIndexRef.current = 1;
+        waveKillCountRef.current = 0;
+        waveTargetKillCountRef.current = getWaveTargetKillCount(1);
+        nextWaveAdvanceAtMsRef.current = null;
         nextEnemyIdRef.current = 1;
         nextRangedEnemyIdRef.current = 1;
         nextEliteIdRef.current = 1;
@@ -291,14 +374,22 @@ export const useJelloKnightGame = ({
         nextBombStrikeIdRef.current = 1;
         nextSignalIdRef.current = 1;
         nextAnnouncementIdRef.current = 1;
+        nextWebZoneIdRef.current = 1;
         enemiesRef.current = [];
         rangedEnemiesRef.current = [];
         eliteEnemyRef.current = null;
         projectilesRef.current = [];
+        webZonesRef.current = [];
         bombStrikesRef.current = [];
         bombBlastsRef.current = [];
         xpPickupsRef.current = [];
         spawnSignalsRef.current = [];
+        enemyRenderSnapshotRef.current = [];
+        rangedEnemyRenderSnapshotRef.current = [];
+        eliteRenderSnapshotRef.current = null;
+        projectileRenderSnapshotRef.current = [];
+        webZoneRenderSnapshotRef.current = [];
+        pickupRenderSnapshotRef.current = [];
         resetJoystick();
     }, [resetJoystick]);
 
@@ -307,12 +398,17 @@ export const useJelloKnightGame = ({
         setLastRunWasBest(false);
         setPlayerPosition(INITIAL_PLAYER_POSITION);
         setRunnerMotion({ x: 0, y: 0, strength: 0 });
-        setCameraPosition(getCameraPosition(INITIAL_PLAYER_POSITION, stageRef.current));
+        setCameraPosition(getCameraPositionFromViewport(
+            INITIAL_PLAYER_POSITION,
+            stageViewportSizeRef.current.width,
+            stageViewportSizeRef.current.height
+        ));
         setOrbitPositions([]);
         setEnemies([]);
         setRangedEnemies([]);
         setEliteEnemy(null);
         setProjectiles([]);
+        setWebZones([]);
         setBombStrikes([]);
         setBombBlasts([]);
         setXpPickups([]);
@@ -423,9 +519,23 @@ export const useJelloKnightGame = ({
             pauseStartedAtRef.current = null;
         }
 
-        const DAMAGE_FLASH_DURATION_MS = 340;
-        const DAMAGE_FLASH_MAX_OPACITY = 0.72;
-        const PICKUP_SPAWN_GRACE_MS = 520;
+        const addWebZoneAt = (x: number, y: number) => {
+            const nextWebZone: WebZone = {
+                id: nextWebZoneIdRef.current,
+                x: clamp(x, WEB_ZONE_RADIUS, FIELD_SIZE - WEB_ZONE_RADIUS),
+                y: clamp(y, WEB_ZONE_RADIUS, FIELD_SIZE - WEB_ZONE_RADIUS),
+                radius: WEB_ZONE_RADIUS,
+                slowMultiplier: WEB_ZONE_SLOW_MULTIPLIER,
+                hp: WEB_ZONE_HP,
+                maxHp: WEB_ZONE_HP,
+                lastOrbHitAtMs: -WEB_ZONE_ORBIT_HIT_COOLDOWN_MS,
+                expiresAtMs: Number.POSITIVE_INFINITY,
+            };
+            nextWebZoneIdRef.current += 1;
+            webZonesRef.current = webZonesRef.current
+                .concat(nextWebZone)
+                .slice(-WEB_ZONE_MAX_COUNT);
+        };
 
         const syncVisualState = ({
             elapsedMs,
@@ -457,7 +567,7 @@ export const useJelloKnightGame = ({
                 const flashRemainingMs = Math.max(0, damageFlashUntilRef.current - elapsedMs);
                 setDamageFlashOpacity(
                     flashRemainingMs > 0
-                        ? Number(((flashRemainingMs / DAMAGE_FLASH_DURATION_MS) * DAMAGE_FLASH_MAX_OPACITY).toFixed(3))
+                        ? Math.round(((flashRemainingMs / DAMAGE_FLASH_DURATION_MS) * DAMAGE_FLASH_MAX_OPACITY) * 1000) / 1000
                         : 0
                 );
                 setHudState({
@@ -473,16 +583,68 @@ export const useJelloKnightGame = ({
                     lastObstacleTierRef.current = waveVisualTier;
                     setActiveObstacles(activeObstacleSet);
                 }
-                setEnemies([...enemiesRef.current]);
-                setRangedEnemies([...rangedEnemiesRef.current]);
-                setEliteEnemy(eliteEnemyRef.current ? { ...eliteEnemyRef.current } : null);
-                setProjectiles([...projectilesRef.current]);
+                const nextEnemySnapshot = buildEnemyRenderSnapshot(enemiesRef.current, enemyRenderSnapshotRef.current);
+                if (nextEnemySnapshot !== enemyRenderSnapshotRef.current) {
+                    enemyRenderSnapshotRef.current = nextEnemySnapshot;
+                    setEnemies(nextEnemySnapshot);
+                }
+
+                const nextRangedSnapshot = buildRangedEnemyRenderSnapshot(
+                    rangedEnemiesRef.current,
+                    rangedEnemyRenderSnapshotRef.current
+                );
+                if (nextRangedSnapshot !== rangedEnemyRenderSnapshotRef.current) {
+                    rangedEnemyRenderSnapshotRef.current = nextRangedSnapshot;
+                    setRangedEnemies(nextRangedSnapshot);
+                }
+
+                const nextEliteSnapshot = buildEliteRenderSnapshot(
+                    eliteEnemyRef.current,
+                    eliteRenderSnapshotRef.current
+                );
+                if (nextEliteSnapshot !== eliteRenderSnapshotRef.current) {
+                    eliteRenderSnapshotRef.current = nextEliteSnapshot;
+                    setEliteEnemy(nextEliteSnapshot);
+                }
+
+                const nextProjectileSnapshot = buildProjectileRenderSnapshot(
+                    projectilesRef.current,
+                    projectileRenderSnapshotRef.current
+                );
+                if (nextProjectileSnapshot !== projectileRenderSnapshotRef.current) {
+                    projectileRenderSnapshotRef.current = nextProjectileSnapshot;
+                    setProjectiles(nextProjectileSnapshot);
+                }
+
+                const nextWebZoneSnapshot = buildWebZoneRenderSnapshot(
+                    webZonesRef.current,
+                    webZoneRenderSnapshotRef.current
+                );
+                if (nextWebZoneSnapshot !== webZoneRenderSnapshotRef.current) {
+                    webZoneRenderSnapshotRef.current = nextWebZoneSnapshot;
+                    setWebZones(nextWebZoneSnapshot);
+                }
+
                 setBombStrikes([...bombStrikesRef.current]);
                 setBombBlasts([...bombBlastsRef.current]);
-                setXpPickups([...xpPickupsRef.current]);
+                const nextPickupSnapshot = buildPickupRenderSnapshot(
+                    xpPickupsRef.current,
+                    pickupRenderSnapshotRef.current
+                );
+                if (nextPickupSnapshot !== pickupRenderSnapshotRef.current) {
+                    pickupRenderSnapshotRef.current = nextPickupSnapshot;
+                    setXpPickups(nextPickupSnapshot);
+                }
                 setSpawnSignals([...spawnSignalsRef.current]);
             } else if (shouldRefreshPickups) {
-                setXpPickups([...xpPickupsRef.current]);
+                const nextPickupSnapshot = buildPickupRenderSnapshot(
+                    xpPickupsRef.current,
+                    pickupRenderSnapshotRef.current
+                );
+                if (nextPickupSnapshot !== pickupRenderSnapshotRef.current) {
+                    pickupRenderSnapshotRef.current = nextPickupSnapshot;
+                    setXpPickups(nextPickupSnapshot);
+                }
             }
 
             if (shouldSyncPlayerVisuals) {
@@ -494,19 +656,21 @@ export const useJelloKnightGame = ({
                     strength: activeStrength,
                 });
                 setOrbitPositions(orbitPositionsNow);
-                setCameraPosition(getCameraPosition(nextPosition, stageRef.current));
+                setCameraPosition(getCameraPositionFromViewport(
+                    nextPosition,
+                    stageViewportSizeRef.current.width,
+                    stageViewportSizeRef.current.height
+                ));
                 setJoystickVector(joystickInputRef.current);
             }
         };
 
         const updateAnnouncementsAndEffects = ({
             elapsedMs,
-            waveAnnouncementStep,
             waveIndex,
             showAnnouncement,
         }: {
             elapsedMs: number;
-            waveAnnouncementStep: number;
             waveIndex: number;
             showAnnouncement: (
                 title: string,
@@ -514,11 +678,17 @@ export const useJelloKnightGame = ({
                 tone: JelloKnightAnnouncement['tone']
             ) => void;
         }) => {
-            if (waveAnnouncementStep > lastWaveAnnouncementStepRef.current) {
-                lastWaveAnnouncementStepRef.current = waveAnnouncementStep;
+            if (waveIndex > lastAnnouncedWaveRef.current) {
+                lastAnnouncedWaveRef.current = waveIndex;
+                const dangerDetailKeys = [
+                    'announcements.dangerDetail1',
+                    'announcements.dangerDetail2',
+                    'announcements.dangerDetail3',
+                ] as const;
+                const dangerDetailKey = dangerDetailKeys[Math.floor(Math.random() * dangerDetailKeys.length)];
                 showAnnouncement(
                     gt('announcements.dangerTitle', { tier: waveIndex }),
-                    gt('announcements.dangerDetail'),
+                    gt(dangerDetailKey),
                     'danger'
                 );
             }
@@ -555,6 +725,11 @@ export const useJelloKnightGame = ({
             if (liveBombBlasts !== bombBlastsRef.current) {
                 bombBlastsRef.current = liveBombBlasts;
             }
+
+            const liveWebZones = pruneExpiredEntries(webZonesRef.current);
+            if (liveWebZones !== webZonesRef.current) {
+                webZonesRef.current = liveWebZones;
+            }
         };
 
         const trySpawnEnemiesAndBombs = ({
@@ -567,6 +742,7 @@ export const useJelloKnightGame = ({
             rangedMaxCount,
             rangedSpawnChance,
             showAnnouncement,
+            isWaveTransitioning,
             waveIndex,
         }: {
             activeObstacleSet: Obstacle[];
@@ -574,6 +750,7 @@ export const useJelloKnightGame = ({
             eliteSpawnChance: number;
             enemyMaxCount: number;
             enemySpawnInterval: number;
+            isWaveTransitioning: boolean;
             nextPosition: Vector2;
             rangedMaxCount: number;
             rangedSpawnChance: number;
@@ -584,6 +761,8 @@ export const useJelloKnightGame = ({
             ) => void;
             waveIndex: number;
         }) => {
+            if (isWaveTransitioning) return;
+
             if (
                 elapsedMs - lastSpawnTimeRef.current >= enemySpawnInterval
                 && enemiesRef.current.length < enemyMaxCount
@@ -620,7 +799,9 @@ export const useJelloKnightGame = ({
                         lastRangedAnnouncementAtRef.current = elapsedMs;
                         showAnnouncement(
                             gt('announcements.rangedTitle'),
-                            gt('announcements.rangedDetail'),
+                            gt('announcements.rangedDetail', {
+                                name: getEnemyDisplayName(nextRangedEnemy.enemyType),
+                            }),
                             'ranged'
                         );
                     }
@@ -648,7 +829,9 @@ export const useJelloKnightGame = ({
                     nextSignalIdRef.current += 1;
                     showAnnouncement(
                         gt('announcements.eliteTitle'),
-                        gt('announcements.eliteDetail'),
+                        gt('announcements.eliteDetail', {
+                            name: getEnemyDisplayName(nextElite.enemyType),
+                        }),
                         'elite'
                     );
                 } else {
@@ -673,6 +856,7 @@ export const useJelloKnightGame = ({
                     const landAtMs = elapsedMs + 420;
                     bombStrikesRef.current = bombStrikesRef.current.concat({
                         id: nextBombStrikeIdRef.current,
+                        strikeKind: 'bomb',
                         sourceX: nextPosition.x,
                         sourceY: nextPosition.y,
                         targetX: throwTarget.x,
@@ -694,6 +878,7 @@ export const useJelloKnightGame = ({
             enemySpeedBonus,
             nextPosition,
             orbitPositionsNow,
+            registerEnemyDefeat,
         }: {
             activeObstacleSet: Obstacle[];
             addDropsForDefeat: (params: { x: number; y: number; enemyLevel: number; dropCount: number; xpValue: number }) => void;
@@ -702,6 +887,7 @@ export const useJelloKnightGame = ({
             enemySpeedBonus: number;
             nextPosition: Vector2;
             orbitPositionsNow: Vector2[];
+            registerEnemyDefeat: () => void;
         }) => {
             const nextEnemies: ChaserEnemy[] = [];
 
@@ -733,7 +919,7 @@ export const useJelloKnightGame = ({
                 const hpBeforeOrbitHit = nextEnemy.hp;
                 nextEnemy = applyOrbitContactDamage(
                     nextEnemy,
-                    ENEMY_RADIUS,
+                    ENEMY_ORBIT_HIT_RADIUS_BY_TYPE[nextEnemy.enemyType],
                     orbitPositionsNow,
                     orbitDamageRef.current,
                     orbitCritMultiplierRef.current
@@ -742,7 +928,7 @@ export const useJelloKnightGame = ({
                     playQuietOrbHitSynth(0.3, 90);
                 }
 
-                if (Math.hypot(nextEnemy.x - nextPosition.x, nextEnemy.y - nextPosition.y) <= ENEMY_CONTACT_RADIUS + PLAYER_RADIUS) {
+                if (isWithinRadius(nextEnemy.x, nextEnemy.y, nextPosition.x, nextPosition.y, ENEMY_CONTACT_RADIUS + PLAYER_RADIUS)) {
                     applyPlayerDamage(nextEnemy.contactDamage, lastEnemyContactDamageTimeRef);
                 }
 
@@ -754,6 +940,7 @@ export const useJelloKnightGame = ({
                         dropCount: nextEnemy.enemyType === 'heavy' ? 2 : 1,
                         xpValue: XP_PICKUP_VALUE,
                     });
+                    registerEnemyDefeat();
                     continue;
                 }
 
@@ -769,19 +956,26 @@ export const useJelloKnightGame = ({
             deltaMs,
             nextPosition,
             orbitPositionsNow,
+            registerEnemyDefeat,
         }: {
             activeObstacleSet: Obstacle[];
             addDropsForDefeat: (params: { x: number; y: number; enemyLevel: number; dropCount: number; xpValue: number }) => void;
             deltaMs: number;
             nextPosition: Vector2;
             orbitPositionsNow: Vector2[];
+            registerEnemyDefeat: () => void;
         }) => {
             const nextRangedEnemies: RangedEnemy[] = [];
 
             for (const enemy of rangedEnemiesRef.current) {
                 const toPlayerRaw = { x: nextPosition.x - enemy.x, y: nextPosition.y - enemy.y };
-                const distanceToPlayer = Math.hypot(toPlayerRaw.x, toPlayerRaw.y);
-                const toPlayer = normalizeVector(toPlayerRaw);
+                const distanceToPlayerSq = (toPlayerRaw.x * toPlayerRaw.x) + (toPlayerRaw.y * toPlayerRaw.y);
+                const distanceToPlayer = Math.sqrt(distanceToPlayerSq);
+                const inverseDistance = distanceToPlayer > 0 ? 1 / distanceToPlayer : 0;
+                const toPlayer = {
+                    x: toPlayerRaw.x * inverseDistance,
+                    y: toPlayerRaw.y * inverseDistance,
+                };
                 const shouldAdvance = distanceToPlayer > enemy.fireRange * 0.82;
                 const movedRangedEnemy = {
                     ...enemy,
@@ -812,7 +1006,7 @@ export const useJelloKnightGame = ({
                 const hpBeforeOrbitHit = nextRangedEnemy.hp;
                 nextRangedEnemy = applyOrbitContactDamage(
                     nextRangedEnemy,
-                    RANGED_ENEMY_RADIUS,
+                    RANGED_ORBIT_HIT_RADIUS_BY_TYPE[nextRangedEnemy.enemyType],
                     orbitPositionsNow,
                     orbitDamageRef.current,
                     orbitCritMultiplierRef.current
@@ -829,14 +1023,18 @@ export const useJelloKnightGame = ({
                         dropCount: nextRangedEnemy.enemyType === 'heavyCaster' ? 2 : 1,
                         xpValue: nextRangedEnemy.xpValue,
                     });
+                    registerEnemyDefeat();
                     continue;
                 }
 
-                if (distanceToPlayer <= nextRangedEnemy.fireRange && nextRangedEnemy.cooldownMs <= 0) {
-                    const projectileDirection = normalizeVector({
-                        x: nextPosition.x - nextRangedEnemy.x,
-                        y: nextPosition.y - nextRangedEnemy.y,
-                    });
+                if (distanceToPlayerSq <= (nextRangedEnemy.fireRange * nextRangedEnemy.fireRange) && nextRangedEnemy.cooldownMs <= 0) {
+                    const projectileDx = nextPosition.x - nextRangedEnemy.x;
+                    const projectileDy = nextPosition.y - nextRangedEnemy.y;
+                    const projectileDistance = Math.sqrt((projectileDx * projectileDx) + (projectileDy * projectileDy)) || 1;
+                    const projectileDirection = {
+                        x: projectileDx / projectileDistance,
+                        y: projectileDy / projectileDistance,
+                    };
                     projectilesRef.current = [
                         ...projectilesRef.current,
                         {
@@ -866,6 +1064,7 @@ export const useJelloKnightGame = ({
             elapsedMs,
             nextPosition,
             orbitPositionsNow,
+            registerEnemyDefeat,
         }: {
             activeObstacleSet: Obstacle[];
             addDropsForDefeat: (params: { x: number; y: number; enemyLevel: number; dropCount: number; xpValue: number }) => void;
@@ -874,14 +1073,21 @@ export const useJelloKnightGame = ({
             elapsedMs: number;
             nextPosition: Vector2;
             orbitPositionsNow: Vector2[];
+            registerEnemyDefeat: () => void;
         }) => {
             if (!eliteEnemyRef.current) return;
 
             const currentElite = eliteEnemyRef.current;
             const toPlayer = normalizeVector({ x: nextPosition.x - currentElite.x, y: nextPosition.y - currentElite.y });
-            const isDashing = currentElite.dashUntilMs !== null && elapsedMs < currentElite.dashUntilMs;
-            const isInWindup = currentElite.dashWindupUntilMs !== null && elapsedMs < currentElite.dashWindupUntilMs;
-            const canStartDash = !isDashing && !isInWindup && elapsedMs >= currentElite.nextDashReadyAtMs;
+            const usesDashPattern = currentElite.enemyType !== 'weaver';
+            const isDashing = usesDashPattern && currentElite.dashUntilMs !== null && elapsedMs < currentElite.dashUntilMs;
+            const isInWindup = usesDashPattern && currentElite.dashWindupUntilMs !== null && elapsedMs < currentElite.dashWindupUntilMs;
+            const canStartDash = usesDashPattern
+                && currentElite.dashWindupUntilMs === null
+                && currentElite.dashUntilMs === null
+                && !isDashing
+                && !isInWindup
+                && elapsedMs >= currentElite.nextDashReadyAtMs;
             let dashDirection = {
                 x: currentElite.dashDirectionX,
                 y: currentElite.dashDirectionY,
@@ -889,6 +1095,7 @@ export const useJelloKnightGame = ({
             let dashWindupUntilMs = currentElite.dashWindupUntilMs;
             let dashUntilMs = currentElite.dashUntilMs;
             let nextDashReadyAtMs = currentElite.nextDashReadyAtMs;
+            let lastWebShotAtMs = currentElite.lastWebShotAtMs;
 
             if (canStartDash) {
                 dashDirection = toPlayer;
@@ -901,7 +1108,7 @@ export const useJelloKnightGame = ({
                 dashUntilMs = elapsedMs + currentElite.dashDurationMs;
                 dashWindupUntilMs = null;
                 dashDirection = currentElite.dashDirectionX === 0 && currentElite.dashDirectionY === 0 ? toPlayer : dashDirection;
-            } else if (currentElite.dashUntilMs !== null && elapsedMs >= currentElite.dashUntilMs) {
+            } else if (usesDashPattern && currentElite.dashUntilMs !== null && elapsedMs >= currentElite.dashUntilMs) {
                 dashUntilMs = null;
                 const dashCooldownRange = Math.max(1, currentElite.dashCooldownMaxMs - currentElite.dashCooldownMinMs);
                 nextDashReadyAtMs = elapsedMs + currentElite.dashCooldownMinMs + ((currentElite.id * 97 + Math.floor(elapsedMs)) % dashCooldownRange);
@@ -909,12 +1116,25 @@ export const useJelloKnightGame = ({
             }
 
             const nextIsDashing = dashUntilMs !== null && elapsedMs < dashUntilMs;
-            const movementVector = nextIsDashing
-                ? normalizeVector(dashDirection)
-                : toPlayer;
-            const moveSpeed = nextIsDashing
-                ? currentElite.baseSpeed * currentElite.dashSpeedMultiplier
-                : currentElite.baseSpeed;
+            const nextIsInWindup = dashWindupUntilMs !== null && elapsedMs < dashWindupUntilMs;
+            const movementVector = getEliteMovementVector({
+                dashDirection,
+                dashDurationMs: currentElite.dashDurationMs,
+                dashUntilMs,
+                elapsedMs,
+                enemyType: currentElite.enemyType,
+                isDashing: nextIsDashing,
+                isInWindup: nextIsInWindup,
+                toPlayer,
+                unitId: currentElite.id,
+            });
+            const moveSpeed = currentElite.enemyType === 'weaver'
+                ? currentElite.baseSpeed
+                : nextIsDashing
+                    ? currentElite.baseSpeed * currentElite.dashSpeedMultiplier
+                    : nextIsInWindup
+                        ? 0
+                        : currentElite.baseSpeed;
             const movedElite = {
                 ...currentElite,
                 x: clamp(currentElite.x + movementVector.x * moveSpeed * (deltaMs / 1000), ELITE_RADIUS, FIELD_SIZE - ELITE_RADIUS),
@@ -924,6 +1144,7 @@ export const useJelloKnightGame = ({
                 dashWindupUntilMs,
                 dashUntilMs,
                 nextDashReadyAtMs,
+                lastWebShotAtMs,
             };
             let nextElite = {
                 ...movedElite,
@@ -936,13 +1157,68 @@ export const useJelloKnightGame = ({
                     OBSTACLE_ENEMY_PADDING
                 ),
             };
+            const intendedMoveDistance = Math.hypot(movedElite.x - currentElite.x, movedElite.y - currentElite.y);
             nextElite = {
                 ...nextElite,
                 ...resolveCircleCircleSeparation(nextElite, nextElite.contactRadius, nextPosition, PLAYER_RADIUS),
             };
+            const actualMoveDistance = Math.hypot(nextElite.x - currentElite.x, nextElite.y - currentElite.y);
+            if (
+                nextIsDashing
+                && intendedMoveDistance > 0
+                && actualMoveDistance < intendedMoveDistance * 0.58
+            ) {
+                const dashCooldownRange = Math.max(1, currentElite.dashCooldownMaxMs - currentElite.dashCooldownMinMs);
+                nextDashReadyAtMs = elapsedMs + currentElite.dashCooldownMinMs + ((currentElite.id * 97 + Math.floor(elapsedMs)) % dashCooldownRange);
+                nextElite = {
+                    ...nextElite,
+                    dashUntilMs: null,
+                    dashDirectionX: 0,
+                    dashDirectionY: 0,
+                    nextDashReadyAtMs,
+                    lastWebShotAtMs,
+                };
+            }
+            if (
+                currentElite.enemyType === 'weaver'
+                && elapsedMs - lastWebShotAtMs >= WEB_SHOT_INTERVAL_MS
+            ) {
+                const baseAngle = Math.atan2(toPlayer.y, toPlayer.x);
+                const offsetAngle = ((currentElite.id + Math.floor(elapsedMs / 280)) % 5 - 2) * 0.42;
+                const shotAngle = baseAngle + offsetAngle;
+                const shotDistance = WEB_SHOT_MIN_DISTANCE + (((currentElite.id * 29) + Math.floor(elapsedMs / 10)) % (WEB_SHOT_MAX_DISTANCE - WEB_SHOT_MIN_DISTANCE + 1));
+                const webTarget = resolveCircleObstacleCollisions(
+                    {
+                        x: clamp(nextElite.x + (Math.cos(shotAngle) * shotDistance), WEB_ZONE_RADIUS, FIELD_SIZE - WEB_ZONE_RADIUS),
+                        y: clamp(nextElite.y + (Math.sin(shotAngle) * shotDistance), WEB_ZONE_RADIUS, FIELD_SIZE - WEB_ZONE_RADIUS),
+                    },
+                    18,
+                    activeObstacleSet,
+                    4
+                );
+                bombStrikesRef.current = bombStrikesRef.current.concat({
+                    id: nextBombStrikeIdRef.current,
+                    strikeKind: 'web',
+                    sourceX: nextElite.x,
+                    sourceY: nextElite.y,
+                    targetX: webTarget.x,
+                    targetY: webTarget.y,
+                    createdAtMs: elapsedMs,
+                    landAtMs: elapsedMs + 420,
+                    triggerAtMs: elapsedMs + 420,
+                });
+                nextBombStrikeIdRef.current += 1;
+                lastWebShotAtMs = elapsedMs;
+            }
             const eliteDeltaX = nextElite.x - currentElite.x;
+            const eliteDeltaY = nextElite.y - currentElite.y;
+            const renderAngleDeg = currentElite.enemyType === 'weaver'
+                ? Math.atan2(eliteDeltaY, eliteDeltaX) * (180 / Math.PI) + 90
+                : 0;
             nextElite = {
                 ...nextElite,
+                lastWebShotAtMs,
+                renderAngleDeg: Number.isFinite(renderAngleDeg) ? renderAngleDeg : currentElite.renderAngleDeg,
                 facing: eliteDeltaX < -0.01
                     ? 'left'
                     : eliteDeltaX > 0.01
@@ -953,7 +1229,7 @@ export const useJelloKnightGame = ({
             const hpBeforeOrbitHit = nextElite.hp;
             nextElite = applyOrbitContactDamage(
                 nextElite,
-                ELITE_RADIUS,
+                ELITE_ORBIT_HIT_RADIUS_BY_TYPE[nextElite.enemyType],
                 orbitPositionsNow,
                 orbitDamageRef.current,
                 orbitCritMultiplierRef.current
@@ -962,7 +1238,7 @@ export const useJelloKnightGame = ({
                 playQuietOrbHitSynth(0.34, 90);
             }
 
-            if (Math.hypot(nextElite.x - nextPosition.x, nextElite.y - nextPosition.y) <= nextElite.contactRadius + PLAYER_RADIUS) {
+            if (isWithinRadius(nextElite.x, nextElite.y, nextPosition.x, nextPosition.y, nextElite.contactRadius + PLAYER_RADIUS)) {
                 applyPlayerDamage(nextElite.contactDamage, lastEliteContactDamageTimeRef);
             }
 
@@ -974,6 +1250,7 @@ export const useJelloKnightGame = ({
                     dropCount: 5,
                     xpValue: nextElite.xpValue,
                 });
+                registerEnemyDefeat();
                 eliteEnemyRef.current = null;
                 return;
             }
@@ -995,9 +1272,21 @@ export const useJelloKnightGame = ({
             lastFrameTimeRef.current = timestamp;
             const shouldSyncPlayerVisuals = elapsedMs - lastPlayerVisualSyncTimeRef.current >= PLAYER_VISUAL_SYNC_INTERVAL_MS;
             const shouldSyncVisuals = elapsedMs - lastVisualSyncTimeRef.current >= VISUAL_SYNC_INTERVAL_MS;
-            const waveIndex = getWaveIndex(elapsedMs);
+            if (
+                nextWaveAdvanceAtMsRef.current !== null
+                && elapsedMs >= nextWaveAdvanceAtMsRef.current
+            ) {
+                nextWaveAdvanceAtMsRef.current = null;
+                waveIndexRef.current = Math.min(MAX_WAVE, waveIndexRef.current + 1);
+                waveKillCountRef.current = 0;
+                waveTargetKillCountRef.current = getWaveTargetKillCount(waveIndexRef.current);
+                lastSpawnTimeRef.current = elapsedMs;
+                lastRangedSpawnTimeRef.current = elapsedMs;
+            }
+
+            const waveIndex = waveIndexRef.current;
+            const isWaveTransitioning = nextWaveAdvanceAtMsRef.current !== null;
             const waveVisualTier = getWaveVisualTier(waveIndex);
-            const waveAnnouncementStep = getWaveAnnouncementStep(waveIndex);
             const activeObstacleSet = getActiveObstacles(waveIndex);
             const enemySpawnInterval = getEnemySpawnInterval(waveIndex);
             const enemyMaxCount = getEnemyMaxCount(waveIndex);
@@ -1023,7 +1312,15 @@ export const useJelloKnightGame = ({
 
             const triggerDamageFlash = () => {
                 damageFlashUntilRef.current = elapsedMs + DAMAGE_FLASH_DURATION_MS;
-                setDamageFlashOpacity(DAMAGE_FLASH_MAX_OPACITY);
+            };
+
+            const registerEnemyDefeat = () => {
+                if (nextWaveAdvanceAtMsRef.current !== null || waveIndexRef.current >= MAX_WAVE) return;
+
+                waveKillCountRef.current += 1;
+                if (waveKillCountRef.current >= waveTargetKillCountRef.current) {
+                    nextWaveAdvanceAtMsRef.current = elapsedMs + WAVE_TRANSITION_DELAY_MS;
+                }
             };
 
             const applyPlayerDamage = (
@@ -1049,7 +1346,6 @@ export const useJelloKnightGame = ({
 
             updateAnnouncementsAndEffects({
                 elapsedMs,
-                waveAnnouncementStep,
                 waveIndex,
                 showAnnouncement,
             });
@@ -1065,8 +1361,17 @@ export const useJelloKnightGame = ({
             });
             const activeStrength = Math.max(getVectorLength(keyboardVector), joystickStrength);
             const hasMovementInput = activeStrength > 0.08;
-            const moveSpeed = hasMovementInput ? playerMoveSpeedRef.current : 0;
             const currentPosition = playerPositionRef.current;
+            const touchedWebZone = webZonesRef.current.some((webZone) => (
+                isWithinRadius(currentPosition.x, currentPosition.y, webZone.x, webZone.y, webZone.radius + (PLAYER_RADIUS * 0.15))
+            ));
+            if (touchedWebZone) {
+                playerWebSlowUntilMsRef.current = elapsedMs + WEB_ZONE_TOUCH_DEBUFF_MS;
+            }
+            const webSlowMultiplier = elapsedMs < playerWebSlowUntilMsRef.current
+                ? WEB_ZONE_TOUCH_SLOW_MULTIPLIER
+                : 1;
+            const moveSpeed = hasMovementInput ? playerMoveSpeedRef.current * webSlowMultiplier : 0;
             const movedPosition = moveSpeed <= 0
                 ? currentPosition
                 : {
@@ -1092,6 +1397,7 @@ export const useJelloKnightGame = ({
                 rangedMaxCount,
                 rangedSpawnChance,
                 showAnnouncement,
+                isWaveTransitioning,
                 waveIndex,
             });
 
@@ -1137,6 +1443,35 @@ export const useJelloKnightGame = ({
                 pendingNextPickupId = nextId;
             };
 
+            const survivingWebZones: WebZone[] = [];
+            let webZoneHit = false;
+            for (const webZone of webZonesRef.current) {
+                const webHitRadius = Math.min(34, webZone.radius * 0.44);
+                const orbTouchesWeb = orbitPositionsNow.some((orbitPosition) => (
+                    isWithinRadius(orbitPosition.x, orbitPosition.y, webZone.x, webZone.y, webHitRadius)
+                ));
+                if (
+                    orbTouchesWeb
+                    && elapsedMs - webZone.lastOrbHitAtMs >= WEB_ZONE_ORBIT_HIT_COOLDOWN_MS
+                ) {
+                    const nextWebZone = {
+                        ...webZone,
+                        hp: webZone.hp - orbitDamageRef.current,
+                        lastOrbHitAtMs: elapsedMs,
+                    };
+                    webZoneHit = true;
+                    if (nextWebZone.hp > 0) {
+                        survivingWebZones.push(nextWebZone);
+                    }
+                    continue;
+                }
+                survivingWebZones.push(webZone);
+            }
+            if (webZoneHit) {
+                playQuietOrbHitSynth(0.24, 120);
+            }
+            webZonesRef.current = survivingWebZones;
+
             updateChaserEnemiesLoop({
                 activeObstacleSet,
                 addDropsForDefeat,
@@ -1145,6 +1480,7 @@ export const useJelloKnightGame = ({
                 enemySpeedBonus,
                 nextPosition,
                 orbitPositionsNow,
+                registerEnemyDefeat,
             });
 
             updateRangedEnemiesLoop({
@@ -1153,6 +1489,7 @@ export const useJelloKnightGame = ({
                 deltaMs,
                 nextPosition,
                 orbitPositionsNow,
+                registerEnemyDefeat,
             });
 
             updateEliteEnemyLoop({
@@ -1163,6 +1500,7 @@ export const useJelloKnightGame = ({
                 elapsedMs,
                 nextPosition,
                 orbitPositionsNow,
+                registerEnemyDefeat,
             });
 
             const readyBombs: BombStrike[] = [];
@@ -1178,8 +1516,13 @@ export const useJelloKnightGame = ({
                 bombStrikesRef.current = pendingBombs;
 
                 readyBombs.forEach((bombStrike) => {
+                    if (bombStrike.strikeKind === 'web') {
+                        addWebZoneAt(bombStrike.targetX, bombStrike.targetY);
+                        return;
+                    }
+
                     const applyBombDamage = <T extends { x: number; y: number; hp: number }>(target: T, radius: number) => {
-                        if (Math.hypot(target.x - bombStrike.targetX, target.y - bombStrike.targetY) > radius) return target;
+                        if (!isWithinRadius(target.x, target.y, bombStrike.targetX, bombStrike.targetY, radius)) return target;
                         const bombDamageAmount = bombDamageRef.current * (
                             Math.random() <= BOMB_CRIT_CHANCE ? bombCritMultiplierRef.current : 1
                         );
@@ -1206,6 +1549,7 @@ export const useJelloKnightGame = ({
                                 dropCount: enemy.enemyType === 'heavy' ? 2 : 1,
                                 xpValue: XP_PICKUP_VALUE,
                             });
+                            registerEnemyDefeat();
                             continue;
                         }
                         survivingEnemies.push(nextEnemy);
@@ -1223,6 +1567,7 @@ export const useJelloKnightGame = ({
                                 dropCount: enemy.enemyType === 'heavyCaster' ? 2 : 1,
                                 xpValue: enemy.xpValue,
                             });
+                            registerEnemyDefeat();
                             continue;
                         }
                         survivingRangedEnemies.push(nextEnemy);
@@ -1239,6 +1584,7 @@ export const useJelloKnightGame = ({
                                 dropCount: 5,
                                 xpValue: eliteEnemyRef.current.xpValue,
                             });
+                            registerEnemyDefeat();
                             eliteEnemyRef.current = null;
                         } else {
                             eliteEnemyRef.current = nextElite;
@@ -1279,7 +1625,13 @@ export const useJelloKnightGame = ({
                 if (hitsObstacle) continue;
 
                 if (
-                    Math.hypot(movedProjectile.x - nextPosition.x, movedProjectile.y - nextPosition.y) <= ENEMY_PROJECTILE_RADIUS + PLAYER_RADIUS - 10
+                    isWithinRadius(
+                        movedProjectile.x,
+                        movedProjectile.y,
+                        nextPosition.x,
+                        nextPosition.y,
+                        ENEMY_PROJECTILE_RADIUS + PLAYER_RADIUS - 10
+                    )
                 ) {
                     applyPlayerDamage(movedProjectile.damage, lastProjectileDamageTimeRef, 'quiet-orb');
                     continue;
@@ -1297,7 +1649,7 @@ export const useJelloKnightGame = ({
                     continue;
                 }
 
-                if (Math.hypot(pickup.x - nextPosition.x, pickup.y - nextPosition.y) > PICKUP_COLLECT_RADIUS) {
+                if (!isWithinRadius(pickup.x, pickup.y, nextPosition.x, nextPosition.y, PICKUP_COLLECT_RADIUS)) {
                     remainingPickups.push(pickup);
                     continue;
                 }
@@ -1325,6 +1677,7 @@ export const useJelloKnightGame = ({
                     buildUpgradeOptions(
                         upgradeLevelsRef.current,
                         bombUnlockedRef.current,
+                        levelRef.current,
                         gt
                     )
                 );
@@ -1361,7 +1714,7 @@ export const useJelloKnightGame = ({
                 animationFrameRef.current = null;
             }
         };
-    }, [finishRun, gamePhase]);
+    }, [finishRun, gamePhase, getEnemyDisplayName]);
 
     const headerStats = useMemo<PlayArcadeHeaderStat[]>(() => ([
         {
@@ -1487,15 +1840,15 @@ export const useJelloKnightGame = ({
         () => ({
             width: `${FIELD_SIZE}px`,
             height: `${FIELD_SIZE}px`,
-            transform: `translate3d(${-Math.round(cameraPosition.x)}px, ${-Math.round(cameraPosition.y)}px, 0)`,
+            transform: `translate3d(${-cameraPosition.x.toFixed(2)}px, ${-cameraPosition.y.toFixed(2)}px, 0)`,
         }),
         [cameraPosition.x, cameraPosition.y]
     );
 
     const playerStyle = useMemo(
         () => ({
-            left: `${Math.round(playerPosition.x)}px`,
-            top: `${Math.round(playerPosition.y)}px`,
+            left: `${playerPosition.x.toFixed(2)}px`,
+            top: `${playerPosition.y.toFixed(2)}px`,
         }),
         [playerPosition.x, playerPosition.y]
     );
@@ -1555,6 +1908,7 @@ export const useJelloKnightGame = ({
         stageRef,
         startRun,
         upgradeOptions,
+        webZones,
         xpPickups,
         enemies,
         eliteEnemy,

@@ -6,27 +6,36 @@ import {
     PlayArcadeStartOverlay,
 } from '../../shared/PlayArcadeUI';
 import {
+    DEBUG_CONTACT_RANGES_ENABLED,
     FIELD_FENCE_POSTS,
     FIELD_GROUND_PATCHES,
+    PLAYER_RADIUS,
 } from './constants';
+import {
+    ENEMY_CONTACT_RADIUS,
+    ENEMY_ORBIT_HIT_RADIUS_BY_TYPE,
+    ELITE_ORBIT_HIT_RADIUS_BY_TYPE,
+    RANGED_ORBIT_HIT_RADIUS_BY_TYPE,
+} from './enemyBehaviors';
 import { formatRunClock } from './helpers';
 import type {
     BombBlast,
     BombStrike,
-    ChaserEnemy,
-    EliteEnemy,
-    EnemyProjectile,
+    EliteRenderItem,
+    EnemyRenderItem,
     FencePost,
     GroundPatch,
     JelloKnightAnnouncement,
     JelloKnightPhaseOverlay,
     Obstacle,
-    RangedEnemy,
+    PickupRenderItem,
+    ProjectileRenderItem,
+    RangedEnemyRenderItem,
     SpawnSignal,
     UpgradeOption,
     UpgradeOptionId,
     Vector2,
-    XpPickup,
+    WebZoneRenderItem,
 } from './types';
 
 type TranslateFn = (key: string, values?: Record<string, string | number>) => string;
@@ -84,7 +93,7 @@ const ObstacleNode = React.memo<{ obstacle: Obstacle }>(({ obstacle }) => (
     />
 ));
 
-const EnemyUnit = React.memo<{ enemy: ChaserEnemy }>(({ enemy }) => (
+const EnemyUnit = React.memo<{ enemy: EnemyRenderItem }>(({ enemy }) => (
     <div
         className={`jello-knight__enemy jello-knight__enemy--${enemy.enemyType}`}
         style={{
@@ -92,6 +101,24 @@ const EnemyUnit = React.memo<{ enemy: ChaserEnemy }>(({ enemy }) => (
             ['--jello-knight-enemy-scale' as string]: `${enemy.sizeScale}`,
         }}
     >
+        {DEBUG_CONTACT_RANGES_ENABLED && (
+            <>
+                <span
+                    className="jello-knight__debug-contact jello-knight__debug-contact--enemy"
+                    style={{
+                        ...toSizeStyle(ENEMY_CONTACT_RADIUS * 2, ENEMY_CONTACT_RADIUS * 2),
+                    }}
+                    aria-hidden="true"
+                />
+                <span
+                    className="jello-knight__debug-contact jello-knight__debug-contact--orbit"
+                    style={{
+                        ...toSizeStyle(ENEMY_ORBIT_HIT_RADIUS_BY_TYPE[enemy.enemyType] * 2, ENEMY_ORBIT_HIT_RADIUS_BY_TYPE[enemy.enemyType] * 2),
+                    }}
+                    aria-hidden="true"
+                />
+            </>
+        )}
         <span className="jello-knight__enemy-healthbar" aria-hidden="true">
             <span
                 className="jello-knight__enemy-healthbar-fill"
@@ -105,11 +132,29 @@ const EnemyUnit = React.memo<{ enemy: ChaserEnemy }>(({ enemy }) => (
     </div>
 ));
 
-const RangedEnemyUnit = React.memo<{ enemy: RangedEnemy }>(({ enemy }) => (
+const RangedEnemyUnit = React.memo<{ enemy: RangedEnemyRenderItem }>(({ enemy }) => (
     <div
         className={`jello-knight__ranged-enemy jello-knight__ranged-enemy--${enemy.enemyType}`}
         style={toPositionStyle(enemy.x, enemy.y)}
     >
+        {DEBUG_CONTACT_RANGES_ENABLED && (
+            <>
+                <span
+                    className="jello-knight__debug-contact jello-knight__debug-contact--enemy"
+                    style={{
+                        ...toSizeStyle(enemy.contactRadius * 2, enemy.contactRadius * 2),
+                    }}
+                    aria-hidden="true"
+                />
+                <span
+                    className="jello-knight__debug-contact jello-knight__debug-contact--orbit"
+                    style={{
+                        ...toSizeStyle(RANGED_ORBIT_HIT_RADIUS_BY_TYPE[enemy.enemyType] * 2, RANGED_ORBIT_HIT_RADIUS_BY_TYPE[enemy.enemyType] * 2),
+                    }}
+                    aria-hidden="true"
+                />
+            </>
+        )}
         <span className="jello-knight__enemy-healthbar jello-knight__enemy-healthbar--ranged" aria-hidden="true">
             <span
                 className="jello-knight__enemy-healthbar-fill jello-knight__enemy-healthbar-fill--ranged"
@@ -123,14 +168,44 @@ const RangedEnemyUnit = React.memo<{ enemy: RangedEnemy }>(({ enemy }) => (
     </div>
 ));
 
-const EliteUnit = React.memo<{ eliteEnemy: EliteEnemy }>(({ eliteEnemy }) => {
-    const renderFacing = eliteEnemy.emojiBaseFacing === eliteEnemy.facing ? 'default' : 'flipped';
+const EliteUnit = React.memo<{ eliteEnemy: EliteRenderItem; elapsedMs: number }>(({ eliteEnemy, elapsedMs }) => {
+    const renderFacing = eliteEnemy.enemyType === 'weaver'
+        ? 'default'
+        : eliteEnemy.emojiBaseFacing === eliteEnemy.facing ? 'default' : 'flipped';
+    const isWindup = eliteEnemy.dashWindupUntilMs !== null && elapsedMs < eliteEnemy.dashWindupUntilMs;
+    const isCharging = eliteEnemy.dashUntilMs !== null && elapsedMs < eliteEnemy.dashUntilMs;
+    const phaseClassName = isCharging
+        ? ' jello-knight__elite--charge'
+        : isWindup
+            ? ' jello-knight__elite--alert'
+            : '';
 
     return (
         <div
-            className={`jello-knight__elite jello-knight__elite--${eliteEnemy.enemyType}`}
-            style={toPositionStyle(eliteEnemy.x, eliteEnemy.y)}
+            className={`jello-knight__elite jello-knight__elite--${eliteEnemy.enemyType}${phaseClassName}`}
+            style={{
+                ...toPositionStyle(eliteEnemy.x, eliteEnemy.y),
+                ['--jello-knight-elite-angle' as string]: `${eliteEnemy.renderAngleDeg}deg`,
+            }}
         >
+            {DEBUG_CONTACT_RANGES_ENABLED && (
+                <>
+                    <span
+                        className="jello-knight__debug-contact jello-knight__debug-contact--elite"
+                        style={{
+                            ...toSizeStyle(eliteEnemy.contactRadius * 2, eliteEnemy.contactRadius * 2),
+                        }}
+                        aria-hidden="true"
+                    />
+                    <span
+                        className="jello-knight__debug-contact jello-knight__debug-contact--orbit"
+                        style={{
+                            ...toSizeStyle(ELITE_ORBIT_HIT_RADIUS_BY_TYPE[eliteEnemy.enemyType] * 2, ELITE_ORBIT_HIT_RADIUS_BY_TYPE[eliteEnemy.enemyType] * 2),
+                        }}
+                        aria-hidden="true"
+                    />
+                </>
+            )}
             <span className="jello-knight__enemy-healthbar jello-knight__enemy-healthbar--elite" aria-hidden="true">
                 <span
                     className="jello-knight__enemy-healthbar-fill jello-knight__enemy-healthbar-fill--elite"
@@ -138,6 +213,9 @@ const EliteUnit = React.memo<{ eliteEnemy: EliteEnemy }>(({ eliteEnemy }) => {
                 />
             </span>
             <span className="jello-knight__elite-crown" aria-hidden="true">👑</span>
+            {(isWindup || isCharging) && (
+                <span className="jello-knight__elite-alert" aria-hidden="true">💢</span>
+            )}
             <span
                 className={`jello-knight__enemy-emoji-stack jello-knight__elite-stack jello-knight__elite-stack--${renderFacing}`}
                 aria-hidden="true"
@@ -149,7 +227,7 @@ const EliteUnit = React.memo<{ eliteEnemy: EliteEnemy }>(({ eliteEnemy }) => {
     );
 });
 
-const ProjectileNode = React.memo<{ projectile: EnemyProjectile }>(({ projectile }) => (
+const ProjectileNode = React.memo<{ projectile: ProjectileRenderItem }>(({ projectile }) => (
     <div
         className="jello-knight__enemy-projectile"
         style={toPositionStyle(projectile.x, projectile.y)}
@@ -179,6 +257,7 @@ const BombStrikeNode = React.memo<{
     elapsedMs: number;
 }>(({ bombRadius, bombStrike, elapsedMs }) => {
     const bombVisualSize = 42;
+    const isWebStrike = bombStrike.strikeKind === 'web';
     const isLanded = elapsedMs >= bombStrike.landAtMs;
     const flightDuration = Math.max(1, bombStrike.landAtMs - bombStrike.createdAtMs);
     const flightProgress = Math.max(
@@ -232,7 +311,7 @@ const BombStrikeNode = React.memo<{
             <div
                 className={`jello-knight__bomb-strike${isLanded
                     ? ' jello-knight__bomb-strike--landed'
-                    : ' jello-knight__bomb-strike--flying'}`}
+                    : ' jello-knight__bomb-strike--flying'}${isWebStrike ? ' jello-knight__bomb-strike--web' : ''}`}
                 style={{
                     ...toPositionStyle(isLanded ? bombStrike.targetX : flightX, isLanded ? bombStrike.targetY : flightY),
                     ...toSizeStyle(bombVisualSize, bombVisualSize),
@@ -240,7 +319,7 @@ const BombStrikeNode = React.memo<{
                     marginTop: `${-(bombVisualSize / 2)}px`,
                 }}
             >
-                {isLanded && (
+                {isLanded && !isWebStrike && (
                     <span
                         className="jello-knight__bomb-radius-ring"
                         style={{
@@ -252,10 +331,10 @@ const BombStrikeNode = React.memo<{
                     />
                 )}
                 <span className="jello-knight__bomb-emoji-stack" aria-hidden="true">
-                    <span className="jello-knight__bomb-core jello-knight__bomb-core--shadow">💣</span>
-                    <span className="jello-knight__bomb-core">💣</span>
+                    <span className="jello-knight__bomb-core jello-knight__bomb-core--shadow">{isWebStrike ? '🕸️' : '💣'}</span>
+                    <span className="jello-knight__bomb-core">{isWebStrike ? '🕸️' : '💣'}</span>
                 </span>
-                {isLanded && <span className="jello-knight__bomb-countdown">{countdown}</span>}
+                {isLanded && !isWebStrike && <span className="jello-knight__bomb-countdown">{countdown}</span>}
             </div>
         </>
     );
@@ -286,7 +365,30 @@ const SpawnSignalNode = React.memo<{ signal: SpawnSignal }>(({ signal }) => (
     />
 ));
 
-const PickupNode = React.memo<{ pickup: XpPickup }>(({ pickup }) => (
+const WebZoneNode = React.memo<{ zone: WebZoneRenderItem }>(({ zone }) => (
+    <div
+        className="jello-knight__web-zone"
+        style={{
+            ...toPositionStyle(zone.x, zone.y),
+            ...toSizeStyle(zone.radius * 2, zone.radius * 2),
+            marginLeft: `${-zone.radius}px`,
+            marginTop: `${-zone.radius}px`,
+        }}
+        aria-hidden="true"
+    >
+        <span className="jello-knight__web-zone-healthbar">
+            <span
+                className="jello-knight__web-zone-healthbar-fill"
+                style={{ width: `${clampPercent((zone.hp / zone.maxHp) * 100)}%` }}
+            />
+        </span>
+        <div className="jello-knight__web-zone-core">
+            <span className="jello-knight__web-zone-emoji">🕸️</span>
+        </div>
+    </div>
+));
+
+const PickupNode = React.memo<{ pickup: PickupRenderItem }>(({ pickup }) => (
     <div
         className={`jello-knight__xp-pickup ${pickup.pickupKind === 'xp'
             ? 'jello-knight__xp-pickup--xp'
@@ -322,8 +424,8 @@ type FieldProps = {
     elapsedMs: number;
     gt: TranslateFn;
     joystickBaseRef: React.RefObject<HTMLDivElement | null>;
-    eliteEnemy: EliteEnemy | null;
-    enemies: ChaserEnemy[];
+    eliteEnemy: EliteRenderItem | null;
+    enemies: EnemyRenderItem[];
     fieldStyle: React.CSSProperties;
     gamePhase: JelloKnightPhaseOverlay;
     handleJoystickPointerCancel: (event: React.PointerEvent<HTMLDivElement>) => void;
@@ -335,14 +437,15 @@ type FieldProps = {
     orbitPalette: { core: string; glow: string; edge: string };
     playerStyle: React.CSSProperties;
     runnerMotionStyle: React.CSSProperties;
-    projectiles: EnemyProjectile[];
-    rangedEnemies: RangedEnemy[];
+    projectiles: ProjectileRenderItem[];
+    rangedEnemies: RangedEnemyRenderItem[];
     runnerCharacter: Character;
     safeSpeciesId: string;
     spawnSignals: SpawnSignal[];
     stageMoodStyle: React.CSSProperties;
     stageRef: React.RefObject<HTMLDivElement | null>;
-    xpPickups: XpPickup[];
+    webZones: WebZoneRenderItem[];
+    xpPickups: PickupRenderItem[];
 };
 
 const StaticArenaDecor = React.memo(() => (
@@ -373,19 +476,96 @@ const ObstaclesLayer = React.memo<ObstaclesLayerProps>(({ activeObstacles }) => 
 ));
 
 type CombatLayerProps = {
+    elapsedMs: number;
+    eliteEnemy: EliteRenderItem | null;
+    enemies: EnemyRenderItem[];
+    orbitPalette: { core: string; glow: string; edge: string };
+    orbitPositions: Vector2[];
+    projectiles: ProjectileRenderItem[];
+    rangedEnemies: RangedEnemyRenderItem[];
     bombBlasts: BombBlast[];
     bombRadius: number;
     bombStrikes: BombStrike[];
-    elapsedMs: number;
-    eliteEnemy: EliteEnemy | null;
-    enemies: ChaserEnemy[];
+    spawnSignals: SpawnSignal[];
+    webZones: WebZoneRenderItem[];
+    xpPickups: PickupRenderItem[];
+};
+
+const WebZoneLayer = React.memo<{ webZones: WebZoneRenderItem[] }>(({ webZones }) => (
+    <>
+        {webZones.map((zone) => <WebZoneNode key={zone.id} zone={zone} />)}
+    </>
+));
+
+const MeleeEnemiesLayer = React.memo<{ enemies: EnemyRenderItem[] }>(({ enemies }) => (
+    <>
+        {enemies.map((enemy) => <EnemyUnit key={enemy.id} enemy={enemy} />)}
+    </>
+));
+
+const RangedEnemiesLayer = React.memo<{ rangedEnemies: RangedEnemyRenderItem[] }>(({ rangedEnemies }) => (
+    <>
+        {rangedEnemies.map((enemy) => <RangedEnemyUnit key={enemy.id} enemy={enemy} />)}
+    </>
+));
+
+const EliteLayer = React.memo<{ eliteEnemy: EliteRenderItem | null; elapsedMs: number }>(({ eliteEnemy, elapsedMs }) => (
+    <>
+        {eliteEnemy && <EliteUnit eliteEnemy={eliteEnemy} elapsedMs={elapsedMs} />}
+    </>
+));
+
+const ProjectileLayer = React.memo<{ projectiles: ProjectileRenderItem[] }>(({ projectiles }) => (
+    <>
+        {projectiles.map((projectile) => <ProjectileNode key={projectile.id} projectile={projectile} />)}
+    </>
+));
+
+const OrbitLayer = React.memo<{
     orbitPalette: { core: string; glow: string; edge: string };
     orbitPositions: Vector2[];
-    projectiles: EnemyProjectile[];
-    rangedEnemies: RangedEnemy[];
-    spawnSignals: SpawnSignal[];
-    xpPickups: XpPickup[];
-};
+}>(({ orbitPalette, orbitPositions }) => (
+    <>
+        {orbitPositions.map((orbPosition, index) => (
+            <OrbitNode key={`orbit-${index}`} orbPosition={orbPosition} orbitPalette={orbitPalette} />
+        ))}
+    </>
+));
+
+const BombStrikeLayer = React.memo<{
+    bombRadius: number;
+    bombStrikes: BombStrike[];
+    elapsedMs: number;
+}>(({ bombRadius, bombStrikes, elapsedMs }) => (
+    <>
+        {bombStrikes.map((bombStrike) => (
+            <BombStrikeNode
+                key={bombStrike.id}
+                bombRadius={bombRadius}
+                bombStrike={bombStrike}
+                elapsedMs={elapsedMs}
+            />
+        ))}
+    </>
+));
+
+const BombBlastLayer = React.memo<{ bombBlasts: BombBlast[] }>(({ bombBlasts }) => (
+    <>
+        {bombBlasts.map((blast) => <BombBlastNode key={`blast-${blast.id}`} blast={blast} />)}
+    </>
+));
+
+const SpawnSignalLayer = React.memo<{ spawnSignals: SpawnSignal[] }>(({ spawnSignals }) => (
+    <>
+        {spawnSignals.map((signal) => <SpawnSignalNode key={signal.id} signal={signal} />)}
+    </>
+));
+
+const PickupLayer = React.memo<{ xpPickups: PickupRenderItem[] }>(({ xpPickups }) => (
+    <>
+        {xpPickups.map((pickup) => <PickupNode key={pickup.id} pickup={pickup} />)}
+    </>
+));
 
 const CombatLayer = React.memo<CombatLayerProps>(({
     bombBlasts,
@@ -399,27 +579,20 @@ const CombatLayer = React.memo<CombatLayerProps>(({
     projectiles,
     rangedEnemies,
     spawnSignals,
+    webZones,
     xpPickups,
 }) => (
     <>
-        {enemies.map((enemy) => <EnemyUnit key={enemy.id} enemy={enemy} />)}
-        {rangedEnemies.map((enemy) => <RangedEnemyUnit key={enemy.id} enemy={enemy} />)}
-        {eliteEnemy && <EliteUnit eliteEnemy={eliteEnemy} />}
-        {projectiles.map((projectile) => <ProjectileNode key={projectile.id} projectile={projectile} />)}
-        {orbitPositions.map((orbPosition, index) => (
-            <OrbitNode key={`orbit-${index}`} orbPosition={orbPosition} orbitPalette={orbitPalette} />
-        ))}
-        {bombStrikes.map((bombStrike) => (
-            <BombStrikeNode
-                key={bombStrike.id}
-                bombRadius={bombRadius}
-                bombStrike={bombStrike}
-                elapsedMs={elapsedMs}
-            />
-        ))}
-        {bombBlasts.map((blast) => <BombBlastNode key={`blast-${blast.id}`} blast={blast} />)}
-        {spawnSignals.map((signal) => <SpawnSignalNode key={signal.id} signal={signal} />)}
-        {xpPickups.map((pickup) => <PickupNode key={pickup.id} pickup={pickup} />)}
+        <WebZoneLayer webZones={webZones} />
+        <MeleeEnemiesLayer enemies={enemies} />
+        <RangedEnemiesLayer rangedEnemies={rangedEnemies} />
+        <EliteLayer eliteEnemy={eliteEnemy} elapsedMs={elapsedMs} />
+        <ProjectileLayer projectiles={projectiles} />
+        <OrbitLayer orbitPalette={orbitPalette} orbitPositions={orbitPositions} />
+        <BombStrikeLayer bombRadius={bombRadius} bombStrikes={bombStrikes} elapsedMs={elapsedMs} />
+        <BombBlastLayer bombBlasts={bombBlasts} />
+        <SpawnSignalLayer spawnSignals={spawnSignals} />
+        <PickupLayer xpPickups={xpPickups} />
     </>
 ));
 
@@ -437,6 +610,15 @@ const RunnerLayer = React.memo<RunnerLayerProps>(({
     safeSpeciesId,
 }) => (
     <div className="jello-knight__runner-core" style={playerStyle}>
+        {DEBUG_CONTACT_RANGES_ENABLED && (
+            <span
+                className="jello-knight__debug-contact jello-knight__debug-contact--player"
+                style={{
+                    ...toSizeStyle(PLAYER_RADIUS * 2, PLAYER_RADIUS * 2),
+                }}
+                aria-hidden="true"
+            />
+        )}
         <div className="jello-knight__runner-avatar" style={runnerMotionStyle}>
             <div className="jello-knight__runner-jello">
                 <JelloAvatar
@@ -481,6 +663,7 @@ export const JelloKnightField: React.FC<FieldProps> = ({
     spawnSignals,
     stageMoodStyle,
     stageRef,
+    webZones,
     xpPickups,
 }) => (
     <div className="jello-knight__stage-shell">
@@ -501,6 +684,7 @@ export const JelloKnightField: React.FC<FieldProps> = ({
                         projectiles={projectiles}
                         rangedEnemies={rangedEnemies}
                         spawnSignals={spawnSignals}
+                        webZones={webZones}
                         xpPickups={xpPickups}
                     />
                     <RunnerLayer

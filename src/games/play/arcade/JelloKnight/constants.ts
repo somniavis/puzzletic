@@ -1,14 +1,8 @@
 import type { TailRunnerGemTier } from '../TailRunner/types';
-import type { ChaserEnemy, FencePost, GroundPatch, JelloKnightHudState, Obstacle, RangedEnemy, Vector2, WeightedDropEntry } from './types';
+import type { FencePost, GroundPatch, JelloKnightHudState, Obstacle, Vector2, WeightedDropEntry } from './types';
 
 export const FIELD_SIZE = 3000;
 export const MAX_WAVE = 100;
-export const WAVE_DURATION_RULES = [
-    { waveStart: 1, waveEnd: 30, durationMs: 15000 },
-    { waveStart: 31, waveEnd: 60, durationMs: 13000 },
-    { waveStart: 61, waveEnd: 80, durationMs: 10000 },
-    { waveStart: 81, waveEnd: 100, durationMs: 8000 },
-] as const;
 export const PLAYER_SIZE = 52;
 export const PLAYER_RADIUS = PLAYER_SIZE / 2;
 export const MAX_SKILL_LEVEL = 5;
@@ -29,7 +23,6 @@ export const ORBIT_DAMAGE = ORBIT_DAMAGE_LEVELS[0];
 export const ORBIT_ROTATION_SPEED = ORBIT_SPEED_LEVELS[0];
 export const ENEMY_SIZE = 82;
 export const ENEMY_RADIUS = ENEMY_SIZE / 2;
-export const ENEMY_CONTACT_RADIUS = 34;
 export const ENEMY_SPAWN_INTERVAL_MS = 1200;
 export const ENEMY_MAX_COUNT = 10;
 export const ELITE_SIZE = 244;
@@ -42,7 +35,7 @@ export const ENEMY_PROJECTILE_RADIUS = 16;
 export const BOMB_BASE_DAMAGE = 7;
 export const BOMB_DROP_CHANCE_LEVELS = [0.18, 0.24, 0.31, 0.39, 0.48] as const;
 export const BOMB_DROP_INTERVAL_LEVELS = [3400, 3050, 2750, 2450, 2150] as const;
-export const BOMB_RADIUS_LEVELS = [52, 66, 82, 100, 120] as const;
+export const BOMB_RADIUS_LEVELS = [60, 78, 98, 120, 144] as const;
 export const BOMB_CRIT_MULTIPLIER_LEVELS = [1.7, 2.0, 2.3, 2.6, 3.0] as const;
 export const BOMB_CRIT_CHANCE = 0.12;
 export const BOMB_BASE_RADIUS = BOMB_RADIUS_LEVELS[0];
@@ -54,6 +47,7 @@ export const CONTACT_DAMAGE = 7;
 export const CONTACT_DAMAGE_COOLDOWN_MS = 700;
 export const PLAYER_MAX_HP = PLAYER_MAX_HP_LEVELS[0];
 export const PICKUP_COLLECT_RADIUS = 44;
+export const PICKUP_SPAWN_GRACE_MS = 520;
 export const XP_PICKUP_VALUE = 17;
 export const XP_ORB_SCORE_VALUE = 0;
 export const HEART_HEAL_VALUE = 12;
@@ -62,9 +56,13 @@ export const LEVEL_UP_CARD_COUNT = 3;
 export const OBSTACLE_PLAYER_PADDING = 6;
 export const OBSTACLE_ENEMY_PADDING = 6;
 export const SIGNAL_DURATION_MS = 1100;
-export const ANNOUNCEMENT_DURATION_MS = 2200;
+export const ANNOUNCEMENT_DURATION_MS = 3600;
 export const VISUAL_SYNC_INTERVAL_MS = 33;
 export const PLAYER_VISUAL_SYNC_INTERVAL_MS = 16;
+export const WAVE_TRANSITION_DELAY_MS = 1400;
+export const DAMAGE_FLASH_DURATION_MS = 340;
+export const DAMAGE_FLASH_MAX_OPACITY = 0.72;
+export const DEBUG_CONTACT_RANGES_ENABLED = false;
 
 export const INITIAL_HUD_STATE: JelloKnightHudState = {
     hp: PLAYER_MAX_HP,
@@ -81,140 +79,17 @@ export const INITIAL_PLAYER_POSITION: Vector2 = {
     y: FIELD_SIZE / 2,
 };
 
-export const MELEE_ENEMY_VARIANTS: Array<{
-    enemyType: ChaserEnemy['enemyType'];
-    emoji: ChaserEnemy['emoji'];
-    hp: number;
-    baseSpeed: number;
-    contactDamage: number;
-    sizeScale: number;
-    spawnWeight: number;
-}> = [
-    {
-        enemyType: 'standard',
-        emoji: '👾',
-        hp: 6,
-        baseSpeed: 56,
-        contactDamage: 4,
-        sizeScale: 1,
-        spawnWeight: 45,
-    },
-    {
-        enemyType: 'swift',
-        emoji: '🦠',
-        hp: 5,
-        baseSpeed: 72,
-        contactDamage: 3,
-        sizeScale: 0.9,
-        spawnWeight: 35,
-    },
-    {
-        enemyType: 'heavy',
-        emoji: '🪼',
-        hp: 9,
-        baseSpeed: 46,
-        contactDamage: 7,
-        sizeScale: 1.12,
-        spawnWeight: 20,
-    },
-];
-
-export const RANGED_ENEMY_VARIANTS: Array<{
-    enemyType: RangedEnemy['enemyType'];
-    emoji: RangedEnemy['emoji'];
-    hp: number;
-    baseSpeed: number;
-    contactRadius: number;
-    fireRange: number;
-    fireCooldownMs: number;
-    projectileSpeed: number;
-    projectileDamage: number;
-    spawnWeight: number;
-    maxCount: number;
-    xpValue: number;
-}> = [
-    {
-        enemyType: 'sniper',
-        emoji: '🧿',
-        hp: 6,
-        baseSpeed: 38,
-        contactRadius: 30,
-        fireRange: 500,
-        fireCooldownMs: 2300,
-        projectileSpeed: 255,
-        projectileDamage: 5,
-        spawnWeight: 70,
-        maxCount: 4,
-        xpValue: 25,
-    },
-    {
-        enemyType: 'heavyCaster',
-        emoji: '👁️‍🗨️',
-        hp: 9,
-        baseSpeed: 32,
-        contactRadius: 34,
-        fireRange: 545,
-        fireCooldownMs: 3100,
-        projectileSpeed: 215,
-        projectileDamage: 7,
-        spawnWeight: 30,
-        maxCount: 2,
-        xpValue: 32,
-    },
-];
-
-export const ELITE_ENEMY_VARIANTS: Array<{
-    enemyType: 'brute' | 'stinger';
-    emoji: '🦖' | '🦂';
-    emojiBaseFacing: 'left' | 'right';
-    hp: number;
-    baseSpeed: number;
-    contactRadius: number;
-    contactDamage: number;
-    spawnIntervalMs: number;
-    xpValue: number;
-    dashWindupMs: number;
-    dashSpeedMultiplier: number;
-    dashDurationMs: number;
-    dashCooldownMinMs: number;
-    dashCooldownMaxMs: number;
-    spawnWeight: number;
-}> = [
-    {
-        enemyType: 'brute',
-        emoji: '🦖',
-        emojiBaseFacing: 'left',
-        hp: 40,
-        baseSpeed: 64,
-        contactRadius: 54,
-        contactDamage: 13,
-        spawnIntervalMs: 20000,
-        xpValue: 60,
-        dashWindupMs: 550,
-        dashSpeedMultiplier: 2.3,
-        dashDurationMs: 420,
-        dashCooldownMinMs: 4800,
-        dashCooldownMaxMs: 6200,
-        spawnWeight: 60,
-    },
-    {
-        enemyType: 'stinger',
-        emoji: '🦂',
-        emojiBaseFacing: 'left',
-        hp: 32,
-        baseSpeed: 88,
-        contactRadius: 44,
-        contactDamage: 10,
-        spawnIntervalMs: 16000,
-        xpValue: 48,
-        dashWindupMs: 320,
-        dashSpeedMultiplier: 2.8,
-        dashDurationMs: 260,
-        dashCooldownMinMs: 2600,
-        dashCooldownMaxMs: 3600,
-        spawnWeight: 40,
-    },
-];
+export const WEB_ZONE_RADIUS = 72;
+export const WEB_ZONE_DURATION_MS = 4200;
+export const WEB_ZONE_SLOW_MULTIPLIER = 0.78;
+export const WEB_ZONE_MAX_COUNT = 5;
+export const WEB_ZONE_TOUCH_SLOW_MULTIPLIER = 0.5;
+export const WEB_ZONE_TOUCH_DEBUFF_MS = 3000;
+export const WEB_ZONE_HP = 6;
+export const WEB_SHOT_INTERVAL_MS = 3000;
+export const WEB_SHOT_MIN_DISTANCE = 120;
+export const WEB_SHOT_MAX_DISTANCE = 250;
+export const WEB_ZONE_ORBIT_HIT_COOLDOWN_MS = 200;
 
 export const OBSTACLE_SET: Obstacle[] = [
     { id: 'north-wall', x: FIELD_SIZE / 2 - 240, y: FIELD_SIZE / 2 - 436, width: 480, height: 67, stageRequired: 2 },
@@ -300,22 +175,22 @@ export const RESCUE_ANIMALS: Record<TailRunnerGemTier, string[]> = {
 };
 
 export const LEVEL_ONE_DROP_TABLE: WeightedDropEntry[] = [
-    { type: 'xp', weight: 40 },
-    { type: 'berry', weight: 40 },
-    { type: 'heart', weight: 20 },
+    { type: 'xp', weight: 85 },
+    { type: 'berry', weight: 85 },
+    { type: 'heart', weight: 30 },
 ];
 
 export const LEVEL_TWO_DROP_TABLE: WeightedDropEntry[] = [
-    { type: 'xp', weight: 35 },
-    { type: 'berry', weight: 30 },
-    { type: 'gold', weight: 20 },
-    { type: 'heart', weight: 15 },
+    { type: 'xp', weight: 85 },
+    { type: 'berry', weight: 55 },
+    { type: 'gold', weight: 30 },
+    { type: 'heart', weight: 30 },
 ];
 
 export const LEVEL_FOUR_DROP_TABLE: WeightedDropEntry[] = [
-    { type: 'xp', weight: 28 },
-    { type: 'berry', weight: 22 },
-    { type: 'gold', weight: 25 },
-    { type: 'diamond', weight: 15 },
-    { type: 'heart', weight: 10 },
+    { type: 'xp', weight: 85 },
+    { type: 'berry', weight: 20 },
+    { type: 'gold', weight: 35 },
+    { type: 'diamond', weight: 30 },
+    { type: 'heart', weight: 30 },
 ];

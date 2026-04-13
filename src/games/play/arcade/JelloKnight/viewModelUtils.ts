@@ -1,4 +1,18 @@
-import type { RunnerMotion } from './types';
+import type {
+    ChaserEnemy,
+    EliteEnemy,
+    EnemyProjectile,
+    EnemyRenderItem,
+    EliteRenderItem,
+    PickupRenderItem,
+    RangedEnemy,
+    RangedEnemyRenderItem,
+    RunnerMotion,
+    WebZone,
+    WebZoneRenderItem,
+    XpPickup,
+    ProjectileRenderItem,
+} from './types';
 
 export const getRunnerMotionStyleVars = (runnerMotion: RunnerMotion) => ({
     ['--jello-knight-runner-bob-speed' as string]: runnerMotion.strength > 0.18 ? '1.7s' : '2.45s',
@@ -24,3 +38,191 @@ export const getStageMoodStyleVars = (dangerTier: number, hasElite: boolean) => 
         ['--jello-knight-grid-opacity' as string]: `${gridOpacity}`,
     };
 };
+
+const reconcileRenderArray = <Source, Render extends { id: number }>(
+    source: Source[],
+    previous: Render[],
+    build: (item: Source) => Render,
+    isSame: (previousItem: Render, nextItem: Render) => boolean,
+): Render[] => {
+    let changed = previous.length !== source.length;
+    const next = new Array<Render>(source.length);
+
+    for (let index = 0; index < source.length; index += 1) {
+        const nextItem = build(source[index]);
+        const previousItem = previous[index];
+
+        if (previousItem && previousItem.id === nextItem.id && isSame(previousItem, nextItem)) {
+            next[index] = previousItem;
+            continue;
+        }
+
+        next[index] = nextItem;
+        changed = true;
+    }
+
+    return changed ? next : previous;
+};
+
+const buildEnemyRenderItem = (enemy: ChaserEnemy): EnemyRenderItem => ({
+    id: enemy.id,
+    x: enemy.x,
+    y: enemy.y,
+    hp: enemy.hp,
+    maxHp: enemy.maxHp,
+    emoji: enemy.emoji,
+    enemyType: enemy.enemyType,
+    sizeScale: enemy.sizeScale,
+});
+
+const buildRangedEnemyRenderItem = (enemy: RangedEnemy): RangedEnemyRenderItem => ({
+    id: enemy.id,
+    x: enemy.x,
+    y: enemy.y,
+    hp: enemy.hp,
+    maxHp: enemy.maxHp,
+    emoji: enemy.emoji,
+    enemyType: enemy.enemyType,
+    contactRadius: enemy.contactRadius,
+});
+
+const buildEliteRenderItem = (enemy: EliteEnemy): EliteRenderItem => ({
+    id: enemy.id,
+    x: enemy.x,
+    y: enemy.y,
+    hp: enemy.hp,
+    maxHp: enemy.maxHp,
+    emoji: enemy.emoji,
+    enemyType: enemy.enemyType,
+    contactRadius: enemy.contactRadius,
+    dashWindupUntilMs: enemy.dashWindupUntilMs,
+    dashUntilMs: enemy.dashUntilMs,
+    renderAngleDeg: enemy.renderAngleDeg,
+    facing: enemy.facing,
+    emojiBaseFacing: enemy.emojiBaseFacing,
+});
+
+const buildProjectileRenderItem = (projectile: EnemyProjectile): ProjectileRenderItem => ({
+    id: projectile.id,
+    x: projectile.x,
+    y: projectile.y,
+});
+
+const buildPickupRenderItem = (pickup: XpPickup): PickupRenderItem => ({
+    id: pickup.id,
+    x: pickup.x,
+    y: pickup.y,
+    pickupKind: pickup.pickupKind,
+    gemTier: pickup.gemTier,
+    animalEmoji: pickup.animalEmoji,
+});
+
+const buildWebZoneRenderItem = (zone: WebZone): WebZoneRenderItem => ({
+    id: zone.id,
+    x: zone.x,
+    y: zone.y,
+    radius: zone.radius,
+    hp: zone.hp,
+    maxHp: zone.maxHp,
+});
+
+export const buildEnemyRenderSnapshot = (enemies: ChaserEnemy[], previous: EnemyRenderItem[] = []) => reconcileRenderArray(
+    enemies,
+    previous,
+    buildEnemyRenderItem,
+    (a, b) => (
+        a.x === b.x
+        && a.y === b.y
+        && a.hp === b.hp
+        && a.maxHp === b.maxHp
+        && a.emoji === b.emoji
+        && a.enemyType === b.enemyType
+        && a.sizeScale === b.sizeScale
+    )
+);
+
+export const buildRangedEnemyRenderSnapshot = (enemies: RangedEnemy[], previous: RangedEnemyRenderItem[] = []) => reconcileRenderArray(
+    enemies,
+    previous,
+    buildRangedEnemyRenderItem,
+    (a, b) => (
+        a.x === b.x
+        && a.y === b.y
+        && a.hp === b.hp
+        && a.maxHp === b.maxHp
+        && a.emoji === b.emoji
+        && a.enemyType === b.enemyType
+        && a.contactRadius === b.contactRadius
+    )
+);
+
+export const buildEliteRenderSnapshot = (
+    enemy: EliteEnemy | null,
+    previous: EliteRenderItem | null = null
+): EliteRenderItem | null => {
+    if (!enemy) return null;
+
+    const next = buildEliteRenderItem(enemy);
+    if (
+        previous
+        && previous.id === next.id
+        && previous.x === next.x
+        && previous.y === next.y
+        && previous.hp === next.hp
+        && previous.maxHp === next.maxHp
+        && previous.emoji === next.emoji
+        && previous.enemyType === next.enemyType
+        && previous.contactRadius === next.contactRadius
+        && previous.dashWindupUntilMs === next.dashWindupUntilMs
+        && previous.dashUntilMs === next.dashUntilMs
+        && previous.renderAngleDeg === next.renderAngleDeg
+        && previous.facing === next.facing
+        && previous.emojiBaseFacing === next.emojiBaseFacing
+    ) {
+        return previous;
+    }
+
+    return next;
+};
+
+export const buildProjectileRenderSnapshot = (
+    projectiles: EnemyProjectile[],
+    previous: ProjectileRenderItem[] = []
+) => reconcileRenderArray(
+    projectiles,
+    previous,
+    buildProjectileRenderItem,
+    (a, b) => a.x === b.x && a.y === b.y
+);
+
+export const buildPickupRenderSnapshot = (
+    pickups: XpPickup[],
+    previous: PickupRenderItem[] = []
+) => reconcileRenderArray(
+    pickups,
+    previous,
+    buildPickupRenderItem,
+    (a, b) => (
+        a.x === b.x
+        && a.y === b.y
+        && a.pickupKind === b.pickupKind
+        && a.gemTier === b.gemTier
+        && a.animalEmoji === b.animalEmoji
+    )
+);
+
+export const buildWebZoneRenderSnapshot = (
+    zones: WebZone[],
+    previous: WebZoneRenderItem[] = []
+) => reconcileRenderArray(
+    zones,
+    previous,
+    buildWebZoneRenderItem,
+    (a, b) => (
+        a.x === b.x
+        && a.y === b.y
+        && a.radius === b.radius
+        && a.hp === b.hp
+        && a.maxHp === b.maxHp
+    )
+);

@@ -55,8 +55,8 @@ export type EliteEnemy = {
     hp: number;
     maxHp: number;
     orbContactReady: boolean;
-    emoji: '🦖' | '🦂';
-    enemyType: 'brute' | 'stinger';
+    emoji: '🦖' | '🦂' | '🕷️';
+    enemyType: 'brute' | 'stinger' | 'weaver';
     baseSpeed: number;
     contactRadius: number;
     contactDamage: number;
@@ -72,8 +72,22 @@ export type EliteEnemy = {
     dashUntilMs: number | null;
     dashDirectionX: number;
     dashDirectionY: number;
+    lastWebShotAtMs: number;
+    renderAngleDeg: number;
     facing: 'left' | 'right';
     emojiBaseFacing: 'left' | 'right';
+};
+
+export type WebZone = {
+    id: number;
+    x: number;
+    y: number;
+    radius: number;
+    slowMultiplier: number;
+    hp: number;
+    maxHp: number;
+    lastOrbHitAtMs: number;
+    expiresAtMs: number;
 };
 
 export type EnemyProjectile = {
@@ -87,6 +101,7 @@ export type EnemyProjectile = {
 
 export type BombStrike = {
     id: number;
+    strikeKind: 'bomb' | 'web';
     sourceX: number;
     sourceY: number;
     targetX: number;
@@ -198,6 +213,41 @@ export type RunnerMotion = {
     y: number;
     strength: number;
 };
+
+export type EnemyRenderItem = Pick<ChaserEnemy, 'id' | 'x' | 'y' | 'hp' | 'maxHp' | 'emoji' | 'enemyType' | 'sizeScale'>;
+
+export type RangedEnemyRenderItem = Pick<RangedEnemy, 'id' | 'x' | 'y' | 'hp' | 'maxHp' | 'emoji' | 'enemyType' | 'contactRadius'>;
+
+export type EliteRenderItem = Pick<
+    EliteEnemy,
+    'id'
+    | 'x'
+    | 'y'
+    | 'hp'
+    | 'maxHp'
+    | 'emoji'
+    | 'enemyType'
+    | 'contactRadius'
+    | 'dashWindupUntilMs'
+    | 'dashUntilMs'
+    | 'renderAngleDeg'
+    | 'facing'
+    | 'emojiBaseFacing'
+>;
+
+export type ProjectileRenderItem = Pick<EnemyProjectile, 'id' | 'x' | 'y'>;
+
+export type PickupRenderItem = Pick<
+    XpPickup,
+    'id'
+    | 'x'
+    | 'y'
+    | 'pickupKind'
+    | 'gemTier'
+    | 'animalEmoji'
+>;
+
+export type WebZoneRenderItem = Pick<WebZone, 'id' | 'x' | 'y' | 'radius' | 'hp' | 'maxHp'>;
 
 export type PickupDropType = 'xp' | TailRunnerGemTier | 'heart';
 
