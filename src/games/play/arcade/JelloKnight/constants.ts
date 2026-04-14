@@ -1,5 +1,5 @@
 import type { TailRunnerGemTier } from '../TailRunner/types';
-import type { FencePost, GroundPatch, JelloKnightHudState, Obstacle, Vector2, WeightedDropEntry } from './types';
+import type { FencePost, GroundPatch, JelloKnightHudState, Obstacle, ObstacleSlot, SpawnZone, Vector2, WeightedDropEntry } from './types';
 
 export const FIELD_SIZE = 3000;
 export const MAX_WAVE = 100;
@@ -63,6 +63,8 @@ export const WAVE_TRANSITION_DELAY_MS = 1400;
 export const DAMAGE_FLASH_DURATION_MS = 340;
 export const DAMAGE_FLASH_MAX_OPACITY = 0.72;
 export const DEBUG_CONTACT_RANGES_ENABLED = false;
+export const DEBUG_OBSTACLE_SLOTS_ENABLED = true;
+export const DEBUG_CASTLE_SPAWN_POINTS_ENABLED = true;
 
 export const INITIAL_HUD_STATE: JelloKnightHudState = {
     hp: PLAYER_MAX_HP,
@@ -74,10 +76,67 @@ export const INITIAL_HUD_STATE: JelloKnightHudState = {
     level: 1,
 };
 
-export const INITIAL_PLAYER_POSITION: Vector2 = {
+export const FIELD_CASTLE_CENTER: Vector2 = {
     x: FIELD_SIZE / 2,
     y: FIELD_SIZE / 2,
 };
+
+const INNER_BOTTOM_SMALL_WALL_CENTER: Vector2 = {
+    x: FIELD_SIZE / 2,
+    y: (FIELD_SIZE / 2) + 486 + 37,
+};
+
+export const INITIAL_PLAYER_POSITION: Vector2 = {
+    x: FIELD_CASTLE_CENTER.x,
+    y: Math.round((FIELD_CASTLE_CENTER.y + INNER_BOTTOM_SMALL_WALL_CENTER.y) / 2),
+};
+
+export const CASTLE_OBSTACLE: Obstacle = {
+    id: 'castle-core',
+    x: FIELD_CASTLE_CENTER.x - 52,
+    y: FIELD_CASTLE_CENTER.y - 46,
+    width: 104,
+    height: 92,
+    stageRequired: 1,
+};
+
+export const FIELD_CORNER_SPAWN_ZONES: SpawnZone[] = [
+    { id: 'northwest', x: 110, y: 110, width: 180, height: 180 },
+    { id: 'northeast', x: FIELD_SIZE - 290, y: 110, width: 180, height: 180 },
+    { id: 'southwest', x: 110, y: FIELD_SIZE - 290, width: 180, height: 180 },
+    { id: 'southeast', x: FIELD_SIZE - 290, y: FIELD_SIZE - 290, width: 180, height: 180 },
+] as const;
+
+export const FIELD_CASTLE_SPAWN_ZONES: SpawnZone[] = [
+    {
+        id: 'castle-top-center',
+        x: FIELD_CASTLE_CENTER.x - 16,
+        y: CASTLE_OBSTACLE.y - 28,
+        width: 32,
+        height: 20,
+    },
+    {
+        id: 'castle-bottom-center',
+        x: FIELD_CASTLE_CENTER.x - 18,
+        y: CASTLE_OBSTACLE.y + CASTLE_OBSTACLE.height + 8,
+        width: 36,
+        height: 24,
+    },
+    {
+        id: 'castle-left-center',
+        x: CASTLE_OBSTACLE.x - 28,
+        y: FIELD_CASTLE_CENTER.y - 16,
+        width: 20,
+        height: 32,
+    },
+    {
+        id: 'castle-right-center',
+        x: CASTLE_OBSTACLE.x + CASTLE_OBSTACLE.width + 8,
+        y: FIELD_CASTLE_CENTER.y - 16,
+        width: 20,
+        height: 32,
+    },
+] as const;
 
 export const WEB_ZONE_RADIUS = 72;
 export const WEB_ZONE_DURATION_MS = 4200;
@@ -91,12 +150,29 @@ export const WEB_SHOT_MIN_DISTANCE = 120;
 export const WEB_SHOT_MAX_DISTANCE = 250;
 export const WEB_ZONE_ORBIT_HIT_COOLDOWN_MS = 200;
 
-export const OBSTACLE_SET: Obstacle[] = [
-    { id: 'north-wall', x: FIELD_SIZE / 2 - 240, y: FIELD_SIZE / 2 - 436, width: 480, height: 67, stageRequired: 2 },
-    { id: 'west-pillar', x: FIELD_SIZE / 2 - 520, y: FIELD_SIZE / 2 - 120, width: 96, height: 280, stageRequired: 3 },
-    { id: 'east-pillar', x: FIELD_SIZE / 2 + 424, y: FIELD_SIZE / 2 - 120, width: 96, height: 280, stageRequired: 3 },
-    { id: 'south-wall', x: FIELD_SIZE / 2 - 260, y: FIELD_SIZE / 2 + 332, width: 520, height: 77, stageRequired: 4 },
-    { id: 'center-block', x: FIELD_SIZE / 2 - 84, y: FIELD_SIZE / 2 + 10, width: 168, height: 132, stageRequired: 5 },
+export const OBSTACLE_SLOT_SET: ObstacleSlot[] = [
+    { id: 'slot-top-left', x: FIELD_SIZE / 2 - 640, y: FIELD_SIZE / 2 - 560, width: 300, height: 74, stageRequired: 1 },
+    { id: 'slot-top-right', x: FIELD_SIZE / 2 + 340, y: FIELD_SIZE / 2 - 560, width: 300, height: 74, stageRequired: 1 },
+    { id: 'slot-top-center-small', x: FIELD_SIZE / 2 - 48, y: FIELD_SIZE / 2 - 560, width: 96, height: 74, stageRequired: 2 },
+    { id: 'slot-left-upper', x: FIELD_SIZE / 2 - 660, y: FIELD_SIZE / 2 - 420, width: 96, height: 270, stageRequired: 2 },
+    { id: 'slot-left-lower', x: FIELD_SIZE / 2 - 660, y: FIELD_SIZE / 2 + 150, width: 96, height: 270, stageRequired: 2 },
+    { id: 'slot-right-upper', x: FIELD_SIZE / 2 + 564, y: FIELD_SIZE / 2 - 420, width: 96, height: 270, stageRequired: 2 },
+    { id: 'slot-right-lower', x: FIELD_SIZE / 2 + 564, y: FIELD_SIZE / 2 + 150, width: 96, height: 270, stageRequired: 2 },
+    { id: 'slot-bottom-left', x: FIELD_SIZE / 2 - 640, y: FIELD_SIZE / 2 + 486, width: 300, height: 74, stageRequired: 3 },
+    { id: 'slot-bottom-right', x: FIELD_SIZE / 2 + 340, y: FIELD_SIZE / 2 + 486, width: 300, height: 74, stageRequired: 3 },
+    { id: 'slot-bottom-center-small', x: FIELD_SIZE / 2 - 48, y: FIELD_SIZE / 2 + 486, width: 96, height: 74, stageRequired: 3 },
+    { id: 'slot-outer-northwest', x: 240, y: 300, width: 280, height: 74, stageRequired: 4 },
+    { id: 'slot-outer-north-main', x: FIELD_SIZE / 2 - 450, y: 300, width: 300, height: 70, stageRequired: 4 },
+    { id: 'slot-outer-north-short', x: FIELD_SIZE / 2 + 350, y: 300, width: 96, height: 70, stageRequired: 4 },
+    { id: 'slot-outer-northeast', x: FIELD_SIZE - 520, y: 320, width: 280, height: 74, stageRequired: 4 },
+    { id: 'slot-outer-southwest', x: 260, y: FIELD_SIZE - 394, width: 280, height: 74, stageRequired: 4 },
+    { id: 'slot-outer-south-short', x: FIELD_SIZE / 2 - 446, y: FIELD_SIZE - 394, width: 96, height: 70, stageRequired: 4 },
+    { id: 'slot-outer-south-main', x: FIELD_SIZE / 2 + 350, y: FIELD_SIZE - 394, width: 300, height: 70, stageRequired: 4 },
+    { id: 'slot-outer-southeast', x: FIELD_SIZE - 540, y: FIELD_SIZE - 414, width: 280, height: 74, stageRequired: 4 },
+    { id: 'slot-outer-west-main', x: 250, y: FIELD_SIZE / 2 - 330, width: 92, height: 300, stageRequired: 4 },
+    { id: 'slot-outer-west-short', x: 250, y: FIELD_SIZE / 2 + 500, width: 92, height: 96, stageRequired: 4 },
+    { id: 'slot-outer-east-main', x: FIELD_SIZE - 342, y: FIELD_SIZE / 2 + 140, width: 92, height: 300, stageRequired: 4 },
+    { id: 'slot-outer-east-short', x: FIELD_SIZE - 342, y: FIELD_SIZE / 2 - 606, width: 92, height: 96, stageRequired: 4 },
 ];
 
 export const FIELD_GROUND_PATCHES: GroundPatch[] = [

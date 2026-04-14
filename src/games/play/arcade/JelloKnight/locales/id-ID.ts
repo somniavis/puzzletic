@@ -4,8 +4,10 @@ export default {
     closeButton: 'Keluar dari Jello Knight',
     joystickAriaLabel: 'Joystick gerak',
     startTitle: 'Jello Knight',
-    startDescription: 'Bertahanlah di arena, kumpulkan XP dan orb penyelamatan, lalu terus naikkan skor saat gelombang musuh, dinding, dan tekanan arena meningkat bersama.',
+    startDescription: 'Bertahan dan selamatkan semuanya.',
     startButton: 'Mulai',
+    controlsMoveShort: 'Gerak',
+    controlsActionShort: 'Serang otomatis',
     startGuides: {
         labels: {
             hud: 'HUD',
@@ -30,6 +32,7 @@ export default {
         standard: 'Imp',
         swift: 'Spora',
         heavy: 'Jeli Brutal',
+        pumpkin: 'Labu Kutukan',
         sniper: 'Mata Pengintai',
         heavyCaster: 'Mata Kutukan',
         brute: 'Tyrant Rex',
@@ -42,7 +45,7 @@ export default {
         unlockReady: 'Buka',
     },
     gameOver: {
-        title: 'Hasil Permainan',
+        title: 'Game Over',
         retryButton: 'Main Lagi',
         newBest: 'Rekor Baru',
         records: {
@@ -50,6 +53,7 @@ export default {
             survival: 'Waktu Bertahan',
             coins: 'Koin',
             peakDanger: 'Wave Tertinggi',
+            peakWaveSurvival: 'Wave Tertinggi / Bertahan',
             peakDangerValue: 'Wave {{tier}}',
         },
         rewards: {

@@ -4,8 +4,10 @@ export default {
     closeButton: 'Thoát Jello Knight',
     joystickAriaLabel: 'Cần điều khiển di chuyển',
     startTitle: 'Jello Knight',
-    startDescription: 'Sống sót trong đấu trường, thu thập XP và orb giải cứu, rồi tiếp tục tăng điểm khi làn sóng quái, tường chắn và áp lực chiến trường cùng dâng cao.',
+    startDescription: 'Sống sót và giải cứu tất cả.',
     startButton: 'Bắt đầu',
+    controlsMoveShort: 'Di chuyển',
+    controlsActionShort: 'Tấn công tự động',
     startGuides: {
         labels: {
             hud: 'HUD',
@@ -30,6 +32,7 @@ export default {
         standard: 'Imp',
         swift: 'Bào Tử',
         heavy: 'Sứa Nặng',
+        pumpkin: 'Bí Ngô Ma',
         sniper: 'Mắt Canh Gác',
         heavyCaster: 'Mắt Nguyền',
         brute: 'Khủng Long Chúa',
@@ -42,7 +45,7 @@ export default {
         unlockReady: 'Mở khóa',
     },
     gameOver: {
-        title: 'Kết Quả',
+        title: 'Game Over',
         retryButton: 'Chơi Lại',
         newBest: 'Kỷ Lục Mới',
         records: {
@@ -50,6 +53,7 @@ export default {
             survival: 'Thời Gian Sống Sót',
             coins: 'Xu',
             peakDanger: 'Wave Cao Nhất',
+            peakWaveSurvival: 'Wave Cao Nhất / Sinh Tồn',
             peakDangerValue: 'Wave {{tier}}',
         },
         rewards: {

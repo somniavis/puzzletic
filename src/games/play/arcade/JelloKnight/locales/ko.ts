@@ -4,8 +4,10 @@ export default {
     closeButton: '젤로 나이트 나가기',
     joystickAriaLabel: '이동 조이스틱',
     startTitle: '젤로 나이트',
-    startDescription: '아레나를 생존하며 XP와 구조 오브를 모으고, 적 웨이브와 벽, 전장 압박이 함께 상승하는 흐름 속에서 점수를 끌어올리세요.',
+    startDescription: '살아남아 모두를 구하세요.',
     startButton: '시작',
+    controlsMoveShort: '이동',
+    controlsActionShort: '레벨업 & 구조',
     startGuides: {
         labels: {
             hud: 'HUD',
@@ -30,6 +32,7 @@ export default {
         standard: '임프',
         swift: '스포어',
         heavy: '헤비 젤리',
+        pumpkin: '잭오펌프',
         sniper: '감시의 눈',
         heavyCaster: '저주의 눈',
         brute: '티라노',
@@ -42,7 +45,7 @@ export default {
         unlockReady: '해금',
     },
     gameOver: {
-        title: '런 결과',
+        title: '게임 오버',
         retryButton: '다시 플레이',
         newBest: '신기록',
         records: {
@@ -50,6 +53,7 @@ export default {
             survival: '생존 시간',
             coins: '코인',
             peakDanger: '최고 웨이브',
+            peakWaveSurvival: '피크 웨이브 / 서바이벌',
             peakDangerValue: '웨이브 {{tier}}',
         },
         rewards: {

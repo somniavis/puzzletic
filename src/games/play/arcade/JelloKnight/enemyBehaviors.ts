@@ -6,6 +6,7 @@ export const ENEMY_ORBIT_HIT_RADIUS_BY_TYPE = {
     standard: 26,
     swift: 26,
     heavy: 26,
+    pumpkin: 27,
 } as const;
 
 export const RANGED_ORBIT_HIT_RADIUS_BY_TYPE = {
@@ -54,6 +55,15 @@ export const MELEE_ENEMY_VARIANTS: Array<{
         contactDamage: 7,
         sizeScale: 1.12,
         spawnWeight: 20,
+    },
+    {
+        enemyType: 'pumpkin',
+        emoji: '🎃',
+        hp: 7,
+        baseSpeed: 61,
+        contactDamage: 5,
+        sizeScale: 0.98,
+        spawnWeight: 18,
     },
 ];
 

@@ -4,8 +4,10 @@ export default {
     closeButton: 'Salir de Jello Knight',
     joystickAriaLabel: 'Joystick de movimiento',
     startTitle: 'Jello Knight',
-    startDescription: 'Sobrevive a la arena, reúne XP y orbes de rescate, y sigue aumentando tu puntuación mientras suben las oleadas enemigas, los muros y la presión del campo.',
+    startDescription: 'Sobrevive y rescátalos a todos.',
     startButton: 'Comenzar',
+    controlsMoveShort: 'Mover',
+    controlsActionShort: 'Ataque automático',
     startGuides: {
         labels: {
             hud: 'HUD',
@@ -30,6 +32,7 @@ export default {
         standard: 'Duende',
         swift: 'Espora',
         heavy: 'Jalea Bruta',
+        pumpkin: 'Calabaza Maldita',
         sniper: 'Ojo Vigía',
         heavyCaster: 'Ojo Maldito',
         brute: 'Rex Tirano',
@@ -42,7 +45,7 @@ export default {
         unlockReady: 'Desbloquear',
     },
     gameOver: {
-        title: 'Resultados de la Partida',
+        title: 'Game Over',
         retryButton: 'Jugar de Nuevo',
         newBest: 'Nuevo Récord',
         records: {
@@ -50,6 +53,7 @@ export default {
             survival: 'Supervivencia',
             coins: 'Monedas',
             peakDanger: 'Oleada Máxima',
+            peakWaveSurvival: 'Oleada Máxima / Supervivencia',
             peakDangerValue: 'Oleada {{tier}}',
         },
         rewards: {

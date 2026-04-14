@@ -4,8 +4,10 @@ export default {
     closeButton: 'Exit Jello Knight',
     joystickAriaLabel: 'Movement joystick',
     startTitle: 'Jello Knight',
-    startDescription: 'Survive the arena, gather XP and rescue animals, and keep pushing your score higher as enemy waves, walls, and battlefield pressure rise together.',
-    startButton: 'Start Run',
+    startDescription: 'Survive and rescue them all.',
+    startButton: 'Start',
+    controlsMoveShort: 'Move',
+    controlsActionShort: 'Lv up & Rescue',
     startGuides: {
         labels: {
             hud: 'HUD',
@@ -30,6 +32,7 @@ export default {
         standard: 'Imp',
         swift: 'Spore',
         heavy: 'Jelly Brute',
+        pumpkin: 'Jack-o-Lantern',
         sniper: 'Watcher Eye',
         heavyCaster: 'Curse Eye',
         brute: 'Tyrant Rex',
@@ -42,7 +45,7 @@ export default {
         unlockReady: 'Unlock',
     },
     gameOver: {
-        title: 'Run Results',
+        title: 'Game Over',
         retryButton: 'Play Again',
         newBest: 'New Best',
         records: {
@@ -50,6 +53,7 @@ export default {
             survival: 'Survival',
             coins: 'Coins',
             peakDanger: 'Peak Wave',
+            peakWaveSurvival: 'Peak Wave / Survival',
             peakDangerValue: 'Wave {{tier}}',
         },
         rewards: {

@@ -2,6 +2,14 @@ import type { TailRunnerGemTier } from '../TailRunner/types';
 
 export type Vector2 = { x: number; y: number };
 
+export type SpawnZone = {
+    id: string;
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+};
+
 export type ChaserEnemy = {
     id: number;
     x: number;
@@ -9,8 +17,8 @@ export type ChaserEnemy = {
     hp: number;
     maxHp: number;
     orbContactReady: boolean;
-    emoji: '👾' | '🦠' | '🪼';
-    enemyType: 'standard' | 'swift' | 'heavy';
+    emoji: '👾' | '🦠' | '🪼' | '🎃';
+    enemyType: 'standard' | 'swift' | 'heavy' | 'pumpkin';
     baseSpeed: number;
     contactDamage: number;
     sizeScale: number;
@@ -128,7 +136,7 @@ export type SpawnSignal = {
     expiresAtMs: number;
 };
 
-export type Obstacle = {
+export type ObstacleSlot = {
     id: string;
     x: number;
     y: number;
@@ -136,6 +144,8 @@ export type Obstacle = {
     height: number;
     stageRequired: number;
 };
+
+export type Obstacle = ObstacleSlot;
 
 export type GroundPatch = {
     id: string;

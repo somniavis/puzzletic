@@ -12,9 +12,9 @@
     display: flex;
     flex-direction: column;
     background:
-        radial-gradient(circle at top, rgba(194, 228, 173, 0.18), transparent 32%),
-        radial-gradient(circle at 18% 18%, rgba(96, 153, 97, 0.12), transparent 24%),
-        linear-gradient(180deg, #6f9d62 0%, #5d8d58 34%, #4c784f 100%);
+        radial-gradient(circle at top, rgba(255, 251, 213, 0.42), transparent 34%),
+        radial-gradient(circle at 16% 18%, rgba(255, 236, 152, 0.28), transparent 24%),
+        linear-gradient(180deg, #f6e7a8 0%, #edd98a 42%, #dfc66d 100%);
     color: #f7fbff;
 }
 
@@ -104,6 +104,109 @@
     position: absolute;
     inset: 0;
     pointer-events: none;
+}
+
+.jello-knight__castle-spawn-point {
+    position: absolute;
+    z-index: 5;
+    width: 18px;
+    height: 18px;
+    transform: translate(-50%, -50%);
+    border-radius: 999px;
+    border: 2px dashed rgba(255, 245, 183, 0.95);
+    background: rgba(255, 196, 92, 0.2);
+    box-shadow:
+        0 0 0 2px rgba(88, 56, 28, 0.22),
+        0 0 14px rgba(255, 220, 129, 0.3);
+    pointer-events: none;
+}
+
+.jello-knight__castle-spawn-point::before,
+.jello-knight__castle-spawn-point::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    background: rgba(255, 249, 214, 0.95);
+    transform: translate(-50%, -50%);
+    border-radius: 999px;
+}
+
+.jello-knight__castle-spawn-point::before {
+    width: 10px;
+    height: 2px;
+}
+
+.jello-knight__castle-spawn-point::after {
+    width: 2px;
+    height: 10px;
+}
+
+.jello-knight__castle {
+    position: absolute;
+    z-index: 6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+}
+
+.jello-knight__castle-base {
+    --jello-knight-obstacle-depth: 16px;
+    position: absolute;
+    inset: 0;
+    display: block;
+    overflow: hidden;
+    border-radius: 28px;
+    background: linear-gradient(
+        180deg,
+        #d7a171 0%,
+        #c98353 calc(100% - var(--jello-knight-obstacle-depth)),
+        #2f5c42 calc(100% - var(--jello-knight-obstacle-depth)),
+        #234632 100%
+    );
+    border: 1px solid rgba(36, 82, 56, 0.9);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 239, 211, 0.18),
+        inset 0 calc(var(--jello-knight-obstacle-depth) * -1) 0 rgb(35, 70, 50),
+        0 10px 22px rgba(28, 54, 41, 0.16);
+}
+
+.jello-knight__castle-base::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+        linear-gradient(180deg, rgba(255, 233, 205, 0.14), rgba(255, 233, 205, 0) 30%),
+        radial-gradient(ellipse at 22% 28%, rgba(184, 111, 76, 0.18) 0 9%, transparent 10%),
+        radial-gradient(ellipse at 66% 32%, rgba(176, 104, 70, 0.16) 0 8%, transparent 9%),
+        radial-gradient(ellipse at 48% 58%, rgba(160, 92, 61, 0.14) 0 10%, transparent 11%),
+        radial-gradient(ellipse at 76% 68%, rgba(184, 111, 76, 0.12) 0 7%, transparent 8%);
+    opacity: 0.72;
+}
+
+.jello-knight__castle-main,
+.jello-knight__castle-shadow {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    display: block;
+    line-height: 1;
+    user-select: none;
+    font-size: 108px;
+}
+
+.jello-knight__castle-shadow {
+    transform: translate(calc(-50% + 12px), calc(-50% - 12px));
+    filter: saturate(0.55) brightness(0.68);
+    opacity: 0.8;
+}
+
+.jello-knight__castle-main {
+    transform: translate(-50%, -50%);
+    text-shadow:
+        0 10px 18px rgba(34, 57, 46, 0.18),
+        0 0 18px rgba(216, 245, 237, 0.12);
 }
 
 .jello-knight__field-fence {
@@ -292,6 +395,7 @@
 .jello-knight__obstacle {
     --jello-knight-obstacle-depth: 14px;
     position: absolute;
+    z-index: 3;
     display: block;
     overflow: hidden;
     pointer-events: none;
@@ -325,6 +429,73 @@
 
 .jello-knight__obstacle::after {
     content: none;
+}
+
+.jello-knight__obstacle--castle {
+    --jello-knight-obstacle-depth: 16px;
+    border-radius: 28px;
+    background: linear-gradient(
+        180deg,
+        #d7a171 0%,
+        #c98353 calc(100% - var(--jello-knight-obstacle-depth)),
+        #2f5c42 calc(100% - var(--jello-knight-obstacle-depth)),
+        #234632 100%
+    );
+    box-shadow:
+        inset 0 1px 0 rgba(255, 239, 211, 0.18),
+        inset 0 calc(var(--jello-knight-obstacle-depth) * -1) 0 rgb(35, 70, 50),
+        0 10px 22px rgba(28, 54, 41, 0.16);
+}
+
+.jello-knight__obstacle-slot {
+    position: absolute;
+    z-index: 4;
+    pointer-events: none;
+    border-radius: 18px;
+    border: 4px dashed rgba(255, 92, 92, 0.95);
+    background:
+        linear-gradient(rgba(255, 64, 64, 0.12), rgba(255, 64, 64, 0.12)),
+        repeating-linear-gradient(
+            -45deg,
+            rgba(255, 214, 214, 0.14) 0 12px,
+            rgba(255, 255, 255, 0.04) 12px 24px
+        );
+    box-shadow:
+        inset 0 0 0 2px rgba(255, 255, 255, 0.2),
+        0 0 0 2px rgba(121, 18, 18, 0.22);
+    opacity: 1;
+}
+
+.jello-knight__obstacle-slot::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(255, 92, 92, 0.96);
+    box-shadow:
+        0 0 0 4px rgba(255, 92, 92, 0.22),
+        0 0 12px rgba(255, 92, 92, 0.34);
+}
+
+.jello-knight__obstacle-slot::after {
+    content: attr(data-slot);
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, calc(-50% - 26px));
+    padding: 3px 8px;
+    border-radius: 999px;
+    background: rgba(90, 16, 16, 0.88);
+    color: #fff4f4;
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+    box-shadow: 0 4px 10px rgba(48, 8, 8, 0.22);
 }
 
 /* Overlay */
@@ -673,6 +844,10 @@
 
 .jello-knight__enemy--heavy {
     animation: jello-knight-enemy-squish 1.58s ease-in-out infinite;
+}
+
+.jello-knight__enemy--pumpkin {
+    animation: jello-knight-enemy-pumpkin 1.08s ease-in-out infinite;
 }
 
 .jello-knight__ranged-enemy--sniper {
@@ -1512,13 +1687,20 @@
 .jello-knight .play-arcade-game__card,
 .jello-knight .play-arcade-game__card--gameover {
     background:
-        radial-gradient(circle at 18% 18%, rgba(255, 255, 255, 0.4), transparent 18%),
-        linear-gradient(180deg, rgba(249, 254, 255, 0.98), rgba(209, 232, 240, 0.99));
-    border-color: rgba(188, 221, 233, 0.96);
+        linear-gradient(180deg, rgba(255, 241, 210, 0.18), rgba(255, 255, 255, 0) 28%),
+        repeating-linear-gradient(
+            90deg,
+            rgba(118, 69, 31, 0.16) 0 18px,
+            rgba(92, 50, 21, 0.06) 18px 34px,
+            rgba(135, 82, 38, 0.14) 34px 52px
+        ),
+        linear-gradient(180deg, #c98b4b 0%, #ae6f35 54%, #8a5326 100%);
+    border-color: rgba(98, 56, 24, 0.76);
     box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.98),
-        0 0.4rem 0 rgba(121, 158, 173, 0.9),
-        0 1.18rem 2.3rem rgba(65, 97, 111, 0.2);
+        inset 0 2px 0 rgba(255, 238, 205, 0.44),
+        inset 0 -2px 0 rgba(92, 50, 21, 0.3),
+        0 0.4rem 0 rgba(104, 59, 26, 0.92),
+        0 1.18rem 2.3rem rgba(15, 9, 4, 0.28);
 }
 
 .jello-knight .play-arcade-game__visual-bubble,
@@ -1535,14 +1717,14 @@
 .jello-knight .play-arcade-game__copy h2,
 .jello-knight .play-arcade-game__record-value,
 .jello-knight .play-arcade-game__reward-value {
-    color: #275063;
+    color: #ffffff;
 }
 
 .jello-knight .play-arcade-game__copy p,
 .jello-knight .play-arcade-game__record-label,
 .jello-knight .play-arcade-game__record-best,
 .jello-knight .play-arcade-game__record-separator {
-    color: rgba(71, 102, 118, 0.88);
+    color: rgba(255, 247, 232, 0.92);
 }
 
 .jello-knight .play-arcade-game__action {
@@ -1577,6 +1759,38 @@
     box-shadow:
         inset 0 1px 0 rgba(255, 255, 255, 0.96),
         0 0.26rem 0 rgba(196, 146, 44, 0.86);
+}
+
+.jello-knight .jello-knight__gameover-record--score,
+.jello-knight .jello-knight__gameover-record--run {
+    grid-column: 1 / -1;
+}
+
+.jello-knight .jello-knight__gameover-record--score .play-arcade-game__record-value {
+    font-size: 1.12rem;
+}
+
+.jello-knight .jello-knight__gameover-record--run .play-arcade-game__record-value {
+    font-size: 0.96rem;
+}
+
+.jello-knight .play-arcade-game__copy--gameover h2 {
+    color: #fffdf7;
+    text-shadow:
+        0 2px 0 rgba(101, 57, 24, 0.34),
+        0 6px 18px rgba(44, 22, 8, 0.18);
+}
+
+.jello-knight .play-arcade-game__record-label,
+.jello-knight .play-arcade-game__record-best,
+.jello-knight .play-arcade-game__record-separator,
+.jello-knight .play-arcade-game__reward-label {
+    color: rgba(104, 63, 27, 0.88);
+}
+
+.jello-knight .play-arcade-game__record-value,
+.jello-knight .play-arcade-game__reward-value {
+    color: #5b3110;
 }
 
 .jello-knight .play-arcade-game__record-badge {
@@ -1692,6 +1906,21 @@
     }
     80% {
         transform: translateY(0.5px) scale(1.02, 0.98);
+    }
+}
+
+@keyframes jello-knight-enemy-pumpkin {
+    0%, 100% {
+        transform: translateY(0) rotate(0deg) scale(1, 1);
+    }
+    22% {
+        transform: translateY(-1px) rotate(-1.4deg) scale(1.02, 0.98);
+    }
+    48% {
+        transform: translateY(1px) rotate(1.3deg) scale(0.98, 1.02);
+    }
+    74% {
+        transform: translateY(-0.5px) rotate(-0.8deg) scale(1.01, 0.99);
     }
 }
 

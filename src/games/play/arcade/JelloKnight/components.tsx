@@ -6,7 +6,11 @@ import {
     PlayArcadeStartOverlay,
 } from '../../shared/PlayArcadeUI';
 import {
+    CASTLE_OBSTACLE,
+    DEBUG_CASTLE_SPAWN_POINTS_ENABLED,
     DEBUG_CONTACT_RANGES_ENABLED,
+    DEBUG_OBSTACLE_SLOTS_ENABLED,
+    FIELD_CASTLE_SPAWN_ZONES,
     FIELD_FENCE_POSTS,
     FIELD_GROUND_PATCHES,
     PLAYER_RADIUS,
@@ -28,6 +32,7 @@ import type {
     JelloKnightAnnouncement,
     JelloKnightPhaseOverlay,
     Obstacle,
+    ObstacleSlot,
     PickupRenderItem,
     ProjectileRenderItem,
     RangedEnemyRenderItem,
@@ -83,13 +88,48 @@ const GroundPatchNode = React.memo<{ patch: GroundPatch }>(({ patch }) => (
     </div>
 ));
 
+const CastleNode = React.memo(() => (
+    <div
+        className="jello-knight__castle"
+        style={{
+            ...toPositionStyle(CASTLE_OBSTACLE.x, CASTLE_OBSTACLE.y),
+            ...toSizeStyle(CASTLE_OBSTACLE.width, CASTLE_OBSTACLE.height),
+        }}
+        aria-hidden="true"
+    >
+        <span className="jello-knight__castle-shadow">🏰</span>
+        <span className="jello-knight__castle-main">🏰</span>
+    </div>
+));
+
 const ObstacleNode = React.memo<{ obstacle: Obstacle }>(({ obstacle }) => (
     <div
-        className="jello-knight__obstacle"
+        className={`jello-knight__obstacle${obstacle.id === 'castle-core' ? ' jello-knight__obstacle--castle' : ''}`}
         style={{
             ...toPositionStyle(obstacle.x, obstacle.y),
             ...toSizeStyle(obstacle.width, obstacle.height),
         }}
+    />
+));
+
+const ObstacleSlotNode = React.memo<{ slot: ObstacleSlot }>(({ slot }) => (
+    <div
+        className="jello-knight__obstacle-slot"
+        data-slot={slot.id}
+        style={{
+            ...toPositionStyle(slot.x, slot.y),
+            ...toSizeStyle(slot.width, slot.height),
+        }}
+        aria-hidden="true"
+    />
+));
+
+const CastleSpawnPointNode = React.memo<{ x: number; y: number; id: string }>(({ x, y, id }) => (
+    <div
+        className="jello-knight__castle-spawn-point"
+        data-slot={id}
+        style={toPositionStyle(x, y)}
+        aria-hidden="true"
     />
 ));
 
@@ -415,6 +455,7 @@ const PickupNode = React.memo<{ pickup: PickupRenderItem }>(({ pickup }) => (
 
 type FieldProps = {
     activeObstacles: Obstacle[];
+    obstacleSlots: ObstacleSlot[];
     announcement: JelloKnightAnnouncement | null;
     bombBlasts: BombBlast[];
     bombRadius: number;
@@ -462,16 +503,29 @@ const StaticArenaDecor = React.memo(() => (
         <div className="jello-knight__field-ground" aria-hidden="true">
             {FIELD_GROUND_PATCHES.map((patch) => <GroundPatchNode key={patch.id} patch={patch} />)}
         </div>
+        {DEBUG_CASTLE_SPAWN_POINTS_ENABLED && FIELD_CASTLE_SPAWN_ZONES.map((zone) => (
+            <CastleSpawnPointNode
+                key={zone.id}
+                id={zone.id}
+                x={zone.x + (zone.width / 2)}
+                y={zone.y + (zone.height / 2)}
+            />
+        ))}
+        <CastleNode />
     </>
 ));
 
 type ObstaclesLayerProps = {
     activeObstacles: Obstacle[];
+    obstacleSlots: ObstacleSlot[];
 };
 
-const ObstaclesLayer = React.memo<ObstaclesLayerProps>(({ activeObstacles }) => (
+const ObstaclesLayer = React.memo<ObstaclesLayerProps>(({ activeObstacles, obstacleSlots }) => (
     <>
-        {activeObstacles.map((obstacle) => <ObstacleNode key={obstacle.id} obstacle={obstacle} />)}
+        {DEBUG_OBSTACLE_SLOTS_ENABLED && obstacleSlots.map((slot) => <ObstacleSlotNode key={slot.id} slot={slot} />)}
+        {activeObstacles
+            .filter((obstacle) => obstacle.id !== 'castle-core')
+            .map((obstacle) => <ObstacleNode key={obstacle.id} obstacle={obstacle} />)}
     </>
 ));
 
@@ -634,6 +688,7 @@ const RunnerLayer = React.memo<RunnerLayerProps>(({
 
 export const JelloKnightField: React.FC<FieldProps> = ({
     activeObstacles,
+    obstacleSlots,
     announcement,
     bombBlasts,
     bombRadius,
@@ -671,7 +726,7 @@ export const JelloKnightField: React.FC<FieldProps> = ({
             <div className="jello-knight__viewport">
                 <div className="jello-knight__field" style={fieldStyle}>
                     <StaticArenaDecor />
-                    <ObstaclesLayer activeObstacles={activeObstacles} />
+                    <ObstaclesLayer activeObstacles={activeObstacles} obstacleSlots={obstacleSlots} />
                     <CombatLayer
                         bombBlasts={bombBlasts}
                         bombRadius={bombRadius}
@@ -746,11 +801,11 @@ export const JelloKnightStartOverlay: React.FC<StartProps> = ({ gt, onStart }) =
         description={gt('startDescription')}
         actionLabel={gt('startButton')}
         onAction={onStart}
-        visual={<span className="jello-knight__start-visual">🫧⚔️</span>}
+        iconOnly
+        visual={<span className="jello-knight__start-visual">⚔️</span>}
         guides={[
-            { keys: [gt('startGuides.labels.hud')], text: gt('startGuides.hud') },
-            { keys: [gt('startGuides.labels.move')], text: gt('startGuides.move') },
-            { keys: [gt('startGuides.labels.elite')], text: gt('startGuides.elite') },
+            { keys: ['←', '↑', '↓', '→'], text: gt('controlsMoveShort') },
+            { keys: ['💣', '🐶'], text: gt('controlsActionShort') },
         ]}
     />
 );
@@ -836,16 +891,17 @@ export const JelloKnightGameOverOverlay: React.FC<GameOverProps> = ({
                 best: bestScore.toLocaleString(),
                 highlighted: lastRunWasBest,
                 badgeText: lastRunWasBest ? gt('gameOver.newBest') : undefined,
+                className: 'jello-knight__gameover-record--score',
+            },
+            {
+                label: gt('gameOver.records.peakDanger'),
+                current: gt('gameOver.records.peakDangerValue', { tier: wave }),
+                tone: 'secondary',
             },
             {
                 label: gt('gameOver.records.survival'),
                 current: formatRunClock(elapsedMs),
                 best: formatRunClock(bestTimeMs),
-                tone: 'secondary',
-            },
-            {
-                label: gt('gameOver.records.peakDanger'),
-                current: gt('gameOver.records.peakDangerValue', { tier: wave }),
                 tone: 'secondary',
             },
         ]}

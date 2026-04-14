@@ -4,8 +4,10 @@ export default {
     closeButton: 'Quitter Jello Knight',
     joystickAriaLabel: 'Joystick de déplacement',
     startTitle: 'Jello Knight',
-    startDescription: 'Survivez dans l’arène, ramassez de l’XP et des orbes de sauvetage, puis faites grimper votre score pendant que les vagues, les murs et la pression du terrain augmentent.',
+    startDescription: 'Survivez et sauvez-les tous.',
     startButton: 'Démarrer',
+    controlsMoveShort: 'Déplacer',
+    controlsActionShort: 'Attaque auto',
     startGuides: {
         labels: {
             hud: 'HUD',
@@ -30,6 +32,7 @@ export default {
         standard: 'Lutin',
         swift: 'Spore',
         heavy: 'Gelée Brute',
+        pumpkin: 'Citrouille Maudite',
         sniper: 'Œil Veilleur',
         heavyCaster: 'Œil Maudit',
         brute: 'Tyran Rex',
@@ -42,7 +45,7 @@ export default {
         unlockReady: 'Débloquer',
     },
     gameOver: {
-        title: 'Résultats de la Partie',
+        title: 'Game Over',
         retryButton: 'Rejouer',
         newBest: 'Nouveau Record',
         records: {
@@ -50,6 +53,7 @@ export default {
             survival: 'Survie',
             coins: 'Pièces',
             peakDanger: 'Vague Max',
+            peakWaveSurvival: 'Vague Max / Survie',
             peakDangerValue: 'Vague {{tier}}',
         },
         rewards: {

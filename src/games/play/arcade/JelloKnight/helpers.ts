@@ -4,6 +4,10 @@ import {
     BOMB_CRIT_MULTIPLIER_LEVELS,
     BOMB_DROP_CHANCE_LEVELS,
     BOMB_DROP_INTERVAL_LEVELS,
+    CASTLE_OBSTACLE,
+    FIELD_CASTLE_SPAWN_ZONES,
+    DEBUG_OBSTACLE_SLOTS_ENABLED,
+    FIELD_CORNER_SPAWN_ZONES,
     FIELD_SIZE,
     GEM_SCORE_VALUES,
     HEART_HEAL_VALUE,
@@ -13,7 +17,7 @@ import {
     LEVEL_UP_CARD_COUNT,
     MAX_WAVE,
     MAX_SKILL_LEVEL,
-    OBSTACLE_SET,
+    OBSTACLE_SLOT_SET,
     ORBIT_COUNT_LEVELS,
     ORBIT_CRIT_MULTIPLIER_LEVELS,
     ORBIT_DAMAGE_LEVELS,
@@ -35,9 +39,11 @@ import type {
     ChaserEnemy,
     EliteEnemy,
     Obstacle,
+    ObstacleSlot,
     PickupDropType,
     RangedEnemy,
     SkillUpgradeId,
+    SpawnZone,
     UpgradeOption,
     UpgradeLevels,
     Vector2,
@@ -83,12 +89,12 @@ const WAVE_STAT_BANDS: WaveStatBand[] = [
 ];
 
 const MELEE_RATIO_BANDS: Array<RatioBand<ChaserEnemy['enemyType']>> = [
-    { waveStart: 1, waveEnd: 10, values: { standard: 65, swift: 25, heavy: 10 } },
-    { waveStart: 11, waveEnd: 20, values: { standard: 54, swift: 31, heavy: 15 } },
-    { waveStart: 21, waveEnd: 40, values: { standard: 48, swift: 32, heavy: 20 } },
-    { waveStart: 41, waveEnd: 60, values: { standard: 42, swift: 34, heavy: 24 } },
-    { waveStart: 61, waveEnd: 80, values: { standard: 38, swift: 36, heavy: 26 } },
-    { waveStart: 81, waveEnd: 100, values: { standard: 34, swift: 38, heavy: 28 } },
+    { waveStart: 1, waveEnd: 10, values: { standard: 55, swift: 23, heavy: 10, pumpkin: 12 } },
+    { waveStart: 11, waveEnd: 20, values: { standard: 45, swift: 28, heavy: 15, pumpkin: 12 } },
+    { waveStart: 21, waveEnd: 40, values: { standard: 39, swift: 29, heavy: 20, pumpkin: 12 } },
+    { waveStart: 41, waveEnd: 60, values: { standard: 34, swift: 30, heavy: 24, pumpkin: 12 } },
+    { waveStart: 61, waveEnd: 80, values: { standard: 30, swift: 31, heavy: 26, pumpkin: 13 } },
+    { waveStart: 81, waveEnd: 100, values: { standard: 26, swift: 32, heavy: 28, pumpkin: 14 } },
 ];
 
 const RANGED_RATIO_BANDS: Array<RatioBand<RangedEnemy['enemyType']>> = [
@@ -302,6 +308,50 @@ const getWeightedVariant = <T extends { enemyType: string }>(
     return variants[variants.length - 1];
 };
 
+const getCastleSpawnChance = (
+    waveIndex: number,
+    enemyGroup: 'melee' | 'ranged' | 'elite'
+) => {
+    if (enemyGroup === 'elite') {
+        if (waveIndex <= 10) return 0.45;
+        if (waveIndex <= 25) return 0.28;
+        if (waveIndex <= 50) return 0.14;
+        return 0.05;
+    }
+
+    if (enemyGroup === 'ranged') {
+        if (waveIndex <= 10) return 0.8;
+        if (waveIndex <= 25) return 0.55;
+        if (waveIndex <= 50) return 0.3;
+        return 0.1;
+    }
+
+    if (waveIndex <= 10) return 0.8;
+    if (waveIndex <= 25) return 0.55;
+    if (waveIndex <= 50) return 0.3;
+    return 0.1;
+};
+
+const getSpawnZoneForWave = (
+    seed: number,
+    waveIndex: number,
+    enemyGroup: 'melee' | 'ranged' | 'elite'
+): SpawnZone => {
+    const castleChance = getCastleSpawnChance(waveIndex, enemyGroup);
+    const shouldUseCastleZone = castleChance > 0 && seededUnit((seed * 1.13) + 5.7) < castleChance;
+    const zonePool = shouldUseCastleZone ? FIELD_CASTLE_SPAWN_ZONES : FIELD_CORNER_SPAWN_ZONES;
+    return zonePool[Math.abs(seed) % zonePool.length];
+};
+
+const getSpawnPointFromZone = (zone: SpawnZone, seed: number) => {
+    const horizontalUnit = seededUnit((seed * 1.37) + 11.3);
+    const verticalUnit = seededUnit((seed * 1.91) + 27.7);
+    return {
+        x: zone.x + (zone.width * horizontalUnit),
+        y: zone.y + (zone.height * verticalUnit),
+    };
+};
+
 export const getWaveTargetKillCount = (waveIndex: number) => {
     const band = getWaveStatBand(waveIndex);
     return Math.round(lerp(
@@ -365,19 +415,20 @@ export const getEliteSpawnChance = (waveIndex: number) => {
 };
 
 export const createSpawnEnemy = (id: number, elapsedMs: number, waveIndex: number): ChaserEnemy => {
-    const angle = ((id * 1.37) + (elapsedMs / 800)) % (Math.PI * 2);
-    const radius = FIELD_SIZE / 2 - 180;
+    const spawnSeed = id * 17 + Math.floor(elapsedMs / 350);
+    const spawnZone = getSpawnZoneForWave(spawnSeed, waveIndex, 'melee');
+    const spawnPoint = getSpawnPointFromZone(spawnZone, spawnSeed);
     const ratioBand = getRatioBand(MELEE_RATIO_BANDS, waveIndex);
     const variant = getWeightedVariant(
         MELEE_ENEMY_VARIANTS,
         (entry) => ratioBand.values[entry.enemyType] ?? 0,
-        id * 17 + Math.floor(elapsedMs / 350),
+        spawnSeed,
     );
 
     return {
         id,
-        x: FIELD_SIZE / 2 + Math.cos(angle) * radius,
-        y: FIELD_SIZE / 2 + Math.sin(angle) * radius,
+        x: spawnPoint.x,
+        y: spawnPoint.y,
         hp: variant.hp,
         maxHp: variant.hp,
         orbContactReady: true,
@@ -395,22 +446,24 @@ export const createEliteEnemy = (
     waveIndex: number,
     forcedEnemyType?: EliteEnemy['enemyType']
 ): EliteEnemy => {
-    const angle = ((id * 0.91) + (elapsedMs / 1200)) % (Math.PI * 2);
-    const radius = FIELD_SIZE / 2 - 260;
+    const spawnSeed = id * 23 + Math.floor(elapsedMs / 700);
+    const spawnZone = getSpawnZoneForWave(spawnSeed + 9, waveIndex, 'elite');
+    const spawnPoint = getSpawnPointFromZone(spawnZone, spawnSeed + 31);
     const ratioBand = getRatioBand(ELITE_RATIO_BANDS, waveIndex);
     const variant = forcedEnemyType
         ? ELITE_ENEMY_VARIANTS.find((entry) => entry.enemyType === forcedEnemyType) ?? ELITE_ENEMY_VARIANTS[0]
         : getWeightedVariant(
             ELITE_ENEMY_VARIANTS,
             (entry) => ratioBand.values[entry.enemyType] ?? 0,
-            id * 23 + Math.floor(elapsedMs / 700),
+            spawnSeed,
         );
     const initialDashReadyAtMs = elapsedMs + variant.dashCooldownMinMs + ((id * 173) % Math.max(1, variant.dashCooldownMaxMs - variant.dashCooldownMinMs));
+    const initialFacing = spawnPoint.x <= FIELD_SIZE / 2 ? 'right' : 'left';
 
     return {
         id,
-        x: FIELD_SIZE / 2 + Math.cos(angle) * radius,
-        y: FIELD_SIZE / 2 + Math.sin(angle) * radius,
+        x: spawnPoint.x,
+        y: spawnPoint.y,
         hp: variant.hp,
         maxHp: variant.hp,
         orbContactReady: true,
@@ -433,8 +486,8 @@ export const createEliteEnemy = (
         dashDirectionX: 0,
         dashDirectionY: 0,
         lastWebShotAtMs: elapsedMs,
-        renderAngleDeg: (Math.cos(angle) >= 0 ? 0 : 180),
-        facing: Math.cos(angle) >= 0 ? 'right' : 'left',
+        renderAngleDeg: initialFacing === 'right' ? 0 : 180,
+        facing: initialFacing,
     };
 };
 
@@ -444,8 +497,9 @@ export const createRangedEnemy = (
     existingEnemies: RangedEnemy[],
     waveIndex: number
 ): RangedEnemy | null => {
-    const angle = ((id * 1.11) + (elapsedMs / 1600)) % (Math.PI * 2);
-    const radius = FIELD_SIZE / 2 - 320;
+    const spawnSeed = id * 19 + Math.floor(elapsedMs / 420);
+    const spawnZone = getSpawnZoneForWave(spawnSeed + 5, waveIndex, 'ranged');
+    const spawnPoint = getSpawnPointFromZone(spawnZone, spawnSeed + 19);
     const ratioBand = getRatioBand(RANGED_RATIO_BANDS, waveIndex);
     const enemyTypeCounts = existingEnemies.reduce<Record<RangedEnemy['enemyType'], number>>(
         (counts, enemy) => {
@@ -465,13 +519,13 @@ export const createRangedEnemy = (
     const variant = getWeightedVariant(
         eligibleVariants,
         (entry) => ratioBand.values[entry.enemyType] ?? 0,
-        id * 19 + Math.floor(elapsedMs / 420),
+        spawnSeed,
     );
 
     return {
         id,
-        x: FIELD_SIZE / 2 + Math.cos(angle) * radius,
-        y: FIELD_SIZE / 2 + Math.sin(angle) * radius,
+        x: spawnPoint.x,
+        y: spawnPoint.y,
         hp: variant.hp,
         maxHp: variant.hp,
         cooldownMs: 800,
@@ -615,13 +669,102 @@ export const buildUpgradeOptions = (
     return pickRandomOptions(fullPool, Math.min(LEVEL_UP_CARD_COUNT, fullPool.length));
 };
 
-const ACTIVE_OBSTACLES_BY_TIER = Array.from({ length: 5 }, (_, index) => (
-    OBSTACLE_SET.filter((obstacle) => obstacle.stageRequired <= index + 1)
-));
+const OBSTACLE_SLOT_COUNT_BY_TIER = [
+    { min: 0, max: 1, extraChance: 0.3 },
+    { min: 1, max: 2, extraChance: 0.45 },
+    { min: 2, max: 3, extraChance: 0.55 },
+    { min: 3, max: 4, extraChance: 0.62 },
+    { min: 4, max: 5, extraChance: 0.72 },
+] as const;
 
-export const getActiveObstacles = (waveIndex: number) => (
-    ACTIVE_OBSTACLES_BY_TIER[getWaveVisualTier(waveIndex) - 1]
+const obstacleSlotsByTierCache = new Map<number, ObstacleSlot[]>();
+const activeObstaclesByWaveCache = new Map<number, Obstacle[]>();
+
+const seededUnit = (seed: number) => {
+    const value = Math.sin(seed * 12.9898) * 43758.5453;
+    return value - Math.floor(value);
+};
+
+const createWaveShuffle = <T,>(items: T[], seed: number) => {
+    const list = [...items];
+    for (let index = list.length - 1; index > 0; index -= 1) {
+        const swapIndex = Math.floor(seededUnit(seed + (index * 1.17)) * (index + 1));
+        const current = list[index];
+        list[index] = list[swapIndex];
+        list[swapIndex] = current;
+    }
+    return list;
+};
+
+export const getObstacleSlotsForWave = (waveIndex: number): ObstacleSlot[] => {
+    if (DEBUG_OBSTACLE_SLOTS_ENABLED) {
+        return OBSTACLE_SLOT_SET;
+    }
+
+    const tier = getWaveVisualTier(waveIndex);
+    const cachedSlots = obstacleSlotsByTierCache.get(tier);
+    if (cachedSlots) return cachedSlots;
+
+    const visibleSlots = OBSTACLE_SLOT_SET.filter((slot) => slot.stageRequired <= tier);
+    obstacleSlotsByTierCache.set(tier, visibleSlots);
+    return visibleSlots;
+};
+
+export const getActiveObstacles = (waveIndex: number): Obstacle[] => {
+    const cachedObstacles = activeObstaclesByWaveCache.get(waveIndex);
+    if (cachedObstacles) return cachedObstacles;
+
+    const tierIndex = getWaveVisualTier(waveIndex) - 1;
+    const tierConfig = OBSTACLE_SLOT_COUNT_BY_TIER[tierIndex];
+    const availableSlots = getObstacleSlotsForWave(waveIndex);
+
+    if (availableSlots.length === 0) {
+        const fallbackObstacles = [CASTLE_OBSTACLE];
+        activeObstaclesByWaveCache.set(waveIndex, fallbackObstacles);
+        return fallbackObstacles;
+    }
+
+    const maxCount = Math.min(tierConfig.max, availableSlots.length);
+    let desiredCount = Math.min(tierConfig.min, maxCount);
+    const additionalCapacity = maxCount - desiredCount;
+
+    for (let index = 0; index < additionalCapacity; index += 1) {
+        const extraRoll = seededUnit((waveIndex * 31.7) + (index * 3.19));
+        if (extraRoll <= tierConfig.extraChance) {
+            desiredCount += 1;
+        }
+    }
+
+    const shuffledSlots = createWaveShuffle(availableSlots, waveIndex * 17.31);
+    const activeObstacles = shuffledSlots.slice(0, desiredCount).map((slot) => ({
+        id: `wave-${waveIndex}-${slot.id}`,
+        x: slot.x,
+        y: slot.y,
+        width: slot.width,
+        height: slot.height,
+        stageRequired: slot.stageRequired,
+    }));
+    const obstacleSet = [CASTLE_OBSTACLE, ...activeObstacles];
+    activeObstaclesByWaveCache.set(waveIndex, obstacleSet);
+    return obstacleSet;
+};
+
+export const isPointInsideObstacle = (
+    pointX: number,
+    pointY: number,
+    obstacle: Pick<Obstacle, 'x' | 'y' | 'width' | 'height'>
+) => (
+    pointX >= obstacle.x
+    && pointX <= obstacle.x + obstacle.width
+    && pointY >= obstacle.y
+    && pointY <= obstacle.y + obstacle.height
 );
+
+export const isPointInsideAnyObstacle = (
+    pointX: number,
+    pointY: number,
+    obstacles: Obstacle[]
+) => obstacles.some((obstacle) => isPointInsideObstacle(pointX, pointY, obstacle));
 
 export const resolveCircleRectCollision = (
     position: Vector2,

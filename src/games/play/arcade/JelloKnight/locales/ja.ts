@@ -4,8 +4,10 @@ export default {
     closeButton: 'ジェロナイトを終了',
     joystickAriaLabel: '移動ジョイスティック',
     startTitle: 'ジェロナイト',
-    startDescription: 'アリーナで生き残り、XPとレスキューオーブを集めながら、敵ウェーブや壁、戦場の圧力が高まる中でスコアを伸ばしましょう。',
+    startDescription: '生き残ってみんなを助けよう。',
     startButton: 'スタート',
+    controlsMoveShort: '移動',
+    controlsActionShort: '自動攻撃',
     startGuides: {
         labels: {
             hud: 'HUD',
@@ -30,6 +32,7 @@ export default {
         standard: 'インプ',
         swift: 'スポア',
         heavy: 'ヘビージェリー',
+        pumpkin: 'パンプキン',
         sniper: '監視の目',
         heavyCaster: '呪いの目',
         brute: 'ティラノ',
@@ -42,7 +45,7 @@ export default {
         unlockReady: '解放',
     },
     gameOver: {
-        title: '結果',
+        title: 'ゲームオーバー',
         retryButton: 'もう一度',
         newBest: '新記録',
         records: {
@@ -50,6 +53,7 @@ export default {
             survival: '生存時間',
             coins: 'コイン',
             peakDanger: '最高ウェーブ',
+            peakWaveSurvival: '最高ウェーブ / 生存時間',
             peakDangerValue: 'ウェーブ {{tier}}',
         },
         rewards: {

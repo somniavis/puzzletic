@@ -4,8 +4,10 @@ export default {
     closeButton: 'Sair do Jello Knight',
     joystickAriaLabel: 'Joystick de movimento',
     startTitle: 'Jello Knight',
-    startDescription: 'Sobrevive à arena, recolhe XP e orbes de resgate, e continua a aumentar a tua pontuação enquanto as vagas inimigas, as paredes e a pressão do campo aumentam.',
+    startDescription: 'Sobrevive e salva todos.',
     startButton: 'Começar',
+    controlsMoveShort: 'Mover',
+    controlsActionShort: 'Ataque automático',
     startGuides: {
         labels: {
             hud: 'HUD',
@@ -30,6 +32,7 @@ export default {
         standard: 'Imp',
         swift: 'Esporo',
         heavy: 'Geleia Bruta',
+        pumpkin: 'Abóbora Maldita',
         sniper: 'Olho Vigia',
         heavyCaster: 'Olho Amaldiçoado',
         brute: 'Tirano Rex',
@@ -42,7 +45,7 @@ export default {
         unlockReady: 'Desbloquear',
     },
     gameOver: {
-        title: 'Resultados da Corrida',
+        title: 'Game Over',
         retryButton: 'Jogar Novamente',
         newBest: 'Novo Recorde',
         records: {
@@ -50,6 +53,7 @@ export default {
             survival: 'Sobrevivência',
             coins: 'Moedas',
             peakDanger: 'Onda Máxima',
+            peakWaveSurvival: 'Onda Máxima / Sobrevivência',
             peakDangerValue: 'Onda {{tier}}',
         },
         rewards: {

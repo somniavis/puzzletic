@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNurturing } from '../../../../contexts/NurturingContext';
 import { createCharacter } from '../../../../data/characters';
@@ -39,20 +39,22 @@ export const JelloKnight: React.FC<GameComponentProps> = ({ onExit }) => {
         return character;
     }, [characterName, gt, safeEvolutionStage, safeSpeciesId]);
 
-    const [lastRunWasBestFlag, setLastRunWasBestFlag] = React.useState(false);
+    const game = useJelloKnightGame({ gt });
+    const rewardGrantedRef = useRef(false);
     const rewards = useMemo(
-        () => calculatePlayArcadeReward(safeEvolutionStage, lastRunWasBestFlag),
-        [lastRunWasBestFlag, safeEvolutionStage]
+        () => calculatePlayArcadeReward(safeEvolutionStage, game.lastRunWasBest),
+        [game.lastRunWasBest, safeEvolutionStage]
     );
 
-    const game = useJelloKnightGame({
-        addRewards,
-        gt,
-        rewards,
-        onReward: (wasBest) => {
-            setLastRunWasBestFlag(wasBest);
-        },
-    });
+    useEffect(() => {
+        if (game.gamePhase !== 'gameOver') {
+            rewardGrantedRef.current = false;
+            return;
+        }
+        if (rewardGrantedRef.current) return;
+        rewardGrantedRef.current = true;
+        addRewards(rewards.xp, rewards.gro);
+    }, [addRewards, game.gamePhase, rewards.gro, rewards.xp]);
 
     usePreventArcadeBrowserGestures({
         rootRef: game.rootRef,
@@ -79,6 +81,7 @@ export const JelloKnight: React.FC<GameComponentProps> = ({ onExit }) => {
 
             <JelloKnightField
                 activeObstacles={game.activeObstacles}
+                obstacleSlots={game.obstacleSlots}
                 announcement={game.announcement}
                 bombBlasts={game.bombBlasts}
                 bombRadius={game.bombRadius}

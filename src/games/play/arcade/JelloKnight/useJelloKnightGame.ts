@@ -81,6 +81,7 @@ import {
     createRangedEnemy,
     createSpawnEnemy,
     getActiveObstacles,
+    getObstacleSlotsForWave,
     getCameraPositionFromViewport,
     getEnemyMaxCount,
     getEnemySpawnInterval,
@@ -92,6 +93,7 @@ import {
     getWaveTargetKillCount,
     getWaveVisualTier,
     getXpToNextLevel,
+    isPointInsideAnyObstacle,
     moveCircleWithObstacleSlide,
     normalizeVector,
     resolveCircleCircleSeparation,
@@ -125,6 +127,7 @@ import type {
     JelloKnightHudState,
     JelloKnightPhaseOverlay,
     Obstacle,
+    ObstacleSlot,
     PickupRenderItem,
     RangedEnemy,
     RangedEnemyRenderItem,
@@ -141,15 +144,9 @@ import type {
 } from './types';
 
 export const useJelloKnightGame = ({
-    addRewards,
     gt,
-    onReward,
-    rewards,
 }: {
-    addRewards: (xp: number, gro: number) => void;
     gt: (key: string, values?: Record<string, string | number>) => string;
-    onReward: (wasBest: boolean, score: number, elapsedMs: number) => void;
-    rewards: { xp: number; gro: number };
 }) => {
     const isWithinRadius = (
         ax: number,
@@ -175,7 +172,6 @@ export const useJelloKnightGame = ({
     const lastVisualSyncTimeRef = useRef<number>(0);
     const lastPlayerVisualSyncTimeRef = useRef<number>(0);
     const stageViewportSizeRef = useRef<{ width: number; height: number }>({ width: 0, height: 0 });
-    const rewardGrantedRef = useRef(false);
     const joystickPointerIdRef = useRef<number | null>(null);
     const keyboardInputRef = useRef({ up: false, down: false, left: false, right: false });
     const joystickInputRef = useRef<Vector2>({ x: 0, y: 0 });
@@ -223,7 +219,9 @@ export const useJelloKnightGame = ({
     const lastEliteContactDamageTimeRef = useRef<number>(-CONTACT_DAMAGE_COOLDOWN_MS);
     const lastProjectileDamageTimeRef = useRef<number>(-CONTACT_DAMAGE_COOLDOWN_MS);
     const lastAnnouncedWaveRef = useRef<number>(0);
-    const lastObstacleTierRef = useRef<number>(0);
+    const lastObstacleWaveRef = useRef<number>(0);
+    const activeObstaclesRef = useRef<Obstacle[]>(getActiveObstacles(1));
+    const obstacleSlotsRef = useRef<ObstacleSlot[]>(getObstacleSlotsForWave(1));
     const lastRangedAnnouncementAtRef = useRef<number>(-RANGED_ENEMY_SPAWN_INTERVAL_MS);
     const announcementExpiresAtRef = useRef<number>(0);
     const damageFlashUntilRef = useRef<number>(0);
@@ -269,7 +267,8 @@ export const useJelloKnightGame = ({
     const [bombDamage, setBombDamage] = useState<number>(BOMB_BASE_DAMAGE);
     const [bombRadius, setBombRadius] = useState<number>(BOMB_BASE_RADIUS);
     const [, setUpgradeLevels] = useState<UpgradeLevels>(createInitialUpgradeLevels());
-    const [activeObstacles, setActiveObstacles] = useState<Obstacle[]>([]);
+    const [activeObstacles, setActiveObstacles] = useState<Obstacle[]>(activeObstaclesRef.current);
+    const [obstacleSlots, setObstacleSlots] = useState<ObstacleSlot[]>(obstacleSlotsRef.current);
     const [spawnSignals, setSpawnSignals] = useState<SpawnSignal[]>([]);
     const [announcement, setAnnouncement] = useState<JelloKnightAnnouncement | null>(null);
     const [damageFlashOpacity, setDamageFlashOpacity] = useState(0);
@@ -297,16 +296,6 @@ export const useJelloKnightGame = ({
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
-    useEffect(() => {
-        if (gamePhase !== 'gameOver') {
-            rewardGrantedRef.current = false;
-            return;
-        }
-        if (rewardGrantedRef.current) return;
-        rewardGrantedRef.current = true;
-        addRewards(rewards.xp, rewards.gro);
-    }, [addRewards, gamePhase, rewards.gro, rewards.xp]);
-
     const resetJoystick = useCallback(() => {
         joystickPointerIdRef.current = null;
         joystickInputRef.current = { x: 0, y: 0 };
@@ -319,7 +308,6 @@ export const useJelloKnightGame = ({
     );
 
     const resetRunRefs = useCallback(() => {
-        rewardGrantedRef.current = false;
         runStartTimeRef.current = null;
         pauseStartedAtRef.current = null;
         accumulatedPauseMsRef.current = 0;
@@ -357,7 +345,9 @@ export const useJelloKnightGame = ({
         lastEliteContactDamageTimeRef.current = -CONTACT_DAMAGE_COOLDOWN_MS;
         lastProjectileDamageTimeRef.current = -CONTACT_DAMAGE_COOLDOWN_MS;
         lastAnnouncedWaveRef.current = 0;
-        lastObstacleTierRef.current = 0;
+        lastObstacleWaveRef.current = 0;
+        activeObstaclesRef.current = getActiveObstacles(1);
+        obstacleSlotsRef.current = getObstacleSlotsForWave(1);
         lastRangedAnnouncementAtRef.current = -RANGED_ENEMY_SPAWN_INTERVAL_MS;
         announcementExpiresAtRef.current = 0;
         damageFlashUntilRef.current = 0;
@@ -421,7 +411,8 @@ export const useJelloKnightGame = ({
         setBombDamage(BOMB_BASE_DAMAGE);
         setBombRadius(BOMB_RADIUS_LEVELS[0]);
         setUpgradeLevels(createInitialUpgradeLevels());
-        setActiveObstacles([]);
+        setActiveObstacles(activeObstaclesRef.current);
+        setObstacleSlots(obstacleSlotsRef.current);
         setSpawnSignals([]);
         setAnnouncement(null);
         setDamageFlashOpacity(0);
@@ -441,8 +432,7 @@ export const useJelloKnightGame = ({
         setLastRunWasBest(isBest);
         setBestScore((currentBest) => Math.max(currentBest, finalScore));
         setBestTimeMs((currentBest) => Math.max(currentBest, finalElapsedMs));
-        onReward(isBest, finalScore, finalElapsedMs);
-    }, [bestScore, onReward, resetJoystick]);
+    }, [bestScore, resetJoystick]);
 
     useEffect(() => {
         if (gamePhase !== 'playing') {
@@ -546,7 +536,6 @@ export const useJelloKnightGame = ({
             shouldSyncVisuals,
             waveIndex,
             waveVisualTier,
-            activeObstacleSet,
             combinedVector,
             activeStrength,
         }: {
@@ -558,7 +547,6 @@ export const useJelloKnightGame = ({
             shouldSyncVisuals: boolean;
             waveIndex: number;
             waveVisualTier: number;
-            activeObstacleSet: Obstacle[];
             combinedVector: Vector2;
             activeStrength: number;
         }) => {
@@ -579,10 +567,6 @@ export const useJelloKnightGame = ({
                     dangerTier: waveVisualTier,
                     level: levelRef.current,
                 });
-                if (waveVisualTier !== lastObstacleTierRef.current) {
-                    lastObstacleTierRef.current = waveVisualTier;
-                    setActiveObstacles(activeObstacleSet);
-                }
                 const nextEnemySnapshot = buildEnemyRenderSnapshot(enemiesRef.current, enemyRenderSnapshotRef.current);
                 if (nextEnemySnapshot !== enemyRenderSnapshotRef.current) {
                     enemyRenderSnapshotRef.current = nextEnemySnapshot;
@@ -1287,7 +1271,14 @@ export const useJelloKnightGame = ({
             const waveIndex = waveIndexRef.current;
             const isWaveTransitioning = nextWaveAdvanceAtMsRef.current !== null;
             const waveVisualTier = getWaveVisualTier(waveIndex);
-            const activeObstacleSet = getActiveObstacles(waveIndex);
+            if (waveIndex !== lastObstacleWaveRef.current) {
+                lastObstacleWaveRef.current = waveIndex;
+                activeObstaclesRef.current = getActiveObstacles(waveIndex);
+                obstacleSlotsRef.current = getObstacleSlotsForWave(waveIndex);
+                setActiveObstacles(activeObstaclesRef.current);
+                setObstacleSlots(obstacleSlotsRef.current);
+            }
+            const activeObstacleSet = activeObstaclesRef.current;
             const enemySpawnInterval = getEnemySpawnInterval(waveIndex);
             const enemyMaxCount = getEnemyMaxCount(waveIndex);
             const enemySpeedBonus = getEnemySpeedBonus(waveIndex);
@@ -1616,12 +1607,11 @@ export const useJelloKnightGame = ({
                     continue;
                 }
 
-                const hitsObstacle = activeObstacleSet.some((obstacle) => (
-                    movedProjectile.x >= obstacle.x
-                    && movedProjectile.x <= obstacle.x + obstacle.width
-                    && movedProjectile.y >= obstacle.y
-                    && movedProjectile.y <= obstacle.y + obstacle.height
-                ));
+                const hitsObstacle = isPointInsideAnyObstacle(
+                    movedProjectile.x,
+                    movedProjectile.y,
+                    activeObstacleSet
+                );
                 if (hitsObstacle) continue;
 
                 if (
@@ -1692,7 +1682,6 @@ export const useJelloKnightGame = ({
                 shouldSyncVisuals,
                 waveIndex,
                 waveVisualTier,
-                activeObstacleSet,
                 combinedVector,
                 activeStrength,
             });
@@ -1872,6 +1861,7 @@ export const useJelloKnightGame = ({
 
     return {
         activeObstacles,
+        obstacleSlots,
         announcement,
         bestScore,
         bestTimeMs,

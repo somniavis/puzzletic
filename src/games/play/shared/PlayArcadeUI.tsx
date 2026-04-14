@@ -150,6 +150,7 @@ export type PlayArcadeRecord = {
     highlighted?: boolean;
     badgeText?: string;
     tone?: 'default' | 'secondary';
+    className?: string;
 };
 
 export type PlayArcadeReward = {
@@ -189,6 +190,7 @@ export const PlayArcadeGameOverOverlay: React.FC<PlayArcadeGameOverOverlayProps>
                             'play-arcade-game__record',
                             record.tone === 'secondary' ? 'play-arcade-game__record--secondary' : '',
                             record.highlighted ? 'play-arcade-game__record--highlight' : '',
+                            record.className ?? '',
                         ].filter(Boolean).join(' ')}
                     >
                         {record.highlighted && record.badgeText && (
