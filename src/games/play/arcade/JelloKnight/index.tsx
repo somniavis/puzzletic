@@ -111,31 +111,34 @@ export const JelloKnight: React.FC<GameComponentProps> = ({ onExit }) => {
                 spawnSignals={game.spawnSignals}
                 stageMoodStyle={game.stageMoodStyle}
                 stageRef={game.stageRef}
+                overlayContent={(
+                    <>
+                        {game.gamePhase === 'start' && <JelloKnightStartOverlay gt={gt} onStart={game.startRun} />}
+                        {game.gamePhase === 'levelUp' && (
+                            <JelloKnightLevelUpOverlay
+                                gt={gt}
+                                options={game.upgradeOptions}
+                                onSelect={game.handleUpgradeSelect}
+                            />
+                        )}
+                        {game.gamePhase === 'gameOver' && (
+                            <JelloKnightGameOverOverlay
+                                bestScore={game.bestScore}
+                                bestTimeMs={game.bestTimeMs}
+                                wave={game.hudState.wave}
+                                elapsedMs={game.hudState.elapsedMs}
+                                gt={gt}
+                                lastRunWasBest={game.lastRunWasBest}
+                                onRetry={game.startRun}
+                                rewards={rewards}
+                                score={game.hudState.score}
+                            />
+                        )}
+                    </>
+                )}
                 webZones={game.webZones}
                 xpPickups={game.xpPickups}
             />
-
-            {game.gamePhase === 'start' && <JelloKnightStartOverlay gt={gt} onStart={game.startRun} />}
-            {game.gamePhase === 'levelUp' && (
-                <JelloKnightLevelUpOverlay
-                    gt={gt}
-                    options={game.upgradeOptions}
-                    onSelect={game.handleUpgradeSelect}
-                />
-            )}
-            {game.gamePhase === 'gameOver' && (
-                <JelloKnightGameOverOverlay
-                    bestScore={game.bestScore}
-                    bestTimeMs={game.bestTimeMs}
-                    wave={game.hudState.wave}
-                    elapsedMs={game.hudState.elapsedMs}
-                    gt={gt}
-                    lastRunWasBest={game.lastRunWasBest}
-                    onRetry={game.startRun}
-                    rewards={rewards}
-                    score={game.hudState.score}
-                />
-            )}
         </div>
     );
 };

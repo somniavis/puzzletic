@@ -485,6 +485,7 @@ type FieldProps = {
     spawnSignals: SpawnSignal[];
     stageMoodStyle: React.CSSProperties;
     stageRef: React.RefObject<HTMLDivElement | null>;
+    overlayContent?: React.ReactNode;
     webZones: WebZoneRenderItem[];
     xpPickups: PickupRenderItem[];
 };
@@ -718,6 +719,7 @@ export const JelloKnightField: React.FC<FieldProps> = ({
     spawnSignals,
     stageMoodStyle,
     stageRef,
+    overlayContent,
     webZones,
     xpPickups,
 }) => (
@@ -770,6 +772,7 @@ export const JelloKnightField: React.FC<FieldProps> = ({
                         <strong>{announcement.detail}</strong>
                     </div>
                 )}
+                {overlayContent}
             </div>
 
             <div

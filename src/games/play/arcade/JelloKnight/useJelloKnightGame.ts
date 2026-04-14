@@ -87,6 +87,7 @@ import {
     getEnemySpawnInterval,
     getEnemySpeedBonus,
     getEliteSpawnChance,
+    getSpreadPursuitVector,
     getVectorLength,
     getRangedMaxCount,
     getRangedSpawnChance,
@@ -876,7 +877,11 @@ export const useJelloKnightGame = ({
             const nextEnemies: ChaserEnemy[] = [];
 
             for (const enemy of enemiesRef.current) {
-                const toPlayer = normalizeVector({ x: nextPosition.x - enemy.x, y: nextPosition.y - enemy.y });
+                const toPlayer = getSpreadPursuitVector({
+                    origin: enemy,
+                    target: nextPosition,
+                    pursuitOffset: enemy.pursuitOffset,
+                });
                 const enemyMoveSpeed = enemy.baseSpeed + enemySpeedBonus;
                 const movedEnemy = {
                     ...enemy,
@@ -955,11 +960,12 @@ export const useJelloKnightGame = ({
                 const toPlayerRaw = { x: nextPosition.x - enemy.x, y: nextPosition.y - enemy.y };
                 const distanceToPlayerSq = (toPlayerRaw.x * toPlayerRaw.x) + (toPlayerRaw.y * toPlayerRaw.y);
                 const distanceToPlayer = Math.sqrt(distanceToPlayerSq);
-                const inverseDistance = distanceToPlayer > 0 ? 1 / distanceToPlayer : 0;
-                const toPlayer = {
-                    x: toPlayerRaw.x * inverseDistance,
-                    y: toPlayerRaw.y * inverseDistance,
-                };
+                const toPlayer = getSpreadPursuitVector({
+                    origin: enemy,
+                    target: nextPosition,
+                    pursuitOffset: enemy.pursuitOffset,
+                    settleRadius: 180,
+                });
                 const shouldAdvance = distanceToPlayer > enemy.fireRange * 0.82;
                 const movedRangedEnemy = {
                     ...enemy,
@@ -1062,7 +1068,12 @@ export const useJelloKnightGame = ({
             if (!eliteEnemyRef.current) return;
 
             const currentElite = eliteEnemyRef.current;
-            const toPlayer = normalizeVector({ x: nextPosition.x - currentElite.x, y: nextPosition.y - currentElite.y });
+            const toPlayer = getSpreadPursuitVector({
+                origin: currentElite,
+                target: nextPosition,
+                pursuitOffset: currentElite.pursuitOffset,
+                settleRadius: 170,
+            });
             const usesDashPattern = currentElite.enemyType !== 'weaver';
             const isDashing = usesDashPattern && currentElite.dashUntilMs !== null && elapsedMs < currentElite.dashUntilMs;
             const isInWindup = usesDashPattern && currentElite.dashWindupUntilMs !== null && elapsedMs < currentElite.dashWindupUntilMs;

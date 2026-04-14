@@ -122,6 +122,50 @@ export const normalizeVector = (vector: Vector2) => {
     return { x: vector.x / length, y: vector.y / length };
 };
 
+export const getSpreadPursuitVector = ({
+    origin,
+    target,
+    pursuitOffset,
+    settleRadius = 140,
+}: {
+    origin: Vector2;
+    target: Vector2;
+    pursuitOffset: number;
+    settleRadius?: number;
+}) => {
+    const toTarget = {
+        x: target.x - origin.x,
+        y: target.y - origin.y,
+    };
+    const distance = getVectorLength(toTarget);
+    if (distance === 0) return { x: 0, y: 0 };
+
+    const forward = {
+        x: toTarget.x / distance,
+        y: toTarget.y / distance,
+    };
+    const perpendicular = {
+        x: -forward.y,
+        y: forward.x,
+    };
+    const spreadWeight = clamp((distance - settleRadius) / 260, 0, 1);
+    const desiredTarget = {
+        x: target.x + (perpendicular.x * pursuitOffset * spreadWeight),
+        y: target.y + (perpendicular.y * pursuitOffset * spreadWeight),
+    };
+
+    return normalizeVector({
+        x: desiredTarget.x - origin.x,
+        y: desiredTarget.y - origin.y,
+    });
+};
+
+const getSpawnPursuitOffset = (seed: number, magnitude: number) => {
+    const lane = (seed % 5) - 2;
+    const jitter = (seededUnit((seed * 1.73) + 9.1) - 0.5) * magnitude * 0.32;
+    return (lane * magnitude * 0.42) + jitter;
+};
+
 export const formatRunClock = (elapsedMs: number) => {
     const totalSeconds = Math.floor(elapsedMs / 1000);
     const minutes = Math.floor(totalSeconds / 60);
@@ -437,6 +481,7 @@ export const createSpawnEnemy = (id: number, elapsedMs: number, waveIndex: numbe
         baseSpeed: variant.baseSpeed,
         contactDamage: variant.contactDamage,
         sizeScale: variant.sizeScale,
+        pursuitOffset: getSpawnPursuitOffset(spawnSeed, 48),
     };
 };
 
@@ -488,6 +533,7 @@ export const createEliteEnemy = (
         lastWebShotAtMs: elapsedMs,
         renderAngleDeg: initialFacing === 'right' ? 0 : 180,
         facing: initialFacing,
+        pursuitOffset: getSpawnPursuitOffset(spawnSeed, 64),
     };
 };
 
@@ -539,6 +585,7 @@ export const createRangedEnemy = (
         projectileSpeed: variant.projectileSpeed,
         projectileDamage: variant.projectileDamage,
         xpValue: variant.xpValue,
+        pursuitOffset: getSpawnPursuitOffset(spawnSeed, 58),
     };
 };
 

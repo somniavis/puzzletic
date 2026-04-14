@@ -22,6 +22,7 @@ export type ChaserEnemy = {
     baseSpeed: number;
     contactDamage: number;
     sizeScale: number;
+    pursuitOffset: number;
 };
 
 export type RangedEnemy = {
@@ -41,6 +42,7 @@ export type RangedEnemy = {
     projectileSpeed: number;
     projectileDamage: number;
     xpValue: number;
+    pursuitOffset: number;
 };
 
 export type XpPickup = {
@@ -84,6 +86,7 @@ export type EliteEnemy = {
     renderAngleDeg: number;
     facing: 'left' | 'right';
     emojiBaseFacing: 'left' | 'right';
+    pursuitOffset: number;
 };
 
 export type WebZone = {
