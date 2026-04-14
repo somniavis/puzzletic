@@ -1,5 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import './TermsOfServicePage.css';
 
 type Locale = 'en' | 'ko';
@@ -1133,6 +1134,7 @@ const koreanSections: TermsSection[] = [
 
 export const TermsOfServicePage: React.FC = () => {
     const { i18n } = useTranslation();
+    const navigate = useNavigate();
     const [locale, setLocale] = React.useState<Locale>(() => getDefaultLegalLocale(i18n.resolvedLanguage || i18n.language));
 
     const sections = locale === 'ko' ? koreanSections : englishSections;
@@ -1142,6 +1144,16 @@ export const TermsOfServicePage: React.FC = () => {
         locale === 'ko'
             ? '이 코드베이스 기준 마지막 반영일: 2026년 4월 15일'
             : 'Last translated and published in this codebase on April 15, 2026.';
+    const closeLabel = locale === 'ko' ? '닫기' : 'Close';
+
+    const handleClose = React.useCallback(() => {
+        if (window.history.length > 1) {
+            navigate(-1);
+            return;
+        }
+
+        navigate('/');
+    }, [navigate]);
 
     return (
         <div className="terms-page">
@@ -1153,19 +1165,27 @@ export const TermsOfServicePage: React.FC = () => {
                             <h1>{title}</h1>
                         </div>
 
-                        <label className="terms-page__language-picker">
-                            <span className="terms-page__language-label">
-                                {locale === 'ko' ? '언어' : 'Language'}
-                            </span>
-                            <select
-                                aria-label={locale === 'ko' ? '언어 선택' : 'Select language'}
-                                value={locale}
-                                onChange={(event) => setLocale(event.target.value as Locale)}
+                        <div className="terms-page__actions">
+                            <label className="terms-page__language-picker">
+                                <select
+                                    aria-label={locale === 'ko' ? '언어 선택' : 'Select language'}
+                                    value={locale}
+                                    onChange={(event) => setLocale(event.target.value as Locale)}
+                                >
+                                    <option value="en">English</option>
+                                    <option value="ko">한국어</option>
+                                </select>
+                            </label>
+
+                            <button
+                                type="button"
+                                className="terms-page__close"
+                                onClick={handleClose}
+                                aria-label={closeLabel}
                             >
-                                <option value="en">English</option>
-                                <option value="ko">한국어</option>
-                            </select>
-                        </label>
+                                ×
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
