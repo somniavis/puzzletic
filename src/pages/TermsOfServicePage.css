@@ -84,10 +84,17 @@
 
 .terms-page__language-picker select {
     min-width: 132px;
-    padding: 10px 36px 10px 12px;
+    padding: 10px 42px 10px 12px;
     border: 1px solid rgba(36, 49, 39, 0.18);
     border-radius: 8px;
-    background: rgba(255, 255, 255, 0.92);
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-color: rgba(255, 255, 255, 0.92);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='none' stroke='%23243127' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.75' d='M1 1.25 6 6.25l5-5'/%3E%3C/svg%3E");
+    background-position: right 14px center;
+    background-repeat: no-repeat;
+    background-size: 12px 8px;
     color: #243127;
     font-size: 0.95rem;
     font-weight: 600;
