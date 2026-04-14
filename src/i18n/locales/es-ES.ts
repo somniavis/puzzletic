@@ -1255,6 +1255,11 @@ export const esES = {
       passwordMismatch: 'Las contraseñas no coinciden.',
       success: '¡Registro completado!',
       action: 'Crear cuenta', // Explicit action key
+      consentPrefix: 'Al registrarte, aceptas los ',
+      termsLink: 'Términos del Servicio',
+      privacyLink: 'la Política de Privacidad',
+      consentConnector: ' y ',
+      consentSuffix: '.',
     },
     errors: {
       default: 'Error al iniciar sesión.',

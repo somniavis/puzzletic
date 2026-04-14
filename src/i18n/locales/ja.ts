@@ -2000,6 +2000,11 @@ const jaBase = {
             passwordMismatch: 'パスワードが一致しません。',
             success: '登録が完了しました！',
             action: '新規登録', // Explicit action key
+            consentPrefix: '',
+            termsLink: '利用規約',
+            privacyLink: 'プライバシーポリシー',
+            consentConnector: 'および',
+            consentSuffix: 'に同意します。',
         },
         errors: {
             default: 'ログインに失敗しました。',

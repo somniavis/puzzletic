@@ -1255,6 +1255,11 @@ export const frFR = {
       passwordMismatch: 'Les mots de passe ne correspondent pas.',
       success: 'Inscription réussie !',
       action: 'Inscription', // Explicit action key
+      consentPrefix: "En vous inscrivant, vous acceptez les ",
+      termsLink: "Conditions d'utilisation",
+      privacyLink: 'la Politique de confidentialité',
+      consentConnector: ' et ',
+      consentSuffix: '.',
     },
     errors: {
       default: 'Échec de connexion.',

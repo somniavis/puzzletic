@@ -1255,6 +1255,11 @@ export const idID = {
       passwordMismatch: 'Kata sandi tidak cocok.',
       success: 'Pendaftaran berhasil!',
       action: 'Daftar', // Explicit action key
+      consentPrefix: 'Dengan mendaftar, Anda menyetujui ',
+      termsLink: 'Ketentuan Layanan',
+      privacyLink: 'Kebijakan Privasi',
+      consentConnector: ' dan ',
+      consentSuffix: '.',
     },
     errors: {
       default: 'Gagal masuk.',

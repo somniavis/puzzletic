@@ -1255,6 +1255,11 @@ export const enUK = {
       passwordMismatch: 'Passwords do not match.',
       success: 'Sign up successful!',
       action: 'Sign Up', // Explicit action key
+      consentPrefix: 'By signing up, you agree to the ',
+      termsLink: 'Terms of Service',
+      privacyLink: 'Privacy Policy',
+      consentConnector: ' and ',
+      consentSuffix: '.',
     },
     errors: {
       default: 'Login failed.',

@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import './TermsOfServicePage.css';
 
 type Locale = 'en' | 'ko';
@@ -8,6 +9,9 @@ type TermsSection = {
     title: string;
     content: React.ReactNode;
 };
+
+const getDefaultLegalLocale = (language: string | undefined): Locale =>
+    language?.toLowerCase().startsWith('ko') ? 'ko' : 'en';
 
 const englishSections: TermsSection[] = [
     {
@@ -1128,7 +1132,8 @@ const koreanSections: TermsSection[] = [
 ];
 
 export const TermsOfServicePage: React.FC = () => {
-    const [locale, setLocale] = React.useState<Locale>('en');
+    const { i18n } = useTranslation();
+    const [locale, setLocale] = React.useState<Locale>(() => getDefaultLegalLocale(i18n.resolvedLanguage || i18n.language));
 
     const sections = locale === 'ko' ? koreanSections : englishSections;
     const eyebrow = locale === 'ko' ? 'GroGroJello 법률' : 'GroGroJello Legal';

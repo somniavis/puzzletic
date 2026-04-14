@@ -1255,6 +1255,11 @@ export const ptPT = {
       passwordMismatch: 'As palavras-passe não coincidem.',
       success: 'Registo concluído com sucesso!',
       action: 'Registar', // Explicit action key
+      consentPrefix: 'Ao registar-se, concorda com os ',
+      termsLink: 'Termos de Serviço',
+      privacyLink: 'a Política de Privacidade',
+      consentConnector: ' e ',
+      consentSuffix: '.',
     },
     errors: {
       default: 'Falha no início de sessão.',

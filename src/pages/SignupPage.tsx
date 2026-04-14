@@ -8,7 +8,7 @@ import { createUserWithEmailAndPassword, getRedirectResult, signInWithPopup, sig
 import { loadNurturingState, saveNurturingState, getStorageKey } from '../services/persistenceService';
 import { migrateGuestToCloud } from '../services/syncService';
 
-import { useNavigate, useLocation } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 
 export const SignupPage: React.FC = () => {
     const navigate = useNavigate();
@@ -306,6 +306,13 @@ export const SignupPage: React.FC = () => {
                     <button type="submit" className="auth-btn auth-btn--primary" disabled={loading || isSubmitting} style={{ width: '100%' }}>
                         {isSubmitting ? t('auth.signing_up') : t('auth.signup.action')}
                     </button>
+                    <p className="auth-consent-text">
+                        {t('auth.signup.consentPrefix')}
+                        <Link to="/terms" className="auth-consent-link">{t('auth.signup.termsLink')}</Link>
+                        {t('auth.signup.consentConnector')}
+                        <Link to="/privacy" className="auth-consent-link">{t('auth.signup.privacyLink')}</Link>
+                        {t('auth.signup.consentSuffix')}
+                    </p>
                     {errors.general && <p className="form-error form-error--general">{errors.general}</p>}
                 </form>
 

@@ -1781,6 +1781,11 @@ export const viVN = {
       passwordMismatch: 'Mật khẩu không khớp.',
       success: 'Đăng ký thành công!',
       action: 'Đăng ký',
+      consentPrefix: 'Bằng việc đăng ký, bạn đồng ý với ',
+      termsLink: 'Điều khoản Dịch vụ',
+      privacyLink: 'Chính sách Quyền riêng tư',
+      consentConnector: ' và ',
+      consentSuffix: '.',
     },
     errors: {
       default: 'Đăng nhập thất bại.',

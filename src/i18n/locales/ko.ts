@@ -1257,6 +1257,11 @@ const koBase = {
             passwordMismatch: '비밀번호가 일치하지 않습니다.',
             success: '회원가입이 완료되었습니다!',
             action: '회원가입', // Explicit action key
+            consentPrefix: '',
+            termsLink: '이용약관',
+            privacyLink: '개인정보 취급방침',
+            consentConnector: ' 및 ',
+            consentSuffix: '에 동의합니다.',
         },
         errors: {
             default: '로그인에 실패했습니다.',

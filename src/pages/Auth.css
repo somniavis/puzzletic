@@ -139,6 +139,26 @@
     color: #6f3410;
 }
 
+.auth-consent-text {
+    margin: -0.2rem 0 0;
+    text-align: center;
+    font-size: 0.82rem;
+    line-height: 1.5;
+    color: #6d4e3f;
+    font-weight: 600;
+}
+
+.auth-consent-link {
+    color: #8B4513;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    font-weight: 800;
+}
+
+.auth-consent-link:hover {
+    color: #6f3410;
+}
+
 .signup-login-btn {
     min-width: 104px;
     height: 44px;
