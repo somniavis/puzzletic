@@ -139,6 +139,15 @@ export type SpawnSignal = {
     expiresAtMs: number;
 };
 
+export type DeathBurst = {
+    id: number;
+    x: number;
+    y: number;
+    emoji: string;
+    sizeScale: number;
+    expiresAtMs: number;
+};
+
 export type ObstacleSlot = {
     id: string;
     x: number;

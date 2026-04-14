@@ -25,6 +25,7 @@ import { formatRunClock } from './helpers';
 import type {
     BombBlast,
     BombStrike,
+    DeathBurst,
     EliteRenderItem,
     EnemyRenderItem,
     FencePost,
@@ -460,6 +461,7 @@ type FieldProps = {
     bombBlasts: BombBlast[];
     bombRadius: number;
     bombStrikes: BombStrike[];
+    deathBursts: DeathBurst[];
     controlsRef: React.RefObject<HTMLDivElement | null>;
     damageFlashOpacity: number;
     elapsedMs: number;
@@ -541,6 +543,7 @@ type CombatLayerProps = {
     bombBlasts: BombBlast[];
     bombRadius: number;
     bombStrikes: BombStrike[];
+    deathBursts: DeathBurst[];
     spawnSignals: SpawnSignal[];
     webZones: WebZoneRenderItem[];
     xpPickups: PickupRenderItem[];
@@ -616,6 +619,27 @@ const SpawnSignalLayer = React.memo<{ spawnSignals: SpawnSignal[] }>(({ spawnSig
     </>
 ));
 
+const DeathBurstNode = React.memo<{ burst: DeathBurst }>(({ burst }) => (
+    <div
+        className="jello-knight__death-burst"
+        style={{
+            ...toPositionStyle(burst.x, burst.y),
+            ['--jello-knight-death-burst-scale' as string]: `${burst.sizeScale}`,
+        }}
+        aria-hidden="true"
+    >
+        <span className="jello-knight__death-burst-ring" />
+        <span className="jello-knight__death-burst-emoji jello-knight__death-burst-emoji--shadow">{burst.emoji}</span>
+        <span className="jello-knight__death-burst-emoji">{burst.emoji}</span>
+    </div>
+));
+
+const DeathBurstLayer = React.memo<{ deathBursts: DeathBurst[] }>(({ deathBursts }) => (
+    <>
+        {deathBursts.map((burst) => <DeathBurstNode key={burst.id} burst={burst} />)}
+    </>
+));
+
 const PickupLayer = React.memo<{ xpPickups: PickupRenderItem[] }>(({ xpPickups }) => (
     <>
         {xpPickups.map((pickup) => <PickupNode key={pickup.id} pickup={pickup} />)}
@@ -626,6 +650,7 @@ const CombatLayer = React.memo<CombatLayerProps>(({
     bombBlasts,
     bombRadius,
     bombStrikes,
+    deathBursts,
     elapsedMs,
     eliteEnemy,
     enemies,
@@ -646,6 +671,7 @@ const CombatLayer = React.memo<CombatLayerProps>(({
         <OrbitLayer orbitPalette={orbitPalette} orbitPositions={orbitPositions} />
         <BombStrikeLayer bombRadius={bombRadius} bombStrikes={bombStrikes} elapsedMs={elapsedMs} />
         <BombBlastLayer bombBlasts={bombBlasts} />
+        <DeathBurstLayer deathBursts={deathBursts} />
         <SpawnSignalLayer spawnSignals={spawnSignals} />
         <PickupLayer xpPickups={xpPickups} />
     </>
@@ -694,6 +720,7 @@ export const JelloKnightField: React.FC<FieldProps> = ({
     bombBlasts,
     bombRadius,
     bombStrikes,
+    deathBursts,
     controlsRef,
     damageFlashOpacity,
     elapsedMs,
@@ -733,6 +760,7 @@ export const JelloKnightField: React.FC<FieldProps> = ({
                         bombBlasts={bombBlasts}
                         bombRadius={bombRadius}
                         bombStrikes={bombStrikes}
+                        deathBursts={deathBursts}
                         elapsedMs={elapsedMs}
                         eliteEnemy={eliteEnemy}
                         enemies={enemies}

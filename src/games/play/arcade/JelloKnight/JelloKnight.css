@@ -991,6 +991,44 @@
     box-shadow: 0 0 0 12px rgba(210, 110, 255, 0.1);
 }
 
+.jello-knight__death-burst {
+    position: absolute;
+    width: 56px;
+    height: 56px;
+    margin-left: -28px;
+    margin-top: -28px;
+    display: grid;
+    place-items: center;
+    pointer-events: none;
+    z-index: 2;
+    animation: jello-knight-death-burst 0.38s ease-out forwards;
+    transform-origin: center center;
+}
+
+.jello-knight__death-burst > * {
+    grid-area: 1 / 1;
+}
+
+.jello-knight__death-burst-ring {
+    width: calc(26px * var(--jello-knight-death-burst-scale, 1));
+    height: calc(26px * var(--jello-knight-death-burst-scale, 1));
+    border-radius: 50%;
+    border: 2px solid rgba(255, 245, 208, 0.78);
+    box-shadow: 0 0 0 6px rgba(255, 238, 162, 0.18);
+}
+
+.jello-knight__death-burst-emoji {
+    font-size: calc(28px * var(--jello-knight-death-burst-scale, 1));
+    line-height: 1;
+    filter: drop-shadow(0 3px 5px rgba(30, 22, 11, 0.16));
+}
+
+.jello-knight__death-burst-emoji--shadow {
+    transform: translate(1px, 1px);
+    filter: brightness(0.55) saturate(0.4);
+    opacity: 0.34;
+}
+
 .jello-knight__web-zone {
     position: absolute;
     pointer-events: none;
@@ -1276,7 +1314,7 @@
 .jello-knight__overlay {
     position: absolute;
     inset: 0;
-    z-index: 3;
+    z-index: 6;
     pointer-events: none;
 }
 
@@ -2053,6 +2091,21 @@
     100% {
         opacity: 0;
         transform: scale(1.08);
+    }
+}
+
+@keyframes jello-knight-death-burst {
+    0% {
+        opacity: 0;
+        transform: scale(0.72);
+    }
+    28% {
+        opacity: 1;
+        transform: scale(1.06);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-10px) scale(1.22);
     }
 }
 

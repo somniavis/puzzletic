@@ -30,6 +30,8 @@ const ProfilePage = lazy(() => import('./pages/ProfilePage').then(module => ({ d
 const SharePage = lazy(() => import('./pages/SharePage').then(module => ({ default: module.SharePage })));
 const DebugLayoutPreview = lazy(() => import('./pages/DebugLayoutPreview').then(module => ({ default: module.DebugLayoutPreview })));
 const AdminConsolePage = lazy(() => import('./pages/AdminConsolePage').then(module => ({ default: module.AdminConsolePage })));
+const TermsOfServicePage = lazy(() => import('./pages/TermsOfServicePage').then(module => ({ default: module.TermsOfServicePage })));
+const PrivacyPolicyPage = lazy(() => import('./pages/PrivacyPolicyPage').then(module => ({ default: module.PrivacyPolicyPage })));
 
 const LandingPage = lazy(() => import('./pages/LandingPage').then(module => ({ default: module.LandingPage })));
 
@@ -242,6 +244,8 @@ function AppContent() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/share" element={<SharePage />} />
+        <Route path="/terms" element={<TermsOfServicePage />} />
+        <Route path="/privacy" element={<PrivacyPolicyPage />} />
 
         {/* Protected Routes (Guest or User) */}
         <Route path="/room" element={

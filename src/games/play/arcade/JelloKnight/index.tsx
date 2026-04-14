@@ -86,6 +86,7 @@ export const JelloKnight: React.FC<GameComponentProps> = ({ onExit }) => {
                 bombBlasts={game.bombBlasts}
                 bombRadius={game.bombRadius}
                 bombStrikes={game.bombStrikes}
+                deathBursts={game.deathBursts}
                 controlsRef={game.controlsRef}
                 damageFlashOpacity={game.damageFlashOpacity}
                 elapsedMs={game.hudState.elapsedMs}

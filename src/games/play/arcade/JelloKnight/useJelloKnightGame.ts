@@ -120,6 +120,7 @@ import type {
     BombBlast,
     BombStrike,
     ChaserEnemy,
+    DeathBurst,
     EliteEnemy,
     EnemyProjectile,
     EnemyRenderItem,
@@ -185,6 +186,7 @@ export const useJelloKnightGame = ({
     const webZonesRef = useRef<WebZone[]>([]);
     const bombStrikesRef = useRef<BombStrike[]>([]);
     const bombBlastsRef = useRef<BombBlast[]>([]);
+    const deathBurstsRef = useRef<DeathBurst[]>([]);
     const xpPickupsRef = useRef<XpPickup[]>([]);
     const spawnSignalsRef = useRef<SpawnSignal[]>([]);
     const scoreRef = useRef<number>(0);
@@ -234,6 +236,7 @@ export const useJelloKnightGame = ({
     const nextSignalIdRef = useRef<number>(1);
     const nextAnnouncementIdRef = useRef<number>(1);
     const nextWebZoneIdRef = useRef<number>(1);
+    const nextDeathBurstIdRef = useRef<number>(1);
     const enemyRenderSnapshotRef = useRef<EnemyRenderItem[]>([]);
     const rangedEnemyRenderSnapshotRef = useRef<RangedEnemyRenderItem[]>([]);
     const eliteRenderSnapshotRef = useRef<EliteRenderItem | null>(null);
@@ -258,6 +261,7 @@ export const useJelloKnightGame = ({
     const [webZones, setWebZones] = useState<WebZoneRenderItem[]>([]);
     const [bombStrikes, setBombStrikes] = useState<BombStrike[]>([]);
     const [bombBlasts, setBombBlasts] = useState<BombBlast[]>([]);
+    const [deathBursts, setDeathBursts] = useState<DeathBurst[]>([]);
     const [xpPickups, setXpPickups] = useState<PickupRenderItem[]>([]);
     const [upgradeOptions, setUpgradeOptions] = useState<UpgradeOption[]>([]);
     const [orbitDamage, setOrbitDamage] = useState<number>(ORBIT_DAMAGE);
@@ -307,6 +311,23 @@ export const useJelloKnightGame = ({
         (enemyType: string) => gt(`enemyNames.${enemyType}`),
         [gt]
     );
+
+    const addDeathBurst = useCallback((params: {
+        x: number;
+        y: number;
+        emoji: string;
+        sizeScale?: number;
+    }) => {
+        deathBurstsRef.current = deathBurstsRef.current.concat({
+            id: nextDeathBurstIdRef.current,
+            x: params.x,
+            y: params.y,
+            emoji: params.emoji,
+            sizeScale: params.sizeScale ?? 1,
+            expiresAtMs: elapsedMsRef.current + 380,
+        });
+        nextDeathBurstIdRef.current += 1;
+    }, []);
 
     const resetRunRefs = useCallback(() => {
         runStartTimeRef.current = null;
@@ -366,6 +387,7 @@ export const useJelloKnightGame = ({
         nextSignalIdRef.current = 1;
         nextAnnouncementIdRef.current = 1;
         nextWebZoneIdRef.current = 1;
+        nextDeathBurstIdRef.current = 1;
         enemiesRef.current = [];
         rangedEnemiesRef.current = [];
         eliteEnemyRef.current = null;
@@ -373,6 +395,7 @@ export const useJelloKnightGame = ({
         webZonesRef.current = [];
         bombStrikesRef.current = [];
         bombBlastsRef.current = [];
+        deathBurstsRef.current = [];
         xpPickupsRef.current = [];
         spawnSignalsRef.current = [];
         enemyRenderSnapshotRef.current = [];
@@ -402,6 +425,7 @@ export const useJelloKnightGame = ({
         setWebZones([]);
         setBombStrikes([]);
         setBombBlasts([]);
+        setDeathBursts([]);
         setXpPickups([]);
         setUpgradeOptions([]);
         setOrbitDamage(ORBIT_DAMAGE_LEVELS[0]);
@@ -612,6 +636,7 @@ export const useJelloKnightGame = ({
 
                 setBombStrikes([...bombStrikesRef.current]);
                 setBombBlasts([...bombBlastsRef.current]);
+                setDeathBursts([...deathBurstsRef.current]);
                 const nextPickupSnapshot = buildPickupRenderSnapshot(
                     xpPickupsRef.current,
                     pickupRenderSnapshotRef.current
@@ -709,6 +734,11 @@ export const useJelloKnightGame = ({
             const liveBombBlasts = pruneExpiredEntries(bombBlastsRef.current);
             if (liveBombBlasts !== bombBlastsRef.current) {
                 bombBlastsRef.current = liveBombBlasts;
+            }
+
+            const liveDeathBursts = pruneExpiredEntries(deathBurstsRef.current);
+            if (liveDeathBursts !== deathBurstsRef.current) {
+                deathBurstsRef.current = liveDeathBursts;
             }
 
             const liveWebZones = pruneExpiredEntries(webZonesRef.current);
@@ -922,6 +952,12 @@ export const useJelloKnightGame = ({
                 }
 
                 if (nextEnemy.hp <= 0) {
+                    addDeathBurst({
+                        x: nextEnemy.x,
+                        y: nextEnemy.y,
+                        emoji: nextEnemy.emoji,
+                        sizeScale: nextEnemy.sizeScale,
+                    });
                     addDropsForDefeat({
                         x: nextEnemy.x,
                         y: nextEnemy.y,
@@ -1006,6 +1042,12 @@ export const useJelloKnightGame = ({
                 }
 
                 if (nextRangedEnemy.hp <= 0) {
+                    addDeathBurst({
+                        x: nextRangedEnemy.x,
+                        y: nextRangedEnemy.y,
+                        emoji: nextRangedEnemy.emoji,
+                        sizeScale: 1.02,
+                    });
                     addDropsForDefeat({
                         x: nextRangedEnemy.x,
                         y: nextRangedEnemy.y,
@@ -1238,6 +1280,12 @@ export const useJelloKnightGame = ({
             }
 
             if (nextElite.hp <= 0) {
+                addDeathBurst({
+                    x: nextElite.x,
+                    y: nextElite.y,
+                    emoji: nextElite.emoji,
+                    sizeScale: nextElite.enemyType === 'brute' ? 1.34 : nextElite.enemyType === 'stinger' ? 1.22 : 1.28,
+                });
                 addDropsForDefeat({
                     x: nextElite.x,
                     y: nextElite.y,
@@ -1880,6 +1928,7 @@ export const useJelloKnightGame = ({
         bombBlasts,
         bombRadius,
         bombStrikes,
+        deathBursts,
         controlsRef,
         damageFlashOpacity,
         joystickBaseRef,
