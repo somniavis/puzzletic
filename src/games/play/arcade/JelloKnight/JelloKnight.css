@@ -734,6 +734,7 @@
     background: none;
     border: none;
     box-shadow: none;
+    transition: transform 120ms ease, filter 120ms ease, opacity 120ms ease;
 }
 
 .jello-knight__debug-contact {
@@ -810,6 +811,7 @@
     background: none;
     border: none;
     box-shadow: none;
+    transition: transform 120ms ease, filter 120ms ease, opacity 120ms ease;
 }
 
 .jello-knight__ranged-enemy-emoji {
@@ -832,6 +834,26 @@
     background: none;
     border: none;
     box-shadow: none;
+    transition: transform 120ms ease, filter 120ms ease, opacity 120ms ease;
+}
+
+.jello-knight__enemy--hit,
+.jello-knight__ranged-enemy--hit,
+.jello-knight__elite--hit {
+    transform: scale(0.965);
+    filter: brightness(1.18) saturate(1.22);
+}
+
+.jello-knight__enemy--hit .jello-knight__enemy-emoji,
+.jello-knight__ranged-enemy--hit .jello-knight__ranged-enemy-emoji,
+.jello-knight__elite--hit .jello-knight__elite-emoji {
+    filter: drop-shadow(0 0 10px rgba(255, 245, 196, 0.42));
+}
+
+.jello-knight__enemy--hit .jello-knight__enemy-healthbar,
+.jello-knight__ranged-enemy--hit .jello-knight__enemy-healthbar,
+.jello-knight__elite--hit .jello-knight__enemy-healthbar {
+    box-shadow: 0 0 0 1px rgba(255, 247, 208, 0.22), 0 4px 10px rgba(15, 25, 34, 0.18);
 }
 
 .jello-knight__enemy--standard {
@@ -1512,22 +1534,6 @@
         inset 0 1px 0 rgba(255, 255, 255, 0.9),
         0 2px 0 rgba(188, 142, 55, 0.88),
         0 7px 12px rgba(116, 82, 27, 0.12);
-}
-
-.jello-knight__levelup-stars {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-}
-
-.jello-knight__levelup-star {
-    font-size: 0.88rem;
-    line-height: 1;
-    color: rgba(145, 118, 74, 0.32);
-}
-
-.jello-knight__levelup-star.is-filled {
-    color: #c88a21;
 }
 
 .jello-knight__levelup-unlock-badge {

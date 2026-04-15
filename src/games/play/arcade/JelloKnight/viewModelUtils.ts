@@ -1,3 +1,4 @@
+import { ENEMY_HIT_FEEDBACK_MS } from './constants';
 import type {
     ChaserEnemy,
     EliteEnemy,
@@ -64,7 +65,7 @@ const reconcileRenderArray = <Source, Render extends { id: number }>(
     return changed ? next : previous;
 };
 
-const buildEnemyRenderItem = (enemy: ChaserEnemy): EnemyRenderItem => ({
+const buildEnemyRenderItem = (enemy: ChaserEnemy, elapsedMs: number): EnemyRenderItem => ({
     id: enemy.id,
     x: enemy.x,
     y: enemy.y,
@@ -73,9 +74,10 @@ const buildEnemyRenderItem = (enemy: ChaserEnemy): EnemyRenderItem => ({
     emoji: enemy.emoji,
     enemyType: enemy.enemyType,
     sizeScale: enemy.sizeScale,
+    isHit: (elapsedMs - enemy.lastHitAtMs) <= ENEMY_HIT_FEEDBACK_MS,
 });
 
-const buildRangedEnemyRenderItem = (enemy: RangedEnemy): RangedEnemyRenderItem => ({
+const buildRangedEnemyRenderItem = (enemy: RangedEnemy, elapsedMs: number): RangedEnemyRenderItem => ({
     id: enemy.id,
     x: enemy.x,
     y: enemy.y,
@@ -84,9 +86,10 @@ const buildRangedEnemyRenderItem = (enemy: RangedEnemy): RangedEnemyRenderItem =
     emoji: enemy.emoji,
     enemyType: enemy.enemyType,
     contactRadius: enemy.contactRadius,
+    isHit: (elapsedMs - enemy.lastHitAtMs) <= ENEMY_HIT_FEEDBACK_MS,
 });
 
-const buildEliteRenderItem = (enemy: EliteEnemy): EliteRenderItem => ({
+const buildEliteRenderItem = (enemy: EliteEnemy, elapsedMs: number): EliteRenderItem => ({
     id: enemy.id,
     x: enemy.x,
     y: enemy.y,
@@ -100,6 +103,7 @@ const buildEliteRenderItem = (enemy: EliteEnemy): EliteRenderItem => ({
     renderAngleDeg: enemy.renderAngleDeg,
     facing: enemy.facing,
     emojiBaseFacing: enemy.emojiBaseFacing,
+    isHit: (elapsedMs - enemy.lastHitAtMs) <= ENEMY_HIT_FEEDBACK_MS,
 });
 
 const buildProjectileRenderItem = (projectile: EnemyProjectile): ProjectileRenderItem => ({
@@ -126,10 +130,14 @@ const buildWebZoneRenderItem = (zone: WebZone): WebZoneRenderItem => ({
     maxHp: zone.maxHp,
 });
 
-export const buildEnemyRenderSnapshot = (enemies: ChaserEnemy[], previous: EnemyRenderItem[] = []) => reconcileRenderArray(
+export const buildEnemyRenderSnapshot = (
+    enemies: ChaserEnemy[],
+    elapsedMs: number,
+    previous: EnemyRenderItem[] = []
+) => reconcileRenderArray(
     enemies,
     previous,
-    buildEnemyRenderItem,
+    (enemy) => buildEnemyRenderItem(enemy, elapsedMs),
     (a, b) => (
         a.x === b.x
         && a.y === b.y
@@ -138,13 +146,18 @@ export const buildEnemyRenderSnapshot = (enemies: ChaserEnemy[], previous: Enemy
         && a.emoji === b.emoji
         && a.enemyType === b.enemyType
         && a.sizeScale === b.sizeScale
+        && a.isHit === b.isHit
     )
 );
 
-export const buildRangedEnemyRenderSnapshot = (enemies: RangedEnemy[], previous: RangedEnemyRenderItem[] = []) => reconcileRenderArray(
+export const buildRangedEnemyRenderSnapshot = (
+    enemies: RangedEnemy[],
+    elapsedMs: number,
+    previous: RangedEnemyRenderItem[] = []
+) => reconcileRenderArray(
     enemies,
     previous,
-    buildRangedEnemyRenderItem,
+    (enemy) => buildRangedEnemyRenderItem(enemy, elapsedMs),
     (a, b) => (
         a.x === b.x
         && a.y === b.y
@@ -153,16 +166,18 @@ export const buildRangedEnemyRenderSnapshot = (enemies: RangedEnemy[], previous:
         && a.emoji === b.emoji
         && a.enemyType === b.enemyType
         && a.contactRadius === b.contactRadius
+        && a.isHit === b.isHit
     )
 );
 
 export const buildEliteRenderSnapshot = (
     enemy: EliteEnemy | null,
+    elapsedMs: number,
     previous: EliteRenderItem | null = null
 ): EliteRenderItem | null => {
     if (!enemy) return null;
 
-    const next = buildEliteRenderItem(enemy);
+    const next = buildEliteRenderItem(enemy, elapsedMs);
     if (
         previous
         && previous.id === next.id
@@ -178,6 +193,7 @@ export const buildEliteRenderSnapshot = (
         && previous.renderAngleDeg === next.renderAngleDeg
         && previous.facing === next.facing
         && previous.emojiBaseFacing === next.emojiBaseFacing
+        && previous.isHit === next.isHit
     ) {
         return previous;
     }

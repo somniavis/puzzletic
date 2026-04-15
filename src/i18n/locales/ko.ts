@@ -1341,7 +1341,13 @@ const koBase = {
             },
             gameTitles: {
                 tailRunner: '테일 러너',
+                jelloKnight: '젤로 나이트',
                 groGroLand: '그로그로 랜드',
+            },
+            gameSubtitles: {
+                tailRunner: '젤로와 함께 달려요.',
+                jelloKnight: '살아남아 모두를 구해요.',
+                groGroLand: '젤로 땅을 넓히세요.',
             },
         },
     },
@@ -1354,7 +1360,13 @@ const koBase = {
         },
         gameTitles: {
             tailRunner: '테일 러너',
+            jelloKnight: '젤로 나이트',
             groGroLand: '그로그로 랜드',
+        },
+        gameSubtitles: {
+            tailRunner: '젤로와 함께 달려요.',
+            jelloKnight: '살아남아 모두를 구해요.',
+            groGroLand: '젤로 땅을 넓히세요.',
         },
     },
     games: {

@@ -1865,8 +1865,14 @@ export const viVN = {
         reason: 'Hoàn thành thuần thục {{game}} để mở khóa',
       },
       gameTitles: {
-        tailRunner: 'TAIL RUNNER',
-        groGroLand: 'GROGRO LAND',
+        tailRunner: 'KẺ CHẠY ĐUÔI',
+        jelloKnight: 'HIỆP SĨ JELLO',
+        groGroLand: 'VÙNG ĐẤT GROGRO',
+      },
+      gameSubtitles: {
+        tailRunner: 'Chạy cùng Jello của bạn.',
+        jelloKnight: 'Sinh tồn và giải cứu tất cả.',
+        groGroLand: 'Mở rộng vùng đất Jello của bạn.',
       },
     },
   },
@@ -1878,8 +1884,14 @@ export const viVN = {
       reason: 'Hoàn thành bậc thầy của {{game}} để mở khóa',
     },
     gameTitles: {
-      tailRunner: 'TAIL RUNNER',
-      groGroLand: 'GROGRO LAND',
+      tailRunner: 'KẺ CHẠY ĐUÔI',
+      jelloKnight: 'HIỆP SĨ JELLO',
+      groGroLand: 'VÙNG ĐẤT GROGRO',
+    },
+    gameSubtitles: {
+      tailRunner: 'Chạy cùng Jello của bạn.',
+      jelloKnight: 'Sinh tồn và giải cứu tất cả.',
+      groGroLand: 'Mở rộng vùng đất Jello của bạn.',
     },
   },
   games: {

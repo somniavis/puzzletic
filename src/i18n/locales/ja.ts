@@ -2083,8 +2083,14 @@ const jaBase = {
                 reason: '{{game}}のマスターランク達成で解禁',
             },
             gameTitles: {
-                tailRunner: 'TAIL RUNNER',
-                groGroLand: 'GROGRO LAND',
+                tailRunner: 'テイルランナー',
+                jelloKnight: 'ジェロナイト',
+                groGroLand: 'グログロランド',
+            },
+            gameSubtitles: {
+                tailRunner: 'ジェロといっしょに走ろう。',
+                jelloKnight: '生きのびて、みんなを助けよう。',
+                groGroLand: 'ジェロの大地を広げよう。',
             },
         },
     },
@@ -2097,7 +2103,13 @@ const jaBase = {
         },
         gameTitles: {
             tailRunner: 'テイルランナー',
+            jelloKnight: 'ジェロナイト',
             groGroLand: 'グログロランド',
+        },
+        gameSubtitles: {
+            tailRunner: 'ジェロといっしょに走ろう。',
+            jelloKnight: '生きのびて、みんなを助けよう。',
+            groGroLand: 'ジェロの大地を広げよう。',
         },
     },
     games: {

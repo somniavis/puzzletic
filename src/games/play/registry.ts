@@ -14,7 +14,6 @@ const delayedImport = <T,>(importPromise: Promise<T>): Promise<T> => {
 const PlayTailRunner = lazy(() => delayedImport(import('./arcade/TailRunner')));
 const PlayJelloKnight = lazy(() => delayedImport(import('./arcade/JelloKnight')));
 const PlayGroGroLand = lazy(() => delayedImport(import('./arcade/GroGroLand')));
-const PlayStarBridge = lazy(() => delayedImport(import('./arcade/StarBridge')));
 
 export const PLAY_GAMES: PlayGameManifest[] = [
     {
@@ -23,6 +22,7 @@ export const PLAY_GAMES: PlayGameManifest[] = [
         description: 'Run, grow your tail, and survive the world.',
         subtitle: 'Run with your Jello',
         titleKey: 'play.game.gameTitles.tailRunner',
+        subtitleKey: 'play.game.gameSubtitles.tailRunner',
         category: 'play' as const,
         level: 1 as const,
         component: PlayTailRunner,
@@ -43,6 +43,8 @@ export const PLAY_GAMES: PlayGameManifest[] = [
         title: 'Jello Knight',
         description: 'Endless survival prototype with your Jello hero.',
         subtitle: 'Orbit, dodge, and grow',
+        titleKey: 'play.game.gameTitles.jelloKnight',
+        subtitleKey: 'play.game.gameSubtitles.jelloKnight',
         category: 'play' as const,
         level: 1 as const,
         component: PlayJelloKnight,
@@ -64,6 +66,7 @@ export const PLAY_GAMES: PlayGameManifest[] = [
         description: 'Grow a colorful world in a dedicated play-land.',
         subtitle: 'Grow your land',
         titleKey: 'play.game.gameTitles.groGroLand',
+        subtitleKey: 'play.game.gameSubtitles.groGroLand',
         category: 'play' as const,
         level: 1 as const,
         component: PlayGroGroLand,
@@ -77,26 +80,6 @@ export const PLAY_GAMES: PlayGameManifest[] = [
             ink: '#19345f',
             edge: '#eef7ff',
             glow: 'rgba(137, 200, 255, 0.34)',
-        },
-    },
-    {
-        id: GameIds.PLAY_STAR_BRIDGE,
-        title: 'Star Bridge',
-        description: 'Standalone puzzle-action play game slot.',
-        subtitle: 'Build the path',
-        category: 'play' as const,
-        level: 1 as const,
-        component: PlayStarBridge,
-        launcher: {
-            order: 4,
-            sticker: '🌌',
-            shell: '#4767b0',
-            shellDark: '#314a84',
-            accent: '#77a9ff',
-            accentLight: '#aacbff',
-            ink: '#152549',
-            edge: '#dbe6ff',
-            glow: 'rgba(119, 169, 255, 0.34)',
         },
     },
 ].sort((a, b) => a.launcher.order - b.launcher.order);

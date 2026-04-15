@@ -16,6 +16,7 @@ export type ChaserEnemy = {
     y: number;
     hp: number;
     maxHp: number;
+    lastHitAtMs: number;
     orbContactReady: boolean;
     emoji: '👾' | '🦠' | '🪼' | '🎃';
     enemyType: 'standard' | 'swift' | 'heavy' | 'pumpkin';
@@ -32,6 +33,7 @@ export type RangedEnemy = {
     hp: number;
     cooldownMs: number;
     maxHp: number;
+    lastHitAtMs: number;
     orbContactReady: boolean;
     emoji: '🧿' | '👁️‍🗨️';
     enemyType: 'sniper' | 'heavyCaster';
@@ -64,13 +66,13 @@ export type EliteEnemy = {
     y: number;
     hp: number;
     maxHp: number;
+    lastHitAtMs: number;
     orbContactReady: boolean;
     emoji: '🦖' | '🦂' | '🕷️';
     enemyType: 'brute' | 'stinger' | 'weaver';
     baseSpeed: number;
     contactRadius: number;
     contactDamage: number;
-    spawnIntervalMs: number;
     xpValue: number;
     dashWindupMs: number;
     dashSpeedMultiplier: number;
@@ -205,9 +207,6 @@ export type UpgradeOption = {
     title: string;
     description: string;
     icon: string;
-    currentLevel: number;
-    nextLevel: number;
-    maxLevel: number;
     isUnlock?: boolean;
 };
 
@@ -236,9 +235,13 @@ export type RunnerMotion = {
     strength: number;
 };
 
-export type EnemyRenderItem = Pick<ChaserEnemy, 'id' | 'x' | 'y' | 'hp' | 'maxHp' | 'emoji' | 'enemyType' | 'sizeScale'>;
+export type EnemyRenderItem = Pick<ChaserEnemy, 'id' | 'x' | 'y' | 'hp' | 'maxHp' | 'emoji' | 'enemyType' | 'sizeScale'> & {
+    isHit: boolean;
+};
 
-export type RangedEnemyRenderItem = Pick<RangedEnemy, 'id' | 'x' | 'y' | 'hp' | 'maxHp' | 'emoji' | 'enemyType' | 'contactRadius'>;
+export type RangedEnemyRenderItem = Pick<RangedEnemy, 'id' | 'x' | 'y' | 'hp' | 'maxHp' | 'emoji' | 'enemyType' | 'contactRadius'> & {
+    isHit: boolean;
+};
 
 export type EliteRenderItem = Pick<
     EliteEnemy,
@@ -255,7 +258,9 @@ export type EliteRenderItem = Pick<
     | 'renderAngleDeg'
     | 'facing'
     | 'emojiBaseFacing'
->;
+> & {
+    isHit: boolean;
+};
 
 export type ProjectileRenderItem = Pick<EnemyProjectile, 'id' | 'x' | 'y'>;
 

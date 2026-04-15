@@ -1339,7 +1339,13 @@ export const en = {
       },
       gameTitles: {
         tailRunner: 'TAIL RUNNER',
+        jelloKnight: 'JELLO KNIGHT',
         groGroLand: 'GROGRO LAND',
+      },
+      gameSubtitles: {
+        tailRunner: 'Run with your Jello.',
+        jelloKnight: 'Survive and rescue them all.',
+        groGroLand: 'Expand your Jello land.',
       },
     },
   },
@@ -1352,7 +1358,13 @@ export const en = {
     },
     gameTitles: {
       tailRunner: 'TAIL RUNNER',
+      jelloKnight: 'JELLO KNIGHT',
       groGroLand: 'GROGRO LAND',
+    },
+    gameSubtitles: {
+      tailRunner: 'Run with your Jello.',
+      jelloKnight: 'Survive and rescue them all.',
+      groGroLand: 'Expand your Jello land.',
     },
   },
   games: {

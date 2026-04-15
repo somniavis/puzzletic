@@ -136,7 +136,7 @@ const CastleSpawnPointNode = React.memo<{ x: number; y: number; id: string }>(({
 
 const EnemyUnit = React.memo<{ enemy: EnemyRenderItem }>(({ enemy }) => (
     <div
-        className={`jello-knight__enemy jello-knight__enemy--${enemy.enemyType}`}
+        className={`jello-knight__enemy jello-knight__enemy--${enemy.enemyType}${enemy.isHit ? ' jello-knight__enemy--hit' : ''}`}
         style={{
             ...toPositionStyle(enemy.x, enemy.y),
             ['--jello-knight-enemy-scale' as string]: `${enemy.sizeScale}`,
@@ -175,7 +175,7 @@ const EnemyUnit = React.memo<{ enemy: EnemyRenderItem }>(({ enemy }) => (
 
 const RangedEnemyUnit = React.memo<{ enemy: RangedEnemyRenderItem }>(({ enemy }) => (
     <div
-        className={`jello-knight__ranged-enemy jello-knight__ranged-enemy--${enemy.enemyType}`}
+        className={`jello-knight__ranged-enemy jello-knight__ranged-enemy--${enemy.enemyType}${enemy.isHit ? ' jello-knight__ranged-enemy--hit' : ''}`}
         style={toPositionStyle(enemy.x, enemy.y)}
     >
         {DEBUG_CONTACT_RANGES_ENABLED && (
@@ -223,7 +223,7 @@ const EliteUnit = React.memo<{ eliteEnemy: EliteRenderItem; elapsedMs: number }>
 
     return (
         <div
-            className={`jello-knight__elite jello-knight__elite--${eliteEnemy.enemyType}${phaseClassName}`}
+            className={`jello-knight__elite jello-knight__elite--${eliteEnemy.enemyType}${phaseClassName}${eliteEnemy.isHit ? ' jello-knight__elite--hit' : ''}`}
             style={{
                 ...toPositionStyle(eliteEnemy.x, eliteEnemy.y),
                 ['--jello-knight-elite-angle' as string]: `${eliteEnemy.renderAngleDeg}deg`,
@@ -868,18 +868,7 @@ export const JelloKnightLevelUpOverlay: React.FC<LevelUpProps> = ({ gt, onSelect
                             </div>
                             {option.isUnlock ? (
                                 <div className="jello-knight__levelup-unlock-badge">{gt('levelUp.unlockReady')}</div>
-                            ) : (
-                                <div className="jello-knight__levelup-stars" aria-hidden="true">
-                                    {Array.from({ length: option.maxLevel }, (_, index) => (
-                                        <span
-                                            key={`${option.id}-star-${index}`}
-                                            className={`jello-knight__levelup-star${index < option.currentLevel ? ' is-filled' : ''}`}
-                                        >
-                                            ★
-                                        </span>
-                                    ))}
-                                </div>
-                            )}
+                            ) : null}
                         </div>
                     </button>
                 ))}

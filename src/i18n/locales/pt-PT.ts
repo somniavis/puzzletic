@@ -1338,8 +1338,14 @@ export const ptPT = {
         reason: 'Domine completamente {{game}} para desbloquear',
       },
       gameTitles: {
-        tailRunner: 'TAIL RUNNER',
-        groGroLand: 'GROGRO LAND',
+        tailRunner: 'CORREDOR DE CAUDA',
+        jelloKnight: 'CAVALEIRO GELO',
+        groGroLand: 'TERRA GROGRO',
+      },
+      gameSubtitles: {
+        tailRunner: 'Corre com o teu Jello.',
+        jelloKnight: 'Sobrevive e salva todos.',
+        groGroLand: 'Expande a tua terra Jello.',
       },
     },
   },
@@ -1351,8 +1357,14 @@ export const ptPT = {
       reason: 'Domine completamente {{game}} para desbloquear',
     },
     gameTitles: {
-      tailRunner: 'TAIL RUNNER',
-      groGroLand: 'GROGRO LAND',
+      tailRunner: 'CORREDOR DE CAUDA',
+      jelloKnight: 'CAVALEIRO GELO',
+      groGroLand: 'TERRA GROGRO',
+    },
+    gameSubtitles: {
+      tailRunner: 'Corre com o teu Jello.',
+      jelloKnight: 'Sobrevive e salva todos.',
+      groGroLand: 'Expande a tua terra Jello.',
     },
   },
   games: {

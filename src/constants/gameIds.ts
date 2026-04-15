@@ -93,7 +93,6 @@ export const GameIds = {
     PLAY_JELLO_KNIGHT: 'play-jello-knight',
     PLAY_GROGRO_LAND: 'play-grogro-land',
     PLAY_SNACK_SPRINT: 'play-snack-sprint',
-    PLAY_STAR_BRIDGE: 'play-star-bridge',
 } as const;
 
 export type GameId = typeof GameIds[keyof typeof GameIds];

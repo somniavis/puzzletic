@@ -1338,8 +1338,14 @@ export const idID = {
         reason: 'Capai tingkat mahir di {{game}} untuk membuka',
       },
       gameTitles: {
-        tailRunner: 'TAIL RUNNER',
-        groGroLand: 'GROGRO LAND',
+        tailRunner: 'PELARI EKOR',
+        jelloKnight: 'KSATRIA JELLO',
+        groGroLand: 'TANAH GROGRO',
+      },
+      gameSubtitles: {
+        tailRunner: 'Berlari bersama Jello-mu.',
+        jelloKnight: 'Bertahan hidup dan selamatkan semuanya.',
+        groGroLand: 'Perluas tanah Jello-mu.',
       },
     },
   },
@@ -1351,8 +1357,14 @@ export const idID = {
       reason: 'Capai tingkat mahir di {{game}} untuk membuka',
     },
     gameTitles: {
-      tailRunner: 'TAIL RUNNER',
-      groGroLand: 'GROGRO LAND',
+      tailRunner: 'PELARI EKOR',
+      jelloKnight: 'KSATRIA JELLO',
+      groGroLand: 'TANAH GROGRO',
+    },
+    gameSubtitles: {
+      tailRunner: 'Berlari bersama Jello-mu.',
+      jelloKnight: 'Bertahan hidup dan selamatkan semuanya.',
+      groGroLand: 'Perluas tanah Jello-mu.',
     },
   },
   games: {

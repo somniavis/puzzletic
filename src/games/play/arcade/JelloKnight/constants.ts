@@ -1,5 +1,5 @@
 import type { TailRunnerGemTier } from '../TailRunner/types';
-import type { FencePost, GroundPatch, JelloKnightHudState, Obstacle, ObstacleSlot, SpawnZone, Vector2, WeightedDropEntry } from './types';
+import type { FencePost, GroundPatch, JelloKnightHudState, Obstacle, ObstacleSlot, SkillUpgradeId, SpawnZone, Vector2, WeightedDropEntry } from './types';
 
 export const FIELD_SIZE = 3000;
 export const MAX_WAVE = 100;
@@ -13,7 +13,7 @@ export const PLAYER_BASE_SPEED = PLAYER_MOVE_SPEED_LEVELS[0];
 export const JOYSTICK_MAX_RADIUS = 42;
 export const ORBIT_DAMAGE_LEVELS = [3, 3.4, 3.8, 4.3, 4.8] as const;
 export const ORBIT_RADIUS_LEVELS = [76, 84, 100, 118, 138] as const;
-export const ORBIT_COUNT_LEVELS = [1, 2, 2, 3, 4] as const;
+export const ORBIT_COUNT_LEVELS = [1, 2, 3, 4] as const;
 export const ORBIT_SPEED_LEVELS = [0.72, 0.86, 1.02, 1.20, 1.38] as const;
 export const ORBIT_CRIT_MULTIPLIER_LEVELS = [1.4, 1.55, 1.75, 2.0, 2.3] as const;
 export const ORBIT_CRIT_CHANCE = 0.08;
@@ -21,6 +21,20 @@ export const ORBIT_RADIUS = ORBIT_RADIUS_LEVELS[0];
 export const ORBIT_SIZE = 24;
 export const ORBIT_DAMAGE = ORBIT_DAMAGE_LEVELS[0];
 export const ORBIT_ROTATION_SPEED = ORBIT_SPEED_LEVELS[0];
+export const SKILL_MAX_LEVELS: Record<SkillUpgradeId, number> = {
+    orb_damage: MAX_SKILL_LEVEL,
+    orb_count: ORBIT_COUNT_LEVELS.length,
+    orb_speed: MAX_SKILL_LEVEL,
+    orb_radius: MAX_SKILL_LEVEL,
+    orb_crit: MAX_SKILL_LEVEL,
+    bomb_chance: MAX_SKILL_LEVEL,
+    bomb_interval: MAX_SKILL_LEVEL,
+    bomb_radius: MAX_SKILL_LEVEL,
+    bomb_crit: MAX_SKILL_LEVEL,
+    player_hp: MAX_SKILL_LEVEL,
+    player_defense: MAX_SKILL_LEVEL,
+    player_speed: MAX_SKILL_LEVEL,
+};
 export const ENEMY_SIZE = 82;
 export const ENEMY_RADIUS = ENEMY_SIZE / 2;
 export const ENEMY_SPAWN_INTERVAL_MS = 1200;
@@ -62,6 +76,7 @@ export const PLAYER_VISUAL_SYNC_INTERVAL_MS = 16;
 export const WAVE_TRANSITION_DELAY_MS = 1400;
 export const DAMAGE_FLASH_DURATION_MS = 340;
 export const DAMAGE_FLASH_MAX_OPACITY = 0.72;
+export const ENEMY_HIT_FEEDBACK_MS = 120;
 export const DEBUG_CONTACT_RANGES_ENABLED = false;
 export const DEBUG_OBSTACLE_SLOTS_ENABLED = true;
 export const DEBUG_CASTLE_SPAWN_POINTS_ENABLED = true;

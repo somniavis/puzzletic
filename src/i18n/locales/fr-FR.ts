@@ -1338,8 +1338,14 @@ export const frFR = {
         reason: 'Maîtrisez totalement {{game}} pour débloquer',
       },
       gameTitles: {
-        tailRunner: 'TAIL RUNNER',
-        groGroLand: 'GROGRO LAND',
+        tailRunner: 'COUREUR À QUEUE',
+        jelloKnight: 'CHEVALIER GELO',
+        groGroLand: 'TERRE GROGRO',
+      },
+      gameSubtitles: {
+        tailRunner: 'Cours avec ton Jello.',
+        jelloKnight: 'Survis et sauve-les tous.',
+        groGroLand: 'Agrandis ton monde Jello.',
       },
     },
   },
@@ -1351,8 +1357,14 @@ export const frFR = {
       reason: 'Maîtrisez totalement {{game}} pour débloquer',
     },
     gameTitles: {
-      tailRunner: 'TAIL RUNNER',
-      groGroLand: 'GROGRO LAND',
+      tailRunner: 'COUREUR À QUEUE',
+      jelloKnight: 'CHEVALIER GELO',
+      groGroLand: 'TERRE GROGRO',
+    },
+    gameSubtitles: {
+      tailRunner: 'Cours avec ton Jello.',
+      jelloKnight: 'Survis et sauve-les tous.',
+      groGroLand: 'Agrandis ton monde Jello.',
     },
   },
   games: {

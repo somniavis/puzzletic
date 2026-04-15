@@ -119,7 +119,6 @@ export const ELITE_ENEMY_VARIANTS: Array<{
     baseSpeed: number;
     contactRadius: number;
     contactDamage: number;
-    spawnIntervalMs: number;
     xpValue: number;
     dashWindupMs: number;
     dashSpeedMultiplier: number;
@@ -136,7 +135,6 @@ export const ELITE_ENEMY_VARIANTS: Array<{
         baseSpeed: 64,
         contactRadius: 49,
         contactDamage: 13,
-        spawnIntervalMs: 20000,
         xpValue: 60,
         dashWindupMs: 550,
         dashSpeedMultiplier: 4.2,
@@ -153,7 +151,6 @@ export const ELITE_ENEMY_VARIANTS: Array<{
         baseSpeed: 88,
         contactRadius: 44,
         contactDamage: 10,
-        spawnIntervalMs: 16000,
         xpValue: 48,
         dashWindupMs: 320,
         dashSpeedMultiplier: 4,
@@ -170,7 +167,6 @@ export const ELITE_ENEMY_VARIANTS: Array<{
         baseSpeed: 58,
         contactRadius: 48,
         contactDamage: 9,
-        spawnIntervalMs: 18000,
         xpValue: 54,
         dashWindupMs: 440,
         dashSpeedMultiplier: 1.9,

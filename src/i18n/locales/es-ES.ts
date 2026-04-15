@@ -1338,8 +1338,14 @@ export const esES = {
         reason: 'Domina por completo {{game}} para desbloquearlo',
       },
       gameTitles: {
-        tailRunner: 'TAIL RUNNER',
-        groGroLand: 'GROGRO LAND',
+        tailRunner: 'CORREDOR DE COLA',
+        jelloKnight: 'CABALLERO GELO',
+        groGroLand: 'TIERRA GROGRO',
+      },
+      gameSubtitles: {
+        tailRunner: 'Corre con tu Jello.',
+        jelloKnight: 'Sobrevive y rescátalos a todos.',
+        groGroLand: 'Expande tu tierra Jello.',
       },
     },
   },
@@ -1351,8 +1357,14 @@ export const esES = {
       reason: 'Domina por completo {{game}} para desbloquearlo',
     },
     gameTitles: {
-      tailRunner: 'TAIL RUNNER',
-      groGroLand: 'GROGRO LAND',
+      tailRunner: 'CORREDOR DE COLA',
+      jelloKnight: 'CABALLERO GELO',
+      groGroLand: 'TIERRA GROGRO',
+    },
+    gameSubtitles: {
+      tailRunner: 'Corre con tu Jello.',
+      jelloKnight: 'Sobrevive y rescátalos a todos.',
+      groGroLand: 'Expande tu tierra Jello.',
     },
   },
   games: {
