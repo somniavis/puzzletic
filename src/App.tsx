@@ -238,7 +238,7 @@ function AppContent() {
 
   return (
     <Suspense fallback={<Loading />}>
-      <Routes>
+        <Routes>
         {/* Public Routes */}
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<LoginPage />} />

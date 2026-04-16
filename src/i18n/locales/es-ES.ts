@@ -153,6 +153,11 @@ export const esES = {
   landing: {
     title: 'Cuida a tu Jello',
     subtitle: 'Crece junto a tu amigo adorable',
+    secret_invitation: 'Invitación secreta al Mundo Jello',
+    portal_chip_raise: '🥚 criar',
+    portal_chip_play: '🎮 jugar',
+    portal_chip_learn: '📚 aprender',
+    free_start: 'Empieza gratis',
     start_experience: 'Empezar ahora',
     auth_prompt: '¿Ya tienes cuenta?',
     login: 'Iniciar sesión',

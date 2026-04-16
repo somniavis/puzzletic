@@ -3,6 +3,7 @@ import './Auth.css';
 import { playButtonSound } from '../utils/sound';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext'; // Import useAuth
+import { useMobileInteractionGuard } from '../hooks/useMobileInteractionGuard';
 import { auth, googleProvider } from '../firebase';
 import { createUserWithEmailAndPassword, getRedirectResult, signInWithPopup, signInWithRedirect } from 'firebase/auth';
 import { loadNurturingState, saveNurturingState, getStorageKey } from '../services/persistenceService';
@@ -23,12 +24,15 @@ export const SignupPage: React.FC = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isRedirecting, setIsRedirecting] = useState(false);
     const [showLoginHint, setShowLoginHint] = useState(false);
+    const rootRef = React.useRef<HTMLDivElement | null>(null);
     const [errors, setErrors] = useState<{
         email?: string;
         password?: string;
         confirmPassword?: string;
         general?: string;
     }>({});
+
+    useMobileInteractionGuard({ rootRef });
 
     React.useEffect(() => {
         const checkRedirect = async () => {
@@ -179,7 +183,7 @@ export const SignupPage: React.FC = () => {
     };
 
     return (
-        <div className="auth-page">
+        <div ref={rootRef} className="auth-page mobile-ui-guard">
             {isSubmitting && (
                 <div style={{
                     position: 'fixed',
@@ -238,7 +242,6 @@ export const SignupPage: React.FC = () => {
                             height: '42px',
                             fontSize: '1.5rem',
                             flexShrink: 0,
-                            paddingBottom: '4px',
                             backgroundColor: '#8B4513', // Explicit Brown background
                             color: '#FFFFFF', // White text
                             border: '2px solid #5e2f0d'

@@ -6,6 +6,34 @@
   /* Prevent double-tap zoom globally */
 }
 
+.mobile-ui-guard,
+.mobile-ui-guard * {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.mobile-ui-guard button,
+.mobile-ui-guard [role="button"],
+.mobile-ui-guard a {
+  touch-action: manipulation;
+}
+
+.mobile-ui-guard img,
+.mobile-ui-guard svg {
+  -webkit-user-drag: none;
+}
+
+.mobile-ui-guard input,
+.mobile-ui-guard textarea,
+.mobile-ui-guard select,
+.mobile-ui-guard [contenteditable="true"] {
+  -webkit-touch-callout: default;
+  -webkit-user-select: text;
+  user-select: text;
+}
+
 /* Global Layout Layers */
 .layout-background-layer {
   position: absolute;

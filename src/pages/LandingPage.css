@@ -32,6 +32,46 @@
     pointer-events: none;
 }
 
+.landing-preview-mode .nature-bg g {
+    transform-box: fill-box;
+}
+
+.landing-preview-mode .nature-sky-layer {
+    transform-origin: 78% 22%;
+    animation: landing-breathe-sky 1.25s ease-out both;
+}
+
+.landing-preview-mode .nature-hill-layer {
+    transform-origin: 50% 68%;
+    animation: landing-breathe-hill 1.15s ease-out both;
+}
+
+.landing-preview-mode .nature-ridge-layer {
+    transform-origin: 48% 74%;
+    animation: landing-breathe-ridge 1.05s ease-out both;
+}
+
+.landing-preview-mode .nature-ground-layer {
+    transform-origin: 38% 88%;
+    animation: landing-breathe-ground 0.95s ease-out both;
+}
+
+.landing-preview-badge {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    z-index: 3;
+    padding: 0.45rem 0.8rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.88);
+    color: #2d4a36;
+    font-size: 0.8rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
 .corner-frame {
     position: absolute;
     inset: 0;
@@ -41,8 +81,29 @@
     pointer-events: none;
 }
 
-.shadow-filter {
-    filter: drop-shadow(0 8px 12px rgba(0, 40, 20, 0.3));
+.landing-preview-mode .corner-shape {
+    transform-box: fill-box;
+    opacity: 0.98;
+}
+
+.landing-preview-mode .corner-shape--tl {
+    transform-origin: left top;
+    animation: landing-corner-leaf-open-tl 2.8s cubic-bezier(0.14, 0.8, 0.22, 1) both;
+}
+
+.landing-preview-mode .corner-shape--tr {
+    transform-origin: right top;
+    animation: landing-corner-leaf-open-tr 2.8s cubic-bezier(0.14, 0.8, 0.22, 1) both;
+}
+
+.landing-preview-mode .corner-shape--bl {
+    transform-origin: left bottom;
+    animation: landing-corner-leaf-open-bl 2.8s cubic-bezier(0.14, 0.8, 0.22, 1) both;
+}
+
+.landing-preview-mode .corner-shape--br {
+    transform-origin: right bottom;
+    animation: landing-corner-leaf-open-br 2.8s cubic-bezier(0.14, 0.8, 0.22, 1) both;
 }
 
 .landing-content {
@@ -54,6 +115,12 @@
     gap: 1rem;
     position: relative;
     z-index: 3;
+}
+
+.landing-preview-mode .landing-content,
+.landing-preview-mode .auth-dock {
+    opacity: 0;
+    animation: landing-reveal-content 0.8s ease-out 1.75s forwards;
 }
 
 .landing-jello-preview {
@@ -90,6 +157,23 @@
     text-align: center;
 }
 
+.landing-preview-pill-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.55rem;
+}
+
+.landing-preview-pill-row span {
+    padding: 0.5rem 0.78rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.74);
+    color: #34513d;
+    font-size: 0.82rem;
+    font-weight: 800;
+    box-shadow: 0 8px 16px rgba(52, 81, 61, 0.1);
+}
+
 .landing-brand {
     margin: 0;
     font-size: 2rem;
@@ -98,16 +182,6 @@
     line-height: 1;
     letter-spacing: 0.01em;
     text-shadow: 2px 2px 0 rgba(255, 255, 255, 0.56);
-}
-
-.landing-title {
-    margin: 0.35rem 0 0;
-    font-size: 1.12rem;
-    font-weight: 800;
-    color: #4d3e2f;
-    line-height: 1.25;
-    letter-spacing: 0.01em;
-    text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.56);
 }
 
 .landing-subtitle {
@@ -263,6 +337,106 @@
     box-shadow: 0 0 0 #8B4513;
 }
 
+@keyframes landing-breathe-sky {
+    0% {
+        transform: scale(1) translate3d(0, 0, 0);
+    }
+
+    100% {
+        transform: scale(1.03) translate3d(0, -3px, 0);
+    }
+}
+
+@keyframes landing-breathe-hill {
+    0% {
+        transform: scale(1) translate3d(0, 0, 0);
+    }
+
+    100% {
+        transform: scale(1.028) translate3d(0, -3px, 0);
+    }
+}
+
+@keyframes landing-breathe-ridge {
+    0% {
+        transform: scale(1) translate3d(0, 0, 0);
+    }
+
+    100% {
+        transform: scale(1.02) translate3d(0, -2px, 0);
+    }
+}
+
+@keyframes landing-breathe-ground {
+    0% {
+        transform: scale(1) translate3d(0, 0, 0);
+    }
+
+    100% {
+        transform: scale(1.014) translate3d(0, -1px, 0);
+    }
+}
+
+@keyframes landing-corner-leaf-open-tl {
+    0% {
+        transform: translate3d(0, 0, 0) scale(5.8) rotate(0deg);
+        opacity: 0.98;
+    }
+
+    100% {
+        transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
+        opacity: 0.94;
+    }
+}
+
+@keyframes landing-corner-leaf-open-tr {
+    0% {
+        transform: translate3d(0, 0, 0) scale(5.8) rotate(0deg);
+        opacity: 0.98;
+    }
+
+    100% {
+        transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
+        opacity: 0.94;
+    }
+}
+
+@keyframes landing-corner-leaf-open-bl {
+    0% {
+        transform: translate3d(0, 0, 0) scale(5.8) rotate(0deg);
+        opacity: 0.98;
+    }
+
+    100% {
+        transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
+        opacity: 0.94;
+    }
+}
+
+@keyframes landing-corner-leaf-open-br {
+    0% {
+        transform: translate3d(0, 0, 0) scale(5.8) rotate(0deg);
+        opacity: 0.98;
+    }
+
+    100% {
+        transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
+        opacity: 0.94;
+    }
+}
+
+@keyframes landing-reveal-content {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 @keyframes landing-float {
     0% {
         transform: translateY(0) rotate(-1deg);
@@ -289,9 +463,25 @@
     .landing-brand {
         font-size: 1.68rem;
     }
+}
 
-    .landing-title {
-        font-size: 1rem;
+@media (prefers-reduced-motion: reduce) {
+    .landing-preview-mode .nature-sky-layer,
+    .landing-preview-mode .nature-hill-layer,
+    .landing-preview-mode .nature-ridge-layer,
+    .landing-preview-mode .nature-ground-layer,
+    .landing-preview-mode .corner-shape--tl,
+    .landing-preview-mode .corner-shape--tr,
+    .landing-preview-mode .corner-shape--bl,
+    .landing-preview-mode .corner-shape--br,
+    .landing-preview-mode .landing-content,
+    .landing-preview-mode .auth-dock,
+    .jello-silhouette {
+        animation: none !important;
     }
 
+    .landing-preview-mode .landing-content,
+    .landing-preview-mode .auth-dock {
+        opacity: 1;
+    }
 }

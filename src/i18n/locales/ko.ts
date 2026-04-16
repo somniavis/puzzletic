@@ -155,6 +155,11 @@ const koBase = {
     landing: {
         title: '나만의 젤로 키우기',
         subtitle: '귀여운 친구와 함께 성장하세요',
+        secret_invitation: '젤로월드 비밀초대장',
+        portal_chip_raise: '🥚 키우기',
+        portal_chip_play: '🎮 놀이',
+        portal_chip_learn: '📚 배우기',
+        free_start: '무료 시작',
         start_experience: '지금 바로 시작하기 (체험)',
         auth_prompt: '이미 계정이 있으신가요?',
         login: '로그인',

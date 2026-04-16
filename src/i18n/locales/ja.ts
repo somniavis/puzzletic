@@ -155,6 +155,11 @@ const jaBase = {
     landing: {
         title: 'ジェロを育てよう',
         subtitle: 'かわいい友達と一緒に成長しましょう',
+        secret_invitation: 'ジェロワールドへのひみつ招待状',
+        portal_chip_raise: '🥚 そだてる',
+        portal_chip_play: '🎮 あそぶ',
+        portal_chip_learn: '📚 まなぶ',
+        free_start: '無料ではじめる',
         start_experience: '今すぐ体験する',
         auth_prompt: 'アカウントをお持ちですか？',
         login: 'ログイン',

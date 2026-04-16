@@ -368,6 +368,11 @@ export const viVN = {
   landing: {
     title: 'Nuôi dưỡng Jello',
     subtitle: 'Lớn lên cùng người bạn đáng yêu',
+    secret_invitation: 'Lời mời bí mật đến Thế giới Jello',
+    portal_chip_raise: '🥚 nuôi dưỡng',
+    portal_chip_play: '🎮 vui chơi',
+    portal_chip_learn: '📚 học hỏi',
+    free_start: 'Bắt đầu miễn phí',
     start_experience: 'Bắt đầu ngay',
     auth_prompt: 'Đã có tài khoản?',
     login: 'Đăng nhập',

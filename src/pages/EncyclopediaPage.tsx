@@ -6,6 +6,7 @@ import { CHARACTER_SPECIES } from '../data/species';
 import { EvolutionNode } from '../components/Encyclopedia/EvolutionNode';
 import { JelloAvatar } from '../components/characters/JelloAvatar';
 import { createCharacter } from '../data/characters';
+import { useMobileInteractionGuard } from '../hooks/useMobileInteractionGuard';
 import './EncyclopediaPage.css';
 
 // Color themes for each species
@@ -23,6 +24,7 @@ const SPECIES_THEMES: Record<string, { bg: string, border: string, shadow: strin
 export const EncyclopediaPage: React.FC = () => {
     const { t } = useTranslation();
     const navigate = useNavigate();
+    const rootRef = React.useRef<HTMLDivElement | null>(null);
 
     // Get unlock status from context to ensure persistent state is used
     const { unlockedJellos, totalGameStars } = useNurturing();
@@ -33,6 +35,8 @@ export const EncyclopediaPage: React.FC = () => {
 
 
     const [selectedJello, setSelectedJello] = React.useState<{ speciesId: string, stage: number } | null>(null);
+
+    useMobileInteractionGuard({ rootRef });
 
     const isUnlocked = (speciesId: string, stage: number) => {
         const speciesUnlocks = unlockedJellos?.[speciesId];
@@ -62,7 +66,7 @@ export const EncyclopediaPage: React.FC = () => {
     const modalSpecies = modalCharacter ? CHARACTER_SPECIES[selectedJello!.speciesId] : null;
 
     return (
-        <div className="encyclopedia-page">
+        <div ref={rootRef} className="encyclopedia-page mobile-ui-guard">
             <header className="encyclopedia-header">
                 <h1>📚 {t('encyclopedia.title')}</h1>
                 <div style={{ display: 'flex', alignItems: 'center' }}>

@@ -153,6 +153,11 @@ export const frFR = {
   landing: {
     title: 'Élève ton Jello',
     subtitle: 'Grandis avec ton adorable compagnon',
+    secret_invitation: 'Invitation secrète au monde des Jello',
+    portal_chip_raise: '🥚 élever',
+    portal_chip_play: '🎮 jouer',
+    portal_chip_learn: '📚 apprendre',
+    free_start: 'Essai gratuit',
     start_experience: "Commencer l'aventure",
     auth_prompt: 'Vous avez déjà un compte ?',
     login: 'Se connecter',

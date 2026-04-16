@@ -4,6 +4,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation, Trans } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
 import { useNurturing } from '../contexts/NurturingContext';
+import { useMobileInteractionGuard } from '../hooks/useMobileInteractionGuard';
 import './ProfilePage.css';
 
 type ProfileTab = 'my_jello' | 'pass';
@@ -56,6 +57,7 @@ export const ProfilePage: React.FC = () => {
     const purchaseNote = passOfferType === 'subscription'
         ? t('profile.cancelAnytimeShort')
         : null;
+    const rootRef = React.useRef<HTMLDivElement | null>(null);
     const impactImageSeeds = React.useMemo(
         () => createUniqueImpactSeeds(),
         [],
@@ -63,6 +65,8 @@ export const ProfilePage: React.FC = () => {
     const parentGateWordSequence = parentGateCode
         .map((digit) => t(`profile.parentGate.numberWords.${digit}`))
         .join(',  ');
+
+    useMobileInteractionGuard({ rootRef });
 
     React.useEffect(() => {
         const requestedTab = new URLSearchParams(location.search).get('tab');
@@ -150,7 +154,7 @@ export const ProfilePage: React.FC = () => {
     };
 
     return (
-        <div className={`profile-page ${activeTab === 'pass' ? 'profile-page-pass' : ''}`}>
+        <div ref={rootRef} className={`profile-page mobile-ui-guard ${activeTab === 'pass' ? 'profile-page-pass' : ''}`}>
             <header className="profile-header">
                 <div className="profile-tabs" role="tablist" aria-label={t('profile.title')}>
                     <button

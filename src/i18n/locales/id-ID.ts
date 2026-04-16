@@ -153,6 +153,11 @@ export const idID = {
   landing: {
     title: 'Rawat Jello-mu',
     subtitle: 'Tumbuh bersama teman imutmu',
+    secret_invitation: 'Undangan rahasia ke Dunia Jello',
+    portal_chip_raise: '🥚 rawat',
+    portal_chip_play: '🎮 bermain',
+    portal_chip_learn: '📚 belajar',
+    free_start: 'Mulai gratis',
     start_experience: 'Mulai Sekarang',
     auth_prompt: 'Sudah punya akun?',
     login: 'Masuk',

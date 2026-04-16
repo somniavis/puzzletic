@@ -153,6 +153,11 @@ export const ptPT = {
   landing: {
     title: 'Crie o Seu Jello',
     subtitle: 'Cresça com o seu amigo fofo',
+    secret_invitation: 'Convite secreto para o Mundo Jello',
+    portal_chip_raise: '🥚 criar',
+    portal_chip_play: '🎮 jogar',
+    portal_chip_learn: '📚 aprender',
+    free_start: 'Começar grátis',
     start_experience: 'Começar agora',
     auth_prompt: 'Já tem conta?',
     login: 'Iniciar sessão',
