@@ -16,6 +16,7 @@ import type { EvolutionStage } from '../types/character';
 // Hooks & Utils
 import { usePlayPageLogic, type Operator } from '../hooks/usePlayPageLogic';
 import { usePlayUiPreferences } from '../hooks/usePlayUiPreferences';
+import { useMobileInteractionGuard } from '../hooks/useMobileInteractionGuard';
 import { CATEGORY_ICONS } from '../utils/playPageUtils';
 import { usePremiumStatus, isPremiumGame } from '../utils/premiumLogic';
 import { PremiumPurchaseModal } from '../components/Premium/PremiumPurchaseModal';
@@ -237,9 +238,14 @@ const PlayPage: React.FC = () => {
     const retroInsertTimeoutRef = React.useRef<number | null>(null);
     const retroStartToastTimeoutRef = React.useRef<number | null>(null);
     const retroSwipeStartRef = React.useRef<{ x: number; y: number } | null>(null);
+    const playPageRootRef = React.useRef<HTMLDivElement | null>(null);
     const isPlayAdventureMode = playLearnMode === 'play'
         && ((activeTab === 'math' && mathMode === 'adventure') || activeTab === 'brain');
     const isRetroPlayTab = activeTab === 'play';
+
+    useMobileInteractionGuard({
+        rootRef: playPageRootRef,
+    });
 
     const activeGame = gameId ? (getGameById(gameId) ?? getPlayGameById(gameId)) : null;
     const retroPlayPacks = useMemo<RetroPlayPack[]>(() => {
@@ -1302,7 +1308,10 @@ const PlayPage: React.FC = () => {
                 : renderAdventureSection();
 
     return (
-        <div className={`play-page-container ${activeTab === 'brain' ? 'play-page-container-brain' : ''} ${activeTab === 'play' ? 'play-page-container-play' : ''}`}>
+        <div
+            ref={playPageRootRef}
+            className={`play-page-container mobile-ui-guard ${activeTab === 'brain' ? 'play-page-container-brain' : ''} ${activeTab === 'play' ? 'play-page-container-play' : ''}`}
+        >
             {renderHeader()}
 
             {activeTab === 'math' && renderMathModeSwitcher()}
