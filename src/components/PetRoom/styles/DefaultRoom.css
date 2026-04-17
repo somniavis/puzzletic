@@ -7,4 +7,22 @@
     height: 100%;
     margin-top: 0;
     background: linear-gradient(180deg, #fffef4 0%, #f4ecb8 100%);
+    overflow: hidden;
+}
+
+.default-ground-math-layer {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+
+.default-ground-math-symbol {
+    position: absolute;
+    display: block;
+    font-weight: 900;
+    line-height: 1;
+    color: rgba(232, 224, 173, 0.62);
+    text-shadow:
+        0 0 8px rgba(255, 247, 176, 0.03);
+    user-select: none;
 }

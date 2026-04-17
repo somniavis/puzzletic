@@ -18,6 +18,23 @@ interface RoomBackgroundProps {
     lightningStyle?: React.CSSProperties;
 }
 
+const DEFAULT_GROUND_MATH_SYMBOLS = [
+    { id: 1, symbol: '+', left: '8%', top: '10%', size: '3.8rem', rotate: '-12deg', opacity: 0.34 },
+    { id: 2, symbol: '÷', left: '22%', top: '18%', size: '2.6rem', rotate: '9deg', opacity: 0.3 },
+    { id: 3, symbol: '×', left: '38%', top: '8%', size: '5.2rem', rotate: '-6deg', opacity: 0.32 },
+    { id: 4, symbol: '-', left: '58%', top: '16%', size: '4.5rem', rotate: '14deg', opacity: 0.26 },
+    { id: 5, symbol: '+', left: '78%', top: '11%', size: '3rem', rotate: '-10deg', opacity: 0.3 },
+    { id: 6, symbol: '×', left: '12%', top: '35%', size: '4.8rem', rotate: '8deg', opacity: 0.28 },
+    { id: 7, symbol: '÷', left: '31%', top: '42%', size: '3.2rem', rotate: '-15deg', opacity: 0.33 },
+    { id: 8, symbol: '-', left: '52%', top: '33%', size: '5rem', rotate: '5deg', opacity: 0.24 },
+    { id: 9, symbol: '+', left: '70%', top: '39%', size: '2.8rem', rotate: '-8deg', opacity: 0.31 },
+    { id: 10, symbol: '÷', left: '86%', top: '30%', size: '4.1rem', rotate: '12deg', opacity: 0.25 },
+    { id: 11, symbol: '×', left: '18%', top: '63%', size: '3rem', rotate: '-11deg', opacity: 0.4 },
+    { id: 12, symbol: '+', left: '41%', top: '72%', size: '4.6rem', rotate: '7deg', opacity: 0.38 },
+    { id: 13, symbol: '-', left: '63%', top: '68%', size: '3.4rem', rotate: '-13deg', opacity: 0.42 },
+    { id: 14, symbol: '÷', left: '82%', top: '77%', size: '5.4rem', rotate: '10deg', opacity: 0.34 },
+];
+
 export const RoomBackground: React.FC<RoomBackgroundProps> = React.memo(({
     background,
     showGiftBox,
@@ -135,10 +152,32 @@ export const RoomBackground: React.FC<RoomBackgroundProps> = React.memo(({
                 {currentBackground === 'deep_sea_ground' && <DeepSeaGround />}
                 {currentBackground === 'shape_ground' && <ShapeGround />}
             </div>
-            <div className="room-floor" />
+            <div className="room-floor">
+                {currentBackground === 'default_ground' && <DefaultGroundMathScatter />}
+            </div>
         </div>
     );
 });
+
+const DefaultGroundMathScatter = React.memo(() => (
+    <div className="default-ground-math-layer" aria-hidden="true">
+        {DEFAULT_GROUND_MATH_SYMBOLS.map((item) => (
+            <span
+                key={item.id}
+                className="default-ground-math-symbol"
+                style={{
+                    left: item.left,
+                    top: item.top,
+                    fontSize: item.size,
+                    transform: `rotate(${item.rotate})`,
+                    opacity: item.opacity,
+                }}
+            >
+                {item.symbol}
+            </span>
+        ))}
+    </div>
+));
 
 const FrontBuildings = () => (
     <>
