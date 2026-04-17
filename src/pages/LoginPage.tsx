@@ -18,7 +18,6 @@ export const LoginPage: React.FC = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [isRedirecting, setIsRedirecting] = useState(false);
-    const [showSignupHint, setShowSignupHint] = useState(false);
     const rootRef = React.useRef<HTMLDivElement | null>(null);
     const [errors, setErrors] = useState<{
         email?: string;
@@ -26,7 +25,7 @@ export const LoginPage: React.FC = () => {
         general?: string;
     }>({});
 
-    useMobileInteractionGuard({ rootRef });
+    useMobileInteractionGuard({ rootRef, blockSelection: false });
 
     // Handle Redirect Result (for Mobile/Tablet flow)
     React.useEffect(() => {
@@ -34,8 +33,12 @@ export const LoginPage: React.FC = () => {
             try {
                 const result = await getRedirectResult(auth);
                 if (result) {
-
+                    console.log('[LoginPage] getRedirectResult success', {
+                        uid: result.user?.uid ?? null,
+                        email: result.user?.email ?? null,
+                    });
                     playButtonSound();
+                    console.log('[LoginPage] navigate -> /home from redirect result');
                     navigate('/home');
                 }
             } catch (error: any) {
@@ -50,17 +53,22 @@ export const LoginPage: React.FC = () => {
         e.preventDefault();
         playButtonSound();
         setErrors({});
-        setShowSignupHint(false);
-
+        console.log('[LoginPage] handleLogin submit', {
+            email,
+            passwordLength: password.length,
+        });
         try {
-            await signInWithEmailAndPassword(auth, email, password);
-
+            const credential = await signInWithEmailAndPassword(auth, email, password);
+            console.log('[LoginPage] signInWithEmailAndPassword success', {
+                uid: credential.user?.uid ?? null,
+                email: credential.user?.email ?? null,
+            });
+            console.log('[LoginPage] navigate -> /home from email login');
             navigate('/home');
         } catch (error: any) {
             console.error('Login failed:', error);
             if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
                 setErrors({ password: t('auth.errors.invalidCredential') });
-                setShowSignupHint(true);
                 return;
             }
 
@@ -81,9 +89,15 @@ export const LoginPage: React.FC = () => {
     const handleGoogleLogin = async () => {
         playButtonSound();
         setErrors({});
+        console.log('[LoginPage] handleGoogleLogin start');
 
         try {
-            await signInWithPopup(auth, googleProvider);
+            const credential = await signInWithPopup(auth, googleProvider);
+            console.log('[LoginPage] signInWithPopup success', {
+                uid: credential.user?.uid ?? null,
+                email: credential.user?.email ?? null,
+            });
+            console.log('[LoginPage] navigate -> /home from google popup');
             navigate('/home');
         } catch (error: any) {
             const shouldFallbackToRedirect =
@@ -91,9 +105,15 @@ export const LoginPage: React.FC = () => {
                 error?.code === 'auth/cancelled-popup-request' ||
                 error?.code === 'auth/operation-not-supported-in-this-environment';
 
+            console.warn('[LoginPage] google login fallback check', {
+                code: error?.code ?? null,
+                shouldFallbackToRedirect,
+            });
+
             if (shouldFallbackToRedirect) {
                 try {
                     setIsRedirecting(true);
+                    console.log('[LoginPage] signInWithRedirect start');
                     await signInWithRedirect(auth, googleProvider);
                     return;
                 } catch (redirectError: any) {
@@ -116,6 +136,7 @@ export const LoginPage: React.FC = () => {
 
     const handleGoToSignup = () => {
         playButtonSound();
+        console.log('[LoginPage] navigate -> /signup');
         navigate('/signup');
     };
 
@@ -170,7 +191,6 @@ export const LoginPage: React.FC = () => {
                                 if (errors.email || errors.general) {
                                     setErrors(prev => ({ ...prev, email: undefined, general: undefined }));
                                 }
-                                setShowSignupHint(false);
                             }}
                             aria-invalid={Boolean(errors.email)}
                             required
@@ -190,21 +210,11 @@ export const LoginPage: React.FC = () => {
                                 if (errors.password || errors.general) {
                                     setErrors(prev => ({ ...prev, password: undefined, general: undefined }));
                                 }
-                                setShowSignupHint(false);
                             }}
                             aria-invalid={Boolean(errors.password)}
                             required
                         />
                         {errors.password && <p className="form-error">{errors.password}</p>}
-                        {showSignupHint && (
-                            <button
-                                type="button"
-                                className="form-inline-link"
-                                onClick={handleGoToSignup}
-                            >
-                                {t('auth.login.signup')}
-                            </button>
-                        )}
                     </div>
 
                     <button type="submit" className="auth-btn auth-btn--primary" disabled={loading} style={{ width: '100%' }}>
@@ -223,10 +233,10 @@ export const LoginPage: React.FC = () => {
                         disabled={isRedirecting}
                     >
                         {isRedirecting ? (
-                            <span>Loading...</span>
+                            <span>{t('common.loading')}</span>
                         ) : (
                             <>
-                                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" style={{ width: '18px', height: '18px' }} />
+                                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt={t('auth.googleLogoAlt')} style={{ width: '18px', height: '18px' }} />
                                 {t('auth.login.google')}
                             </>
                         )}

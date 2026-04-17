@@ -56,6 +56,7 @@ const getAdminEmailAllowlist = (): string[] => {
 };
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+    const isPremiumSessionGuardEnabled = import.meta.env.VITE_ENABLE_PREMIUM_SESSION_GUARD === 'true';
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
 
@@ -74,9 +75,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // useEffect(() => { ... }, []);
 
     useEffect(() => {
+        console.log('[Auth] subscribe onAuthStateChanged', {
+            isGuestInitial: isGuest,
+            guestIdInitial: guestId,
+            sessionGuardEnabled: isPremiumSessionGuardEnabled,
+        });
+
         const unsubscribe = onAuthStateChanged(
             auth,
             (currentUser) => {
+                console.log('[Auth] onAuthStateChanged', {
+                    uid: currentUser?.uid ?? null,
+                    email: currentUser?.email ?? null,
+                    isGuestBeforeUpdate: isGuest,
+                    guestId,
+                });
                 setUser(currentUser);
                 const adminEmails = getAdminEmailAllowlist();
                 const normalizedEmail = currentUser?.email?.toLowerCase() ?? '';
@@ -92,6 +105,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 }
                 // If no user, isGuest state persists from localStorage initialization
                 setLoading(false);
+                console.log('[Auth] state settled', {
+                    uid: currentUser?.uid ?? null,
+                    isGuestAfterSettle: currentUser ? false : isGuest,
+                    guestId,
+                });
             },
             (error) => {
                 console.error('[Auth] onAuthStateChanged error:', error);
@@ -99,18 +117,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             }
         );
 
-        return () => unsubscribe();
-    }, []);
+        return () => {
+            console.log('[Auth] unsubscribe onAuthStateChanged');
+            unsubscribe();
+        };
+    }, [guestId, isGuest, isPremiumSessionGuardEnabled]);
 
     // Duplicate Login Prevention (Session Management) - PREMIUM ONLY
     useEffect(() => {
-        if (!user) return;
+        if (!user || !isPremiumSessionGuardEnabled) {
+            if (user && !isPremiumSessionGuardEnabled) {
+                console.log('[SessionGuard] skipped because feature flag is disabled', {
+                    uid: user.uid,
+                });
+            }
+            return;
+        }
 
         let unsubscribeSession: (() => void) | undefined;
+        let isActive = true;
 
         const initPremiumSession = async () => {
             try {
+                console.log('[SessionGuard] init start', { uid: user.uid });
                 const result = await fetchUserData(user);
+                if (!isActive) return;
 
                 if (!result.success || !result.data) return;
 
@@ -137,16 +168,41 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 // Premium user: Enable duplicate login protection
                 const userSessionRef = ref(database, `users/${user.uid}/session`);
                 const currentSessionId = `${Date.now()}_${Math.random().toString(36).slice(2, 11)}`;
+                let hasSeenCurrentSession = false;
+
+                console.log('[SessionGuard] enabling RTDB session watch', {
+                    uid: user.uid,
+                    currentSessionId,
+                });
 
                 await set(userSessionRef, {
                     id: currentSessionId,
                     lastActive: Date.now(),
                     deviceInfo: navigator.userAgent.slice(0, 100) // Limit size
                 });
+                if (!isActive) return;
 
                 unsubscribeSession = onValue(userSessionRef, (snapshot) => {
+                    if (!isActive) return;
+
                     const data = snapshot.val();
-                    if (data?.id && data.id !== currentSessionId) {
+                    console.log('[SessionGuard] session snapshot', {
+                        uid: user.uid,
+                        currentSessionId,
+                        seenOwnSession: hasSeenCurrentSession,
+                        remoteSessionId: data?.id ?? null,
+                    });
+                    if (data?.id === currentSessionId) {
+                        hasSeenCurrentSession = true;
+                        return;
+                    }
+
+                    if (hasSeenCurrentSession && data?.id && data.id !== currentSessionId) {
+                        console.warn('[SessionGuard] signing out due to different session id', {
+                            uid: user.uid,
+                            currentSessionId,
+                            remoteSessionId: data.id,
+                        });
                         firebaseSignOut(auth); // Silent logout
                     }
                 });
@@ -158,8 +214,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         initPremiumSession();
 
-        return () => unsubscribeSession?.();
-    }, [user?.uid]);
+        return () => {
+            isActive = false;
+            console.log('[SessionGuard] cleanup', { uid: user.uid });
+            unsubscribeSession?.();
+        };
+    }, [user?.uid, isPremiumSessionGuardEnabled]);
 
     const loginAsGuest = () => {
         let id = safeStorageGet('puzzleletic_guest_id');
@@ -170,9 +230,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setGuestId(id);
         setIsGuest(true);
         safeStorageSet('puzzleletic_is_guest_active', 'true');
+        console.log('[Auth] loginAsGuest', { guestId: id });
     };
 
     const logout = async () => {
+        console.log('[Auth] logout requested', {
+            uid: auth.currentUser?.uid ?? null,
+            guestId,
+            isGuest,
+        });
         await firebaseSignOut(auth);
         setIsGuest(false); // Reset guest state on logout
         setIsAdmin(false);

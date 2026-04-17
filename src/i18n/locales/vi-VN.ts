@@ -378,8 +378,8 @@ export const viVN = {
     login: 'Đăng nhập',
     signup: 'Đăng ký',
     back_to_home: 'Về trang chủ',
-    continue_experience: 'Tiếp tục hành trình',
-    new_game: 'Bắt đầu mới',
+    continue_experience: 'Tiếp tục',
+    new_game: 'Mới',
     auth: {
       duplicateLoginAlert: 'Tài khoản đã đăng nhập ở thiết bị khác. Phiên hiện tại sẽ bị đóng.',
     },
@@ -1805,6 +1805,7 @@ export const viVN = {
     },
     logging_in: 'Đang đăng nhập...',
     signing_up: 'Đang đăng ký...',
+    googleLogoAlt: 'Biểu trưng Google',
   },
   play: {
     title: 'Chơi & Học',

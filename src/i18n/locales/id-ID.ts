@@ -163,8 +163,8 @@ export const idID = {
     login: 'Masuk',
     signup: 'Daftar',
     back_to_home: 'Kembali ke Beranda',
-    continue_experience: 'Lanjutkan Perjalanan',
-    new_game: 'Mulai dari Awal',
+    continue_experience: 'Lanjut',
+    new_game: 'Baru',
     auth: {
       duplicateLoginAlert: 'Akun Anda login di perangkat lain. Sesi ini akan ditutup.',
     },
@@ -1279,6 +1279,7 @@ export const idID = {
     },
     logging_in: 'Sedang masuk...',
     signing_up: 'Sedang mendaftar...',
+    googleLogoAlt: 'Logo Google',
   },
   play: {
     title: 'Main & Belajar',

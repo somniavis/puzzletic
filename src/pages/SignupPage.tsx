@@ -32,7 +32,7 @@ export const SignupPage: React.FC = () => {
         general?: string;
     }>({});
 
-    useMobileInteractionGuard({ rootRef });
+    useMobileInteractionGuard({ rootRef, blockSelection: false });
 
     React.useEffect(() => {
         const checkRedirect = async () => {
@@ -254,10 +254,10 @@ export const SignupPage: React.FC = () => {
                         disabled={isRedirecting}
                     >
                         {isRedirecting ? (
-                            <span>Loading...</span>
+                            <span>{t('common.loading')}</span>
                         ) : (
                             <>
-                                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" style={{ width: '18px', height: '18px' }} />
+                                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt={t('auth.googleLogoAlt')} style={{ width: '18px', height: '18px' }} />
                                 {t('auth.login.google')}
                             </>
                         )}

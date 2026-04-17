@@ -163,8 +163,8 @@ export const ptPT = {
     login: 'Iniciar sessão',
     signup: 'Registar',
     back_to_home: 'Voltar ao início',
-    continue_experience: 'Continuar jornada',
-    new_game: 'Começar de novo',
+    continue_experience: 'Continuar',
+    new_game: 'Novo',
     auth: {
       duplicateLoginAlert: 'A sessão foi iniciada noutro dispositivo. Esta sessão será encerrada.',
     },
@@ -1279,6 +1279,7 @@ export const ptPT = {
     },
     logging_in: 'A iniciar sessão...',
     signing_up: 'A registar...',
+    googleLogoAlt: 'Logótipo Google',
   },
   play: {
     title: 'Jogar e Aprender',

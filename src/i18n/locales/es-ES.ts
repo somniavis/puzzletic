@@ -163,8 +163,8 @@ export const esES = {
     login: 'Iniciar sesión',
     signup: 'Crear cuenta',
     back_to_home: 'Volver al inicio',
-    continue_experience: 'Continuar aventura',
-    new_game: 'Empezar de cero',
+    continue_experience: 'Continuar',
+    new_game: 'Nuevo',
     auth: {
       duplicateLoginAlert: 'Se ha iniciado sesión en otro dispositivo. Esta sesión se cerrará.',
     },
@@ -1279,6 +1279,7 @@ export const esES = {
     },
     logging_in: 'Iniciando sesión...',
     signing_up: 'Creando cuenta...',
+    googleLogoAlt: 'Logotipo de Google',
   },
   play: {
     title: 'Jugar y aprender',

@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
-import { loadNurturingState } from '../services/persistenceService';
+import { loadNurturingState, getStorageKey, getChecksumKey } from '../services/persistenceService';
 import { useMobileInteractionGuard } from '../hooks/useMobileInteractionGuard';
 import './LandingPagePreview2.css';
 
@@ -16,27 +16,62 @@ export const LandingPortalPage: React.FC = () => {
     useMobileInteractionGuard({ rootRef });
 
     React.useEffect(() => {
-        if (!guestId) return;
+        if (!guestId) {
+            setHasActiveSession(false);
+            console.log('[Landing] no guestId, active session cleared');
+            return;
+        }
 
         try {
             const savedState = loadNurturingState(guestId);
+            console.log('[Landing] checked guest session', {
+                guestId,
+                hasCharacter: Boolean(savedState?.hasCharacter),
+            });
             if (savedState && savedState.hasCharacter) {
                 setHasActiveSession(true);
+            } else {
+                setHasActiveSession(false);
             }
         } catch (e) {
             console.warn('Failed to check guest session:', e);
+            setHasActiveSession(false);
         }
     }, [guestId]);
 
     React.useEffect(() => {
         if (user) {
+            console.log('[Landing] user detected, navigate -> /room', {
+                uid: user.uid,
+                email: user.email ?? null,
+            });
             navigate('/room');
         }
     }, [user, navigate]);
 
     const handleStartExperience = () => {
+        console.log('[Landing] handleStartExperience', {
+            hasActiveSession,
+            guestId,
+        });
         loginAsGuest();
+        console.log('[Landing] navigate -> /room from start experience');
         navigate('/room');
+    };
+
+    const handleNewGame = () => {
+        console.log('[Landing] handleNewGame requested', { guestId });
+        if (window.confirm(t('common.confirm_reset') || 'Are you sure you want to start a new game? Existing data will be lost.')) {
+            if (guestId) {
+                localStorage.removeItem(getStorageKey(guestId));
+                localStorage.removeItem(getChecksumKey(guestId));
+                localStorage.removeItem('puzzleletic_guest_id');
+                console.log('[Landing] guest local data cleared for new game', { guestId });
+            }
+            loginAsGuest();
+            console.log('[Landing] navigate -> /room from new game');
+            navigate('/room');
+        }
     };
 
     return (
@@ -96,6 +131,17 @@ export const LandingPortalPage: React.FC = () => {
                                 {hasActiveSession ? t('landing.continue_experience') : t('landing.free_start')}
                             </span>
                         </button>
+                        {hasActiveSession && (
+                            <div className="portal-landing__visual-actions">
+                                <button
+                                    type="button"
+                                    className="portal-landing__secondary-cta"
+                                    onClick={handleNewGame}
+                                >
+                                    {t('landing.new_game')}
+                                </button>
+                            </div>
+                        )}
                         <div className="portal-spark portal-spark--a">✦</div>
                         <div className="portal-spark portal-spark--b">✦</div>
                         <div className="portal-spark portal-spark--c">✦</div>

@@ -20,7 +20,7 @@ export const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose }) =
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const { settings, toggleBgm, toggleSfx } = useSound();
-  const { logout, isAdmin } = useAuth();
+  const { logout, isAdmin, isGuest, user } = useAuth();
   const { saveToCloud } = useNurturing();
   const [currentView, setCurrentView] = useState<MenuView>('main');
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'success' | 'error' | 'cooldown'>('idle');
@@ -139,11 +139,13 @@ export const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose }) =
   const handleLogout = async () => {
     playButtonSound();
     try {
-      // "Safe Save": Sync before logging out
-      const success = await saveToCloud();
-      if (!success) {
-        window.alert('Cloud save failed. Please try again before logging out.');
-        return;
+      // Guest sessions are local-only by design, so don't block logout on cloud sync.
+      if (user && !isGuest) {
+        const success = await saveToCloud();
+        if (!success) {
+          window.alert('Cloud save failed. Please try again before logging out.');
+          return;
+        }
       }
 
       await logout();

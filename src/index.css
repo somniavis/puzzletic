@@ -6,6 +6,13 @@
   /* Prevent double-tap zoom globally */
 }
 
+input,
+textarea,
+select,
+[contenteditable="true"] {
+  touch-action: auto;
+}
+
 .mobile-ui-guard,
 .mobile-ui-guard * {
   -webkit-tap-highlight-color: transparent;
@@ -32,6 +39,7 @@
   -webkit-touch-callout: default;
   -webkit-user-select: text;
   user-select: text;
+  touch-action: auto;
 }
 
 /* Global Layout Layers */

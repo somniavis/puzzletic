@@ -163,8 +163,8 @@ export const enUK = {
     login: 'Log In',
     signup: 'Sign Up',
     back_to_home: 'Back to Home',
-    continue_experience: 'Continue Journey',
-    new_game: 'Start Fresh',
+    continue_experience: 'Continue',
+    new_game: 'New',
     auth: {
       duplicateLoginAlert: 'You have been logged in on another device. This session will be closed.',
     },
@@ -1279,6 +1279,7 @@ export const enUK = {
     },
     logging_in: 'Logging in...',
     signing_up: 'Signing up...',
+    googleLogoAlt: 'Google logo',
   },
   play: {
     title: 'Play & Learn',

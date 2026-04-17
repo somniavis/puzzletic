@@ -163,8 +163,8 @@ export const frFR = {
     login: 'Se connecter',
     signup: "S'inscrire",
     back_to_home: "Retour à l'accueil",
-    continue_experience: "Continuer l'aventure",
-    new_game: 'Nouveau départ',
+    continue_experience: 'Continuer',
+    new_game: 'Nouveau',
     auth: {
       duplicateLoginAlert: 'Connexion détectée sur un autre appareil. Cette session va être fermée.',
     },
@@ -1279,6 +1279,7 @@ export const frFR = {
     },
     logging_in: 'Connexion...',
     signing_up: 'Inscription...',
+    googleLogoAlt: 'Logo Google',
   },
   play: {
     title: 'Jouer & apprendre',

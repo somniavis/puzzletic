@@ -165,8 +165,8 @@ const jaBase = {
         login: 'ログイン',
         signup: '新規登録',
         back_to_home: 'ホームに戻る',
-        continue_experience: 'つづきから',
-        new_game: 'はじめから',
+        continue_experience: 'つづき',
+        new_game: '新しく',
         auth: {
             duplicateLoginAlert: '他の端末でログインされたため、接続を終了します。',
         },
@@ -2024,6 +2024,7 @@ const jaBase = {
         },
         logging_in: 'ログイン中...',
         signing_up: '登録中...',
+        googleLogoAlt: 'Google ロゴ',
     },
     play: {
         title: 'プレイ & 学び',

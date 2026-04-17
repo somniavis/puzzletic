@@ -548,16 +548,23 @@
 }
 
 .portal-landing__secondary-cta {
-    min-width: 122px;
-    min-height: 40px;
+    width: 82px;
+    height: 82px;
+    min-width: 82px;
+    min-height: 82px;
+    display: grid;
+    place-items: center;
     border: 0;
-    border-radius: 999px;
-    padding: 0.7rem 1rem;
+    border-radius: 50%;
+    padding: 0.55rem;
     background: rgba(255, 255, 255, 0.84);
     color: #4b614b;
-    font-size: 0.9rem;
+    font-size: 0.78rem;
+    line-height: 1.05;
+    text-align: center;
     font-weight: 900;
     letter-spacing: 0.01em;
+    white-space: normal;
     cursor: pointer;
     touch-action: manipulation;
     box-shadow:
@@ -692,10 +699,12 @@
     }
 
     .portal-landing__secondary-cta {
-        min-width: 110px;
-        min-height: 36px;
-        padding: 0.58rem 0.84rem;
-        font-size: 0.82rem;
+        width: 74px;
+        height: 74px;
+        min-width: 74px;
+        min-height: 74px;
+        padding: 0.5rem;
+        font-size: 0.72rem;
     }
 
     .portal-landing__footer {
@@ -827,10 +836,12 @@
     }
 
     .portal-landing__secondary-cta {
-        min-width: 86px;
-        min-height: 30px;
-        padding: 0.38rem 0.62rem;
-        font-size: 0.68rem;
+        width: 62px;
+        height: 62px;
+        min-width: 62px;
+        min-height: 62px;
+        padding: 0.34rem;
+        font-size: 0.62rem;
     }
 
     .portal-landing__footer {
