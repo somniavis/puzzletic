@@ -122,47 +122,42 @@ export const LoginPage: React.FC = () => {
 
 
     return (
-        <div ref={rootRef} className="auth-page mobile-ui-guard">
-            <div className="auth-container">
-                <header className="auth-header" style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    gap: '16px',
-                    textAlign: 'left'
-                }}>
-                    <div>
-                        <h1 style={{ margin: 0, fontSize: '1.8rem', lineHeight: '1.2' }}>{t('auth.login.title')}</h1>
-                        <p style={{ margin: '4px 0 0 0', fontSize: '0.9rem', opacity: 0.9 }}>{t('auth.login.subtitle')}</p>
-                    </div>
+        <div ref={rootRef} className="auth-page auth-page--login mobile-ui-guard">
+            <div className="auth-page__decor" aria-hidden="true">
+                <div className="auth-page__aurora auth-page__aurora--left" />
+                <div className="auth-page__aurora auth-page__aurora--right" />
+                <div className="auth-page__math-layer">
+                    <div className="auth-page__math auth-page__math--a">+</div>
+                    <div className="auth-page__math auth-page__math--b">−</div>
+                    <div className="auth-page__math auth-page__math--c">×</div>
+                    <div className="auth-page__math auth-page__math--d">÷</div>
+                    <div className="auth-page__math auth-page__math--e">+</div>
+                    <div className="auth-page__math auth-page__math--f">×</div>
+                </div>
+            </div>
 
+            <div className="auth-container auth-container--login">
+                <button
+                    className="back-btn auth-login__back-btn"
+                    onClick={() => {
+                        const from = (location.state as any)?.from;
+                        if (from) {
+                            navigate(from);
+                        } else {
+                            navigate('/');
+                        }
+                    }}
+                    aria-label={t('common.close')}
+                >
+                    ←
+                </button>
 
-                    <button
-                        className="back-btn"
-                        onClick={() => {
-                            const from = (location.state as any)?.from;
-                            if (from) {
-                                navigate(from);
-                            } else {
-                                navigate('/');
-                            }
-                        }}
-                        aria-label={t('common.close')}
-                        style={{
-                            width: '42px',
-                            height: '42px',
-                            fontSize: '1.5rem',
-                            flexShrink: 0,
-                            backgroundColor: '#8B4513', // Explicit Brown background
-                            color: '#FFFFFF', // White text
-                            border: '2px solid #5e2f0d'
-                        }}
-                    >
-                        ←
-                    </button>
+                <header className="auth-header auth-header--login">
+                    <h1>{t('auth.login.title')}</h1>
+                    <p>{t('auth.login.subtitle')}</p>
                 </header>
 
-                <form className="auth-form" onSubmit={handleLogin}>
+                <form className="auth-form auth-form--login" onSubmit={handleLogin}>
                     <div className="form-group">
                         <label className="form-label">{t('auth.login.email')}</label>
                         <input
@@ -218,28 +213,14 @@ export const LoginPage: React.FC = () => {
                     {errors.general && <p className="form-error form-error--general">{errors.general}</p>}
                 </form>
 
-                <div className="auth-divider">{t('auth.login.or')}</div>
+                <div className="auth-divider auth-divider--login">{t('auth.login.or')}</div>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                <div className="auth-login__actions">
                     <button
                         type="button"
-                        className="auth-btn"
+                        className="auth-btn auth-btn--google"
                         onClick={handleGoogleLogin}
                         disabled={isRedirecting}
-                        style={{
-                            backgroundColor: isRedirecting ? '#f5f5f5' : '#ffffff',
-                            color: isRedirecting ? '#9e9e9e' : '#757575',
-                            border: '1px solid #ddd',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            gap: '8px',
-                            fontSize: '15px',
-                            width: '100%',
-                            height: '56px',
-                            boxSizing: 'border-box',
-                            cursor: isRedirecting ? 'not-allowed' : 'pointer'
-                        }}
                     >
                         {isRedirecting ? (
                             <span>Loading...</span>
@@ -250,37 +231,15 @@ export const LoginPage: React.FC = () => {
                             </>
                         )}
                     </button>
+                </div>
 
-                    {/* 
-                    <button 
-                        type="button" 
-                        className="auth-btn auth-btn--apple"
-                        onClick={handleAppleLogin}
-                        style={{ backgroundColor: '#000000', color: '#ffffff', border: '1px solid #000', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
-                    >
-                        <span style={{ fontSize: '18px' }}></span>
-                        Sign in with Apple
-                    </button> 
-                    */}
-
+                <div className="auth-login__footer-link">
+                    <span>{t('auth.login.needAccount')}</span>
                     <button
-                        className="auth-btn"
+                        type="button"
+                        className="auth-link-btn auth-link-btn--inline"
                         onClick={handleGoToSignup}
-                        style={{
-                            backgroundColor: '#FFD700', /* Stronger Gold */
-                            color: '#4d3e2f',
-                            border: '1px solid #d4961f',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            gap: '8px',
-                            fontSize: '15px',
-                            width: '100%',
-                            height: '56px',
-                            boxSizing: 'border-box'
-                        }}
                     >
-                        <span style={{ fontSize: '18px' }}>✉️</span>
                         {t('auth.login.signup')}
                     </button>
                 </div>

@@ -1237,6 +1237,7 @@ export const idID = {
     login: {
       title: 'Masuk',
       subtitle: 'Jello lucumu sedang menunggu!',
+      needAccount: 'Butuh akun?',
       email: 'Email',
       emailPlaceholder: 'Masukkan email',
       password: 'Kata sandi',
@@ -1248,7 +1249,7 @@ export const idID = {
     },
     signup: {
       title: 'Daftar',
-      subtitle: 'Simpan momen berharga bersama Jello.',
+      subtitle: 'Masuk ke dunia rahasia GroGroJello',
       emailLabel: 'Email',
       emailPlaceholder: 'Masukkan email',
       passwordLabel: 'Kata sandi',

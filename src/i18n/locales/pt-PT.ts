@@ -1237,6 +1237,7 @@ export const ptPT = {
     login: {
       title: 'Iniciar sessão',
       subtitle: 'O seu Jello fofinho está à espera!',
+      needAccount: 'Precisa de uma conta?',
       email: 'Email',
       emailPlaceholder: 'Introduza o seu email',
       password: 'Palavra-passe',
@@ -1248,7 +1249,7 @@ export const ptPT = {
     },
     signup: {
       title: 'Registar',
-      subtitle: 'Guarde os seus momentos preciosos com o Jello.',
+      subtitle: 'Entra no mundo secreto de GroGroJello',
       emailLabel: 'Email',
       emailPlaceholder: 'Introduza o seu email',
       passwordLabel: 'Palavra-passe',

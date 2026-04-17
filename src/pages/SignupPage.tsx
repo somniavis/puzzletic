@@ -183,7 +183,20 @@ export const SignupPage: React.FC = () => {
     };
 
     return (
-        <div ref={rootRef} className="auth-page mobile-ui-guard">
+        <div ref={rootRef} className="auth-page auth-page--signup mobile-ui-guard">
+            <div className="auth-page__decor" aria-hidden="true">
+                <div className="auth-page__aurora auth-page__aurora--left" />
+                <div className="auth-page__aurora auth-page__aurora--right" />
+                <div className="auth-page__math-layer">
+                    <div className="auth-page__math auth-page__math--a">+</div>
+                    <div className="auth-page__math auth-page__math--b">−</div>
+                    <div className="auth-page__math auth-page__math--c">×</div>
+                    <div className="auth-page__math auth-page__math--d">÷</div>
+                    <div className="auth-page__math auth-page__math--e">+</div>
+                    <div className="auth-page__math auth-page__math--f">×</div>
+                </div>
+            </div>
+
             {isSubmitting && (
                 <div style={{
                     position: 'fixed',
@@ -212,46 +225,48 @@ export const SignupPage: React.FC = () => {
                 </div>
             )}
 
-            <div className="auth-container">
-                <header className="auth-header" style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    gap: '16px',
-                    textAlign: 'left'
-                }}>
-                    <div>
-                        <h1 style={{ margin: 0, fontSize: '1.8rem', lineHeight: '1.2' }}>{t('auth.signup.title')}</h1>
-                        <p style={{ margin: '4px 0 0 0', fontSize: '0.9rem', opacity: 0.9 }}>{t('auth.signup.subtitle')}</p>
-                    </div>
+            <div className="auth-container auth-container--signup">
+                <button
+                    className="back-btn auth-login__back-btn"
+                    onClick={() => {
+                        const from = (location.state as any)?.from;
+                        if (from) {
+                            navigate(from);
+                        } else {
+                            navigate('/');
+                        }
+                    }}
+                    aria-label={t('common.close')}
+                >
+                    ←
+                </button>
 
-
-                    <button
-                        className="back-btn"
-                        onClick={() => {
-                            const from = (location.state as any)?.from;
-                            if (from) {
-                                navigate(from);
-                            } else {
-                                navigate('/');
-                            }
-                        }}
-                        aria-label={t('common.close')}
-                        style={{
-                            width: '42px',
-                            height: '42px',
-                            fontSize: '1.5rem',
-                            flexShrink: 0,
-                            backgroundColor: '#8B4513', // Explicit Brown background
-                            color: '#FFFFFF', // White text
-                            border: '2px solid #5e2f0d'
-                        }}
-                    >
-                        ←
-                    </button>
+                <header className="auth-header auth-header--signup">
+                    <h1>{t('auth.signup.title')}</h1>
+                    <p>{t('auth.signup.subtitle')}</p>
                 </header>
 
-                <form className="auth-form" onSubmit={handleSignup}>
+                <div className="auth-login__actions">
+                    <button
+                        type="button"
+                        className="auth-btn auth-btn--google"
+                        onClick={handleGoogleSignup}
+                        disabled={isRedirecting}
+                    >
+                        {isRedirecting ? (
+                            <span>Loading...</span>
+                        ) : (
+                            <>
+                                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" style={{ width: '18px', height: '18px' }} />
+                                {t('auth.login.google')}
+                            </>
+                        )}
+                    </button>
+                </div>
+
+                <div className="auth-divider auth-divider--signup">{t('auth.login.or')}</div>
+
+                <form className="auth-form auth-form--signup" onSubmit={handleSignup}>
                     <div className="form-group">
                         <label className="form-label">{t('auth.signup.emailLabel')}</label>
                         <input
@@ -309,7 +324,7 @@ export const SignupPage: React.FC = () => {
                     <button type="submit" className="auth-btn auth-btn--primary" disabled={loading || isSubmitting} style={{ width: '100%' }}>
                         {isSubmitting ? t('auth.signing_up') : t('auth.signup.action')}
                     </button>
-                    <p className="auth-consent-text">
+                    <p className="auth-consent-text auth-consent-text--signup">
                         {t('auth.signup.consentPrefix')}
                         <Link to="/terms" className="auth-consent-link">{t('auth.signup.termsLink')}</Link>
                         {t('auth.signup.consentConnector')}
@@ -319,49 +334,16 @@ export const SignupPage: React.FC = () => {
                     {errors.general && <p className="form-error form-error--general">{errors.general}</p>}
                 </form>
 
-                <div className="auth-divider">{t('auth.login.or')}</div>
-
-                <button
-                    type="button"
-                    className="auth-btn"
-                    onClick={handleGoogleSignup}
-                    disabled={isRedirecting}
-                    style={{
-                        backgroundColor: isRedirecting ? '#f5f5f5' : '#ffffff',
-                        color: isRedirecting ? '#9e9e9e' : '#757575',
-                        border: '1px solid #ddd',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: '8px',
-                        fontSize: '15px',
-                        width: '100%',
-                        height: '56px',
-                        boxSizing: 'border-box',
-                        cursor: isRedirecting ? 'not-allowed' : 'pointer'
-                    }}
-                >
-                    {isRedirecting ? (
-                        <span>Loading...</span>
-                    ) : (
-                        <>
-                            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" style={{ width: '18px', height: '18px' }} />
-                            {t('auth.login.google')}
-                        </>
-                    )}
-                </button>
-
-                <div className="auth-divider">
-                    {t('auth.signup.haveAccount')}
+                <div className="auth-login__footer-link auth-login__footer-link--signup">
+                    <span>{t('auth.signup.haveAccount')}</span>
+                    <button
+                        type="button"
+                        className="auth-link-btn auth-link-btn--inline"
+                        onClick={handleBackToLogin}
+                    >
+                        {t('auth.signup.loginLink')}
+                    </button>
                 </div>
-
-                <button
-                    className="signup-login-btn"
-                    onClick={handleBackToLogin}
-                >
-                    <span style={{ fontSize: '18px' }}>🔑</span>
-                    {t('auth.signup.loginLink')}
-                </button>
             </div>
         </div>
     );

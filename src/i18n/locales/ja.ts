@@ -1982,6 +1982,7 @@ const jaBase = {
         login: {
             title: 'ログイン',
             subtitle: 'かわいいジェロが待ってるよ！',
+            needAccount: 'アカウントが必要ですか？',
             email: 'メールアドレス',
             emailPlaceholder: 'メールアドレスを入力',
             password: 'パスワード',
@@ -1993,7 +1994,7 @@ const jaBase = {
         },
         signup: {
             title: '新規登録',
-            subtitle: 'ジェロとの大切な時間を記録しよう。',
+            subtitle: 'GroGroJello の秘密の世界へようこそ',
             emailLabel: 'メールアドレス',
             emailPlaceholder: 'メールアドレスを入力',
             passwordLabel: 'パスワード',

@@ -1239,6 +1239,7 @@ const koBase = {
         login: {
             title: '로그인',
             subtitle: '귀여운 젤로가 기다리고있어요!',
+            needAccount: '계정이 필요하신가요?',
             email: '이메일',
             emailPlaceholder: '이메일을 입력하세요',
             password: '비밀번호',
@@ -1250,7 +1251,7 @@ const koBase = {
         },
         signup: {
             title: '회원가입',
-            subtitle: '젤로와의 소중한 시간을 기록하세요.',
+            subtitle: '그로그로젤로의 비밀 세계로 들어오세요',
             emailLabel: '이메일',
             emailPlaceholder: '이메일을 입력하세요',
             passwordLabel: '비밀번호',

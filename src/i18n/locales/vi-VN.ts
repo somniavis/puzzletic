@@ -1763,6 +1763,7 @@ export const viVN = {
     login: {
       title: 'Đăng nhập',
       subtitle: 'Jello đáng yêu của bạn đang chờ!',
+      needAccount: 'Bạn cần một tài khoản?',
       email: 'Email',
       emailPlaceholder: 'Nhập email',
       password: 'Mật khẩu',
@@ -1774,7 +1775,7 @@ export const viVN = {
     },
     signup: {
       title: 'Đăng ký',
-      subtitle: 'Lưu lại những khoảnh khắc quý giá cùng Jello.',
+      subtitle: 'Bước vào thế giới bí mật của GroGroJello',
       emailLabel: 'Email',
       emailPlaceholder: 'Nhập email',
       passwordLabel: 'Mật khẩu',

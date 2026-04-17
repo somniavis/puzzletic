@@ -1237,6 +1237,7 @@ export const frFR = {
     login: {
       title: 'Connexion',
       subtitle: 'Ton adorable Jello t’attend !',
+      needAccount: 'Besoin d’un compte ?',
       email: 'E-mail',
       emailPlaceholder: 'Entrez votre e-mail',
       password: 'Mot de passe',
@@ -1248,7 +1249,7 @@ export const frFR = {
     },
     signup: {
       title: 'Inscription',
-      subtitle: 'Conservez vos précieux moments avec Jello.',
+      subtitle: 'Entrez dans le monde secret de GroGroJello',
       emailLabel: 'E-mail',
       emailPlaceholder: 'Entrez votre e-mail',
       passwordLabel: 'Mot de passe',

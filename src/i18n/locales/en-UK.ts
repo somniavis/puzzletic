@@ -1237,18 +1237,19 @@ export const enUK = {
     login: {
       title: 'Log In',
       subtitle: 'Your cute Jello is waiting!',
+      needAccount: 'Need an account?',
       email: 'Email',
       emailPlaceholder: 'Enter your email',
       password: 'Password',
       passwordPlaceholder: 'Enter your password',
       or: 'OR',
       google: 'Continue with Google',
-      signup: 'Sign up with Email',
+      signup: 'Sign up',
       action: 'Log In', // Explicit action key
     },
     signup: {
       title: 'Sign Up',
-      subtitle: 'Save your precious moments with Jello.',
+      subtitle: 'Enter the secret world of GroGroJello',
       emailLabel: 'Email',
       emailPlaceholder: 'Enter your email',
       passwordLabel: 'Password',

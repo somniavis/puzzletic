@@ -1237,6 +1237,7 @@ export const esES = {
     login: {
       title: 'Iniciar sesión',
       subtitle: '¡Tu adorable Jello te está esperando!',
+      needAccount: '¿Necesitas una cuenta?',
       email: 'Correo electrónico',
       emailPlaceholder: 'Introduce tu correo electrónico',
       password: 'Contraseña',
@@ -1248,7 +1249,7 @@ export const esES = {
     },
     signup: {
       title: 'Crear cuenta',
-      subtitle: 'Guarda tus momentos especiales con Jello.',
+      subtitle: 'Entra en el mundo secreto de GroGroJello',
       emailLabel: 'Correo electrónico',
       emailPlaceholder: 'Introduce tu correo electrónico',
       passwordLabel: 'Contraseña',
