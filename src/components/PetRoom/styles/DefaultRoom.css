@@ -6,5 +6,5 @@
 .room-background.default_ground .room-floor {
     height: 100%;
     margin-top: 0;
-    background: linear-gradient(180deg, #FFF9E6 0%, #FFE4B5 100%);
+    background: linear-gradient(180deg, #fffef4 0%, #f4ecb8 100%);
 }

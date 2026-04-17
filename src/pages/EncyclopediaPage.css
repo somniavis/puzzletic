@@ -4,7 +4,9 @@
     flex-direction: column;
     height: 100vh;
     height: 100dvh;
-    background: linear-gradient(180deg, #87CEEB 0%, #E0F6FF 100%);
+    background:
+        radial-gradient(circle at 50% 38%, rgba(255, 244, 184, 0.92) 0%, rgba(255, 244, 184, 0.54) 18%, rgba(241, 255, 196, 0.1) 36%, transparent 58%),
+        linear-gradient(180deg, #f8ffdf 0%, #dff7ff 42%, #8ed7b8 100%);
     overflow: hidden;
     position: relative;
     font-family: inherit;
