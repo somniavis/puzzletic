@@ -7,10 +7,10 @@ import {
 } from '../../shared/PlayArcadeUI';
 import {
     CASTLE_OBSTACLE,
+    FIELD_ALL_SPAWN_ZONES,
     DEBUG_CASTLE_SPAWN_POINTS_ENABLED,
     DEBUG_CONTACT_RANGES_ENABLED,
     DEBUG_OBSTACLE_SLOTS_ENABLED,
-    FIELD_CASTLE_SPAWN_ZONES,
     FIELD_FENCE_POSTS,
     FIELD_GROUND_PATCHES,
     PLAYER_RADIUS,
@@ -23,9 +23,9 @@ import {
 } from './enemyBehaviors';
 import { formatRunClock } from './helpers';
 import type {
-    BombBlast,
-    BombStrike,
-    DeathBurst,
+    BombBlastRenderItem,
+    BombStrikeRenderItem,
+    DeathBurstRenderItem,
     EliteRenderItem,
     EnemyRenderItem,
     FencePost,
@@ -37,7 +37,7 @@ import type {
     PickupRenderItem,
     ProjectileRenderItem,
     RangedEnemyRenderItem,
-    SpawnSignal,
+    SpawnSignalRenderItem,
     UpgradeOption,
     UpgradeOptionId,
     Vector2,
@@ -294,7 +294,7 @@ const OrbitNode = React.memo<{
 
 const BombStrikeNode = React.memo<{
     bombRadius: number;
-    bombStrike: BombStrike;
+    bombStrike: BombStrikeRenderItem;
     elapsedMs: number;
 }>(({ bombRadius, bombStrike, elapsedMs }) => {
     const bombVisualSize = 42;
@@ -381,7 +381,7 @@ const BombStrikeNode = React.memo<{
     );
 });
 
-const BombBlastNode = React.memo<{ blast: BombBlast }>(({ blast }) => (
+const BombBlastNode = React.memo<{ blast: BombBlastRenderItem }>(({ blast }) => (
     <div
         className="jello-knight__bomb-blast"
         style={{
@@ -394,7 +394,7 @@ const BombBlastNode = React.memo<{ blast: BombBlast }>(({ blast }) => (
     />
 ));
 
-const SpawnSignalNode = React.memo<{ signal: SpawnSignal }>(({ signal }) => (
+const SpawnSignalNode = React.memo<{ signal: SpawnSignalRenderItem }>(({ signal }) => (
     <div
         className={`jello-knight__spawn-signal jello-knight__spawn-signal--${signal.tone}`}
         style={{
@@ -458,10 +458,10 @@ type FieldProps = {
     activeObstacles: Obstacle[];
     obstacleSlots: ObstacleSlot[];
     announcement: JelloKnightAnnouncement | null;
-    bombBlasts: BombBlast[];
+    bombBlasts: BombBlastRenderItem[];
     bombRadius: number;
-    bombStrikes: BombStrike[];
-    deathBursts: DeathBurst[];
+    bombStrikes: BombStrikeRenderItem[];
+    deathBursts: DeathBurstRenderItem[];
     controlsRef: React.RefObject<HTMLDivElement | null>;
     damageFlashOpacity: number;
     elapsedMs: number;
@@ -484,7 +484,7 @@ type FieldProps = {
     rangedEnemies: RangedEnemyRenderItem[];
     runnerCharacter: Character;
     safeSpeciesId: string;
-    spawnSignals: SpawnSignal[];
+    spawnSignals: SpawnSignalRenderItem[];
     stageMoodStyle: React.CSSProperties;
     stageRef: React.RefObject<HTMLDivElement | null>;
     overlayContent?: React.ReactNode;
@@ -506,7 +506,7 @@ const StaticArenaDecor = React.memo(() => (
         <div className="jello-knight__field-ground" aria-hidden="true">
             {FIELD_GROUND_PATCHES.map((patch) => <GroundPatchNode key={patch.id} patch={patch} />)}
         </div>
-        {DEBUG_CASTLE_SPAWN_POINTS_ENABLED && FIELD_CASTLE_SPAWN_ZONES.map((zone) => (
+        {DEBUG_CASTLE_SPAWN_POINTS_ENABLED && FIELD_ALL_SPAWN_ZONES.map((zone) => (
             <CastleSpawnPointNode
                 key={zone.id}
                 id={zone.id}
@@ -526,28 +526,13 @@ type ObstaclesLayerProps = {
 const ObstaclesLayer = React.memo<ObstaclesLayerProps>(({ activeObstacles, obstacleSlots }) => (
     <>
         {DEBUG_OBSTACLE_SLOTS_ENABLED && obstacleSlots.map((slot) => <ObstacleSlotNode key={slot.id} slot={slot} />)}
-        {activeObstacles
-            .filter((obstacle) => obstacle.id !== 'castle-core')
-            .map((obstacle) => <ObstacleNode key={obstacle.id} obstacle={obstacle} />)}
+        {activeObstacles.map((obstacle) => (
+            obstacle.id === 'castle-core'
+                ? null
+                : <ObstacleNode key={obstacle.id} obstacle={obstacle} />
+        ))}
     </>
 ));
-
-type CombatLayerProps = {
-    elapsedMs: number;
-    eliteEnemy: EliteRenderItem | null;
-    enemies: EnemyRenderItem[];
-    orbitPalette: { core: string; glow: string; edge: string };
-    orbitPositions: Vector2[];
-    projectiles: ProjectileRenderItem[];
-    rangedEnemies: RangedEnemyRenderItem[];
-    bombBlasts: BombBlast[];
-    bombRadius: number;
-    bombStrikes: BombStrike[];
-    deathBursts: DeathBurst[];
-    spawnSignals: SpawnSignal[];
-    webZones: WebZoneRenderItem[];
-    xpPickups: PickupRenderItem[];
-};
 
 const WebZoneLayer = React.memo<{ webZones: WebZoneRenderItem[] }>(({ webZones }) => (
     <>
@@ -592,7 +577,7 @@ const OrbitLayer = React.memo<{
 
 const BombStrikeLayer = React.memo<{
     bombRadius: number;
-    bombStrikes: BombStrike[];
+    bombStrikes: BombStrikeRenderItem[];
     elapsedMs: number;
 }>(({ bombRadius, bombStrikes, elapsedMs }) => (
     <>
@@ -607,19 +592,19 @@ const BombStrikeLayer = React.memo<{
     </>
 ));
 
-const BombBlastLayer = React.memo<{ bombBlasts: BombBlast[] }>(({ bombBlasts }) => (
+const BombBlastLayer = React.memo<{ bombBlasts: BombBlastRenderItem[] }>(({ bombBlasts }) => (
     <>
         {bombBlasts.map((blast) => <BombBlastNode key={`blast-${blast.id}`} blast={blast} />)}
     </>
 ));
 
-const SpawnSignalLayer = React.memo<{ spawnSignals: SpawnSignal[] }>(({ spawnSignals }) => (
+const SpawnSignalLayer = React.memo<{ spawnSignals: SpawnSignalRenderItem[] }>(({ spawnSignals }) => (
     <>
         {spawnSignals.map((signal) => <SpawnSignalNode key={signal.id} signal={signal} />)}
     </>
 ));
 
-const DeathBurstNode = React.memo<{ burst: DeathBurst }>(({ burst }) => (
+const DeathBurstNode = React.memo<{ burst: DeathBurstRenderItem }>(({ burst }) => (
     <div
         className="jello-knight__death-burst"
         style={{
@@ -634,7 +619,7 @@ const DeathBurstNode = React.memo<{ burst: DeathBurst }>(({ burst }) => (
     </div>
 ));
 
-const DeathBurstLayer = React.memo<{ deathBursts: DeathBurst[] }>(({ deathBursts }) => (
+const DeathBurstLayer = React.memo<{ deathBursts: DeathBurstRenderItem[] }>(({ deathBursts }) => (
     <>
         {deathBursts.map((burst) => <DeathBurstNode key={burst.id} burst={burst} />)}
     </>
@@ -646,29 +631,63 @@ const PickupLayer = React.memo<{ xpPickups: PickupRenderItem[] }>(({ xpPickups }
     </>
 ));
 
-const CombatLayer = React.memo<CombatLayerProps>(({
+type CombatUnitLayerProps = {
+    elapsedMs: number;
+    eliteEnemy: EliteRenderItem | null;
+    enemies: EnemyRenderItem[];
+    rangedEnemies: RangedEnemyRenderItem[];
+};
+
+const CombatUnitLayer = React.memo<CombatUnitLayerProps>(({
+    elapsedMs,
+    eliteEnemy,
+    enemies,
+    rangedEnemies,
+}) => (
+    <>
+        <MeleeEnemiesLayer enemies={enemies} />
+        <RangedEnemiesLayer rangedEnemies={rangedEnemies} />
+        <EliteLayer eliteEnemy={eliteEnemy} elapsedMs={elapsedMs} />
+    </>
+));
+
+type CombatMotionLayerProps = {
+    orbitPalette: { core: string; glow: string; edge: string };
+    orbitPositions: Vector2[];
+    projectiles: ProjectileRenderItem[];
+};
+
+const CombatMotionLayer = React.memo<CombatMotionLayerProps>(({
+    orbitPalette,
+    orbitPositions,
+    projectiles,
+}) => (
+    <>
+        <ProjectileLayer projectiles={projectiles} />
+        <OrbitLayer orbitPalette={orbitPalette} orbitPositions={orbitPositions} />
+    </>
+));
+
+type CombatFeedbackLayerProps = {
+    bombBlasts: BombBlastRenderItem[];
+    bombRadius: number;
+    bombStrikes: BombStrikeRenderItem[];
+    deathBursts: DeathBurstRenderItem[];
+    elapsedMs: number;
+    spawnSignals: SpawnSignalRenderItem[];
+    xpPickups: PickupRenderItem[];
+};
+
+const CombatFeedbackLayer = React.memo<CombatFeedbackLayerProps>(({
     bombBlasts,
     bombRadius,
     bombStrikes,
     deathBursts,
     elapsedMs,
-    eliteEnemy,
-    enemies,
-    orbitPalette,
-    orbitPositions,
-    projectiles,
-    rangedEnemies,
     spawnSignals,
-    webZones,
     xpPickups,
 }) => (
     <>
-        <WebZoneLayer webZones={webZones} />
-        <MeleeEnemiesLayer enemies={enemies} />
-        <RangedEnemiesLayer rangedEnemies={rangedEnemies} />
-        <EliteLayer eliteEnemy={eliteEnemy} elapsedMs={elapsedMs} />
-        <ProjectileLayer projectiles={projectiles} />
-        <OrbitLayer orbitPalette={orbitPalette} orbitPositions={orbitPositions} />
         <BombStrikeLayer bombRadius={bombRadius} bombStrikes={bombStrikes} elapsedMs={elapsedMs} />
         <BombBlastLayer bombBlasts={bombBlasts} />
         <DeathBurstLayer deathBursts={deathBursts} />
@@ -756,20 +775,25 @@ export const JelloKnightField: React.FC<FieldProps> = ({
                 <div className="jello-knight__field" style={fieldStyle}>
                     <StaticArenaDecor />
                     <ObstaclesLayer activeObstacles={activeObstacles} obstacleSlots={obstacleSlots} />
-                    <CombatLayer
+                    <WebZoneLayer webZones={webZones} />
+                    <CombatUnitLayer
+                        elapsedMs={elapsedMs}
+                        eliteEnemy={eliteEnemy}
+                        enemies={enemies}
+                        rangedEnemies={rangedEnemies}
+                    />
+                    <CombatMotionLayer
+                        orbitPalette={orbitPalette}
+                        orbitPositions={orbitPositions}
+                        projectiles={projectiles}
+                    />
+                    <CombatFeedbackLayer
                         bombBlasts={bombBlasts}
                         bombRadius={bombRadius}
                         bombStrikes={bombStrikes}
                         deathBursts={deathBursts}
                         elapsedMs={elapsedMs}
-                        eliteEnemy={eliteEnemy}
-                        enemies={enemies}
-                        orbitPalette={orbitPalette}
-                        orbitPositions={orbitPositions}
-                        projectiles={projectiles}
-                        rangedEnemies={rangedEnemies}
                         spawnSignals={spawnSignals}
-                        webZones={webZones}
                         xpPickups={xpPickups}
                     />
                     <RunnerLayer

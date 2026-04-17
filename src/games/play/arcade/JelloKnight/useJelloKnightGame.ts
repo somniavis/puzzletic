@@ -41,8 +41,6 @@ import {
 } from './constants';
 import {
     clamp,
-    getActiveObstacles,
-    getObstacleSlotsForWave,
     getCameraPositionFromViewport,
     getVectorLength,
     getWaveTargetKillCount,
@@ -50,6 +48,7 @@ import {
     normalizeVector,
     resolveCircleObstacleCollisions,
 } from './helpers';
+import { getActiveObstacles, getObstacleSlotsForWave } from './obstacleLayout';
 import {
     applyDamageWithDefense,
     createInitialUpgradeLevels,
@@ -75,9 +74,12 @@ import {
 } from './waveProgress';
 import type {
     BombBlast,
+    BombBlastRenderItem,
     BombStrike,
+    BombStrikeRenderItem,
     ChaserEnemy,
     DeathBurst,
+    DeathBurstRenderItem,
     EliteEnemy,
     EnemyProjectile,
     EnemyRenderItem,
@@ -91,8 +93,9 @@ import type {
     RangedEnemy,
     RangedEnemyRenderItem,
     RunnerMotion,
-    UpgradeLevels,
     SpawnSignal,
+    SpawnSignalRenderItem,
+    UpgradeLevels,
     UpgradeOption,
     UpgradeOptionId,
     Vector2,
@@ -101,6 +104,300 @@ import type {
     XpPickup,
     ProjectileRenderItem,
 } from './types';
+
+const getCombinedMovementInput = (
+    keyboardInput: { up: boolean; down: boolean; left: boolean; right: boolean },
+    joystickInput: Vector2
+) => {
+    const keyboardVector = normalizeVector({
+        x: (keyboardInput.right ? 1 : 0) - (keyboardInput.left ? 1 : 0),
+        y: (keyboardInput.down ? 1 : 0) - (keyboardInput.up ? 1 : 0),
+    });
+    const joystickStrength = Math.min(1, getVectorLength(joystickInput));
+    const combinedVector = normalizeVector({
+        x: keyboardVector.x + joystickInput.x,
+        y: keyboardVector.y + joystickInput.y,
+    });
+    const activeStrength = Math.max(getVectorLength(keyboardVector), joystickStrength);
+
+    return {
+        combinedVector,
+        activeStrength,
+        hasMovementInput: activeStrength > 0.08,
+    };
+};
+
+const isPlayerTouchingWebZone = (
+    position: Vector2,
+    webZones: WebZone[],
+    isWithinRadius: (ax: number, ay: number, bx: number, by: number, radius: number) => boolean
+) => webZones.some((webZone) => (
+    isWithinRadius(position.x, position.y, webZone.x, webZone.y, webZone.radius + (PLAYER_RADIUS * 0.15))
+));
+
+const getNextPlayerPosition = (params: {
+    activeObstacles: Obstacle[];
+    combinedVector: Vector2;
+    currentPosition: Vector2;
+    deltaMs: number;
+    hasMovementInput: boolean;
+    moveSpeed: number;
+}) => {
+    const { activeObstacles, combinedVector, currentPosition, deltaMs, hasMovementInput, moveSpeed } = params;
+    const movedPosition = !hasMovementInput || moveSpeed <= 0
+        ? currentPosition
+        : {
+            x: clamp(
+                currentPosition.x + combinedVector.x * moveSpeed * (deltaMs / 1000),
+                PLAYER_RADIUS,
+                FIELD_SIZE - PLAYER_RADIUS
+            ),
+            y: clamp(
+                currentPosition.y + combinedVector.y * moveSpeed * (deltaMs / 1000),
+                PLAYER_RADIUS,
+                FIELD_SIZE - PLAYER_RADIUS
+            ),
+        };
+
+    return resolveCircleObstacleCollisions(
+        movedPosition,
+        PLAYER_RADIUS,
+        activeObstacles,
+        OBSTACLE_PLAYER_PADDING
+    );
+};
+
+const buildOrbitPositions = (params: {
+    elapsedMs: number;
+    orbitCount: number;
+    orbitRadius: number;
+    orbitSpeed: number;
+    playerPosition: Vector2;
+}) => {
+    const { elapsedMs, orbitCount, orbitRadius, orbitSpeed, playerPosition } = params;
+    const baseOrbitAngle = (elapsedMs / 1000) * orbitSpeed * Math.PI * 2;
+    const orbitPositions: Vector2[] = [];
+
+    for (let index = 0; index < orbitCount; index += 1) {
+        const orbitAngle = baseOrbitAngle + ((Math.PI * 2 * index) / orbitCount);
+        orbitPositions.push({
+            x: playerPosition.x + Math.cos(orbitAngle) * orbitRadius,
+            y: playerPosition.y + Math.sin(orbitAngle) * orbitRadius,
+        });
+    }
+
+    return orbitPositions;
+};
+
+const syncWaveObstacles = (params: {
+    waveIndex: number;
+    lastObstacleWaveRef: React.MutableRefObject<number>;
+    activeObstaclesRef: React.MutableRefObject<Obstacle[]>;
+    obstacleSlotsRef: React.MutableRefObject<ObstacleSlot[]>;
+    setActiveObstacles: React.Dispatch<React.SetStateAction<Obstacle[]>>;
+    setObstacleSlots: React.Dispatch<React.SetStateAction<ObstacleSlot[]>>;
+}) => {
+    const {
+        waveIndex,
+        lastObstacleWaveRef,
+        activeObstaclesRef,
+        obstacleSlotsRef,
+        setActiveObstacles,
+        setObstacleSlots,
+    } = params;
+
+    if (waveIndex === lastObstacleWaveRef.current) {
+        return activeObstaclesRef.current;
+    }
+
+    lastObstacleWaveRef.current = waveIndex;
+    activeObstaclesRef.current = getActiveObstacles(waveIndex);
+    obstacleSlotsRef.current = getObstacleSlotsForWave(waveIndex);
+    setActiveObstacles(activeObstaclesRef.current);
+    setObstacleSlots(obstacleSlotsRef.current);
+
+    return activeObstaclesRef.current;
+};
+
+const getWaveFrameState = (params: {
+    elapsedMs: number;
+    nextWaveAdvanceAtMsRef: React.MutableRefObject<number | null>;
+    waveIndexRef: React.MutableRefObject<number>;
+    waveKillCountRef: React.MutableRefObject<number>;
+    waveTargetKillCountRef: React.MutableRefObject<number>;
+    waveEliteKillCountRef: React.MutableRefObject<number>;
+    waveEliteKillTargetRef: React.MutableRefObject<number>;
+    lastSpawnTimeRef: React.MutableRefObject<number>;
+    lastRangedSpawnTimeRef: React.MutableRefObject<number>;
+    nextEliteSpawnAtMsRef: React.MutableRefObject<number>;
+    lastObstacleWaveRef: React.MutableRefObject<number>;
+    activeObstaclesRef: React.MutableRefObject<Obstacle[]>;
+    obstacleSlotsRef: React.MutableRefObject<ObstacleSlot[]>;
+    setActiveObstacles: React.Dispatch<React.SetStateAction<Obstacle[]>>;
+    setObstacleSlots: React.Dispatch<React.SetStateAction<ObstacleSlot[]>>;
+}) => {
+    const {
+        elapsedMs,
+        nextWaveAdvanceAtMsRef,
+        waveIndexRef,
+        waveKillCountRef,
+        waveTargetKillCountRef,
+        waveEliteKillCountRef,
+        waveEliteKillTargetRef,
+        lastSpawnTimeRef,
+        lastRangedSpawnTimeRef,
+        nextEliteSpawnAtMsRef,
+        lastObstacleWaveRef,
+        activeObstaclesRef,
+        obstacleSlotsRef,
+        setActiveObstacles,
+        setObstacleSlots,
+    } = params;
+
+    const waveState = advanceWaveIfReady({
+        elapsedMs,
+        nextWaveAdvanceAtMsRef,
+        waveIndexRef,
+        waveKillCountRef,
+        waveTargetKillCountRef,
+        waveEliteKillCountRef,
+        waveEliteKillTargetRef,
+        lastSpawnTimeRef,
+        lastRangedSpawnTimeRef,
+        nextEliteSpawnAtMsRef,
+    });
+
+    const activeObstacleSet = syncWaveObstacles({
+        waveIndex: waveState.waveIndex,
+        lastObstacleWaveRef,
+        activeObstaclesRef,
+        obstacleSlotsRef,
+        setActiveObstacles,
+        setObstacleSlots,
+    });
+
+    return {
+        ...waveState,
+        activeObstacleSet,
+        enemySpawnInterval: waveState.waveConfig.meleeSpawnIntervalMs,
+        enemyMaxCount: waveState.waveConfig.meleeMaxCount,
+        enemySpeedBonus: waveState.waveConfig.enemySpeedBonus,
+        rangedSpawnChance: waveState.waveConfig.rangedSpawnChance,
+        rangedSpawnInterval: waveState.waveConfig.rangedSpawnIntervalMs,
+        rangedMaxCount: waveState.waveConfig.rangedMaxCount,
+        eliteSpawnChance: waveState.waveConfig.eliteSpawnChance,
+    };
+};
+
+const createFrameCallbacks = (params: {
+    elapsedMs: number;
+    announcementExpiresAtRef: React.MutableRefObject<number>;
+    nextAnnouncementIdRef: React.MutableRefObject<number>;
+    setAnnouncement: React.Dispatch<React.SetStateAction<JelloKnightAnnouncement | null>>;
+    nextWaveAdvanceAtMsRef: React.MutableRefObject<number | null>;
+    waveIndexRef: React.MutableRefObject<number>;
+    waveKillCountRef: React.MutableRefObject<number>;
+    waveTargetKillCountRef: React.MutableRefObject<number>;
+    waveEliteKillCountRef: React.MutableRefObject<number>;
+    waveEliteKillTargetRef: React.MutableRefObject<number>;
+    damageFlashUntilRef: React.MutableRefObject<number>;
+    hpRef: React.MutableRefObject<number>;
+    defenseRateRef: React.MutableRefObject<number>;
+}) => {
+    const {
+        elapsedMs,
+        announcementExpiresAtRef,
+        nextAnnouncementIdRef,
+        setAnnouncement,
+        nextWaveAdvanceAtMsRef,
+        waveIndexRef,
+        waveKillCountRef,
+        waveTargetKillCountRef,
+        waveEliteKillCountRef,
+        waveEliteKillTargetRef,
+        damageFlashUntilRef,
+        hpRef,
+        defenseRateRef,
+    } = params;
+
+    const showAnnouncement = createShowAnnouncement({
+        elapsedMs,
+        announcementExpiresAtRef,
+        nextAnnouncementIdRef,
+        setAnnouncement,
+    });
+
+    const triggerDamageFlash = () => {
+        damageFlashUntilRef.current = elapsedMs + DAMAGE_FLASH_DURATION_MS;
+    };
+
+    const registerEnemyDefeat = createRegisterEnemyDefeat({
+        elapsedMs,
+        nextWaveAdvanceAtMsRef,
+        waveIndexRef,
+        waveKillCountRef,
+        waveTargetKillCountRef,
+        waveEliteKillCountRef,
+        waveEliteKillTargetRef,
+    });
+
+    const applyPlayerDamage = (
+        rawDamage: number,
+        lastDamageRef: React.MutableRefObject<number>,
+        hitSound: 'jello' | 'quiet-orb' = 'jello'
+    ) => {
+        if (elapsedMs - lastDamageRef.current < CONTACT_DAMAGE_COOLDOWN_MS) return false;
+        lastDamageRef.current = elapsedMs;
+        const nextHp = applyDamageWithDefense(hpRef.current, rawDamage, defenseRateRef.current);
+        const tookDamage = nextHp < hpRef.current;
+        hpRef.current = nextHp;
+        if (tookDamage) {
+            if (hitSound === 'quiet-orb') {
+                playQuietOrbHitSynth(0.38, 140);
+            } else {
+                playJelloClickSound(0.42);
+            }
+        }
+        triggerDamageFlash();
+        return true;
+    };
+
+    return {
+        showAnnouncement,
+        registerEnemyDefeat,
+        applyPlayerDamage,
+    };
+};
+
+const getPlayerMoveSpeedForFrame = (params: {
+    currentPosition: Vector2;
+    elapsedMs: number;
+    hasMovementInput: boolean;
+    isWithinRadius: (ax: number, ay: number, bx: number, by: number, radius: number) => boolean;
+    playerMoveSpeed: number;
+    playerWebSlowUntilMsRef: React.MutableRefObject<number>;
+    webZones: WebZone[];
+}) => {
+    const {
+        currentPosition,
+        elapsedMs,
+        hasMovementInput,
+        isWithinRadius,
+        playerMoveSpeed,
+        playerWebSlowUntilMsRef,
+        webZones,
+    } = params;
+
+    if (isPlayerTouchingWebZone(currentPosition, webZones, isWithinRadius)) {
+        playerWebSlowUntilMsRef.current = elapsedMs + WEB_ZONE_TOUCH_DEBUFF_MS;
+    }
+
+    const webSlowMultiplier = elapsedMs < playerWebSlowUntilMsRef.current
+        ? WEB_ZONE_TOUCH_SLOW_MULTIPLIER
+        : 1;
+
+    return hasMovementInput ? playerMoveSpeed * webSlowMultiplier : 0;
+};
 
 export const useJelloKnightGame = ({
     gt,
@@ -206,6 +503,10 @@ export const useJelloKnightGame = ({
     const projectileRenderSnapshotRef = useRef<ProjectileRenderItem[]>([]);
     const webZoneRenderSnapshotRef = useRef<WebZoneRenderItem[]>([]);
     const pickupRenderSnapshotRef = useRef<PickupRenderItem[]>([]);
+    const bombStrikeSnapshotRef = useRef<BombStrikeRenderItem[]>([]);
+    const bombBlastSnapshotRef = useRef<BombBlastRenderItem[]>([]);
+    const deathBurstSnapshotRef = useRef<DeathBurstRenderItem[]>([]);
+    const spawnSignalSnapshotRef = useRef<SpawnSignalRenderItem[]>([]);
 
     const [gamePhase, setGamePhase] = useState<JelloKnightPhaseOverlay>('start');
     const [hudState, setHudState] = useState<JelloKnightHudState>(INITIAL_HUD_STATE);
@@ -222,9 +523,9 @@ export const useJelloKnightGame = ({
     const [eliteEnemy, setEliteEnemy] = useState<EliteRenderItem | null>(null);
     const [projectiles, setProjectiles] = useState<ProjectileRenderItem[]>([]);
     const [webZones, setWebZones] = useState<WebZoneRenderItem[]>([]);
-    const [bombStrikes, setBombStrikes] = useState<BombStrike[]>([]);
-    const [bombBlasts, setBombBlasts] = useState<BombBlast[]>([]);
-    const [deathBursts, setDeathBursts] = useState<DeathBurst[]>([]);
+    const [bombStrikes, setBombStrikes] = useState<BombStrikeRenderItem[]>([]);
+    const [bombBlasts, setBombBlasts] = useState<BombBlastRenderItem[]>([]);
+    const [deathBursts, setDeathBursts] = useState<DeathBurstRenderItem[]>([]);
     const [xpPickups, setXpPickups] = useState<PickupRenderItem[]>([]);
     const [upgradeOptions, setUpgradeOptions] = useState<UpgradeOption[]>([]);
     const [orbitDamage, setOrbitDamage] = useState<number>(ORBIT_DAMAGE);
@@ -235,7 +536,7 @@ export const useJelloKnightGame = ({
     const [bombRadius, setBombRadius] = useState<number>(BOMB_BASE_RADIUS);
     const [activeObstacles, setActiveObstacles] = useState<Obstacle[]>(activeObstaclesRef.current);
     const [obstacleSlots, setObstacleSlots] = useState<ObstacleSlot[]>(obstacleSlotsRef.current);
-    const [spawnSignals, setSpawnSignals] = useState<SpawnSignal[]>([]);
+    const [spawnSignals, setSpawnSignals] = useState<SpawnSignalRenderItem[]>([]);
     const [announcement, setAnnouncement] = useState<JelloKnightAnnouncement | null>(null);
     const [damageFlashOpacity, setDamageFlashOpacity] = useState(0);
 
@@ -369,6 +670,10 @@ export const useJelloKnightGame = ({
         projectileRenderSnapshotRef.current = [];
         webZoneRenderSnapshotRef.current = [];
         pickupRenderSnapshotRef.current = [];
+        bombStrikeSnapshotRef.current = [];
+        bombBlastSnapshotRef.current = [];
+        deathBurstSnapshotRef.current = [];
+        spawnSignalSnapshotRef.current = [];
         resetJoystick();
     }, [resetJoystick]);
 
@@ -511,7 +816,19 @@ export const useJelloKnightGame = ({
             lastFrameTimeRef.current = timestamp;
             const shouldSyncPlayerVisuals = elapsedMs - lastPlayerVisualSyncTimeRef.current >= PLAYER_VISUAL_SYNC_INTERVAL_MS;
             const shouldSyncVisuals = elapsedMs - lastVisualSyncTimeRef.current >= VISUAL_SYNC_INTERVAL_MS;
-            const { waveIndex, isWaveTransitioning, waveConfig, waveVisualTier } = advanceWaveIfReady({
+            const {
+                waveIndex,
+                isWaveTransitioning,
+                waveVisualTier,
+                activeObstacleSet,
+                enemySpawnInterval,
+                enemyMaxCount,
+                enemySpeedBonus,
+                rangedSpawnChance,
+                rangedSpawnInterval,
+                rangedMaxCount,
+                eliteSpawnChance,
+            } = getWaveFrameState({
                 elapsedMs,
                 nextWaveAdvanceAtMsRef,
                 waveIndexRef,
@@ -522,64 +839,31 @@ export const useJelloKnightGame = ({
                 lastSpawnTimeRef,
                 lastRangedSpawnTimeRef,
                 nextEliteSpawnAtMsRef,
+                lastObstacleWaveRef,
+                activeObstaclesRef,
+                obstacleSlotsRef,
+                setActiveObstacles,
+                setObstacleSlots,
             });
-            if (waveIndex !== lastObstacleWaveRef.current) {
-                lastObstacleWaveRef.current = waveIndex;
-                activeObstaclesRef.current = getActiveObstacles(waveIndex);
-                obstacleSlotsRef.current = getObstacleSlotsForWave(waveIndex);
-                setActiveObstacles(activeObstaclesRef.current);
-                setObstacleSlots(obstacleSlotsRef.current);
-            }
-            const activeObstacleSet = activeObstaclesRef.current;
-            const enemySpawnInterval = waveConfig.meleeSpawnIntervalMs;
-            const enemyMaxCount = waveConfig.meleeMaxCount;
-            const enemySpeedBonus = waveConfig.enemySpeedBonus;
-            const rangedSpawnChance = waveConfig.rangedSpawnChance;
-            const rangedSpawnInterval = waveConfig.rangedSpawnIntervalMs;
-            const rangedMaxCount = waveConfig.rangedMaxCount;
-            const eliteSpawnChance = waveConfig.eliteSpawnChance;
-
-            const showAnnouncement = createShowAnnouncement({
+            const {
+                showAnnouncement,
+                registerEnemyDefeat,
+                applyPlayerDamage,
+            } = createFrameCallbacks({
                 elapsedMs,
                 announcementExpiresAtRef,
                 nextAnnouncementIdRef,
                 setAnnouncement,
-            });
-
-            const triggerDamageFlash = () => {
-                damageFlashUntilRef.current = elapsedMs + DAMAGE_FLASH_DURATION_MS;
-            };
-
-            const registerEnemyDefeat = createRegisterEnemyDefeat({
-                elapsedMs,
                 nextWaveAdvanceAtMsRef,
                 waveIndexRef,
                 waveKillCountRef,
                 waveTargetKillCountRef,
                 waveEliteKillCountRef,
                 waveEliteKillTargetRef,
+                damageFlashUntilRef,
+                hpRef,
+                defenseRateRef,
             });
-
-            const applyPlayerDamage = (
-                rawDamage: number,
-                lastDamageRef: React.MutableRefObject<number>,
-                hitSound: 'jello' | 'quiet-orb' = 'jello'
-            ) => {
-                if (elapsedMs - lastDamageRef.current < CONTACT_DAMAGE_COOLDOWN_MS) return false;
-                lastDamageRef.current = elapsedMs;
-                const nextHp = applyDamageWithDefense(hpRef.current, rawDamage, defenseRateRef.current);
-                const tookDamage = nextHp < hpRef.current;
-                hpRef.current = nextHp;
-                if (tookDamage) {
-                    if (hitSound === 'quiet-orb') {
-                        playQuietOrbHitSynth(0.38, 140);
-                    } else {
-                        playJelloClickSound(0.42);
-                    }
-                }
-                triggerDamageFlash();
-                return true;
-            };
 
             updateAnnouncementsAndEffects({
                 elapsedMs,
@@ -595,40 +879,28 @@ export const useJelloKnightGame = ({
                 showAnnouncement,
             });
 
-            const keyboardVector = normalizeVector({
-                x: (keyboardInputRef.current.right ? 1 : 0) - (keyboardInputRef.current.left ? 1 : 0),
-                y: (keyboardInputRef.current.down ? 1 : 0) - (keyboardInputRef.current.up ? 1 : 0),
-            });
-            const joystickStrength = Math.min(1, getVectorLength(joystickInputRef.current));
-            const combinedVector = normalizeVector({
-                x: keyboardVector.x + joystickInputRef.current.x,
-                y: keyboardVector.y + joystickInputRef.current.y,
-            });
-            const activeStrength = Math.max(getVectorLength(keyboardVector), joystickStrength);
-            const hasMovementInput = activeStrength > 0.08;
-            const currentPosition = playerPositionRef.current;
-            const touchedWebZone = webZonesRef.current.some((webZone) => (
-                isWithinRadius(currentPosition.x, currentPosition.y, webZone.x, webZone.y, webZone.radius + (PLAYER_RADIUS * 0.15))
-            ));
-            if (touchedWebZone) {
-                playerWebSlowUntilMsRef.current = elapsedMs + WEB_ZONE_TOUCH_DEBUFF_MS;
-            }
-            const webSlowMultiplier = elapsedMs < playerWebSlowUntilMsRef.current
-                ? WEB_ZONE_TOUCH_SLOW_MULTIPLIER
-                : 1;
-            const moveSpeed = hasMovementInput ? playerMoveSpeedRef.current * webSlowMultiplier : 0;
-            const movedPosition = moveSpeed <= 0
-                ? currentPosition
-                : {
-                    x: clamp(currentPosition.x + combinedVector.x * moveSpeed * (deltaMs / 1000), PLAYER_RADIUS, FIELD_SIZE - PLAYER_RADIUS),
-                    y: clamp(currentPosition.y + combinedVector.y * moveSpeed * (deltaMs / 1000), PLAYER_RADIUS, FIELD_SIZE - PLAYER_RADIUS),
-                };
-            const nextPosition = resolveCircleObstacleCollisions(
-                movedPosition,
-                PLAYER_RADIUS,
-                activeObstacleSet,
-                OBSTACLE_PLAYER_PADDING
+            const { combinedVector, activeStrength, hasMovementInput } = getCombinedMovementInput(
+                keyboardInputRef.current,
+                joystickInputRef.current
             );
+            const currentPosition = playerPositionRef.current;
+            const moveSpeed = getPlayerMoveSpeedForFrame({
+                currentPosition,
+                elapsedMs,
+                hasMovementInput,
+                isWithinRadius,
+                playerMoveSpeed: playerMoveSpeedRef.current,
+                playerWebSlowUntilMsRef,
+                webZones: webZonesRef.current,
+            });
+            const nextPosition = getNextPlayerPosition({
+                activeObstacles: activeObstacleSet,
+                combinedVector,
+                currentPosition,
+                deltaMs,
+                hasMovementInput,
+                moveSpeed,
+            });
 
             playerPositionRef.current = nextPosition;
 
@@ -667,15 +939,13 @@ export const useJelloKnightGame = ({
                 nextBombStrikeIdRef,
             });
 
-            const baseOrbitAngle = (elapsedMs / 1000) * orbitSpeedRef.current * Math.PI * 2;
-            const orbitPositionsNow: Vector2[] = [];
-            for (let index = 0; index < orbitCountRef.current; index += 1) {
-                const orbitAngle = baseOrbitAngle + ((Math.PI * 2 * index) / orbitCountRef.current);
-                orbitPositionsNow.push({
-                    x: nextPosition.x + Math.cos(orbitAngle) * orbitRadiusRef.current,
-                    y: nextPosition.y + Math.sin(orbitAngle) * orbitRadiusRef.current,
-                });
-            }
+            const orbitPositionsNow = buildOrbitPositions({
+                elapsedMs,
+                orbitCount: orbitCountRef.current,
+                orbitRadius: orbitRadiusRef.current,
+                orbitSpeed: orbitSpeedRef.current,
+                playerPosition: nextPosition,
+            });
 
             const { shouldRefreshPickups, leveledUp } = runCombatFrame({
                 activeObstacleSet,
@@ -746,6 +1016,10 @@ export const useJelloKnightGame = ({
                 projectileRenderSnapshotRef,
                 webZoneRenderSnapshotRef,
                 pickupRenderSnapshotRef,
+                bombStrikeSnapshotRef,
+                bombBlastSnapshotRef,
+                deathBurstSnapshotRef,
+                spawnSignalSnapshotRef,
                 enemiesRef,
                 rangedEnemiesRef,
                 eliteEnemyRef,

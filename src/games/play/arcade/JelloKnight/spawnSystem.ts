@@ -1,8 +1,12 @@
 import type React from 'react';
 import { SIGNAL_DURATION_MS, BOMB_FALL_DELAY_MS, FIELD_SIZE } from './constants';
-import { clamp, createEliteEnemy, createRangedEnemy, createSpawnEnemy, resolveCircleObstacleCollisions } from './helpers';
+import { createEliteEnemy, createRangedEnemy, createSpawnEnemy } from './enemyFactory';
+import { clamp, resolveCircleObstacleCollisions } from './helpers';
 import { getWaveEliteSpawnInterval } from './waveConfig';
 import type { BombStrike, ChaserEnemy, EliteEnemy, JelloKnightAnnouncement, Obstacle, RangedEnemy, SpawnSignal, Vector2 } from './types';
+
+const BOMB_THROW_MIN_DISTANCE = 90;
+const BOMB_THROW_DISTANCE_RANGE = 80;
 
 type ShowAnnouncement = (
     title: string,
@@ -162,7 +166,7 @@ export const trySpawnEnemiesAndBombs = ({
         lastBombTriggerTimeRef.current = elapsedMs;
         if (Math.random() <= bombDropChanceRef.current) {
             const throwAngle = Math.random() * Math.PI * 2;
-            const throwDistance = 170 + (Math.random() * 150);
+            const throwDistance = BOMB_THROW_MIN_DISTANCE + (Math.random() * BOMB_THROW_DISTANCE_RANGE);
             const throwTarget = resolveCircleObstacleCollisions(
                 {
                     x: clamp(nextPosition.x + (Math.cos(throwAngle) * throwDistance), 32, FIELD_SIZE - 32),

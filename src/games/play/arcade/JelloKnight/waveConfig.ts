@@ -1,6 +1,7 @@
 import {
     FIELD_CASTLE_SPAWN_ZONES,
     FIELD_CORNER_SPAWN_ZONES,
+    FIELD_OUTER_CORNER_SPAWN_ZONES,
     MAX_WAVE,
 } from './constants';
 import type { ChaserEnemy, EliteEnemy, RangedEnemy, SpawnZone } from './types';
@@ -60,9 +61,19 @@ const clamp = (value: number, min: number, max: number) => Math.min(max, Math.ma
 const SPAWN_ZONE_LOOKUP = new Map<string, SpawnZone>([
     ...FIELD_CASTLE_SPAWN_ZONES,
     ...FIELD_CORNER_SPAWN_ZONES,
+    ...FIELD_OUTER_CORNER_SPAWN_ZONES,
 ].map((zone) => [zone.id, zone]));
 
-const getZones = (zoneIds: readonly string[]) => zoneIds
+const SPAWN_ZONE_ALIAS_GROUPS: Record<string, string[]> = {
+    northwest: ['northwest', 'outer-northwest'],
+    northeast: ['northeast', 'outer-northeast'],
+    southwest: ['southwest', 'outer-southwest'],
+    southeast: ['southeast', 'outer-southeast'],
+};
+
+const expandZoneIds = (zoneIds: readonly string[]) => zoneIds.flatMap((zoneId) => SPAWN_ZONE_ALIAS_GROUPS[zoneId] ?? [zoneId]);
+
+const getZones = (zoneIds: readonly string[]) => expandZoneIds(zoneIds)
     .map((zoneId) => SPAWN_ZONE_LOOKUP.get(zoneId))
     .filter((zone): zone is SpawnZone => Boolean(zone));
 

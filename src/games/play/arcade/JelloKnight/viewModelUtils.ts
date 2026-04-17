@@ -1,6 +1,12 @@
 import { ENEMY_HIT_FEEDBACK_MS } from './constants';
 import type {
+    BombBlast,
+    BombBlastRenderItem,
+    BombStrike,
+    BombStrikeRenderItem,
     ChaserEnemy,
+    DeathBurst,
+    DeathBurstRenderItem,
     EliteEnemy,
     EnemyProjectile,
     EnemyRenderItem,
@@ -9,6 +15,8 @@ import type {
     RangedEnemy,
     RangedEnemyRenderItem,
     RunnerMotion,
+    SpawnSignal,
+    SpawnSignalRenderItem,
     WebZone,
     WebZoneRenderItem,
     XpPickup,
@@ -110,6 +118,44 @@ const buildProjectileRenderItem = (projectile: EnemyProjectile): ProjectileRende
     id: projectile.id,
     x: projectile.x,
     y: projectile.y,
+});
+
+const buildBombStrikeRenderItem = (bombStrike: BombStrike): BombStrikeRenderItem => ({
+    id: bombStrike.id,
+    strikeKind: bombStrike.strikeKind,
+    sourceX: bombStrike.sourceX,
+    sourceY: bombStrike.sourceY,
+    targetX: bombStrike.targetX,
+    targetY: bombStrike.targetY,
+    createdAtMs: bombStrike.createdAtMs,
+    landAtMs: bombStrike.landAtMs,
+    triggerAtMs: bombStrike.triggerAtMs,
+});
+
+const buildBombBlastRenderItem = (bombBlast: BombBlast): BombBlastRenderItem => ({
+    id: bombBlast.id,
+    x: bombBlast.x,
+    y: bombBlast.y,
+    radius: bombBlast.radius,
+    expiresAtMs: bombBlast.expiresAtMs,
+});
+
+const buildDeathBurstRenderItem = (deathBurst: DeathBurst): DeathBurstRenderItem => ({
+    id: deathBurst.id,
+    x: deathBurst.x,
+    y: deathBurst.y,
+    emoji: deathBurst.emoji,
+    sizeScale: deathBurst.sizeScale,
+    expiresAtMs: deathBurst.expiresAtMs,
+});
+
+const buildSpawnSignalRenderItem = (spawnSignal: SpawnSignal): SpawnSignalRenderItem => ({
+    id: spawnSignal.id,
+    x: spawnSignal.x,
+    y: spawnSignal.y,
+    size: spawnSignal.size,
+    tone: spawnSignal.tone,
+    expiresAtMs: spawnSignal.expiresAtMs,
 });
 
 const buildPickupRenderItem = (pickup: XpPickup): PickupRenderItem => ({
@@ -240,5 +286,71 @@ export const buildWebZoneRenderSnapshot = (
         && a.radius === b.radius
         && a.hp === b.hp
         && a.maxHp === b.maxHp
+    )
+);
+
+export const buildBombStrikeRenderSnapshot = (
+    bombStrikes: BombStrike[],
+    previous: BombStrikeRenderItem[] = []
+) => reconcileRenderArray(
+    bombStrikes,
+    previous,
+    buildBombStrikeRenderItem,
+    (a, b) => (
+        a.strikeKind === b.strikeKind
+        && a.sourceX === b.sourceX
+        && a.sourceY === b.sourceY
+        && a.targetX === b.targetX
+        && a.targetY === b.targetY
+        && a.createdAtMs === b.createdAtMs
+        && a.landAtMs === b.landAtMs
+        && a.triggerAtMs === b.triggerAtMs
+    )
+);
+
+export const buildBombBlastRenderSnapshot = (
+    bombBlasts: BombBlast[],
+    previous: BombBlastRenderItem[] = []
+) => reconcileRenderArray(
+    bombBlasts,
+    previous,
+    buildBombBlastRenderItem,
+    (a, b) => (
+        a.x === b.x
+        && a.y === b.y
+        && a.radius === b.radius
+        && a.expiresAtMs === b.expiresAtMs
+    )
+);
+
+export const buildDeathBurstRenderSnapshot = (
+    deathBursts: DeathBurst[],
+    previous: DeathBurstRenderItem[] = []
+) => reconcileRenderArray(
+    deathBursts,
+    previous,
+    buildDeathBurstRenderItem,
+    (a, b) => (
+        a.x === b.x
+        && a.y === b.y
+        && a.emoji === b.emoji
+        && a.sizeScale === b.sizeScale
+        && a.expiresAtMs === b.expiresAtMs
+    )
+);
+
+export const buildSpawnSignalRenderSnapshot = (
+    spawnSignals: SpawnSignal[],
+    previous: SpawnSignalRenderItem[] = []
+) => reconcileRenderArray(
+    spawnSignals,
+    previous,
+    buildSpawnSignalRenderItem,
+    (a, b) => (
+        a.x === b.x
+        && a.y === b.y
+        && a.size === b.size
+        && a.tone === b.tone
+        && a.expiresAtMs === b.expiresAtMs
     )
 );

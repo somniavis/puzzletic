@@ -264,6 +264,25 @@ export type EliteRenderItem = Pick<
 
 export type ProjectileRenderItem = Pick<EnemyProjectile, 'id' | 'x' | 'y'>;
 
+export type BombStrikeRenderItem = Pick<
+    BombStrike,
+    'id'
+    | 'strikeKind'
+    | 'sourceX'
+    | 'sourceY'
+    | 'targetX'
+    | 'targetY'
+    | 'createdAtMs'
+    | 'landAtMs'
+    | 'triggerAtMs'
+>;
+
+export type BombBlastRenderItem = Pick<BombBlast, 'id' | 'x' | 'y' | 'radius' | 'expiresAtMs'>;
+
+export type DeathBurstRenderItem = Pick<DeathBurst, 'id' | 'x' | 'y' | 'emoji' | 'sizeScale' | 'expiresAtMs'>;
+
+export type SpawnSignalRenderItem = Pick<SpawnSignal, 'id' | 'x' | 'y' | 'size' | 'tone' | 'expiresAtMs'>;
+
 export type PickupRenderItem = Pick<
     XpPickup,
     'id'

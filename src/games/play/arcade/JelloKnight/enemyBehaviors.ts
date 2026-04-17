@@ -185,6 +185,60 @@ const normalizeVector = (vector: Vector2) => {
     return { x: vector.x / length, y: vector.y / length };
 };
 
+export const getPatternedTrackingVector = ({
+    baseVector,
+    enemyType,
+    elapsedMs,
+    origin,
+    target,
+    unitId,
+}: {
+    baseVector: Vector2;
+    enemyType: ChaserEnemy['enemyType'] | RangedEnemy['enemyType'];
+    elapsedMs: number;
+    origin: Vector2;
+    target: Vector2;
+    unitId: number;
+}): Vector2 => {
+    const distance = Math.hypot(target.x - origin.x, target.y - origin.y);
+    if (distance <= 0.0001) return baseVector;
+
+    const perpendicular = {
+        x: -baseVector.y,
+        y: baseVector.x,
+    };
+    const distanceWeight = clamp(distance / 260, 0.22, 1);
+
+    if (enemyType === 'swift') {
+        const phase = (elapsedMs / 240) + (unitId * 0.83);
+        const sway = Math.sin(phase) * 0.88 * distanceWeight;
+        return normalizeVector({
+            x: baseVector.x + (perpendicular.x * sway),
+            y: baseVector.y + (perpendicular.y * sway),
+        });
+    }
+
+    if (enemyType === 'heavy') {
+        const arcDirection = unitId % 2 === 0 ? 1 : -1;
+        const arc = (arcDirection * 0.34) + (Math.sin((elapsedMs / 820) + (unitId * 0.37)) * 0.16);
+        return normalizeVector({
+            x: baseVector.x + (perpendicular.x * arc * distanceWeight),
+            y: baseVector.y + (perpendicular.y * arc * distanceWeight),
+        });
+    }
+
+    if (enemyType === 'heavyCaster') {
+        const arcDirection = unitId % 2 === 0 ? 1 : -1;
+        const glide = (arcDirection * 0.22) + (Math.sin((elapsedMs / 1100) + (unitId * 0.29)) * 0.12);
+        return normalizeVector({
+            x: baseVector.x + (perpendicular.x * glide * distanceWeight),
+            y: baseVector.y + (perpendicular.y * glide * distanceWeight),
+        });
+    }
+
+    return baseVector;
+};
+
 export const getEliteMovementVector = ({
     dashDirection,
     dashDurationMs,

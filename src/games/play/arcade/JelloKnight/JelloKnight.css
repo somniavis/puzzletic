@@ -113,11 +113,12 @@
     height: 18px;
     transform: translate(-50%, -50%);
     border-radius: 999px;
-    border: 2px dashed rgba(255, 245, 183, 0.95);
-    background: rgba(255, 196, 92, 0.2);
+    border: 2px dashed rgba(255, 245, 183, 0.62);
+    background: rgba(255, 196, 92, 0.1);
     box-shadow:
-        0 0 0 2px rgba(88, 56, 28, 0.22),
-        0 0 14px rgba(255, 220, 129, 0.3);
+        0 0 0 1px rgba(88, 56, 28, 0.14),
+        0 0 8px rgba(255, 220, 129, 0.16);
+    opacity: 0.72;
     pointer-events: none;
 }
 
@@ -127,7 +128,7 @@
     position: absolute;
     left: 50%;
     top: 50%;
-    background: rgba(255, 249, 214, 0.95);
+    background: rgba(255, 249, 214, 0.62);
     transform: translate(-50%, -50%);
     border-radius: 999px;
 }
@@ -449,53 +450,25 @@
 
 .jello-knight__obstacle-slot {
     position: absolute;
-    z-index: 4;
+    z-index: 0;
     pointer-events: none;
     border-radius: 18px;
-    border: 4px dashed rgba(255, 92, 92, 0.95);
+    border: 1px solid rgba(33, 77, 61, 0.28);
     background:
-        linear-gradient(rgba(255, 64, 64, 0.12), rgba(255, 64, 64, 0.12)),
-        repeating-linear-gradient(
-            -45deg,
-            rgba(255, 214, 214, 0.14) 0 12px,
-            rgba(255, 255, 255, 0.04) 12px 24px
-        );
+        linear-gradient(180deg, rgba(35, 89, 69, 0.22), rgba(25, 67, 52, 0.18)),
+        rgba(29, 78, 59, 0.14);
     box-shadow:
-        inset 0 0 0 2px rgba(255, 255, 255, 0.2),
-        0 0 0 2px rgba(121, 18, 18, 0.22);
-    opacity: 1;
+        inset 0 1px 0 rgba(203, 234, 223, 0.06),
+        inset 0 0 0 1px rgba(24, 63, 49, 0.06);
+    opacity: 0.95;
 }
 
 .jello-knight__obstacle-slot::before {
-    content: '';
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    transform: translate(-50%, -50%);
-    background: rgba(255, 92, 92, 0.96);
-    box-shadow:
-        0 0 0 4px rgba(255, 92, 92, 0.22),
-        0 0 12px rgba(255, 92, 92, 0.34);
+    content: none;
 }
 
 .jello-knight__obstacle-slot::after {
-    content: attr(data-slot);
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, calc(-50% - 26px));
-    padding: 3px 8px;
-    border-radius: 999px;
-    background: rgba(90, 16, 16, 0.88);
-    color: #fff4f4;
-    font-size: 11px;
-    font-weight: 900;
-    letter-spacing: 0.04em;
-    white-space: nowrap;
-    box-shadow: 0 4px 10px rgba(48, 8, 8, 0.22);
+    content: none;
 }
 
 /* Overlay */

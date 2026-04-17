@@ -4,8 +4,6 @@ import {
     BOMB_CRIT_MULTIPLIER_LEVELS,
     BOMB_DROP_CHANCE_LEVELS,
     BOMB_DROP_INTERVAL_LEVELS,
-    CASTLE_OBSTACLE,
-    DEBUG_OBSTACLE_SLOTS_ENABLED,
     FIELD_SIZE,
     GEM_SCORE_VALUES,
     HEART_HEAL_VALUE,
@@ -13,7 +11,6 @@ import {
     LEVEL_ONE_DROP_TABLE,
     LEVEL_TWO_DROP_TABLE,
     LEVEL_UP_CARD_COUNT,
-    OBSTACLE_SLOT_SET,
     ORBIT_COUNT_LEVELS,
     ORBIT_CRIT_MULTIPLIER_LEVELS,
     ORBIT_DAMAGE_LEVELS,
@@ -27,30 +24,11 @@ import {
     XP_ORB_SCORE_VALUE,
     BOMB_RADIUS_LEVELS,
 } from './constants';
-import {
-    ELITE_ENEMY_VARIANTS,
-    MELEE_ENEMY_VARIANTS,
-    RANGED_ENEMY_VARIANTS,
-} from './enemyBehaviors';
-import {
-    getWaveMeleeWeights,
-    getWaveObstaclePhase,
-    getWaveCombatScaling,
-    getWaveRangedWeights,
-    getWaveRuntimeConfig,
-    getWaveSpawnZones,
-    getWaveTargetKillCount as getWaveTargetKillCountConfig,
-    getWaveEliteWeights,
-} from './waveConfig';
+import { getWaveTargetKillCount as getWaveTargetKillCountConfig } from './waveConfig';
 import type {
-    ChaserEnemy,
-    EliteEnemy,
     Obstacle,
-    ObstacleSlot,
     PickupDropType,
-    RangedEnemy,
     SkillUpgradeId,
-    SpawnZone,
     UpgradeOption,
     UpgradeLevels,
     Vector2,
@@ -105,12 +83,6 @@ export const getSpreadPursuitVector = ({
         x: desiredTarget.x - origin.x,
         y: desiredTarget.y - origin.y,
     });
-};
-
-const getSpawnPursuitOffset = (seed: number, magnitude: number) => {
-    const lane = (seed % 5) - 2;
-    const jitter = (seededUnit((seed * 1.73) + 9.1) - 0.5) * magnitude * 0.32;
-    return (lane * magnitude * 0.42) + jitter;
 };
 
 export const formatRunClock = (elapsedMs: number) => {
@@ -255,51 +227,6 @@ export const createDropsForDefeat = ({
     return { drops, nextId };
 };
 
-const getWeightedVariant = <T extends { enemyType: string }>(
-    variants: T[],
-    getWeight: (variant: T) => number,
-    seed: number,
-) => {
-    let totalWeight = 0;
-    const weights = variants.map((variant) => {
-        const weight = Math.max(0, getWeight(variant));
-        totalWeight += weight;
-        return weight;
-    });
-
-    if (totalWeight <= 0) {
-        return variants[0];
-    }
-
-    let roll = seed % totalWeight;
-    for (let index = 0; index < variants.length; index += 1) {
-        roll -= weights[index];
-        if (roll < 0) {
-            return variants[index];
-        }
-    }
-
-    return variants[variants.length - 1];
-};
-
-const getSpawnZoneForWave = (
-    seed: number,
-    waveIndex: number,
-    enemyGroup: 'melee' | 'ranged' | 'elite'
-): SpawnZone => {
-    const zonePool = getWaveSpawnZones(waveIndex, enemyGroup);
-    return zonePool[Math.abs(seed) % zonePool.length];
-};
-
-const getSpawnPointFromZone = (zone: SpawnZone, seed: number) => {
-    const horizontalUnit = seededUnit((seed * 1.37) + 11.3);
-    const verticalUnit = seededUnit((seed * 1.91) + 27.7);
-    return {
-        x: zone.x + (zone.width * horizontalUnit),
-        y: zone.y + (zone.height * verticalUnit),
-    };
-};
-
 export const getWaveTargetKillCount = (waveIndex: number) => {
     return getWaveTargetKillCountConfig(waveIndex);
 };
@@ -307,148 +234,6 @@ export const getWaveTargetKillCount = (waveIndex: number) => {
 export const getWaveVisualTier = (waveIndex: number) => (
     clamp(1 + Math.floor((waveIndex - 1) / 20), 1, 5)
 );
-
-export const createSpawnEnemy = (id: number, elapsedMs: number, waveIndex: number): ChaserEnemy => {
-    const spawnSeed = id * 17 + Math.floor(elapsedMs / 350);
-    const spawnZone = getSpawnZoneForWave(spawnSeed, waveIndex, 'melee');
-    const spawnPoint = getSpawnPointFromZone(spawnZone, spawnSeed);
-    const weights = getWaveMeleeWeights(waveIndex);
-    const variant = getWeightedVariant(
-        MELEE_ENEMY_VARIANTS,
-        (entry) => weights[entry.enemyType] ?? 0,
-        spawnSeed,
-    );
-    const combatScaling = getWaveCombatScaling(waveIndex);
-    const scaledHp = Math.max(1, Math.round(variant.hp * combatScaling.normalHpMultiplier));
-    const scaledContactDamage = Math.max(1, Math.round(variant.contactDamage * combatScaling.normalContactDamageMultiplier));
-
-    return {
-        id,
-        x: spawnPoint.x,
-        y: spawnPoint.y,
-        hp: scaledHp,
-        maxHp: scaledHp,
-        lastHitAtMs: Number.NEGATIVE_INFINITY,
-        orbContactReady: true,
-        emoji: variant.emoji,
-        enemyType: variant.enemyType,
-        baseSpeed: variant.baseSpeed,
-        contactDamage: scaledContactDamage,
-        sizeScale: variant.sizeScale,
-        pursuitOffset: getSpawnPursuitOffset(spawnSeed, 48),
-    };
-};
-
-export const createEliteEnemy = (
-    id: number,
-    elapsedMs: number,
-    waveIndex: number,
-    forcedEnemyType?: EliteEnemy['enemyType']
-): EliteEnemy => {
-    const spawnSeed = id * 23 + Math.floor(elapsedMs / 700);
-    const spawnZone = getSpawnZoneForWave(spawnSeed + 9, waveIndex, 'elite');
-    const spawnPoint = getSpawnPointFromZone(spawnZone, spawnSeed + 31);
-    const weights = getWaveEliteWeights(waveIndex);
-    const variant = forcedEnemyType
-        ? ELITE_ENEMY_VARIANTS.find((entry) => entry.enemyType === forcedEnemyType) ?? ELITE_ENEMY_VARIANTS[0]
-        : getWeightedVariant(
-            ELITE_ENEMY_VARIANTS,
-            (entry) => weights[entry.enemyType] ?? 0,
-            spawnSeed,
-        );
-    const combatScaling = getWaveCombatScaling(waveIndex);
-    const scaledHp = Math.max(1, Math.round(variant.hp * combatScaling.eliteHpMultiplier));
-    const scaledContactDamage = Math.max(1, Math.round(variant.contactDamage * combatScaling.eliteContactDamageMultiplier));
-    const initialDashReadyAtMs = elapsedMs + variant.dashCooldownMinMs + ((id * 173) % Math.max(1, variant.dashCooldownMaxMs - variant.dashCooldownMinMs));
-    const initialFacing = spawnPoint.x <= FIELD_SIZE / 2 ? 'right' : 'left';
-
-    return {
-        id,
-        x: spawnPoint.x,
-        y: spawnPoint.y,
-        hp: scaledHp,
-        maxHp: scaledHp,
-        lastHitAtMs: Number.NEGATIVE_INFINITY,
-        orbContactReady: true,
-        emoji: variant.emoji,
-        emojiBaseFacing: variant.emojiBaseFacing,
-        enemyType: variant.enemyType,
-        baseSpeed: variant.baseSpeed,
-        contactRadius: variant.contactRadius,
-        contactDamage: scaledContactDamage,
-        xpValue: variant.xpValue,
-        dashWindupMs: variant.dashWindupMs,
-        dashSpeedMultiplier: variant.dashSpeedMultiplier,
-        dashDurationMs: variant.dashDurationMs,
-        dashCooldownMinMs: variant.dashCooldownMinMs,
-        dashCooldownMaxMs: variant.dashCooldownMaxMs,
-        nextDashReadyAtMs: initialDashReadyAtMs,
-        dashWindupUntilMs: null,
-        dashUntilMs: null,
-        dashDirectionX: 0,
-        dashDirectionY: 0,
-        lastWebShotAtMs: elapsedMs,
-        renderAngleDeg: initialFacing === 'right' ? 0 : 180,
-        facing: initialFacing,
-        pursuitOffset: getSpawnPursuitOffset(spawnSeed, 64),
-    };
-};
-
-export const createRangedEnemy = (
-    id: number,
-    elapsedMs: number,
-    existingEnemies: RangedEnemy[],
-    waveIndex: number
-): RangedEnemy | null => {
-    const spawnSeed = id * 19 + Math.floor(elapsedMs / 420);
-    const spawnZone = getSpawnZoneForWave(spawnSeed + 5, waveIndex, 'ranged');
-    const spawnPoint = getSpawnPointFromZone(spawnZone, spawnSeed + 19);
-    const weights = getWaveRangedWeights(waveIndex);
-    const enemyTypeCounts = existingEnemies.reduce<Record<RangedEnemy['enemyType'], number>>(
-        (counts, enemy) => {
-            counts[enemy.enemyType] += 1;
-            return counts;
-        },
-        { sniper: 0, heavyCaster: 0 }
-    );
-    const eligibleVariants = RANGED_ENEMY_VARIANTS.filter((variant) => (
-        enemyTypeCounts[variant.enemyType] < variant.maxCount
-    ));
-
-    if (eligibleVariants.length === 0) {
-        return null;
-    }
-
-    const variant = getWeightedVariant(
-        eligibleVariants,
-        (entry) => weights[entry.enemyType] ?? 0,
-        spawnSeed,
-    );
-    const combatScaling = getWaveCombatScaling(waveIndex);
-    const scaledHp = Math.max(1, Math.round(variant.hp * combatScaling.normalHpMultiplier));
-    const scaledProjectileDamage = Math.max(1, Math.round(variant.projectileDamage * combatScaling.rangedProjectileDamageMultiplier));
-
-    return {
-        id,
-        x: spawnPoint.x,
-        y: spawnPoint.y,
-        hp: scaledHp,
-        maxHp: scaledHp,
-        cooldownMs: 800,
-        lastHitAtMs: Number.NEGATIVE_INFINITY,
-        orbContactReady: true,
-        emoji: variant.emoji,
-        enemyType: variant.enemyType,
-        baseSpeed: variant.baseSpeed,
-        contactRadius: variant.contactRadius,
-        fireRange: variant.fireRange,
-        fireCooldownMs: variant.fireCooldownMs,
-        projectileSpeed: variant.projectileSpeed,
-        projectileDamage: scaledProjectileDamage,
-        xpValue: variant.xpValue,
-        pursuitOffset: getSpawnPursuitOffset(spawnSeed, 58),
-    };
-};
 
 export const getXpToNextLevel = (level: number) => BASE_XP_TO_LEVEL + ((level - 1) * 45);
 
@@ -572,166 +357,6 @@ export const buildUpgradeOptions = (
     return pickRandomOptions(fullPool, Math.min(LEVEL_UP_CARD_COUNT, fullPool.length));
 };
 
-type ObstacleFace = 'north' | 'east' | 'south' | 'west';
-
-const activeObstaclesByWaveCache = new Map<number, Obstacle[]>();
-const obstacleSlotsByLayoutCache = new Map<string, ObstacleSlot[]>();
-
-const OBSTACLE_FACES: ObstacleFace[] = ['north', 'east', 'south', 'west'];
-
-const INNER_CORNER_SLOT_IDS = [
-    'slot-top-left',
-    'slot-top-right',
-    'slot-bottom-left',
-    'slot-bottom-right',
-] as const;
-
-const INNER_FACE_SLOT_IDS: Record<ObstacleFace, readonly string[]> = {
-    north: ['slot-top-center-small'],
-    east: ['slot-right-upper', 'slot-right-lower'],
-    south: ['slot-bottom-center-small'],
-    west: ['slot-left-upper', 'slot-left-lower'],
-};
-
-const OUTER_CORNER_SLOT_IDS = [
-    'slot-outer-northwest',
-    'slot-outer-northeast',
-    'slot-outer-southwest',
-    'slot-outer-southeast',
-] as const;
-
-const OUTER_FACE_SLOT_IDS: Record<ObstacleFace, readonly string[]> = {
-    north: ['slot-outer-north-main', 'slot-outer-north-short'],
-    east: ['slot-outer-east-short', 'slot-outer-east-main'],
-    south: ['slot-outer-south-short', 'slot-outer-south-main'],
-    west: ['slot-outer-west-main', 'slot-outer-west-short'],
-};
-
-const seededUnit = (seed: number) => {
-    const value = Math.sin(seed * 12.9898) * 43758.5453;
-    return value - Math.floor(value);
-};
-
-const createWaveShuffle = <T,>(items: T[], seed: number) => {
-    const list = [...items];
-    for (let index = list.length - 1; index > 0; index -= 1) {
-        const swapIndex = Math.floor(seededUnit(seed + (index * 1.17)) * (index + 1));
-        const current = list[index];
-        list[index] = list[swapIndex];
-        list[swapIndex] = current;
-    }
-    return list;
-};
-
-const OBSTACLE_SLOT_LOOKUP = new Map(OBSTACLE_SLOT_SET.map((slot) => [slot.id, slot]));
-
-const getObstacleLayoutSeed = (waveIndex: number) => {
-    const { setIndex, setWaveIndex } = getWaveRuntimeConfig(waveIndex);
-    return (setIndex * 10) + Math.ceil(setWaveIndex / 2);
-};
-
-const getOpenedFacesForWave = (
-    waveIndex: number,
-    family: 'inner' | 'outer'
-) => createWaveShuffle(
-    OBSTACLE_FACES,
-    (getObstacleLayoutSeed(waveIndex) * (family === 'inner' ? 17.13 : 41.27))
-).slice(0, 3);
-
-const collectObstacleSlots = (slotIds: readonly string[]) => slotIds
-    .map((slotId) => OBSTACLE_SLOT_LOOKUP.get(slotId))
-    .filter((slot): slot is ObstacleSlot => Boolean(slot));
-
-const collectObstacleFaceSlots = (
-    slotGroups: Record<ObstacleFace, readonly string[]>,
-    faces: ObstacleFace[]
-) => faces.flatMap((face) => collectObstacleSlots(slotGroups[face]));
-
-const getObstacleCandidateSlotsForWave = (waveIndex: number) => {
-    const phase = getWaveObstaclePhase(waveIndex);
-    const layoutSeed = getObstacleLayoutSeed(waveIndex);
-    const cacheKey = `phase-${phase}-layout-${layoutSeed}`;
-    const cachedSlots = obstacleSlotsByLayoutCache.get(cacheKey);
-    if (cachedSlots) return cachedSlots;
-
-    const activeSlots: ObstacleSlot[] = [];
-    activeSlots.push(...collectObstacleSlots(INNER_CORNER_SLOT_IDS));
-
-    if (phase >= 2) {
-        activeSlots.push(
-            ...collectObstacleFaceSlots(
-                INNER_FACE_SLOT_IDS,
-                getOpenedFacesForWave(waveIndex, 'inner')
-            )
-        );
-    }
-
-    if (phase >= 3) {
-        activeSlots.push(...collectObstacleSlots(OUTER_CORNER_SLOT_IDS));
-    }
-
-    if (phase >= 4) {
-        activeSlots.push(
-            ...collectObstacleFaceSlots(
-                OUTER_FACE_SLOT_IDS,
-                getOpenedFacesForWave(waveIndex, 'outer')
-            )
-        );
-    }
-
-    obstacleSlotsByLayoutCache.set(cacheKey, activeSlots);
-    return activeSlots;
-};
-
-export const getObstacleSlotsForWave = (waveIndex: number): ObstacleSlot[] => {
-    if (DEBUG_OBSTACLE_SLOTS_ENABLED) {
-        return OBSTACLE_SLOT_SET;
-    }
-    return getObstacleCandidateSlotsForWave(waveIndex);
-};
-
-export const getActiveObstacles = (waveIndex: number): Obstacle[] => {
-    const cachedObstacles = activeObstaclesByWaveCache.get(waveIndex);
-    if (cachedObstacles) return cachedObstacles;
-
-    const availableSlots = getObstacleCandidateSlotsForWave(waveIndex);
-
-    if (availableSlots.length === 0) {
-        const fallbackObstacles = [CASTLE_OBSTACLE];
-        activeObstaclesByWaveCache.set(waveIndex, fallbackObstacles);
-        return fallbackObstacles;
-    }
-
-    const activeObstacles = availableSlots.map((slot) => ({
-        id: `wave-${waveIndex}-${slot.id}`,
-        x: slot.x,
-        y: slot.y,
-        width: slot.width,
-        height: slot.height,
-        stageRequired: slot.stageRequired,
-    }));
-    const obstacleSet = [CASTLE_OBSTACLE, ...activeObstacles];
-    activeObstaclesByWaveCache.set(waveIndex, obstacleSet);
-    return obstacleSet;
-};
-
-export const isPointInsideObstacle = (
-    pointX: number,
-    pointY: number,
-    obstacle: Pick<Obstacle, 'x' | 'y' | 'width' | 'height'>
-) => (
-    pointX >= obstacle.x
-    && pointX <= obstacle.x + obstacle.width
-    && pointY >= obstacle.y
-    && pointY <= obstacle.y + obstacle.height
-);
-
-export const isPointInsideAnyObstacle = (
-    pointX: number,
-    pointY: number,
-    obstacles: Obstacle[]
-) => obstacles.some((obstacle) => isPointInsideObstacle(pointX, pointY, obstacle));
-
 export const resolveCircleRectCollision = (
     position: Vector2,
     radius: number,
@@ -800,73 +425,127 @@ export const moveCircleWithObstacleSlide = (
     obstacles: Obstacle[],
     padding = 0
 ) => {
-    const resolveAndMeasure = (candidate: Vector2) => {
+    const resolveAndMeasure = (anchorPosition: Vector2, candidate: Vector2) => {
         const resolved = resolveCircleObstacleCollisions(candidate, radius, obstacles, padding);
         const dx = resolved.x - candidate.x;
         const dy = resolved.y - candidate.y;
         return {
             position: resolved,
             correctionDistanceSq: (dx * dx) + (dy * dy),
-            movedDistanceSq: ((resolved.x - currentPosition.x) * (resolved.x - currentPosition.x))
-                + ((resolved.y - currentPosition.y) * (resolved.y - currentPosition.y)),
+            movedDistanceSq: ((resolved.x - anchorPosition.x) * (resolved.x - anchorPosition.x))
+                + ((resolved.y - anchorPosition.y) * (resolved.y - anchorPosition.y)),
             targetDistanceSq: ((resolved.x - targetPosition.x) * (resolved.x - targetPosition.x))
                 + ((resolved.y - targetPosition.y) * (resolved.y - targetPosition.y)),
         };
     };
+    const totalDeltaX = nextPosition.x - currentPosition.x;
+    const totalDeltaY = nextPosition.y - currentPosition.y;
+    const totalDistance = Math.hypot(totalDeltaX, totalDeltaY);
+    const stepCount = Math.max(1, Math.ceil(totalDistance / 18));
+    let anchorPosition = currentPosition;
 
-    const direct = resolveAndMeasure(nextPosition);
-    if (direct.correctionDistanceSq < 0.0001) {
-        return direct.position;
-    }
-
-    const deltaX = nextPosition.x - currentPosition.x;
-    const deltaY = nextPosition.y - currentPosition.y;
-    const slideX = resolveAndMeasure({
-        x: nextPosition.x,
-        y: currentPosition.y,
-    });
-    const slideY = resolveAndMeasure({
-        x: currentPosition.x,
-        y: nextPosition.y,
-    });
-    const tangentLeft = resolveAndMeasure({
-        x: currentPosition.x - deltaY,
-        y: currentPosition.y + deltaX,
-    });
-    const tangentRight = resolveAndMeasure({
-        x: currentPosition.x + deltaY,
-        y: currentPosition.y - deltaX,
-    });
-
-    let bestCandidate: ReturnType<typeof resolveAndMeasure> | null = null;
-    const candidates = [slideX, slideY, tangentLeft, tangentRight];
-
-    for (let index = 0; index < candidates.length; index += 1) {
-        const candidate = candidates[index];
-        if (candidate.movedDistanceSq <= 0.0001) continue;
-
-        if (!bestCandidate) {
-            bestCandidate = candidate;
+    for (let stepIndex = 0; stepIndex < stepCount; stepIndex += 1) {
+        const stepTarget = {
+            x: anchorPosition.x + (totalDeltaX / stepCount),
+            y: anchorPosition.y + (totalDeltaY / stepCount),
+        };
+        const direct = resolveAndMeasure(anchorPosition, stepTarget);
+        if (direct.correctionDistanceSq < 0.0001) {
+            anchorPosition = direct.position;
             continue;
         }
 
-        if (Math.abs(candidate.correctionDistanceSq - bestCandidate.correctionDistanceSq) > 0.0001) {
+        const deltaX = stepTarget.x - anchorPosition.x;
+        const deltaY = stepTarget.y - anchorPosition.y;
+        const moveDistance = Math.hypot(deltaX, deltaY);
+        const slideX = resolveAndMeasure(anchorPosition, {
+            x: stepTarget.x,
+            y: anchorPosition.y,
+        });
+        const slideY = resolveAndMeasure(anchorPosition, {
+            x: anchorPosition.x,
+            y: stepTarget.y,
+        });
+        const tangentLeft = resolveAndMeasure(anchorPosition, {
+            x: anchorPosition.x - deltaY,
+            y: anchorPosition.y + deltaX,
+        });
+        const tangentRight = resolveAndMeasure(anchorPosition, {
+            x: anchorPosition.x + deltaY,
+            y: anchorPosition.y - deltaX,
+        });
+        const normalizedMove = moveDistance <= 0.0001
+            ? { x: 0, y: 0 }
+            : { x: deltaX / moveDistance, y: deltaY / moveDistance };
+        const tangentLeftUnit = {
+            x: -normalizedMove.y,
+            y: normalizedMove.x,
+        };
+        const tangentRightUnit = {
+            x: normalizedMove.y,
+            y: -normalizedMove.x,
+        };
+        const hugLeft = resolveAndMeasure(anchorPosition, {
+            x: anchorPosition.x + ((normalizedMove.x * 0.28) + tangentLeftUnit.x) * moveDistance,
+            y: anchorPosition.y + ((normalizedMove.y * 0.28) + tangentLeftUnit.y) * moveDistance,
+        });
+        const hugRight = resolveAndMeasure(anchorPosition, {
+            x: anchorPosition.x + ((normalizedMove.x * 0.28) + tangentRightUnit.x) * moveDistance,
+            y: anchorPosition.y + ((normalizedMove.y * 0.28) + tangentRightUnit.y) * moveDistance,
+        });
+        const tangentLeftShort = resolveAndMeasure(anchorPosition, {
+            x: anchorPosition.x + tangentLeftUnit.x * moveDistance * 0.6,
+            y: anchorPosition.y + tangentLeftUnit.y * moveDistance * 0.6,
+        });
+        const tangentRightShort = resolveAndMeasure(anchorPosition, {
+            x: anchorPosition.x + tangentRightUnit.x * moveDistance * 0.6,
+            y: anchorPosition.y + tangentRightUnit.y * moveDistance * 0.6,
+        });
+
+        let bestCandidate: ReturnType<typeof resolveAndMeasure> | null = null;
+        const candidates = [
+            slideX,
+            slideY,
+            tangentLeft,
+            tangentRight,
+            hugLeft,
+            hugRight,
+            tangentLeftShort,
+            tangentRightShort,
+        ];
+
+        for (let index = 0; index < candidates.length; index += 1) {
+            const candidate = candidates[index];
+            if (candidate.movedDistanceSq <= 0.0001) continue;
+
+            if (!bestCandidate) {
+                bestCandidate = candidate;
+                continue;
+            }
+
+            if (Math.abs(candidate.targetDistanceSq - bestCandidate.targetDistanceSq) > 0.0001) {
+                if (candidate.targetDistanceSq < bestCandidate.targetDistanceSq) {
+                    bestCandidate = candidate;
+                }
+                continue;
+            }
+
+            if (Math.abs(candidate.movedDistanceSq - bestCandidate.movedDistanceSq) > 0.0001) {
+                if (candidate.movedDistanceSq > bestCandidate.movedDistanceSq) {
+                    bestCandidate = candidate;
+                }
+                continue;
+            }
+
             if (candidate.correctionDistanceSq < bestCandidate.correctionDistanceSq) {
                 bestCandidate = candidate;
             }
-            continue;
         }
 
-        if (candidate.targetDistanceSq < bestCandidate.targetDistanceSq) {
-            bestCandidate = candidate;
-        }
+        anchorPosition = bestCandidate ? bestCandidate.position : direct.position;
     }
 
-    if (bestCandidate) {
-        return bestCandidate.position;
-    }
-
-    return direct.position;
+    return anchorPosition;
 };
 
 export const resolveCircleCircleSeparation = (

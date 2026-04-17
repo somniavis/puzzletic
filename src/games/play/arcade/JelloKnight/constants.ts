@@ -116,10 +116,17 @@ export const CASTLE_OBSTACLE: Obstacle = {
 };
 
 export const FIELD_CORNER_SPAWN_ZONES: SpawnZone[] = [
-    { id: 'northwest', x: 110, y: 110, width: 180, height: 180 },
-    { id: 'northeast', x: FIELD_SIZE - 290, y: 110, width: 180, height: 180 },
-    { id: 'southwest', x: 110, y: FIELD_SIZE - 290, width: 180, height: 180 },
-    { id: 'southeast', x: FIELD_SIZE - 290, y: FIELD_SIZE - 290, width: 180, height: 180 },
+    { id: 'northwest', x: FIELD_SIZE / 2 - 530, y: FIELD_SIZE / 2 - 490, width: 84, height: 84 },
+    { id: 'northeast', x: FIELD_SIZE / 2 + 446, y: FIELD_SIZE / 2 - 490, width: 84, height: 84 },
+    { id: 'southwest', x: FIELD_SIZE / 2 - 530, y: FIELD_SIZE / 2 + 406, width: 84, height: 84 },
+    { id: 'southeast', x: FIELD_SIZE / 2 + 446, y: FIELD_SIZE / 2 + 406, width: 84, height: 84 },
+] as const;
+
+export const FIELD_OUTER_CORNER_SPAWN_ZONES: SpawnZone[] = [
+    { id: 'outer-northwest', x: 344, y: 396, width: 84, height: 84 },
+    { id: 'outer-northeast', x: FIELD_SIZE - 428, y: 396, width: 84, height: 84 },
+    { id: 'outer-southwest', x: 344, y: FIELD_SIZE - 480, width: 84, height: 84 },
+    { id: 'outer-southeast', x: FIELD_SIZE - 428, y: FIELD_SIZE - 480, width: 84, height: 84 },
 ] as const;
 
 export const FIELD_CASTLE_SPAWN_ZONES: SpawnZone[] = [
@@ -153,6 +160,12 @@ export const FIELD_CASTLE_SPAWN_ZONES: SpawnZone[] = [
     },
 ] as const;
 
+export const FIELD_ALL_SPAWN_ZONES: SpawnZone[] = [
+    ...FIELD_CASTLE_SPAWN_ZONES,
+    ...FIELD_CORNER_SPAWN_ZONES,
+    ...FIELD_OUTER_CORNER_SPAWN_ZONES,
+];
+
 export const WEB_ZONE_RADIUS = 72;
 export const WEB_ZONE_DURATION_MS = 4200;
 export const WEB_ZONE_SLOW_MULTIPLIER = 0.78;
@@ -166,15 +179,15 @@ export const WEB_SHOT_MAX_DISTANCE = 250;
 export const WEB_ZONE_ORBIT_HIT_COOLDOWN_MS = 200;
 
 export const OBSTACLE_SLOT_SET: ObstacleSlot[] = [
-    { id: 'slot-top-left', x: FIELD_SIZE / 2 - 640, y: FIELD_SIZE / 2 - 560, width: 300, height: 74, stageRequired: 1 },
-    { id: 'slot-top-right', x: FIELD_SIZE / 2 + 340, y: FIELD_SIZE / 2 - 560, width: 300, height: 74, stageRequired: 1 },
+    { id: 'slot-top-left', x: FIELD_SIZE / 2 - 560, y: FIELD_SIZE / 2 - 590, width: 300, height: 74, stageRequired: 1 },
+    { id: 'slot-top-right', x: FIELD_SIZE / 2 + 260, y: FIELD_SIZE / 2 - 590, width: 300, height: 74, stageRequired: 1 },
     { id: 'slot-top-center-small', x: FIELD_SIZE / 2 - 48, y: FIELD_SIZE / 2 - 560, width: 96, height: 74, stageRequired: 2 },
-    { id: 'slot-left-upper', x: FIELD_SIZE / 2 - 660, y: FIELD_SIZE / 2 - 420, width: 96, height: 270, stageRequired: 2 },
-    { id: 'slot-left-lower', x: FIELD_SIZE / 2 - 660, y: FIELD_SIZE / 2 + 150, width: 96, height: 270, stageRequired: 2 },
-    { id: 'slot-right-upper', x: FIELD_SIZE / 2 + 564, y: FIELD_SIZE / 2 - 420, width: 96, height: 270, stageRequired: 2 },
-    { id: 'slot-right-lower', x: FIELD_SIZE / 2 + 564, y: FIELD_SIZE / 2 + 150, width: 96, height: 270, stageRequired: 2 },
-    { id: 'slot-bottom-left', x: FIELD_SIZE / 2 - 640, y: FIELD_SIZE / 2 + 486, width: 300, height: 74, stageRequired: 3 },
-    { id: 'slot-bottom-right', x: FIELD_SIZE / 2 + 340, y: FIELD_SIZE / 2 + 486, width: 300, height: 74, stageRequired: 3 },
+    { id: 'slot-left-upper', x: FIELD_SIZE / 2 - 800, y: FIELD_SIZE / 2 - 420, width: 96, height: 270, stageRequired: 2 },
+    { id: 'slot-left-lower', x: FIELD_SIZE / 2 - 800, y: FIELD_SIZE / 2 + 150, width: 96, height: 270, stageRequired: 2 },
+    { id: 'slot-right-upper', x: FIELD_SIZE / 2 + 704, y: FIELD_SIZE / 2 - 420, width: 96, height: 270, stageRequired: 2 },
+    { id: 'slot-right-lower', x: FIELD_SIZE / 2 + 704, y: FIELD_SIZE / 2 + 150, width: 96, height: 270, stageRequired: 2 },
+    { id: 'slot-bottom-left', x: FIELD_SIZE / 2 - 560, y: FIELD_SIZE / 2 + 516, width: 300, height: 74, stageRequired: 3 },
+    { id: 'slot-bottom-right', x: FIELD_SIZE / 2 + 260, y: FIELD_SIZE / 2 + 516, width: 300, height: 74, stageRequired: 3 },
     { id: 'slot-bottom-center-small', x: FIELD_SIZE / 2 - 48, y: FIELD_SIZE / 2 + 486, width: 96, height: 74, stageRequired: 3 },
     { id: 'slot-outer-northwest', x: 240, y: 300, width: 280, height: 74, stageRequired: 4 },
     { id: 'slot-outer-north-main', x: FIELD_SIZE / 2 - 450, y: 300, width: 300, height: 70, stageRequired: 4 },

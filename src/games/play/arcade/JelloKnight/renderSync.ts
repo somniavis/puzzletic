@@ -5,18 +5,25 @@ import {
 } from './constants';
 import { getCameraPositionFromViewport, getXpToNextLevel } from './helpers';
 import {
+    buildBombBlastRenderSnapshot,
+    buildBombStrikeRenderSnapshot,
+    buildDeathBurstRenderSnapshot,
     buildEliteRenderSnapshot,
     buildEnemyRenderSnapshot,
     buildPickupRenderSnapshot,
     buildProjectileRenderSnapshot,
     buildRangedEnemyRenderSnapshot,
+    buildSpawnSignalRenderSnapshot,
     buildWebZoneRenderSnapshot,
 } from './viewModelUtils';
 import type {
     BombBlast,
+    BombBlastRenderItem,
     BombStrike,
+    BombStrikeRenderItem,
     ChaserEnemy,
     DeathBurst,
+    DeathBurstRenderItem,
     EliteEnemy,
     EliteRenderItem,
     EnemyProjectile,
@@ -28,6 +35,7 @@ import type {
     RangedEnemyRenderItem,
     RunnerMotion,
     SpawnSignal,
+    SpawnSignalRenderItem,
     Vector2,
     WebZone,
     WebZoneRenderItem,
@@ -61,6 +69,10 @@ type SyncVisualStateParams = {
     projectileRenderSnapshotRef: React.MutableRefObject<ProjectileRenderItem[]>;
     webZoneRenderSnapshotRef: React.MutableRefObject<WebZoneRenderItem[]>;
     pickupRenderSnapshotRef: React.MutableRefObject<PickupRenderItem[]>;
+    bombStrikeSnapshotRef: React.MutableRefObject<BombStrikeRenderItem[]>;
+    bombBlastSnapshotRef: React.MutableRefObject<BombBlastRenderItem[]>;
+    deathBurstSnapshotRef: React.MutableRefObject<DeathBurstRenderItem[]>;
+    spawnSignalSnapshotRef: React.MutableRefObject<SpawnSignalRenderItem[]>;
     enemiesRef: React.MutableRefObject<ChaserEnemy[]>;
     rangedEnemiesRef: React.MutableRefObject<RangedEnemy[]>;
     eliteEnemyRef: React.MutableRefObject<EliteEnemy | null>;
@@ -78,11 +90,11 @@ type SyncVisualStateParams = {
     setEliteEnemy: React.Dispatch<React.SetStateAction<EliteRenderItem | null>>;
     setProjectiles: React.Dispatch<React.SetStateAction<ProjectileRenderItem[]>>;
     setWebZones: React.Dispatch<React.SetStateAction<WebZoneRenderItem[]>>;
-    setBombStrikes: React.Dispatch<React.SetStateAction<BombStrike[]>>;
-    setBombBlasts: React.Dispatch<React.SetStateAction<BombBlast[]>>;
-    setDeathBursts: React.Dispatch<React.SetStateAction<DeathBurst[]>>;
+    setBombStrikes: React.Dispatch<React.SetStateAction<BombStrikeRenderItem[]>>;
+    setBombBlasts: React.Dispatch<React.SetStateAction<BombBlastRenderItem[]>>;
+    setDeathBursts: React.Dispatch<React.SetStateAction<DeathBurstRenderItem[]>>;
     setXpPickups: React.Dispatch<React.SetStateAction<PickupRenderItem[]>>;
-    setSpawnSignals: React.Dispatch<React.SetStateAction<SpawnSignal[]>>;
+    setSpawnSignals: React.Dispatch<React.SetStateAction<SpawnSignalRenderItem[]>>;
     setPlayerPosition: React.Dispatch<React.SetStateAction<Vector2>>;
     setRunnerMotion: React.Dispatch<React.SetStateAction<RunnerMotion>>;
     setOrbitPositions: React.Dispatch<React.SetStateAction<Vector2[]>>;
@@ -116,6 +128,10 @@ export const syncVisualState = ({
     projectileRenderSnapshotRef,
     webZoneRenderSnapshotRef,
     pickupRenderSnapshotRef,
+    bombStrikeSnapshotRef,
+    bombBlastSnapshotRef,
+    deathBurstSnapshotRef,
+    spawnSignalSnapshotRef,
     enemiesRef,
     rangedEnemiesRef,
     eliteEnemyRef,
@@ -210,9 +226,32 @@ export const syncVisualState = ({
             setWebZones(nextWebZoneSnapshot);
         }
 
-        setBombStrikes([...bombStrikesRef.current]);
-        setBombBlasts([...bombBlastsRef.current]);
-        setDeathBursts([...deathBurstsRef.current]);
+        const nextBombStrikeSnapshot = buildBombStrikeRenderSnapshot(
+            bombStrikesRef.current,
+            bombStrikeSnapshotRef.current
+        );
+        if (nextBombStrikeSnapshot !== bombStrikeSnapshotRef.current) {
+            bombStrikeSnapshotRef.current = nextBombStrikeSnapshot;
+            setBombStrikes(nextBombStrikeSnapshot);
+        }
+
+        const nextBombBlastSnapshot = buildBombBlastRenderSnapshot(
+            bombBlastsRef.current,
+            bombBlastSnapshotRef.current
+        );
+        if (nextBombBlastSnapshot !== bombBlastSnapshotRef.current) {
+            bombBlastSnapshotRef.current = nextBombBlastSnapshot;
+            setBombBlasts(nextBombBlastSnapshot);
+        }
+
+        const nextDeathBurstSnapshot = buildDeathBurstRenderSnapshot(
+            deathBurstsRef.current,
+            deathBurstSnapshotRef.current
+        );
+        if (nextDeathBurstSnapshot !== deathBurstSnapshotRef.current) {
+            deathBurstSnapshotRef.current = nextDeathBurstSnapshot;
+            setDeathBursts(nextDeathBurstSnapshot);
+        }
 
         const nextPickupSnapshot = buildPickupRenderSnapshot(
             xpPickupsRef.current,
@@ -223,7 +262,14 @@ export const syncVisualState = ({
             setXpPickups(nextPickupSnapshot);
         }
 
-        setSpawnSignals([...spawnSignalsRef.current]);
+        const nextSpawnSignalSnapshot = buildSpawnSignalRenderSnapshot(
+            spawnSignalsRef.current,
+            spawnSignalSnapshotRef.current
+        );
+        if (nextSpawnSignalSnapshot !== spawnSignalSnapshotRef.current) {
+            spawnSignalSnapshotRef.current = nextSpawnSignalSnapshot;
+            setSpawnSignals(nextSpawnSignalSnapshot);
+        }
     } else if (shouldRefreshPickups) {
         const nextPickupSnapshot = buildPickupRenderSnapshot(
             xpPickupsRef.current,
