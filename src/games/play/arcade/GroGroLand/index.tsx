@@ -365,17 +365,18 @@ export const GroGroLand: React.FC<GameComponentProps> = ({ onExit }) => {
                 />
 
                 <section className="play-arcade-game__hero grogro-land__hero">
-                    <div
-                        ref={stageRef}
-                        className="play-arcade-game__stage grogro-land__stage"
-                        onContextMenu={preventDefaultEvent}
-                        onDragStart={preventDefaultEvent}
-                        onPointerDown={handleStagePointerDown}
-                        onPointerMove={handleStagePointerMove}
-                        onPointerUp={handleStagePointerUp}
-                        onPointerCancel={handleStagePointerUp}
-                        onPointerLeave={handleStagePointerUp}
-                    >
+                    <div className="grogro-land__stage-shell">
+                        <div
+                            ref={stageRef}
+                            className="play-arcade-game__stage grogro-land__stage"
+                            onContextMenu={preventDefaultEvent}
+                            onDragStart={preventDefaultEvent}
+                            onPointerDown={handleStagePointerDown}
+                            onPointerMove={handleStagePointerMove}
+                            onPointerUp={handleStagePointerUp}
+                            onPointerCancel={handleStagePointerUp}
+                            onPointerLeave={handleStagePointerUp}
+                        >
                         <canvas ref={canvasRef} className="grogro-land__canvas" aria-label={gt('stageLabel')} />
 
                         {gamePhase === 'playing' && (
@@ -531,37 +532,38 @@ export const GroGroLand: React.FC<GameComponentProps> = ({ onExit }) => {
                             </div>
                         )}
 
-                        {gamePhase === 'gameOver' && (
-                            <PlayArcadeGameOverOverlay
-                                title={gt('gameOverTitle')}
-                                retryLabel={gt('retryButton')}
-                                onRetry={startGame}
-                                iconOnly
-                                records={[
-                                    {
-                                        label: `${gt('stats.land')} / ${gt('stats.best')}`,
-                                        current: `${hudState.landPercent}%`,
-                                        best: `${hudState.bestLandPercent}%`,
-                                        highlighted: gameOverWasBest,
-                                        badgeText: gt('newBest'),
-                                    },
-                                ]}
-                                rewards={[
-                                    {
-                                        icon: '✨',
-                                        label: gt('rewards.xp'),
-                                        value: `+${gameOverRewards.xp}`,
-                                        tone: 'xp',
-                                    },
-                                    {
-                                        icon: '💰',
-                                        label: gt('rewards.gro'),
-                                        value: `+${gameOverRewards.gro}`,
-                                        tone: 'gro',
-                                    },
-                                ]}
-                            />
-                        )}
+                            {gamePhase === 'gameOver' && (
+                                <PlayArcadeGameOverOverlay
+                                    title={gt('gameOverTitle')}
+                                    retryLabel={gt('retryButton')}
+                                    onRetry={startGame}
+                                    iconOnly
+                                    records={[
+                                        {
+                                            label: `${gt('stats.land')} / ${gt('stats.best')}`,
+                                            current: `${hudState.landPercent}%`,
+                                            best: `${hudState.bestLandPercent}%`,
+                                            highlighted: gameOverWasBest,
+                                            badgeText: gt('newBest'),
+                                        },
+                                    ]}
+                                    rewards={[
+                                        {
+                                            icon: '✨',
+                                            label: gt('rewards.xp'),
+                                            value: `+${gameOverRewards.xp}`,
+                                            tone: 'xp',
+                                        },
+                                        {
+                                            icon: '💰',
+                                            label: gt('rewards.gro'),
+                                            value: `+${gameOverRewards.gro}`,
+                                            tone: 'gro',
+                                        },
+                                    ]}
+                                />
+                            )}
+                        </div>
                     </div>
                 </section>
             </div>

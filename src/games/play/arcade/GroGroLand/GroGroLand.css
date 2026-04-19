@@ -1,4 +1,7 @@
 .grogro-land {
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
     background:
         radial-gradient(circle at top, rgba(118, 152, 205, 0.18), transparent 34%),
         linear-gradient(180deg, #445776 0%, #32445f 54%, #273650 100%);
@@ -27,6 +30,32 @@
     pointer-events: none;
     overflow: hidden;
     clip-path: inset(50%);
+}
+
+.grogro-land__panel {
+    width: 100%;
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    padding: 0;
+}
+
+.grogro-land .play-arcade-game__header {
+    padding: 4px 12px 0;
+}
+
+.grogro-land__hero {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.grogro-land__stage-shell {
+    flex: 1;
+    min-height: 0;
+    padding: 12px;
 }
 
 .grogro-land .play-arcade-game__header-stat {
@@ -214,6 +243,10 @@
 }
 
 .grogro-land__stage {
+    position: relative;
+    min-height: 580px;
+    height: 100%;
+    border-radius: 26px;
     background:
         linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(214, 229, 255, 0.04)),
         linear-gradient(180deg, #40516e 0%, #2a3a53 100%);
@@ -278,6 +311,17 @@
 .grogro-land__enemy-face {
     font-size: 2.375rem;
     line-height: 1;
+}
+
+@media (max-width: 820px) {
+    .grogro-land__stage-shell {
+        padding: 8px;
+    }
+
+    .grogro-land__stage {
+        min-height: calc(100vh - 118px);
+        border-radius: 22px;
+    }
 }
 
 .grogro-land__heart-layer {

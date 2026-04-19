@@ -404,55 +404,57 @@ export const TailRunner: React.FC<GameComponentProps> = ({ onExit }) => {
                 />
 
                 <section className="play-arcade-game__hero tail-runner__hero">
-                    <div
-                        ref={stageRef}
-                        className="play-arcade-game__stage tail-runner__stage"
-                        aria-label={gt('stageLabel')}
-                        onPointerDown={handleStagePointerDown}
-                        onPointerMove={handleStagePointerMove}
-                        onPointerUp={handleStagePointerUp}
-                        onPointerCancel={handleStagePointerUp}
-                        onPointerLeave={handleStagePointerUp}
-                        onContextMenu={preventDefaultEvent}
-                        onDragStart={preventDefaultEvent}
-                    >
-                        <canvas ref={canvasRef} className="tail-runner__canvas" />
-                        {shouldUseDomMovingEmojiOverlay && (
-                            <div ref={movingEmojiOverlayRef} className="tail-runner__moving-emoji-overlay" aria-hidden="true" />
-                        )}
-                        <TailRunnerPlayerOverlay
-                            runnerCharacter={runnerCharacter}
-                            liveShieldActive={liveShieldActive}
-                            liveShieldWarning={liveShieldWarning}
-                            liveMagnetActive={liveMagnetActive}
-                            heartBursts={heartBursts}
-                            scoreBursts={scoreBursts}
-                        />
-                        {gamePhase === 'start' && (
-                            <TailRunnerStartScreen
-                                gt={gt}
+                    <div className="tail-runner__stage-shell">
+                        <div
+                            ref={stageRef}
+                            className="play-arcade-game__stage tail-runner__stage"
+                            aria-label={gt('stageLabel')}
+                            onPointerDown={handleStagePointerDown}
+                            onPointerMove={handleStagePointerMove}
+                            onPointerUp={handleStagePointerUp}
+                            onPointerCancel={handleStagePointerUp}
+                            onPointerLeave={handleStagePointerUp}
+                            onContextMenu={preventDefaultEvent}
+                            onDragStart={preventDefaultEvent}
+                        >
+                            <canvas ref={canvasRef} className="tail-runner__canvas" />
+                            {shouldUseDomMovingEmojiOverlay && (
+                                <div ref={movingEmojiOverlayRef} className="tail-runner__moving-emoji-overlay" aria-hidden="true" />
+                            )}
+                            <TailRunnerPlayerOverlay
                                 runnerCharacter={runnerCharacter}
-                                onStart={startGame}
+                                liveShieldActive={liveShieldActive}
+                                liveShieldWarning={liveShieldWarning}
+                                liveMagnetActive={liveMagnetActive}
+                                heartBursts={heartBursts}
+                                scoreBursts={scoreBursts}
                             />
-                        )}
-                        {gamePhase === 'gameOver' && (
-                            <TailRunnerGameOverScreen
+                            {gamePhase === 'start' && (
+                                <TailRunnerStartScreen
+                                    gt={gt}
+                                    runnerCharacter={runnerCharacter}
+                                    onStart={startGame}
+                                />
+                            )}
+                            {gamePhase === 'gameOver' && (
+                                <TailRunnerGameOverScreen
+                                    gt={gt}
+                                    hudState={hudState}
+                                    gameOverHighlights={gameOverHighlights}
+                                    rewards={tailRunnerRewards}
+                                    onRetry={startGame}
+                                />
+                            )}
+                            <TailRunnerTouchControls
+                                controlsRef={touchControlsRef}
                                 gt={gt}
-                                hudState={hudState}
-                                gameOverHighlights={gameOverHighlights}
-                                rewards={tailRunnerRewards}
-                                onRetry={startGame}
+                                gamePhase={gamePhase}
+                                liveShieldActive={liveShieldActive}
+                                shieldCharges={hudState.shieldCharges}
+                                onSetInputPressed={setInputPressed}
+                                onActivateShield={activateShield}
                             />
-                        )}
-                        <TailRunnerTouchControls
-                            controlsRef={touchControlsRef}
-                            gt={gt}
-                            gamePhase={gamePhase}
-                            liveShieldActive={liveShieldActive}
-                            shieldCharges={hudState.shieldCharges}
-                            onSetInputPressed={setInputPressed}
-                            onActivateShield={activateShield}
-                        />
+                        </div>
                     </div>
 
                     <TailRunnerSidebar
