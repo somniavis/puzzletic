@@ -31,6 +31,7 @@ import type {
     GroGroLandCaptureEffect,
     GroGroLandEnemy,
     GroGroLandEnemyPersonality,
+    GroGroLandEnemyRole,
     GroGroLandHudState,
     GroGroLandItem,
     GroGroLandItemKind,
@@ -160,6 +161,7 @@ const createEnemy = (
     index: number,
     position: { x: number; y: number },
     personality: GroGroLandEnemyPersonality,
+    role: GroGroLandEnemyRole,
     emoji: string,
     colors: GroGroLandOwnerPalette
 ): GroGroLandEnemy => {
@@ -176,6 +178,7 @@ const createEnemy = (
         ...actor,
         emoji,
         personality,
+        role,
         aiMode: 'patrol',
         decisionCooldown: config.patrolCooldown + (index * config.patrolVariance),
         expandFrames: 0,
@@ -238,6 +241,26 @@ export const replaceOwnerTiles = (grid: Uint16Array, fromOwnerId: number, toOwne
     }
 };
 
+const getOwnerTileIndexes = (grid: Uint16Array, ownerId: number) => {
+    const indexes: number[] = [];
+    for (let index = 0; index < grid.length; index += 1) {
+        if (grid[index] === ownerId) {
+            indexes.push(index);
+        }
+    }
+    return indexes;
+};
+
+const getSpawnTileIndexes = (spawnGrid: Uint16Array, ownerId: number) => {
+    const indexes: number[] = [];
+    for (let index = 0; index < spawnGrid.length; index += 1) {
+        if (spawnGrid[index] === ownerId) {
+            indexes.push(index);
+        }
+    }
+    return indexes;
+};
+
 export const createInitialGroGroLandState = (
     bestScore = 0,
     bestLandPercent = 0
@@ -245,10 +268,12 @@ export const createInitialGroGroLandState = (
     const cols = Math.floor(GROGRO_LAND_WORLD_WIDTH / GROGRO_LAND_TILE_SIZE);
     const rows = Math.floor(GROGRO_LAND_WORLD_HEIGHT / GROGRO_LAND_TILE_SIZE);
     const grid = new Uint16Array(cols * rows);
+    const spawnGrid = new Uint16Array(cols * rows);
     const [playerSpawn, ...enemySpawns] = shuffleSpawnPoints();
     const [playerColors, ...enemyColors] = shuffleOwnerPalettes();
     const enemyPersonalities = shuffleEnemyPersonalities();
     const enemyEmojis = shuffleEnemyEmojis();
+    const enemyRoles: GroGroLandEnemyRole[] = ['hunter', 'hunter', 'expander'];
 
     const player = createActor(
         'player',
@@ -268,6 +293,16 @@ export const createInitialGroGroLandState = (
         GROGRO_LAND_START_TERRITORY_SIZE,
         GROGRO_LAND_PLAYER_OWNER_ID
     );
+    claimRect(
+        spawnGrid,
+        cols,
+        rows,
+        playerSpawn.x - GROGRO_LAND_START_TERRITORY_SIZE / 2,
+        playerSpawn.y - GROGRO_LAND_START_TERRITORY_SIZE / 2,
+        GROGRO_LAND_START_TERRITORY_SIZE,
+        GROGRO_LAND_START_TERRITORY_SIZE,
+        GROGRO_LAND_PLAYER_OWNER_ID
+    );
 
     const enemies = Array.from(
         { length: GROGRO_LAND_ENEMY_COUNT },
@@ -275,6 +310,7 @@ export const createInitialGroGroLandState = (
             index,
             enemySpawns[index],
             enemyPersonalities[index % enemyPersonalities.length],
+            enemyRoles[index % enemyRoles.length],
             enemyEmojis[index % enemyEmojis.length],
             enemyColors[index] ?? GROGRO_LAND_OWNER_COLOR_POOL[index + 1]
         )
@@ -291,6 +327,16 @@ export const createInitialGroGroLandState = (
             GROGRO_LAND_START_TERRITORY_SIZE,
             enemy.ownerId
         );
+        claimRect(
+            spawnGrid,
+            cols,
+            rows,
+            enemy.spawnX - GROGRO_LAND_START_TERRITORY_SIZE / 2,
+            enemy.spawnY - GROGRO_LAND_START_TERRITORY_SIZE / 2,
+            GROGRO_LAND_START_TERRITORY_SIZE,
+            GROGRO_LAND_START_TERRITORY_SIZE,
+            enemy.ownerId
+        );
     });
 
     const initialState = {
@@ -298,6 +344,7 @@ export const createInitialGroGroLandState = (
         player,
         enemies,
         grid,
+        spawnGrid,
         bombVoidMask: new Uint8Array(cols * rows),
         cols,
         rows,
@@ -788,7 +835,6 @@ export const resetEnemyTerritory = (
     const enemy = state.enemies[enemyIndex];
     if (!enemy) return;
 
-    replaceOwnerTiles(state.grid, enemy.ownerId, 0);
     enemy.x = enemy.spawnX;
     enemy.y = enemy.spawnY;
     enemy.direction = pickRandomCardinalDirection();
@@ -814,6 +860,129 @@ export const resetEnemyTerritory = (
         GROGRO_LAND_START_TERRITORY_SIZE,
         enemy.ownerId
     );
+};
+
+const shrinkOwnerTerritoryFromSpawn = (
+    state: GroGroLandState,
+    ownerId: number,
+    spawnX: number,
+    spawnY: number
+) => {
+    const ownerTileIndexes = getOwnerTileIndexes(state.grid, ownerId);
+    if (!ownerTileIndexes.length) return;
+
+    const guaranteedSpawnTileIndexes = new Set<number>(getSpawnTileIndexes(state.spawnGrid, ownerId));
+    const ownedNonSpawnTileIndexes = ownerTileIndexes.filter((index) => !guaranteedSpawnTileIndexes.has(index));
+    const nonSpawnKeepCount = Math.ceil(ownedNonSpawnTileIndexes.length * 0.5);
+
+    const candidateTileIndexes = ownedNonSpawnTileIndexes
+        .sort((leftIndex, rightIndex) => {
+            const leftCol = leftIndex % state.cols;
+            const leftRow = Math.floor(leftIndex / state.cols);
+            const rightCol = rightIndex % state.cols;
+            const rightRow = Math.floor(rightIndex / state.cols);
+            const leftCenterX = (leftCol + 0.5) * GROGRO_LAND_TILE_SIZE;
+            const leftCenterY = (leftRow + 0.5) * GROGRO_LAND_TILE_SIZE;
+            const rightCenterX = (rightCol + 0.5) * GROGRO_LAND_TILE_SIZE;
+            const rightCenterY = (rightRow + 0.5) * GROGRO_LAND_TILE_SIZE;
+            const leftDistanceSq = ((leftCenterX - spawnX) ** 2) + ((leftCenterY - spawnY) ** 2);
+            const rightDistanceSq = ((rightCenterX - spawnX) ** 2) + ((rightCenterY - spawnY) ** 2);
+            return leftDistanceSq - rightDistanceSq;
+        });
+
+    const keepTileIndexes = new Set<number>(guaranteedSpawnTileIndexes);
+
+    for (let index = 0; index < nonSpawnKeepCount && index < candidateTileIndexes.length; index += 1) {
+        keepTileIndexes.add(candidateTileIndexes[index]);
+    }
+
+    ownerTileIndexes.forEach((tileIndex) => {
+        if (keepTileIndexes.has(tileIndex)) {
+            state.grid[tileIndex] = ownerId;
+            state.bombVoidMask[tileIndex] = 0;
+            return;
+        }
+
+        state.grid[tileIndex] = 0;
+        state.bombVoidMask[tileIndex] = 0;
+    });
+};
+
+const isSpawnAreaBlockedForActor = (
+    state: GroGroLandState,
+    actor: Pick<GroGroLandActor, 'ownerId' | 'spawnX' | 'spawnY'>
+) => {
+    const startCol = Math.max(0, Math.floor((actor.spawnX - GROGRO_LAND_START_TERRITORY_SIZE / 2) / GROGRO_LAND_TILE_SIZE));
+    const endCol = Math.min(state.cols - 1, Math.floor((actor.spawnX + GROGRO_LAND_START_TERRITORY_SIZE / 2) / GROGRO_LAND_TILE_SIZE));
+    const startRow = Math.max(0, Math.floor((actor.spawnY - GROGRO_LAND_START_TERRITORY_SIZE / 2) / GROGRO_LAND_TILE_SIZE));
+    const endRow = Math.min(state.rows - 1, Math.floor((actor.spawnY + GROGRO_LAND_START_TERRITORY_SIZE / 2) / GROGRO_LAND_TILE_SIZE));
+
+    for (let row = startRow; row <= endRow; row += 1) {
+        for (let col = startCol; col <= endCol; col += 1) {
+            const ownerId = state.grid[row * state.cols + col];
+            if (ownerId !== 0 && ownerId !== actor.ownerId) {
+                return true;
+            }
+        }
+    }
+
+    return false;
+};
+
+export const resetPlayerTerritory = (state: GroGroLandState) => {
+    const player = state.player;
+    player.x = player.spawnX;
+    player.y = player.spawnY;
+    player.direction = pickRandomCardinalDirection();
+    player.status = 'safe';
+    player.trail = [];
+    player.captureExitPoint = null;
+    player.duelWithId = null;
+    player.boostTimer = 0;
+    player.slowTimer = 0;
+    player.freezeTimer = 0;
+
+    claimRect(
+        state.grid,
+        state.cols,
+        state.rows,
+        player.spawnX - GROGRO_LAND_START_TERRITORY_SIZE / 2,
+        player.spawnY - GROGRO_LAND_START_TERRITORY_SIZE / 2,
+        GROGRO_LAND_START_TERRITORY_SIZE,
+        GROGRO_LAND_START_TERRITORY_SIZE,
+        player.ownerId
+    );
+};
+
+export const respawnPlayerFromOriginOrFinish = (
+    state: GroGroLandState,
+    onFinishGame: () => void
+) => {
+    const player = state.player;
+
+    if (isSpawnAreaBlockedForActor(state, player)) {
+        onFinishGame();
+        return;
+    }
+
+    shrinkOwnerTerritoryFromSpawn(state, player.ownerId, player.spawnX, player.spawnY);
+    resetPlayerTerritory(state);
+};
+
+export const respawnEnemyFromOriginOrEliminate = (
+    state: GroGroLandState,
+    enemyIndex: number
+) => {
+    const enemy = state.enemies[enemyIndex];
+    if (!enemy) return;
+
+    if (isSpawnAreaBlockedForActor(state, enemy)) {
+        eliminateEnemyFromGame(state, enemyIndex);
+        return;
+    }
+
+    shrinkOwnerTerritoryFromSpawn(state, enemy.ownerId, enemy.spawnX, enemy.spawnY);
+    resetEnemyTerritory(state, enemyIndex);
 };
 
 export const eliminateEnemyFromGame = (

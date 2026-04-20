@@ -32,6 +32,7 @@ export const SOUNDS = {
   eating: `${SOUND_BASE_URL}/game%20sound/eating_sound1.mp3`,
   cleaning: `${SOUND_BASE_URL}/game%20sound/cleaning-sound1.mp3`,
   backgroundMusic: `${SOUND_BASE_URL}/game%20sound/background_bgm1.mp3`,
+  playBackgroundMusic: `${SOUND_BASE_URL}/game%20sound/play_bgm2.mp3`,
 } as const;
 
 /**
@@ -77,6 +78,7 @@ class SoundManager {
   private preloadComplete: Set<string> = new Set();
   private isUnlocked: boolean = false; // 모바일 오디오 컨텍스트 활성화 여부
   private bgmAudio: HTMLAudioElement | null = null; // 배경음 전용 인스턴스
+  private currentBgmUrl: string | null = null;
   private unlockInProgress: boolean = false;
   private silentUnlockAudio: HTMLAudioElement | null = null;
 
@@ -283,10 +285,17 @@ class SoundManager {
   /**
    * 배경음악 초기화 및 프리로드
    */
-  async initBgm(): Promise<void> {
-    if (this.bgmAudio) return;
+  async initBgm(soundUrl: string = SOUNDS.backgroundMusic): Promise<void> {
+    if (this.bgmAudio && this.currentBgmUrl === soundUrl) return;
 
-    this.bgmAudio = new Audio(SOUNDS.backgroundMusic);
+    if (this.bgmAudio) {
+      this.bgmAudio.pause();
+      this.bgmAudio.src = '';
+      this.bgmAudio.load();
+    }
+
+    this.bgmAudio = new Audio(soundUrl);
+    this.currentBgmUrl = soundUrl;
     this.bgmAudio.loop = true; // 무한 반복
     this.bgmAudio.volume = 0.3; // 배경음은 조금 작게
     this.bgmAudio.preload = 'auto';
@@ -422,10 +431,10 @@ export const playClearSound = (volume: number = 0.5): void => {
  * 배경음악을 재생합니다.
  * 설정에서 BGM이 활성화된 경우에만 재생됩니다.
  */
-export const startBackgroundMusic = async (): Promise<void> => {
+export const startBackgroundMusic = async (soundUrl: string = SOUNDS.backgroundMusic): Promise<void> => {
   if (isBgmEnabled()) {
     try {
-      await soundManager.initBgm();
+      await soundManager.initBgm(soundUrl);
       soundManager.playBgm();
     } catch (error) {
       if (error instanceof Error && error.name === 'NotAllowedError') {
@@ -450,6 +459,10 @@ export const stopBackgroundMusic = (): void => {
  */
 export const setBackgroundMusicVolume = (volume: number): void => {
   soundManager.setBgmVolume(volume);
+};
+
+export const startPlayBackgroundMusic = async (): Promise<void> => {
+  await startBackgroundMusic(SOUNDS.playBackgroundMusic);
 };
 
 /**

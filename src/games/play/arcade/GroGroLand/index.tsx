@@ -37,6 +37,22 @@ import {
 } from './engine';
 import './GroGroLand.css';
 
+const createHeaderStatStyle = (
+    fill: string,
+    edge: string,
+    actor: string,
+    muted = false
+): React.CSSProperties => ({
+    background: `linear-gradient(180deg, ${fill}${muted ? 'cc' : 'f5'}, ${fill}${muted ? 'a8' : 'e8'})`,
+    borderColor: edge,
+    boxShadow: [
+        'inset 0 1px 0 rgba(255, 255, 255, 0.72)',
+        `0 0.28rem 0 ${edge}`,
+        `0 0.8rem 1.25rem ${actor}${muted ? '14' : '24'}`,
+    ].join(', '),
+    color: actor,
+});
+
 export const GroGroLand: React.FC<GameComponentProps> = ({ onExit }) => {
     const { i18n } = useTranslation();
     const { speciesId, evolutionStage, characterName, addRewards } = useNurturing();
@@ -83,6 +99,11 @@ export const GroGroLand: React.FC<GameComponentProps> = ({ onExit }) => {
             best: `${hudState.bestLandPercent}%`,
             widthWeight: 3.4,
             className: 'grogro-land__header-stat--mine',
+            style: createHeaderStatStyle(
+                stateRef.current.player.colors.fill,
+                stateRef.current.player.colors.edge,
+                stateRef.current.player.colors.actor
+            ),
         },
         ...hudState.enemyLandPercents.map((landPercent, index) => ({
             label: hudState.enemyEmojis[index] ?? gt('stats.enemyLand', { index: index + 1 }),
@@ -93,6 +114,12 @@ export const GroGroLand: React.FC<GameComponentProps> = ({ onExit }) => {
             className: hudState.enemyAlive[index]
                 ? 'grogro-land__header-stat--enemy'
                 : 'grogro-land__header-stat--enemy-dead',
+            style: createHeaderStatStyle(
+                stateRef.current.enemies[index]?.colors.fill ?? '#d9dfe8',
+                stateRef.current.enemies[index]?.colors.edge ?? '#98a2b3',
+                stateRef.current.enemies[index]?.colors.actor ?? '#667085',
+                !hudState.enemyAlive[index]
+            ),
         })),
     ]), [gt, hudState]);
 

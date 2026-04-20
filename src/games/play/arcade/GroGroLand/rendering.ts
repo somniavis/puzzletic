@@ -305,7 +305,8 @@ const drawTerritoryFill = (
             if (!ownerId) continue;
             const palette = ownerPaletteMap.get(ownerId);
             if (!palette) continue;
-            context.fillStyle = palette.fill;
+            const isSpawnTile = state.spawnGrid[row * state.cols + col] === ownerId;
+            context.fillStyle = isSpawnTile ? palette.edge : palette.fill;
             context.fillRect(
                 (col * tileSize) - cameraX - 0.9,
                 (row * tileSize) - cameraY - 0.9,

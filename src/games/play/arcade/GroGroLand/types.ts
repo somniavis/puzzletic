@@ -1,6 +1,7 @@
 export type GroGroLandPhase = 'start' | 'playing' | 'paused' | 'gameOver';
 export type GroGroLandActorStatus = 'safe' | 'drawing' | 'dead';
 export type GroGroLandEnemyPersonality = 'conservative' | 'balanced' | 'aggressive';
+export type GroGroLandEnemyRole = 'hunter' | 'expander';
 export type GroGroLandItemKind = 'boost' | 'slow' | 'freeze' | 'bomb';
 
 export type GroGroLandOwnerPalette = {
@@ -32,6 +33,7 @@ export type GroGroLandActor = {
 export type GroGroLandEnemy = GroGroLandActor & {
     emoji: string;
     personality: GroGroLandEnemyPersonality;
+    role: GroGroLandEnemyRole;
     aiMode: 'patrol' | 'expand' | 'arc' | 'return';
     decisionCooldown: number;
     expandFrames: number;
@@ -70,6 +72,7 @@ export type GroGroLandState = {
     player: GroGroLandActor;
     enemies: GroGroLandEnemy[];
     grid: Uint16Array;
+    spawnGrid: Uint16Array;
     bombVoidMask: Uint8Array;
     cols: number;
     rows: number;

@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, Suspense, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import './PlayPage.css';
-import { playButtonSound } from '../utils/sound';
+import { playButtonSound, startBackgroundMusic, startPlayBackgroundMusic, stopBackgroundMusic } from '../utils/sound';
 import { useNurturing } from '../contexts/NurturingContext';
 import { GAMES, getGameById } from '../games/registry';
 import type { GameCategory, GameManifest } from '../games/types';
@@ -21,6 +21,7 @@ import { CATEGORY_ICONS } from '../utils/playPageUtils';
 import { usePremiumStatus, isPremiumGame } from '../utils/premiumLogic';
 import { PremiumPurchaseModal } from '../components/Premium/PremiumPurchaseModal';
 import { SettingsMenu } from '../components/SettingsMenu/SettingsMenu';
+import { useSound } from '../contexts/SoundContext';
 
 // Components
 import { AdventureCard } from '../components/PlayPage/AdventureCard';
@@ -181,6 +182,7 @@ const PlayPage: React.FC = () => {
     const { gameId } = useParams();
     const { t } = useTranslation();
     const { user, guestId } = useAuth();
+    const { settings } = useSound();
     const {
         setGameDifficulty,
         gameScores,
@@ -248,6 +250,7 @@ const PlayPage: React.FC = () => {
     });
 
     const activeGame = gameId ? (getGameById(gameId) ?? getPlayGameById(gameId)) : null;
+    const activePlayGame = gameId ? getPlayGameById(gameId) : null;
     const retroPlayPacks = useMemo<RetroPlayPack[]>(() => {
         return getPlayGames().map((game) => {
             return {
@@ -707,6 +710,24 @@ const PlayPage: React.FC = () => {
 
         return () => window.clearTimeout(timeoutId);
     }, [isRetroPlayTab, retroPhase]);
+
+    useEffect(() => {
+        if (!activePlayGame) return;
+
+        if (settings.bgmEnabled && user) {
+            void startPlayBackgroundMusic();
+        } else {
+            stopBackgroundMusic();
+        }
+
+        return () => {
+            if (settings.bgmEnabled && user) {
+                void startBackgroundMusic();
+            } else {
+                stopBackgroundMusic();
+            }
+        };
+    }, [activePlayGame, settings.bgmEnabled, user]);
 
     // -- Handlers --
     const onTabSelect = useCallback((category: GameCategory) => {

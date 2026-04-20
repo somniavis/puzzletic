@@ -11,13 +11,14 @@ import {
     captureTrailBoundingArea,
     collectOwnedGroGroLandItems,
     doTrailsOverlap,
-    eliminateEnemyFromGame,
     getGroGroLandActorSpeed,
     getOwnerAtWorldPosition,
     hasLostCaptureAnchor,
     isGroGroLandOutOfBounds,
     isPointTouchingTrail,
     refreshGroGroLandMetrics,
+    respawnPlayerFromOriginOrFinish,
+    respawnEnemyFromOriginOrEliminate,
     steerGroGroLandActorToward,
     tickActorEffectTimers,
 } from './helpers';
@@ -45,6 +46,35 @@ const clampWorldPoint = (x: number, y: number) => ({
     ),
 });
 
+const isRivalEnemyTerritory = (ownerId: number, enemyOwnerId: number) => (
+    ownerId > GROGRO_LAND_PLAYER_OWNER_ID && ownerId !== enemyOwnerId
+);
+
+const getEnemyPlayerPressureRadius = (enemy: GroGroLandState['enemies'][number], baseRadius: number) => (
+    enemy.role === 'hunter'
+        ? Math.max(baseRadius, 460)
+        : 0
+);
+
+const getEnemyPlayerPressureTurn = (enemy: GroGroLandState['enemies'][number], baseTurn: number) => (
+    enemy.role === 'hunter'
+        ? Math.max(baseTurn, 0.92)
+        : 0
+);
+
+const getEnemyMinimumExpansionDistance = (enemy: GroGroLandState['enemies'][number]) => (
+    enemy.role === 'hunter' ? 520 : 680
+);
+
+const getEnemyWideSweepDirection = (enemy: GroGroLandState['enemies'][number]) => {
+    if (!enemy.captureExitPoint) return enemy.direction;
+    const fromExitX = enemy.x - enemy.captureExitPoint.x;
+    const fromExitY = enemy.y - enemy.captureExitPoint.y;
+    const distance = Math.hypot(fromExitX, fromExitY) || 1;
+    const outwardDirection = Math.atan2(fromExitY / distance, fromExitX / distance);
+    return outwardDirection + (enemy.arcTurnDirection * 1.02);
+};
+
 const getEnemyReentryTarget = (
     enemy: GroGroLandState['enemies'][number],
     returnEntryOffset: number
@@ -53,29 +83,42 @@ const getEnemyReentryTarget = (
         return { x: enemy.spawnX, y: enemy.spawnY };
     }
 
-    const baseDx = enemy.captureExitPoint.x - enemy.spawnX;
-    const baseDy = enemy.captureExitPoint.y - enemy.spawnY;
-    const distance = Math.hypot(baseDx, baseDy) || 1;
-    const unitDx = baseDx / distance;
-    const unitDy = baseDy / distance;
-    const perpendicularX = -unitDy * enemy.arcTurnDirection;
-    const perpendicularY = unitDx * enemy.arcTurnDirection;
-    const forwardPull = Math.min(returnEntryOffset * 0.45, distance * 0.35);
+    const travelDx = enemy.x - enemy.spawnX;
+    const travelDy = enemy.y - enemy.spawnY;
+    const travelDistance = Math.hypot(travelDx, travelDy);
+    const exitDx = enemy.captureExitPoint.x - enemy.spawnX;
+    const exitDy = enemy.captureExitPoint.y - enemy.spawnY;
+    const exitDistance = Math.hypot(exitDx, exitDy) || 1;
+    const basisDx = travelDistance > GROGRO_LAND_START_TERRITORY_SIZE
+        ? travelDx / travelDistance
+        : exitDx / exitDistance;
+    const basisDy = travelDistance > GROGRO_LAND_START_TERRITORY_SIZE
+        ? travelDy / travelDistance
+        : exitDy / exitDistance;
+    const perpendicularX = -basisDy * enemy.arcTurnDirection;
+    const perpendicularY = basisDx * enemy.arcTurnDirection;
+    const lateralReach = Math.max(returnEntryOffset * 1.85, exitDistance * 0.95, 240);
+    const outwardReach = Math.max(returnEntryOffset * 0.9, travelDistance * 0.42, 150);
 
     return clampWorldPoint(
-        enemy.spawnX + (perpendicularX * returnEntryOffset) - (unitDx * forwardPull),
-        enemy.spawnY + (perpendicularY * returnEntryOffset) - (unitDy * forwardPull)
+        enemy.spawnX + (perpendicularX * lateralReach) + (basisDx * outwardReach),
+        enemy.spawnY + (perpendicularY * lateralReach) + (basisDy * outwardReach)
     );
 };
 
 const beginEnemyReturn = (
     enemy: GroGroLandState['enemies'][number],
-    returnEntryOffset: number
+    returnEntryOffset: number,
+    options?: { directToExit?: boolean }
 ) => {
     enemy.aiMode = 'return';
     enemy.arcFrames = 0;
     enemy.arcTargetDirection = null;
-    enemy.returnTarget = getEnemyReentryTarget(enemy, returnEntryOffset);
+    enemy.returnTarget = options?.directToExit
+        ? (enemy.captureExitPoint
+            ? { ...enemy.captureExitPoint }
+            : { x: enemy.spawnX, y: enemy.spawnY })
+        : getEnemyReentryTarget(enemy, returnEntryOffset);
 };
 
 const clearDuelPair = (state: GroGroLandState, actorId: string, opponentId: string | null) => {
@@ -103,13 +146,14 @@ const resolveReturnDuel = (
     clearDuelPair(state, winnerId, loserId);
 
     if (loserId === state.player.id) {
-        onFinishGame();
+        respawnPlayerFromOriginOrFinish(state, onFinishGame);
+        refreshGroGroLandMetrics(state);
         return;
     }
 
     const loserIndex = state.enemies.findIndex((enemy) => enemy.id === loserId);
     if (loserIndex >= 0) {
-        eliminateEnemyFromGame(state, loserIndex);
+        respawnEnemyFromOriginOrEliminate(state, loserIndex);
         refreshGroGroLandMetrics(state);
     }
 };
@@ -123,6 +167,8 @@ const updateEnemy = (
     const enemy = state.enemies[enemyIndex];
     if (!enemy || enemy.status === 'dead') return;
     const personalityConfig = GROGRO_LAND_ENEMY_PERSONALITY_CONFIG[enemy.personality];
+    const playerPressureRadius = getEnemyPlayerPressureRadius(enemy, personalityConfig.playerPressureRadius);
+    const playerPressureTurn = getEnemyPlayerPressureTurn(enemy, personalityConfig.playerPressureTurn);
 
     const findNearestItemDirection = (searchRadius: number) => {
         let nearestItem: { x: number; y: number } | null = null;
@@ -143,11 +189,11 @@ const updateEnemy = (
     };
 
     const getPlayerPressureDirection = () => {
-        if (personalityConfig.playerPressureRadius <= 0 || state.player.status === 'dead') return null;
+        if (playerPressureRadius <= 0 || state.player.status === 'dead') return null;
         const dx = state.player.x - enemy.x;
         const dy = state.player.y - enemy.y;
         const distanceSq = (dx * dx) + (dy * dy);
-        if (distanceSq > personalityConfig.playerPressureRadius * personalityConfig.playerPressureRadius) return null;
+        if (distanceSq > playerPressureRadius * playerPressureRadius) return null;
         return Math.atan2(dy, dx);
     };
 
@@ -157,6 +203,11 @@ const updateEnemy = (
     enemy.decisionCooldown -= deltaMultiplier;
     const ownerAtEnemy = getOwnerAtWorldPosition(state.grid, state.cols, state.rows, enemy.x, enemy.y);
     const isInsideOwnTerritory = ownerAtEnemy === enemy.ownerId;
+    const captureDistanceFromExit = enemy.captureExitPoint
+        ? Math.hypot(enemy.x - enemy.captureExitPoint.x, enemy.y - enemy.captureExitPoint.y)
+        : 0;
+    const needsWiderExpansion = enemy.status === 'drawing'
+        && captureDistanceFromExit < getEnemyMinimumExpansionDistance(enemy);
 
     if (enemy.aiMode === 'patrol') {
         if (enemy.decisionCooldown <= 0) {
@@ -167,7 +218,7 @@ const updateEnemy = (
             enemy.arcTargetDirection = null;
             enemy.returnTarget = null;
             enemy.decisionCooldown = personalityConfig.decisionCooldown;
-            enemy.direction += enemyIndex % 2 === 0 ? -0.9 : 0.9;
+            enemy.direction += enemyIndex % 2 === 0 ? -1.18 : 1.18;
         }
         const itemDirection = findNearestItemDirection(320);
         if (itemDirection !== null) {
@@ -181,7 +232,7 @@ const updateEnemy = (
             steerGroGroLandActorToward(
                 enemy,
                 playerPressureDirection,
-                GROGRO_LAND_TURN_SPEED * personalityConfig.playerPressureTurn * deltaMultiplier
+                GROGRO_LAND_TURN_SPEED * playerPressureTurn * deltaMultiplier
             );
             if (isInsideOwnTerritory && enemy.decisionCooldown > 6) {
                 enemy.decisionCooldown = 6;
@@ -189,7 +240,12 @@ const updateEnemy = (
         }
     } else if (enemy.aiMode === 'expand') {
         enemy.expandFrames -= deltaMultiplier;
-        if (enemy.expandFrames <= 0) {
+        if (needsWiderExpansion) {
+            const wideSweepDirection = getEnemyWideSweepDirection(enemy);
+            steerGroGroLandActorToward(enemy, wideSweepDirection, GROGRO_LAND_TURN_SPEED * 0.94 * deltaMultiplier);
+            enemy.expandFrames = Math.max(enemy.expandFrames, enemy.role === 'hunter' ? 126 : 176);
+            enemy.arcFrames = Math.max(enemy.arcFrames, enemy.role === 'hunter' ? 82 : 116);
+        } else if (enemy.expandFrames <= 0) {
             beginEnemyReturn(enemy, personalityConfig.returnEntryOffset);
         } else if (
             enemy.arcFrames > 0 &&
@@ -197,24 +253,24 @@ const updateEnemy = (
             enemy.status === 'drawing'
         ) {
             enemy.aiMode = 'arc';
-            enemy.arcTargetDirection = enemy.direction + (enemy.arcTurnDirection * personalityConfig.arcTurnAngle);
+            enemy.arcTargetDirection = getEnemyWideSweepDirection(enemy) + (enemy.arcTurnDirection * (personalityConfig.arcTurnAngle * 0.72));
         } else if (enemy.decisionCooldown <= 0) {
-            enemy.direction += (Math.random() - 0.5) * personalityConfig.turnJitter;
+            enemy.direction += (Math.random() - 0.5) * personalityConfig.turnJitter * 1.35;
             enemy.decisionCooldown = personalityConfig.decisionCooldown;
         }
         const itemDirection = findNearestItemDirection(420);
         if (itemDirection !== null) {
             steerGroGroLandActorToward(enemy, itemDirection, GROGRO_LAND_TURN_SPEED * 0.9 * deltaMultiplier);
-            enemy.expandFrames = Math.max(enemy.expandFrames, 24);
+            enemy.expandFrames = Math.max(enemy.expandFrames, enemy.role === 'hunter' ? 54 : 76);
         }
         const playerPressureDirection = getPlayerPressureDirection();
         if (playerPressureDirection !== null) {
             steerGroGroLandActorToward(
                 enemy,
                 playerPressureDirection,
-                GROGRO_LAND_TURN_SPEED * personalityConfig.playerPressureTurn * deltaMultiplier
+                GROGRO_LAND_TURN_SPEED * playerPressureTurn * deltaMultiplier
             );
-            enemy.expandFrames = Math.max(enemy.expandFrames, 46);
+            enemy.expandFrames = Math.max(enemy.expandFrames, enemy.role === 'hunter' ? 110 : 54);
         }
     } else if (enemy.aiMode === 'arc') {
         enemy.arcFrames -= deltaMultiplier;
@@ -230,10 +286,13 @@ const updateEnemy = (
             steerGroGroLandActorToward(
                 enemy,
                 playerPressureDirection,
-                GROGRO_LAND_TURN_SPEED * personalityConfig.playerPressureTurn * 0.54 * deltaMultiplier
+                GROGRO_LAND_TURN_SPEED * playerPressureTurn * 0.54 * deltaMultiplier
             );
         }
-        if (enemy.arcFrames <= 0) {
+        if (needsWiderExpansion) {
+            enemy.arcTargetDirection = getEnemyWideSweepDirection(enemy);
+            enemy.arcFrames = Math.max(enemy.arcFrames, enemy.role === 'hunter' ? 72 : 104);
+        } else if (enemy.arcFrames <= 0) {
             beginEnemyReturn(enemy, personalityConfig.returnEntryOffset);
         }
     } else if (enemy.aiMode === 'return') {
@@ -242,7 +301,7 @@ const updateEnemy = (
         steerGroGroLandActorToward(enemy, targetDirection, GROGRO_LAND_TURN_SPEED * 0.9 * deltaMultiplier);
         const targetDx = returnTarget.x - enemy.x;
         const targetDy = returnTarget.y - enemy.y;
-        if ((targetDx * targetDx) + (targetDy * targetDy) < (90 * 90)) {
+        if ((targetDx * targetDx) + (targetDy * targetDy) < (72 * 72)) {
             enemy.returnTarget = enemy.captureExitPoint
                 ? { ...enemy.captureExitPoint }
                 : { x: enemy.spawnX, y: enemy.spawnY };
@@ -275,7 +334,7 @@ const updateEnemy = (
         const returnTarget = getEnemyReturnTarget(enemy);
         const targetDirection = Math.atan2(returnTarget.y - enemy.y, returnTarget.x - enemy.x);
         steerGroGroLandActorToward(enemy, targetDirection, GROGRO_LAND_TURN_SPEED * personalityConfig.avoidTurnBoost * deltaMultiplier);
-        beginEnemyReturn(enemy, personalityConfig.returnEntryOffset);
+        beginEnemyReturn(enemy, personalityConfig.returnEntryOffset, { directToExit: true });
 
         if (wouldHitOwnTrail(enemy.direction)) {
             const alternateDirections = [
@@ -309,6 +368,53 @@ const updateEnemy = (
 
     const ownerAfterMove = getOwnerAtWorldPosition(state.grid, state.cols, state.rows, enemy.x, enemy.y);
     const reenteredOwnTerritory = ownerAfterMove === enemy.ownerId;
+    const enteredRivalEnemyTerritory = isRivalEnemyTerritory(ownerAfterMove, enemy.ownerId);
+
+    if (enteredRivalEnemyTerritory) {
+        const alternateDirections = [
+            enemy.direction + 0.82,
+            enemy.direction - 0.82,
+            enemy.direction + 1.34,
+            enemy.direction - 1.34,
+            enemy.direction + Math.PI * 0.55,
+        ];
+        let foundDetour = false;
+
+        for (let index = 0; index < alternateDirections.length; index += 1) {
+            const candidateDirection = alternateDirections[index];
+            const candidateX = previousEnemyX + (Math.cos(candidateDirection) * enemySpeed * deltaMultiplier);
+            const candidateY = previousEnemyY + (Math.sin(candidateDirection) * enemySpeed * deltaMultiplier);
+
+            if (isGroGroLandOutOfBounds(candidateX, candidateY)) continue;
+
+            const candidateOwner = getOwnerAtWorldPosition(
+                state.grid,
+                state.cols,
+                state.rows,
+                candidateX,
+                candidateY
+            );
+
+            if (isRivalEnemyTerritory(candidateOwner, enemy.ownerId)) continue;
+            if (enemy.status === 'drawing' && wouldHitOwnTrail(candidateDirection)) continue;
+
+            enemy.direction = candidateDirection;
+            enemy.x = candidateX;
+            enemy.y = candidateY;
+            foundDetour = true;
+            break;
+        }
+
+        if (!foundDetour) {
+            // Rival territory avoidance is a preference, not a hard rule.
+            // If boxed in, keep moving so enemies do not stall in place.
+            enemy.x = previousEnemyX + (Math.cos(enemy.direction) * enemySpeed * deltaMultiplier);
+            enemy.y = previousEnemyY + (Math.sin(enemy.direction) * enemySpeed * deltaMultiplier);
+        } else if (enemy.status === 'safe') {
+            enemy.aiMode = 'patrol';
+            enemy.decisionCooldown = Math.max(enemy.decisionCooldown, 10);
+        }
+    }
 
     if (enemy.status === 'safe' && !reenteredOwnTerritory) {
         enemy.status = 'drawing';
@@ -320,7 +426,7 @@ const updateEnemy = (
     } else if (enemy.status === 'drawing') {
         appendTrailPoint(enemy);
         if (hasLostCaptureAnchor(state.grid, state.cols, state.rows, enemy)) {
-            eliminateEnemyFromGame(state, enemyIndex);
+            respawnEnemyFromOriginOrEliminate(state, enemyIndex);
             refreshGroGroLandMetrics(state);
             return;
         }
@@ -369,7 +475,8 @@ export const updateGroGroLandPlayer = (
     player.y += Math.sin(player.direction) * playerSpeed * deltaMultiplier;
 
     if (isGroGroLandOutOfBounds(player.x, player.y)) {
-        callbacks.onFinishGame();
+        respawnPlayerFromOriginOrFinish(state, callbacks.onFinishGame);
+        refreshGroGroLandMetrics(state);
         return;
     }
 
@@ -389,7 +496,8 @@ export const updateGroGroLandPlayer = (
     if (player.status === 'drawing') {
         appendTrailPoint(player);
         if (hasLostCaptureAnchor(state.grid, state.cols, state.rows, player)) {
-            callbacks.onFinishGame();
+            respawnPlayerFromOriginOrFinish(state, callbacks.onFinishGame);
+            refreshGroGroLandMetrics(state);
             return;
         }
         if (isOwnTerritory && player.trail.length > 1) {
@@ -409,7 +517,8 @@ export const resolveGroGroLandTrailCollisions = (
     const player = state.player;
 
     if (player.status === 'drawing' && player.trail.length > 10 && isPointTouchingTrail(player.x, player.y, player.trail.slice(0, -6), 8)) {
-        onFinishGame();
+        respawnPlayerFromOriginOrFinish(state, onFinishGame);
+        refreshGroGroLandMetrics(state);
         return;
     }
 

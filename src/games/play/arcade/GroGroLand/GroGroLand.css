@@ -99,15 +99,15 @@
 }
 
 .grogro-land .play-arcade-game__header-stat.grogro-land__header-stat--mine .play-arcade-game__header-stat-value > span:first-child {
-    color: #3957b4;
+    color: inherit;
 }
 
 .grogro-land .play-arcade-game__header-stat.grogro-land__header-stat--enemy .play-arcade-game__header-stat-value > span:first-child {
-    color: #a6582f;
+    color: inherit;
 }
 
 .grogro-land .play-arcade-game__header-stat.grogro-land__header-stat--enemy-dead .play-arcade-game__header-stat-value > span:first-child {
-    color: #8a8f98;
+    color: inherit;
 }
 
 .grogro-land__enemy-percent {

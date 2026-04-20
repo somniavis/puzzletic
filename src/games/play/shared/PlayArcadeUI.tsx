@@ -13,6 +13,7 @@ export type PlayArcadeHeaderStat = {
     currentClassName?: string;
     fillPercent?: number;
     fillClassName?: string;
+    style?: React.CSSProperties;
 };
 
 type PlayArcadeHeaderProps = {
@@ -38,7 +39,10 @@ export const PlayArcadeHeader: React.FC<PlayArcadeHeaderProps> = ({
                         stat.className ?? '',
                     ].filter(Boolean).join(' ')}
                     key={stat.label}
-                    style={stat.widthWeight ? { flex: `${stat.widthWeight} 1 0` } : undefined}
+                    style={{
+                        ...(stat.widthWeight ? { flex: `${stat.widthWeight} 1 0` } : {}),
+                        ...(stat.style ?? {}),
+                    }}
                 >
                     {stat.fillPercent !== undefined && (
                         <span
