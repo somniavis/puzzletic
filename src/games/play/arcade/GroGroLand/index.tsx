@@ -293,6 +293,11 @@ export const GroGroLand: React.FC<GameComponentProps> = ({ onExit }) => {
             resolveGroGroLandTrailCollisions(stateRef.current, { onFinishGame: finishGame });
             tickGroGroLandItems(stateRef.current, deltaMultiplier);
             tickGroGroLandCaptureEffects(stateRef.current, deltaMultiplier);
+
+            if (stateRef.current.phase === 'playing' && stateRef.current.enemies.every((enemy) => enemy.status === 'dead')) {
+                finishGame();
+            }
+
             drawScene();
 
             if (now - lastHudSync >= GROGRO_LAND_TIMINGS.hudSyncMs) {
