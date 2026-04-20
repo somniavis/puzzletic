@@ -37,12 +37,12 @@ export const TrainRewardModal: React.FC<TrainRewardModalProps> = ({
     return (
         <div className="train-reward-overlay">
             <div className={`train-reward-modal ${rewardType === 'big' ? 'jackpot' : ''}`}>
-                <div className="reward-emoji">{getRewardEmoji()}</div>
-                <div className="reward-label">{getRewardLabel()}</div>
+                <div className="train-reward-emoji">{getRewardEmoji()}</div>
+                <div className="train-reward-label">{getRewardLabel()}</div>
                 {rewardType !== 'dud' && (
-                    <div className="reward-amount">+{amount}</div>
+                    <div className="train-reward-amount">+{amount}</div>
                 )}
-                <button className="confirm-btn" onClick={handleConfirm}>
+                <button className="train-reward-confirm-btn" onClick={handleConfirm}>
                     {t('train.reward.confirm')}
                 </button>
             </div>

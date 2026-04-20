@@ -54,7 +54,7 @@
     }
 }
 
-.reward-emoji {
+.train-reward-emoji {
     font-size: 48px;
     margin-bottom: 8px;
     animation: bounce 0.5s ease-in-out infinite alternate;
@@ -70,7 +70,7 @@
     }
 }
 
-.reward-label {
+.train-reward-label {
     font-size: 14px;
     font-weight: 600;
     color: #64748b;
@@ -79,7 +79,7 @@
     margin-bottom: 4px;
 }
 
-.reward-amount {
+.train-reward-amount {
     font-size: 36px;
     font-weight: 800;
     color: #f59e0b;
@@ -87,9 +87,14 @@
     margin-bottom: 16px;
 }
 
-.train-reward-modal.jackpot .reward-amount {
+.train-reward-modal.jackpot .train-reward-amount {
     color: #d97706;
     animation: pulse 0.5s ease-in-out infinite;
+}
+
+.train-reward-amount--secondary {
+    font-size: 1.5rem;
+    margin-top: -0.4rem;
 }
 
 @keyframes pulse {
@@ -105,7 +110,7 @@
 }
 
 /* 3D Rectangle Button (matching app style) */
-.confirm-btn {
+.train-reward-confirm-btn {
     display: inline-block;
     padding: 12px 32px;
     border-radius: 12px;
@@ -122,7 +127,7 @@
     min-width: 100px;
 }
 
-.confirm-btn:active {
+.train-reward-confirm-btn:active {
     transform: translateY(4px);
     box-shadow:
         0 0 0 #15803d,

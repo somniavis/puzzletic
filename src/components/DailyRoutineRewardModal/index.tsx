@@ -24,16 +24,16 @@ export const DailyRoutineRewardModal: React.FC<DailyRoutineRewardModalProps> = (
   return (
     <div className="train-reward-overlay">
       <div className={`train-reward-modal ${reward.tier === 'jackpot' ? 'jackpot' : ''}`}>
-        <div className="reward-emoji">{getRewardEmoji(reward.tier)}</div>
-        <div className="reward-label">
+        <div className="train-reward-emoji">{getRewardEmoji(reward.tier)}</div>
+        <div className="train-reward-label">
           {t('dailyRoutine.reward.title')}
         </div>
-        <div className="reward-amount">+{reward.gro} GRO</div>
-        <div className="reward-amount" style={{ fontSize: '1.5rem', marginTop: '-0.4rem' }}>
+        <div className="train-reward-amount">+{reward.gro} GRO</div>
+        <div className="train-reward-amount train-reward-amount--secondary">
           +{reward.xp} XP
         </div>
         <button
-          className="confirm-btn"
+          className="train-reward-confirm-btn"
           onClick={() => {
             playButtonSound();
             onConfirm();
