@@ -1201,6 +1201,11 @@ export const frFR = {
       description: 'Choisissez une langue',
       selected: 'Sélectionnée',
     },
+    mode: {
+      title: 'Mode',
+      game: 'Jeu (Par défaut)',
+      learn: 'Apprendre',
+    },
     admin: {
       title: 'Administrateur',
       gallery: 'Galerie',

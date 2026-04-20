@@ -1201,6 +1201,11 @@ export const en = {
       description: 'Select language',
       selected: 'Selected',
     },
+    mode: {
+      title: 'Mode',
+      game: 'Game (Default)',
+      learn: 'Learn',
+    },
     admin: {
       title: 'Admin',
       gallery: 'Gallery',

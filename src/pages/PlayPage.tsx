@@ -801,34 +801,11 @@ const PlayPage: React.FC = () => {
 
     const renderHeader = () => (
         <header className="play-header-hub">
-            <div className="play-learn-switch" role="tablist" aria-label="Play mode switch">
-                <span className="play-learn-mode-label">Mode</span>
-                <button
-                    type="button"
-                    role="tab"
-                    aria-selected={playLearnMode === 'play'}
-                    aria-label="Play mode"
-                    className={`play-learn-btn ${playLearnMode === 'play' ? 'active' : ''}`}
-                    onClick={() => {
-                        playButtonSound();
-                        setPlayLearnMode('play');
-                    }}
-                >
-                    <i className="fas fa-gamepad" aria-hidden="true"></i>
-                </button>
-                <button
-                    type="button"
-                    role="tab"
-                    aria-selected={playLearnMode === 'learn'}
-                    aria-label="Learn mode"
-                    className={`play-learn-btn ${playLearnMode === 'learn' ? 'active' : ''}`}
-                    onClick={() => {
-                        playButtonSound();
-                        setPlayLearnMode('learn');
-                    }}
-                >
-                    <i className="fas fa-graduation-cap" aria-hidden="true"></i>
-                </button>
+            <div className="play-mode-indicator" aria-label={playLearnMode === 'play' ? 'Game mode' : 'Learn mode'}>
+                <span className="play-mode-indicator-label">Mode</span>
+                <span className="play-mode-indicator-icon" aria-hidden="true">
+                    <i className={`fas ${playLearnMode === 'play' ? 'fa-gamepad' : 'fa-graduation-cap'}`}></i>
+                </span>
             </div>
             <div className="play-header-actions">
                 <div className="star-display">
@@ -1367,6 +1344,8 @@ const PlayPage: React.FC = () => {
             <SettingsMenu
                 isOpen={isSettingsMenuOpen}
                 onClose={() => setIsSettingsMenuOpen(false)}
+                playLearnMode={playLearnMode}
+                onPlayLearnModeChange={setPlayLearnMode}
             />
         </div>
     );

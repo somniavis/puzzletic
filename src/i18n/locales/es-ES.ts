@@ -1201,6 +1201,11 @@ export const esES = {
       description: 'Selecciona idioma',
       selected: 'Seleccionado',
     },
+    mode: {
+      title: 'Modo',
+      game: 'Juego (Predeterminado)',
+      learn: 'Aprender',
+    },
     admin: {
       title: 'Admin',
       gallery: 'Galería',

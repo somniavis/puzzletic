@@ -1201,6 +1201,11 @@ export const ptPT = {
       description: 'Selecionar idioma',
       selected: 'Selecionado',
     },
+    mode: {
+      title: 'Modo',
+      game: 'Jogo (Predefinição)',
+      learn: 'Aprender',
+    },
     admin: {
       title: 'Admin',
       gallery: 'Galeria',

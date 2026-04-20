@@ -5,6 +5,7 @@ import { playButtonSound } from '../../utils/sound';
 import { useSound } from '../../contexts/SoundContext';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNurturing } from '../../contexts/NurturingContext';
+import type { PlayLearnMode } from '../../services/playUiPreferencesService';
 import './SettingsMenu.css';
 
 import { useNavigate } from 'react-router-dom';
@@ -12,11 +13,18 @@ import { useNavigate } from 'react-router-dom';
 interface SettingsMenuProps {
   isOpen: boolean;
   onClose: () => void;
+  playLearnMode?: PlayLearnMode;
+  onPlayLearnModeChange?: (mode: PlayLearnMode) => void;
 }
 
-type MenuView = 'main' | 'sound' | 'language' | 'admin';
+type MenuView = 'main' | 'sound' | 'language' | 'mode' | 'admin';
 
-export const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose }) => {
+export const SettingsMenu: React.FC<SettingsMenuProps> = ({
+  isOpen,
+  onClose,
+  playLearnMode = 'play',
+  onPlayLearnModeChange,
+}) => {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const { settings, toggleBgm, toggleSfx } = useSound();
@@ -92,6 +100,16 @@ export const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose }) =
   const handleLanguageClick = () => {
     playButtonSound();
     setCurrentView('language');
+  };
+
+  const handleModeClick = () => {
+    playButtonSound();
+    setCurrentView('mode');
+  };
+
+  const handleModeSelect = (mode: PlayLearnMode) => {
+    playButtonSound();
+    onPlayLearnModeChange?.(mode);
   };
 
   const handleBgmToggle = () => {
@@ -170,6 +188,7 @@ export const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose }) =
               {currentView === 'main' && t('settings.title')}
               {currentView === 'sound' && t('settings.sound.title')}
               {currentView === 'language' && t('settings.language.title')}
+              {currentView === 'mode' && t('settings.mode.title')}
               {currentView === 'admin' && t('settings.admin.title')}
             </h3>
           </div>
@@ -194,6 +213,13 @@ export const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose }) =
                 {saveStatus === 'cooldown' && t('settings.saveStatus.cooldown', { time: cooldownTime })}
                 {saveStatus === 'idle' && t('settings.cloudSave')}
               </span>
+            </button>
+
+            <button className="food-item" onClick={handleModeClick}>
+              <span className="food-item-icon">
+                {playLearnMode === 'play' ? '🎮' : '🎓'}
+              </span>
+              <span className="food-item-name">{t('settings.mode.title')}</span>
             </button>
 
             <button className="food-item" onClick={handleSoundClick}>
@@ -239,6 +265,37 @@ export const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose }) =
               <div className="food-item-effects">
                 <span className={`effect ${settings.sfxEnabled ? 'effect--on' : 'effect--off'}`}>
                   {settings.sfxEnabled ? t('settings.sound.on') : t('settings.sound.off')}
+                </span>
+              </div>
+            </button>
+          </div>
+        )}
+
+        {/* Mode Submenu */}
+        {currentView === 'mode' && (
+          <div className="food-items-grid">
+            <button
+              className={`food-item ${playLearnMode === 'play' ? 'food-item--selected' : ''}`}
+              onClick={() => handleModeSelect('play')}
+            >
+              <span className="food-item-icon">🎮</span>
+              <span className="food-item-name">{t('settings.mode.game')}</span>
+              <div className="food-item-effects">
+                <span className={`effect ${playLearnMode === 'play' ? 'effect--on' : 'effect--off'}`}>
+                  {playLearnMode === 'play' ? t('settings.sound.on') : t('settings.sound.off')}
+                </span>
+              </div>
+            </button>
+
+            <button
+              className={`food-item ${playLearnMode === 'learn' ? 'food-item--selected' : ''}`}
+              onClick={() => handleModeSelect('learn')}
+            >
+              <span className="food-item-icon">🎓</span>
+              <span className="food-item-name">{t('settings.mode.learn')}</span>
+              <div className="food-item-effects">
+                <span className={`effect ${playLearnMode === 'learn' ? 'effect--on' : 'effect--off'}`}>
+                  {playLearnMode === 'learn' ? t('settings.sound.on') : t('settings.sound.off')}
                 </span>
               </div>
             </button>

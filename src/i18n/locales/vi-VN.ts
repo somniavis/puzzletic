@@ -1727,6 +1727,11 @@ export const viVN = {
       description: 'Chọn ngôn ngữ',
       selected: 'Đã chọn',
     },
+    mode: {
+      title: 'Chế độ',
+      game: 'Game (Mặc định)',
+      learn: 'Learn',
+    },
     admin: {
       title: 'Quản trị',
       gallery: 'Thư viện',

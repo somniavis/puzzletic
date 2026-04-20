@@ -1201,6 +1201,11 @@ export const idID = {
       description: 'Pilih bahasa',
       selected: 'Dipilih',
     },
+    mode: {
+      title: 'Mode',
+      game: 'Game (Default)',
+      learn: 'Learn',
+    },
     admin: {
       title: 'Admin',
       gallery: 'Galeri',

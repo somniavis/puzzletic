@@ -1946,6 +1946,11 @@ const jaBase = {
             description: '言語選択',
             selected: '選択中',
         },
+        mode: {
+            title: 'モード',
+            game: 'ゲーム（デフォルト）',
+            learn: '学習',
+        },
         admin: {
             title: '管理',
             gallery: '図鑑',

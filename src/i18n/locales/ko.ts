@@ -1203,6 +1203,11 @@ const koBase = {
             description: '언어 선택',
             selected: '선택됨',
         },
+        mode: {
+            title: '모드',
+            game: '게임 (기본값)',
+            learn: '학습',
+        },
         admin: {
             title: '관리',
             gallery: '도감',
