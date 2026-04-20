@@ -13,6 +13,7 @@ import { GameLayoutHeader } from '../shared/GameLayoutHeader';
 import { GameLayoutDashboard } from '../shared/GameLayoutDashboard';
 import { GameStartScreen } from '../shared/GameStartScreen';
 import { GameOverScreen } from '../shared/GameOverScreen';
+import { PortalMathBackground } from '../../../../components/common/PortalMathBackground';
 
 interface Layout2Props {
     title: string;
@@ -59,6 +60,7 @@ export const Layout2: React.FC<Layout2Props> = ({
     cardBackground,
     className
 }) => {
+    const resolvedBackground = background ?? <PortalMathBackground />;
     const {
         gameState, score, lives, timeLeft,
         combo, bestCombo,
@@ -100,7 +102,7 @@ export const Layout2: React.FC<Layout2Props> = ({
     if (gameState === 'idle') {
         return (
             <div className={`layout2-container ${className || ''}`}>
-                {background && <div className="layout-background-layer">{background}</div>}
+                {resolvedBackground}
                 <GameLayoutHeader title={title} bgmEnabled={settings.bgmEnabled} onExit={onExit} onToggleBgm={toggleBgm} className="layout2-header" />
                 <GameStartScreen title={title} subtitle={subtitle} description={description} instructions={instructions} onStart={() => { startGame(); }} />
             </div>
@@ -111,7 +113,7 @@ export const Layout2: React.FC<Layout2Props> = ({
     if (gameState === 'gameover') {
         return (
             <div className={`layout2-container ${className || ''}`}>
-                {background && <div className="layout-background-layer">{background}</div>}
+                {resolvedBackground}
                 <GameLayoutHeader title={title} bgmEnabled={settings.bgmEnabled} onExit={onExit} onToggleBgm={toggleBgm} className="layout2-header" />
                 <GameOverScreen title={title} gameOverReason={gameOverReason || 'time_up'} score={score} highScore={highScore} prevBest={prevBest} isNewRecord={isNewRecord} bestCombo={bestCombo} stats={stats} rewardResult={rewardResult} onRestart={() => { startGame(); }} />
             </div>
@@ -121,7 +123,7 @@ export const Layout2: React.FC<Layout2Props> = ({
     // RENDER: Playing
     return (
         <div className={`layout2-container ${className || ''}`}>
-            {background && <div className="layout-background-layer">{background}</div>}
+            {resolvedBackground}
 
             <GameLayoutHeader title={title} bgmEnabled={settings.bgmEnabled} onExit={onExit} onToggleBgm={toggleBgm} className="layout2-header" />
 

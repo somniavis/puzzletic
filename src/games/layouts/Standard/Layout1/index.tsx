@@ -13,6 +13,7 @@ import { GameLayoutHeader } from '../shared/GameLayoutHeader';
 import { GameLayoutDashboard } from '../shared/GameLayoutDashboard';
 import { GameStartScreen } from '../shared/GameStartScreen';
 import { GameOverScreen } from '../shared/GameOverScreen';
+import { PortalMathBackground } from '../../../../components/common/PortalMathBackground';
 
 interface Layout1Props {
     title: string;
@@ -39,6 +40,7 @@ export const Layout1: React.FC<Layout1Props> = ({
     background,
     cardBackground
 }) => {
+    const resolvedBackground = background ?? <PortalMathBackground />;
     const {
         gameState, score, lives, timeLeft,
         combo, bestCombo,
@@ -75,7 +77,7 @@ export const Layout1: React.FC<Layout1Props> = ({
     if (gameState === 'idle') {
         return (
             <div className="layout1-container">
-                {background && <div className="layout-background-layer">{background}</div>}
+                {resolvedBackground}
                 <GameLayoutHeader
                     title={title}
                     bgmEnabled={settings.bgmEnabled}
@@ -98,7 +100,7 @@ export const Layout1: React.FC<Layout1Props> = ({
     if (gameState === 'gameover') {
         return (
             <div className="layout1-container">
-                {background && <div className="layout-background-layer">{background}</div>}
+                {resolvedBackground}
                 <GameLayoutHeader
                     title={title}
                     bgmEnabled={settings.bgmEnabled}
@@ -125,7 +127,7 @@ export const Layout1: React.FC<Layout1Props> = ({
     // RENDER: Playing
     return (
         <div className="layout1-container">
-            {background && <div className="layout-background-layer">{background}</div>}
+            {resolvedBackground}
 
             <GameLayoutHeader
                 title={title}

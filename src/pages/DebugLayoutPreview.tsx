@@ -5,6 +5,7 @@ import { Layout2 } from '../games/layouts/Standard/Layout2';
 import { Layout3 } from '../games/layouts/Standard/Layout3';
 import { useGameEngine } from '../games/layouts/Standard/Layout0/useGameEngine';
 import type { PowerUpBtnProps } from '../components/Game/PowerUpBtn';
+import { PortalMathBackground } from '../components/common/PortalMathBackground';
 
 export const DebugLayoutPreview: React.FC = () => {
     const navigate = useNavigate();
@@ -113,12 +114,9 @@ export const DebugLayoutPreview: React.FC = () => {
         </div>
     );
 
-    // Unified "Existing Purple" Background (Matches Layout2/Layout3 default)
+    // Unified background for debug preview, matching the portal math theme
     const unifiedBackground = (
-        <div style={{
-            width: '100%', height: '100%',
-            background: 'linear-gradient(135deg, #e9d5ff 0%, #b1b2fb 50%, #fecdd3 100%)'
-        }} />
+        <PortalMathBackground />
     );
 
     // Render Correct Layout

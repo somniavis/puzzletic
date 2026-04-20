@@ -13,6 +13,7 @@ import { GameLayoutHeader } from '../shared/GameLayoutHeader';
 import { GameLayoutDashboard } from '../shared/GameLayoutDashboard';
 import { GameStartScreen } from '../shared/GameStartScreen';
 import { GameOverScreen } from '../shared/GameOverScreen';
+import { PortalMathBackground } from '../../../../components/common/PortalMathBackground';
 
 interface Layout3Props {
     title: string;
@@ -57,6 +58,7 @@ export const Layout3: React.FC<Layout3Props> = ({
     cardBackground,
     className
 }) => {
+    const resolvedBackground = background ?? <PortalMathBackground />;
     const renderTargetValue = React.useCallback((value: React.ReactNode) => {
         if (typeof value !== 'string' && typeof value !== 'number') return value;
 
@@ -120,7 +122,7 @@ export const Layout3: React.FC<Layout3Props> = ({
     if (gameState === 'idle') {
         return (
             <div className={`layout3-container ${className || ''}`}>
-                {background && <div className="layout-background-layer">{background}</div>}
+                {resolvedBackground}
                 <GameLayoutHeader title={title} bgmEnabled={settings.bgmEnabled} onExit={onExit} onToggleBgm={toggleBgm} className="layout3-header" />
                 <GameStartScreen title={title} subtitle={subtitle} description={description} instructions={instructions} onStart={() => { startGame(); }} />
             </div>
@@ -131,7 +133,7 @@ export const Layout3: React.FC<Layout3Props> = ({
     if (gameState === 'gameover') {
         return (
             <div className={`layout3-container ${className || ''}`}>
-                {background && <div className="layout-background-layer">{background}</div>}
+                {resolvedBackground}
                 <GameLayoutHeader title={title} bgmEnabled={settings.bgmEnabled} onExit={onExit} onToggleBgm={toggleBgm} className="layout3-header" />
                 <GameOverScreen title={title} gameOverReason={gameOverReason || 'time_up'} score={score} highScore={highScore} prevBest={prevBest} isNewRecord={isNewRecord} bestCombo={bestCombo} stats={stats} rewardResult={rewardResult} onRestart={() => { startGame(); }} />
             </div>
@@ -141,7 +143,7 @@ export const Layout3: React.FC<Layout3Props> = ({
     // RENDER: Playing
     return (
         <div className={`layout3-container ${className || ''}`}>
-            {background && <div className="layout-background-layer">{background}</div>}
+            {resolvedBackground}
 
             <GameLayoutHeader title={title} bgmEnabled={settings.bgmEnabled} onExit={onExit} onToggleBgm={toggleBgm} className="layout3-header" />
 

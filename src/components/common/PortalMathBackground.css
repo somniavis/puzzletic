@@ -1,0 +1,149 @@
+.portal-math-background {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 0;
+    background:
+        radial-gradient(circle at 50% 38%, rgba(255, 244, 184, 0.92) 0%, rgba(255, 244, 184, 0.54) 18%, rgba(241, 255, 196, 0.1) 36%, transparent 58%),
+        linear-gradient(180deg, #f8ffdf 0%, #dff7ff 42%, #8ed7b8 100%);
+}
+
+.portal-math-background__aurora {
+    position: absolute;
+    width: 42rem;
+    height: 42rem;
+    border-radius: 50%;
+    filter: blur(22px);
+    opacity: 0.4;
+}
+
+.portal-math-background__aurora--left {
+    top: -10rem;
+    left: -12rem;
+    background: radial-gradient(circle, rgba(176, 255, 174, 0.85) 0%, rgba(176, 255, 174, 0.2) 55%, transparent 72%);
+}
+
+.portal-math-background__aurora--right {
+    right: -12rem;
+    bottom: -16rem;
+    background: radial-gradient(circle, rgba(255, 238, 160, 0.7) 0%, rgba(255, 238, 160, 0.18) 52%, transparent 72%);
+}
+
+.portal-math-background__math-layer {
+    position: absolute;
+    inset: 0;
+}
+
+.portal-math-background__math {
+    position: absolute;
+    font-weight: 900;
+    line-height: 1;
+    color: rgba(255, 248, 204, 0.5);
+    text-shadow:
+        0 0 18px rgba(255, 246, 179, 0.24),
+        0 0 32px rgba(255, 246, 179, 0.18);
+    user-select: none;
+    animation: portal-math-background-drift 9s ease-in-out infinite;
+}
+
+.portal-math-background__math--a {
+    top: 9%;
+    left: 8%;
+    font-size: 4.2rem;
+    animation-delay: 0s;
+}
+
+.portal-math-background__math--b {
+    top: 13%;
+    left: 24%;
+    font-size: 5.8rem;
+    animation-delay: 1.1s;
+}
+
+.portal-math-background__math--c {
+    top: 27%;
+    left: 6%;
+    font-size: 6.4rem;
+    animation-delay: 2.4s;
+}
+
+.portal-math-background__math--d {
+    top: 15%;
+    right: 8%;
+    font-size: 6rem;
+    animation-delay: 1.8s;
+}
+
+.portal-math-background__math--e {
+    top: 48%;
+    left: 13%;
+    font-size: 6.8rem;
+    animation-delay: 2.9s;
+}
+
+.portal-math-background__math--f {
+    top: 31%;
+    right: 12%;
+    font-size: 5.2rem;
+    animation-delay: 0.7s;
+}
+
+.portal-math-background__math--g {
+    bottom: 24%;
+    left: 8%;
+    font-size: 3.9rem;
+    animation-delay: 3.2s;
+}
+
+.portal-math-background__math--h {
+    bottom: 14%;
+    left: 28%;
+    font-size: 4.5rem;
+    animation-delay: 1.5s;
+}
+
+.portal-math-background__math--i {
+    top: 56%;
+    right: 8%;
+    font-size: 5.9rem;
+    animation-delay: 2.1s;
+}
+
+.portal-math-background__math--j {
+    bottom: 11%;
+    right: 18%;
+    font-size: 4.8rem;
+    animation-delay: 0.9s;
+}
+
+.portal-math-background__math--k {
+    top: 7%;
+    right: 31%;
+    font-size: 4rem;
+    animation-delay: 2.7s;
+}
+
+.portal-math-background__math--l {
+    bottom: 7%;
+    right: 38%;
+    font-size: 4.3rem;
+    animation-delay: 1.3s;
+}
+
+@keyframes portal-math-background-drift {
+    0%,
+    100% {
+        transform: translate3d(0, 0, 0) rotate(0deg);
+    }
+
+    50% {
+        transform: translate3d(0, -12px, 0) rotate(2deg);
+    }
+}
+
+@media (max-width: 720px) {
+    .portal-math-background__math {
+        opacity: 0.78;
+    }
+}

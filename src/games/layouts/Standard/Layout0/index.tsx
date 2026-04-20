@@ -11,6 +11,7 @@ import type { RewardCalculation, MinigameDifficulty } from '../../../../types/ga
 import { GameOverScreen } from '../shared/GameOverScreen';
 import { GameLayoutHeader } from '../shared/GameLayoutHeader';
 import { GameLayoutDashboard } from '../shared/GameLayoutDashboard';
+import { PortalMathBackground } from '../../../../components/common/PortalMathBackground';
 
 interface Layout0Props {
     title: string;
@@ -215,6 +216,7 @@ export const Layout0: React.FC<Layout0Props> = ({
     if (gameState === 'idle') {
         return (
             <div className="layout0-container">
+                <PortalMathBackground />
                 <GameLayoutHeader
                     title={title}
                     bgmEnabled={settings.bgmEnabled}
@@ -265,6 +267,7 @@ export const Layout0: React.FC<Layout0Props> = ({
     if (gameState === 'gameover') {
         return (
             <div className="layout0-container">
+                <PortalMathBackground />
                 <GameLayoutHeader
                     title={title}
                     bgmEnabled={settings.bgmEnabled}
@@ -293,6 +296,7 @@ export const Layout0: React.FC<Layout0Props> = ({
     // Render Playing State
     return (
         <div className="layout0-container">
+            <PortalMathBackground />
             <GameLayoutHeader
                 title={title}
                 bgmEnabled={settings.bgmEnabled}
