@@ -10,6 +10,7 @@ const ALLOWED_ORIGINS = new Set([
 	'https://grogrojello.com',
 	'https://www.grogrojello.com',
 	'http://localhost:5173',
+	'http://175.214.49.200:5173',
 ]);
 const DEFAULT_ALLOWED_ORIGIN = 'https://grogrojello.com';
 const PRIVATE_DEV_ORIGIN_RE = /^http:\/\/(?:(?:localhost)|(?:10(?:\.\d{1,3}){3})|(?:172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})|(?:192\.168(?:\.\d{1,3}){2})):\d+$/;
