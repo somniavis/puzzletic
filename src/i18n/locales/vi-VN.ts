@@ -45,6 +45,7 @@ import pizzaPizzaLocale from "../../games/math/adventure/level3/PizzaPizza/local
 import riverCrossingLocale from "../../games/math/adventure/level3/RiverCrossing/locales/vi-VN";
 import neonMatrixVi from '../../games/math/adventure/level3/NeonMatrix/locales/vi-VN';
 import threeLeafCloverLocale from '../../games/math/adventure/level3/ThreeLeafClover/locales/vi-VN';
+import signShifterLocale from '../../games/math/adventure/level3/SignShifter/locales/vi-VN';
 import hexHiveSixLocale from '../../games/math/adventure/level3/HexHiveSix/locales/vi-VN';
 import flightCalendarLocale from '../../games/math/adventure/level3/FlightCalendar/locales/vi-VN';
 import tenFramePopLocale from '../../games/math/adventure/level3/TenFramePop/locales/vi-VN';
@@ -1933,6 +1934,7 @@ export const viVN = {
         'fair-share': fairShareLocale,
         'donut-shop': donutShopLocale,
         'chocolate-split': chocolateSplitLocale,
+        'sign-shifter': signShifterLocale,
         'scorpion-king': scorpionKingLocale,
         'pizza-pizza': pizzaPizzaLocale,
         'river-crossing': riverCrossingLocale,

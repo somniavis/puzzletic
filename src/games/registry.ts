@@ -51,6 +51,7 @@ const L3_FairShare = lazy(() => delayedImport(import('./math/adventure/level3/Fa
 const L3_DonutShop = lazy(() => delayedImport(import('./math/adventure/level3/DonutShop').then(m => ({ default: m.DonutShop }))));
 const L3_PizzaPizza = lazy(() => delayedImport(import('./math/adventure/level3/PizzaPizza').then(m => ({ default: m.PizzaPizza }))));
 const L3_ChocolateSplit = lazy(() => delayedImport(import('./math/adventure/level3/ChocolateSplit').then(m => ({ default: m.ChocolateSplit }))));
+const L3_SignShifter = lazy(() => delayedImport(import('./math/adventure/level3/SignShifter').then(m => ({ default: m.SignShifter }))));
 const L3_ScorpionKing = lazy(() => delayedImport(import('./math/adventure/level3/ScorpionKing').then(m => ({ default: m.ScorpionKing }))));
 const L3_RiverCrossing = lazy(() => delayedImport(import('./math/adventure/level3/RiverCrossing').then(m => ({ default: m.RiverCrossing }))));
 
@@ -415,7 +416,7 @@ export const GAMES: GameManifest[] = [
         mode: 'adventure',
         component: L3_FruitBox,
         thumbnail: '📦',
-        tagsKey: 'games.tags.multiplication'
+        tagsKey: 'games.tags.division'
     },
     {
         id: GameIds.MATH_ICE_STACKING,
@@ -430,7 +431,7 @@ export const GAMES: GameManifest[] = [
         mode: 'adventure',
         component: L3_IceStacking,
         thumbnail: '🧊',
-        tagsKey: 'games.tags.multiplication'
+        tagsKey: 'games.tags.division'
     },
     {
         id: GameIds.MATH_FLOOR_TILER,
@@ -640,7 +641,7 @@ export const GAMES: GameManifest[] = [
         mode: 'adventure',
         component: L3_FairShare,
         thumbnail: '🧺',
-        tagsKey: 'games.tags.multiplication'
+        tagsKey: 'games.tags.division'
     },
     {
         id: GameIds.MATH_DONUT_SHOP,
@@ -685,6 +686,21 @@ export const GAMES: GameManifest[] = [
         mode: 'adventure',
         component: L3_ChocolateSplit,
         thumbnail: '🍫',
+        tagsKey: 'games.tags.division'
+    },
+    {
+        id: GameIds.MATH_SIGN_SHIFTER,
+        title: 'Sign Shifter',
+        titleKey: 'games.sign-shifter.title',
+        subtitle: 'Turn ÷ into ×!',
+        subtitleKey: 'games.sign-shifter.subtitle',
+        description: 'ㅇㅇㅇ',
+        descriptionKey: 'games.sign-shifter.description',
+        category: 'math',
+        level: 3,
+        mode: 'adventure',
+        component: L3_SignShifter,
+        thumbnail: '÷',
         tagsKey: 'games.tags.division'
     },
     {

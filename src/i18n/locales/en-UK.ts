@@ -45,6 +45,7 @@ import pizzaPizzaLocale from "../../games/math/adventure/level3/PizzaPizza/local
 import riverCrossingLocale from "../../games/math/adventure/level3/RiverCrossing/locales/en-UK";
 import neonMatrixEn from '../../games/math/adventure/level3/NeonMatrix/locales/en-UK';
 import threeLeafCloverLocale from '../../games/math/adventure/level3/ThreeLeafClover/locales/en-UK';
+import signShifterLocale from '../../games/math/adventure/level3/SignShifter/locales/en-UK';
 import hexHiveSixLocale from '../../games/math/adventure/level3/HexHiveSix/locales/en-UK';
 import flightCalendarLocale from '../../games/math/adventure/level3/FlightCalendar/locales/en-UK';
 import tenFramePopLocale from '../../games/math/adventure/level3/TenFramePop/locales/en-UK';
@@ -1406,6 +1407,7 @@ export const enUK = {
         'fair-share': fairShareLocale,
         'donut-shop': donutShopLocale,
         'chocolate-split': chocolateSplitLocale,
+        'sign-shifter': signShifterLocale,
         'scorpion-king': scorpionKingLocale,
         'pizza-pizza': pizzaPizzaLocale,
         'river-crossing': riverCrossingLocale,

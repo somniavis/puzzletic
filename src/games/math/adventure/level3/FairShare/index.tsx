@@ -834,5 +834,5 @@ export const manifest: GameManifest = {
     mode: 'adventure',
     component: FairShare,
     thumbnail: '🧺',
-    tagsKey: 'games.tags.multiplication'
+    tagsKey: 'games.tags.division'
 };

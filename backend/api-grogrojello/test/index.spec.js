@@ -487,6 +487,21 @@ describe('Worker auth gate', () => {
 		expect(response.headers.get('Access-Control-Allow-Origin')).toBe('http://175.214.49.200:5173');
 	});
 
+	it('allows the current public Vite preview origin in CORS headers', async () => {
+		const request = new Request(`http://example.com/api/users/${userId}`, {
+			method: 'OPTIONS',
+			headers: {
+				Origin: 'http://175.214.49.200:4173',
+			},
+		});
+		const ctx = createExecutionContext();
+		const response = await worker.fetch(request, env, ctx);
+		await waitOnExecutionContext(ctx);
+
+		expect(response.status).toBe(200);
+		expect(response.headers.get('Access-Control-Allow-Origin')).toBe('http://175.214.49.200:4173');
+	});
+
 	it('omits Access-Control-Allow-Origin for disallowed origins', async () => {
 		const request = new Request(`http://example.com/api/users/${userId}`, {
 			method: 'OPTIONS',
