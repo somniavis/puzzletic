@@ -690,7 +690,7 @@ export const GAMES: GameManifest[] = [
     },
     {
         id: GameIds.MATH_SIGN_SHIFTER,
-        title: 'Sign Shifter',
+        title: 'Polar Bear',
         titleKey: 'games.sign-shifter.title',
         subtitle: 'Turn ÷ into ×!',
         subtitleKey: 'games.sign-shifter.subtitle',
@@ -700,7 +700,7 @@ export const GAMES: GameManifest[] = [
         level: 3,
         mode: 'adventure',
         component: L3_SignShifter,
-        thumbnail: '÷',
+        thumbnail: '🐻‍❄️',
         tagsKey: 'games.tags.division'
     },
     {

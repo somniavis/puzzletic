@@ -460,7 +460,7 @@ export const SignShifter: React.FC<SignShifterProps> = ({ onExit }) => {
 // eslint-disable-next-line react-refresh/only-export-components
 export const manifest: GameManifest = {
     id: GameIds.MATH_SIGN_SHIFTER,
-    title: 'Sign Shifter',
+    title: 'Polar Bear',
     titleKey: 'games.sign-shifter.title',
     subtitle: 'Turn ÷ into ×!',
     subtitleKey: 'games.sign-shifter.subtitle',
@@ -470,6 +470,6 @@ export const manifest: GameManifest = {
     level: 3,
     mode: 'adventure',
     component: SignShifter,
-    thumbnail: '÷',
+    thumbnail: '🐻‍❄️',
     tagsKey: 'games.tags.division'
 };

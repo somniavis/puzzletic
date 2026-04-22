@@ -1,5 +1,5 @@
 const en = {
-    title: 'Sign Shifter',
+    title: 'Polar Bear',
     subtitle: 'Turn ÷ into ×!',
     description: 'Break the ice signs and choose the missing number.',
     question: 'Which number fits in { ? }?',

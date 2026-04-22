@@ -1,5 +1,5 @@
 const ko = {
-    title: 'Sign Shifter',
+    title: '북극곰',
     subtitle: '나누기를 곱하기로 바꿔봐!',
     description: '얼음 기호를 깨고 빈칸에 들어갈 숫자를 골라요.',
     question: '{ ? }에 맞는 숫자는?',

@@ -216,6 +216,7 @@
 }
 
 .sign-shifter-equation {
+    --equation-scale: 1.25;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -223,6 +224,8 @@
     width: 100%;
     max-width: 100%;
     flex-wrap: nowrap;
+    transform: scale(var(--equation-scale));
+    transform-origin: center;
 }
 
 .sign-shifter-polar-bears {
