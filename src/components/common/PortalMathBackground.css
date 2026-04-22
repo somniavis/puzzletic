@@ -5,8 +5,8 @@
     pointer-events: none;
     z-index: 0;
     background:
-        radial-gradient(circle at 50% 38%, rgba(255, 244, 184, 0.92) 0%, rgba(255, 244, 184, 0.54) 18%, rgba(241, 255, 196, 0.1) 36%, transparent 58%),
-        linear-gradient(180deg, #f8ffdf 0%, #dff7ff 42%, #8ed7b8 100%);
+        radial-gradient(circle at 50% 38%, rgba(255, 255, 255, 0.28) 0%, rgba(255, 255, 255, 0.12) 28%, transparent 58%),
+        linear-gradient(135deg, #e9d5ff 0%, #b1b2fb 50%, #fecdd3 100%);
 }
 
 .portal-math-background__aurora {
@@ -21,13 +21,13 @@
 .portal-math-background__aurora--left {
     top: -10rem;
     left: -12rem;
-    background: radial-gradient(circle, rgba(176, 255, 174, 0.85) 0%, rgba(176, 255, 174, 0.2) 55%, transparent 72%);
+    background: radial-gradient(circle, rgba(216, 180, 254, 0.72) 0%, rgba(216, 180, 254, 0.18) 55%, transparent 72%);
 }
 
 .portal-math-background__aurora--right {
     right: -12rem;
     bottom: -16rem;
-    background: radial-gradient(circle, rgba(255, 238, 160, 0.7) 0%, rgba(255, 238, 160, 0.18) 52%, transparent 72%);
+    background: radial-gradient(circle, rgba(251, 207, 232, 0.72) 0%, rgba(251, 207, 232, 0.18) 52%, transparent 72%);
 }
 
 .portal-math-background__math-layer {
@@ -39,10 +39,10 @@
     position: absolute;
     font-weight: 900;
     line-height: 1;
-    color: rgba(255, 248, 204, 0.5);
+    color: rgba(255, 255, 255, 0.1);
     text-shadow:
-        0 0 18px rgba(255, 246, 179, 0.24),
-        0 0 32px rgba(255, 246, 179, 0.18);
+        0 0 10px rgba(255, 255, 255, 0.05),
+        0 0 18px rgba(216, 180, 254, 0.04);
     user-select: none;
     animation: portal-math-background-drift 9s ease-in-out infinite;
 }
@@ -144,6 +144,6 @@
 
 @media (max-width: 720px) {
     .portal-math-background__math {
-        opacity: 0.78;
+        opacity: 0.48;
     }
 }
