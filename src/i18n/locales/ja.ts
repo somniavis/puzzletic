@@ -69,7 +69,7 @@ const jaBase = {
         guestUser: 'ゲスト',
         status: {
             premium: '👑 プレミアム',
-            angelPass: 'Angel Pass',
+            angelPass: 'エンジェルパス',
             jelloPass: 'Jello Pass',
             free: 'トライアル',
             premiumLabel: '✨ プレミアム会員',
@@ -341,8 +341,8 @@ const jaBase = {
         premium: 'プレミアム',
         upgrade_btn_text: 'アップグレード',
         modal: {
-            title: 'One for you,\none for a friend in need.',
-            desc: '<bold>あなた</bold>がプレミアムになることで、<br/><bold>学びを必要とする友達</bold>にも機会が届きます。',
+            title: 'ひとつはあなたに、\nひとつは支援が必要な友達に。',
+            desc: '<bold>ひとつのエンジェルパス</bold>、<br/>ふたつの学びの旅。',
             benefit1: '全てのジェロ進化 & ゲームを解除',
             benefit2: '支援が必要な子どもに1年パスを贈る',
             benefit3: 'XP & GROブーストでより早く成長',

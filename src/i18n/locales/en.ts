@@ -340,7 +340,7 @@ export const en = {
     upgrade_btn_text: 'UPGRADE',
     modal: {
       title: 'One for you,\none for a friend in need.',
-      desc: 'Your subscription unlocks Premium for <bold>YOU</bold> + gives free access to a <bold>friend in need</bold>.',
+      desc: '<bold>One Angel Pass</bold>,<br/>two learning journeys.',
       benefit1: 'Unlock All Jello Evolutions & Games',
       benefit2: 'Gift a 1-year pass to a child in need',
       benefit3: 'Grow Faster with XP & GRO Boost',

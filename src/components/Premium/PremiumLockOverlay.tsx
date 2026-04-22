@@ -13,32 +13,33 @@ export const PremiumLockOverlay: React.FC = () => {
             bottom: 0,
             backgroundColor: 'rgba(0, 0, 0, 0.65)',
             display: 'flex',
-            flexDirection: 'row', // Horizontal layout
+            flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            gap: '8px', // Add spacing between lock and badge
-            borderRadius: '16px', // Matches card border radius
+            gap: '8px',
+            borderRadius: '16px',
             zIndex: 10,
             backdropFilter: 'blur(2px)'
         }}>
             <div style={{
-                fontSize: '1.5rem', // Slightly smaller for horizontal fit
+                fontSize: '1.55rem',
                 filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))',
                 lineHeight: 1
             }}>
                 🔒
             </div>
             <div style={{
-                background: 'linear-gradient(135deg, #FFD700, #FFA500)',
-                color: '#fff',
-                padding: '4px 12px',
-                borderRadius: '12px',
+                background: 'linear-gradient(135deg, #8ff3dc, #31cdb4)',
+                color: '#063b35',
+                padding: '5px 13px',
+                borderRadius: '999px',
                 fontSize: '0.8rem',
-                fontWeight: 'bold',
-                boxShadow: '0 2px 8px rgba(255, 215, 0, 0.4)',
-                border: '1px solid rgba(255, 255, 255, 0.3)'
+                fontWeight: 900,
+                lineHeight: 1,
+                boxShadow: '0 2px 10px rgba(49, 205, 180, 0.38)',
+                border: '1px solid rgba(255, 255, 255, 0.45)'
             }}>
-                {t('common.premium')}
+                {t('profile.status.angelPass')}
             </div>
         </div>
     );

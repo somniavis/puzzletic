@@ -67,7 +67,7 @@ export const idID = {
     guestUser: 'Pengguna Tamu',
     status: {
       premium: '👑 PREMIUM',
-      angelPass: 'Angel Pass',
+      angelPass: 'Pas Malaikat',
       jelloPass: 'Jello Pass',
       free: 'UJI COBA',
       premiumLabel: '✨ Anggota Premium',
@@ -340,7 +340,7 @@ export const idID = {
     upgrade_btn_text: 'TINGKATKAN',
     modal: {
       title: 'Satu untukmu,\nsatu untuk teman yang membutuhkan.',
-      desc: 'Langgananmu membuka Premium untuk <bold>KAMU</bold> + memberi akses gratis kepada <bold>teman yang membutuhkan</bold>.',
+      desc: '<bold>Satu Pas Malaikat</bold>,<br/>dua perjalanan belajar.',
       benefit1: 'Buka semua evolusi Jello & game',
       benefit2: 'Hadiahkan pass 1 tahun untuk anak yang membutuhkan',
       benefit3: 'Tumbuh lebih cepat dengan boost XP & GRO',

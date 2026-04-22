@@ -279,7 +279,7 @@ const PlayPage: React.FC = () => {
         start: t('play.retro.start'),
         eject: t('play.retro.eject'),
         insertPackFirst: t('play.retro.insertPackFirst'),
-        premium: t('common.premium'),
+        angelPass: t('profile.status.angelPass'),
     }), [t]);
     const retroHintLabel = useMemo(() => {
         if (retroPhase === 'browse') return retroUiText.swipeHint;
@@ -1154,12 +1154,13 @@ const PlayPage: React.FC = () => {
                                                 style={style}
                                                 onClick={() => handleRetroPackSelection(index)}
                                                 aria-pressed={isCenter}
-                                                aria-label={pack.isPremiumLocked ? `${pack.title} ${retroUiText.premium}` : pack.title}
+                                                aria-label={pack.isPremiumLocked ? `${pack.title} ${retroUiText.angelPass}` : pack.title}
                                                 disabled={retroPhase !== 'browse'}
                                             >
                                                 {pack.isPremiumLocked && (
                                                     <span className="retro-pack-premium-lock" aria-hidden="true">
                                                         <span className="retro-pack-premium-lock-icon">🔒</span>
+                                                        <span className="retro-pack-premium-lock-badge">{retroUiText.angelPass}</span>
                                                     </span>
                                                 )}
                                                 <span className="retro-pack-notch" aria-hidden="true" />

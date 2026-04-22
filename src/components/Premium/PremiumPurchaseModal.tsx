@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useTranslation, Trans } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { playButtonSound } from '../../utils/sound';
 
 interface PremiumPurchaseModalProps {
@@ -125,7 +125,7 @@ export const PremiumPurchaseModal: React.FC<PremiumPurchaseModalProps> = ({ isOp
                 <div style={{
                     flex: 1,
                     overflowY: 'auto',
-                    padding: '68px 20px 0', // Reduced top padding (Halved gap)
+                    padding: '54px 20px 0',
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center'
@@ -144,17 +144,24 @@ export const PremiumPurchaseModal: React.FC<PremiumPurchaseModalProps> = ({ isOp
                         {t('common.modal.title')}
                     </h2>
 
-                    <p style={{
-                        fontSize: '1rem',
-                        opacity: 0.9,
-                        marginBottom: '24px',
-                        lineHeight: '1.5'
+                    <div style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        background: 'linear-gradient(135deg, #8ff3dc, #31cdb4)',
+                        color: '#063b35',
+                        padding: '7px 16px',
+                        borderRadius: '999px',
+                        fontSize: '0.95rem',
+                        fontWeight: 900,
+                        lineHeight: 1,
+                        marginTop: '8px',
+                        marginBottom: '14px',
+                        boxShadow: '0 3px 12px rgba(49, 205, 180, 0.36)',
+                        border: '1px solid rgba(255, 255, 255, 0.45)'
                     }}>
-                        <Trans
-                            i18nKey="common.modal.desc"
-                            components={{ bold: <b />, br: <br /> }}
-                        />
-                    </p>
+                        {t('profile.status.angelPass')}
+                    </div>
 
                     {/* Benefits List */}
                     <div style={{

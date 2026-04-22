@@ -67,7 +67,7 @@ export const esES = {
     guestUser: 'Usuario invitado',
     status: {
       premium: '👑 PREMIUM',
-      angelPass: 'Angel Pass',
+      angelPass: 'Pase Ángel',
       jelloPass: 'Jello Pass',
       free: 'PRUEBA',
       premiumLabel: '✨ Miembro Premium',
@@ -339,8 +339,8 @@ export const esES = {
     premium: 'Premium',
     upgrade_btn_text: 'MEJORAR',
     modal: {
-      title: 'Uno para ti,\notro para un amigo que lo necesite.',
-      desc: 'Tu suscripción desbloquea Premium para <bold>TI</bold> + acceso gratis para <bold>un amigo que lo necesite</bold>.',
+      title: 'Uno para ti,\notro para un amigo que lo necesita.',
+      desc: '<bold>Un Pase Ángel</bold>,<br/>dos caminos de aprendizaje.',
       benefit1: 'Desbloquea todas las evoluciones y juegos de Jello',
       benefit2: 'Regala un pase de 1 ano a un nino que lo necesite',
       benefit3: 'Crece más rápido con el impulso de XP y GRO',

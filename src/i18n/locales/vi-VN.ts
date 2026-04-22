@@ -282,7 +282,7 @@ export const viVN = {
     guestUser: 'Khách',
     status: {
       premium: '👑 CAO CẤP',
-      angelPass: 'Angel Pass',
+      angelPass: 'Thẻ Thiên Thần',
       jelloPass: 'Jello Pass',
       free: 'DÙNG THỬ',
       premiumLabel: '✨ Thành viên cao cấp',
@@ -555,7 +555,7 @@ export const viVN = {
     upgrade_btn_text: 'NÂNG CẤP',
     modal: {
       title: 'Một cho bạn,\nmột cho người bạn cần giúp đỡ.',
-      desc: 'Đăng ký của bạn mở khóa gói cao cấp cho <bold>BẠN</bold> + tặng quyền truy cập miễn phí cho <bold>một người bạn cần giúp đỡ</bold>.',
+      desc: '<bold>Một Thẻ Thiên Thần</bold>,<br/>hai hành trình học tập.',
       benefit1: 'Mở khóa toàn bộ tiến hóa Jello và trò chơi',
       benefit2: 'Tang goi 1 nam cho mot em nho can giup do',
       benefit3: 'Phat trien nhanh hon voi tang cuong XP & GRO',

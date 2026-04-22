@@ -67,7 +67,7 @@ export const ptPT = {
     guestUser: 'Utilizador convidado',
     status: {
       premium: '👑 PREMIUM',
-      angelPass: 'Angel Pass',
+      angelPass: 'Passe Anjo',
       jelloPass: 'Jello Pass',
       free: 'TESTE',
       premiumLabel: '✨ Membro Premium',
@@ -340,7 +340,7 @@ export const ptPT = {
     upgrade_btn_text: 'ATUALIZAR',
     modal: {
       title: 'Um para si,\noutro para um amigo que precisa.',
-      desc: 'A sua subscrição desbloqueia o Premium para <bold>SI</bold> + oferece acesso gratuito a <bold>um amigo que precisa</bold>.',
+      desc: '<bold>Um Passe Anjo</bold>,<br/>duas jornadas de aprendizagem.',
       benefit1: 'Desbloqueie todas as evoluções e jogos dos Jellos',
       benefit2: 'Oferece um passe de 1 ano a uma crianca necessitada',
       benefit3: 'Cresça mais rápido com impulso de XP e GRO',

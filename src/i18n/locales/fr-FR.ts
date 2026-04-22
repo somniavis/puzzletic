@@ -67,7 +67,7 @@ export const frFR = {
     guestUser: 'Invité',
     status: {
       premium: '👑 PREMIUM',
-      angelPass: 'Angel Pass',
+      angelPass: 'Pass Ange',
       jelloPass: 'Jello Pass',
       free: 'ESSAI',
       premiumLabel: '✨ Membre Premium',
@@ -340,7 +340,7 @@ export const frFR = {
     upgrade_btn_text: 'UPGRADE',
     modal: {
       title: 'Un pour vous,\nun pour un ami qui en a besoin.',
-      desc: 'Votre abonnement débloque Premium pour <bold>VOUS</bold> + offre un accès gratuit à <bold>un ami dans le besoin</bold>.',
+      desc: '<bold>Un Pass Ange</bold>,<br/>deux chemins d’apprentissage.',
       benefit1: 'Débloquez toutes les évolutions de Jello et tous les jeux',
       benefit2: 'Offrez un pass d’un an à un enfant dans le besoin',
       benefit3: 'Progresse plus vite avec le boost XP et GRO',

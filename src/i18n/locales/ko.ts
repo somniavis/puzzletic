@@ -69,7 +69,7 @@ const koBase = {
         guestUser: '게스트 유저',
         status: {
             premium: '👑 프리미엄',
-            angelPass: 'Angel Pass',
+            angelPass: '엔젤패스',
             jelloPass: 'Jello Pass',
             free: '체험판',
             premiumLabel: '✨ 프리미엄 멤버',
@@ -341,8 +341,8 @@ const koBase = {
         premium: '프리미엄',
         upgrade_btn_text: '업그레이드',
         modal: {
-            title: 'One for you,\none for a friend in need.',
-            desc: '<bold>나</bold>의 프리미엄 잠금 해제가,\n<bold>도움이 필요한 친구</bold>에게도 기회를 줍니다.',
+            title: '하나는 우리 아이에게,\n하나는 도움이 필요한 친구에게.',
+            desc: '<bold>하나의 엔젤패스</bold>,<br/>두 아이의 배움.',
             benefit1: '모든 젤로 진화 & 게임 잠금 해제',
             benefit2: '도움이 필요한 아이에게 1년 패스 기부',
             benefit3: 'XP & GRO 부스트로 더 빠르게 성장',
