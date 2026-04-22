@@ -46,6 +46,7 @@ type RetroPlayPack = {
     launcher: PlayGameManifest['launcher'];
     title: string;
     subtitle: string;
+    isPremiumLocked: boolean;
 };
 
 const RETRO_PACK_RIDGE_KEYS = Array.from({ length: 8 }, (_, index) => index);
@@ -251,6 +252,7 @@ const PlayPage: React.FC = () => {
 
     const activeGame = gameId ? (getGameById(gameId) ?? getPlayGameById(gameId)) : null;
     const activePlayGame = gameId ? getPlayGameById(gameId) : null;
+    const activeGamePremiumLocked = activeGame ? !isPremium && isPremiumGame(activeGame) : false;
     const retroPlayPacks = useMemo<RetroPlayPack[]>(() => {
         return getPlayGames().map((game) => {
             return {
@@ -258,22 +260,26 @@ const PlayPage: React.FC = () => {
                 launcher: game.launcher,
                 title: getLocalizedGameTitle(game, t),
                 subtitle: getLocalizedGameSubtitle(game, t),
+                isPremiumLocked: !isPremium && isPremiumGame(game),
             };
         });
-    }, [t]);
+    }, [isPremium, t]);
     const retroSelectedPack = useMemo(
         () => retroPlayPacks.find((pack) => pack.game.id === retroSelectedGameId) ?? null,
         [retroPlayPacks, retroSelectedGameId]
     );
+    const retroActivePack = retroPlayPacks[retroActiveIndex] ?? null;
     const retroUiText = useMemo(() => ({
         carousel: t('play.retro.selectCartridge'),
         swipeHint: t('play.retro.swipeOrTap'),
         inserting: t('play.retro.inserting'),
         loading: t('play.retro.nowLoading'),
         power: t('play.retro.power'),
+        insert: t('play.retro.insert'),
         start: t('play.retro.start'),
         eject: t('play.retro.eject'),
         insertPackFirst: t('play.retro.insertPackFirst'),
+        premium: t('common.premium'),
     }), [t]);
     const retroHintLabel = useMemo(() => {
         if (retroPhase === 'browse') return retroUiText.swipeHint;
@@ -300,7 +306,9 @@ const PlayPage: React.FC = () => {
                     ['--retro-pack-glow' as string]: pack.launcher.glow,
                     transform: `translate3d(${offset === 0 ? 0 : Math.sign(offset) * (depth === 1 ? 108 : 176)}px, ${depth * 12}px, 0) scale(${1 - depth * 0.23}) rotateY(${offset * 28}deg)`,
                     opacity: String(1 - depth * 0.26),
-                    filter: `saturate(${1 - depth * 0.35})`,
+                    filter: pack.isPremiumLocked
+                        ? `saturate(${Math.max(0.42, 0.58 - depth * 0.18)}) brightness(0.82)`
+                        : `saturate(${1 - depth * 0.35})`,
                     zIndex: String(10 - depth),
                 } as React.CSSProperties,
             };
@@ -461,18 +469,13 @@ const PlayPage: React.FC = () => {
         }
     }, [moveRetroCarousel]);
 
-    const handleRetroPackSelection = useCallback((index: number) => {
-        if (retroPhase !== 'browse') return;
-        const pack = retroPlayPacks[index];
-        if (!pack) return;
-
-        if (index !== retroActiveIndex) {
-            playButtonSound();
-            setRetroActiveIndex(index);
+    const insertRetroPack = useCallback((pack: RetroPlayPack) => {
+        playButtonSound();
+        if (pack.isPremiumLocked) {
+            setIsPremiumModalOpen(true);
             return;
         }
 
-        playButtonSound();
         setRetroPowerOn(true);
         setRetroSelectedGameId(pack.game.id);
         setRetroPhase('inserting');
@@ -485,15 +488,39 @@ const PlayPage: React.FC = () => {
             setRetroPhase('loading');
             retroInsertTimeoutRef.current = null;
         }, 900);
-    }, [retroActiveIndex, retroPhase, retroPlayPacks]);
+    }, []);
+
+    const handleRetroPackSelection = useCallback((index: number) => {
+        if (retroPhase !== 'browse') return;
+        const pack = retroPlayPacks[index];
+        if (!pack) return;
+
+        if (index !== retroActiveIndex) {
+            playButtonSound();
+            setRetroActiveIndex(index);
+            return;
+        }
+
+        insertRetroPack(pack);
+    }, [insertRetroPack, retroActiveIndex, retroPhase, retroPlayPacks]);
+
+    const handleRetroInsertActivePack = useCallback(() => {
+        if (retroPhase !== 'browse' || !retroActivePack) return;
+        insertRetroPack(retroActivePack);
+    }, [insertRetroPack, retroActivePack, retroPhase]);
 
     const handleRetroReset = useCallback(() => {
         playButtonSound();
         resetRetroLauncher({ keepPowerOn: true });
     }, [resetRetroLauncher]);
 
-    const handleRetroStart = useCallback(() => {
-        if (!retroSelectedPack || retroPhase === 'browse' || retroPhase === 'inserting') {
+    const handleRetroMainAction = useCallback(() => {
+        if (retroPhase === 'browse') {
+            handleRetroInsertActivePack();
+            return;
+        }
+
+        if (!retroSelectedPack || retroPhase === 'inserting') {
             playButtonSound();
             setRetroStartToastVisible(true);
             if (retroStartToastTimeoutRef.current) {
@@ -506,9 +533,14 @@ const PlayPage: React.FC = () => {
             return;
         }
         if (!retroPowerOn || retroPhase !== 'loading') return;
+        if (retroSelectedPack.isPremiumLocked) {
+            playButtonSound();
+            setIsPremiumModalOpen(true);
+            return;
+        }
         playButtonSound();
         navigate(`/play/${retroSelectedPack.game.id}`);
-    }, [navigate, retroPhase, retroPowerOn, retroSelectedPack]);
+    }, [handleRetroInsertActivePack, navigate, retroPhase, retroPowerOn, retroSelectedPack]);
 
     const handleRetroPowerToggle = useCallback(() => {
         playButtonSound();
@@ -1118,13 +1150,18 @@ const PlayPage: React.FC = () => {
                                             <button
                                                 key={pack.game.id}
                                                 type="button"
-                                                className={`retro-pack ${isCenter ? 'is-center' : ''} ${hidden ? 'is-hidden' : ''}`}
+                                                className={`retro-pack ${isCenter ? 'is-center' : ''} ${hidden ? 'is-hidden' : ''} ${pack.isPremiumLocked ? 'is-premium-locked' : ''}`}
                                                 style={style}
                                                 onClick={() => handleRetroPackSelection(index)}
                                                 aria-pressed={isCenter}
-                                                aria-label={pack.title}
+                                                aria-label={pack.isPremiumLocked ? `${pack.title} ${retroUiText.premium}` : pack.title}
                                                 disabled={retroPhase !== 'browse'}
                                             >
+                                                {pack.isPremiumLocked && (
+                                                    <span className="retro-pack-premium-lock" aria-hidden="true">
+                                                        <span className="retro-pack-premium-lock-icon">🔒</span>
+                                                    </span>
+                                                )}
                                                 <span className="retro-pack-notch" aria-hidden="true" />
                                                 <span className="retro-pack-label">
                                                     <span className="retro-pack-sticker" aria-hidden="true">{pack.launcher.sticker}</span>
@@ -1204,12 +1241,12 @@ const PlayPage: React.FC = () => {
                             </div>
                             <button
                                 type="button"
-                                className="retro-console-action retro-console-action-start"
-                                onClick={handleRetroStart}
-                                disabled={!retroPowerOn}
-                                aria-disabled={!retroPowerOn}
+                                className={`retro-console-action retro-console-action-start ${retroPhase === 'loading' ? 'is-start' : 'is-insert'}`}
+                                onClick={handleRetroMainAction}
+                                disabled={!retroPowerOn || retroPhase === 'inserting' || (retroPhase === 'browse' && !retroActivePack)}
+                                aria-disabled={!retroPowerOn || retroPhase === 'inserting' || (retroPhase === 'browse' && !retroActivePack)}
                             >
-                                {retroUiText.start}
+                                {retroPhase === 'loading' ? retroUiText.start : retroUiText.insert}
                             </button>
                             <div className="retro-console-reset-group">
                                 <button type="button" className="retro-console-reset-btn" onClick={handleRetroReset}>
@@ -1278,6 +1315,31 @@ const PlayPage: React.FC = () => {
 
     // -- Main Render --
     if (activeGame) {
+        if (activeGamePremiumLocked) {
+            return (
+                <div
+                    ref={playPageRootRef}
+                    className="play-page-container mobile-ui-guard"
+                >
+                    {renderHeader()}
+                    <div className="hub-content">
+                        <div className="play-board-empty">
+                            <div className="play-board-empty-card">
+                                <span className="play-board-empty-icon">🔒</span>
+                                <h3>{activeGame.titleKey ? t(activeGame.titleKey) : activeGame.title}</h3>
+                                <p>{t('common.premium')}</p>
+                            </div>
+                        </div>
+                    </div>
+                    {renderBottomNav()}
+                    <PremiumPurchaseModal
+                        isOpen={true}
+                        onClose={() => navigate('/play', { replace: true })}
+                    />
+                </div>
+            );
+        }
+
         const GameComponent = activeGame.component;
         return (
             <div className="game-wrapper">

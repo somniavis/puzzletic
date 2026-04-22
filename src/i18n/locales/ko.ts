@@ -1325,6 +1325,7 @@ const koBase = {
             inserting: '삽입 중...',
             nowLoading: '로딩 완료',
             power: '전원',
+            insert: '삽입',
             start: '시작',
             eject: '꺼내기',
             insertPackFirst: '팩을 삽입해주세요',

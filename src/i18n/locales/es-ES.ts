@@ -1323,6 +1323,7 @@ export const esES = {
       inserting: 'Insertando...',
       nowLoading: 'Carga completa',
       power: 'Encendido',
+      insert: 'Insertar',
       start: 'Iniciar',
       eject: 'Sacar',
       insertPackFirst: 'Inserta un cartucho primero',

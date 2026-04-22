@@ -1323,6 +1323,7 @@ export const idID = {
       inserting: 'Memasang...',
       nowLoading: 'Muat selesai',
       power: 'Daya',
+      insert: 'Masukkan',
       start: 'Mulai',
       eject: 'Keluarkan',
       insertPackFirst: 'Masukkan kartrid dulu',

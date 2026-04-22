@@ -2068,6 +2068,7 @@ const jaBase = {
             inserting: 'そうちゃく中...',
             nowLoading: 'ロード完了',
             power: 'でんげん',
+            insert: '挿入',
             start: 'スタート',
             eject: '取り出す',
             insertPackFirst: 'カセットを入れてください',

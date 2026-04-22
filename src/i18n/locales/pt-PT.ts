@@ -1323,6 +1323,7 @@ export const ptPT = {
       inserting: 'A inserir...',
       nowLoading: 'Carregado',
       power: 'Energia',
+      insert: 'Inserir',
       start: 'Iniciar',
       eject: 'Retirar',
       insertPackFirst: 'Insere um cartucho primeiro',

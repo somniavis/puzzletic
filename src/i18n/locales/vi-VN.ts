@@ -1850,6 +1850,7 @@ export const viVN = {
       inserting: 'Đang lắp...',
       nowLoading: 'Đã tải xong',
       power: 'Nguồn',
+      insert: 'Lắp vào',
       start: 'Bắt đầu',
       eject: 'Lấy ra',
       insertPackFirst: 'Hãy lắp băng trò chơi trước',

@@ -417,6 +417,38 @@
     transform: translate3d(0, -0.45rem, 0) scale(1.06) rotateY(0deg);
 }
 
+.retro-pack.is-premium-locked {
+    filter: saturate(0.58) brightness(0.82);
+}
+
+.retro-pack.is-premium-locked.is-center {
+    box-shadow:
+        inset 0 0 0 2px rgba(255, 255, 255, 0.12),
+        0 0 0 1px rgba(255, 255, 255, 0.18),
+        0 1.4rem 2.3rem rgba(8, 10, 18, 0.44),
+        0 0 2.2rem rgba(255, 215, 0, 0.24);
+}
+
+.retro-pack-premium-lock {
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: inherit;
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(2px);
+}
+
+.retro-pack-premium-lock-icon {
+    color: #fff;
+    font-size: 2rem;
+    line-height: 1;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+}
+
 .retro-pack:disabled {
     cursor: default;
 }
@@ -810,6 +842,19 @@
     box-shadow:
         inset 0 2px 0 rgba(255, 255, 255, 0.34),
         inset 0 -4px 0 rgba(91, 69, 127, 0.58);
+}
+
+.retro-console-action-start.is-insert {
+    background: linear-gradient(180deg, #62d6a0 0%, #2f9f76 100%);
+    color: #f5fff9;
+    box-shadow:
+        inset 0 2px 0 rgba(255, 255, 255, 0.38),
+        inset 0 -4px 0 rgba(28, 103, 75, 0.6);
+}
+
+.retro-console-action-start:disabled {
+    opacity: 0.62;
+    cursor: default;
 }
 
 .retro-console-reset-btn {

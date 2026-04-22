@@ -1323,6 +1323,7 @@ export const frFR = {
       inserting: 'Insertion...',
       nowLoading: 'Chargement terminé',
       power: 'Alim.',
+      insert: 'Insérer',
       start: 'Démarrer',
       eject: 'Retirer',
       insertPackFirst: 'Insérez une cartouche',

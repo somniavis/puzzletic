@@ -1323,6 +1323,7 @@ export const enUK = {
       inserting: 'Inserting...',
       nowLoading: 'Loaded',
       power: 'Power',
+      insert: 'Insert',
       start: 'Start',
       eject: 'Eject',
       insertPackFirst: 'Please insert a pack',
