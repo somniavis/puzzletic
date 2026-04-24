@@ -5,6 +5,7 @@ import { useTranslation, Trans } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
 import { useNurturing } from '../contexts/NurturingContext';
 import { useMobileInteractionGuard } from '../hooks/useMobileInteractionGuard';
+import { resolveBillingOfferType } from '../constants/billingPlans';
 import './ProfilePage.css';
 
 type ProfileTab = 'my_jello' | 'pass';
@@ -38,12 +39,8 @@ export const ProfilePage: React.FC = () => {
     const showDebugMode = import.meta.env.DEV || isAdmin;
     const isPremium = subscription.isPremium;
     const isGuest = !user;
-    const durationOfferLanguages = React.useMemo(
-        () => new Set(['vi', 'vi-VN', 'id', 'id-ID']),
-        [],
-    );
     const resolvedLanguage = i18n.resolvedLanguage || i18n.language;
-    const passOfferType = durationOfferLanguages.has(resolvedLanguage) ? 'duration' : 'subscription';
+    const passOfferType = resolveBillingOfferType(null, resolvedLanguage);
     const isDurationOffer = passOfferType === 'duration';
     const annualPassTitle = t(`profile.subscription.yearly.${passOfferType}Title`);
     const annualPassDesc = t(`profile.subscription.yearly.${passOfferType}Desc`);
@@ -101,9 +98,7 @@ export const ProfilePage: React.FC = () => {
 
         if (window.confirm(confirmMessage)) {
             const success = await purchasePlan(plan);
-            if (success) {
-                alert(t('profile.purchaseResult.success'));
-            } else {
+            if (!success) {
                 alert(t('profile.purchaseResult.failure'));
             }
         }

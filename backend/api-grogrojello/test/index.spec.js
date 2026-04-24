@@ -19,6 +19,13 @@ const bytesToBase64Url = (bytes) => {
 	return toBase64Url(binary);
 };
 
+const toHex = (bytes) => Array.from(bytes).map((byte) => byte.toString(16).padStart(2, '0')).join('');
+
+const createXsollaSignature = async (body, secret) => {
+	const digest = await crypto.subtle.digest('SHA-1', new TextEncoder().encode(`${body}${secret}`));
+	return toHex(new Uint8Array(digest));
+};
+
 const signJwt = async (privateKey, kid, payload) => {
 	const header = { alg: 'RS256', typ: 'JWT', kid };
 	const encodedHeader = jsonToBase64Url(header);
@@ -152,6 +159,164 @@ describe('Worker auth gate', () => {
 			const body = await response.json();
 			expect(body.error).toContain('UID mismatch');
 		});
+	});
+
+	it('requires auth for xsolla checkout token endpoint', async () => {
+		const request = new Request(`http://example.com/api/users/${userId}/xsolla/checkout-token`, {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ productId: 'subscription_12_months' }),
+		});
+		const ctx = createExecutionContext();
+		const response = await worker.fetch(request, env, ctx);
+		await waitOnExecutionContext(ctx);
+
+		expect(response.status).toBe(401);
+	});
+
+	it('returns 503 for xsolla checkout token endpoint when xsolla config is incomplete', async () => {
+		const now = Math.floor(Date.now() / 1000);
+		const token = await signJwt(privateKey, publicJwk.kid, {
+			iss: `https://securetoken.google.com/${PROJECT_ID}`,
+			aud: PROJECT_ID,
+			sub: userId,
+			iat: now - 30,
+			exp: now + 3600,
+			auth_time: now - 30,
+		});
+
+		await withMockedJwks(publicJwk, async () => {
+			const request = new Request(`http://example.com/api/users/${userId}/xsolla/checkout-token`, {
+				method: 'POST',
+				headers: {
+					Authorization: `Bearer ${token}`,
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({ productId: 'subscription_12_months' }),
+			});
+			const ctx = createExecutionContext();
+			const response = await worker.fetch(request, env, ctx);
+			await waitOnExecutionContext(ctx);
+
+			expect(response.status).toBe(503);
+			const body = await response.json();
+			expect(body.error).toContain('Xsolla base configuration incomplete');
+		});
+	});
+
+	it('returns 503 for xsolla webhook endpoint when webhook secret is missing', async () => {
+		const request = new Request('http://example.com/api/xsolla/webhook', {
+			method: 'POST',
+			body: JSON.stringify({ event: 'payment' }),
+		});
+		const ctx = createExecutionContext();
+		const response = await worker.fetch(request, env, ctx);
+		await waitOnExecutionContext(ctx);
+
+		expect(response.status).toBe(503);
+		const body = await response.json();
+		expect(body.error).toContain('Xsolla webhook secret not configured');
+	});
+
+	it('rejects xsolla webhook requests with invalid signature', async () => {
+		env.XSOLLA_WEBHOOK_SECRET = 'test-secret';
+		const request = new Request('http://example.com/api/xsolla/webhook', {
+			method: 'POST',
+			headers: {
+				authorization: 'Signature deadbeef',
+			},
+			body: JSON.stringify({ notification_type: 'user_validation', user: { id: userId } }),
+		});
+		const ctx = createExecutionContext();
+		const response = await worker.fetch(request, env, ctx);
+		await waitOnExecutionContext(ctx);
+
+		expect(response.status).toBe(401);
+		const body = await response.json();
+		expect(body.error).toBe('INVALID_SIGNATURE');
+		delete env.XSOLLA_WEBHOOK_SECRET;
+	});
+
+	it('accepts signed xsolla user_validation webhook', async () => {
+		env.XSOLLA_WEBHOOK_SECRET = 'test-secret';
+		const rawBody = JSON.stringify({ notification_type: 'user_validation', user: { id: userId } });
+		const signature = await createXsollaSignature(rawBody, env.XSOLLA_WEBHOOK_SECRET);
+		const request = new Request('http://example.com/api/xsolla/webhook', {
+			method: 'POST',
+			headers: {
+				authorization: `Signature ${signature}`,
+			},
+			body: rawBody,
+		});
+		const ctx = createExecutionContext();
+		const response = await worker.fetch(request, env, ctx);
+		await waitOnExecutionContext(ctx);
+
+		expect(response.status).toBe(204);
+		delete env.XSOLLA_WEBHOOK_SECRET;
+	});
+
+	it('grants subscription access on create_subscription webhook', async () => {
+		env.XSOLLA_WEBHOOK_SECRET = 'test-secret';
+		env.XSOLLA_REGULAR_SUBSCRIPTION_3_MONTHS_PLAN_ID = 'WZ401Sj5';
+		const rawBody = JSON.stringify({
+			notification_type: 'create_subscription',
+			user: { id: userId },
+			subscription: {
+				plan_id: 'WZ401Sj5',
+				date_next_charge: '2026-07-24T00:00:00+00:00',
+			},
+		});
+		const signature = await createXsollaSignature(rawBody, env.XSOLLA_WEBHOOK_SECRET);
+		const request = new Request('http://example.com/api/xsolla/webhook', {
+			method: 'POST',
+			headers: {
+				authorization: `Signature ${signature}`,
+			},
+			body: rawBody,
+		});
+		const ctx = createExecutionContext();
+		const response = await worker.fetch(request, env, ctx);
+		await waitOnExecutionContext(ctx);
+
+		expect(response.status).toBe(204);
+		const stored = await env.DB.prepare('SELECT is_premium, subscription_plan, subscription_end FROM users WHERE uid = ?').bind(userId).first();
+		expect(stored.is_premium).toBe(1);
+		expect(stored.subscription_plan).toBe('subscription_3_months');
+		expect(stored.subscription_end).toBe(Date.parse('2026-07-24T00:00:00+00:00'));
+		delete env.XSOLLA_WEBHOOK_SECRET;
+		delete env.XSOLLA_REGULAR_SUBSCRIPTION_3_MONTHS_PLAN_ID;
+	});
+
+	it('grants one-time duration access on order_paid webhook', async () => {
+		env.XSOLLA_WEBHOOK_SECRET = 'test-secret';
+		env.XSOLLA_DURATION_3_MONTHS_SKU = 'duration_3_months';
+		const paymentDate = '2026-04-24T00:00:00+00:00';
+		const rawBody = JSON.stringify({
+			notification_type: 'order_paid',
+			user: { id: userId },
+			transaction: { payment_date: paymentDate },
+			items: [{ sku: 'duration_3_months' }],
+		});
+		const signature = await createXsollaSignature(rawBody, env.XSOLLA_WEBHOOK_SECRET);
+		const request = new Request('http://example.com/api/xsolla/webhook', {
+			method: 'POST',
+			headers: {
+				authorization: `Signature ${signature}`,
+			},
+			body: rawBody,
+		});
+		const ctx = createExecutionContext();
+		const response = await worker.fetch(request, env, ctx);
+		await waitOnExecutionContext(ctx);
+
+		expect(response.status).toBe(204);
+		const stored = await env.DB.prepare('SELECT is_premium, subscription_plan, subscription_end FROM users WHERE uid = ?').bind(userId).first();
+		expect(stored.is_premium).toBe(1);
+		expect(stored.subscription_plan).toBe('duration_3_months');
+		expect(stored.subscription_end).toBe(Date.parse('2026-07-24T00:00:00.000Z'));
+		delete env.XSOLLA_WEBHOOK_SECRET;
+		delete env.XSOLLA_DURATION_3_MONTHS_SKU;
 	});
 
 	it('allows GET when token is valid and uid matches', async () => {

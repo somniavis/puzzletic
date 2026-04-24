@@ -6,6 +6,7 @@
 import type { User } from 'firebase/auth';
 import type { NurturingPersistentState } from '../types/nurturing';
 import type { DailyRoutineReward } from './dailyRoutineRewardService';
+import type { BillingProductId } from '../constants/billingPlans';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.grogrojello.com';
 const CLIENT_SYNC_COOLDOWN_MS = 2200;
@@ -400,36 +401,58 @@ const enqueueSync = (user: User, state: NurturingPersistentState): Promise<boole
 };
 
 
+export interface XsollaCheckoutRequest {
+    productId: BillingProductId;
+    countryCode?: string | null;
+    languageCode?: string | null;
+    email?: string | null;
+    name?: string | null;
+}
+
+export interface XsollaCheckoutResponse {
+    success: boolean;
+    productId?: BillingProductId;
+    token?: string;
+    orderId?: string | null;
+    checkoutUrl?: string;
+    sandbox?: boolean;
+    identifierType?: 'plan_id' | 'sku';
+    error?: string;
+    details?: unknown;
+}
+
 /**
- * Purchase Subscription
- * Calls the dedicated purchase endpoint to process subscription
+ * Create Xsolla checkout token
+ * Calls the dedicated checkout-token endpoint and returns the hosted checkout URL.
  */
 export const purchaseSubscription = async (
     user: User,
-    planId: '3_months' | '12_months'
-): Promise<{ success: boolean; is_premium?: number; subscription_end?: number; plan?: string }> => {
+    payload: XsollaCheckoutRequest
+): Promise<XsollaCheckoutResponse> => {
     try {
         const token = await user.getIdToken();
-        const response = await fetchFromApi(`/api/users/${user.uid}/purchase`, {
+        const response = await fetchFromApi(`/api/users/${user.uid}/xsolla/checkout-token`, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ planId }),
+            body: JSON.stringify(payload),
         });
 
         if (!response.ok) {
-            const text = await response.text();
-            throw new Error(text);
+            const json = await response.json().catch(() => null);
+            throw new Error(json?.error || `Checkout Error: ${response.status}`);
         }
 
         const json = await response.json();
-        invalidateFetchUserCache(user.uid);
         return json;
     } catch (error: any) {
         console.error('Purchase failed:', error);
-        return { success: false };
+        return {
+            success: false,
+            error: error?.message || 'Unknown error',
+        };
     }
 };
 

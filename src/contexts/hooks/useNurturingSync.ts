@@ -11,6 +11,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import type { User } from 'firebase/auth';
 import type { NurturingPersistentState } from '../../types/nurturing';
 import type { GameScoreValue, Poop, PendingPoop, Bug, BugType } from '../../types/nurturing';
+import { BILLING_PRODUCTS, resolveBillingOfferType } from '../../constants/billingPlans';
 import {
     loadNurturingState,
     saveNurturingState,
@@ -118,6 +119,22 @@ export const useNurturingSync = (user: User | null, guestId: string | null = nul
             return createDefaultState();
         }
     });
+
+    const refreshSubscriptionFromCloud = useCallback(async (): Promise<boolean> => {
+        if (!user) return false;
+
+        const result = await fetchUserData(user, { forceFresh: true });
+        if (!result.success) {
+            return false;
+        }
+
+        setSubscription({
+            isPremium: !!result.data.is_premium,
+            plan: result.data.subscription_plan as any || null,
+            expiryDate: result.data.subscription_end || null,
+        });
+        return true;
+    }, [user]);
 
     // ========== THROTTLED LOCAL PERSISTENCE ==========
     const debouncedState = useDebounce(state, 1000);
@@ -499,17 +516,50 @@ export const useNurturingSync = (user: User | null, guestId: string | null = nul
 
     const purchasePlan = useCallback(async (planId: '3_months' | '12_months'): Promise<boolean> => {
         if (!user) return false;
-        const result = await purchaseSubscription(user, planId);
-        if (result.success) {
-            setSubscription({
-                isPremium: !!result.is_premium,
-                plan: result.plan as any,
-                expiryDate: result.subscription_end || null,
-            });
-            return true;
-        } else {
+
+        const languageCode = navigator.language || 'en';
+        const offerType = resolveBillingOfferType(null, languageCode);
+        const product = BILLING_PRODUCTS.find((entry) =>
+            entry.legacyPlanId === planId && entry.offerType === offerType
+        );
+
+        if (!product) {
+            console.error('Purchase failed: matching billing product not found', { planId, offerType, languageCode });
             return false;
         }
+
+        const result = await purchaseSubscription(user, {
+            productId: product.id,
+            languageCode,
+            email: user.email || null,
+            name: user.displayName || null,
+        });
+
+        if (!result.success || !result.checkoutUrl) {
+            return false;
+        }
+
+        const refreshAfterReturn = () => {
+            void refreshSubscriptionFromCloud();
+            window.removeEventListener('focus', refreshAfterReturn);
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+        };
+
+        const handleVisibilityChange = () => {
+            if (document.visibilityState === 'visible') {
+                refreshAfterReturn();
+            }
+        };
+
+        window.addEventListener('focus', refreshAfterReturn);
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+
+        const popup = window.open(result.checkoutUrl, '_blank', 'noopener,noreferrer');
+        if (!popup) {
+            window.location.assign(result.checkoutUrl);
+        }
+
+        return true;
     }, [user]);
 
     const completeCharacterCreation = useCallback(() => {

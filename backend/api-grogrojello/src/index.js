@@ -94,6 +94,41 @@ const MAX_INITIAL_XP = 250;
 const MAX_INITIAL_STAR = 100;
 const MAX_LEVEL = 5;
 const MAX_STAR_TOTAL = 100000;
+const XSOLLA_WEBHOOK_PATH = '/api/xsolla/webhook';
+const XSOLLA_SUBSCRIPTION_TOKEN_URL = (merchantId) => `https://api.xsolla.com/merchant/v2/merchants/${merchantId}/token`;
+const XSOLLA_CATALOG_TOKEN_URL = (projectId) => `https://store.xsolla.com/api/v3/project/${projectId}/admin/payment/token`;
+const DEFAULT_XSOLLA_RETURN_URL = 'https://www.grogrojello.com/profile?tab=pass';
+
+const XSOLLA_PRODUCTS = {
+	subscription_3_months: {
+		id: 'subscription_3_months',
+		kind: 'regular_subscription',
+		durationMonths: 3,
+		displayName: '3-month subscription',
+		xsollaIdentifierEnvKey: 'XSOLLA_REGULAR_SUBSCRIPTION_3_MONTHS_PLAN_ID',
+	},
+	subscription_12_months: {
+		id: 'subscription_12_months',
+		kind: 'regular_subscription',
+		durationMonths: 12,
+		displayName: '12-month subscription',
+		xsollaIdentifierEnvKey: 'XSOLLA_REGULAR_SUBSCRIPTION_12_MONTHS_PLAN_ID',
+	},
+	duration_3_months: {
+		id: 'duration_3_months',
+		kind: 'one_time_item',
+		durationMonths: 3,
+		displayName: '3-month duration pass',
+		xsollaIdentifierEnvKey: 'XSOLLA_DURATION_3_MONTHS_SKU',
+	},
+	duration_12_months: {
+		id: 'duration_12_months',
+		kind: 'one_time_item',
+		durationMonths: 12,
+		displayName: '12-month duration pass',
+		xsollaIdentifierEnvKey: 'XSOLLA_DURATION_12_MONTHS_SKU',
+	},
+};
 
 const clampStage = (stage) => Math.min(5, Math.max(1, Math.floor(Number(stage) || 1)));
 
@@ -183,7 +218,8 @@ const getUserRouteInfo = (path) => {
 	const pathSegments = path.split('/');
 	const uid = pathSegments[3];
 	const subPath = pathSegments[4] || '';
-	const extraSegments = pathSegments.length > 5;
+	const nestedSubPath = pathSegments[5] || '';
+	const extraSegments = pathSegments.length > 6;
 
 	if (!uid || uid === 'purchase') {
 		return { ok: false, status: 400, error: 'Missing UID' };
@@ -193,11 +229,18 @@ const getUserRouteInfo = (path) => {
 		return { ok: false, status: 404, error: 'Unknown API path' };
 	}
 
-	if (subPath && !['purchase', 'cancel', 'daily-routine-claim'].includes(subPath)) {
+	const isAllowedDirectSubPath = ['purchase', 'cancel', 'daily-routine-claim'].includes(subPath);
+	const isAllowedNestedSubPath = subPath === 'xsolla' && nestedSubPath === 'checkout-token';
+
+	if (subPath && !isAllowedDirectSubPath && !isAllowedNestedSubPath) {
 		return { ok: false, status: 404, error: 'Unknown API path' };
 	}
 
-	return { ok: true, uid, subPath };
+	if (subPath === 'xsolla' && !nestedSubPath) {
+		return { ok: false, status: 404, error: 'Unknown API path' };
+	}
+
+	return { ok: true, uid, subPath, nestedSubPath };
 };
 
 const getBodySize = (request) => {
@@ -212,12 +255,16 @@ const validateApiRequestShape = (request, routeInfo) => {
 		return { ok: false, status: 405, error: 'Method Not Allowed', headers: { Allow: 'GET, POST, OPTIONS' } };
 	}
 
-	if (request.method === 'GET' && routeInfo.subPath) {
+	if (request.method === 'GET' && (routeInfo.subPath || routeInfo.nestedSubPath)) {
 		return { ok: false, status: 405, error: 'Method Not Allowed', headers: { Allow: 'POST, OPTIONS' } };
 	}
 
 	if (request.method === 'POST') {
-		const requiresJsonBody = !routeInfo.subPath || routeInfo.subPath === 'purchase' || routeInfo.subPath === 'daily-routine-claim';
+		const requiresJsonBody =
+			!routeInfo.subPath ||
+			routeInfo.subPath === 'purchase' ||
+			routeInfo.subPath === 'daily-routine-claim' ||
+			(routeInfo.subPath === 'xsolla' && routeInfo.nestedSubPath === 'checkout-token');
 		if (requiresJsonBody) {
 			const contentType = request.headers.get('Content-Type') || '';
 			if (!contentType.toLowerCase().includes('application/json')) {
@@ -491,13 +538,473 @@ const getCorsHeaders = (request) => {
 	return { headers, allowedOrigin, requestOrigin };
 };
 
+const jsonResponse = (corsHeaders, body, status = 200, extraHeaders = {}) =>
+	new Response(JSON.stringify(body), {
+		status,
+		headers: { ...corsHeaders, 'Content-Type': 'application/json', ...extraHeaders },
+	});
+
+const getXsollaConfigStatus = (env) => {
+	const missingBaseEnv = [];
+	if (!env.XSOLLA_MERCHANT_ID) missingBaseEnv.push('XSOLLA_MERCHANT_ID');
+	if (!env.XSOLLA_PROJECT_ID) missingBaseEnv.push('XSOLLA_PROJECT_ID');
+	if (!env.XSOLLA_API_KEY) missingBaseEnv.push('XSOLLA_API_KEY');
+
+	const missingProductEnv = [];
+	for (const product of Object.values(XSOLLA_PRODUCTS)) {
+		if (!env[product.xsollaIdentifierEnvKey]) {
+			missingProductEnv.push(product.xsollaIdentifierEnvKey);
+		}
+	}
+
+	return {
+		missingBaseEnv,
+		missingProductEnv,
+		ready: missingBaseEnv.length === 0 && missingProductEnv.length === 0,
+	};
+};
+
+const buildXsollaCheckoutUrl = (token) =>
+	`https://sandbox-secure.xsolla.com/paystation4/?token=${encodeURIComponent(token)}`;
+
+const encodeBasicAuth = (left, right) => btoa(`${left}:${right}`);
+
+const toTwoLetterLanguage = (value) => {
+	const trimmed = String(value || '').trim();
+	if (!trimmed) return 'en';
+	const [language] = trimmed.split(/[-_]/);
+	return language ? language.toLowerCase() : 'en';
+};
+
+const normalizeCountryCode = (value) => {
+	const normalized = String(value || '').trim().toUpperCase();
+	return /^[A-Z]{2}$/.test(normalized) ? normalized : null;
+};
+
+const buildXsollaExternalId = (uid, productId) =>
+	`${uid}:${productId}:${Date.now()}:${Math.random().toString(36).slice(2, 8)}`;
+
+const parseXsollaError = async (response) => {
+	try {
+		const json = await response.json();
+		return {
+			status: response.status,
+			body: json,
+			message: json?.errorMessage || json?.message || json?.error || 'Xsolla request failed',
+		};
+	} catch {
+		const text = await response.text();
+		return {
+			status: response.status,
+			body: null,
+			message: text || 'Xsolla request failed',
+		};
+	}
+};
+
+const toSha1Hex = async (input) => {
+	const digest = await crypto.subtle.digest('SHA-1', new TextEncoder().encode(input));
+	return Array.from(new Uint8Array(digest))
+		.map((byte) => byte.toString(16).padStart(2, '0'))
+		.join('');
+};
+
+const getXsollaSignature = (request) => {
+	const authorization = request.headers.get('authorization') || request.headers.get('Authorization') || '';
+	const match = authorization.match(/^Signature\s+([a-fA-F0-9]+)$/);
+	return match ? match[1].toLowerCase() : null;
+};
+
+const verifyXsollaWebhookSignature = async (request, rawBody, secret) => {
+	const providedSignature = getXsollaSignature(request);
+	if (!providedSignature) {
+		return { ok: false, reason: 'MISSING_SIGNATURE' };
+	}
+
+	const expectedSignature = await toSha1Hex(`${rawBody}${secret}`);
+	if (providedSignature !== expectedSignature) {
+		return { ok: false, reason: 'INVALID_SIGNATURE' };
+	}
+
+	return { ok: true };
+};
+
+const addDurationMonths = (timestampMs, months) => {
+	const date = new Date(timestampMs);
+	date.setUTCMonth(date.getUTCMonth() + months);
+	return date.getTime();
+};
+
+const parseIsoTimestamp = (value) => {
+	if (!value) return null;
+	const parsed = Date.parse(value);
+	return Number.isFinite(parsed) ? parsed : null;
+};
+
+const getXsollaProductByIdentifier = (env, identifier) => {
+	if (!identifier) return null;
+	return Object.values(XSOLLA_PRODUCTS).find((product) => env[product.xsollaIdentifierEnvKey] === identifier) || null;
+};
+
+const applySubscriptionGrant = async (env, uid, product, endTimestampMs, now) => {
+	const subscriptionEnd = Number.isFinite(endTimestampMs) ? endTimestampMs : addDurationMonths(now, product.durationMonths);
+	await env.DB.prepare(`
+		INSERT INTO users (
+			uid, is_premium, subscription_end, subscription_plan, created_at, last_synced_at
+		)
+		VALUES (?, 1, ?, ?, ?, ?)
+		ON CONFLICT(uid) DO UPDATE SET
+			is_premium = 1,
+			subscription_end = excluded.subscription_end,
+			subscription_plan = excluded.subscription_plan,
+			last_synced_at = excluded.last_synced_at
+	`).bind(uid, subscriptionEnd, product.id, now, now).run();
+};
+
+const applyDurationItemGrant = async (env, uid, product, baseTimestampMs, now) => {
+	const current = await env.DB.prepare('SELECT subscription_end FROM users WHERE uid = ?').bind(uid).first();
+	const startAt = current?.subscription_end && current.subscription_end > baseTimestampMs
+		? current.subscription_end
+		: baseTimestampMs;
+	const subscriptionEnd = addDurationMonths(startAt, product.durationMonths);
+	await env.DB.prepare(`
+		INSERT INTO users (
+			uid, is_premium, subscription_end, subscription_plan, created_at, last_synced_at
+		)
+		VALUES (?, 1, ?, ?, ?, ?)
+		ON CONFLICT(uid) DO UPDATE SET
+			is_premium = 1,
+			subscription_end = excluded.subscription_end,
+			subscription_plan = excluded.subscription_plan,
+			last_synced_at = excluded.last_synced_at
+	`).bind(uid, subscriptionEnd, product.id, now, now).run();
+};
+
+const applySubscriptionCancellation = async (env, uid, product, dateEndMs, now) => {
+	const stillActive = Number.isFinite(dateEndMs) && dateEndMs > now;
+	await env.DB.prepare(`
+		INSERT INTO users (
+			uid, is_premium, subscription_end, subscription_plan, created_at, last_synced_at
+		)
+		VALUES (?, ?, ?, ?, ?, ?)
+		ON CONFLICT(uid) DO UPDATE SET
+			is_premium = excluded.is_premium,
+			subscription_end = excluded.subscription_end,
+			subscription_plan = excluded.subscription_plan,
+			last_synced_at = excluded.last_synced_at
+	`).bind(uid, stillActive ? 1 : 0, stillActive ? dateEndMs : 0, product?.id || null, now, now).run();
+};
+
+const extractOrderPaidSkus = (payload) => {
+	const items = Array.isArray(payload?.items) ? payload.items : [];
+	return items
+		.map((item) => item?.sku || item?.item?.sku || item?.virtual_item?.sku || null)
+		.filter(Boolean);
+};
+
+const processXsollaWebhook = async (env, payload, now) => {
+	const notificationType = payload?.notification_type;
+
+	if (notificationType === 'user_validation') {
+		return { status: 204 };
+	}
+
+	if (notificationType === 'create_subscription' || notificationType === 'update_subscription') {
+		const uid = payload?.user?.id;
+		const planId = payload?.subscription?.plan_id;
+		const product = getXsollaProductByIdentifier(env, planId);
+		if (!uid || !product) {
+			return { status: 400, body: { error: 'Unknown subscription webhook payload' } };
+		}
+
+		const endTimestampMs =
+			parseIsoTimestamp(payload?.subscription?.date_next_charge) ||
+			parseIsoTimestamp(payload?.subscription?.date_end) ||
+			null;
+		await applySubscriptionGrant(env, uid, product, endTimestampMs, now);
+		return { status: 204 };
+	}
+
+	if (notificationType === 'cancel_subscription') {
+		const uid = payload?.user?.id;
+		const planId = payload?.subscription?.plan_id;
+		const product = getXsollaProductByIdentifier(env, planId);
+		if (!uid) {
+			return { status: 400, body: { error: 'Missing user id' } };
+		}
+		const dateEndMs = parseIsoTimestamp(payload?.subscription?.date_end);
+		await applySubscriptionCancellation(env, uid, product, dateEndMs, now);
+		return { status: 204 };
+	}
+
+	if (notificationType === 'order_paid') {
+		const uid = payload?.user?.id || payload?.user?.user_id || payload?.user_id;
+		if (!uid) {
+			return { status: 400, body: { error: 'Missing user id' } };
+		}
+
+		const skus = extractOrderPaidSkus(payload);
+		const durationProducts = skus
+			.map((sku) => getXsollaProductByIdentifier(env, sku))
+			.filter((product) => product?.kind === 'one_time_item');
+
+		if (durationProducts.length === 0) {
+			return { status: 204 };
+		}
+
+		const paymentDateMs = parseIsoTimestamp(payload?.transaction?.payment_date) || now;
+		for (const product of durationProducts) {
+			await applyDurationItemGrant(env, uid, product, paymentDateMs, now);
+		}
+		return { status: 204 };
+	}
+
+	if (notificationType === 'order_canceled' || notificationType === 'refund' || notificationType === 'payment') {
+		// Processed later with transaction history/idempotency support.
+		return { status: 204 };
+	}
+
+	return { status: 204 };
+};
+
+const createXsollaSubscriptionToken = async ({
+	env,
+	product,
+	productIdentifier,
+	userId,
+	email,
+	name,
+	countryCode,
+	language,
+	returnUrl,
+}) => {
+	const body = {
+		user: {
+			id: { value: userId },
+		},
+		settings: {
+			external_id: buildXsollaExternalId(userId, product.id),
+			language,
+			currency: 'USD',
+			return_url: returnUrl,
+		},
+		purchase: {
+			subscription: {
+				plan_id: productIdentifier,
+				currency: 'USD',
+			},
+		},
+	};
+
+	if (email) {
+		body.user.email = { value: email, allow_modify: false };
+	}
+
+	if (name) {
+		body.user.name = { value: name, allow_modify: false };
+	}
+
+	if (countryCode) {
+		body.user.country = { value: countryCode, allow_modify: true };
+	}
+
+	const response = await fetch(XSOLLA_SUBSCRIPTION_TOKEN_URL(env.XSOLLA_MERCHANT_ID), {
+		method: 'POST',
+		headers: {
+			'Authorization': `Basic ${encodeBasicAuth(env.XSOLLA_MERCHANT_ID, env.XSOLLA_API_KEY)}`,
+			'Content-Type': 'application/json',
+		},
+		body: JSON.stringify(body),
+	});
+
+	if (!response.ok) {
+		throw await parseXsollaError(response);
+	}
+
+	return response.json();
+};
+
+const createXsollaCatalogToken = async ({
+	env,
+	product,
+	productIdentifier,
+	userId,
+	email,
+	name,
+	countryCode,
+	language,
+	returnUrl,
+	clientIp,
+}) => {
+	const body = {
+		sandbox: true,
+		user: {
+			id: { value: userId },
+		},
+		purchase: {
+			items: [
+				{ sku: productIdentifier },
+			],
+		},
+		settings: {
+			external_id: buildXsollaExternalId(userId, product.id),
+			language,
+			currency: 'USD',
+			return_url: returnUrl,
+		},
+	};
+
+	if (email) {
+		body.user.email = { value: email };
+	}
+
+	if (name) {
+		body.user.name = { value: name };
+	}
+
+	if (countryCode) {
+		body.user.country = { value: countryCode };
+	}
+
+	const headers = {
+		'Authorization': `Basic ${encodeBasicAuth(env.XSOLLA_PROJECT_ID, env.XSOLLA_API_KEY)}`,
+		'Content-Type': 'application/json',
+	};
+	if (!countryCode && clientIp && clientIp !== 'unknown') {
+		headers['X-User-Ip'] = clientIp;
+	}
+
+	const response = await fetch(XSOLLA_CATALOG_TOKEN_URL(env.XSOLLA_PROJECT_ID), {
+		method: 'POST',
+		headers,
+		body: JSON.stringify(body),
+	});
+
+	if (!response.ok) {
+		throw await parseXsollaError(response);
+	}
+
+	return response.json();
+};
+
+const handleXsollaCheckoutTokenRequest = async (request, env, corsHeaders, uid, clientIp) => {
+	const body = await request.json();
+	const { productId, countryCode, languageCode } = body || {};
+	const product = XSOLLA_PRODUCTS[productId];
+
+	if (!product) {
+		return jsonResponse(corsHeaders, { error: 'Invalid productId' }, 400);
+	}
+
+	const configStatus = getXsollaConfigStatus(env);
+	if (configStatus.missingBaseEnv.length > 0) {
+		return jsonResponse(corsHeaders, {
+			error: 'Xsolla base configuration incomplete',
+			missing: configStatus.missingBaseEnv,
+		}, 503);
+	}
+
+	if (!env[product.xsollaIdentifierEnvKey]) {
+		return jsonResponse(corsHeaders, {
+			error: 'Xsolla product mapping incomplete',
+			missing: [product.xsollaIdentifierEnvKey],
+			productId,
+		}, 503);
+	}
+
+	const productIdentifier = env[product.xsollaIdentifierEnvKey];
+	const normalizedCountryCode = normalizeCountryCode(countryCode);
+	const normalizedLanguage = toTwoLetterLanguage(languageCode);
+	const returnUrl = env.XSOLLA_RETURN_URL || DEFAULT_XSOLLA_RETURN_URL;
+
+	try {
+		const tokenResponse = product.kind === 'regular_subscription'
+			? await createXsollaSubscriptionToken({
+				env,
+				product,
+				productIdentifier,
+				userId: uid,
+				email: body.email || null,
+				name: body.name || null,
+				countryCode: normalizedCountryCode,
+				language: normalizedLanguage,
+				returnUrl,
+			})
+			: await createXsollaCatalogToken({
+				env,
+				product,
+				productIdentifier,
+				userId: uid,
+				email: body.email || null,
+				name: body.name || null,
+				countryCode: normalizedCountryCode,
+				language: normalizedLanguage,
+				returnUrl,
+				clientIp,
+			});
+
+		return jsonResponse(corsHeaders, {
+			success: true,
+			productId,
+			token: tokenResponse.token,
+			orderId: tokenResponse.order_id || null,
+			checkoutUrl: buildXsollaCheckoutUrl(tokenResponse.token),
+			sandbox: true,
+			identifierType: product.kind === 'regular_subscription' ? 'plan_id' : 'sku',
+		});
+	} catch (error) {
+		return jsonResponse(corsHeaders, {
+			error: 'Xsolla checkout token request failed',
+			productId,
+			details: error?.body || error?.message || error,
+			status: error?.status || 500,
+		}, error?.status || 500);
+	}
+};
+
+const handleXsollaWebhookRequest = async (request, env, corsHeaders) => {
+	if (request.method !== 'POST') {
+		return jsonResponse(corsHeaders, { error: 'Method Not Allowed' }, 405, { Allow: 'POST, OPTIONS' });
+	}
+
+	if (!env.XSOLLA_WEBHOOK_SECRET) {
+		return jsonResponse(corsHeaders, {
+			error: 'Xsolla webhook secret not configured',
+			missing: ['XSOLLA_WEBHOOK_SECRET'],
+		}, 503);
+	}
+
+	const rawBody = await request.text();
+	const signatureCheck = await verifyXsollaWebhookSignature(request, rawBody, env.XSOLLA_WEBHOOK_SECRET);
+	if (!signatureCheck.ok) {
+		return jsonResponse(corsHeaders, {
+			error: signatureCheck.reason,
+		}, 401);
+	}
+
+	let payload;
+	try {
+		payload = JSON.parse(rawBody);
+	} catch {
+		return jsonResponse(corsHeaders, { error: 'INVALID_JSON' }, 400);
+	}
+
+	const result = await processXsollaWebhook(env, payload, Date.now());
+	if (result.status === 204) {
+		return new Response(null, { status: 204, headers: corsHeaders });
+	}
+
+	return jsonResponse(corsHeaders, result.body || { error: 'Webhook processing failed' }, result.status || 500);
+};
+
 export default {
 	async fetch(request, env) {
 		const url = new URL(request.url);
 		const path = url.pathname;
 		const now = Date.now();
 		const requestId = getRequestId(request);
-		const clientIp = normalizeRouteSegment(getClientIp(request));
+		const rawClientIp = getClientIp(request);
+		const clientIp = normalizeRouteSegment(rawClientIp);
 
 		// CORS Headers
 		const corsContext = getCorsHeaders(request);
@@ -515,6 +1022,10 @@ export default {
 		// Handle OPTIONS (CORS preflight)
 		if (request.method === 'OPTIONS') {
 			return new Response(null, { headers: corsHeaders });
+		}
+
+		if (path === XSOLLA_WEBHOOK_PATH) {
+			return handleXsollaWebhookRequest(request, env, corsHeaders);
 		}
 
 		// Router
@@ -690,6 +1201,14 @@ export default {
 			if (request.method === 'POST') {
 				// Check if this is a purchase request (sub-path)
 				// Since we are inside /api/users/:uid block, check if url ends with /purchase
+				if (routeInfo.subPath === 'xsolla' && routeInfo.nestedSubPath === 'checkout-token') {
+					try {
+						return await handleXsollaCheckoutTokenRequest(request, env, corsHeaders, uid, rawClientIp);
+					} catch (err) {
+						return jsonResponse(corsHeaders, { error: err.message }, 500);
+					}
+				}
+
 				if (path.endsWith('/purchase')) {
 					try {
 						const body = await request.json();
