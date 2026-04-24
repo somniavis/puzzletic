@@ -656,6 +656,18 @@
     border: none;
 }
 
+.adventure-card--learning-card .category-badge {
+    max-width: min(100%, 12rem);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-transform: none;
+}
+
+.adventure-card--learning-card .card-title {
+    font-size: 1.45rem;
+}
+
 .difficulty-stars {
     display: flex;
     gap: 0.125rem;

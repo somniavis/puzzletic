@@ -917,6 +917,7 @@ const PlayPage: React.FC = () => {
                                             isMastered={isMastered}
                                             onPlay={handlePlayClick}
                                             isPremiumLocked={isPremiumLocked}
+                                            contentMode="learning"
                                         />
                                     );
                                 })}
@@ -969,6 +970,7 @@ const PlayPage: React.FC = () => {
                                             onPlay={handlePlayClick}
                                             isPremiumLocked={isPremiumLocked}
                                             variant="brain-hybrid"
+                                            contentMode="learning"
                                         />
                                     ))}
                                 </div>

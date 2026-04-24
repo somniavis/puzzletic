@@ -14,6 +14,7 @@ interface AdventureCardProps {
     onPlay: (game: GameManifest, isLocked: boolean, reason?: string) => void;
     isPremiumLocked?: boolean;
     variant?: 'brain-hybrid';
+    contentMode?: 'default' | 'learning';
 }
 
 export const AdventureCard: React.FC<AdventureCardProps> = ({
@@ -25,9 +26,12 @@ export const AdventureCard: React.FC<AdventureCardProps> = ({
     isMastered,
     onPlay,
     isPremiumLocked = false,
-    variant
+    variant,
+    contentMode = 'default'
 }) => {
     const { t } = useTranslation();
+    const gameTitle = game.titleKey ? t(game.titleKey) : game.title;
+    const learningConcept = game.tagsKey ? t(game.tagsKey) : (game.tags?.[0] || game.category.toUpperCase());
 
     const handleClick = () => {
         onPlay(game, !unlocked, displayReason);
@@ -97,7 +101,7 @@ export const AdventureCard: React.FC<AdventureCardProps> = ({
     return (
         <div
             id={id}
-            className={`adventure-card ${game.category === 'brain' ? 'brain-card' : ''} ${variant ? variant : ''} ${(!unlocked || isPremiumLocked) ? 'locked' : ''}`}
+            className={`adventure-card ${contentMode === 'learning' ? 'adventure-card--learning-card' : ''} ${game.category === 'brain' ? 'brain-card' : ''} ${variant ? variant : ''} ${(!unlocked || isPremiumLocked) ? 'locked' : ''}`}
         >
             {isPremiumLocked && <PremiumLockOverlay />}
             <div className="card-top">
@@ -107,12 +111,12 @@ export const AdventureCard: React.FC<AdventureCardProps> = ({
                 <div className="card-info">
                     <div className="card-meta">
                         <span className="category-badge">
-                            {game.tagsKey ? t(game.tagsKey) : (game.tags?.[0] || game.category.toUpperCase())}
+                            {contentMode === 'learning' ? gameTitle : learningConcept}
                         </span>
                         {renderDifficultyStars(game.level)}
                     </div>
                     <h3 className="card-title">
-                        {(game.titleKey ? t(game.titleKey) : game.title).split(/(\(Lv\.?\d+\))/).map((part, i) =>
+                        {(contentMode === 'learning' ? learningConcept : gameTitle).split(/(\(Lv\.?\d+\))/).map((part, i) =>
                             part.match(/^\(Lv\.?\d+\)$/) ? <span key={i} style={{ fontSize: '0.75em', marginLeft: '2px' }}>{part}</span> : part
                         )}
                     </h3>
