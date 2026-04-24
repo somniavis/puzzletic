@@ -110,6 +110,8 @@ export const idID = {
     collectionLabel: 'Koleksi',
     profileInfo: 'Akun',
     paymentInfo: 'Pembayaran',
+    checkoutTitle: 'Pembelian Pass',
+    checkoutPreparing: 'Menyiapkan pembayaran...',
     purchaseButton: 'Beli',
     expiresLabel: 'Berakhir',
     purchaseConfirm: {

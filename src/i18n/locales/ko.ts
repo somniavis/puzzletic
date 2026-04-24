@@ -112,6 +112,8 @@ const koBase = {
         collectionLabel: '컬렉션',
         profileInfo: '계정',
         paymentInfo: '결제',
+        checkoutTitle: '패스 구매',
+        checkoutPreparing: '결제 준비 중...',
         purchaseButton: '구매',
         expiresLabel: '만료일',
         purchaseConfirm: {

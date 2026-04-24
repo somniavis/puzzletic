@@ -110,6 +110,8 @@ export const frFR = {
     collectionLabel: 'Collection',
     profileInfo: 'Compte',
     paymentInfo: 'Paiement',
+    checkoutTitle: 'Achat du pass',
+    checkoutPreparing: 'Préparation du paiement...',
     purchaseButton: 'Acheter',
     expiresLabel: 'Expire le',
     purchaseConfirm: {

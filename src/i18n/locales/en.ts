@@ -110,6 +110,8 @@ export const en = {
     collectionLabel: 'Collection',
     profileInfo: 'Account',
     paymentInfo: 'Payment',
+    checkoutTitle: 'Pass Purchase',
+    checkoutPreparing: 'Preparing checkout...',
     purchaseButton: 'Purchase',
     expiresLabel: 'Expires',
     purchaseConfirm: {

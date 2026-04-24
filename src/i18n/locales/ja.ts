@@ -112,6 +112,8 @@ const jaBase = {
         collectionLabel: 'コレクション',
         profileInfo: 'アカウント',
         paymentInfo: 'お支払い',
+        checkoutTitle: 'パス購入',
+        checkoutPreparing: '決済を準備中...',
         purchaseButton: '購入',
         expiresLabel: '有効期限',
         purchaseConfirm: {

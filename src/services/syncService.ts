@@ -421,6 +421,15 @@ export interface XsollaCheckoutResponse {
     details?: unknown;
 }
 
+export type CancelSubscriptionResult =
+    | { success: true }
+    | {
+        success: false;
+        reason: 'xsolla_managed' | 'request_failed';
+        message?: string;
+        subscriptionPlan?: string | null;
+    };
+
 /**
  * Create Xsolla checkout token
  * Calls the dedicated checkout-token endpoint and returns the hosted checkout URL.
@@ -462,7 +471,7 @@ export const purchaseSubscription = async (
  */
 export const cancelSubscription = async (
     user: User
-): Promise<{ success: boolean }> => {
+): Promise<CancelSubscriptionResult> => {
     try {
         const token = await user.getIdToken();
         const response = await fetchFromApi(`/api/users/${user.uid}/cancel`, {
@@ -474,7 +483,17 @@ export const cancelSubscription = async (
         });
 
         if (!response.ok) {
-            const text = await response.text();
+            const json = await response.json().catch(() => null);
+            if (response.status === 409) {
+                return {
+                    success: false,
+                    reason: 'xsolla_managed',
+                    message: json?.error || 'Cancel through Xsolla and wait for the verified webhook.',
+                    subscriptionPlan: json?.subscriptionPlan || null,
+                };
+            }
+
+            const text = json ? JSON.stringify(json) : await response.text();
             throw new Error(text);
         }
 
@@ -483,7 +502,11 @@ export const cancelSubscription = async (
         return json;
     } catch (error: any) {
         console.error('Cancellation failed:', error);
-        return { success: false };
+        return {
+            success: false,
+            reason: 'request_failed',
+            message: error?.message || 'Unknown error',
+        };
     }
 };
 

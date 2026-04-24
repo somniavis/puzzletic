@@ -6,6 +6,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useNurturing } from '../contexts/NurturingContext';
 import { useMobileInteractionGuard } from '../hooks/useMobileInteractionGuard';
 import { resolveBillingOfferType } from '../constants/billingPlans';
+import { AppLoadingOverlay } from '../components/common/AppLoadingOverlay';
 import './ProfilePage.css';
 
 type ProfileTab = 'my_jello' | 'pass';
@@ -35,7 +36,19 @@ export const ProfilePage: React.FC = () => {
     const [parentGateInput, setParentGateInput] = React.useState('');
     const [parentGateError, setParentGateError] = React.useState('');
     const { user, isAdmin } = useAuth();
-    const { gro, xp, addRewards, maxStats, subscription, purchasePlan, cancelSubscription, debugUnlockAllGames, debugAddStars } = useNurturing();
+    const {
+        gro,
+        xp,
+        addRewards,
+        maxStats,
+        subscription,
+        checkoutOverlay,
+        closeCheckoutOverlay,
+        purchasePlan,
+        cancelSubscription,
+        debugUnlockAllGames,
+        debugAddStars,
+    } = useNurturing();
     const showDebugMode = import.meta.env.DEV || isAdmin;
     const isPremium = subscription.isPremium;
     const isGuest = !user;
@@ -46,14 +59,20 @@ export const ProfilePage: React.FC = () => {
     const annualPassDesc = t(`profile.subscription.yearly.${passOfferType}Desc`);
     const quarterlyPassTitle = t(`profile.subscription.quarterly.${passOfferType}Title`);
     const quarterlyPassDesc = t(`profile.subscription.quarterly.${passOfferType}Desc`);
-    const premiumStatusLabel = subscription.plan === '12_months'
+    const canCancelInService =
+        subscription.plan === '3_months' ||
+        subscription.plan === '12_months' ||
+        subscription.plan === 'subscription_3_months' ||
+        subscription.plan === 'subscription_12_months';
+    const premiumStatusLabel = subscription.plan === '12_months' || subscription.plan === 'subscription_12_months'
         ? t('profile.status.angelPass')
-        : subscription.plan === '3_months'
+        : subscription.plan === '3_months' || subscription.plan === 'subscription_3_months'
             ? t('profile.status.jelloPass')
             : t('profile.status.premium');
     const purchaseNote = passOfferType === 'subscription'
         ? t('profile.cancelAnytimeShort')
         : null;
+    const isCheckoutBusy = checkoutOverlay.isPreparing || checkoutOverlay.isOpen;
     const rootRef = React.useRef<HTMLDivElement | null>(null);
     const impactImageSeeds = React.useMemo(
         () => createUniqueImpactSeeds(),
@@ -64,6 +83,27 @@ export const ProfilePage: React.FC = () => {
         .join(',  ');
 
     useMobileInteractionGuard({ rootRef });
+
+    React.useEffect(() => {
+        if (!checkoutOverlay.isOpen) {
+            return;
+        }
+
+        const originalOverflow = document.body.style.overflow;
+        document.body.style.overflow = 'hidden';
+
+        const handleEscape = (event: KeyboardEvent) => {
+            if (event.key === 'Escape') {
+                closeCheckoutOverlay({ refresh: true });
+            }
+        };
+
+        window.addEventListener('keydown', handleEscape);
+        return () => {
+            document.body.style.overflow = originalOverflow;
+            window.removeEventListener('keydown', handleEscape);
+        };
+    }, [checkoutOverlay.isOpen, closeCheckoutOverlay]);
 
     React.useEffect(() => {
         const requestedTab = new URLSearchParams(location.search).get('tab');
@@ -84,23 +124,29 @@ export const ProfilePage: React.FC = () => {
     }, [location.search, isPassUnlocked]);
 
     const handleCancelSubscription = async () => {
-        const success = await cancelSubscription();
-        if (success) {
-            alert(t('profile.cancelSuccess'));
+        const result = await cancelSubscription();
+        if (result.success) {
+            alert(t('profile.cancelSuccess', {
+                defaultValue: 'Your cancellation request has been submitted.',
+            }));
             setShowCancelModal(false);
+            return;
         }
+
+        if (result.message) {
+            alert(result.message);
+            return;
+        }
+
+        alert(t('profile.cancelFailure', {
+            defaultValue: 'Unable to cancel the subscription right now. Please try again shortly.',
+        }));
     };
 
     const handlePurchase = async (plan: '3_months' | '12_months') => {
-        const confirmMessage = plan === '3_months'
-            ? t('profile.purchaseConfirm.threeMonths')
-            : t('profile.purchaseConfirm.twelveMonths');
-
-        if (window.confirm(confirmMessage)) {
-            const success = await purchasePlan(plan);
-            if (!success) {
-                alert(t('profile.purchaseResult.failure'));
-            }
+        const success = await purchasePlan(plan);
+        if (!success) {
+            alert(t('profile.purchaseResult.failure'));
         }
     };
 
@@ -435,7 +481,7 @@ export const ProfilePage: React.FC = () => {
                                                 {t('profile.expiresLabel')}: {new Date(subscription.expiryDate).toLocaleDateString()}
                                             </span>
                                         )}
-                                        {isPremium && (
+                                        {isPremium && canCancelInService && (
                                             <button
                                                 className="text-btn"
                                                 onClick={() => setShowCancelModal(true)}
@@ -507,6 +553,7 @@ export const ProfilePage: React.FC = () => {
                                                     type="button"
                                                     className="pricing-cta pricing-cta-angel"
                                                     onClick={() => handlePurchase('3_months')}
+                                                    disabled={isCheckoutBusy}
                                                 >
                                                     {t('profile.purchaseButton')}
                                                 </button>
@@ -566,6 +613,7 @@ export const ProfilePage: React.FC = () => {
                                                     type="button"
                                                     className="pricing-cta pricing-cta-basic"
                                                     onClick={() => handlePurchase('12_months')}
+                                                    disabled={isCheckoutBusy}
                                                 >
                                                     {t('profile.purchaseButton')}
                                                 </button>
@@ -627,6 +675,7 @@ export const ProfilePage: React.FC = () => {
                                             type="button"
                                             className="pricing-cta pricing-cta-angel"
                                             onClick={() => handlePurchase('12_months')}
+                                            disabled={isCheckoutBusy}
                                         >
                                             {t('profile.purchaseButton')}
                                         </button>
@@ -669,6 +718,7 @@ export const ProfilePage: React.FC = () => {
                                             type="button"
                                             className="pricing-cta pricing-cta-basic"
                                             onClick={() => handlePurchase('3_months')}
+                                            disabled={isCheckoutBusy}
                                         >
                                             {t('profile.purchaseButton')}
                                         </button>
@@ -709,6 +759,40 @@ export const ProfilePage: React.FC = () => {
                     </>
                 )}
             </div>
+
+            {checkoutOverlay.isPreparing && (
+                <AppLoadingOverlay message={t('profile.checkoutPreparing')} zIndex={2400} />
+            )}
+
+            {checkoutOverlay.isOpen && checkoutOverlay.checkoutUrl && (
+                <div className="xsolla-checkout-overlay" role="dialog" aria-modal="true" aria-label="Xsolla checkout">
+                    <div className="xsolla-checkout-shell">
+                        <div className="xsolla-checkout-header">
+                            <div className="xsolla-checkout-copy">
+                                <span className="xsolla-checkout-kicker">Secure Checkout</span>
+                                <strong>{t('profile.checkoutTitle')}</strong>
+                            </div>
+                            <button
+                                type="button"
+                                className="xsolla-checkout-close"
+                                onClick={() => closeCheckoutOverlay({ refresh: true })}
+                                aria-label={t('common.close')}
+                            >
+                                ✕
+                            </button>
+                        </div>
+
+                        <div className="xsolla-checkout-frame-wrap">
+                            <iframe
+                                src={checkoutOverlay.checkoutUrl}
+                                title={t('profile.checkoutTitle')}
+                                className="xsolla-checkout-frame"
+                                allow="clipboard-read; clipboard-write; payment"
+                            />
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* Cancel Subscription Modal */}
             {

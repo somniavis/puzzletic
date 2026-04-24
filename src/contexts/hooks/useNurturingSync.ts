@@ -11,6 +11,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import type { User } from 'firebase/auth';
 import type { NurturingPersistentState } from '../../types/nurturing';
 import type { GameScoreValue, Poop, PendingPoop, Bug, BugType } from '../../types/nurturing';
+import type { BillingProductId, LegacyPlanId } from '../../constants/billingPlans';
 import { BILLING_PRODUCTS, resolveBillingOfferType } from '../../constants/billingPlans';
 import {
     loadNurturingState,
@@ -21,14 +22,28 @@ import {
     saveFailSafeLastSeenStage,
     getFailSafeLastSeenStage
 } from '../../services/persistenceService';
-import { syncUserData, fetchUserData, purchaseSubscription, cancelSubscription as cancelSubscriptionApi } from '../../services/syncService';
+import {
+    syncUserData,
+    fetchUserData,
+    purchaseSubscription,
+    cancelSubscription as cancelSubscriptionApi,
+} from '../../services/syncService';
+import type { CancelSubscriptionResult } from '../../services/syncService';
 import { useDebounce } from '../../hooks/useDebounce';
 import { getProgressionCategory, getUnlockThreshold, createGameScore } from '../../utils/progression';
 
 export interface SubscriptionState {
     isPremium: boolean;
-    plan: '3_months' | '12_months' | null;
+    plan: LegacyPlanId | BillingProductId | null;
     expiryDate: number | null;
+}
+
+export interface CheckoutOverlayState {
+    isOpen: boolean;
+    checkoutUrl: string | null;
+    productId: string | null;
+    status: string | null;
+    isPreparing: boolean;
 }
 
 // Security: Max allowed gain per sync to prevent abnormal data
@@ -91,6 +106,13 @@ export const useNurturingSync = (user: User | null, guestId: string | null = nul
         plan: null,
         expiryDate: null,
     });
+    const [checkoutOverlay, setCheckoutOverlay] = useState<CheckoutOverlayState>({
+        isOpen: false,
+        checkoutUrl: null,
+        productId: null,
+        status: null,
+        isPreparing: false,
+    });
 
     // Initial State Strategy:
     // Sync load from localStorage to prevent "Flash of Default" -> "Autosave Overwrite" race condition.
@@ -135,6 +157,71 @@ export const useNurturingSync = (user: User | null, guestId: string | null = nul
         });
         return true;
     }, [user]);
+
+    const closeCheckoutOverlay = useCallback((options: { refresh?: boolean } = {}) => {
+        setCheckoutOverlay({
+            isOpen: false,
+            checkoutUrl: null,
+            productId: null,
+            status: null,
+            isPreparing: false,
+        });
+
+        if (options.refresh) {
+            void refreshSubscriptionFromCloud();
+        }
+    }, [refreshSubscriptionFromCloud]);
+
+    useEffect(() => {
+        if (!checkoutOverlay.isOpen) {
+            return;
+        }
+
+        const handleMessage = (event: MessageEvent) => {
+            if (!event.origin.includes('xsolla.com')) {
+                return;
+            }
+
+            if (typeof event.data !== 'string') {
+                return;
+            }
+
+            let payload: any;
+            try {
+                payload = JSON.parse(event.data);
+            } catch {
+                return;
+            }
+
+            if (!payload?.command) {
+                return;
+            }
+
+            if (payload.command === 'close' || payload.command === 'return') {
+                closeCheckoutOverlay({ refresh: true });
+                return;
+            }
+
+            if (payload.command === 'status') {
+                const nextStatus = payload?.data?.status || payload?.value || null;
+                setCheckoutOverlay((current) => ({
+                    ...current,
+                    status: nextStatus,
+                }));
+
+                if (nextStatus === 'done' || nextStatus === 'successful' || nextStatus === 'delivering') {
+                    closeCheckoutOverlay({ refresh: true });
+                }
+
+                if (nextStatus === 'troubled' || nextStatus === 'canceled') {
+                    closeCheckoutOverlay({ refresh: false });
+                }
+            }
+        };
+
+        window.addEventListener('message', handleMessage);
+        return () => window.removeEventListener('message', handleMessage);
+    }, [checkoutOverlay.isOpen, closeCheckoutOverlay]);
 
     // ========== THROTTLED LOCAL PERSISTENCE ==========
     const debouncedState = useDebounce(state, 1000);
@@ -516,6 +603,12 @@ export const useNurturingSync = (user: User | null, guestId: string | null = nul
 
     const purchasePlan = useCallback(async (planId: '3_months' | '12_months'): Promise<boolean> => {
         if (!user) return false;
+        if (checkoutOverlay.isPreparing || checkoutOverlay.isOpen) return false;
+
+        setCheckoutOverlay((current) => ({
+            ...current,
+            isPreparing: true,
+        }));
 
         const languageCode = navigator.language || 'en';
         const offerType = resolveBillingOfferType(null, languageCode);
@@ -525,6 +618,13 @@ export const useNurturingSync = (user: User | null, guestId: string | null = nul
 
         if (!product) {
             console.error('Purchase failed: matching billing product not found', { planId, offerType, languageCode });
+            setCheckoutOverlay({
+                isOpen: false,
+                checkoutUrl: null,
+                productId: null,
+                status: null,
+                isPreparing: false,
+            });
             return false;
         }
 
@@ -536,31 +636,26 @@ export const useNurturingSync = (user: User | null, guestId: string | null = nul
         });
 
         if (!result.success || !result.checkoutUrl) {
+            setCheckoutOverlay({
+                isOpen: false,
+                checkoutUrl: null,
+                productId: null,
+                status: null,
+                isPreparing: false,
+            });
             return false;
         }
 
-        const refreshAfterReturn = () => {
-            void refreshSubscriptionFromCloud();
-            window.removeEventListener('focus', refreshAfterReturn);
-            document.removeEventListener('visibilitychange', handleVisibilityChange);
-        };
-
-        const handleVisibilityChange = () => {
-            if (document.visibilityState === 'visible') {
-                refreshAfterReturn();
-            }
-        };
-
-        window.addEventListener('focus', refreshAfterReturn);
-        document.addEventListener('visibilitychange', handleVisibilityChange);
-
-        const popup = window.open(result.checkoutUrl, '_blank', 'noopener,noreferrer');
-        if (!popup) {
-            window.location.assign(result.checkoutUrl);
-        }
+        setCheckoutOverlay({
+            isOpen: true,
+            checkoutUrl: result.checkoutUrl,
+            productId: result.productId || product.id,
+            status: null,
+            isPreparing: false,
+        });
 
         return true;
-    }, [user]);
+    }, [checkoutOverlay.isOpen, checkoutOverlay.isPreparing, user]);
 
     const completeCharacterCreation = useCallback(() => {
         setState((currentState) => {
@@ -570,31 +665,42 @@ export const useNurturingSync = (user: User | null, guestId: string | null = nul
         });
     }, [user]);
 
-    const cancelSubscription = useCallback(async (): Promise<boolean> => {
-        if (!user) return false;
+    const cancelSubscription = useCallback(async (): Promise<CancelSubscriptionResult> => {
+        if (!user) {
+            return { success: false, reason: 'request_failed', message: 'Not signed in' };
+        }
 
         try {
             const result = await cancelSubscriptionApi(user);
 
             if (result.success) {
-                setSubscription({
-                    isPremium: false,
-                    plan: null,
-                    expiryDate: null,
-                });
-                return true;
+                const isLegacyDirectPlan =
+                    subscription.plan === '3_months' || subscription.plan === '12_months';
+
+                if (isLegacyDirectPlan) {
+                    setSubscription({
+                        isPremium: false,
+                        plan: null,
+                        expiryDate: null,
+                    });
+                } else {
+                    await refreshSubscriptionFromCloud();
+                }
+                return result;
             }
-            return false;
+            return result;
         } catch {
-            return false;
+            return { success: false, reason: 'request_failed', message: 'Unknown error' };
         }
-    }, [user]);
+    }, [refreshSubscriptionFromCloud, subscription.plan, user]);
 
     return {
         state,
         setState,
         isGlobalLoading,
         subscription,
+        checkoutOverlay,
+        closeCheckoutOverlay,
         setSubscription,
         saveToCloud,
         purchasePlan,

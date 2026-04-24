@@ -110,6 +110,8 @@ export const esES = {
     collectionLabel: 'Colección',
     profileInfo: 'Cuenta',
     paymentInfo: 'Pago',
+    checkoutTitle: 'Compra del pase',
+    checkoutPreparing: 'Preparando el pago...',
     purchaseButton: 'Comprar',
     expiresLabel: 'Vence',
     purchaseConfirm: {

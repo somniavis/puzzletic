@@ -759,6 +759,106 @@
     color: #111827;
 }
 
+.xsolla-checkout-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 2500;
+    display: flex;
+    align-items: stretch;
+    justify-content: stretch;
+    padding: 0;
+    background: #0f172a;
+}
+
+.xsolla-checkout-shell {
+    width: 100%;
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border-radius: 0;
+    border: 0;
+    background: #f8fafc;
+    box-shadow: none;
+}
+
+.xsolla-checkout-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.85rem 1rem;
+    background: linear-gradient(180deg, #0f172a 0%, #111827 100%);
+    border-bottom: 1px solid rgba(148, 163, 184, 0.16);
+}
+
+.xsolla-checkout-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 0.12rem;
+    color: #f8fafc;
+}
+
+.xsolla-checkout-kicker {
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(226, 232, 240, 0.72);
+}
+
+.xsolla-checkout-close {
+    flex-shrink: 0;
+    width: 42px;
+    height: 42px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 3px solid #4d3e2f;
+    border-radius: 14px;
+    background: linear-gradient(180deg, #7d5e4f 0%, #6d4e3f 100%);
+    color: #f8fafc;
+    font-size: 1.22rem;
+    font-weight: 900;
+    line-height: 1;
+    cursor: pointer;
+    box-shadow: 0 4px 0 #3d2e1f;
+    transition: transform 0.1s ease, filter 0.1s ease, box-shadow 0.1s ease;
+}
+
+.xsolla-checkout-close:hover {
+    filter: brightness(1.08);
+    transform: translateY(-1px);
+}
+
+.xsolla-checkout-close:active {
+    transform: translateY(4px);
+    box-shadow: 0 0 0 #3d2e1f;
+}
+
+.xsolla-checkout-frame-wrap {
+    flex: 1;
+    min-height: 0;
+    background: #ffffff;
+}
+
+.xsolla-checkout-frame {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    display: block;
+    background: #ffffff;
+}
+
+.pricing-cta:disabled {
+    opacity: 0.68;
+    cursor: not-allowed;
+    filter: grayscale(0.15);
+    transform: none !important;
+    box-shadow: 0 4px 0 rgba(0, 0, 0, 0.18) !important;
+}
+
 .pricing-unit {
     font-size: 0.95rem;
     font-weight: 800;

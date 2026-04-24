@@ -29,10 +29,11 @@ import { GAMES } from '../games/registry';
 
 import { saveNurturingState, resetNurturingState } from '../services/persistenceService';
 import { syncUserData } from '../services/syncService';
+import type { CancelSubscriptionResult } from '../services/syncService';
 
 // Hooks
 import { useNurturingSync } from './hooks/useNurturingSync';
-import type { SubscriptionState } from './hooks/useNurturingSync';
+import type { CheckoutOverlayState, SubscriptionState } from './hooks/useNurturingSync';
 import { useNurturingTick } from './hooks/useNurturingTick';
 import { useNurturingActions } from './hooks/useNurturingActions';
 import { useEvolutionLogic } from './hooks/useEvolutionLogic';
@@ -119,8 +120,10 @@ interface NurturingContextValue {
 
   // Subscription
   subscription: SubscriptionState;
+  checkoutOverlay: CheckoutOverlayState;
+  closeCheckoutOverlay: (options?: { refresh?: boolean }) => void;
   purchasePlan: (planId: '3_months' | '12_months') => Promise<boolean>;
-  cancelSubscription: () => Promise<boolean>; // [NEW]
+  cancelSubscription: () => Promise<CancelSubscriptionResult>;
 
   // Jello House & Sleep
   isSleeping: boolean;
@@ -168,6 +171,8 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     setState,
     isGlobalLoading,
     subscription,
+    checkoutOverlay,
+    closeCheckoutOverlay,
     saveToCloud,
     purchasePlan,
     cancelSubscription,
@@ -439,6 +444,8 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
 
     saveToCloud,
     purchasePlan,
+    checkoutOverlay,
+    closeCheckoutOverlay,
     cancelSubscription,
     subscription,
     pauseTick,
@@ -483,6 +490,8 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     evolution,
     saveToCloud,
     purchasePlan,
+    checkoutOverlay,
+    closeCheckoutOverlay,
     subscription,
     cancelSubscription,
     pauseTick,

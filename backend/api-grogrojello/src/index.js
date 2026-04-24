@@ -97,7 +97,22 @@ const MAX_STAR_TOTAL = 100000;
 const XSOLLA_WEBHOOK_PATH = '/api/xsolla/webhook';
 const XSOLLA_SUBSCRIPTION_TOKEN_URL = (merchantId) => `https://api.xsolla.com/merchant/v2/merchants/${merchantId}/token`;
 const XSOLLA_CATALOG_TOKEN_URL = (projectId) => `https://store.xsolla.com/api/v3/project/${projectId}/admin/payment/token`;
+const XSOLLA_UPDATE_SUBSCRIPTION_URL = (projectId, userId, subscriptionId) =>
+	`https://api.xsolla.com/merchant/v2/projects/${projectId}/users/${encodeURIComponent(userId)}/subscriptions/${subscriptionId}`;
 const DEFAULT_XSOLLA_RETURN_URL = 'https://www.grogrojello.com/profile?tab=pass';
+const XSOLLA_RETURN_PATH = '/profile?tab=pass';
+const XSOLLA_ENVIRONMENTS = {
+	sandbox: {
+		checkoutBaseUrl: 'https://sandbox-secure.xsolla.com/paystation4/',
+		subscriptionMode: 'sandbox',
+		catalogSandbox: true,
+	},
+	production: {
+		checkoutBaseUrl: 'https://secure.xsolla.com/paystation4/',
+		subscriptionMode: 'live',
+		catalogSandbox: false,
+	},
+};
 
 const XSOLLA_PRODUCTS = {
 	subscription_3_months: {
@@ -564,8 +579,25 @@ const getXsollaConfigStatus = (env) => {
 	};
 };
 
-const buildXsollaCheckoutUrl = (token) =>
-	`https://sandbox-secure.xsolla.com/paystation4/?token=${encodeURIComponent(token)}`;
+const getXsollaEnvironmentConfig = (env) => {
+	const requestedEnv = String(env.XSOLLA_ENV || 'sandbox').trim().toLowerCase();
+	return XSOLLA_ENVIRONMENTS[requestedEnv] || XSOLLA_ENVIRONMENTS.sandbox;
+};
+
+const buildXsollaCheckoutUrl = (token, xsollaEnvironment) =>
+	`${xsollaEnvironment.checkoutBaseUrl}?token=${encodeURIComponent(token)}`;
+
+const buildXsollaReturnUrl = (env, allowedOrigin) => {
+	if (env.XSOLLA_RETURN_URL) {
+		return env.XSOLLA_RETURN_URL;
+	}
+
+	if (allowedOrigin) {
+		return new URL(XSOLLA_RETURN_PATH, `${allowedOrigin}/`).toString();
+	}
+
+	return DEFAULT_XSOLLA_RETURN_URL;
+};
 
 const encodeBasicAuth = (left, right) => btoa(`${left}:${right}`);
 
@@ -581,23 +613,36 @@ const normalizeCountryCode = (value) => {
 	return /^[A-Z]{2}$/.test(normalized) ? normalized : null;
 };
 
-const buildXsollaExternalId = (uid, productId) =>
-	`${uid}:${productId}:${Date.now()}:${Math.random().toString(36).slice(2, 8)}`;
-
 const parseXsollaError = async (response) => {
 	try {
-		const json = await response.json();
-		return {
-			status: response.status,
-			body: json,
-			message: json?.errorMessage || json?.message || json?.error || 'Xsolla request failed',
-		};
-	} catch {
 		const text = await response.text();
+		if (!text) {
+			return {
+				status: response.status,
+				body: null,
+				message: 'Xsolla request failed',
+			};
+		}
+
+		try {
+			const json = JSON.parse(text);
+			return {
+				status: response.status,
+				body: json,
+				message: json?.errorMessage || json?.message || json?.error || text || 'Xsolla request failed',
+			};
+		} catch {
+			return {
+				status: response.status,
+				body: null,
+				message: text || 'Xsolla request failed',
+			};
+		}
+	} catch {
 		return {
 			status: response.status,
 			body: null,
-			message: text || 'Xsolla request failed',
+			message: 'Xsolla request failed',
 		};
 	}
 };
@@ -646,19 +691,75 @@ const getXsollaProductByIdentifier = (env, identifier) => {
 	return Object.values(XSOLLA_PRODUCTS).find((product) => env[product.xsollaIdentifierEnvKey] === identifier) || null;
 };
 
-const applySubscriptionGrant = async (env, uid, product, endTimestampMs, now) => {
+const isXsollaRecurringPlan = (plan) =>
+	typeof plan === 'string' && plan.startsWith('subscription_');
+
+const isXsollaDurationPlan = (plan) =>
+	typeof plan === 'string' && plan.startsWith('duration_');
+
+const getXsollaProductById = (productId) =>
+	(productId && XSOLLA_PRODUCTS[productId]) || null;
+
+const getXsollaProductIdentifierByPlan = (env, plan) => {
+	const product = getXsollaProductById(plan);
+	return product ? env[product.xsollaIdentifierEnvKey] || null : null;
+};
+
+const isValidXsollaSubscriptionId = (value) =>
+	Number.isInteger(value) && value > 0;
+
+const createXsollaAuthHeaders = (env) => ({
+	'Authorization': `Basic ${encodeBasicAuth(env.XSOLLA_MERCHANT_ID, env.XSOLLA_API_KEY)}`,
+	'Content-Type': 'application/json',
+});
+
+const requestXsollaSubscriptionCancellation = async (env, userId, currentPlan, subscriptionId) => {
+	if (!isValidXsollaSubscriptionId(subscriptionId)) {
+		return {
+			ok: false,
+			status: 409,
+			body: {
+				error: 'This subscription was created before Xsolla subscription tracking was enabled. Cancel it once in Xsolla, then new purchases can be canceled from the service.',
+				subscriptionPlan: currentPlan || null,
+			},
+		};
+	}
+
+	const response = await fetch(
+		XSOLLA_UPDATE_SUBSCRIPTION_URL(env.XSOLLA_PROJECT_ID, userId, subscriptionId),
+		{
+			method: 'PUT',
+			headers: createXsollaAuthHeaders(env),
+			body: JSON.stringify({ status: 'canceled' }),
+		}
+	);
+
+	if (!response.ok) {
+		throw await parseXsollaError(response);
+	}
+
+	const payload = await response.json().catch(() => null);
+	return {
+		ok: true,
+		subscriptionId,
+		payload,
+	};
+};
+
+const applySubscriptionGrant = async (env, uid, product, endTimestampMs, now, xsollaSubscriptionId = null) => {
 	const subscriptionEnd = Number.isFinite(endTimestampMs) ? endTimestampMs : addDurationMonths(now, product.durationMonths);
 	await env.DB.prepare(`
 		INSERT INTO users (
-			uid, is_premium, subscription_end, subscription_plan, created_at, last_synced_at
+			uid, is_premium, subscription_end, subscription_plan, xsolla_subscription_id, created_at, last_synced_at
 		)
-		VALUES (?, 1, ?, ?, ?, ?)
+		VALUES (?, 1, ?, ?, ?, ?, ?)
 		ON CONFLICT(uid) DO UPDATE SET
 			is_premium = 1,
 			subscription_end = excluded.subscription_end,
 			subscription_plan = excluded.subscription_plan,
+			xsolla_subscription_id = excluded.xsolla_subscription_id,
 			last_synced_at = excluded.last_synced_at
-	`).bind(uid, subscriptionEnd, product.id, now, now).run();
+	`).bind(uid, subscriptionEnd, product.id, xsollaSubscriptionId, now, now).run();
 };
 
 const applyDurationItemGrant = async (env, uid, product, baseTimestampMs, now) => {
@@ -680,19 +781,20 @@ const applyDurationItemGrant = async (env, uid, product, baseTimestampMs, now) =
 	`).bind(uid, subscriptionEnd, product.id, now, now).run();
 };
 
-const applySubscriptionCancellation = async (env, uid, product, dateEndMs, now) => {
+const applySubscriptionCancellation = async (env, uid, product, dateEndMs, now, xsollaSubscriptionId = null) => {
 	const stillActive = Number.isFinite(dateEndMs) && dateEndMs > now;
 	await env.DB.prepare(`
 		INSERT INTO users (
-			uid, is_premium, subscription_end, subscription_plan, created_at, last_synced_at
+			uid, is_premium, subscription_end, subscription_plan, xsolla_subscription_id, created_at, last_synced_at
 		)
-		VALUES (?, ?, ?, ?, ?, ?)
+		VALUES (?, ?, ?, ?, ?, ?, ?)
 		ON CONFLICT(uid) DO UPDATE SET
 			is_premium = excluded.is_premium,
 			subscription_end = excluded.subscription_end,
 			subscription_plan = excluded.subscription_plan,
+			xsolla_subscription_id = excluded.xsolla_subscription_id,
 			last_synced_at = excluded.last_synced_at
-	`).bind(uid, stillActive ? 1 : 0, stillActive ? dateEndMs : 0, product?.id || null, now, now).run();
+	`).bind(uid, stillActive ? 1 : 0, stillActive ? dateEndMs : 0, product?.id || null, xsollaSubscriptionId, now, now).run();
 };
 
 const extractOrderPaidSkus = (payload) => {
@@ -712,6 +814,7 @@ const processXsollaWebhook = async (env, payload, now) => {
 	if (notificationType === 'create_subscription' || notificationType === 'update_subscription') {
 		const uid = payload?.user?.id;
 		const planId = payload?.subscription?.plan_id;
+		const subscriptionId = Number(payload?.subscription?.subscription_id);
 		const product = getXsollaProductByIdentifier(env, planId);
 		if (!uid || !product) {
 			return { status: 400, body: { error: 'Unknown subscription webhook payload' } };
@@ -721,19 +824,34 @@ const processXsollaWebhook = async (env, payload, now) => {
 			parseIsoTimestamp(payload?.subscription?.date_next_charge) ||
 			parseIsoTimestamp(payload?.subscription?.date_end) ||
 			null;
-		await applySubscriptionGrant(env, uid, product, endTimestampMs, now);
+		await applySubscriptionGrant(
+			env,
+			uid,
+			product,
+			endTimestampMs,
+			now,
+			isValidXsollaSubscriptionId(subscriptionId) ? subscriptionId : null
+		);
 		return { status: 204 };
 	}
 
 	if (notificationType === 'cancel_subscription') {
 		const uid = payload?.user?.id;
 		const planId = payload?.subscription?.plan_id;
+		const subscriptionId = Number(payload?.subscription?.subscription_id);
 		const product = getXsollaProductByIdentifier(env, planId);
 		if (!uid) {
 			return { status: 400, body: { error: 'Missing user id' } };
 		}
 		const dateEndMs = parseIsoTimestamp(payload?.subscription?.date_end);
-		await applySubscriptionCancellation(env, uid, product, dateEndMs, now);
+		await applySubscriptionCancellation(
+			env,
+			uid,
+			product,
+			dateEndMs,
+			now,
+			isValidXsollaSubscriptionId(subscriptionId) ? subscriptionId : null
+		);
 		return { status: 204 };
 	}
 
@@ -769,6 +887,7 @@ const processXsollaWebhook = async (env, payload, now) => {
 
 const createXsollaSubscriptionToken = async ({
 	env,
+	xsollaEnvironment,
 	product,
 	productIdentifier,
 	userId,
@@ -783,9 +902,10 @@ const createXsollaSubscriptionToken = async ({
 			id: { value: userId },
 		},
 		settings: {
-			external_id: buildXsollaExternalId(userId, product.id),
+			project_id: Number(env.XSOLLA_PROJECT_ID),
 			language,
 			currency: 'USD',
+			mode: xsollaEnvironment.subscriptionMode,
 			return_url: returnUrl,
 		},
 		purchase: {
@@ -826,6 +946,7 @@ const createXsollaSubscriptionToken = async ({
 
 const createXsollaCatalogToken = async ({
 	env,
+	xsollaEnvironment,
 	product,
 	productIdentifier,
 	userId,
@@ -837,7 +958,7 @@ const createXsollaCatalogToken = async ({
 	clientIp,
 }) => {
 	const body = {
-		sandbox: true,
+		sandbox: xsollaEnvironment.catalogSandbox,
 		user: {
 			id: { value: userId },
 		},
@@ -847,7 +968,6 @@ const createXsollaCatalogToken = async ({
 			],
 		},
 		settings: {
-			external_id: buildXsollaExternalId(userId, product.id),
 			language,
 			currency: 'USD',
 			return_url: returnUrl,
@@ -887,7 +1007,7 @@ const createXsollaCatalogToken = async ({
 	return response.json();
 };
 
-const handleXsollaCheckoutTokenRequest = async (request, env, corsHeaders, uid, clientIp) => {
+const handleXsollaCheckoutTokenRequest = async (request, env, corsHeaders, uid, clientIp, allowedOrigin) => {
 	const body = await request.json();
 	const { productId, countryCode, languageCode } = body || {};
 	const product = XSOLLA_PRODUCTS[productId];
@@ -915,12 +1035,14 @@ const handleXsollaCheckoutTokenRequest = async (request, env, corsHeaders, uid, 
 	const productIdentifier = env[product.xsollaIdentifierEnvKey];
 	const normalizedCountryCode = normalizeCountryCode(countryCode);
 	const normalizedLanguage = toTwoLetterLanguage(languageCode);
-	const returnUrl = env.XSOLLA_RETURN_URL || DEFAULT_XSOLLA_RETURN_URL;
+	const returnUrl = buildXsollaReturnUrl(env, allowedOrigin);
+	const xsollaEnvironment = getXsollaEnvironmentConfig(env);
 
 	try {
 		const tokenResponse = product.kind === 'regular_subscription'
 			? await createXsollaSubscriptionToken({
 				env,
+				xsollaEnvironment,
 				product,
 				productIdentifier,
 				userId: uid,
@@ -932,6 +1054,7 @@ const handleXsollaCheckoutTokenRequest = async (request, env, corsHeaders, uid, 
 			})
 			: await createXsollaCatalogToken({
 				env,
+				xsollaEnvironment,
 				product,
 				productIdentifier,
 				userId: uid,
@@ -948,8 +1071,8 @@ const handleXsollaCheckoutTokenRequest = async (request, env, corsHeaders, uid, 
 			productId,
 			token: tokenResponse.token,
 			orderId: tokenResponse.order_id || null,
-			checkoutUrl: buildXsollaCheckoutUrl(tokenResponse.token),
-			sandbox: true,
+			checkoutUrl: buildXsollaCheckoutUrl(tokenResponse.token, xsollaEnvironment),
+			sandbox: xsollaEnvironment.catalogSandbox,
 			identifierType: product.kind === 'regular_subscription' ? 'plan_id' : 'sku',
 		});
 	} catch (error) {
@@ -1203,63 +1326,67 @@ export default {
 				// Since we are inside /api/users/:uid block, check if url ends with /purchase
 				if (routeInfo.subPath === 'xsolla' && routeInfo.nestedSubPath === 'checkout-token') {
 					try {
-						return await handleXsollaCheckoutTokenRequest(request, env, corsHeaders, uid, rawClientIp);
+						return await handleXsollaCheckoutTokenRequest(
+							request,
+							env,
+							corsHeaders,
+							uid,
+							rawClientIp,
+							corsContext.allowedOrigin
+						);
 					} catch (err) {
 						return jsonResponse(corsHeaders, { error: err.message }, 500);
 					}
 				}
 
 				if (path.endsWith('/purchase')) {
-					try {
-						const body = await request.json();
-						const { planId } = body; // '3_months' or '12_months'
-
-						if (!['3_months', '12_months'].includes(planId)) {
-							return new Response(JSON.stringify({ error: 'Invalid Plan ID' }), { status: 400, headers: corsHeaders });
-						}
-
-						let duration = 0;
-						if (planId === '3_months') duration = 90 * 24 * 60 * 60 * 1000;
-						if (planId === '12_months') duration = 365 * 24 * 60 * 60 * 1000;
-
-						// Get current end date to extend it if already active
-						const currentStmt = env.DB.prepare('SELECT subscription_end FROM users WHERE uid = ?').bind(uid);
-						const currentData = await currentStmt.first();
-
-						let newEnd = now + duration;
-						// If currently active, extend from current end date
-						if (currentData && currentData.subscription_end > now) {
-							newEnd = currentData.subscription_end + duration;
-						}
-
-						// Upsert DB row to guarantee subscription state is persisted
-						await env.DB.prepare(`
-							INSERT INTO users (
-								uid, is_premium, subscription_end, subscription_plan, created_at, last_synced_at
-							)
-							VALUES (?, 1, ?, ?, ?, ?)
-							ON CONFLICT(uid) DO UPDATE SET
-								is_premium = 1,
-								subscription_end = excluded.subscription_end,
-								subscription_plan = excluded.subscription_plan,
-								last_synced_at = excluded.last_synced_at
-						`).bind(uid, newEnd, planId, now, now).run();
-
-						return new Response(JSON.stringify({ success: true, is_premium: 1, subscription_end: newEnd, plan: planId }), {
-							headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-						});
-
-					} catch (err) {
-						return new Response(JSON.stringify({ error: err.message }), {
-							status: 500,
-							headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-						});
-					}
+					return jsonResponse(corsHeaders, {
+						error: 'Legacy purchase endpoint disabled. Use /api/users/:uid/xsolla/checkout-token and wait for verified Xsolla webhook delivery.',
+					}, 410);
 				}
 
 				// Cancel Subscription Endpoint
 				if (path.endsWith('/cancel')) {
 					try {
+						const currentSubscription = await env.DB.prepare(
+							'SELECT subscription_plan, xsolla_subscription_id FROM users WHERE uid = ?'
+						).bind(uid).first();
+						const currentPlan = currentSubscription?.subscription_plan || null;
+						const xsollaSubscriptionId = Number(currentSubscription?.xsolla_subscription_id);
+						if (isXsollaRecurringPlan(currentPlan)) {
+							const configStatus = getXsollaConfigStatus(env);
+							if (configStatus.missingBaseEnv.length > 0) {
+								return jsonResponse(corsHeaders, {
+									error: 'Xsolla base configuration incomplete',
+									missing: configStatus.missingBaseEnv,
+								}, 503);
+							}
+
+							const cancellation = await requestXsollaSubscriptionCancellation(
+								env,
+								uid,
+								currentPlan,
+								isValidXsollaSubscriptionId(xsollaSubscriptionId) ? xsollaSubscriptionId : null
+							);
+							if (!cancellation.ok) {
+								return jsonResponse(corsHeaders, cancellation.body, cancellation.status);
+							}
+
+							return jsonResponse(corsHeaders, {
+								success: true,
+								mode: 'xsolla',
+								subscriptionId: cancellation.subscriptionId,
+								status: cancellation.payload?.status || 'canceled',
+							});
+						}
+
+						if (isXsollaDurationPlan(currentPlan)) {
+							return jsonResponse(corsHeaders, {
+								error: 'Fixed-term Xsolla passes cannot be canceled early.',
+								subscriptionPlan: currentPlan,
+							}, 409);
+						}
+
 						await env.DB.prepare(`
 							INSERT INTO users (
 								uid, is_premium, subscription_end, subscription_plan, created_at, last_synced_at

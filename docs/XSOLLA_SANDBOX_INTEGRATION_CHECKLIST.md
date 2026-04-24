@@ -1,7 +1,8 @@
 # Xsolla 샌드박스 결제 연동 체크리스트
 
-> 마지막 업데이트: 2026-04-24
-> 상태: Phase 1 백엔드 배포 및 secret 등록 완료, Phase 4 프론트 연동 진행 중
+> 마지막 업데이트: 2026-04-25
+> 상태: Phase 1 결제 테스트 안전장치 반영 완료, Phase 4 프론트 UX 보강 진행 중
+> 현재 확인: Xsolla 결제 페이지를 기존 페이지 내 full-screen iframe 오버레이로 오픈 성공, 레거시 직접지급 차단 완료, 실결제 완료 검증 전
 
 ## 목적
 
@@ -34,7 +35,7 @@
 
 ## 현재 확인된 핵심 리스크
 
-1. 현재 `backend/api-grogrojello/src/index.js`의 `/purchase`는 결제 검증 없이 `is_premium = 1`을 바로 반영한다.
+1. 레거시 `/purchase` 직접지급은 차단했지만, 프론트/운영 문서에서 해당 레거시 경로 사용 흔적이 남아 있으면 혼선이 생길 수 있다.
 2. 프론트에서 결제 성공처럼 보이는 상태와 실제 정산 완료 상태를 혼동하면 권한 오지급이 발생한다.
 3. Xsolla API Key, webhook secret을 프론트에 노출하면 결제 위변조 가능성이 커진다.
 4. 웹훅 멱등 처리가 없으면 재전송 시 중복 지급이 발생할 수 있다.
@@ -89,8 +90,8 @@
 
 ### Phase 1. 서버 구조 전환
 
-- [ ] 기존 `/purchase`의 즉시 지급 로직 제거
-- [ ] 기존 `/cancel`의 임시 테스트 해지 로직 제거 또는 레거시 격리
+- [x] 기존 `/purchase`의 즉시 지급 로직 제거
+- [x] 기존 `/cancel`의 임시 테스트 해지 로직 제거 또는 레거시 격리
 - [ ] 레거시 결제 흐름 초기화 방안 확정
 - [x] Xsolla 전용 신규 결제 흐름 설계
 - [x] 신규 endpoint 경로 확정
@@ -103,9 +104,14 @@
   - 현재 상태:
     - 내부 상품 ID 4종 -> Xsolla plan env key 매핑 추가
     - 실제 Xsolla plan ID/SKU 값 Worker secret 등록 완료
-- [ ] 샌드박스 모드 강제
-- [ ] 결제창 오픈용 응답 포맷 정의
-- [ ] 프론트 redirect/callback URL 설계
+- [x] 샌드박스 모드 강제
+- [x] 결제창 오픈용 응답 포맷 정의
+- [-] 프론트 redirect/callback URL 설계
+  - 현재 기본 동작:
+    - `XSOLLA_RETURN_URL`가 있으면 해당 값 사용
+    - 없으면 허용된 요청 origin 기준 `.../profile?tab=pass` 사용
+    - 둘 다 없으면 fallback으로 `https://www.grogrojello.com/profile?tab=pass`
+  - 운영 전환 시 env 분리형 return URL 구조로 정리 필요
 
 ### Phase 2. 웹훅 검증 및 권한 반영
 
@@ -135,10 +141,16 @@
 ### Phase 4. 프론트 연동
 
 - [-] `purchasePlan()` 흐름을 토큰 발급 기반으로 변경
-- [-] 샌드박스 Pay Station 열기
-- [ ] 결제 중 UI 상태 처리
+- [x] 샌드박스 Pay Station 열기
+- [-] 결제 중 UI 상태 처리
 - [-] 결제 종료 후 상태 재조회
-- [ ] 실패/취소 UX 처리
+- [-] 실패/취소 UX 처리
+  - 현재 반영:
+    - 기존 탭 이동 제거
+    - full-screen iframe 오버레이 결제 UI
+    - 결제 준비 중 로딩 오버레이
+    - 중복 클릭 방지
+    - 닫기 버튼 및 Escape 종료
 
 ### Phase 5. 검증
 
@@ -152,11 +164,38 @@
 
 ### Phase 6. 운영 전환 준비
 
-- [ ] 샌드박스 URL 제거 계획
-- [ ] 운영용 Xsolla 설정값 분리
+- [-] 샌드박스 URL 제거 계획
+- [-] 운영용 Xsolla 설정값 분리
 - [ ] 운영 webhook endpoint 확인
 - [ ] 모니터링 항목 정리
 - [ ] 장애 대응 절차 문서화
+
+### Phase 6-A. 환경 분리 구조 보강
+
+- [ ] Xsolla environment mode를 env 기반으로 분리
+  - 예시:
+    - `XSOLLA_ENV=sandbox|production`
+- [ ] Pay Station base URL을 env 기반으로 분리
+  - 예시:
+    - sandbox: `https://sandbox-secure.xsolla.com/paystation4/`
+    - production: `https://secure.xsolla.com/paystation4/`
+- [ ] return URL을 env 기반으로 분리
+  - 예시:
+    - `XSOLLA_RETURN_URL`
+- [ ] webhook secret을 환경별로 분리
+  - 예시:
+    - sandbox: `XSOLLA_WEBHOOK_SECRET`
+    - production: 운영 Worker secret 별도 등록
+- [ ] project/merchant/api key를 환경별로 분리
+  - 예시:
+    - sandbox values
+    - production values
+- [ ] plan_id / sku 매핑을 환경별로 분리
+  - 예시:
+    - sandbox plan ids
+    - production plan ids
+- [ ] 코드에서 sandbox 전용 하드코딩 제거
+- [ ] 운영 전환 절차를 "코드 수정 없이 env 교체 + 배포" 형태로 문서화
 
 ## 사용자 할 일
 
@@ -181,8 +220,20 @@
   - `XSOLLA_REGULAR_SUBSCRIPTION_12_MONTHS_PLAN_ID`
   - `XSOLLA_DURATION_3_MONTHS_SKU`
   - `XSOLLA_DURATION_12_MONTHS_SKU`
-- [ ] 프론트에서 사용할 redirect URL 후보 확정
-- [ ] 운영과 샌드박스 값을 혼동하지 않도록 환경 분리 원칙 확정
+- [-] 프론트에서 사용할 redirect URL 후보 확정
+  - 현재 사용 중:
+    - `XSOLLA_RETURN_URL` 우선
+    - 미설정 시 현재 허용 origin + `/profile?tab=pass`
+    - 최종 fallback: `https://www.grogrojello.com/profile?tab=pass`
+  - 추후 환경별 `XSOLLA_RETURN_URL` 로 완전 고정 가능
+- [-] 운영과 샌드박스 값을 혼동하지 않도록 환경 분리 원칙 확정
+  - 원칙:
+    - 코드 수정 없이 env/secret 교체만으로 운영 전환 가능해야 함
+    - sandbox/production plan id, sku, project, merchant, webhook secret, return url 분리
+  - 현재 반영:
+    - `XSOLLA_ENV=sandbox|production`
+    - checkout base URL env 연동
+    - subscription token mode / catalog sandbox flag env 연동
 
 ### 정책 및 제품 결정
 
@@ -208,10 +259,14 @@
 
 - [-] 현재 `/purchase` 구조를 Xsolla 토큰 발급 방식으로 교체
   - 신규 Xsolla 경로 구현 완료
-  - 기존 레거시 `/purchase` 제거는 미완료
+  - 기존 레거시 `/purchase` 직접지급 차단 완료
 - [x] planId 화이트리스트 및 서버 고정 매핑 추가
 - [x] Xsolla 샌드박스 토큰 발급 호출 구현
 - [x] 웹훅 endpoint 및 서명 검증 구현
+- [-] Xsolla 토큰 요청 payload 보정
+  - 현재 반영:
+    - subscription token request에 `project_id`, env 기반 `mode` 반영
+    - Xsolla 콘솔 옵션과 충돌하는 `settings.external_id` 제거
 - [ ] 거래 멱등 처리 구현
 - [-] 프리미엄 반영 로직을 웹훅 성공 기준으로 이동
   - 기본 반영 완료
@@ -230,8 +285,13 @@
 - [x] `src/services/syncService.ts` 결제 API 흐름 수정
 - [x] `useNurturingSync.ts` 구매 완료 처리 구조 수정
 - [x] 결제창 오픈 유틸 추가
-- [ ] 결제 대기/실패/취소 UI 상태 연결
+- [-] 결제 대기/실패/취소 UI 상태 연결
 - [-] 결제 후 서버 상태 재동기화 처리
+  - 현재 반영:
+    - full-screen iframe overlay
+    - localized checkout header title
+    - service-wide loading overlay reuse
+    - purchase button disable during checkout preparation/open
 
 ### 문서 및 진행 관리
 
@@ -686,26 +746,36 @@ sku: ...
   - `XSOLLA_DURATION_12_MONTHS_SKU`
 - Worker 배포 완료
   - worker: `api-grogrojello`
-  - version: `f27094a4-8392-4cef-af4b-df50ba547d39`
+  - latest version: `47390cb9-8713-461d-85cc-2f5f8f89531c`
 - 프론트 Xsolla 1차 연동 완료
   - `purchasePlan()` -> `/api/users/:uid/xsolla/checkout-token` 연결
-  - Xsolla hosted checkout URL 오픈 연결
+  - Xsolla hosted checkout iframe 오버레이 연결
   - 결제 페이지 복귀 시 subscription 상태 재조회 연결
+- Xsolla 결제 페이지 오픈 확인 완료
+  - 기존 페이지 내 full-screen iframe 오버레이로 실제 Pay Station 진입 확인
+  - 아직 샌드박스 결제 완료 검증 전
+- 프론트 결제 UX 2차 보강 완료
+  - 시스템 confirm 팝업 제거
+  - 구매 버튼 클릭 시 즉시 결제 준비 로딩 오버레이 표시
+  - 새 탭 없이 기존 페이지에서 full-screen 결제 진행
+  - checkout header title 다국어 적용
 - 로컬 빌드 통과
-- backend tests `24 passed`
+- backend tests `27 passed`
 
 ### 사용자 다음 작업
 
 1. 샌드박스 테스트 카드/결제 시나리오 확인
-2. 프론트에서 사용할 redirect URL 후보 확정
-3. 샌드박스 결제 테스트 실행
+2. 샌드박스 결제 성공 시나리오 1회 실행
+3. 결제 완료 후 premium 반영 여부 확인
+4. 실패/취소 시나리오에서 권한 미부여 확인
 
 ### 다음 세션에서 내가 할 일
 
-1. 결제 중/실패/취소 UX 보강
+1. Xsolla env 분리 구조 보강
 2. sandbox end-to-end 점검
 3. 거래 로그 테이블/멱등 처리 보강
-4. 레거시 `/purchase` 제거 또는 격리
+4. 실패/취소 UX 세부 마감
+5. 레거시 `/purchase` 제거 또는 격리
 
 ## 관련 파일
 

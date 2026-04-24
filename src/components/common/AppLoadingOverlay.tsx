@@ -1,7 +1,12 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-export const AppLoadingOverlay: React.FC = () => {
+interface AppLoadingOverlayProps {
+  message?: string;
+  zIndex?: number;
+}
+
+export const AppLoadingOverlay: React.FC<AppLoadingOverlayProps> = ({ message, zIndex = 200 }) => {
   const { t } = useTranslation();
 
   return (
@@ -9,7 +14,7 @@ export const AppLoadingOverlay: React.FC = () => {
       style={{
         position: 'fixed',
         inset: 0,
-        zIndex: 200,
+        zIndex,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -43,7 +48,7 @@ export const AppLoadingOverlay: React.FC = () => {
             animation: 'app-loading-pulse 1.5s infinite ease-in-out',
           }}
         >
-          {t('common.loading')}
+          {message || t('common.loading')}
         </div>
       </div>
       <style>{`
@@ -60,4 +65,3 @@ export const AppLoadingOverlay: React.FC = () => {
     </div>
   );
 };
-

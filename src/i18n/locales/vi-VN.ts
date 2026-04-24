@@ -325,6 +325,8 @@ export const viVN = {
     collectionLabel: 'Bộ sưu tập',
     profileInfo: 'Tài khoản',
     paymentInfo: 'Thanh toán',
+    checkoutTitle: 'Mua gói',
+    checkoutPreparing: 'Đang chuẩn bị thanh toán...',
     purchaseButton: 'Mua',
     expiresLabel: 'Het han',
     purchaseConfirm: {
