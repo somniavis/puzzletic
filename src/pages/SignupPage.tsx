@@ -8,8 +8,31 @@ import { auth, googleProvider } from '../firebase';
 import { createUserWithEmailAndPassword, getRedirectResult, signInWithPopup, signInWithRedirect } from 'firebase/auth';
 import { loadNurturingState, saveNurturingState, getStorageKey } from '../services/persistenceService';
 import { migrateGuestToCloud } from '../services/syncService';
+import { AppLoadingOverlay } from '../components/common/AppLoadingOverlay';
 
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+
+const ROOM_NAVIGATION_STATE = { skipRoomLoadingDelay: true };
+
+const getPostSignupDestination = (
+    state: unknown,
+): { to: string; navigationState?: Record<string, unknown> } => {
+    if (
+        state &&
+        typeof state === 'object' &&
+        'postSignupRedirectTo' in state &&
+        typeof (state as { postSignupRedirectTo?: unknown }).postSignupRedirectTo === 'string'
+    ) {
+        return {
+            to: (state as { postSignupRedirectTo: string }).postSignupRedirectTo,
+        };
+    }
+
+    return {
+        to: '/room',
+        navigationState: ROOM_NAVIGATION_STATE,
+    };
+};
 
 export const SignupPage: React.FC = () => {
     const navigate = useNavigate();
@@ -31,6 +54,10 @@ export const SignupPage: React.FC = () => {
         confirmPassword?: string;
         general?: string;
     }>({});
+    const postSignupDestination = React.useMemo(
+        () => getPostSignupDestination(location.state),
+        [location.state],
+    );
 
     useMobileInteractionGuard({ rootRef, blockSelection: false });
 
@@ -40,7 +67,10 @@ export const SignupPage: React.FC = () => {
                 const result = await getRedirectResult(auth);
                 if (result) {
                     playButtonSound();
-                    navigate('/home');
+                    navigate(postSignupDestination.to, {
+                        replace: true,
+                        state: postSignupDestination.navigationState,
+                    });
                 }
             } catch (error: any) {
                 console.error('Google Signup (Redirect) failed:', error);
@@ -48,7 +78,7 @@ export const SignupPage: React.FC = () => {
             }
         };
         checkRedirect();
-    }, [navigate, t]);
+    }, [navigate, postSignupDestination, t]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -118,7 +148,10 @@ export const SignupPage: React.FC = () => {
                 }
 
                 // alert(t('auth.signup.success')); // REMOVED: Smoother flow without popup
-                navigate('/home');
+                navigate(postSignupDestination.to, {
+                    replace: true,
+                    state: postSignupDestination.navigationState,
+                });
             } catch (error: any) {
                 console.error('Signup failed:', error);
                 setIsSubmitting(false); // Enable retry
@@ -149,7 +182,10 @@ export const SignupPage: React.FC = () => {
 
         try {
             await signInWithPopup(auth, googleProvider);
-            navigate('/home');
+            navigate(postSignupDestination.to, {
+                replace: true,
+                state: postSignupDestination.navigationState,
+            });
         } catch (error: any) {
             const shouldFallbackToRedirect =
                 error?.code === 'auth/popup-blocked' ||
@@ -197,33 +233,7 @@ export const SignupPage: React.FC = () => {
                 </div>
             </div>
 
-            {isSubmitting && (
-                <div style={{
-                    position: 'fixed',
-                    inset: 0,
-                    zIndex: 200,
-                    background: 'linear-gradient(135deg, #FFF9E6 0%, #FFE4B5 100%)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    flexDirection: 'column'
-                }}>
-                    <div className="loading-spinner-container">
-                        <div className="loading-spinner">🐾</div>
-                        <div className="loading-text" style={{
-                            fontSize: '1.2rem',
-                            fontWeight: 800,
-                            color: '#8B4513',
-                            textTransform: 'uppercase',
-                            letterSpacing: '2px',
-                            marginTop: '1rem',
-                            animation: 'pulse-text 1.5s infinite ease-in-out'
-                        }}>
-                            {t('common.loading')}...
-                        </div>
-                    </div>
-                </div>
-            )}
+            {isSubmitting && <AppLoadingOverlay />}
 
             <div className="auth-container auth-container--signup">
                 <button

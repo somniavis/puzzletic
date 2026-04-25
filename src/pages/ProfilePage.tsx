@@ -11,6 +11,8 @@ import './ProfilePage.css';
 
 type ProfileTab = 'my_jello' | 'pass';
 
+type SignupIntent = 'upgrade' | 'purchase';
+
 const createParentGateCode = () =>
     Array.from({ length: 3 }, () => Math.floor(Math.random() * 9) + 1);
 
@@ -124,6 +126,23 @@ export const ProfilePage: React.FC = () => {
         }
     }, [location.search, isPassUnlocked]);
 
+    const navigateToSignup = React.useCallback(
+        (
+            fromTab: ProfileTab,
+            intent: SignupIntent,
+            postSignupTab: ProfileTab = fromTab,
+        ) => {
+            navigate('/signup', {
+                state: {
+                    from: `/profile?tab=${fromTab}`,
+                    postSignupRedirectTo: `/profile?tab=${postSignupTab}`,
+                    signupIntent: intent,
+                },
+            });
+        },
+        [navigate],
+    );
+
     const handleCancelSubscription = async () => {
         if (isCancellingSubscription) {
             return;
@@ -150,6 +169,11 @@ export const ProfilePage: React.FC = () => {
     };
 
     const handlePurchase = async (durationMonths: 3 | 12) => {
+        if (isGuest) {
+            navigateToSignup('pass', 'purchase');
+            return;
+        }
+
         const success = await purchasePlan(durationMonths);
         if (!success) {
             setFeedbackModal({
@@ -242,7 +266,7 @@ export const ProfilePage: React.FC = () => {
                                 className={`account-status-card ${isPremium ? 'premium-active' : ''}`}
                                 onClick={() => {
                                     if (isGuest) {
-                                        navigate('/signup', { state: { from: '/profile' } });
+                                        navigateToSignup('my_jello', 'upgrade');
                                     }
                                 }}
                                 style={{ cursor: isGuest ? 'pointer' : 'default' }}
@@ -264,7 +288,14 @@ export const ProfilePage: React.FC = () => {
                                 <button
                                     type="button"
                                     className="account-upgrade-btn"
-                                    onClick={handlePassTabOpen}
+                                    onClick={() => {
+                                        if (isGuest) {
+                                            navigateToSignup('my_jello', 'upgrade', 'pass');
+                                            return;
+                                        }
+
+                                        handlePassTabOpen();
+                                    }}
                                 >
                                     {t('profile.upgradePrompt')}
                                 </button>
@@ -474,7 +505,7 @@ export const ProfilePage: React.FC = () => {
                                     className={`account-status-card ${isPremium ? 'premium-active' : ''}`}
                                     onClick={() => {
                                         if (isGuest) {
-                                            navigate('/signup', { state: { from: '/profile' } });
+                                            navigateToSignup('pass', 'upgrade');
                                         }
                                     }}
                                     style={{ cursor: isGuest ? 'pointer' : 'default' }}

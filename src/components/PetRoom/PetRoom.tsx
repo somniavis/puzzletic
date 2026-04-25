@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
+import { useLocation } from 'react-router-dom';
 import type { Character, CharacterMood, CharacterAction } from '../../types/character';
 import type { CharacterSpeciesId } from '../../data/species';
 import type { EmotionCategory } from '../../types/emotion';
@@ -62,6 +63,8 @@ export const PetRoom: React.FC<PetRoomProps> = ({
   const { t } = useTranslation();
   const nurturing = useNurturing();
   const { user, isGuest } = useAuth();
+  const location = useLocation();
+  const skipInitialLoadingDelay = location.state?.skipRoomLoadingDelay === true;
 
   // Resume tick safety check
   useEffect(() => {
@@ -113,7 +116,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({
   }, []);
 
   // 1. UI State
-  const ui = usePetRoomUI(showGiftBox);
+  const ui = usePetRoomUI(showGiftBox, skipInitialLoadingDelay);
 
   // 2. Actions (Needs showBubble)
   const actions = usePetActions({

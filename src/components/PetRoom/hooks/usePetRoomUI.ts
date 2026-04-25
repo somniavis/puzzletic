@@ -3,7 +3,7 @@ import { useNurturing } from '../../../contexts/NurturingContext';
 import type { FoodCategory } from '../../../types/food';
 import type { ShopCategory } from '../../../types/shop';
 
-export const usePetRoomUI = (showGiftBox: boolean) => {
+export const usePetRoomUI = (showGiftBox: boolean, skipInitialLoadingDelay = false) => {
     const nurturing = useNurturing();
 
     // Loading State
@@ -11,14 +11,15 @@ export const usePetRoomUI = (showGiftBox: boolean) => {
 
     useEffect(() => {
         if (!nurturing.isGlobalLoading) {
+            const delayMs = skipInitialLoadingDelay ? 0 : 1000;
             const timer = setTimeout(() => {
                 setIsLoading(false);
-            }, 1000); // Keep original aesthetic delay
+            }, delayMs);
             return () => clearTimeout(timer);
         } else {
             setIsLoading(true);
         }
-    }, [nurturing.isGlobalLoading]);
+    }, [nurturing.isGlobalLoading, skipInitialLoadingDelay]);
 
     // Menu States
     const [showFoodMenu, setShowFoodMenu] = useState(false);
