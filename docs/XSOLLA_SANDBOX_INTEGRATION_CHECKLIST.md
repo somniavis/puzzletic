@@ -756,11 +756,12 @@ WHERE subscription_plan IN ('3_months', '12_months');
     - sandbox/production URL 자체는 코드 상수 map으로 관리
     - 기본 fallback env가 `sandbox` 라서 운영 전환 전 최종 점검 필요
     - credentials / plan / sku / return_url 은 scoped env 우선 읽기로 전환 완료
-- [ ] 운영 전환 절차를 "코드 수정 없이 env 교체 + 배포" 형태로 문서화
-  - TODO:
-    - sandbox/production secret 세트 표준화
-    - 전환 순서 문서화
-    - 배포 체크리스트 확정
+- [x] 운영 전환 절차를 "코드 수정 없이 env 교체 + 배포" 형태로 문서화
+  - 현재 문서화 범위:
+    - sandbox/production secret 세트 표준
+    - Worker secret 적용 순서
+    - 운영 전환 runbook 초안
+    - 배포 체크리스트 초안
 
 #### 최종 env 키 표준
 
@@ -806,6 +807,61 @@ WHERE subscription_plan IN ('3_months', '12_months');
 5. `XSOLLA_ENV=production` 로 전환 가능한지 dry-run 기준으로 점검한다.
 6. scoped key가 모두 정상 동작하면 공용 fallback key는 제거 후보로 표시한다.
 
+#### Worker secret 등록 명령 예시
+
+작업 디렉토리:
+
+```bash
+cd backend/api-grogrojello
+```
+
+Sandbox scoped secret 등록:
+
+```bash
+npx wrangler secret put XSOLLA_MERCHANT_ID_SANDBOX
+npx wrangler secret put XSOLLA_PROJECT_ID_SANDBOX
+npx wrangler secret put XSOLLA_API_KEY_SANDBOX
+npx wrangler secret put XSOLLA_WEBHOOK_SECRET_SANDBOX
+npx wrangler secret put XSOLLA_RETURN_URL_SANDBOX
+npx wrangler secret put XSOLLA_REGULAR_SUBSCRIPTION_3_MONTHS_PLAN_ID_SANDBOX
+npx wrangler secret put XSOLLA_REGULAR_SUBSCRIPTION_12_MONTHS_PLAN_ID_SANDBOX
+npx wrangler secret put XSOLLA_DURATION_3_MONTHS_SKU_SANDBOX
+npx wrangler secret put XSOLLA_DURATION_12_MONTHS_SKU_SANDBOX
+```
+
+Production scoped secret 등록:
+
+```bash
+npx wrangler secret put XSOLLA_MERCHANT_ID_PRODUCTION
+npx wrangler secret put XSOLLA_PROJECT_ID_PRODUCTION
+npx wrangler secret put XSOLLA_API_KEY_PRODUCTION
+npx wrangler secret put XSOLLA_WEBHOOK_SECRET_PRODUCTION
+npx wrangler secret put XSOLLA_RETURN_URL_PRODUCTION
+npx wrangler secret put XSOLLA_REGULAR_SUBSCRIPTION_3_MONTHS_PLAN_ID_PRODUCTION
+npx wrangler secret put XSOLLA_REGULAR_SUBSCRIPTION_12_MONTHS_PLAN_ID_PRODUCTION
+npx wrangler secret put XSOLLA_DURATION_3_MONTHS_SKU_PRODUCTION
+npx wrangler secret put XSOLLA_DURATION_12_MONTHS_SKU_PRODUCTION
+```
+
+기본 환경값(`vars`) 또는 secret 중 공통 선택값:
+
+```bash
+# wrangler.jsonc vars 또는 배포 환경에서 관리
+XSOLLA_ENV=sandbox
+```
+
+배포:
+
+```bash
+npm run deploy
+```
+
+검증:
+
+```bash
+npm test -- --run test/index.spec.js
+```
+
 #### 운영 전환 runbook 초안
 
 1. sandbox/prod 식별자 세트를 표로 고정한다.
@@ -824,6 +880,26 @@ WHERE subscription_plan IN ('3_months', '12_months');
    - checkout token 생성
    - webhook signature 수용
    - entitlement 반영
+
+#### 배포 체크리스트 초안
+
+Sandbox 배포 전:
+
+1. sandbox scoped secret 전부 입력
+2. `XSOLLA_ENV=sandbox` 확인
+3. `npm test -- --run test/index.spec.js`
+4. `npm run deploy`
+5. sandbox smoke test
+
+Production 배포 전:
+
+1. production scoped secret 전부 입력
+2. `XSOLLA_ENV=production` 확인
+3. `XSOLLA_RETURN_URL_PRODUCTION` 확인
+4. production plan id / sku 재확인
+5. `npm test -- --run test/index.spec.js`
+6. `npm run deploy`
+7. production smoke test
 
 #### 주의
 
