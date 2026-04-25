@@ -626,7 +626,12 @@ const buildXsollaCheckoutUrl = (token, xsollaEnvironment) =>
 	`${xsollaEnvironment.checkoutBaseUrl}?token=${encodeURIComponent(token)}`;
 
 const buildXsollaReturnUrl = (env, allowedOrigin) => {
+	const environmentName = getXsollaEnvironmentName(env);
 	const scopedReturnUrl = getXsollaScopedEnvValue(env, 'XSOLLA_RETURN_URL');
+	if (environmentName === 'sandbox' && allowedOrigin) {
+		return new URL(XSOLLA_RETURN_PATH, `${allowedOrigin}/`).toString();
+	}
+
 	if (scopedReturnUrl) {
 		return scopedReturnUrl;
 	}

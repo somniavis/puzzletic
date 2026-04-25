@@ -364,10 +364,10 @@ describe('Worker auth gate', () => {
 	});
 
 	it('uses the allowed request origin as the xsolla return url when XSOLLA_RETURN_URL is unset', async () => {
-		env.XSOLLA_MERCHANT_ID = 'merchant-1';
-		env.XSOLLA_PROJECT_ID = 'project-1';
-		env.XSOLLA_API_KEY = 'api-key-1';
-		env.XSOLLA_REGULAR_SUBSCRIPTION_12_MONTHS_PLAN_ID = 'plan-sandbox-12';
+		env.XSOLLA_MERCHANT_ID_SANDBOX = 'merchant-1';
+		env.XSOLLA_PROJECT_ID_SANDBOX = 'project-1';
+		env.XSOLLA_API_KEY_SANDBOX = 'api-key-1';
+		env.XSOLLA_REGULAR_SUBSCRIPTION_12_MONTHS_PLAN_ID_SANDBOX = 'plan-sandbox-12';
 
 		const now = Math.floor(Date.now() / 1000);
 		const token = await signJwt(privateKey, publicJwk.kid, {
@@ -421,18 +421,150 @@ describe('Worker auth gate', () => {
 			expect(body.checkoutUrl).toBe('https://sandbox-secure.xsolla.com/paystation4/?token=sandbox-token-123');
 		} finally {
 			globalThis.fetch = originalFetch;
+			delete env.XSOLLA_MERCHANT_ID_SANDBOX;
+			delete env.XSOLLA_PROJECT_ID_SANDBOX;
+			delete env.XSOLLA_API_KEY_SANDBOX;
+			delete env.XSOLLA_REGULAR_SUBSCRIPTION_12_MONTHS_PLAN_ID_SANDBOX;
+		}
+	});
+
+	it('prefers the allowed request origin over sandbox return url env for sandbox checkout', async () => {
+		env.XSOLLA_ENV = 'sandbox';
+		env.XSOLLA_MERCHANT_ID_SANDBOX = 'merchant-1';
+		env.XSOLLA_PROJECT_ID_SANDBOX = 'project-1';
+		env.XSOLLA_API_KEY_SANDBOX = 'api-key-1';
+		env.XSOLLA_REGULAR_SUBSCRIPTION_12_MONTHS_PLAN_ID_SANDBOX = 'plan-sandbox-12';
+		env.XSOLLA_RETURN_URL_SANDBOX = 'https://www.grogrojello.com/profile?tab=my_jello';
+
+		const now = Math.floor(Date.now() / 1000);
+		const token = await signJwt(privateKey, publicJwk.kid, {
+			iss: `https://securetoken.google.com/${PROJECT_ID}`,
+			aud: PROJECT_ID,
+			sub: userId,
+			iat: now - 30,
+			exp: now + 3600,
+			auth_time: now - 30,
+		});
+
+		const originalFetch = globalThis.fetch;
+		globalThis.fetch = async (input, init) => {
+			const url = typeof input === 'string' ? input : input?.url;
+			if (url === JWKS_URL) {
+				return new Response(JSON.stringify({ keys: [publicJwk] }), {
+					status: 200,
+					headers: { 'cache-control': 'public, max-age=3600' },
+				});
+			}
+
+			if (url === 'https://api.xsolla.com/merchant/v2/merchants/merchant-1/token') {
+				const payload = JSON.parse(init.body);
+				expect(payload.settings.return_url).toBe('http://localhost:5173/profile?tab=my_jello');
+				return new Response(JSON.stringify({ token: 'sandbox-return-token', order_id: 'sandbox-return-order' }), {
+					status: 200,
+					headers: { 'Content-Type': 'application/json' },
+				});
+			}
+
+			return originalFetch(input, init);
+		};
+
+		try {
+			const request = new Request(`http://example.com/api/users/${userId}/xsolla/checkout-token`, {
+				method: 'POST',
+				headers: {
+					Authorization: `Bearer ${token}`,
+					'Content-Type': 'application/json',
+					Origin: 'http://localhost:5173',
+				},
+				body: JSON.stringify({ productId: 'subscription_12_months' }),
+			});
+			const ctx = createExecutionContext();
+			const response = await worker.fetch(request, env, ctx);
+			await waitOnExecutionContext(ctx);
+
+			expect(response.status).toBe(200);
+		} finally {
+			globalThis.fetch = originalFetch;
+			delete env.XSOLLA_ENV;
+			delete env.XSOLLA_MERCHANT_ID_SANDBOX;
+			delete env.XSOLLA_PROJECT_ID_SANDBOX;
+			delete env.XSOLLA_API_KEY_SANDBOX;
+			delete env.XSOLLA_REGULAR_SUBSCRIPTION_12_MONTHS_PLAN_ID_SANDBOX;
+			delete env.XSOLLA_RETURN_URL_SANDBOX;
+		}
+	});
+
+	it('prefers production return url env over request origin for production checkout', async () => {
+		env.XSOLLA_ENV = 'production';
+		env.XSOLLA_MERCHANT_ID = 'merchant-1';
+		env.XSOLLA_PROJECT_ID = 'project-1';
+		env.XSOLLA_API_KEY = 'api-key-1';
+		env.XSOLLA_REGULAR_SUBSCRIPTION_12_MONTHS_PLAN_ID = 'plan-prod-12';
+		env.XSOLLA_RETURN_URL_PRODUCTION = 'https://www.grogrojello.com/profile?tab=my_jello';
+
+		const now = Math.floor(Date.now() / 1000);
+		const token = await signJwt(privateKey, publicJwk.kid, {
+			iss: `https://securetoken.google.com/${PROJECT_ID}`,
+			aud: PROJECT_ID,
+			sub: userId,
+			iat: now - 30,
+			exp: now + 3600,
+			auth_time: now - 30,
+		});
+
+		const originalFetch = globalThis.fetch;
+		globalThis.fetch = async (input, init) => {
+			const url = typeof input === 'string' ? input : input?.url;
+			if (url === JWKS_URL) {
+				return new Response(JSON.stringify({ keys: [publicJwk] }), {
+					status: 200,
+					headers: { 'cache-control': 'public, max-age=3600' },
+				});
+			}
+
+			if (url === 'https://api.xsolla.com/merchant/v2/merchants/merchant-1/token') {
+				const payload = JSON.parse(init.body);
+				expect(payload.settings.return_url).toBe('https://www.grogrojello.com/profile?tab=my_jello');
+				return new Response(JSON.stringify({ token: 'prod-return-token', order_id: 'prod-return-order' }), {
+					status: 200,
+					headers: { 'Content-Type': 'application/json' },
+				});
+			}
+
+			return originalFetch(input, init);
+		};
+
+		try {
+			const request = new Request(`http://example.com/api/users/${userId}/xsolla/checkout-token`, {
+				method: 'POST',
+				headers: {
+					Authorization: `Bearer ${token}`,
+					'Content-Type': 'application/json',
+					Origin: 'http://localhost:5173',
+				},
+				body: JSON.stringify({ productId: 'subscription_12_months' }),
+			});
+			const ctx = createExecutionContext();
+			const response = await worker.fetch(request, env, ctx);
+			await waitOnExecutionContext(ctx);
+
+			expect(response.status).toBe(200);
+		} finally {
+			globalThis.fetch = originalFetch;
+			delete env.XSOLLA_ENV;
 			delete env.XSOLLA_MERCHANT_ID;
 			delete env.XSOLLA_PROJECT_ID;
 			delete env.XSOLLA_API_KEY;
 			delete env.XSOLLA_REGULAR_SUBSCRIPTION_12_MONTHS_PLAN_ID;
+			delete env.XSOLLA_RETURN_URL_PRODUCTION;
 		}
 	});
 
 	it('uses stored user email and display name instead of client-supplied checkout metadata', async () => {
-		env.XSOLLA_MERCHANT_ID = 'merchant-1';
-		env.XSOLLA_PROJECT_ID = 'project-1';
-		env.XSOLLA_API_KEY = 'api-key-1';
-		env.XSOLLA_REGULAR_SUBSCRIPTION_12_MONTHS_PLAN_ID = 'plan-sandbox-12';
+		env.XSOLLA_MERCHANT_ID_SANDBOX = 'merchant-1';
+		env.XSOLLA_PROJECT_ID_SANDBOX = 'project-1';
+		env.XSOLLA_API_KEY_SANDBOX = 'api-key-1';
+		env.XSOLLA_REGULAR_SUBSCRIPTION_12_MONTHS_PLAN_ID_SANDBOX = 'plan-sandbox-12';
 
 		await env.DB.prepare(`
 			INSERT INTO users (uid, email, display_name, created_at, last_synced_at)
@@ -496,10 +628,10 @@ describe('Worker auth gate', () => {
 			expect(body.success).toBe(true);
 		} finally {
 			globalThis.fetch = originalFetch;
-			delete env.XSOLLA_MERCHANT_ID;
-			delete env.XSOLLA_PROJECT_ID;
-			delete env.XSOLLA_API_KEY;
-			delete env.XSOLLA_REGULAR_SUBSCRIPTION_12_MONTHS_PLAN_ID;
+			delete env.XSOLLA_MERCHANT_ID_SANDBOX;
+			delete env.XSOLLA_PROJECT_ID_SANDBOX;
+			delete env.XSOLLA_API_KEY_SANDBOX;
+			delete env.XSOLLA_REGULAR_SUBSCRIPTION_12_MONTHS_PLAN_ID_SANDBOX;
 		}
 	});
 
@@ -547,10 +679,10 @@ describe('Worker auth gate', () => {
 	});
 
 	it('allows a duration product when id-ID should use duration products', async () => {
-		env.XSOLLA_MERCHANT_ID = 'merchant-1';
-		env.XSOLLA_PROJECT_ID = 'project-1';
-		env.XSOLLA_API_KEY = 'api-key-1';
-		env.XSOLLA_DURATION_3_MONTHS_SKU = 'duration-3-sku';
+		env.XSOLLA_MERCHANT_ID_SANDBOX = 'merchant-1';
+		env.XSOLLA_PROJECT_ID_SANDBOX = 'project-1';
+		env.XSOLLA_API_KEY_SANDBOX = 'api-key-1';
+		env.XSOLLA_DURATION_3_MONTHS_SKU_SANDBOX = 'duration-3-sku';
 
 		const now = Math.floor(Date.now() / 1000);
 		const token = await signJwt(privateKey, publicJwk.kid, {
@@ -608,10 +740,10 @@ describe('Worker auth gate', () => {
 			expect(body.productId).toBe('duration_3_months');
 		} finally {
 			globalThis.fetch = originalFetch;
-			delete env.XSOLLA_MERCHANT_ID;
-			delete env.XSOLLA_PROJECT_ID;
-			delete env.XSOLLA_API_KEY;
-			delete env.XSOLLA_DURATION_3_MONTHS_SKU;
+			delete env.XSOLLA_MERCHANT_ID_SANDBOX;
+			delete env.XSOLLA_PROJECT_ID_SANDBOX;
+			delete env.XSOLLA_API_KEY_SANDBOX;
+			delete env.XSOLLA_DURATION_3_MONTHS_SKU_SANDBOX;
 		}
 	});
 
@@ -1033,7 +1165,7 @@ describe('Worker auth gate', () => {
 
 	it('applies update_subscription webhook once for the same renewal window', async () => {
 		env.XSOLLA_WEBHOOK_SECRET = 'test-secret';
-		env.XSOLLA_REGULAR_SUBSCRIPTION_12_MONTHS_PLAN_ID = 'plan-prod-12';
+		env.XSOLLA_REGULAR_SUBSCRIPTION_12_MONTHS_PLAN_ID_SANDBOX = 'plan-prod-12';
 		const rawBody = JSON.stringify({
 			notification_type: 'update_subscription',
 			user: { id: userId },
@@ -1077,7 +1209,7 @@ describe('Worker auth gate', () => {
 		expect(events.results[0].processing_status).toBe('processed');
 
 		delete env.XSOLLA_WEBHOOK_SECRET;
-		delete env.XSOLLA_REGULAR_SUBSCRIPTION_12_MONTHS_PLAN_ID;
+		delete env.XSOLLA_REGULAR_SUBSCRIPTION_12_MONTHS_PLAN_ID_SANDBOX;
 	});
 
 	it('grants one-time duration access on order_paid webhook', async () => {
@@ -1306,7 +1438,7 @@ describe('Worker auth gate', () => {
 
 	it('keeps recurring subscription premium active on non_renewal_subscription webhook', async () => {
 		env.XSOLLA_WEBHOOK_SECRET = 'test-secret';
-		env.XSOLLA_REGULAR_SUBSCRIPTION_12_MONTHS_PLAN_ID = 'plan-prod-12';
+		env.XSOLLA_REGULAR_SUBSCRIPTION_12_MONTHS_PLAN_ID_SANDBOX = 'plan-prod-12';
 		const rawBody = JSON.stringify({
 			notification_type: 'non_renewal_subscription',
 			user: { id: userId },
@@ -1338,12 +1470,12 @@ describe('Worker auth gate', () => {
 		expect(stored.entitlement_end).toBe(Date.parse('2026-07-24T00:00:00+00:00'));
 		expect(stored.billing_reference_id).toBe('991122');
 		delete env.XSOLLA_WEBHOOK_SECRET;
-		delete env.XSOLLA_REGULAR_SUBSCRIPTION_12_MONTHS_PLAN_ID;
+		delete env.XSOLLA_REGULAR_SUBSCRIPTION_12_MONTHS_PLAN_ID_SANDBOX;
 	});
 
 	it('ignores duplicate non_renewal_subscription webhook deliveries', async () => {
 		env.XSOLLA_WEBHOOK_SECRET = 'test-secret';
-		env.XSOLLA_REGULAR_SUBSCRIPTION_12_MONTHS_PLAN_ID = 'plan-prod-12';
+		env.XSOLLA_REGULAR_SUBSCRIPTION_12_MONTHS_PLAN_ID_SANDBOX = 'plan-prod-12';
 		const rawBody = JSON.stringify({
 			notification_type: 'non_renewal_subscription',
 			user: { id: userId },
@@ -1387,12 +1519,12 @@ describe('Worker auth gate', () => {
 		expect(events.results[0].processing_status).toBe('processed');
 
 		delete env.XSOLLA_WEBHOOK_SECRET;
-		delete env.XSOLLA_REGULAR_SUBSCRIPTION_12_MONTHS_PLAN_ID;
+		delete env.XSOLLA_REGULAR_SUBSCRIPTION_12_MONTHS_PLAN_ID_SANDBOX;
 	});
 
 	it('ignores duplicate cancel_subscription webhook deliveries', async () => {
 		env.XSOLLA_WEBHOOK_SECRET = 'test-secret';
-		env.XSOLLA_REGULAR_SUBSCRIPTION_12_MONTHS_PLAN_ID = 'plan-prod-12';
+		env.XSOLLA_REGULAR_SUBSCRIPTION_12_MONTHS_PLAN_ID_SANDBOX = 'plan-prod-12';
 		const rawBody = JSON.stringify({
 			notification_type: 'cancel_subscription',
 			user: { id: userId },
@@ -1436,7 +1568,7 @@ describe('Worker auth gate', () => {
 		expect(events.results[0].processing_status).toBe('processed');
 
 		delete env.XSOLLA_WEBHOOK_SECRET;
-		delete env.XSOLLA_REGULAR_SUBSCRIPTION_12_MONTHS_PLAN_ID;
+		delete env.XSOLLA_REGULAR_SUBSCRIPTION_12_MONTHS_PLAN_ID_SANDBOX;
 	});
 
 	it('ignores duplicate refund webhook deliveries', async () => {
