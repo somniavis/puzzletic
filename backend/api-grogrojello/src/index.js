@@ -6,6 +6,7 @@
 const FIREBASE_DEFAULT_PROJECT_ID = 'grogro-jello-4a53a';
 const FIREBASE_JWKS_URL = 'https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com';
 const MAX_JSON_BODY_BYTES = 256 * 1024;
+const XSOLLA_WEBHOOK_MAX_BODY_BYTES = 64 * 1024;
 const ALLOWED_ORIGINS = new Set([
 	'https://grogrojello.com',
 	'https://www.grogrojello.com',
@@ -49,6 +50,12 @@ const RATE_LIMIT_RULES = {
 		postAuth: [
 			{ keySuffix: 'burst', limit: 2, windowMs: 10_000, blockMs: 3 * 60_000 },
 			{ keySuffix: 'window', limit: 3, windowMs: 60_000, blockMs: 15 * 60_000 },
+		],
+	},
+	webhook: {
+		preAuth: [
+			{ keySuffix: 'burst', limit: 20, windowMs: 10_000, blockMs: 60_000 },
+			{ keySuffix: 'window', limit: 80, windowMs: 60_000, blockMs: 5 * 60_000 },
 		],
 	},
 };
@@ -586,6 +593,15 @@ const getXsollaEnvironmentConfig = (env) => {
 	return XSOLLA_ENVIRONMENTS[requestedEnv] || XSOLLA_ENVIRONMENTS.sandbox;
 };
 
+const getXsollaWebhookSecret = (env) => {
+	const requestedEnv = String(env.XSOLLA_ENV || 'sandbox').trim().toLowerCase();
+	if (requestedEnv === 'production') {
+		return env.XSOLLA_WEBHOOK_SECRET_PRODUCTION || env.XSOLLA_WEBHOOK_SECRET || null;
+	}
+
+	return env.XSOLLA_WEBHOOK_SECRET_SANDBOX || env.XSOLLA_WEBHOOK_SECRET || null;
+};
+
 const buildXsollaCheckoutUrl = (token, xsollaEnvironment) =>
 	`${xsollaEnvironment.checkoutBaseUrl}?token=${encodeURIComponent(token)}`;
 
@@ -694,6 +710,23 @@ const getXsollaSignature = (request) => {
 	return match ? match[1].toLowerCase() : null;
 };
 
+const constantTimeEqualHex = (left, right) => {
+	if (typeof left !== 'string' || typeof right !== 'string') {
+		return false;
+	}
+
+	if (left.length !== right.length) {
+		return false;
+	}
+
+	let diff = 0;
+	for (let i = 0; i < left.length; i += 1) {
+		diff |= left.charCodeAt(i) ^ right.charCodeAt(i);
+	}
+
+	return diff === 0;
+};
+
 const verifyXsollaWebhookSignature = async (request, rawBody, secret) => {
 	const providedSignature = getXsollaSignature(request);
 	if (!providedSignature) {
@@ -701,7 +734,7 @@ const verifyXsollaWebhookSignature = async (request, rawBody, secret) => {
 	}
 
 	const expectedSignature = await toSha1Hex(`${rawBody}${secret}`);
-	if (providedSignature !== expectedSignature) {
+	if (!constantTimeEqualHex(providedSignature, expectedSignature)) {
 		return { ok: false, reason: 'INVALID_SIGNATURE' };
 	}
 
@@ -1090,9 +1123,24 @@ const claimXsollaWebhookEvent = async (env, eventContext, now) => {
 	if (existing?.processing_status === 'failed') {
 		const retryResult = await env.DB.prepare(`
 			UPDATE xsolla_webhook_events
-			SET processing_status = 'processing', processed_at = ?
+			SET
+				notification_type = ?,
+				uid = ?,
+				product_id = ?,
+				xsolla_transaction_id = ?,
+				xsolla_subscription_id = ?,
+				processing_status = 'processing',
+				processed_at = ?
 			WHERE event_key = ? AND processing_status = 'failed'
-		`).bind(now, eventContext.eventKey).run();
+		`).bind(
+			eventContext.notificationType,
+			eventContext.uid,
+			eventContext.productId,
+			eventContext.xsollaTransactionId,
+			eventContext.xsollaSubscriptionId,
+			now,
+			eventContext.eventKey
+		).run();
 
 		if ((retryResult.meta?.changes || 0) > 0) {
 			return { claimed: true };
@@ -1415,6 +1463,15 @@ const handleXsollaCheckoutTokenRequest = async (request, env, corsHeaders, uid, 
 
 	const returnUrl = buildXsollaReturnUrl(env, allowedOrigin);
 	const xsollaEnvironment = getXsollaEnvironmentConfig(env);
+	const storedUser = await env.DB.prepare(
+		'SELECT email, display_name FROM users WHERE uid = ?'
+	).bind(uid).first();
+	const trustedEmail = typeof storedUser?.email === 'string' && storedUser.email.trim()
+		? storedUser.email.trim()
+		: null;
+	const trustedName = typeof storedUser?.display_name === 'string' && storedUser.display_name.trim()
+		? storedUser.display_name.trim()
+		: null;
 
 	try {
 		const tokenResponse = product.kind === 'regular_subscription'
@@ -1424,8 +1481,8 @@ const handleXsollaCheckoutTokenRequest = async (request, env, corsHeaders, uid, 
 				product,
 				productIdentifier,
 				userId: uid,
-				email: body.email || null,
-				name: body.name || null,
+				email: trustedEmail,
+				name: trustedName,
 				countryCode: normalizedCountryCode,
 				language: normalizedLanguage,
 				returnUrl,
@@ -1436,8 +1493,8 @@ const handleXsollaCheckoutTokenRequest = async (request, env, corsHeaders, uid, 
 				product,
 				productIdentifier,
 				userId: uid,
-				email: body.email || null,
-				name: body.name || null,
+				email: trustedEmail,
+				name: trustedName,
 				countryCode: normalizedCountryCode,
 				language: normalizedLanguage,
 				returnUrl,
@@ -1463,20 +1520,66 @@ const handleXsollaCheckoutTokenRequest = async (request, env, corsHeaders, uid, 
 	}
 };
 
-const handleXsollaWebhookRequest = async (request, env, corsHeaders) => {
+const handleXsollaWebhookRequest = async (request, env, corsHeaders, clientIp, requestId, now) => {
 	if (request.method !== 'POST') {
 		return jsonResponse(corsHeaders, { error: 'Method Not Allowed' }, 405, { Allow: 'POST, OPTIONS' });
 	}
 
-	if (!env.XSOLLA_WEBHOOK_SECRET) {
+	const webhookSecret = getXsollaWebhookSecret(env);
+
+	const bodySize = getBodySize(request);
+	if (bodySize !== null && bodySize > XSOLLA_WEBHOOK_MAX_BODY_BYTES) {
+		logSecurityEvent('request_shape_rejected', {
+			requestId,
+			ip: clientIp,
+			path: XSOLLA_WEBHOOK_PATH,
+			method: request.method,
+			reason: 'Xsolla webhook body too large',
+			bodySize,
+		});
+		return jsonResponse(corsHeaders, { error: 'Webhook body too large' }, 413);
+	}
+
+	const webhookRules = RATE_LIMIT_RULES.webhook;
+	if (webhookRules?.preAuth?.length) {
+		const rateLimitResult = await enforceRateLimitRules(
+			env.DB,
+			`webhook:${clientIp}`,
+			now,
+			webhookRules.preAuth
+		);
+		if (!rateLimitResult.ok) {
+			logSecurityEvent('rate_limit_hit', {
+				requestId,
+				stage: 'webhook',
+				ip: clientIp,
+				path: XSOLLA_WEBHOOK_PATH,
+				method: request.method,
+				retryAfterMs: rateLimitResult.retryAfterMs,
+			});
+			return createRateLimitResponse(corsHeaders, 'webhook_rate_limit', rateLimitResult.retryAfterMs);
+		}
+	}
+
+	if (!webhookSecret) {
 		return jsonResponse(corsHeaders, {
 			error: 'Xsolla webhook secret not configured',
-			missing: ['XSOLLA_WEBHOOK_SECRET'],
+			missing: ['XSOLLA_WEBHOOK_SECRET_SANDBOX|XSOLLA_WEBHOOK_SECRET_PRODUCTION|XSOLLA_WEBHOOK_SECRET'],
 		}, 503);
 	}
 
 	const rawBody = await request.text();
-	const signatureCheck = await verifyXsollaWebhookSignature(request, rawBody, env.XSOLLA_WEBHOOK_SECRET);
+	if (new TextEncoder().encode(rawBody).byteLength > XSOLLA_WEBHOOK_MAX_BODY_BYTES) {
+		logSecurityEvent('request_shape_rejected', {
+			requestId,
+			ip: clientIp,
+			path: XSOLLA_WEBHOOK_PATH,
+			method: request.method,
+			reason: 'Xsolla webhook body too large',
+		});
+		return jsonResponse(corsHeaders, { error: 'Webhook body too large' }, 413);
+	}
+	const signatureCheck = await verifyXsollaWebhookSignature(request, rawBody, webhookSecret);
 	if (!signatureCheck.ok) {
 		return jsonResponse(corsHeaders, {
 			error: signatureCheck.reason,
@@ -1526,7 +1629,7 @@ export default {
 		}
 
 		if (path === XSOLLA_WEBHOOK_PATH) {
-			return handleXsollaWebhookRequest(request, env, corsHeaders);
+			return handleXsollaWebhookRequest(request, env, corsHeaders, clientIp, requestId, now);
 		}
 
 		// Router

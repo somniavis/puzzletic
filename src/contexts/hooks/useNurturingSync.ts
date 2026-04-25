@@ -51,6 +51,10 @@ export interface CheckoutOverlayState {
 // Security: Max allowed gain per sync to prevent abnormal data
 const MAX_XP_GAIN_PER_SYNC = 2000;
 const MAX_GRO_GAIN_PER_SYNC = 2000;
+const XSOLLA_CHECKOUT_HOSTS = new Set([
+    'secure.xsolla.com',
+    'sandbox-secure.xsolla.com',
+]);
 
 // Helper: Validate State Integrity
 const validateStateIntegrity = (currentState: NurturingPersistentState, lastSyncedJson: string | null): boolean => {
@@ -124,6 +128,7 @@ const toSubscriptionState = (
 
 export const useNurturingSync = (user: User | null, guestId: string | null = null) => {
     const { i18n } = useTranslation();
+    const isDev = import.meta.env.DEV;
     const [isGlobalLoading, setIsGlobalLoading] = useState(true);
     const [isCancellingSubscription, setIsCancellingSubscription] = useState(false);
 
@@ -201,8 +206,32 @@ export const useNurturingSync = (user: User | null, guestId: string | null = nul
             return;
         }
 
+        let expectedCheckoutOrigin: string | null = null;
+        try {
+            expectedCheckoutOrigin = checkoutOverlay.checkoutUrl
+                ? new URL(checkoutOverlay.checkoutUrl).origin
+                : null;
+        } catch {
+            expectedCheckoutOrigin = null;
+        }
+
         const handleMessage = (event: MessageEvent) => {
-            if (!event.origin.includes('xsolla.com')) {
+            if (!event.origin) {
+                return;
+            }
+
+            let eventUrl: URL;
+            try {
+                eventUrl = new URL(event.origin);
+            } catch {
+                return;
+            }
+
+            if (!XSOLLA_CHECKOUT_HOSTS.has(eventUrl.hostname)) {
+                return;
+            }
+
+            if (expectedCheckoutOrigin && event.origin !== expectedCheckoutOrigin) {
                 return;
             }
 
@@ -654,13 +683,21 @@ export const useNurturingSync = (user: User | null, guestId: string | null = nul
 
         if (!result.success || !result.checkoutUrl) {
             if (result.error) {
-                console.error('Purchase failed with checkout-token error details', {
-                    productId: product.id,
-                    languageCode,
-                    status: result.status,
-                    details: result.details,
-                    error: result.error,
-                });
+                if (isDev) {
+                    console.error('Purchase failed with checkout-token error details', {
+                        productId: product.id,
+                        languageCode,
+                        status: result.status,
+                        details: result.details,
+                        error: result.error,
+                    });
+                } else {
+                    console.error('Purchase failed', {
+                        productId: product.id,
+                        languageCode,
+                        status: result.status,
+                    });
+                }
             }
             setCheckoutOverlay({
                 isOpen: false,
@@ -681,7 +718,7 @@ export const useNurturingSync = (user: User | null, guestId: string | null = nul
         });
 
         return true;
-    }, [checkoutOverlay.isOpen, checkoutOverlay.isPreparing, i18n.language, i18n.resolvedLanguage, user]);
+    }, [checkoutOverlay.isOpen, checkoutOverlay.isPreparing, i18n.language, i18n.resolvedLanguage, isDev, user]);
 
     const completeCharacterCreation = useCallback(() => {
         setState((currentState) => {

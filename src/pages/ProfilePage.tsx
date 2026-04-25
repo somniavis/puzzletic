@@ -148,7 +148,9 @@ export const ProfilePage: React.FC = () => {
         const success = await purchasePlan(durationMonths);
         if (!success) {
             alert(t('profile.purchaseResult.failureDetailed', {
-                defaultValue: 'Purchase failed. Please check the browser console for the detailed server error.',
+                defaultValue: import.meta.env.DEV
+                    ? 'Purchase failed. Please check the browser console for the detailed server error.'
+                    : 'Purchase failed. Please try again shortly.',
             }));
         }
     };

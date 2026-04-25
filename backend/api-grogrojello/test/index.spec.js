@@ -353,6 +353,81 @@ describe('Worker auth gate', () => {
 		}
 	});
 
+	it('uses stored user email and display name instead of client-supplied checkout metadata', async () => {
+		env.XSOLLA_MERCHANT_ID = 'merchant-1';
+		env.XSOLLA_PROJECT_ID = 'project-1';
+		env.XSOLLA_API_KEY = 'api-key-1';
+		env.XSOLLA_REGULAR_SUBSCRIPTION_12_MONTHS_PLAN_ID = 'plan-sandbox-12';
+
+		await env.DB.prepare(`
+			INSERT INTO users (uid, email, display_name, created_at, last_synced_at)
+			VALUES (?, ?, ?, ?, ?)
+		`).bind(userId, 'trusted@example.com', 'Trusted Name', Date.now(), Date.now()).run();
+
+		const now = Math.floor(Date.now() / 1000);
+		const token = await signJwt(privateKey, publicJwk.kid, {
+			iss: `https://securetoken.google.com/${PROJECT_ID}`,
+			aud: PROJECT_ID,
+			sub: userId,
+			iat: now - 30,
+			exp: now + 3600,
+			auth_time: now - 30,
+		});
+
+		const originalFetch = globalThis.fetch;
+		globalThis.fetch = async (input, init) => {
+			const url = typeof input === 'string' ? input : input?.url;
+			if (url === JWKS_URL) {
+				return new Response(
+					JSON.stringify({ keys: [publicJwk] }),
+					{ status: 200, headers: { 'cache-control': 'public, max-age=3600' } }
+				);
+			}
+
+			if (url === 'https://api.xsolla.com/merchant/v2/merchants/merchant-1/token') {
+				const payload = JSON.parse(init.body);
+				expect(payload.user.email.value).toBe('trusted@example.com');
+				expect(payload.user.name.value).toBe('Trusted Name');
+				expect(payload.user.email.value).not.toBe('spoofed@example.com');
+				expect(payload.user.name.value).not.toBe('Spoofed Name');
+				return new Response(JSON.stringify({ token: 'sandbox-token-456', order_id: 'order-sandbox-2' }), {
+					status: 200,
+					headers: { 'Content-Type': 'application/json' },
+				});
+			}
+
+			return originalFetch(input, init);
+		};
+
+		try {
+			const request = new Request(`http://example.com/api/users/${userId}/xsolla/checkout-token`, {
+				method: 'POST',
+				headers: {
+					Authorization: `Bearer ${token}`,
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({
+					productId: 'subscription_12_months',
+					email: 'spoofed@example.com',
+					name: 'Spoofed Name',
+				}),
+			});
+			const ctx = createExecutionContext();
+			const response = await worker.fetch(request, env, ctx);
+			await waitOnExecutionContext(ctx);
+
+			expect(response.status).toBe(200);
+			const body = await response.json();
+			expect(body.success).toBe(true);
+		} finally {
+			globalThis.fetch = originalFetch;
+			delete env.XSOLLA_MERCHANT_ID;
+			delete env.XSOLLA_PROJECT_ID;
+			delete env.XSOLLA_API_KEY;
+			delete env.XSOLLA_REGULAR_SUBSCRIPTION_12_MONTHS_PLAN_ID;
+		}
+	});
+
 	it('rejects a subscription product when vi-VN should use duration products', async () => {
 		env.XSOLLA_MERCHANT_ID = 'merchant-1';
 		env.XSOLLA_PROJECT_ID = 'project-1';
@@ -465,6 +540,82 @@ describe('Worker auth gate', () => {
 		}
 	});
 
+	it('returns xsolla validation details when a duration checkout token request is rejected upstream', async () => {
+		env.XSOLLA_MERCHANT_ID = 'merchant-1';
+		env.XSOLLA_PROJECT_ID = 'project-1';
+		env.XSOLLA_API_KEY = 'api-key-1';
+		env.XSOLLA_DURATION_3_MONTHS_SKU = 'duration-3-sku';
+
+		const now = Math.floor(Date.now() / 1000);
+		const token = await signJwt(privateKey, publicJwk.kid, {
+			iss: `https://securetoken.google.com/${PROJECT_ID}`,
+			aud: PROJECT_ID,
+			sub: userId,
+			iat: now - 30,
+			exp: now + 3600,
+			auth_time: now - 30,
+		});
+
+		const originalFetch = globalThis.fetch;
+		globalThis.fetch = async (input, init) => {
+			const url = typeof input === 'string' ? input : input?.url;
+			if (url === JWKS_URL) {
+				return new Response(
+					JSON.stringify({ keys: [publicJwk] }),
+					{ status: 200, headers: { 'cache-control': 'public, max-age=3600' } }
+				);
+			}
+
+			if (url === 'https://store.xsolla.com/api/v3/project/project-1/admin/payment/token') {
+				return new Response(JSON.stringify({
+					statusCode: 422,
+					errorCode: 1102,
+					errorMessage: '[0401-1102]: Unprocessable Entity',
+					errorMessageExtended: [
+						{ property: 'purchase.items[0].quantity', message: 'The property quantity is required' },
+					],
+					transactionId: 'test-x-error-1',
+				}), {
+					status: 422,
+					headers: { 'Content-Type': 'application/json' },
+				});
+			}
+
+			return originalFetch(input, init);
+		};
+
+		try {
+			const request = new Request(`http://example.com/api/users/${userId}/xsolla/checkout-token`, {
+				method: 'POST',
+				headers: {
+					Authorization: `Bearer ${token}`,
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({
+					productId: 'duration_3_months',
+					languageCode: 'vi-VN',
+				}),
+			});
+			const ctx = createExecutionContext();
+			const response = await worker.fetch(request, env, ctx);
+			await waitOnExecutionContext(ctx);
+
+			expect(response.status).toBe(422);
+			const body = await response.json();
+			expect(body.error).toBe('Xsolla checkout token request failed');
+			expect(body.productId).toBe('duration_3_months');
+			expect(body.status).toBe(422);
+			expect(body.details.errorCode).toBe(1102);
+			expect(body.details.errorMessageExtended[0].property).toBe('purchase.items[0].quantity');
+		} finally {
+			globalThis.fetch = originalFetch;
+			delete env.XSOLLA_MERCHANT_ID;
+			delete env.XSOLLA_PROJECT_ID;
+			delete env.XSOLLA_API_KEY;
+			delete env.XSOLLA_DURATION_3_MONTHS_SKU;
+		}
+	});
+
 	it('returns 503 for xsolla webhook endpoint when webhook secret is missing', async () => {
 		const request = new Request('http://example.com/api/xsolla/webhook', {
 			method: 'POST',
@@ -477,6 +628,72 @@ describe('Worker auth gate', () => {
 		expect(response.status).toBe(503);
 		const body = await response.json();
 		expect(body.error).toContain('Xsolla webhook secret not configured');
+	});
+
+	it('rejects oversized xsolla webhook bodies before signature verification', async () => {
+		env.XSOLLA_WEBHOOK_SECRET = 'test-secret';
+		const oversizedBody = JSON.stringify({
+			notification_type: 'payment',
+			padding: 'x'.repeat((70 * 1024)),
+		});
+		const request = new Request('http://example.com/api/xsolla/webhook', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'Content-Length': String(new TextEncoder().encode(oversizedBody).byteLength),
+				'CF-Connecting-IP': '203.0.113.55',
+			},
+			body: oversizedBody,
+		});
+		const ctx = createExecutionContext();
+		const response = await worker.fetch(request, env, ctx);
+		await waitOnExecutionContext(ctx);
+
+		expect(response.status).toBe(413);
+		const body = await response.json();
+		expect(body.error).toBe('Webhook body too large');
+		delete env.XSOLLA_WEBHOOK_SECRET;
+	});
+
+	it('rate limits repeated xsolla webhook requests from the same ip', async () => {
+		env.XSOLLA_WEBHOOK_SECRET = 'test-secret';
+		const rawBody = JSON.stringify({
+			notification_type: 'payment',
+			user: { id: userId },
+		});
+
+		for (let attempt = 0; attempt < 20; attempt += 1) {
+			const request = new Request('http://example.com/api/xsolla/webhook', {
+				method: 'POST',
+				headers: {
+					authorization: 'Signature deadbeef',
+					'CF-Connecting-IP': '203.0.113.56',
+				},
+				body: rawBody,
+			});
+			const ctx = createExecutionContext();
+			const response = await worker.fetch(request, env, ctx);
+			await waitOnExecutionContext(ctx);
+			expect(response.status).toBe(401);
+		}
+
+		const blockedRequest = new Request('http://example.com/api/xsolla/webhook', {
+			method: 'POST',
+			headers: {
+				authorization: 'Signature deadbeef',
+				'CF-Connecting-IP': '203.0.113.56',
+			},
+			body: rawBody,
+		});
+		const ctx = createExecutionContext();
+		const blockedResponse = await worker.fetch(blockedRequest, env, ctx);
+		await waitOnExecutionContext(ctx);
+
+		expect(blockedResponse.status).toBe(429);
+		const body = await blockedResponse.json();
+		expect(body.reason).toBe('webhook_rate_limit');
+		expect(body.retryAfterSeconds).toBeGreaterThan(0);
+		delete env.XSOLLA_WEBHOOK_SECRET;
 	});
 
 	it('rejects xsolla webhook requests with invalid signature', async () => {
@@ -517,6 +734,27 @@ describe('Worker auth gate', () => {
 		delete env.XSOLLA_WEBHOOK_SECRET;
 	});
 
+	it('uses the production-specific xsolla webhook secret when XSOLLA_ENV=production', async () => {
+		env.XSOLLA_ENV = 'production';
+		env.XSOLLA_WEBHOOK_SECRET_PRODUCTION = 'prod-secret';
+		const rawBody = JSON.stringify({ notification_type: 'user_validation', user: { id: userId } });
+		const signature = await createXsollaSignature(rawBody, env.XSOLLA_WEBHOOK_SECRET_PRODUCTION);
+		const request = new Request('http://example.com/api/xsolla/webhook', {
+			method: 'POST',
+			headers: {
+				authorization: `Signature ${signature}`,
+			},
+			body: rawBody,
+		});
+		const ctx = createExecutionContext();
+		const response = await worker.fetch(request, env, ctx);
+		await waitOnExecutionContext(ctx);
+
+		expect(response.status).toBe(204);
+		delete env.XSOLLA_ENV;
+		delete env.XSOLLA_WEBHOOK_SECRET_PRODUCTION;
+	});
+
 	it('grants subscription access on create_subscription webhook', async () => {
 		env.XSOLLA_WEBHOOK_SECRET = 'test-secret';
 		env.XSOLLA_REGULAR_SUBSCRIPTION_3_MONTHS_PLAN_ID = 'WZ401Sj5';
@@ -551,6 +789,45 @@ describe('Worker auth gate', () => {
 		expect(stored.entitlement_end).toBe(Date.parse('2026-07-24T00:00:00+00:00'));
 		expect(stored.billing_reference_id).toBe('551122');
 		expect(stored.billing_reference_type).toBe('subscription_id');
+		delete env.XSOLLA_WEBHOOK_SECRET;
+		delete env.XSOLLA_REGULAR_SUBSCRIPTION_3_MONTHS_PLAN_ID;
+	});
+
+	it('marks malformed create_subscription webhooks as failed', async () => {
+		env.XSOLLA_WEBHOOK_SECRET = 'test-secret';
+		env.XSOLLA_REGULAR_SUBSCRIPTION_3_MONTHS_PLAN_ID = 'WZ401Sj5';
+		const rawBody = JSON.stringify({
+			notification_type: 'create_subscription',
+			user: {},
+			subscription: {
+				plan_id: 'WZ401Sj5',
+				subscription_id: 551199,
+				date_next_charge: '2026-07-24T00:00:00+00:00',
+			},
+		});
+		const signature = await createXsollaSignature(rawBody, env.XSOLLA_WEBHOOK_SECRET);
+		const request = new Request('http://example.com/api/xsolla/webhook', {
+			method: 'POST',
+			headers: {
+				authorization: `Signature ${signature}`,
+			},
+			body: rawBody,
+		});
+		const ctx = createExecutionContext();
+		const response = await worker.fetch(request, env, ctx);
+		await waitOnExecutionContext(ctx);
+
+		expect(response.status).toBe(400);
+		const body = await response.json();
+		expect(body.error).toBe('Unknown subscription webhook payload');
+
+		const event = await env.DB.prepare(
+			'SELECT notification_type, product_id, processing_status FROM xsolla_webhook_events WHERE xsolla_subscription_id = ?'
+		).bind(551199).first();
+		expect(event.notification_type).toBe('create_subscription');
+		expect(event.product_id).toBe('subscription_3_months');
+		expect(event.processing_status).toBe('failed');
+
 		delete env.XSOLLA_WEBHOOK_SECRET;
 		delete env.XSOLLA_REGULAR_SUBSCRIPTION_3_MONTHS_PLAN_ID;
 	});
@@ -721,6 +998,110 @@ describe('Worker auth gate', () => {
 		expect(stored.entitlement_end).toBe(Date.parse('2026-07-24T00:00:00.000Z'));
 		expect(stored.billing_reference_id).toBe('2002806345');
 		expect(stored.billing_reference_type).toBe('transaction_id');
+		delete env.XSOLLA_WEBHOOK_SECRET;
+		delete env.XSOLLA_DURATION_3_MONTHS_SKU;
+	});
+
+	it('marks malformed order_paid webhooks as failed when no user id can be resolved', async () => {
+		env.XSOLLA_WEBHOOK_SECRET = 'test-secret';
+		env.XSOLLA_DURATION_3_MONTHS_SKU = 'duration_3_months';
+		const rawBody = JSON.stringify({
+			notification_type: 'order_paid',
+			order: { invoice_id: 2002806450 },
+			transaction: { payment_date: '2026-04-24T00:00:00+00:00' },
+			items: [{ sku: 'duration_3_months', quantity: 1 }],
+		});
+		const signature = await createXsollaSignature(rawBody, env.XSOLLA_WEBHOOK_SECRET);
+		const request = new Request('http://example.com/api/xsolla/webhook', {
+			method: 'POST',
+			headers: {
+				authorization: `Signature ${signature}`,
+			},
+			body: rawBody,
+		});
+		const ctx = createExecutionContext();
+		const response = await worker.fetch(request, env, ctx);
+		await waitOnExecutionContext(ctx);
+
+		expect(response.status).toBe(400);
+		const body = await response.json();
+		expect(body.error).toBe('Missing user id');
+
+		const event = await env.DB.prepare(
+			'SELECT notification_type, product_id, processing_status, uid FROM xsolla_webhook_events WHERE xsolla_transaction_id = ?'
+		).bind(2002806450).first();
+		expect(event.notification_type).toBe('order_paid');
+		expect(event.product_id).toBe('duration_3_months');
+		expect(event.processing_status).toBe('failed');
+		expect(event.uid).toBeNull();
+
+		const stored = await env.DB.prepare(
+			'SELECT entitlement_status FROM users WHERE uid = ?'
+		).bind(userId).first();
+		expect(stored).toBeNull();
+
+		delete env.XSOLLA_WEBHOOK_SECRET;
+		delete env.XSOLLA_DURATION_3_MONTHS_SKU;
+	});
+
+	it('reprocesses a failed order_paid webhook once the user id is present on retry', async () => {
+		env.XSOLLA_WEBHOOK_SECRET = 'test-secret';
+		env.XSOLLA_DURATION_3_MONTHS_SKU = 'duration_3_months';
+		const failedRawBody = JSON.stringify({
+			notification_type: 'order_paid',
+			order: { invoice_id: 2002806451 },
+			transaction: { payment_date: '2026-04-24T00:00:00+00:00' },
+			items: [{ sku: 'duration_3_months', quantity: 1 }],
+		});
+		const failedSignature = await createXsollaSignature(failedRawBody, env.XSOLLA_WEBHOOK_SECRET);
+		const failedRequest = new Request('http://example.com/api/xsolla/webhook', {
+			method: 'POST',
+			headers: {
+				authorization: `Signature ${failedSignature}`,
+			},
+			body: failedRawBody,
+		});
+
+		let ctx = createExecutionContext();
+		let response = await worker.fetch(failedRequest, env, ctx);
+		await waitOnExecutionContext(ctx);
+		expect(response.status).toBe(400);
+
+		const retriedRawBody = JSON.stringify({
+			notification_type: 'order_paid',
+			user: { external_id: userId },
+			order: { invoice_id: 2002806451 },
+			transaction: { payment_date: '2026-04-24T00:00:00+00:00' },
+			items: [{ sku: 'duration_3_months', quantity: 1 }],
+		});
+		const retriedSignature = await createXsollaSignature(retriedRawBody, env.XSOLLA_WEBHOOK_SECRET);
+		const retriedRequest = new Request('http://example.com/api/xsolla/webhook', {
+			method: 'POST',
+			headers: {
+				authorization: `Signature ${retriedSignature}`,
+			},
+			body: retriedRawBody,
+		});
+		ctx = createExecutionContext();
+		response = await worker.fetch(retriedRequest, env, ctx);
+		await waitOnExecutionContext(ctx);
+		expect(response.status).toBe(204);
+
+		const event = await env.DB.prepare(
+			'SELECT processing_status, uid FROM xsolla_webhook_events WHERE xsolla_transaction_id = ?'
+		).bind(2002806451).first();
+		expect(event.processing_status).toBe('processed');
+		expect(event.uid).toBe(userId);
+
+		const stored = await env.DB.prepare(
+			'SELECT entitlement_status, entitlement_kind, entitlement_plan, billing_reference_id, billing_reference_type FROM users WHERE uid = ?'
+		).bind(userId).first();
+		expect(stored.entitlement_status).toBe('active');
+		expect(stored.entitlement_kind).toBe('duration');
+		expect(stored.entitlement_plan).toBe('duration_3_months');
+		expect(stored.billing_reference_id).toBe('2002806451');
+		expect(stored.billing_reference_type).toBe('transaction_id');
+
 		delete env.XSOLLA_WEBHOOK_SECRET;
 		delete env.XSOLLA_DURATION_3_MONTHS_SKU;
 	});

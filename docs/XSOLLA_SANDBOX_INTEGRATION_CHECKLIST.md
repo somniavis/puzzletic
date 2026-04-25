@@ -230,25 +230,35 @@
 
 ### 서버 연계 기준 합격선
 
-- [ ] `/api/users/:uid` 응답 기준
-  - 구매 직후:
+- [x] `/api/users/:uid` 응답 기준 1차 확인
+  - 구독 구매 직후:
     - `entitlement_status = active`
-    - `entitlement_plan = subscription_3_months | subscription_12_months`
+    - `entitlement_kind = subscription`
+    - `entitlement_plan = subscription_12_months`
     - `entitlement_end = 미래 시각`
   - 구독 취소 직후:
     - `entitlement_status = non_renewing`
     - `entitlement_end = 기존 미래 시각 유지`
     - `entitlement_plan` 유지
-- [ ] D1 저장 상태 기준
-  - `users.billing_reference_type = subscription_id | transaction_id` 가 정상 저장되는지 확인
-  - 신규 구독 계정 기준 `entitlement_end` 와 entitlement 상태가 webhook 후 업데이트되는지 확인
-- [ ] Xsolla 상태 기준
+  - 기간권 구매 직후:
+    - `entitlement_status = active`
+    - `entitlement_kind = duration`
+    - `entitlement_plan = duration_3_months`
+    - `billing_reference_type = transaction_id`
+- [x] D1 저장 상태 기준 1차 확인
+  - 구독형:
+    - `users.billing_reference_type = subscription_id` 저장 확인
+  - 기간권:
+    - `users.billing_reference_type = transaction_id` 저장 경로 확인
+- [x] 프론트 오판 방지 기준 1차 확인
+  - 결제창 성공 UI만으로 권한을 주지 않고 webhook 반영 후 entitlement/UI 갱신
+  - 서버 재조회 후 premium UI가 확정되는 흐름 확인
+- [ ] Xsolla 상태 기준 최종 확인
+- [x] Xsolla 상태 기준 최종 확인
   - 거래 상세는 `완료됨`으로 남아도 무방
   - 실제 확인 대상은 구독 상태
-  - 구독 취소 후 `non_renewing` 으로 바뀌는지 확인
-- [ ] 프론트 오판 방지 기준
-  - 결제창 성공/종료만으로 premium이 붙지 않는지 확인
-  - 서버 재조회 없이는 UI가 premium 완료로 확정되지 않도록 확인
+  - 구독 취소 후 `non_renewing` 으로 바뀌는지 Xsolla 콘솔에서 최종 확인 완료
+  - `test001g@gmail.com` 기준 Xsolla 구독자 화면에서 `비갱신` 및 미래 청구일 유지 확인
 
 ### 실결선 검증 전 baseline
 
@@ -256,13 +266,9 @@
   - `total_users = 69`
   - `active_users = 0`
   - `non_renewing_users = 0`
-- [ ] 결제 테스트용 신규 계정 1개 준비
-- [ ] 결제 전 `/api/users/:uid` 응답이 아래와 같은지 확인
-  - `entitlement_status = inactive`
-  - `entitlement_kind = null`
-  - `entitlement_plan = null`
-  - `billing_reference_id = null`
-  - `billing_reference_type = null`
+- [x] 결제 테스트용 신규 계정 준비 및 검증 반복 수행
+- [x] 결제 전 `/api/users/:uid` baseline 검증 1차 수행
+  - 신규 테스트 계정 기준 `inactive` 상태에서 시작하는 흐름 확인
 
 ### 실결선 검증 SQL
 
@@ -356,14 +362,93 @@ LIMIT 10;
 - one-time item checkout token 요청에는 `purchase.items[].quantity`가 반드시 포함되어야 한다
 - one-time item webhook은 `user.id` 외에 `user.external_id` 계열 필드로 UID가 올 수 있으므로 서버에서 함께 파싱해야 한다
 
-### 다음 세션에서 이어서 확인할 것
+### 결제 실패 / 비정상 webhook 1차 점검
 
-1. 신규 계정으로 구독 구매
-2. `/api/users/:uid` 응답에서 premium 필드 확인
-3. 구독 취소
-4. `/api/users/:uid` 재조회 후 premium 유지 확인
-5. Xsolla에서 해당 구독 상태가 `non_renewing` 인지 확인
-6. 위 5개가 모두 맞으면 구독형 취소 검증 완료로 체크
+- [x] Xsolla checkout-token upstream `422 validation error` 본문을 서버 응답 `details`로 그대로 노출
+  - 프론트 콘솔에서 `errorCode`, `errorMessageExtended`, `transactionId` 확인 가능
+- [x] malformed `create_subscription` webhook은 `400`으로 거절되고 `xsolla_webhook_events.processing_status = failed` 로 남음
+- [x] malformed `order_paid` webhook은 `400 Missing user id` 로 거절되고 entitlement를 부여하지 않음
+- [x] 동일 `order_paid` 이벤트가 처음엔 malformed였다가 재전송 시 UID가 보강되면 `failed -> processed` 로 재처리 가능
+- [ ] 기간권 `refund` / `order_canceled` 실 webhook 기준 복구/회수 시나리오 확인
+
+### 보안 점검 메모
+
+#### High
+
+- [x] Xsolla iframe `postMessage` origin 검증 강화
+  - 기존 `event.origin.includes('xsolla.com')` 검사 제거
+  - `new URL(event.origin).hostname` 기준 exact host allowlist 적용
+  - 현재 checkout iframe URL의 `origin` 과 일치하는지 추가 확인
+  - 적용 호스트:
+    - `secure.xsolla.com`
+    - `sandbox-secure.xsolla.com`
+  - 대상 코드: `src/contexts/hooks/useNurturingSync.ts`
+
+#### Medium
+
+- [x] webhook endpoint body size 제한 및 rate limit 보강
+  - `Content-Length` 기준 상한 초과 요청은 `413 Webhook body too large`
+  - body 읽은 뒤에도 실제 byte length 재검증
+  - webhook 전용 IP burst/window rate limit 추가
+  - same-IP unsigned flood는 `429 webhook_rate_limit` 로 차단
+  - 대상 코드: `backend/api-grogrojello/src/index.js`
+  - 검증:
+    - oversized webhook 테스트 통과
+    - repeated invalid-signature webhook rate limit 테스트 통과
+
+- [x] checkout-token 생성 시 클라이언트 제공 `email`, `name` 신뢰 제거
+  - Xsolla user metadata는 `users.email`, `users.display_name` 만 사용
+  - 요청 body의 `email`, `name` spoofing 값은 무시
+  - 악의적 클라이언트가 임의 이메일/이름으로 결제 세션 메타데이터를 오염시키지 못하도록 보강
+  - 대상 코드: `backend/api-grogrojello/src/index.js`
+  - 검증:
+    - stored user metadata가 checkout payload에 반영되는 테스트 통과
+
+- [x] provider 에러 상세의 프로덕션 콘솔 노출 축소
+  - 개발 환경에서는 기존처럼 `details`, validation body, transaction reference 확인 가능
+  - 프로덕션에서는 축약된 오류 메시지와 최소 status만 콘솔에 남김
+  - 사용자 alert도 production에서는 일반 실패 문구로 축소
+  - 대상 코드: `src/services/syncService.ts`, `src/contexts/hooks/useNurturingSync.ts`, `src/pages/ProfilePage.tsx`
+  - 검증:
+    - 프론트 build 통과
+
+#### Low
+
+- [x] Xsolla webhook signature 비교를 상수시간 방식으로 교체
+  - 예상 SHA-1 hex와 제공 signature를 루프 기반 상수시간 비교 유틸로 검증
+  - 기능 변화 없이 비교 동작만 강화
+  - 대상 코드: `backend/api-grogrojello/src/index.js`
+  - 검증:
+    - 기존 webhook 테스트 전체 통과
+
+- [x] Xsolla webhook secret 환경 분리
+  - `XSOLLA_ENV` 에 따라
+    - sandbox: `XSOLLA_WEBHOOK_SECRET_SANDBOX`
+    - production: `XSOLLA_WEBHOOK_SECRET_PRODUCTION`
+    를 우선 사용
+  - 기존 `XSOLLA_WEBHOOK_SECRET` 는 전환 중 fallback으로 유지
+  - 환경 혼선 시 잘못된 webhook 수용/거부 리스크를 낮춤
+  - 검증:
+    - production-specific webhook secret 선택 테스트 통과
+
+#### Lowest / Deferred
+
+- [ ] 시장/가격 정책을 클라이언트 입력 `countryCode/languageCode`에 의존
+  - 현재 checkout-token 검증은 서버가 신뢰할 수 없는 요청 body의 `countryCode`, `languageCode`를 기준으로 기대 상품을 계산
+  - 공격자는 직접 API 호출로 `vi-VN`, `id-ID` 등을 보내 다른 상품 타입을 유도할 수 있음
+  - 현재는 구독/기간권의 가격이 동일해 즉시 금전 손실 리스크는 낮음
+  - 다만 정책 우회, 운영 정합성 저하, 향후 국가별 가격 차등 도입 시 취약점으로 확대될 수 있음
+  - 실위치 기반 테스트가 현재 어려우므로 보안 대응 우선순위는 가장 마지막으로 둠
+  - 대상 코드: `backend/api-grogrojello/src/index.js`
+  - 권장:
+    - 최종적으로는 `CF-IPCountry` 또는 서버 신뢰 프로필 기준으로 판정
+    - 언어는 UI 노출 보조값만 사용
+
+### 잔여 진행사항
+
+1. 기간권 `refund` 또는 `order_canceled` webhook 실검증
+2. 결제 실패 시나리오와 비정상 webhook 시나리오 점검
+3. `d1_migrations` baseline 정상화
 
 ## 전체 단계
 
@@ -1215,17 +1300,17 @@ sku: ...
 ### 사용자 다음 작업
 
 1. 신규 테스트 계정으로 구독 1회 결제/취소 검증
-2. duration 노출 조건에서 이용권 1회 결제/환불 webhook 검증
-3. 실패/취소 시나리오에서 entitlement 오지급/오회수 없는지 확인
-4. 검증 후 결과를 체크리스트의 합격선 항목에 반영
+2. `id-ID` 와 `duration_12_months` 실결선 추가 검증
+3. 기간권 `refund/order_canceled` 실검증
+4. 실패/취소 시나리오에서 entitlement 오지급/오회수 없는지 확인
 
 ### 다음 세션에서 내가 할 일
 
-1. 샌드박스 구독/이용권 실결선 결과를 entitlement 기준으로 기록
-2. 실패/중복 event 로깅 세분화
-3. fingerprint 충돌 가능성 검토 및 필요 시 event key 보강
-4. `d1_migrations` baseline 정상화 계획 수립 및 검증
-5. 이후 migration apply 복구
+1. 기간권 `refund/order_canceled`를 실제 webhook 기준으로 검증
+2. `id-ID`, `duration_12_months` 실결선 결과를 entitlement 기준으로 기록
+3. 실패/중복 event 로깅 세분화
+4. fingerprint 충돌 가능성 검토 및 필요 시 event key 보강
+5. `d1_migrations` baseline 정상화 계획 수립 및 검증
 
 ## 관련 파일
 

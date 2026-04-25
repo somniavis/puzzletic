@@ -448,6 +448,7 @@ export const purchaseSubscription = async (
     user: User,
     payload: XsollaCheckoutRequest
 ): Promise<XsollaCheckoutResponse> => {
+    const isDev = import.meta.env.DEV;
     try {
         const token = await user.getIdToken();
         const response = await fetchFromApi(`/api/users/${user.uid}/xsolla/checkout-token`, {
@@ -473,16 +474,20 @@ export const purchaseSubscription = async (
 
             return {
                 success: false,
-                error: detailMessage || json?.error || `Checkout Error: ${response.status}`,
+                error: isDev
+                    ? detailMessage || json?.error || `Checkout Error: ${response.status}`
+                    : json?.error || `Checkout Error: ${response.status}`,
                 status: json?.status || response.status,
-                details: json?.details,
+                details: isDev ? json?.details : undefined,
             };
         }
 
         const json = await response.json();
         return json;
     } catch (error: any) {
-        console.error('Purchase failed:', error);
+        if (isDev) {
+            console.error('Purchase failed:', error);
+        }
         return {
             success: false,
             error: error?.message || 'Unknown error',
