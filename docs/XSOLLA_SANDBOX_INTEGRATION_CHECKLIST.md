@@ -1457,6 +1457,16 @@ sku: ...
 - [x] 원격 D1에서 `xsolla_webhook_events` 존재 재검증 완료
 - [x] backend worker tests 통과
   - `34 passed`
+- [x] 테스트 결제 복귀 URL을 sandbox 요청 origin 우선으로 보정
+  - 테스트 서버 결제 성공 후 `my_jello` 탭 기준 테스트 origin 복귀
+  - production 은 env 기반 return URL 유지
+- [x] 결제 UI / 팝업 다국어 점검 및 번역 키 정리
+  - checkout overlay 영문 하드코딩 제거
+  - 취소 실패 / 구매 실패 팝업을 locale key 기준으로 통일
+  - `en`, `en-UK`, `ko`, `ja`, `es-ES`, `fr-FR`, `pt-PT`, `id-ID`, `vi-VN` 반영
+- [x] 결제/구독 취소 실패 시스템 팝업(`alert`)을 내부 모달로 전환
+  - 현재 상태: 실패 메시지는 내부 모달로 노출되도록 변경
+  - 남은 확인: 실제 실패 시나리오 실결선 재현 후 문구/레이아웃 확인 필요
 
 ## 지금 시점의 사용자 할 일
 
@@ -1542,6 +1552,8 @@ sku: ...
   - full-screen checkout overlay
   - 로딩/중복 클릭 방지
   - 결제 완료 후 `my_jello` 탭 복귀
+  - sandbox 결제 완료 후 테스트 origin 기준 복귀
+  - 결제/취소 팝업 다국어 정리 완료
 - 1차 보안 보강 완료
   - postMessage origin 검증 강화
   - webhook body size / rate limit 보강
@@ -1556,7 +1568,7 @@ sku: ...
 
 ### 현재 기준 테스트/검증 상태
 
-- 백엔드 테스트 스위트: `48 passed`
+- 백엔드 테스트 스위트: `50 passed`
 - 프론트 빌드: `npm run build` 통과
 
 ### 현재 미완료

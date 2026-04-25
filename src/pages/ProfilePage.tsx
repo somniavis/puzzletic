@@ -30,6 +30,7 @@ export const ProfilePage: React.FC = () => {
     const location = useLocation();
     const { t, i18n } = useTranslation();
     const [showCancelModal, setShowCancelModal] = React.useState(false);
+    const [feedbackModal, setFeedbackModal] = React.useState<{ title: string; message: string } | null>(null);
     const [activeTab, setActiveTab] = React.useState<ProfileTab>('my_jello');
     const [isPassUnlocked, setIsPassUnlocked] = React.useState(false);
     const [parentGateCode, setParentGateCode] = React.useState<number[]>(() => createParentGateCode());
@@ -134,24 +135,27 @@ export const ProfilePage: React.FC = () => {
             return;
         }
 
-        if (result.message) {
-            alert(result.message);
-            return;
-        }
+        const localizedMessage = result.reason === 'already_in_progress'
+            ? t('profile.cancelErrors.alreadyInProgress')
+            : result.reason === 'rate_limited'
+                ? t('profile.cancelErrors.rateLimited')
+                : result.reason === 'xsolla_managed'
+                    ? t('profile.cancelErrors.managedExternally')
+                    : t('profile.cancelFailure');
 
-        alert(t('profile.cancelFailure', {
-            defaultValue: 'Unable to cancel the subscription right now. Please try again shortly.',
-        }));
+        setFeedbackModal({
+            title: t('profile.cancelSubscription'),
+            message: localizedMessage,
+        });
     };
 
     const handlePurchase = async (durationMonths: 3 | 12) => {
         const success = await purchasePlan(durationMonths);
         if (!success) {
-            alert(t('profile.purchaseResult.failureDetailed', {
-                defaultValue: import.meta.env.DEV
-                    ? 'Purchase failed. Please check the browser console for the detailed server error.'
-                    : 'Purchase failed. Please try again shortly.',
-            }));
+            setFeedbackModal({
+                title: t('profile.checkoutTitle'),
+                message: t('profile.purchaseResult.failureDetailed'),
+            });
         }
     };
 
@@ -801,11 +805,16 @@ export const ProfilePage: React.FC = () => {
             )}
 
             {checkoutOverlay.isOpen && checkoutOverlay.checkoutUrl && (
-                <div className="xsolla-checkout-overlay" role="dialog" aria-modal="true" aria-label="Xsolla checkout">
+                <div
+                    className="xsolla-checkout-overlay"
+                    role="dialog"
+                    aria-modal="true"
+                    aria-label={t('profile.checkoutAriaLabel')}
+                >
                     <div className="xsolla-checkout-shell">
                         <div className="xsolla-checkout-header">
                             <div className="xsolla-checkout-copy">
-                                <span className="xsolla-checkout-kicker">Secure Checkout</span>
+                                <span className="xsolla-checkout-kicker">{t('profile.checkoutKicker')}</span>
                                 <strong>{t('profile.checkoutTitle')}</strong>
                             </div>
                             <button
@@ -965,6 +974,98 @@ export const ProfilePage: React.FC = () => {
                     </div>
                 )
             }
+
+            {feedbackModal && (
+                <div
+                    style={{
+                        position: 'fixed',
+                        top: 0,
+                        left: 0,
+                        width: '100%',
+                        height: '100%',
+                        backgroundColor: 'rgba(0,0,0,0.6)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        zIndex: 2100,
+                        animation: 'fadeIn 0.3s ease-out',
+                    }}
+                >
+                    <div
+                        className="auth-container"
+                        style={{
+                            maxWidth: '320px',
+                            padding: '1.5rem',
+                            animation: 'popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+                            textAlign: 'center',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: '1rem',
+                            background: 'white',
+                            borderRadius: '20px',
+                            boxShadow: '0 10px 25px rgba(0,0,0,0.2)',
+                            position: 'relative',
+                        }}
+                        role="dialog"
+                        aria-modal="true"
+                        aria-label={feedbackModal.title}
+                    >
+                        <button
+                            onClick={() => setFeedbackModal(null)}
+                            style={{
+                                position: 'absolute',
+                                top: '16px',
+                                right: '16px',
+                                background: 'transparent',
+                                border: '3px solid #ccc',
+                                borderRadius: '12px',
+                                width: '40px',
+                                height: '40px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                cursor: 'pointer',
+                                fontSize: '1.5rem',
+                                color: '#999',
+                                boxShadow: '0 3px 0 #bbb',
+                                transition: 'all 0.1s ease',
+                                padding: 0,
+                                lineHeight: 1,
+                            }}
+                        >
+                            ✕
+                        </button>
+
+                        <div style={{ fontSize: '3rem', marginBottom: '10px', marginTop: '10px' }}>⚠️</div>
+
+                        <h3 style={{ margin: '0 0 8px 0', color: '#443', fontSize: '1.35rem', fontWeight: 800 }}>
+                            {feedbackModal.title}
+                        </h3>
+                        <p style={{ margin: '0 0 24px 0', color: '#666', fontSize: '0.95rem', lineHeight: '1.5', whiteSpace: 'pre-line' }}>
+                            {feedbackModal.message}
+                        </p>
+
+                        <button
+                            onClick={() => setFeedbackModal(null)}
+                            style={{
+                                width: '100%',
+                                background: 'linear-gradient(180deg, #7d8cff 0%, #6270e4 100%)',
+                                color: 'white',
+                                border: 'none',
+                                padding: '16px',
+                                borderRadius: '16px',
+                                fontSize: '1.05rem',
+                                fontWeight: '800',
+                                cursor: 'pointer',
+                                boxShadow: '0 4px 0 #4b58c4, 0 5px 15px rgba(98, 112, 228, 0.35)',
+                                letterSpacing: '0.5px',
+                            }}
+                        >
+                            {t('common.confirm')}
+                        </button>
+                    </div>
+                </div>
+            )}
         </div >
     );
 };
