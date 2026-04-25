@@ -1,5 +1,6 @@
 -- Clear legacy pre-Xsolla subscription states.
 -- This only targets old internal plan ids that should no longer exist.
+-- Historical cleanup for legacy schema before the entitlement refactor.
 
 UPDATE users
 SET

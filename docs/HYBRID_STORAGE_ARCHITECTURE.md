@@ -61,7 +61,7 @@ Cloudflare Worker는 모든 사용자 데이터 API 요청에 대해 Firebase ID
 ### 적용 엔드포인트
 - `GET /api/users/:uid`
 - `POST /api/users/:uid`
-- `POST /api/users/:uid/purchase`
+- `POST /api/users/:uid/xsolla/checkout-token`
 - `POST /api/users/:uid/cancel`
 
 ### 비용/성능 메모
@@ -176,7 +176,7 @@ const gameData = body.game_data || body.gameData;
 | 필드 | 개별 컬럼 | game_data |
 |------|-----------|-----------|
 | `level`, `xp`, `gro` | ✅ (통계용) | ✅ |
-| `is_premium`, `subscription_end`, `subscription_plan` | ✅ (구독/권한용) | ✅ (보조) |
+| `entitlement_status`, `entitlement_kind`, `entitlement_plan`, `entitlement_end`, `billing_reference_*` | ✅ (결제/권한용) | ✅ (보조) |
 | `hasCharacter`, `stats` | ❌ | ✅ |
 | `poops`, `bugs` | ❌ | ✅ |
 | `hallOfFame` | ❌ | ✅ |
@@ -185,17 +185,22 @@ const gameData = body.game_data || body.gameData;
 - 개별 컬럼 = D1 대시보드/통계 쿼리용
 - `game_data` = 게임 상태 복원의 **유일한 원천**
 
-### 구독 컬럼 정합성 (중요)
-- Worker 구독 로직(`purchase/cancel`)은 아래 컬럼이 DB에 반드시 있어야 동작합니다.
-  - `is_premium` (0/1)
-  - `subscription_end` (만료 timestamp)
-  - `subscription_plan` (`3_months` / `12_months`)
-- 컬럼이 없으면 결제/해지 쿼리가 실패하여 프리미엄 권한이 반영되지 않습니다.
+### 결제 컬럼 정합성 (중요)
+- Worker 결제 로직(`xsolla/checkout-token`, webhook, `cancel`)은 아래 컬럼이 DB에 반드시 있어야 동작합니다.
+  - `entitlement_status`
+  - `entitlement_kind`
+  - `entitlement_plan`
+  - `entitlement_end`
+  - `billing_provider`
+  - `billing_reference_id`
+  - `billing_reference_type`
+- webhook 멱등 처리를 위해 `xsolla_webhook_events` 테이블도 필요합니다.
+- 컬럼/테이블이 없으면 결제 검증, 권한 반영, 해지 상태 동기화가 실패합니다.
 
 ### 운영 반영 체크리스트 (DB Migration)
 1. 운영 D1에 아래 SQL을 실행해 컬럼을 추가합니다.
 2. 파일: `backend/api-grogrojello/migrations/2026-02-13_add_subscription_columns.sql`
-3. 배포 후 `purchase`/`cancel` API를 실제 계정으로 호출해 DB 값이 변경되는지 확인합니다.
+3. 배포 후 `xsolla/checkout-token`, webhook, `cancel` 흐름 기준으로 DB 값이 변경되는지 확인합니다.
 
 ---
 

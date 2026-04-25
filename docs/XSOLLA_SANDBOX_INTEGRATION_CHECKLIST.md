@@ -1,12 +1,14 @@
 # Xsolla 샌드박스 결제 연동 체크리스트
 
 > 마지막 업데이트: 2026-04-25
-> 상태: 레거시 코드/데이터 정리 완료, 최소 event ledger + 웹훅 멱등 처리 완료, 결제 상태 모델을 `entitlement_*` / `billing_reference_*` 구조로 전환 완료, 구독권/기간권 1차 실결선 검증 완료, 1차 보안 보강 완료, 다음 우선순위는 `기간권 refund/order_canceled 실검증`과 `D1 migration history 정상화`
+> 상태: 레거시 코드/데이터 정리 완료, 최소 event ledger + 웹훅 멱등 처리 완료, 결제 상태 모델을 `entitlement_*` / `billing_reference_*` 구조로 전환 완료, 구독권/기간권 1차 실결선 검증 완료, 1차 보안 보강 완료, 현재 우선순위는 `D1 migration history 정상화`와 `문서 레거시 billing 표현 정리`, `기간권 refund/order_canceled 실검증`은 후순위
 > 현재 확인: Xsolla 결제 페이지 iframe 오버레이, webhook 기반 entitlement 반영, 구독 취소 `non_renewing` UX 및 Xsolla 콘솔 `비갱신` 확인, 원격 D1 레거시 plan(`3_months`, `12_months`) 22건 초기화 완료, `xsolla_webhook_events` 원격 생성 완료, 원격 D1 `users` entitlement 스키마 반영 완료, duplicate `order_paid/create_subscription/update_subscription/cancel_subscription/non_renewal_subscription/refund` 테스트 통과, `mismatched refund transaction` 무시 테스트 추가, 결제 완료 후 복귀 탭 `my_jello` 전환 완료
 
 ## 목적
 
 이 문서는 `Puzzleletic`에 Xsolla 기반 결제 시스템을 **샌드박스 모드부터 안전하게** 붙이기 위한 전체 단계와 체크리스트를 정리합니다.
+
+운영 기준 요약은 `docs/BILLING_OPERATIONS_RUNBOOK.md` 를 우선 참고합니다.
 
 현재 코드베이스 기준 전제:
 
@@ -592,9 +594,9 @@ LIMIT 10;
 
 ### 레거시 D1 정리 SQL
 
-레거시 테스트 계정 정리는 **구형 billing schema 기준으로 이미 실행 완료**했습니다. 아래 SQL은 당시 실행 기준을 기록용으로 남긴 것입니다.
+레거시 테스트 계정 정리는 **구형 billing schema 기준으로 이미 실행 완료**했습니다. 아래 SQL은 현재 운영 쿼리가 아니라 과거 정리 작업의 기록입니다.
 
-- 조회 SQL
+- 조회 SQL (historical)
 
 ```sql
 SELECT
@@ -609,7 +611,7 @@ FROM users
 WHERE subscription_plan IN ('3_months', '12_months');
 ```
 
-- 초기화 SQL
+- 초기화 SQL (historical)
 
 ```sql
 UPDATE users
@@ -637,6 +639,19 @@ WHERE subscription_plan IN ('3_months', '12_months');
   - 결제 안정화 작업을 먼저 진행
   - 필요한 새 스키마는 직접 SQL로 반영해 운영 불일치를 막는다
   - 이후 별도 작업으로 migration history baseline을 맞춘다
+- 현재 정리 산출물:
+  - runbook: `docs/D1_MIGRATION_BASELINE_RUNBOOK.md`
+  - operations runbook: `docs/BILLING_OPERATIONS_RUNBOOK.md`
+  - helper SQL: `backend/api-grogrojello/sql/d1_migrations_baseline.sql`
+- 2026-04-25 추가 차단 이슈:
+  - `wrangler login` OAuth 재시도 3회 모두 Cloudflare OAuth 경로에서 실패
+  - 브라우저 콘솔/페이지 기준:
+    - `503`
+    - `no healthy upstream`
+  - 로컬 callback server(`localhost:8976`)는 열려 있었으므로, 현재 판단은 로컬 환경 문제가 아니라 Cloudflare OAuth upstream 장애 가능성이 높음
+  - 대응:
+    - Wrangler OAuth 정상화 시 remote baseline 작업 재개
+    - 필요 시 `CF_API_TOKEN` 방식으로 우회
 
 ### Phase 4. 프론트 연동
 
@@ -1263,10 +1278,11 @@ sku: ...
 ### 레거시 경로 처리
 
 - `POST /api/users/:uid/purchase`
-  - 새 구조가 붙으면 제거 또는 항상 실패 응답으로 전환
+  - 현재는 **이미 차단된 레거시 경로**로 관리
+  - 현 코드 기준 기대 동작은 `404 Unknown API path`
 - `POST /api/users/:uid/cancel`
-  - Xsolla 타입별 정책 확정 후 교체
-  - 적어도 즉시 상태 반영용 테스트 경로로는 남기지 않음
+  - 현재는 구독형 Xsolla 취소 요청 진입점으로 유지
+  - 단, webhook 검증 이전에 entitlement를 직접 확정하는 즉시 반영 경로로는 사용하지 않음
 
 ### 상품 ID와 서버 매핑
 
@@ -1324,8 +1340,8 @@ sku: ...
 
 ### 레거시 결제 흐름 처리 원칙
 
-- 기존 `POST /api/users/:uid/purchase` 와 `POST /api/users/:uid/cancel` 는 실제 운영 결제 구조로 승계하지 않습니다.
-- 이 경로들은 임시 테스트용으로만 간주합니다.
+- 기존 `POST /api/users/:uid/purchase` 는 실제 운영 결제 구조로 승계하지 않으며 현재는 차단된 레거시 경로입니다.
+- `POST /api/users/:uid/cancel` 는 운영 경로로 유지하되, webhook 이전 entitlement 확정 경로로 사용하지 않습니다.
 - 실제 Xsolla 연동 시에는 아래 원칙으로 새로 구성합니다.
   - 서버 토큰 발급 endpoint 분리
   - Xsolla webhook 검증 endpoint 분리

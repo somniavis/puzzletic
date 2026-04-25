@@ -1,3 +1,6 @@
+-- Current canonical schema for fresh database bootstrap.
+-- For historical billing migration notes, see migrations/README.md.
+
 DROP TABLE IF EXISTS users;
 CREATE TABLE users (
   uid TEXT PRIMARY KEY,

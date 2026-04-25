@@ -107,14 +107,14 @@
 ### 🔐 백엔드 인증/인가 강화 (Worker AuthN/AuthZ)
 - **Firebase ID Token 검증 추가**: Cloudflare Worker가 `Authorization: Bearer <token>`을 필수로 검사하고, 토큰 서명/클레임(`iss`, `aud`, `exp`, `iat`, `sub`)을 검증하도록 개선.
 - **UID 위변조 차단**: URL 경로의 `:uid`와 토큰의 `sub`가 다를 경우 `403 UID mismatch`로 즉시 차단.
-- **적용 범위**: `GET /api/users/:uid`, `POST /api/users/:uid`, `POST /api/users/:uid/purchase`, `POST /api/users/:uid/cancel` 전부 인증 게이트 적용.
+- **적용 범위**: `GET /api/users/:uid`, `POST /api/users/:uid`, `POST /api/users/:uid/cancel`, 이후 추가된 Xsolla 결제 경로에도 동일 인증 게이트를 승계.
 - **JWK 캐시 적용**: Google Secure Token JWK를 `Cache-Control max-age` 기준으로 캐싱하여 검증 비용 최소화.
 - **환경변수화**: Worker 설정(`wrangler.jsonc`)에 `FIREBASE_PROJECT_ID`를 명시해 프로젝트 식별값을 코드에서 분리.
 
-### 🧾 구독 스키마 정합성 보강 (Subscription Schema Consistency)
-- `users` 테이블에 구독 컬럼 추가: `is_premium`, `subscription_end`, `subscription_plan`.
-- 운영 DB 반영용 SQL 추가: `backend/api-grogrojello/migrations/2026-02-13_add_subscription_columns.sql`.
-- `purchase/cancel` 엔드포인트를 **UPSERT**로 변경해, 유저 행이 없어도 구독 상태가 누락 없이 저장되도록 보강.
+### 🧾 결제 스키마 히스토리 메모
+- 이 시점에는 legacy subscription 컬럼(`is_premium`, `subscription_end`, `subscription_plan`) 기반 보강이 먼저 들어갔습니다.
+- 현재 운영 기준은 해당 구조가 아니라 `entitlement_*` / `billing_reference_*` 스키마입니다.
+- 따라서 위 legacy 항목은 **히스토리 기록**으로만 보고, 현재 결제 구조 판단 기준으로 사용하지 않습니다.
 
 ### ⚠️ 보안 메모
 - 기존의 `XP/GRO` 급변 제한(Delta Validation)은 **값 검증**이고, 이번 수정은 **요청 주체 검증(인증/인가)** 입니다.

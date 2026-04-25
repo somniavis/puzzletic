@@ -106,8 +106,6 @@ const XSOLLA_SUBSCRIPTION_TOKEN_URL = (merchantId) => `https://api.xsolla.com/me
 const XSOLLA_CATALOG_TOKEN_URL = (projectId) => `https://store.xsolla.com/api/v3/project/${projectId}/admin/payment/token`;
 const XSOLLA_UPDATE_SUBSCRIPTION_URL = (projectId, userId, subscriptionId) =>
 	`https://api.xsolla.com/merchant/v2/projects/${projectId}/users/${encodeURIComponent(userId)}/subscriptions/${subscriptionId}`;
-const XSOLLA_REFUND_URL = (merchantId, transactionId) =>
-	`https://api.xsolla.com/merchant/v2/merchants/${merchantId}/reports/transactions/${transactionId}/refund`;
 const DEFAULT_XSOLLA_RETURN_URL = 'https://www.grogrojello.com/profile?tab=my_jello';
 const XSOLLA_RETURN_PATH = '/profile?tab=my_jello';
 const XSOLLA_ENVIRONMENTS = {
@@ -245,7 +243,7 @@ const getUserRouteInfo = (path) => {
 	const nestedSubPath = pathSegments[5] || '';
 	const extraSegments = pathSegments.length > 6;
 
-	if (!uid || uid === 'purchase') {
+	if (!uid) {
 		return { ok: false, status: 400, error: 'Missing UID' };
 	}
 
@@ -253,7 +251,7 @@ const getUserRouteInfo = (path) => {
 		return { ok: false, status: 404, error: 'Unknown API path' };
 	}
 
-	const isAllowedDirectSubPath = ['purchase', 'cancel', 'daily-routine-claim'].includes(subPath);
+	const isAllowedDirectSubPath = ['cancel', 'daily-routine-claim'].includes(subPath);
 	const isAllowedNestedSubPath = subPath === 'xsolla' && nestedSubPath === 'checkout-token';
 
 	if (subPath && !isAllowedDirectSubPath && !isAllowedNestedSubPath) {
@@ -286,7 +284,6 @@ const validateApiRequestShape = (request, routeInfo) => {
 	if (request.method === 'POST') {
 		const requiresJsonBody =
 			!routeInfo.subPath ||
-			routeInfo.subPath === 'purchase' ||
 			routeInfo.subPath === 'daily-routine-claim' ||
 			(routeInfo.subPath === 'xsolla' && routeInfo.nestedSubPath === 'checkout-token');
 		if (requiresJsonBody) {
@@ -914,45 +911,6 @@ const requestXsollaSubscriptionCancellation = async (env, userId, currentPlan, s
 	};
 };
 
-const requestXsollaRefund = async (env, transactionId, email = null) => {
-	if (!isValidXsollaTransactionId(transactionId)) {
-		return {
-			ok: false,
-			status: 409,
-			body: {
-				error: 'Refund transaction ID is missing for this pass.',
-			},
-		};
-	}
-
-	const payload = {
-		description: 'User requested pass cancellation refund.',
-	};
-	if (email) {
-		payload.email = email;
-	}
-
-	const response = await fetch(
-		XSOLLA_REFUND_URL(getXsollaBaseConfig(env).merchantId, transactionId),
-		{
-			method: 'PUT',
-			headers: createXsollaAuthHeaders(env),
-			body: JSON.stringify(payload),
-		}
-	);
-
-	if (!response.ok) {
-		throw await parseXsollaError(response);
-	}
-
-	const body = await response.json().catch(() => null);
-	return {
-		ok: true,
-		transactionId,
-		payload: body,
-	};
-};
-
 const applySubscriptionGrant = async (env, uid, product, endTimestampMs, now, xsollaSubscriptionId = null) => {
 	const subscriptionEnd = Number.isFinite(endTimestampMs) ? endTimestampMs : addDurationMonths(now, product.durationMonths);
 	await upsertEntitlement(env, uid, {
@@ -1202,122 +1160,122 @@ const processXsollaWebhook = async (env, payload, now) => {
 
 	try {
 		if (notificationType === 'create_subscription' || notificationType === 'update_subscription') {
-			const uid = payload?.user?.id;
-		const planId = payload?.subscription?.plan_id;
-		const product = getXsollaProductByIdentifier(env, planId);
-		if (!uid || !product) {
+			const uid = eventContext.uid;
+			const planId = payload?.subscription?.plan_id;
+			const product = getXsollaProductByIdentifier(env, planId);
+			if (!uid || !product) {
 				await finalizeXsollaWebhookEvent(env, eventContext.eventKey, 'failed', now);
 				return { status: 400, body: { error: 'Unknown subscription webhook payload' } };
-		}
+			}
 
-		const endTimestampMs =
-			parseIsoTimestamp(payload?.subscription?.date_next_charge) ||
-			parseIsoTimestamp(payload?.subscription?.date_end) ||
-			null;
-		await applySubscriptionGrant(
-			env,
-			uid,
-			product,
-			endTimestampMs,
-			now,
-			eventContext.xsollaSubscriptionId
-		);
-			await finalizeXsollaWebhookEvent(env, eventContext.eventKey, 'processed', now);
-		return { status: 204 };
-	}
-
-	if (notificationType === 'cancel_subscription') {
-		const uid = payload?.user?.id;
-		const planId = payload?.subscription?.plan_id;
-		const product = getXsollaProductByIdentifier(env, planId);
-		if (!uid) {
-			await finalizeXsollaWebhookEvent(env, eventContext.eventKey, 'failed', now);
-			return { status: 400, body: { error: 'Missing user id' } };
-		}
-		const dateEndMs = parseIsoTimestamp(payload?.subscription?.date_end);
-		await applySubscriptionCancellation(
-			env,
-			uid,
-			product,
-			dateEndMs,
-			now,
-			eventContext.xsollaSubscriptionId
-		);
-		await finalizeXsollaWebhookEvent(env, eventContext.eventKey, 'processed', now);
-		return { status: 204 };
-	}
-
-	if (notificationType === 'non_renewal_subscription') {
-		const uid = payload?.user?.id;
-		const planId = payload?.subscription?.plan_id;
-		const product = getXsollaProductByIdentifier(env, planId);
-		if (!uid) {
-			await finalizeXsollaWebhookEvent(env, eventContext.eventKey, 'failed', now);
-			return { status: 400, body: { error: 'Missing user id' } };
-		}
-		const dateEndMs =
-			parseIsoTimestamp(payload?.subscription?.date_end) ||
-			parseIsoTimestamp(payload?.subscription?.date_next_charge) ||
-			null;
-		await applySubscriptionNonRenewal(
-			env,
-			uid,
-			product,
-			dateEndMs,
-			now,
-			eventContext.xsollaSubscriptionId
-		);
-		await finalizeXsollaWebhookEvent(env, eventContext.eventKey, 'processed', now);
-		return { status: 204 };
-	}
-
-	if (notificationType === 'order_paid') {
-		const uid = eventContext.uid;
-		if (!uid) {
-			await finalizeXsollaWebhookEvent(env, eventContext.eventKey, 'failed', now);
-			return { status: 400, body: { error: 'Missing user id' } };
-		}
-
-		const durationProducts = eventContext.durationProducts;
-		if (durationProducts.length === 0) {
+			const endTimestampMs =
+				parseIsoTimestamp(payload?.subscription?.date_next_charge) ||
+				parseIsoTimestamp(payload?.subscription?.date_end) ||
+				null;
+			await applySubscriptionGrant(
+				env,
+				uid,
+				product,
+				endTimestampMs,
+				now,
+				eventContext.xsollaSubscriptionId
+			);
 			await finalizeXsollaWebhookEvent(env, eventContext.eventKey, 'processed', now);
 			return { status: 204 };
 		}
 
-		const paymentDateMs = parseIsoTimestamp(payload?.transaction?.payment_date) || now;
-		for (const product of durationProducts) {
-			await applyDurationItemGrant(
+		if (notificationType === 'cancel_subscription') {
+			const uid = eventContext.uid;
+			const planId = payload?.subscription?.plan_id;
+			const product = getXsollaProductByIdentifier(env, planId);
+			if (!uid) {
+				await finalizeXsollaWebhookEvent(env, eventContext.eventKey, 'failed', now);
+				return { status: 400, body: { error: 'Missing user id' } };
+			}
+			const dateEndMs = parseIsoTimestamp(payload?.subscription?.date_end);
+			await applySubscriptionCancellation(
 				env,
 				uid,
 				product,
-				paymentDateMs,
+				dateEndMs,
 				now,
-				eventContext.xsollaTransactionId
+				eventContext.xsollaSubscriptionId
 			);
+			await finalizeXsollaWebhookEvent(env, eventContext.eventKey, 'processed', now);
+			return { status: 204 };
 		}
-		await finalizeXsollaWebhookEvent(env, eventContext.eventKey, 'processed', now);
-		return { status: 204 };
-	}
 
-	if (notificationType === 'order_canceled' || notificationType === 'refund') {
-		const uid = eventContext.uid;
-		const revokedDurationProducts = eventContext.durationProducts;
-
-		if (uid && revokedDurationProducts.length > 0) {
-			await revokeDurationAccess(env, uid, eventContext.xsollaTransactionId, now);
+		if (notificationType === 'non_renewal_subscription') {
+			const uid = eventContext.uid;
+			const planId = payload?.subscription?.plan_id;
+			const product = getXsollaProductByIdentifier(env, planId);
+			if (!uid) {
+				await finalizeXsollaWebhookEvent(env, eventContext.eventKey, 'failed', now);
+				return { status: 400, body: { error: 'Missing user id' } };
+			}
+			const dateEndMs =
+				parseIsoTimestamp(payload?.subscription?.date_end) ||
+				parseIsoTimestamp(payload?.subscription?.date_next_charge) ||
+				null;
+			await applySubscriptionNonRenewal(
+				env,
+				uid,
+				product,
+				dateEndMs,
+				now,
+				eventContext.xsollaSubscriptionId
+			);
+			await finalizeXsollaWebhookEvent(env, eventContext.eventKey, 'processed', now);
+			return { status: 204 };
 		}
+
+		if (notificationType === 'order_paid') {
+			const uid = eventContext.uid;
+			if (!uid) {
+				await finalizeXsollaWebhookEvent(env, eventContext.eventKey, 'failed', now);
+				return { status: 400, body: { error: 'Missing user id' } };
+			}
+
+			const durationProducts = eventContext.durationProducts;
+			if (durationProducts.length === 0) {
+				await finalizeXsollaWebhookEvent(env, eventContext.eventKey, 'processed', now);
+				return { status: 204 };
+			}
+
+			const paymentDateMs = parseIsoTimestamp(payload?.transaction?.payment_date) || now;
+			for (const product of durationProducts) {
+				await applyDurationItemGrant(
+					env,
+					uid,
+					product,
+					paymentDateMs,
+					now,
+					eventContext.xsollaTransactionId
+				);
+			}
+			await finalizeXsollaWebhookEvent(env, eventContext.eventKey, 'processed', now);
+			return { status: 204 };
+		}
+
+		if (notificationType === 'order_canceled' || notificationType === 'refund') {
+			const uid = eventContext.uid;
+			const revokedDurationProducts = eventContext.durationProducts;
+
+			if (uid && revokedDurationProducts.length > 0) {
+				await revokeDurationAccess(env, uid, eventContext.xsollaTransactionId, now);
+			}
+			await finalizeXsollaWebhookEvent(env, eventContext.eventKey, 'processed', now);
+			return { status: 204 };
+		}
+
+		if (notificationType === 'payment') {
+			// Processed later with transaction history/idempotency support.
+			await finalizeXsollaWebhookEvent(env, eventContext.eventKey, 'processed', now);
+			return { status: 204 };
+		}
+
 		await finalizeXsollaWebhookEvent(env, eventContext.eventKey, 'processed', now);
 		return { status: 204 };
-	}
-
-	if (notificationType === 'payment') {
-		// Processed later with transaction history/idempotency support.
-		await finalizeXsollaWebhookEvent(env, eventContext.eventKey, 'processed', now);
-		return { status: 204 };
-	}
-
-	await finalizeXsollaWebhookEvent(env, eventContext.eventKey, 'processed', now);
-	return { status: 204 };
 	} catch (error) {
 		await finalizeXsollaWebhookEvent(env, eventContext.eventKey, 'failed', now);
 		throw error;

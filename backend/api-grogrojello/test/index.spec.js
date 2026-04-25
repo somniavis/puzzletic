@@ -191,6 +191,36 @@ describe('Worker auth gate', () => {
 		expect(response.status).toBe(401);
 	});
 
+	it('returns 404 for removed legacy purchase endpoint', async () => {
+		const now = Math.floor(Date.now() / 1000);
+		const token = await signJwt(privateKey, publicJwk.kid, {
+			iss: `https://securetoken.google.com/${PROJECT_ID}`,
+			aud: PROJECT_ID,
+			sub: userId,
+			iat: now - 30,
+			exp: now + 3600,
+			auth_time: now - 30,
+		});
+
+		await withMockedJwks(publicJwk, async () => {
+			const request = new Request(`http://example.com/api/users/${userId}/purchase`, {
+				method: 'POST',
+				headers: {
+					Authorization: `Bearer ${token}`,
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({ productId: 'subscription_12_months' }),
+			});
+			const ctx = createExecutionContext();
+			const response = await worker.fetch(request, env, ctx);
+			await waitOnExecutionContext(ctx);
+
+			expect(response.status).toBe(404);
+			const body = await response.json();
+			expect(body.error).toBe('Unknown API path');
+		});
+	});
+
 	it('returns 503 for xsolla checkout token endpoint when xsolla config is incomplete', async () => {
 		const now = Math.floor(Date.now() / 1000);
 		const token = await signJwt(privateKey, publicJwk.kid, {
@@ -1072,6 +1102,44 @@ describe('Worker auth gate', () => {
 		expect(stored.entitlement_plan).toBe('subscription_3_months');
 		expect(stored.entitlement_end).toBe(Date.parse('2026-07-24T00:00:00+00:00'));
 		expect(stored.billing_reference_id).toBe('551122');
+		expect(stored.billing_reference_type).toBe('subscription_id');
+		delete env.XSOLLA_WEBHOOK_SECRET;
+		delete env.XSOLLA_REGULAR_SUBSCRIPTION_3_MONTHS_PLAN_ID;
+	});
+
+	it('grants subscription access when create_subscription webhook uses user.external_id', async () => {
+		env.XSOLLA_WEBHOOK_SECRET = 'test-secret';
+		env.XSOLLA_REGULAR_SUBSCRIPTION_3_MONTHS_PLAN_ID = 'WZ401Sj5';
+		const rawBody = JSON.stringify({
+			notification_type: 'create_subscription',
+			user: { external_id: userId },
+			subscription: {
+				plan_id: 'WZ401Sj5',
+				subscription_id: 551123,
+				date_next_charge: '2026-07-24T00:00:00+00:00',
+			},
+		});
+		const signature = await createXsollaSignature(rawBody, env.XSOLLA_WEBHOOK_SECRET);
+		const request = new Request('http://example.com/api/xsolla/webhook', {
+			method: 'POST',
+			headers: {
+				authorization: `Signature ${signature}`,
+			},
+			body: rawBody,
+		});
+		const ctx = createExecutionContext();
+		const response = await worker.fetch(request, env, ctx);
+		await waitOnExecutionContext(ctx);
+
+		expect(response.status).toBe(204);
+		const stored = await env.DB.prepare(
+			'SELECT entitlement_status, entitlement_kind, entitlement_plan, entitlement_end, billing_reference_id, billing_reference_type FROM users WHERE uid = ?'
+		).bind(userId).first();
+		expect(stored.entitlement_status).toBe('active');
+		expect(stored.entitlement_kind).toBe('subscription');
+		expect(stored.entitlement_plan).toBe('subscription_3_months');
+		expect(stored.entitlement_end).toBe(Date.parse('2026-07-24T00:00:00+00:00'));
+		expect(stored.billing_reference_id).toBe('551123');
 		expect(stored.billing_reference_type).toBe('subscription_id');
 		delete env.XSOLLA_WEBHOOK_SECRET;
 		delete env.XSOLLA_REGULAR_SUBSCRIPTION_3_MONTHS_PLAN_ID;

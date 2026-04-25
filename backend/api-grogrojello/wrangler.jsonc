@@ -21,7 +21,9 @@
 		{
 			"binding": "DB",
 			"database_name": "grogrojello-db",
-			"database_id": "d22665ca-26f8-4cf3-8ff3-a16ad58745ea"
+			"database_id": "d22665ca-26f8-4cf3-8ff3-a16ad58745ea",
+			"migrations_table": "d1_migrations",
+			"migrations_dir": "migrations"
 		}
 	],
 	"vars": {

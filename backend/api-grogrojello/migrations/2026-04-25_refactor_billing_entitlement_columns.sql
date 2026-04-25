@@ -1,3 +1,7 @@
+-- Historical refactor migration.
+-- Rebuilds users from the legacy billing schema into the current entitlement schema.
+-- This assumes old columns such as subscription_end/subscription_plan/xsolla_* already exist.
+
 PRAGMA foreign_keys=OFF;
 
 CREATE TABLE users__new (

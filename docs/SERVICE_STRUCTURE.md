@@ -37,7 +37,7 @@ User management is handled via Firebase Authentication.
 - Applies to:
   - `GET /api/users/:uid`
   - `POST /api/users/:uid`
-  - `POST /api/users/:uid/purchase`
+  - `POST /api/users/:uid/xsolla/checkout-token`
   - `POST /api/users/:uid/cancel`
 - Existing abnormal value checks (e.g. XP/GRO delta limits) remain as a secondary guard; token verification is the primary guard.
 
@@ -61,11 +61,22 @@ User management is handled via Firebase Authentication.
   - `type`
   - `retryAfterMs`
 
-### Subscription Schema Requirement (D1)
-- Premium APIs require DB columns: `is_premium`, `subscription_end`, `subscription_plan`.
-- If migration is missing, `/purchase` and `/cancel` can fail even when auth/token is valid.
-- Migration file:
-  - `backend/api-grogrojello/migrations/2026-02-13_add_subscription_columns.sql`
+### Billing Schema Requirement (D1)
+- Premium APIs now use entitlement columns, not the old `is_premium` / `subscription_*` shape.
+- Required columns:
+  - `entitlement_status`
+  - `entitlement_kind`
+  - `entitlement_plan`
+  - `entitlement_end`
+  - `billing_provider`
+  - `billing_reference_id`
+  - `billing_reference_type`
+- Required webhook ledger table:
+  - `xsolla_webhook_events`
+- If these migrations are missing, Xsolla checkout verification, webhook processing, and cancellation sync can fail even when auth/token is valid.
+- Relevant migration files:
+  - `backend/api-grogrojello/migrations/2026-04-25_refactor_billing_entitlement_columns.sql`
+  - `backend/api-grogrojello/migrations/2026-04-25_add_xsolla_webhook_events.sql`
 
 ## 3. Directory Structure Updates
 we have organized the codebase to separate "Pages" from "Components".
