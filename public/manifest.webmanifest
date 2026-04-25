@@ -1,7 +1,7 @@
 {
-  "name": "Puzzleletic",
-  "short_name": "Puzzleletic",
-  "description": "Puzzleletic is a math adventure game with GroGroJello characters and parent-guided premium access.",
+  "name": "GroGroJello",
+  "short_name": "GroGroJello",
+  "description": "GroGroJello is a math adventure game with lovable jello characters and parent-guided premium access.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
