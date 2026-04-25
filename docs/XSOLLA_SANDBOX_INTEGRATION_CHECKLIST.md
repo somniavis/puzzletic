@@ -216,6 +216,17 @@
   - 조치:
     - 로컬 Vite 서버 재실행
     - 동일 URL 재오픈 가능 확인
+- [x] 신규 테스트 계정으로 기간권 구매 성공
+  - 개발도상국 언어 `vi-VN` 기준으로 `duration_3_months` checkout 정상 생성
+  - 결제 완료 후 서비스 복귀 및 premium UI 반영 확인
+  - 기간권 상품은 `entitlement_kind = duration`, `billing_reference_type = transaction_id` 기준으로 반영되도록 확인
+- [x] 기간권 결제 경로에서 확인된 치명 오류 수정
+  - one-time item checkout token 요청에 `purchase.items[0].quantity = 1` 누락
+  - one-time item `order_paid` webhook에서 `user.external_id` 계열 UID 파싱 누락
+  - 두 이슈 수정 후 백엔드 테스트 `38 passed`
+  - 기간권 webhook 실패 원인 예시:
+    - `purchase.items[0].quantity` required
+    - `order_paid` event의 `uid = null` 로 인해 D1 반영 실패
 
 ### 서버 연계 기준 합격선
 
@@ -337,6 +348,14 @@ LIMIT 10;
    - 같은 `transaction_id`면 entitlement 회수
    - 다른 `transaction_id`면 entitlement 유지
 
+### 기간권 테스트 메모
+
+- Xsolla duration 상품은 `사용 가능` 상태여야 한다
+- `duration_3_months`, `duration_12_months` 모두 `유료 아이템 + 기본 USD 가격` 저장 필요
+- 서비스 정책상 기간권 만료 후 재구매를 허용하므로 Xsolla item의 사용자별 구매 제한은 `off`가 더 적합
+- one-time item checkout token 요청에는 `purchase.items[].quantity`가 반드시 포함되어야 한다
+- one-time item webhook은 `user.id` 외에 `user.external_id` 계열 필드로 UID가 올 수 있으므로 서버에서 함께 파싱해야 한다
+
 ### 다음 세션에서 이어서 확인할 것
 
 1. 신규 계정으로 구독 구매
@@ -386,6 +405,14 @@ LIMIT 10;
   - 개발도상국:
     - 베트남 `VN`
     - 인도네시아 `ID`
+- [x] 언어 fallback 정책 확정
+  - 개발도상국 fallback 언어:
+    - 베트남어 `vi`, `vi-VN`
+    - 인도네시아어 `id`, `id-ID`
+  - 위 언어 선택 시:
+    - `duration_3_months`
+    - `duration_12_months`
+  - 프론트 노출과 실제 checkout product 결정 모두 앱 설정 언어 기준으로 통일
 - [ ] 샌드박스 테스트 범위 확정
   - 신규 결제
   - 활성 구독 연장

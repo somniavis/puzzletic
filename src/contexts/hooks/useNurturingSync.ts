@@ -9,6 +9,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import type { User } from 'firebase/auth';
+import { useTranslation } from 'react-i18next';
 import type { NurturingPersistentState } from '../../types/nurturing';
 import type { GameScoreValue, Poop, PendingPoop, Bug, BugType } from '../../types/nurturing';
 import type { BillingDurationMonths, BillingProductId } from '../../constants/billingPlans';
@@ -122,6 +123,7 @@ const toSubscriptionState = (
 };
 
 export const useNurturingSync = (user: User | null, guestId: string | null = null) => {
+    const { i18n } = useTranslation();
     const [isGlobalLoading, setIsGlobalLoading] = useState(true);
     const [isCancellingSubscription, setIsCancellingSubscription] = useState(false);
 
@@ -628,7 +630,7 @@ export const useNurturingSync = (user: User | null, guestId: string | null = nul
             isPreparing: true,
         }));
 
-        const languageCode = navigator.language || 'en';
+        const languageCode = i18n.resolvedLanguage || i18n.language || 'en';
         const product = resolveBillingProduct(durationMonths, null, languageCode);
 
         if (!product) {
@@ -651,6 +653,15 @@ export const useNurturingSync = (user: User | null, guestId: string | null = nul
         });
 
         if (!result.success || !result.checkoutUrl) {
+            if (result.error) {
+                console.error('Purchase failed with checkout-token error details', {
+                    productId: product.id,
+                    languageCode,
+                    status: result.status,
+                    details: result.details,
+                    error: result.error,
+                });
+            }
             setCheckoutOverlay({
                 isOpen: false,
                 checkoutUrl: null,
@@ -670,7 +681,7 @@ export const useNurturingSync = (user: User | null, guestId: string | null = nul
         });
 
         return true;
-    }, [checkoutOverlay.isOpen, checkoutOverlay.isPreparing, user]);
+    }, [checkoutOverlay.isOpen, checkoutOverlay.isPreparing, i18n.language, i18n.resolvedLanguage, user]);
 
     const completeCharacterCreation = useCallback(() => {
         setState((currentState) => {

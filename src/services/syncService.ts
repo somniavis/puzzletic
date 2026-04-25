@@ -421,6 +421,7 @@ export interface XsollaCheckoutResponse {
     sandbox?: boolean;
     identifierType?: 'plan_id' | 'sku';
     error?: string;
+    status?: number;
     details?: unknown;
 }
 
@@ -460,7 +461,22 @@ export const purchaseSubscription = async (
 
         if (!response.ok) {
             const json = await response.json().catch(() => null);
-            throw new Error(json?.error || `Checkout Error: ${response.status}`);
+            const detailMessage =
+                typeof json?.details === 'string'
+                    ? json.details
+                    : json?.details?.errorMessage ||
+                      json?.details?.message ||
+                      json?.details?.error ||
+                      json?.details?.errorMessageExtended
+                        ? JSON.stringify(json.details)
+                        : null;
+
+            return {
+                success: false,
+                error: detailMessage || json?.error || `Checkout Error: ${response.status}`,
+                status: json?.status || response.status,
+                details: json?.details,
+            };
         }
 
         const json = await response.json();

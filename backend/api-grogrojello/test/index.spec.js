@@ -353,6 +353,118 @@ describe('Worker auth gate', () => {
 		}
 	});
 
+	it('rejects a subscription product when vi-VN should use duration products', async () => {
+		env.XSOLLA_MERCHANT_ID = 'merchant-1';
+		env.XSOLLA_PROJECT_ID = 'project-1';
+		env.XSOLLA_API_KEY = 'api-key-1';
+		env.XSOLLA_REGULAR_SUBSCRIPTION_3_MONTHS_PLAN_ID = 'plan-sandbox-3';
+
+		const now = Math.floor(Date.now() / 1000);
+		const token = await signJwt(privateKey, publicJwk.kid, {
+			iss: `https://securetoken.google.com/${PROJECT_ID}`,
+			aud: PROJECT_ID,
+			sub: userId,
+			iat: now - 30,
+			exp: now + 3600,
+			auth_time: now - 30,
+		});
+
+		await withMockedJwks(publicJwk, async () => {
+			const request = new Request(`http://example.com/api/users/${userId}/xsolla/checkout-token`, {
+				method: 'POST',
+				headers: {
+					Authorization: `Bearer ${token}`,
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({
+					productId: 'subscription_3_months',
+					languageCode: 'vi-VN',
+				}),
+			});
+			const ctx = createExecutionContext();
+			const response = await worker.fetch(request, env, ctx);
+			await waitOnExecutionContext(ctx);
+
+			expect(response.status).toBe(400);
+			const body = await response.json();
+			expect(body.expectedProductId).toBe('duration_3_months');
+		});
+
+		delete env.XSOLLA_MERCHANT_ID;
+		delete env.XSOLLA_PROJECT_ID;
+		delete env.XSOLLA_API_KEY;
+		delete env.XSOLLA_REGULAR_SUBSCRIPTION_3_MONTHS_PLAN_ID;
+	});
+
+	it('allows a duration product when id-ID should use duration products', async () => {
+		env.XSOLLA_MERCHANT_ID = 'merchant-1';
+		env.XSOLLA_PROJECT_ID = 'project-1';
+		env.XSOLLA_API_KEY = 'api-key-1';
+		env.XSOLLA_DURATION_3_MONTHS_SKU = 'duration-3-sku';
+
+		const now = Math.floor(Date.now() / 1000);
+		const token = await signJwt(privateKey, publicJwk.kid, {
+			iss: `https://securetoken.google.com/${PROJECT_ID}`,
+			aud: PROJECT_ID,
+			sub: userId,
+			iat: now - 30,
+			exp: now + 3600,
+			auth_time: now - 30,
+		});
+
+		const originalFetch = globalThis.fetch;
+		globalThis.fetch = async (input, init) => {
+			const url = typeof input === 'string' ? input : input?.url;
+			if (url === JWKS_URL) {
+				return new Response(
+					JSON.stringify({ keys: [publicJwk] }),
+					{ status: 200, headers: { 'cache-control': 'public, max-age=3600' } }
+				);
+			}
+
+			if (url === 'https://store.xsolla.com/api/v3/project/project-1/admin/payment/token') {
+				const payload = JSON.parse(init.body);
+				expect(payload.settings.language).toBe('id');
+				expect(payload.purchase.items[0].sku).toBe('duration-3-sku');
+				expect(payload.purchase.items[0].quantity).toBe(1);
+				return new Response(JSON.stringify({ token: 'duration-token-123', order_id: 'duration-order-1' }), {
+					status: 200,
+					headers: { 'Content-Type': 'application/json' },
+				});
+			}
+
+			return originalFetch(input, init);
+		};
+
+		try {
+			const request = new Request(`http://example.com/api/users/${userId}/xsolla/checkout-token`, {
+				method: 'POST',
+				headers: {
+					Authorization: `Bearer ${token}`,
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({
+					productId: 'duration_3_months',
+					languageCode: 'id-ID',
+				}),
+			});
+			const ctx = createExecutionContext();
+			const response = await worker.fetch(request, env, ctx);
+			await waitOnExecutionContext(ctx);
+
+			expect(response.status).toBe(200);
+			const body = await response.json();
+			expect(body.success).toBe(true);
+			expect(body.productId).toBe('duration_3_months');
+		} finally {
+			globalThis.fetch = originalFetch;
+			delete env.XSOLLA_MERCHANT_ID;
+			delete env.XSOLLA_PROJECT_ID;
+			delete env.XSOLLA_API_KEY;
+			delete env.XSOLLA_DURATION_3_MONTHS_SKU;
+		}
+	});
+
 	it('returns 503 for xsolla webhook endpoint when webhook secret is missing', async () => {
 		const request = new Request('http://example.com/api/xsolla/webhook', {
 			method: 'POST',
@@ -571,6 +683,43 @@ describe('Worker auth gate', () => {
 		expect(stored.entitlement_plan).toBe('duration_3_months');
 		expect(stored.entitlement_end).toBe(Date.parse('2026-07-24T00:00:00.000Z'));
 		expect(stored.billing_reference_id).toBe('2002806344');
+		expect(stored.billing_reference_type).toBe('transaction_id');
+		delete env.XSOLLA_WEBHOOK_SECRET;
+		delete env.XSOLLA_DURATION_3_MONTHS_SKU;
+	});
+
+	it('grants one-time duration access when order_paid webhook uses user.external_id', async () => {
+		env.XSOLLA_WEBHOOK_SECRET = 'test-secret';
+		env.XSOLLA_DURATION_3_MONTHS_SKU = 'duration_3_months';
+		const paymentDate = '2026-04-24T00:00:00+00:00';
+		const rawBody = JSON.stringify({
+			notification_type: 'order_paid',
+			user: { external_id: userId },
+			order: { invoice_id: 2002806345 },
+			transaction: { payment_date: paymentDate },
+			items: [{ sku: 'duration_3_months', quantity: 1 }],
+		});
+		const signature = await createXsollaSignature(rawBody, env.XSOLLA_WEBHOOK_SECRET);
+		const request = new Request('http://example.com/api/xsolla/webhook', {
+			method: 'POST',
+			headers: {
+				authorization: `Signature ${signature}`,
+			},
+			body: rawBody,
+		});
+		const ctx = createExecutionContext();
+		const response = await worker.fetch(request, env, ctx);
+		await waitOnExecutionContext(ctx);
+
+		expect(response.status).toBe(204);
+		const stored = await env.DB.prepare(
+			'SELECT entitlement_status, entitlement_kind, entitlement_plan, entitlement_end, billing_reference_id, billing_reference_type FROM users WHERE uid = ?'
+		).bind(userId).first();
+		expect(stored.entitlement_status).toBe('active');
+		expect(stored.entitlement_kind).toBe('duration');
+		expect(stored.entitlement_plan).toBe('duration_3_months');
+		expect(stored.entitlement_end).toBe(Date.parse('2026-07-24T00:00:00.000Z'));
+		expect(stored.billing_reference_id).toBe('2002806345');
 		expect(stored.billing_reference_type).toBe('transaction_id');
 		delete env.XSOLLA_WEBHOOK_SECRET;
 		delete env.XSOLLA_DURATION_3_MONTHS_SKU;

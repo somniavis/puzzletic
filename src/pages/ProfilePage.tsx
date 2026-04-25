@@ -147,7 +147,9 @@ export const ProfilePage: React.FC = () => {
     const handlePurchase = async (durationMonths: 3 | 12) => {
         const success = await purchasePlan(durationMonths);
         if (!success) {
-            alert(t('profile.purchaseResult.failure'));
+            alert(t('profile.purchaseResult.failureDetailed', {
+                defaultValue: 'Purchase failed. Please check the browser console for the detailed server error.',
+            }));
         }
     };
 

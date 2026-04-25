@@ -615,6 +615,38 @@ const normalizeCountryCode = (value) => {
 	return /^[A-Z]{2}$/.test(normalized) ? normalized : null;
 };
 
+const DEVELOPED_COUNTRY_CODES = new Set(['US', 'GB', 'ES', 'PT', 'FR', 'KR', 'JP']);
+const DEVELOPING_COUNTRY_CODES = new Set(['VN', 'ID']);
+const DEVELOPING_FALLBACK_LANGUAGES = new Set(['vi', 'id']);
+
+const resolveBillingMarketSegment = (countryCode, languageCode) => {
+	const normalizedCountryCode = normalizeCountryCode(countryCode);
+	const normalizedLanguageCode = toTwoLetterLanguage(languageCode);
+
+	if (normalizedCountryCode && DEVELOPING_COUNTRY_CODES.has(normalizedCountryCode)) {
+		return 'developing';
+	}
+
+	if (normalizedCountryCode && DEVELOPED_COUNTRY_CODES.has(normalizedCountryCode)) {
+		return 'developed';
+	}
+
+	if (DEVELOPING_FALLBACK_LANGUAGES.has(normalizedLanguageCode)) {
+		return 'developing';
+	}
+
+	return 'developed';
+};
+
+const resolveExpectedBillingProductId = (durationMonths, countryCode, languageCode) => {
+	const marketSegment = resolveBillingMarketSegment(countryCode, languageCode);
+	if (marketSegment === 'developing') {
+		return durationMonths === 12 ? 'duration_12_months' : 'duration_3_months';
+	}
+
+	return durationMonths === 12 ? 'subscription_12_months' : 'subscription_3_months';
+};
+
 const parseXsollaError = async (response) => {
 	try {
 		const text = await response.text();
@@ -970,7 +1002,18 @@ const extractXsollaTransactionId = (payload) => {
 
 const buildXsollaWebhookEventContext = (env, payload) => {
 	const notificationType = payload?.notification_type || 'unknown';
-	const uid = payload?.user?.id || payload?.user?.user_id || payload?.user_id || null;
+	const uid =
+		payload?.user?.id ||
+		payload?.user?.user_id ||
+		payload?.user?.external_id ||
+		payload?.user?.externalId ||
+		payload?.user_id ||
+		payload?.external_id ||
+		payload?.externalId ||
+		payload?.custom_parameters?.uid ||
+		payload?.custom_parameters?.user_id ||
+		payload?.custom_parameters?.external_id ||
+		null;
 	const subscriptionPlanId = payload?.subscription?.plan_id || null;
 	const subscriptionProduct = getXsollaProductByIdentifier(env, subscriptionPlanId);
 	const subscriptionId = Number(payload?.subscription?.subscription_id);
@@ -1283,7 +1326,7 @@ const createXsollaCatalogToken = async ({
 		},
 		purchase: {
 			items: [
-				{ sku: productIdentifier },
+				{ sku: productIdentifier, quantity: 1 },
 			],
 		},
 		settings: {
@@ -1354,6 +1397,22 @@ const handleXsollaCheckoutTokenRequest = async (request, env, corsHeaders, uid, 
 	const productIdentifier = env[product.xsollaIdentifierEnvKey];
 	const normalizedCountryCode = normalizeCountryCode(countryCode);
 	const normalizedLanguage = toTwoLetterLanguage(languageCode);
+	const expectedProductId = resolveExpectedBillingProductId(
+		product.durationMonths,
+		normalizedCountryCode,
+		normalizedLanguage
+	);
+
+	if (productId !== expectedProductId) {
+		return jsonResponse(corsHeaders, {
+			error: 'Requested product does not match the current billing market',
+			productId,
+			expectedProductId,
+			countryCode: normalizedCountryCode,
+			languageCode: normalizedLanguage,
+		}, 400);
+	}
+
 	const returnUrl = buildXsollaReturnUrl(env, allowedOrigin);
 	const xsollaEnvironment = getXsollaEnvironmentConfig(env);
 
