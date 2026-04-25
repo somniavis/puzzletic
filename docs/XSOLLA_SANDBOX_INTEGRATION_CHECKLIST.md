@@ -949,6 +949,10 @@ Production 배포 전:
       - `XSOLLA_DURATION_3_MONTHS_SKU_PRODUCTION`
       - `XSOLLA_DURATION_12_MONTHS_SKU_PRODUCTION`
     - 기존 공용 key는 전환 중 fallback 용도로만 유지
+  - 현재 적용 상태:
+    - `XSOLLA_WEBHOOK_SECRET_SANDBOX` 실제 등록 완료
+    - `XSOLLA_ENV=sandbox` 및 sandbox scoped vars 실제 배포 반영 완료
+    - sandbox API key는 현재 공용 fallback `XSOLLA_API_KEY` 경유 유지
 - [x] 프론트에서 사용할 redirect URL 후보 확정
   - 현재 사용 중:
     - `XSOLLA_RETURN_URL` 우선
@@ -1519,6 +1523,8 @@ sku: ...
 - Worker 배포 완료
   - worker: `api-grogrojello`
   - 이후 결제/보안 수정에 따라 추가 배포 진행됨
+  - sandbox scoped env rollout 반영 version:
+    - `46d9a149-4b56-4666-904d-9290e5b6c88a`
 - 프론트 Xsolla 1차 연동 완료
   - `purchasePlan()` -> `/api/users/:uid/xsolla/checkout-token` 연결
   - Xsolla hosted checkout iframe 오버레이 연결

@@ -25,7 +25,15 @@
 		}
 	],
 	"vars": {
-		"FIREBASE_PROJECT_ID": "grogro-jello-4a53a"
+		"FIREBASE_PROJECT_ID": "grogro-jello-4a53a",
+		"XSOLLA_ENV": "sandbox",
+		"XSOLLA_MERCHANT_ID_SANDBOX": "876936",
+		"XSOLLA_PROJECT_ID_SANDBOX": "303877",
+		"XSOLLA_RETURN_URL_SANDBOX": "https://www.grogrojello.com/profile?tab=my_jello",
+		"XSOLLA_REGULAR_SUBSCRIPTION_3_MONTHS_PLAN_ID_SANDBOX": "WZ401Sj5",
+		"XSOLLA_REGULAR_SUBSCRIPTION_12_MONTHS_PLAN_ID_SANDBOX": "l9rHf8au",
+		"XSOLLA_DURATION_3_MONTHS_SKU_SANDBOX": "duration_3_months",
+		"XSOLLA_DURATION_12_MONTHS_SKU_SANDBOX": "duration_12_months"
 	}
 	/**
 	 * Smart Placement
