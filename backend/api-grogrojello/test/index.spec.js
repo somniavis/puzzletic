@@ -84,6 +84,7 @@ describe('Worker auth gate', () => {
 	});
 
 	beforeEach(async () => {
+		await env.DB.prepare('DROP TABLE IF EXISTS xsolla_webhook_events').run();
 		await env.DB.prepare('DROP TABLE IF EXISTS users').run();
 		await env.DB.prepare('DROP TABLE IF EXISTS daily_routine_claims').run();
 		await env.DB.prepare('DROP TABLE IF EXISTS api_rate_limits').run();
@@ -104,7 +105,8 @@ describe('Worker auth gate', () => {
 				is_premium INTEGER DEFAULT 0,
 				subscription_end INTEGER DEFAULT 0,
 				subscription_plan TEXT,
-				xsolla_subscription_id INTEGER
+				xsolla_subscription_id INTEGER,
+				xsolla_transaction_id INTEGER
 			)
 		`).run();
 		await env.DB.prepare(`
@@ -122,6 +124,18 @@ describe('Worker auth gate', () => {
 				window_start INTEGER NOT NULL,
 				last_seen INTEGER NOT NULL,
 				blocked_until INTEGER NOT NULL DEFAULT 0
+			)
+		`).run();
+		await env.DB.prepare(`
+			CREATE TABLE xsolla_webhook_events (
+				event_key TEXT PRIMARY KEY,
+				notification_type TEXT NOT NULL,
+				uid TEXT,
+				product_id TEXT,
+				xsolla_transaction_id INTEGER,
+				xsolla_subscription_id INTEGER,
+				processing_status TEXT NOT NULL DEFAULT 'processing',
+				processed_at INTEGER NOT NULL
 			)
 		`).run();
 	});
@@ -425,6 +439,100 @@ describe('Worker auth gate', () => {
 		delete env.XSOLLA_REGULAR_SUBSCRIPTION_3_MONTHS_PLAN_ID;
 	});
 
+	it('ignores duplicate create_subscription webhook deliveries', async () => {
+		env.XSOLLA_WEBHOOK_SECRET = 'test-secret';
+		env.XSOLLA_REGULAR_SUBSCRIPTION_3_MONTHS_PLAN_ID = 'WZ401Sj5';
+		const rawBody = JSON.stringify({
+			notification_type: 'create_subscription',
+			user: { id: userId },
+			subscription: {
+				plan_id: 'WZ401Sj5',
+				subscription_id: 551122,
+				date_next_charge: '2026-07-24T00:00:00+00:00',
+			},
+		});
+		const signature = await createXsollaSignature(rawBody, env.XSOLLA_WEBHOOK_SECRET);
+
+		for (let attempt = 0; attempt < 2; attempt += 1) {
+			const request = new Request('http://example.com/api/xsolla/webhook', {
+				method: 'POST',
+				headers: {
+					authorization: `Signature ${signature}`,
+				},
+				body: rawBody,
+			});
+			const ctx = createExecutionContext();
+			const response = await worker.fetch(request, env, ctx);
+			await waitOnExecutionContext(ctx);
+			expect(response.status).toBe(204);
+		}
+
+		const stored = await env.DB.prepare(
+			'SELECT subscription_end, xsolla_subscription_id FROM users WHERE uid = ?'
+		).bind(userId).first();
+		expect(stored.subscription_end).toBe(Date.parse('2026-07-24T00:00:00+00:00'));
+		expect(stored.xsolla_subscription_id).toBe(551122);
+
+		const events = await env.DB.prepare(
+			'SELECT notification_type, product_id, processing_status FROM xsolla_webhook_events WHERE xsolla_subscription_id = ?'
+		).bind(551122).all();
+		expect(events.results).toHaveLength(1);
+		expect(events.results[0].notification_type).toBe('create_subscription');
+		expect(events.results[0].product_id).toBe('subscription_3_months');
+		expect(events.results[0].processing_status).toBe('processed');
+
+		delete env.XSOLLA_WEBHOOK_SECRET;
+		delete env.XSOLLA_REGULAR_SUBSCRIPTION_3_MONTHS_PLAN_ID;
+	});
+
+	it('applies update_subscription webhook once for the same renewal window', async () => {
+		env.XSOLLA_WEBHOOK_SECRET = 'test-secret';
+		env.XSOLLA_REGULAR_SUBSCRIPTION_12_MONTHS_PLAN_ID = 'plan-prod-12';
+		const rawBody = JSON.stringify({
+			notification_type: 'update_subscription',
+			user: { id: userId },
+			subscription: {
+				plan_id: 'plan-prod-12',
+				subscription_id: 991122,
+				date_next_charge: '2027-07-24T00:00:00+00:00',
+			},
+		});
+		const signature = await createXsollaSignature(rawBody, env.XSOLLA_WEBHOOK_SECRET);
+
+		for (let attempt = 0; attempt < 2; attempt += 1) {
+			const request = new Request('http://example.com/api/xsolla/webhook', {
+				method: 'POST',
+				headers: {
+					authorization: `Signature ${signature}`,
+				},
+				body: rawBody,
+			});
+			const ctx = createExecutionContext();
+			const response = await worker.fetch(request, env, ctx);
+			await waitOnExecutionContext(ctx);
+			expect(response.status).toBe(204);
+		}
+
+		const stored = await env.DB.prepare(
+			'SELECT is_premium, subscription_plan, subscription_end, xsolla_subscription_id FROM users WHERE uid = ?'
+		).bind(userId).first();
+		expect(stored.is_premium).toBe(1);
+		expect(stored.subscription_plan).toBe('subscription_12_months');
+		expect(stored.subscription_end).toBe(Date.parse('2027-07-24T00:00:00+00:00'));
+		expect(stored.xsolla_subscription_id).toBe(991122);
+
+		const events = await env.DB.prepare(
+			'SELECT notification_type, product_id, processing_status FROM xsolla_webhook_events WHERE xsolla_subscription_id = ?'
+		).bind(991122).all();
+		expect(events.results).toHaveLength(1);
+		expect(events.results[0].notification_type).toBe('update_subscription');
+		expect(events.results[0].product_id).toBe('subscription_12_months');
+		expect(events.results[0].processing_status).toBe('processed');
+
+		delete env.XSOLLA_WEBHOOK_SECRET;
+		delete env.XSOLLA_REGULAR_SUBSCRIPTION_12_MONTHS_PLAN_ID;
+	});
+
 	it('grants one-time duration access on order_paid webhook', async () => {
 		env.XSOLLA_WEBHOOK_SECRET = 'test-secret';
 		env.XSOLLA_DURATION_3_MONTHS_SKU = 'duration_3_months';
@@ -432,6 +540,7 @@ describe('Worker auth gate', () => {
 		const rawBody = JSON.stringify({
 			notification_type: 'order_paid',
 			user: { id: userId },
+			order: { invoice_id: 2002806344 },
 			transaction: { payment_date: paymentDate },
 			items: [{ sku: 'duration_3_months' }],
 		});
@@ -448,10 +557,241 @@ describe('Worker auth gate', () => {
 		await waitOnExecutionContext(ctx);
 
 		expect(response.status).toBe(204);
-		const stored = await env.DB.prepare('SELECT is_premium, subscription_plan, subscription_end FROM users WHERE uid = ?').bind(userId).first();
+		const stored = await env.DB.prepare(
+			'SELECT is_premium, subscription_plan, subscription_end, xsolla_transaction_id FROM users WHERE uid = ?'
+		).bind(userId).first();
 		expect(stored.is_premium).toBe(1);
 		expect(stored.subscription_plan).toBe('duration_3_months');
 		expect(stored.subscription_end).toBe(Date.parse('2026-07-24T00:00:00.000Z'));
+		expect(stored.xsolla_transaction_id).toBe(2002806344);
+		delete env.XSOLLA_WEBHOOK_SECRET;
+		delete env.XSOLLA_DURATION_3_MONTHS_SKU;
+	});
+
+	it('ignores duplicate order_paid webhook deliveries', async () => {
+		env.XSOLLA_WEBHOOK_SECRET = 'test-secret';
+		env.XSOLLA_DURATION_3_MONTHS_SKU = 'duration_3_months';
+		const paymentDate = '2026-04-24T00:00:00+00:00';
+		const rawBody = JSON.stringify({
+			notification_type: 'order_paid',
+			user: { id: userId },
+			order: { invoice_id: 2002806344 },
+			transaction: { payment_date: paymentDate },
+			items: [{ sku: 'duration_3_months' }],
+		});
+		const signature = await createXsollaSignature(rawBody, env.XSOLLA_WEBHOOK_SECRET);
+
+		for (let attempt = 0; attempt < 2; attempt += 1) {
+			const request = new Request('http://example.com/api/xsolla/webhook', {
+				method: 'POST',
+				headers: {
+					authorization: `Signature ${signature}`,
+				},
+				body: rawBody,
+			});
+			const ctx = createExecutionContext();
+			const response = await worker.fetch(request, env, ctx);
+			await waitOnExecutionContext(ctx);
+			expect(response.status).toBe(204);
+		}
+
+		const stored = await env.DB.prepare(
+			'SELECT subscription_end, xsolla_transaction_id FROM users WHERE uid = ?'
+		).bind(userId).first();
+		expect(stored.subscription_end).toBe(Date.parse('2026-07-24T00:00:00.000Z'));
+		expect(stored.xsolla_transaction_id).toBe(2002806344);
+
+		const events = await env.DB.prepare(
+			'SELECT notification_type, product_id, processing_status FROM xsolla_webhook_events WHERE xsolla_transaction_id = ?'
+		).bind(2002806344).all();
+		expect(events.results).toHaveLength(1);
+		expect(events.results[0].notification_type).toBe('order_paid');
+		expect(events.results[0].product_id).toBe('duration_3_months');
+		expect(events.results[0].processing_status).toBe('processed');
+
+		delete env.XSOLLA_WEBHOOK_SECRET;
+		delete env.XSOLLA_DURATION_3_MONTHS_SKU;
+	});
+
+	it('keeps recurring subscription premium active on non_renewal_subscription webhook', async () => {
+		env.XSOLLA_WEBHOOK_SECRET = 'test-secret';
+		env.XSOLLA_REGULAR_SUBSCRIPTION_12_MONTHS_PLAN_ID = 'plan-prod-12';
+		const rawBody = JSON.stringify({
+			notification_type: 'non_renewal_subscription',
+			user: { id: userId },
+			subscription: {
+				plan_id: 'plan-prod-12',
+				subscription_id: 991122,
+				date_end: '2026-07-24T00:00:00+00:00',
+			},
+		});
+		const signature = await createXsollaSignature(rawBody, env.XSOLLA_WEBHOOK_SECRET);
+		const request = new Request('http://example.com/api/xsolla/webhook', {
+			method: 'POST',
+			headers: {
+				authorization: `Signature ${signature}`,
+			},
+			body: rawBody,
+		});
+		const ctx = createExecutionContext();
+		const response = await worker.fetch(request, env, ctx);
+		await waitOnExecutionContext(ctx);
+
+		expect(response.status).toBe(204);
+		const stored = await env.DB.prepare(
+			'SELECT is_premium, subscription_plan, subscription_end, xsolla_subscription_id FROM users WHERE uid = ?'
+		).bind(userId).first();
+		expect(stored.is_premium).toBe(1);
+		expect(stored.subscription_plan).toBe('subscription_12_months');
+		expect(stored.subscription_end).toBe(Date.parse('2026-07-24T00:00:00+00:00'));
+		expect(stored.xsolla_subscription_id).toBe(991122);
+		delete env.XSOLLA_WEBHOOK_SECRET;
+		delete env.XSOLLA_REGULAR_SUBSCRIPTION_12_MONTHS_PLAN_ID;
+	});
+
+	it('ignores duplicate non_renewal_subscription webhook deliveries', async () => {
+		env.XSOLLA_WEBHOOK_SECRET = 'test-secret';
+		env.XSOLLA_REGULAR_SUBSCRIPTION_12_MONTHS_PLAN_ID = 'plan-prod-12';
+		const rawBody = JSON.stringify({
+			notification_type: 'non_renewal_subscription',
+			user: { id: userId },
+			subscription: {
+				plan_id: 'plan-prod-12',
+				subscription_id: 991122,
+				date_end: '2026-07-24T00:00:00+00:00',
+			},
+		});
+		const signature = await createXsollaSignature(rawBody, env.XSOLLA_WEBHOOK_SECRET);
+
+		for (let attempt = 0; attempt < 2; attempt += 1) {
+			const request = new Request('http://example.com/api/xsolla/webhook', {
+				method: 'POST',
+				headers: {
+					authorization: `Signature ${signature}`,
+				},
+				body: rawBody,
+			});
+			const ctx = createExecutionContext();
+			const response = await worker.fetch(request, env, ctx);
+			await waitOnExecutionContext(ctx);
+			expect(response.status).toBe(204);
+		}
+
+		const stored = await env.DB.prepare(
+			'SELECT is_premium, subscription_plan, subscription_end, xsolla_subscription_id FROM users WHERE uid = ?'
+		).bind(userId).first();
+		expect(stored.is_premium).toBe(1);
+		expect(stored.subscription_plan).toBe('subscription_12_months');
+		expect(stored.subscription_end).toBe(Date.parse('2026-07-24T00:00:00+00:00'));
+		expect(stored.xsolla_subscription_id).toBe(991122);
+
+		const events = await env.DB.prepare(
+			'SELECT notification_type, product_id, processing_status FROM xsolla_webhook_events WHERE xsolla_subscription_id = ?'
+		).bind(991122).all();
+		expect(events.results).toHaveLength(1);
+		expect(events.results[0].notification_type).toBe('non_renewal_subscription');
+		expect(events.results[0].product_id).toBe('subscription_12_months');
+		expect(events.results[0].processing_status).toBe('processed');
+
+		delete env.XSOLLA_WEBHOOK_SECRET;
+		delete env.XSOLLA_REGULAR_SUBSCRIPTION_12_MONTHS_PLAN_ID;
+	});
+
+	it('ignores duplicate cancel_subscription webhook deliveries', async () => {
+		env.XSOLLA_WEBHOOK_SECRET = 'test-secret';
+		env.XSOLLA_REGULAR_SUBSCRIPTION_12_MONTHS_PLAN_ID = 'plan-prod-12';
+		const rawBody = JSON.stringify({
+			notification_type: 'cancel_subscription',
+			user: { id: userId },
+			subscription: {
+				plan_id: 'plan-prod-12',
+				subscription_id: 991122,
+				date_end: '2026-07-24T00:00:00+00:00',
+			},
+		});
+		const signature = await createXsollaSignature(rawBody, env.XSOLLA_WEBHOOK_SECRET);
+
+		for (let attempt = 0; attempt < 2; attempt += 1) {
+			const request = new Request('http://example.com/api/xsolla/webhook', {
+				method: 'POST',
+				headers: {
+					authorization: `Signature ${signature}`,
+				},
+				body: rawBody,
+			});
+			const ctx = createExecutionContext();
+			const response = await worker.fetch(request, env, ctx);
+			await waitOnExecutionContext(ctx);
+			expect(response.status).toBe(204);
+		}
+
+		const stored = await env.DB.prepare(
+			'SELECT is_premium, subscription_plan, subscription_end, xsolla_subscription_id FROM users WHERE uid = ?'
+		).bind(userId).first();
+		expect(stored.is_premium).toBe(1);
+		expect(stored.subscription_plan).toBe('subscription_12_months');
+		expect(stored.subscription_end).toBe(Date.parse('2026-07-24T00:00:00+00:00'));
+		expect(stored.xsolla_subscription_id).toBe(991122);
+
+		const events = await env.DB.prepare(
+			'SELECT notification_type, product_id, processing_status FROM xsolla_webhook_events WHERE xsolla_subscription_id = ?'
+		).bind(991122).all();
+		expect(events.results).toHaveLength(1);
+		expect(events.results[0].notification_type).toBe('cancel_subscription');
+		expect(events.results[0].product_id).toBe('subscription_12_months');
+		expect(events.results[0].processing_status).toBe('processed');
+
+		delete env.XSOLLA_WEBHOOK_SECRET;
+		delete env.XSOLLA_REGULAR_SUBSCRIPTION_12_MONTHS_PLAN_ID;
+	});
+
+	it('ignores duplicate refund webhook deliveries', async () => {
+		const nowMs = Date.now();
+		await env.DB.prepare(`
+			INSERT INTO users (uid, is_premium, subscription_end, subscription_plan, xsolla_transaction_id, created_at, last_synced_at)
+			VALUES (?, 1, ?, 'duration_3_months', 2002806344, ?, ?)
+		`).bind(userId, nowMs + (30 * 24 * 60 * 60 * 1000), nowMs, nowMs).run();
+
+		env.XSOLLA_WEBHOOK_SECRET = 'test-secret';
+		env.XSOLLA_DURATION_3_MONTHS_SKU = 'duration_3_months';
+		const rawBody = JSON.stringify({
+			notification_type: 'refund',
+			user: { id: userId },
+			order: { invoice_id: 2002806344 },
+			items: [{ sku: 'duration_3_months' }],
+		});
+		const signature = await createXsollaSignature(rawBody, env.XSOLLA_WEBHOOK_SECRET);
+
+		for (let attempt = 0; attempt < 2; attempt += 1) {
+			const request = new Request('http://example.com/api/xsolla/webhook', {
+				method: 'POST',
+				headers: {
+					authorization: `Signature ${signature}`,
+				},
+				body: rawBody,
+			});
+			const ctx = createExecutionContext();
+			const response = await worker.fetch(request, env, ctx);
+			await waitOnExecutionContext(ctx);
+			expect(response.status).toBe(204);
+		}
+
+		const stored = await env.DB.prepare(
+			'SELECT is_premium, subscription_end, subscription_plan, xsolla_transaction_id FROM users WHERE uid = ?'
+		).bind(userId).first();
+		expect(stored.is_premium).toBe(0);
+		expect(stored.subscription_end).toBe(0);
+		expect(stored.subscription_plan).toBeNull();
+		expect(stored.xsolla_transaction_id).toBeNull();
+
+		const events = await env.DB.prepare(
+			'SELECT notification_type, product_id, processing_status FROM xsolla_webhook_events WHERE xsolla_transaction_id = ?'
+		).bind(2002806344).all();
+		expect(events.results).toHaveLength(1);
+		expect(events.results[0].notification_type).toBe('refund');
+		expect(events.results[0].product_id).toBe('duration_3_months');
+		expect(events.results[0].processing_status).toBe('processed');
+
 		delete env.XSOLLA_WEBHOOK_SECRET;
 		delete env.XSOLLA_DURATION_3_MONTHS_SKU;
 	});
@@ -820,84 +1160,6 @@ describe('Worker auth gate', () => {
 		expect(response.headers.get('Vary')).toContain('Origin');
 	});
 
-	it('disables the legacy purchase endpoint', async () => {
-		const now = Math.floor(Date.now() / 1000);
-		const token = await signJwt(privateKey, publicJwk.kid, {
-			iss: `https://securetoken.google.com/${PROJECT_ID}`,
-			aud: PROJECT_ID,
-			sub: userId,
-			iat: now - 30,
-			exp: now + 3600,
-			auth_time: now - 30,
-		});
-
-		await withMockedJwks(publicJwk, async () => {
-			const request = new Request(`http://example.com/api/users/${userId}/purchase`, {
-				method: 'POST',
-				headers: {
-					Authorization: `Bearer ${token}`,
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify({ planId: '3_months' }),
-			});
-			const ctx = createExecutionContext();
-			const response = await worker.fetch(request, env, ctx);
-			await waitOnExecutionContext(ctx);
-
-			expect(response.status).toBe(410);
-			const body = await response.json();
-			expect(body.error).toContain('Legacy purchase endpoint disabled');
-		});
-
-		const row = await env.DB.prepare('SELECT is_premium, subscription_plan FROM users WHERE uid = ?')
-			.bind(userId)
-			.first();
-		expect(row).toBeNull();
-	});
-
-	it('clears premium state on cancel endpoint', async () => {
-		const nowMs = Date.now();
-		await env.DB.prepare(`
-			INSERT INTO users (uid, is_premium, subscription_end, subscription_plan, created_at, last_synced_at)
-			VALUES (?, 1, ?, '12_months', ?, ?)
-		`).bind(userId, nowMs + (30 * 24 * 60 * 60 * 1000), nowMs, nowMs).run();
-
-		const now = Math.floor(Date.now() / 1000);
-		const token = await signJwt(privateKey, publicJwk.kid, {
-			iss: `https://securetoken.google.com/${PROJECT_ID}`,
-			aud: PROJECT_ID,
-			sub: userId,
-			iat: now - 30,
-			exp: now + 3600,
-			auth_time: now - 30,
-		});
-
-		await withMockedJwks(publicJwk, async () => {
-			const request = new Request(`http://example.com/api/users/${userId}/cancel`, {
-				method: 'POST',
-				headers: {
-					Authorization: `Bearer ${token}`,
-				},
-			});
-			const ctx = createExecutionContext();
-			const response = await worker.fetch(request, env, ctx);
-			await waitOnExecutionContext(ctx);
-
-			expect(response.status).toBe(200);
-			const body = await response.json();
-			expect(body.success).toBe(true);
-			expect(body.is_premium).toBe(0);
-		});
-
-		const row = await env.DB.prepare('SELECT is_premium, subscription_end, subscription_plan FROM users WHERE uid = ?')
-			.bind(userId)
-			.first();
-		expect(row).toBeTruthy();
-		expect(row.is_premium).toBe(0);
-		expect(row.subscription_end).toBe(0);
-		expect(row.subscription_plan).toBeNull();
-	});
-
 	it('forwards recurring subscription cancellation to xsolla', async () => {
 		const nowMs = Date.now();
 		await env.DB.prepare(`
@@ -931,8 +1193,8 @@ describe('Worker auth gate', () => {
 
 			if (url === `https://api.xsolla.com/merchant/v2/projects/303877/users/${userId}/subscriptions/991122`) {
 				const payload = JSON.parse(init.body);
-				expect(payload.status).toBe('canceled');
-				return new Response(JSON.stringify({ id: 991122, status: 'canceled' }), {
+				expect(payload.status).toBe('non_renewing');
+				return new Response(JSON.stringify({ id: 991122, status: 'non_renewing' }), {
 					status: 200,
 					headers: { 'Content-Type': 'application/json' },
 				});
@@ -957,7 +1219,7 @@ describe('Worker auth gate', () => {
 			expect(body.success).toBe(true);
 			expect(body.mode).toBe('xsolla');
 			expect(body.subscriptionId).toBe(991122);
-			expect(body.status).toBe('canceled');
+			expect(body.status).toBe('non_renewing');
 		} finally {
 			globalThis.fetch = originalFetch;
 			delete env.XSOLLA_MERCHANT_ID;
@@ -972,6 +1234,49 @@ describe('Worker auth gate', () => {
 		expect(row).toBeTruthy();
 		expect(row.is_premium).toBe(1);
 		expect(row.subscription_plan).toBe('subscription_12_months');
+	});
+
+	it('returns 409 for duration pass cancellation until refund flow is enabled', async () => {
+		const nowMs = Date.now();
+		await env.DB.prepare(`
+			INSERT INTO users (uid, email, is_premium, subscription_end, subscription_plan, xsolla_transaction_id, created_at, last_synced_at)
+			VALUES (?, 'test@example.com', 1, ?, 'duration_3_months', 2002806344, ?, ?)
+		`).bind(userId, nowMs + (30 * 24 * 60 * 60 * 1000), nowMs, nowMs).run();
+
+		const now = Math.floor(Date.now() / 1000);
+		const token = await signJwt(privateKey, publicJwk.kid, {
+			iss: `https://securetoken.google.com/${PROJECT_ID}`,
+			aud: PROJECT_ID,
+			sub: userId,
+			iat: now - 30,
+			exp: now + 3600,
+			auth_time: now - 30,
+		});
+		await withMockedJwks(publicJwk, async () => {
+			const request = new Request(`http://example.com/api/users/${userId}/cancel`, {
+				method: 'POST',
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+			});
+			const ctx = createExecutionContext();
+			const response = await worker.fetch(request, env, ctx);
+			await waitOnExecutionContext(ctx);
+
+			expect(response.status).toBe(409);
+			const body = await response.json();
+			expect(body.error).toContain('refunds are not enabled');
+			expect(body.subscriptionPlan).toBe('duration_3_months');
+		});
+
+		const row = await env.DB.prepare(
+			'SELECT is_premium, subscription_end, subscription_plan, xsolla_transaction_id FROM users WHERE uid = ?'
+		).bind(userId).first();
+		expect(row).toBeTruthy();
+		expect(row.is_premium).toBe(1);
+		expect(row.subscription_end).toBeGreaterThan(nowMs);
+		expect(row.subscription_plan).toBe('duration_3_months');
+		expect(row.xsolla_transaction_id).toBe(2002806344);
 	});
 
 	it('returns 409 when recurring xsolla subscription id is missing locally', async () => {
@@ -1007,7 +1312,7 @@ describe('Worker auth gate', () => {
 
 			expect(response.status).toBe(409);
 			const body = await response.json();
-			expect(body.error).toContain('created before Xsolla subscription tracking was enabled');
+			expect(body.error).toContain('Xsolla subscription tracking is missing');
 			expect(body.subscriptionPlan).toBe('subscription_12_months');
 		});
 

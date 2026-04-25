@@ -8,14 +8,13 @@ export type BillingProductId =
     | 'duration_3_months'
     | 'duration_12_months';
 
-export type LegacyPlanId = '3_months' | '12_months';
+export type BillingDurationMonths = 3 | 12;
 
 export interface BillingProductDefinition {
     id: BillingProductId;
-    legacyPlanId: LegacyPlanId;
     offerType: BillingOfferType;
     marketSegment: BillingMarketSegment;
-    durationMonths: 3 | 12;
+    durationMonths: BillingDurationMonths;
     displayName: string;
     displayPriority: number;
 }
@@ -23,7 +22,6 @@ export interface BillingProductDefinition {
 export const BILLING_PRODUCTS: BillingProductDefinition[] = [
     {
         id: 'subscription_3_months',
-        legacyPlanId: '3_months',
         offerType: 'subscription',
         marketSegment: 'developed',
         durationMonths: 3,
@@ -32,7 +30,6 @@ export const BILLING_PRODUCTS: BillingProductDefinition[] = [
     },
     {
         id: 'subscription_12_months',
-        legacyPlanId: '12_months',
         offerType: 'subscription',
         marketSegment: 'developed',
         durationMonths: 12,
@@ -41,7 +38,6 @@ export const BILLING_PRODUCTS: BillingProductDefinition[] = [
     },
     {
         id: 'duration_3_months',
-        legacyPlanId: '3_months',
         offerType: 'duration',
         marketSegment: 'developing',
         durationMonths: 3,
@@ -50,7 +46,6 @@ export const BILLING_PRODUCTS: BillingProductDefinition[] = [
     },
     {
         id: 'duration_12_months',
-        legacyPlanId: '12_months',
         offerType: 'duration',
         marketSegment: 'developing',
         durationMonths: 12,
@@ -115,4 +110,16 @@ export const getVisibleBillingProducts = (
     return BILLING_PRODUCTS
         .filter((product) => product.marketSegment === marketSegment)
         .sort((a, b) => a.displayPriority - b.displayPriority);
+};
+
+export const resolveBillingProduct = (
+    durationMonths: BillingDurationMonths,
+    countryCode?: string | null,
+    languageCode?: string | null
+): BillingProductDefinition | null => {
+    const offerType = resolveBillingOfferType(countryCode, languageCode);
+
+    return BILLING_PRODUCTS.find((product) =>
+        product.durationMonths === durationMonths && product.offerType === offerType
+    ) || null;
 };

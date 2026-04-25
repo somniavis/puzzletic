@@ -75,7 +75,7 @@ export const enUK = {
     },
     cancelSubscription: 'Cancel Subscription',
     cancelConfirmTitle: 'Cancel Subscription?',
-    cancelConfirmMessage: 'You will lose all Premium benefits immediately.\nAre you sure you want to cancel?',
+    cancelConfirmMessage: 'Premium will remain active until your current subscription ends.\nNo further charges will be made.',
     cancelSuccess: 'Subscription cancelled.',
     upgradePrompt: 'Upgrade',
     premiumTitle: 'Grow with Angel Pass',

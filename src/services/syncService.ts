@@ -422,7 +422,12 @@ export interface XsollaCheckoutResponse {
 }
 
 export type CancelSubscriptionResult =
-    | { success: true }
+    | {
+        success: true;
+        mode?: 'xsolla' | 'xsolla_refund';
+        status?: string;
+        message?: string;
+    }
     | {
         success: false;
         reason: 'xsolla_managed' | 'request_failed';

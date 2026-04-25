@@ -122,7 +122,7 @@ interface NurturingContextValue {
   subscription: SubscriptionState;
   checkoutOverlay: CheckoutOverlayState;
   closeCheckoutOverlay: (options?: { refresh?: boolean }) => void;
-  purchasePlan: (planId: '3_months' | '12_months') => Promise<boolean>;
+  purchasePlan: (durationMonths: 3 | 12) => Promise<boolean>;
   cancelSubscription: () => Promise<CancelSubscriptionResult>;
 
   // Jello House & Sleep

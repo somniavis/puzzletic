@@ -101,8 +101,10 @@ const jaBase = {
         },
         cancelSubscription: 'サブスクリプションをキャンセル',
         cancelConfirmTitle: '本当にキャンセルしますか？',
-        cancelConfirmMessage: 'キャンセルすると即座に無料プランに戻り、\nプレミアム特典(XP 3倍など)が失われます。',
+        cancelConfirmMessage: '現在の購読期間が終了するまでは、Premiumを引き続き利用できます。\n今後の請求は発生しません。',
         cancelSuccess: 'サブスクリプションがキャンセルされました。',
+        cancellationScheduledBadge: '自動更新オフ',
+        cancellationScheduledMessage: '現在の購読期間が終了するまでは、Premiumを引き続き利用できます。',
         cancelPolicy: 'プランはいつでもキャンセル可能です。',
         premiumActive: {
             title: 'プレミアム会員です！',

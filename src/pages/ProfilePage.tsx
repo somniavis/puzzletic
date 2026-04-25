@@ -60,13 +60,12 @@ export const ProfilePage: React.FC = () => {
     const quarterlyPassTitle = t(`profile.subscription.quarterly.${passOfferType}Title`);
     const quarterlyPassDesc = t(`profile.subscription.quarterly.${passOfferType}Desc`);
     const canCancelInService =
-        subscription.plan === '3_months' ||
-        subscription.plan === '12_months' ||
         subscription.plan === 'subscription_3_months' ||
         subscription.plan === 'subscription_12_months';
-    const premiumStatusLabel = subscription.plan === '12_months' || subscription.plan === 'subscription_12_months'
+    const isCancellationScheduled = subscription.renewalStatus === 'non_renewing';
+    const premiumStatusLabel = subscription.plan === 'subscription_12_months'
         ? t('profile.status.angelPass')
-        : subscription.plan === '3_months' || subscription.plan === 'subscription_3_months'
+        : subscription.plan === 'subscription_3_months'
             ? t('profile.status.jelloPass')
             : t('profile.status.premium');
     const purchaseNote = passOfferType === 'subscription'
@@ -126,9 +125,6 @@ export const ProfilePage: React.FC = () => {
     const handleCancelSubscription = async () => {
         const result = await cancelSubscription();
         if (result.success) {
-            alert(t('profile.cancelSuccess', {
-                defaultValue: 'Your cancellation request has been submitted.',
-            }));
             setShowCancelModal(false);
             return;
         }
@@ -143,8 +139,8 @@ export const ProfilePage: React.FC = () => {
         }));
     };
 
-    const handlePurchase = async (plan: '3_months' | '12_months') => {
-        const success = await purchasePlan(plan);
+    const handlePurchase = async (durationMonths: 3 | 12) => {
+        const success = await purchasePlan(durationMonths);
         if (!success) {
             alert(t('profile.purchaseResult.failure'));
         }
@@ -481,7 +477,7 @@ export const ProfilePage: React.FC = () => {
                                                 {t('profile.expiresLabel')}: {new Date(subscription.expiryDate).toLocaleDateString()}
                                             </span>
                                         )}
-                                        {isPremium && canCancelInService && (
+                                        {isPremium && canCancelInService && !isCancellationScheduled && (
                                             <button
                                                 className="text-btn"
                                                 onClick={() => setShowCancelModal(true)}
@@ -498,6 +494,35 @@ export const ProfilePage: React.FC = () => {
                                             >
                                                 {t('profile.cancelSubscription')}
                                             </button>
+                                        )}
+                                        {isPremium && isCancellationScheduled && (
+                                            <>
+                                                <span
+                                                    style={{
+                                                        display: 'inline-flex',
+                                                        alignItems: 'center',
+                                                        width: 'fit-content',
+                                                        marginTop: '6px',
+                                                        padding: '4px 10px',
+                                                        borderRadius: '999px',
+                                                        background: 'rgba(255, 184, 77, 0.16)',
+                                                        color: '#8a5a00',
+                                                        fontSize: '0.74rem',
+                                                        fontWeight: 800,
+                                                        letterSpacing: '0.03em',
+                                                        textTransform: 'uppercase',
+                                                    }}
+                                                >
+                                                    {t('profile.cancellationScheduledBadge', {
+                                                        defaultValue: 'Cancellation Scheduled',
+                                                    })}
+                                                </span>
+                                                <span className="sub-desc" style={{ fontSize: '0.8rem', opacity: 0.85, marginTop: '4px' }}>
+                                                    {t('profile.cancellationScheduledMessage', {
+                                                        defaultValue: 'Premium remains active until your current subscription ends.',
+                                                    })}
+                                                </span>
+                                            </>
                                         )}
                                     </div>
                                 </div>
@@ -552,7 +577,7 @@ export const ProfilePage: React.FC = () => {
                                                 <button
                                                     type="button"
                                                     className="pricing-cta pricing-cta-angel"
-                                                    onClick={() => handlePurchase('3_months')}
+                                                    onClick={() => handlePurchase(3)}
                                                     disabled={isCheckoutBusy}
                                                 >
                                                     {t('profile.purchaseButton')}
@@ -612,7 +637,7 @@ export const ProfilePage: React.FC = () => {
                                                 <button
                                                     type="button"
                                                     className="pricing-cta pricing-cta-basic"
-                                                    onClick={() => handlePurchase('12_months')}
+                                                    onClick={() => handlePurchase(12)}
                                                     disabled={isCheckoutBusy}
                                                 >
                                                     {t('profile.purchaseButton')}
@@ -674,7 +699,7 @@ export const ProfilePage: React.FC = () => {
                                         <button
                                             type="button"
                                             className="pricing-cta pricing-cta-angel"
-                                            onClick={() => handlePurchase('12_months')}
+                                            onClick={() => handlePurchase(12)}
                                             disabled={isCheckoutBusy}
                                         >
                                             {t('profile.purchaseButton')}
@@ -717,7 +742,7 @@ export const ProfilePage: React.FC = () => {
                                         <button
                                             type="button"
                                             className="pricing-cta pricing-cta-basic"
-                                            onClick={() => handlePurchase('3_months')}
+                                            onClick={() => handlePurchase(3)}
                                             disabled={isCheckoutBusy}
                                         >
                                             {t('profile.purchaseButton')}

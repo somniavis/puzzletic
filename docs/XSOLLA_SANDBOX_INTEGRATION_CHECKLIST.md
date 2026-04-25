@@ -1,8 +1,8 @@
 # Xsolla 샌드박스 결제 연동 체크리스트
 
 > 마지막 업데이트: 2026-04-25
-> 상태: Phase 1 결제 테스트 안전장치 반영 완료, Phase 4 프론트 UX 보강 진행 중
-> 현재 확인: Xsolla 결제 페이지를 기존 페이지 내 full-screen iframe 오버레이로 오픈 성공, 레거시 직접지급 차단 완료, 실결제 완료 검증 전
+> 상태: 레거시 코드/데이터 정리 1차 완료, 최소 거래 기록 테이블 + 웹훅 멱등 처리 1차 구현 및 핵심 lifecycle 중복 테스트 완료, 원격 D1 event ledger 반영 완료, 다음 우선순위는 `환불/취소 거래 단위화`와 `D1 migration history 정상화`
+> 현재 확인: Xsolla 결제 페이지 iframe 오버레이, webhook 기반 premium 반영, 구독 취소 `non_renewing` UX, 원격 D1 레거시 plan(`3_months`, `12_months`) 22건 초기화 완료, `xsolla_webhook_events` 원격 생성 완료, duplicate `order_paid/create_subscription/update_subscription/cancel_subscription/non_renewal_subscription/refund` 테스트 통과
 
 ## 목적
 
@@ -13,11 +13,11 @@
 - 프론트엔드: `Vite + React`
 - 인증: `Firebase Auth`
 - 백엔드: `Cloudflare Worker + D1`
-- 기존 구독 반영 경로:
-  - `POST /api/users/:uid/purchase`
+- 현재 구독 관련 서비스 경로:
+  - `POST /api/users/:uid/xsolla/checkout-token`
   - `POST /api/users/:uid/cancel`
-- 현재 `/purchase`는 실제 결제 검증 없이 프리미엄을 바로 지급하는 구조이므로, Xsolla 연동 전에 반드시 교체되어야 함
-- 위 기존 경로는 **임시 테스트용 레거시 흐름**으로 간주하며, 실제 Xsolla 연동 시에는 보안 기준에 맞게 새 구조로 재구성한다
+  - `POST /api/xsolla/webhook`
+- 레거시 `/purchase` 직접 지급 흐름은 제거 대상으로 관리하며, 실제 premium 반영은 Xsolla webhook 검증 후에만 수행한다
 
 ## 목표
 
@@ -25,6 +25,16 @@
 2. 프론트 성공 콜백이 아니라 **Xsolla 웹훅 검증 후** 프리미엄을 부여한다.
 3. 가격, 권한, 구독 기간, 결제 상태를 모두 서버 기준으로 관리한다.
 4. 운영 전환 전에 필요한 보안 취약점을 사전 차단한다.
+
+## 현재 판단
+
+현재 구조는 "프론트 성공 UI가 아니라 서버 webhook 검증 후 premium 반영"이라는 큰 방향은 맞다.
+
+하지만 운영 전환 전에 반드시 정리해야 하는 핵심 문제는 아래 3가지다.
+
+1. 멱등 처리 1차는 완료됐지만 모든 webhook 타입에 대한 중복 검증이 끝난 것은 아니다.
+2. 거래 기록은 최소 event ledger 수준이라 환불/취소를 거래 단위로 처리하기엔 아직 부족하다.
+3. 원격 D1의 실제 스키마와 `d1_migrations` 기록이 어긋나 있어 일반적인 migration apply가 실패한다.
 
 ## 상태 규칙
 
@@ -35,11 +45,185 @@
 
 ## 현재 확인된 핵심 리스크
 
-1. 레거시 `/purchase` 직접지급은 차단했지만, 프론트/운영 문서에서 해당 레거시 경로 사용 흔적이 남아 있으면 혼선이 생길 수 있다.
+1. 프론트/운영 문서에 남아 있는 레거시 결제 표현이 있으면 실제 Xsolla 전용 흐름과 혼선이 생길 수 있다.
 2. 프론트에서 결제 성공처럼 보이는 상태와 실제 정산 완료 상태를 혼동하면 권한 오지급이 발생한다.
 3. Xsolla API Key, webhook secret을 프론트에 노출하면 결제 위변조 가능성이 커진다.
-4. 웹훅 멱등 처리가 없으면 재전송 시 중복 지급이 발생할 수 있다.
-5. 별도 거래 기록 테이블이 없으면 환불, 취소, 중복 지급, 테스트 이력 추적이 어렵다.
+4. webhook 멱등 처리 범위가 부족하면 일부 이벤트에서 재전송 시 중복 지급/중복 회수가 발생할 수 있다.
+5. 최소 event ledger만으로는 환불, 취소, 운영 조사, 거래 단위 회수 정책이 충분하지 않을 수 있다.
+6. 원격 D1의 `d1_migrations` 기록 불일치로 이후 배포 마이그레이션이 깨질 수 있다.
+
+## 현재까지 반영 사항
+
+### 서버/결제 구조
+
+- [x] 레거시 `/purchase` 직접지급 제거 시작
+- [x] Xsolla checkout token 발급 경로 추가
+- [x] sandbox / production checkout URL 분기 추가
+- [x] `XSOLLA_ENV` 기반 subscription mode / catalog sandbox 분리
+- [x] webhook 서명 검증 및 기본 premium 반영 구현
+- [x] 구독 취소를 `canceled`가 아닌 `non_renewing` 의미로 수정
+- [x] `xsolla_subscription_id` 저장 및 서비스 내 구독 취소 재시도 가능 구조 반영
+- [x] return URL이 허용 origin 또는 `XSOLLA_RETURN_URL`을 따르도록 수정
+- [x] 원격 D1에서 레거시 `subscription_plan IN ('3_months', '12_months')` 22건 초기화 완료
+- [x] 최소 Xsolla webhook event ledger 추가
+- [x] webhook 중복 재전송 멱등 처리 1차 구현
+- [x] 원격 D1에 `xsolla_webhook_events` 테이블 직접 반영 완료
+- [ ] 이용권 환불 API 연동은 아직 보류
+
+### 프론트/UX
+
+- [x] Xsolla checkout을 full-screen iframe overlay로 오픈
+- [x] 결제 준비 중 로딩 오버레이 및 중복 클릭 방지
+- [x] 결제 종료 후 서버 상태 재조회 기본 연결
+- [x] 구독 취소 확인 모달 문구를 “즉시 혜택 상실”이 아닌 “현재 구독 종료일까지 유지” 의미로 수정
+- [x] 구독 취소 성공 후 시스템 `alert` 제거
+- [x] 구독 취소 후 `Cancel Subscription` 버튼 대신 `Auto-Renew Off` 상태 배지 표시
+- [x] 주요 다국어 문구 동기화
+
+### 현재 정책 상태
+
+- [x] 구독형 상품:
+  - 서비스 내 `구독 취소` 가능
+  - 취소 시 `non_renewing`
+  - 현재 구독 종료일까지 premium 유지
+  - 다음 결제만 중단
+- [ ] 이용권 상품:
+  - 서비스 내 환불 미지원
+  - 별도 refund 정책/API/webhook 설계 후 재개 예정
+
+## 최적화 우선순위
+
+이 문서의 남은 작업은 아래 순서로 진행한다. 이전 구조가 비합리적이면 부분 수정이 아니라 새 구조로 교체한다.
+
+### Priority 1. 거래 기록 테이블 도입
+
+- 목적:
+  - 어떤 결제/웹훅이 언제 어떤 사용자에게 반영됐는지 추적 가능하게 만든다.
+- 이유:
+  - 멱등 처리, 환불 처리, 운영 조사, 테스트 이력 관리의 공통 기반이다.
+- 산출물:
+  - D1 거래 기록 테이블
+  - webhook event 기록용 테이블 또는 통합 event 컬럼 설계
+  - `transaction_id`, `subscription_id`, `notification_type`, `product_id`, `uid`, `status`, `processed_at` 저장
+  - 현재 구현:
+    - `xsolla_webhook_events`
+    - 최소 컬럼 기반 event ledger 1차 완료
+
+### Priority 2. 웹훅 멱등 처리
+
+- 목적:
+  - 동일 `order_paid`, `create_subscription`, `update_subscription`, `non_renewal_subscription`, `refund` 이벤트 재전송 시 중복 반영을 막는다.
+- 이유:
+  - 현재 가장 직접적인 금전/권한 오지급 위험이다.
+- 산출물:
+  - webhook 수신 시 event fingerprint 생성
+  - 이미 처리된 이벤트면 DB 반영 생략
+  - 성공/중복/실패 상태 기록
+  - 현재 구현:
+    - subscription / duration webhook fingerprint 생성
+    - `INSERT OR IGNORE` 기반 claim
+    - `processed` / `failed` 상태 기록
+    - duplicate `order_paid/create_subscription/update_subscription/cancel_subscription/non_renewal_subscription/refund` 테스트 통과
+
+### Priority 3. 환불/취소 정책 재설계
+
+- 목적:
+  - 현재의 "이용권 환불 미지원"과 "duration 전체 revoke" 구조를 거래 단위로 바꾼다.
+- 이유:
+  - 거래 기록과 멱등 처리 없이 환불을 먼저 붙이면 오회수 가능성이 크다.
+- 산출물:
+  - 거래 단위 revoke 로직
+  - duration/refund 이벤트 정책 명문화
+  - 보안 기준:
+    - 사용자 전체 상태를 뭉뚱그려 회수하지 않는다
+    - 반드시 거래 단위 또는 event 단위로 회수 대상을 식별한다
+
+### Priority 4. 프론트 상태 확정 로직 보강
+
+- 목적:
+  - checkout 종료 UI와 실제 premium 상태를 더 명확히 분리한다.
+- 이유:
+  - 사용자가 "결제 성공처럼 보였는데 적용이 안 됨" 또는 반대로 "적용된 것처럼 보임" 혼선을 겪지 않게 해야 한다.
+- 산출물:
+  - pending / confirmed / failed 상태 정리
+  - 결제 종료 후 서버 재조회 실패 UX 보강
+
+### Priority 5. `d1_migrations` 정상화
+
+- 목적:
+  - 향후 D1 스키마 변경을 일반적인 migration apply 흐름으로 복구한다.
+- 이유:
+  - 현재는 직접 SQL 실행으로는 작업이 가능하지만, 운영 마이그레이션 체인이 깨져 있다.
+- 산출물:
+  - 원격 DB 실제 스키마와 migration 파일 대응표
+  - `d1_migrations` 정리 또는 baseline 재설정
+  - 이후 migration apply 재검증
+
+## 단계별 진행 순서
+
+1. 거래 기록용 D1 스키마 설계 및 테이블 추가
+2. 웹훅 처리부를 거래 기록 기반 구조로 리팩터링
+3. 멱등 처리와 실패/중복 이벤트 로깅 추가
+4. 기간형 환불/취소 로직을 거래 단위로 재설계
+5. 프론트 결제 상태 UX 보강 및 서버 재조회 실패 케이스 정리
+6. 샌드박스 end-to-end 재검증
+7. 마지막으로 `d1_migrations` 상태 정상화
+
+## 결제 확인 및 서버 연계 검증
+
+이 섹션은 "결제 화면에서 성공처럼 보이는지"가 아니라, 실제로 **서버와 Xsolla webhook, D1 상태가 맞물려 동작하는지**를 점검하기 위한 전용 섹션이다.
+
+### 왜 별도 관리가 필요한가
+
+- 프론트 결제창 종료/성공 UI만으로 premium 부여 여부를 판단하면 안 된다.
+- 실제 기준은 `/api/users/:uid` 응답, webhook 반영, D1 저장 상태, Xsolla 구독 상태다.
+- 특히 구독형 취소는 거래 상세 화면이 아니라 Xsolla의 구독 상태(`non_renewing`)까지 확인해야 한다.
+
+### 현재까지 확인 완료
+
+- [x] 신규 테스트 계정으로 12개월 구독 구매 성공
+- [x] 구매 후 premium 적용 및 만료일 표시 확인
+- [x] 구독 취소 후 premium 즉시 회수되지 않음 확인
+- [x] 구독 취소 후 `Auto-Renew Off` UI 표시 확인
+- [x] 로컬 fallback 복귀 URL 이슈 원인 확인
+  - 원인:
+    - checkout token 생성 시 `Origin: http://localhost:5173`
+    - Xsolla return URL이 `http://localhost:5173/profile?tab=pass...` 로 설정됨
+    - 당시 로컬 Vite 서버가 꺼져 있어 “사이트에 연결할 수 없음” 발생
+  - 조치:
+    - 로컬 Vite 서버 재실행
+    - 동일 URL 재오픈 가능 확인
+
+### 서버 연계 기준 합격선
+
+- [ ] `/api/users/:uid` 응답 기준
+  - 구매 직후:
+    - `is_premium = 1`
+    - `subscription_plan = subscription_3_months | subscription_12_months`
+    - `subscription_end = 미래 시각`
+  - 구독 취소 직후:
+    - `is_premium = 1` 유지
+    - `subscription_end = 기존 미래 시각 유지`
+    - `subscription_plan` 유지
+- [ ] D1 저장 상태 기준
+  - `users.xsolla_subscription_id` 가 정상 저장되는지 확인
+  - 신규 구독 계정 기준 `subscription_end` 와 premium 상태가 webhook 후 업데이트되는지 확인
+- [ ] Xsolla 상태 기준
+  - 거래 상세는 `완료됨`으로 남아도 무방
+  - 실제 확인 대상은 구독 상태
+  - 구독 취소 후 `non_renewing` 으로 바뀌는지 확인
+- [ ] 프론트 오판 방지 기준
+  - 결제창 성공/종료만으로 premium이 붙지 않는지 확인
+  - 서버 재조회 없이는 UI가 premium 완료로 확정되지 않도록 확인
+
+### 다음 세션에서 이어서 확인할 것
+
+1. 신규 계정으로 구독 구매
+2. `/api/users/:uid` 응답에서 premium 필드 확인
+3. 구독 취소
+4. `/api/users/:uid` 재조회 후 premium 유지 확인
+5. Xsolla에서 해당 구독 상태가 `non_renewing` 인지 확인
+6. 위 5개가 모두 맞으면 구독형 취소 검증 완료로 체크
 
 ## 전체 단계
 
@@ -91,8 +275,19 @@
 ### Phase 1. 서버 구조 전환
 
 - [x] 기존 `/purchase`의 즉시 지급 로직 제거
-- [x] 기존 `/cancel`의 임시 테스트 해지 로직 제거 또는 레거시 격리
-- [ ] 레거시 결제 흐름 초기화 방안 확정
+- [x] 기존 `/cancel`의 임시 테스트 해지 fallback 제거 시작
+- [x] 레거시 결제 흐름 초기화 방안 확정
+  - D1에서 `subscription_plan IN ('3_months', '12_months')` 대상 계정을 legacy 테스트 데이터로 간주
+  - 대상 row는 `is_premium = 0`, `subscription_end = 0`, `subscription_plan = NULL`, `xsolla_subscription_id = NULL`, `xsolla_transaction_id = NULL` 로 초기화
+- [x] 원격 D1 legacy row 실제 정리 완료
+  - 직접 SQL 실행 결과:
+    - legacy row 22건 초기화
+    - 재조회 결과 `legacy_count = 0`
+- [x] 원격 D1 event ledger 실제 반영 완료
+  - 대상 테이블:
+    - `xsolla_webhook_events`
+  - 확인 결과:
+    - `sqlite_master` 재조회 시 테이블 존재 확인
 - [x] Xsolla 전용 신규 결제 흐름 설계
 - [x] 신규 endpoint 경로 확정
 - [-] Xsolla 결제 토큰 발급 endpoint 추가
@@ -125,18 +320,74 @@
     - `cancel_subscription`
     - `order_paid`
 - [ ] 웹훅 멱등 처리 구현
+- [x] 웹훅 멱등 처리 1차 구현
 - [-] 검증 성공 시에만 DB premium 반영
   - 현재 반영:
     - 구독 생성/갱신/취소
     - 1회성 기간 이용권 구매
 - [ ] 실패/중복/알 수 없는 이벤트 로깅
+- [ ] webhook fingerprint 기준 확정
+  - 후보:
+    - subscription 계열: `notification_type + subscription_id + date_end/date_next_charge`
+    - duration 계열: `notification_type + transaction_id + sku`
 
 ### Phase 3. 데이터 모델 및 추적성 보강
 
-- [ ] 거래 기록 테이블 추가
+- [x] 거래 기록 테이블 추가
+- [x] webhook event ledger 테이블 추가
+- [ ] 거래 기록 테이블과 event ledger 분리 유지 여부 최종 확정
 - [ ] 구독 상태 변경 이력 저장
 - [ ] 사용자-거래-플랜 매핑 필드 정리
 - [ ] 테스트 데이터와 운영 데이터 구분 전략 수립
+- [ ] 거래 기준 환불/취소 대상 식별 구조 추가
+
+### 레거시 D1 정리 SQL
+
+레거시 테스트 계정 정리는 **조회 후 초기화** 순서로 진행합니다.
+
+- 조회 SQL
+
+```sql
+SELECT
+  uid,
+  email,
+  is_premium,
+  subscription_end,
+  subscription_plan,
+  xsolla_subscription_id,
+  xsolla_transaction_id
+FROM users
+WHERE subscription_plan IN ('3_months', '12_months');
+```
+
+- 초기화 SQL
+
+```sql
+UPDATE users
+SET
+  is_premium = 0,
+  subscription_end = 0,
+  subscription_plan = NULL,
+  xsolla_subscription_id = NULL,
+  xsolla_transaction_id = NULL
+WHERE subscription_plan IN ('3_months', '12_months');
+```
+
+- 반영 파일
+  - `backend/api-grogrojello/migrations/2026-04-25_clear_legacy_subscription_plans.sql`
+
+### D1 migration history 이슈
+
+- 현재 원격 D1는 실제 테이블/컬럼은 존재하지만 `d1_migrations` 기록이 비어 있거나 불완전하다.
+- 확인된 현상:
+  - `wrangler d1 migrations apply --remote` 실행 시
+  - `2026-02-13_add_subscription_columns.sql`
+  - `duplicate column name: is_premium`
+  - 에러로 중단
+- 현재 결론:
+  - 결제 안정화 작업을 먼저 진행
+  - 필요한 새 스키마는 직접 SQL로 반영해 운영 불일치를 막는다
+  - 이후 별도 작업으로 migration history baseline을 맞춘다
 
 ### Phase 4. 프론트 연동
 
@@ -154,10 +405,20 @@
 
 ### Phase 5. 검증
 
-- [ ] 샌드박스 결제 성공 테스트
+- [-] 샌드박스 결제 성공 테스트
+  - 현재 상태:
+    - 신규 테스트 계정 구매/취소 UI 시나리오 1차 확인
+    - 서버/D1/Xsolla 상태 교차검증은 별도 `결제 확인 및 서버 연계 검증` 섹션에서 계속 진행
 - [ ] 결제 실패 테스트
 - [ ] 웹훅 서명 불일치 테스트
 - [ ] 웹훅 중복 전송 테스트
+- [x] 거래 기록/멱등 처리 추가 후 duplicate `order_paid` 재전송 테스트 통과
+- [x] duplicate `create_subscription` 재전송 테스트 통과
+- [x] duplicate `update_subscription` 재전송 테스트 통과
+- [x] duplicate `cancel_subscription` 재전송 테스트 통과
+- [x] duplicate `non_renewal_subscription` 재전송 테스트 통과
+- [x] duplicate `refund` 재전송 테스트 통과
+- [ ] fingerprint 충돌 가능성 검토 및 보강 필요
 - [ ] 비로그인/타 UID 요청 차단 테스트
 - [ ] planId 변조 테스트
 - [ ] 프론트 성공 콜백만으로 premium 부여 안 되는지 검증
@@ -169,6 +430,7 @@
 - [ ] 운영 webhook endpoint 확인
 - [ ] 모니터링 항목 정리
 - [ ] 장애 대응 절차 문서화
+- [ ] migration history 정상화 후 운영 배포 경로 재검증
 
 ### Phase 6-A. 환경 분리 구조 보강
 
@@ -250,8 +512,17 @@
 - [ ] Worker 마이그레이션 적용 승인
 - [x] Worker 배포 실행 또는 배포 승인
 - [x] Xsolla 콘솔 webhook URL 실제 등록
-- [ ] 샌드박스 실결제 테스트 실행
-- [ ] 결과 스크린샷 또는 로그 확인
+- [-] 샌드박스 실결제 테스트 실행
+  - 현재 상태:
+    - 신규 계정 기반 구독 구매/구독 취소/취소 후 UI 상태 확인
+    - 이용권 환불은 아직 범위 밖
+- [-] 결과 스크린샷 또는 로그 확인
+  - 현재 확보:
+    - 구독 취소 후 `Auto-Renew Off` 상태 화면
+    - localhost return URL 실패 원인 추적 결과
+  - 추가 필요:
+    - `/api/users/:uid` 응답 캡처
+    - Xsolla 구독 상태(`non_renewing`) 캡처
 
 ## 내가 처리할 일
 
@@ -275,10 +546,15 @@
 ### 데이터 및 보안
 
 - [ ] 거래 기록용 D1 스키마 초안 작성
+- [x] 거래 기록 테이블 기준 unique key 1차 전략 반영
+  - `subscription`: `notification_type + subscription_id + date`
+  - `duration`: `notification_type + transaction_id + product_id`
+- [ ] replay 공격/지연 재전송에 대한 fingerprint 강건성 재검토
 - [ ] 위변조 방지 체크 추가
 - [ ] 민감값 노출 경계 검토
 - [ ] 에러/보안 이벤트 로그 포인트 정리
 - [ ] 실패 시 롤백 또는 무시 기준 정리
+- [ ] `d1_migrations` 정상화 계획 수립
 
 ### 프론트엔드
 
@@ -605,13 +881,13 @@ sku: ...
 
 ## 권장 구현 순서
 
-1. 서버 plan 매핑과 Xsolla 토큰 발급 endpoint 추가
-2. 기존 `/purchase` 즉시 지급 제거
-3. 웹훅 endpoint와 서명 검증 추가
-4. 거래 기록 테이블 추가
-5. 프론트 결제창 오픈 연결
-6. 결제 완료 후 상태 재조회 연결
-7. 샌드박스 시나리오 테스트
+1. 거래 기록 테이블 설계 및 추가
+2. 웹훅 멱등 처리 추가
+3. 실패/중복/알 수 없는 이벤트 로깅 추가
+4. 기간형 refund/cancel 정책을 거래 단위 구조로 재설계
+5. 프론트 결제 상태 확정 UX 보강
+6. 샌드박스 시나리오 재검증
+7. 마지막으로 `d1_migrations` 정상화
 
 ## 진행 로그
 
@@ -652,6 +928,32 @@ sku: ...
 - [x] Xsolla checkout token 실제 호출 구현
 - [x] Xsolla webhook 서명 검증 및 기본 권한 반영 구현
 - [ ] 다음 작업: Worker secret 등록, webhook 등록, 프론트 연동, 실제 sandbox end-to-end 테스트
+
+### 2026-04-25
+
+- [x] 프론트/백엔드 레거시 `3_months` / `12_months` 호환 분기 제거 시작
+- [x] 원격 D1에서 legacy `subscription_plan` row 조회
+  - 조회 결과: 22건
+- [x] 원격 D1에서 legacy `subscription_plan` row 초기화
+  - 대상:
+    - `3_months`
+    - `12_months`
+  - 결과:
+    - 22 rows written
+    - 재조회 결과 `legacy_count = 0`
+- [x] `wrangler whoami`, `wrangler d1 list`, 원격 schema 조회로 계정/DB 연결 확인
+- [x] `d1_migrations` 불일치 확인
+  - migration apply 시 duplicate column 에러 발생
+  - 이후 별도 baseline 정상화 필요
+- [x] 남은 최우선 작업을 `거래 기록 + 멱등 처리`로 재설정
+- [x] 최소 event ledger 테이블 `xsolla_webhook_events` 추가
+- [x] webhook event fingerprint 기반 멱등 처리 1차 구현
+- [x] duplicate `order_paid` webhook 재전송 테스트 추가 및 통과
+- [x] duplicate `create_subscription` / `update_subscription` / `cancel_subscription` / `non_renewal_subscription` / `refund` webhook 재전송 테스트 추가 및 통과
+- [x] 원격 D1에 `xsolla_webhook_events` 직접 생성
+- [x] 원격 D1에서 `xsolla_webhook_events` 존재 재검증 완료
+- [x] backend worker tests 통과
+  - `34 passed`
 
 ## 지금 시점의 사용자 할 일
 
@@ -771,11 +1073,12 @@ sku: ...
 
 ### 다음 세션에서 내가 할 일
 
-1. Xsolla env 분리 구조 보강
-2. sandbox end-to-end 점검
-3. 거래 로그 테이블/멱등 처리 보강
-4. 실패/취소 UX 세부 마감
-5. 레거시 `/purchase` 제거 또는 격리
+1. 실패/중복 event 로깅 세분화
+2. duration refund/cancel 정책을 거래 단위 구조로 재설계
+3. fingerprint 충돌 가능성 검토 및 필요 시 event key 보강
+4. 프론트 결제 상태 UX 보강
+5. `d1_migrations` baseline 정상화 계획 수립 및 검증
+6. 이후 `d1_migrations` 정상화 작업 분리 진행
 
 ## 관련 파일
 

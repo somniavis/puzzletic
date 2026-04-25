@@ -31,3 +31,14 @@ CREATE TABLE api_rate_limits (
   last_seen INTEGER NOT NULL,
   blocked_until INTEGER NOT NULL DEFAULT 0
 );
+
+CREATE TABLE xsolla_webhook_events (
+  event_key TEXT PRIMARY KEY,
+  notification_type TEXT NOT NULL,
+  uid TEXT,
+  product_id TEXT,
+  xsolla_transaction_id INTEGER,
+  xsolla_subscription_id INTEGER,
+  processing_status TEXT NOT NULL DEFAULT 'processing',
+  processed_at INTEGER NOT NULL
+);

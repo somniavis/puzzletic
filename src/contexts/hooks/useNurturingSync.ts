@@ -11,8 +11,8 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import type { User } from 'firebase/auth';
 import type { NurturingPersistentState } from '../../types/nurturing';
 import type { GameScoreValue, Poop, PendingPoop, Bug, BugType } from '../../types/nurturing';
-import type { BillingProductId, LegacyPlanId } from '../../constants/billingPlans';
-import { BILLING_PRODUCTS, resolveBillingOfferType } from '../../constants/billingPlans';
+import type { BillingDurationMonths, BillingProductId } from '../../constants/billingPlans';
+import { resolveBillingProduct } from '../../constants/billingPlans';
 import {
     loadNurturingState,
     saveNurturingState,
@@ -34,8 +34,9 @@ import { getProgressionCategory, getUnlockThreshold, createGameScore } from '../
 
 export interface SubscriptionState {
     isPremium: boolean;
-    plan: LegacyPlanId | BillingProductId | null;
+    plan: BillingProductId | null;
     expiryDate: number | null;
+    renewalStatus: 'active' | 'non_renewing' | null;
 }
 
 export interface CheckoutOverlayState {
@@ -105,6 +106,7 @@ export const useNurturingSync = (user: User | null, guestId: string | null = nul
         isPremium: false,
         plan: null,
         expiryDate: null,
+        renewalStatus: null,
     });
     const [checkoutOverlay, setCheckoutOverlay] = useState<CheckoutOverlayState>({
         isOpen: false,
@@ -154,9 +156,12 @@ export const useNurturingSync = (user: User | null, guestId: string | null = nul
             isPremium: !!result.data.is_premium,
             plan: result.data.subscription_plan as any || null,
             expiryDate: result.data.subscription_end || null,
+            renewalStatus: result.data.is_premium
+                ? subscription.renewalStatus || 'active'
+                : null,
         });
         return true;
-    }, [user]);
+    }, [subscription.renewalStatus, user]);
 
     const closeCheckoutOverlay = useCallback((options: { refresh?: boolean } = {}) => {
         setCheckoutOverlay({
@@ -389,6 +394,7 @@ export const useNurturingSync = (user: User | null, guestId: string | null = nul
                     isPremium: !!cloudData.is_premium,
                     plan: cloudData.subscription_plan as any || null,
                     expiryDate: cloudData.subscription_end || null,
+                    renewalStatus: cloudData.is_premium ? subscription.renewalStatus || 'active' : null,
                 });
             }
 
@@ -601,7 +607,7 @@ export const useNurturingSync = (user: User | null, guestId: string | null = nul
         return success;
     }, [user]);
 
-    const purchasePlan = useCallback(async (planId: '3_months' | '12_months'): Promise<boolean> => {
+    const purchasePlan = useCallback(async (durationMonths: BillingDurationMonths): Promise<boolean> => {
         if (!user) return false;
         if (checkoutOverlay.isPreparing || checkoutOverlay.isOpen) return false;
 
@@ -611,13 +617,10 @@ export const useNurturingSync = (user: User | null, guestId: string | null = nul
         }));
 
         const languageCode = navigator.language || 'en';
-        const offerType = resolveBillingOfferType(null, languageCode);
-        const product = BILLING_PRODUCTS.find((entry) =>
-            entry.legacyPlanId === planId && entry.offerType === offerType
-        );
+        const product = resolveBillingProduct(durationMonths, null, languageCode);
 
         if (!product) {
-            console.error('Purchase failed: matching billing product not found', { planId, offerType, languageCode });
+            console.error('Purchase failed: matching billing product not found', { durationMonths, languageCode });
             setCheckoutOverlay({
                 isOpen: false,
                 checkoutUrl: null,
@@ -674,17 +677,12 @@ export const useNurturingSync = (user: User | null, guestId: string | null = nul
             const result = await cancelSubscriptionApi(user);
 
             if (result.success) {
-                const isLegacyDirectPlan =
-                    subscription.plan === '3_months' || subscription.plan === '12_months';
-
-                if (isLegacyDirectPlan) {
-                    setSubscription({
-                        isPremium: false,
-                        plan: null,
-                        expiryDate: null,
-                    });
-                } else {
-                    await refreshSubscriptionFromCloud();
+                await refreshSubscriptionFromCloud();
+                if (result.status === 'non_renewing') {
+                    setSubscription((current) => ({
+                        ...current,
+                        renewalStatus: 'non_renewing',
+                    }));
                 }
                 return result;
             }
