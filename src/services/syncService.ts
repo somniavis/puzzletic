@@ -433,9 +433,10 @@ export type CancelSubscriptionResult =
     }
     | {
         success: false;
-        reason: 'xsolla_managed' | 'request_failed';
+        reason: 'xsolla_managed' | 'request_failed' | 'rate_limited' | 'already_in_progress';
         message?: string;
         entitlementPlan?: string | null;
+        retryAfterSeconds?: number;
     };
 
 /**
@@ -498,6 +499,24 @@ export const cancelSubscription = async (
                     reason: 'xsolla_managed',
                     message: json?.error || 'Cancel through Xsolla and wait for the verified webhook.',
                     entitlementPlan: json?.entitlementPlan || null,
+                };
+            }
+
+            if (response.status === 429) {
+                const retryAfterSeconds = Number(
+                    json?.retryAfterSeconds ??
+                    response.headers.get('Retry-After') ??
+                    0
+                );
+                return {
+                    success: false,
+                    reason: 'rate_limited',
+                    message: json?.reason === 'action_cooldown'
+                        ? 'Cancellation is already in progress. Please wait a moment.'
+                        : 'Too many requests. Please wait before trying again.',
+                    retryAfterSeconds: Number.isFinite(retryAfterSeconds) && retryAfterSeconds > 0
+                        ? retryAfterSeconds
+                        : undefined,
                 };
             }
 

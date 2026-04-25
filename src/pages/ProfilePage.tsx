@@ -46,6 +46,7 @@ export const ProfilePage: React.FC = () => {
         closeCheckoutOverlay,
         purchasePlan,
         cancelSubscription,
+        isCancellingSubscription,
         debugUnlockAllGames,
         debugAddStars,
     } = useNurturing();
@@ -123,6 +124,10 @@ export const ProfilePage: React.FC = () => {
     }, [location.search, isPassUnlocked]);
 
     const handleCancelSubscription = async () => {
+        if (isCancellingSubscription) {
+            return;
+        }
+
         const result = await cancelSubscription();
         if (result.success) {
             setShowCancelModal(false);
@@ -481,15 +486,17 @@ export const ProfilePage: React.FC = () => {
                                             <button
                                                 className="text-btn"
                                                 onClick={() => setShowCancelModal(true)}
+                                                disabled={isCancellingSubscription}
                                                 style={{
                                                     fontSize: '0.8rem',
                                                     color: '#999',
                                                     textDecoration: 'underline',
                                                     background: 'none',
                                                     border: 'none',
-                                                    cursor: 'pointer',
+                                                    cursor: isCancellingSubscription ? 'wait' : 'pointer',
                                                     marginTop: '4px',
-                                                    padding: 0
+                                                    padding: 0,
+                                                    opacity: isCancellingSubscription ? 0.6 : 1,
                                                 }}
                                             >
                                                 {t('profile.cancelSubscription')}
@@ -850,6 +857,7 @@ export const ProfilePage: React.FC = () => {
                         }}>
                             <button
                                 onClick={() => setShowCancelModal(false)}
+                                disabled={isCancellingSubscription}
                                 style={{
                                     position: 'absolute',
                                     top: '16px',
@@ -862,27 +870,32 @@ export const ProfilePage: React.FC = () => {
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
-                                    cursor: 'pointer',
+                                    cursor: isCancellingSubscription ? 'not-allowed' : 'pointer',
                                     fontSize: '1.5rem',
                                     color: '#999',
                                     boxShadow: '0 3px 0 #bbb',
                                     transition: 'all 0.1s ease',
                                     padding: 0,
-                                    lineHeight: 1
+                                    lineHeight: 1,
+                                    opacity: isCancellingSubscription ? 0.45 : 1,
                                 }}
                                 onMouseEnter={(e) => {
+                                    if (isCancellingSubscription) return;
                                     e.currentTarget.style.transform = 'scale(1.05)';
                                     e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.05)';
                                 }}
                                 onMouseLeave={(e) => {
+                                    if (isCancellingSubscription) return;
                                     e.currentTarget.style.transform = 'scale(1)';
                                     e.currentTarget.style.backgroundColor = 'transparent';
                                 }}
                                 onMouseDown={(e) => {
+                                    if (isCancellingSubscription) return;
                                     e.currentTarget.style.transform = 'translateY(2px) scale(1.05)';
                                     e.currentTarget.style.boxShadow = '0 1px 0 #bbb';
                                 }}
                                 onMouseUp={(e) => {
+                                    if (isCancellingSubscription) return;
                                     e.currentTarget.style.transform = 'scale(1.05)';
                                     e.currentTarget.style.boxShadow = '0 3px 0 #bbb';
                                 }}
@@ -900,6 +913,7 @@ export const ProfilePage: React.FC = () => {
 
                             <button
                                 onClick={handleCancelSubscription}
+                                disabled={isCancellingSubscription}
                                 style={{
                                     width: '100%',
                                     background: 'linear-gradient(180deg, #ff6b6b 0%, #ee5253 100%)',
@@ -909,32 +923,39 @@ export const ProfilePage: React.FC = () => {
                                     borderRadius: '16px',
                                     fontSize: '1.1rem',
                                     fontWeight: '800',
-                                    cursor: 'pointer',
+                                    cursor: isCancellingSubscription ? 'wait' : 'pointer',
                                     boxShadow: '0 4px 0 #d32f2f, 0 5px 15px rgba(238, 82, 83, 0.4)',
                                     transform: 'translateY(0)',
                                     transition: 'all 0.1s ease',
-                                    letterSpacing: '0.5px'
+                                    letterSpacing: '0.5px',
+                                    opacity: isCancellingSubscription ? 0.7 : 1,
                                 }}
                                 onMouseEnter={(e) => {
+                                    if (isCancellingSubscription) return;
                                     e.currentTarget.style.transform = 'translateY(-2px)';
                                     e.currentTarget.style.filter = 'brightness(1.1)';
                                     e.currentTarget.style.boxShadow = '0 6px 0 #d32f2f, 0 8px 20px rgba(238, 82, 83, 0.5)';
                                 }}
                                 onMouseLeave={(e) => {
+                                    if (isCancellingSubscription) return;
                                     e.currentTarget.style.transform = 'translateY(0)';
                                     e.currentTarget.style.filter = 'brightness(1)';
                                     e.currentTarget.style.boxShadow = '0 4px 0 #d32f2f, 0 5px 15px rgba(238, 82, 83, 0.4)';
                                 }}
                                 onMouseDown={(e) => {
+                                    if (isCancellingSubscription) return;
                                     e.currentTarget.style.transform = 'translateY(4px)';
                                     e.currentTarget.style.boxShadow = '0 0 0 #d32f2f, 0 2px 5px rgba(238, 82, 83, 0.3)';
                                 }}
                                 onMouseUp={(e) => {
+                                    if (isCancellingSubscription) return;
                                     e.currentTarget.style.transform = 'translateY(-2px)';
                                     e.currentTarget.style.boxShadow = '0 6px 0 #d32f2f, 0 8px 20px rgba(238, 82, 83, 0.5)';
                                 }}
                             >
-                                {t('common.confirm')}
+                                {isCancellingSubscription
+                                    ? t('common.loading', { defaultValue: 'Loading...' })
+                                    : t('common.confirm')}
                             </button>
                         </div>
                     </div>

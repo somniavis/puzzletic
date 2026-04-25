@@ -124,6 +124,7 @@ interface NurturingContextValue {
   closeCheckoutOverlay: (options?: { refresh?: boolean }) => void;
   purchasePlan: (durationMonths: 3 | 12) => Promise<boolean>;
   cancelSubscription: () => Promise<CancelSubscriptionResult>;
+  isCancellingSubscription: boolean;
 
   // Jello House & Sleep
   isSleeping: boolean;
@@ -176,6 +177,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     saveToCloud,
     purchasePlan,
     cancelSubscription,
+    isCancellingSubscription,
     stateRef,
     completeCharacterCreation
   } = useNurturingSync(user, guestId);
@@ -447,6 +449,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     checkoutOverlay,
     closeCheckoutOverlay,
     cancelSubscription,
+    isCancellingSubscription,
     subscription,
     pauseTick,
     resumeTick,
@@ -494,6 +497,7 @@ export const NurturingProvider: React.FC<NurturingProviderProps> = ({ children }
     closeCheckoutOverlay,
     subscription,
     cancelSubscription,
+    isCancellingSubscription,
     pauseTick,
     resumeTick,
     setCharacterState,

@@ -123,6 +123,7 @@ const toSubscriptionState = (
 
 export const useNurturingSync = (user: User | null, guestId: string | null = null) => {
     const [isGlobalLoading, setIsGlobalLoading] = useState(true);
+    const [isCancellingSubscription, setIsCancellingSubscription] = useState(false);
 
     // Subscription State
     const [subscription, setSubscription] = useState<SubscriptionState>({
@@ -684,7 +685,16 @@ export const useNurturingSync = (user: User | null, guestId: string | null = nul
             return { success: false, reason: 'request_failed', message: 'Not signed in' };
         }
 
+        if (isCancellingSubscription) {
+            return {
+                success: false,
+                reason: 'already_in_progress',
+                message: 'Cancellation is already in progress. Please wait a moment.',
+            };
+        }
+
         try {
+            setIsCancellingSubscription(true);
             const result = await cancelSubscriptionApi(user);
 
             if (result.success) {
@@ -700,8 +710,10 @@ export const useNurturingSync = (user: User | null, guestId: string | null = nul
             return result;
         } catch {
             return { success: false, reason: 'request_failed', message: 'Unknown error' };
+        } finally {
+            setIsCancellingSubscription(false);
         }
-    }, [refreshSubscriptionFromCloud, user]);
+    }, [isCancellingSubscription, refreshSubscriptionFromCloud, user]);
 
     return {
         state,
@@ -714,6 +726,7 @@ export const useNurturingSync = (user: User | null, guestId: string | null = nul
         saveToCloud,
         purchasePlan,
         cancelSubscription, // [NEW]
+        isCancellingSubscription,
         stateRef,
         completeCharacterCreation
     };
