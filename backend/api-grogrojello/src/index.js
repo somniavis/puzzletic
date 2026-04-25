@@ -129,28 +129,28 @@ const XSOLLA_PRODUCTS = {
 		kind: 'regular_subscription',
 		durationMonths: 3,
 		displayName: '3-month subscription',
-		xsollaIdentifierEnvKey: 'XSOLLA_REGULAR_SUBSCRIPTION_3_MONTHS_PLAN_ID',
+		xsollaIdentifierEnvKeyBase: 'XSOLLA_REGULAR_SUBSCRIPTION_3_MONTHS_PLAN_ID',
 	},
 	subscription_12_months: {
 		id: 'subscription_12_months',
 		kind: 'regular_subscription',
 		durationMonths: 12,
 		displayName: '12-month subscription',
-		xsollaIdentifierEnvKey: 'XSOLLA_REGULAR_SUBSCRIPTION_12_MONTHS_PLAN_ID',
+		xsollaIdentifierEnvKeyBase: 'XSOLLA_REGULAR_SUBSCRIPTION_12_MONTHS_PLAN_ID',
 	},
 	duration_3_months: {
 		id: 'duration_3_months',
 		kind: 'one_time_item',
 		durationMonths: 3,
 		displayName: '3-month duration pass',
-		xsollaIdentifierEnvKey: 'XSOLLA_DURATION_3_MONTHS_SKU',
+		xsollaIdentifierEnvKeyBase: 'XSOLLA_DURATION_3_MONTHS_SKU',
 	},
 	duration_12_months: {
 		id: 'duration_12_months',
 		kind: 'one_time_item',
 		durationMonths: 12,
 		displayName: '12-month duration pass',
-		xsollaIdentifierEnvKey: 'XSOLLA_DURATION_12_MONTHS_SKU',
+		xsollaIdentifierEnvKeyBase: 'XSOLLA_DURATION_12_MONTHS_SKU',
 	},
 };
 
@@ -568,16 +568,37 @@ const jsonResponse = (corsHeaders, body, status = 200, extraHeaders = {}) =>
 		headers: { ...corsHeaders, 'Content-Type': 'application/json', ...extraHeaders },
 	});
 
+const getXsollaEnvironmentName = (env) => {
+	const requestedEnv = String(env.XSOLLA_ENV || 'sandbox').trim().toLowerCase();
+	return XSOLLA_ENVIRONMENTS[requestedEnv] ? requestedEnv : 'sandbox';
+};
+
+const getXsollaScopedEnvValue = (env, baseKey) => {
+	const environmentName = getXsollaEnvironmentName(env);
+	const scopedKey = `${baseKey}_${environmentName.toUpperCase()}`;
+	return env[scopedKey] || env[baseKey] || null;
+};
+
+const getXsollaBaseConfig = (env) => ({
+	merchantId: getXsollaScopedEnvValue(env, 'XSOLLA_MERCHANT_ID'),
+	projectId: getXsollaScopedEnvValue(env, 'XSOLLA_PROJECT_ID'),
+	apiKey: getXsollaScopedEnvValue(env, 'XSOLLA_API_KEY'),
+});
+
+const getXsollaProductIdentifier = (env, product) =>
+	(product ? getXsollaScopedEnvValue(env, product.xsollaIdentifierEnvKeyBase) : null);
+
 const getXsollaConfigStatus = (env) => {
+	const xsollaBaseConfig = getXsollaBaseConfig(env);
 	const missingBaseEnv = [];
-	if (!env.XSOLLA_MERCHANT_ID) missingBaseEnv.push('XSOLLA_MERCHANT_ID');
-	if (!env.XSOLLA_PROJECT_ID) missingBaseEnv.push('XSOLLA_PROJECT_ID');
-	if (!env.XSOLLA_API_KEY) missingBaseEnv.push('XSOLLA_API_KEY');
+	if (!xsollaBaseConfig.merchantId) missingBaseEnv.push('XSOLLA_MERCHANT_ID[_SANDBOX|_PRODUCTION]');
+	if (!xsollaBaseConfig.projectId) missingBaseEnv.push('XSOLLA_PROJECT_ID[_SANDBOX|_PRODUCTION]');
+	if (!xsollaBaseConfig.apiKey) missingBaseEnv.push('XSOLLA_API_KEY[_SANDBOX|_PRODUCTION]');
 
 	const missingProductEnv = [];
 	for (const product of Object.values(XSOLLA_PRODUCTS)) {
-		if (!env[product.xsollaIdentifierEnvKey]) {
-			missingProductEnv.push(product.xsollaIdentifierEnvKey);
+		if (!getXsollaProductIdentifier(env, product)) {
+			missingProductEnv.push(`${product.xsollaIdentifierEnvKeyBase}[_SANDBOX|_PRODUCTION]`);
 		}
 	}
 
@@ -589,13 +610,12 @@ const getXsollaConfigStatus = (env) => {
 };
 
 const getXsollaEnvironmentConfig = (env) => {
-	const requestedEnv = String(env.XSOLLA_ENV || 'sandbox').trim().toLowerCase();
-	return XSOLLA_ENVIRONMENTS[requestedEnv] || XSOLLA_ENVIRONMENTS.sandbox;
+	return XSOLLA_ENVIRONMENTS[getXsollaEnvironmentName(env)];
 };
 
 const getXsollaWebhookSecret = (env) => {
-	const requestedEnv = String(env.XSOLLA_ENV || 'sandbox').trim().toLowerCase();
-	if (requestedEnv === 'production') {
+	const environmentName = getXsollaEnvironmentName(env);
+	if (environmentName === 'production') {
 		return env.XSOLLA_WEBHOOK_SECRET_PRODUCTION || env.XSOLLA_WEBHOOK_SECRET || null;
 	}
 
@@ -606,8 +626,9 @@ const buildXsollaCheckoutUrl = (token, xsollaEnvironment) =>
 	`${xsollaEnvironment.checkoutBaseUrl}?token=${encodeURIComponent(token)}`;
 
 const buildXsollaReturnUrl = (env, allowedOrigin) => {
-	if (env.XSOLLA_RETURN_URL) {
-		return env.XSOLLA_RETURN_URL;
+	const scopedReturnUrl = getXsollaScopedEnvValue(env, 'XSOLLA_RETURN_URL');
+	if (scopedReturnUrl) {
+		return scopedReturnUrl;
 	}
 
 	if (allowedOrigin) {
@@ -760,7 +781,7 @@ const joinProductIds = (productIds) => {
 
 const getXsollaProductByIdentifier = (env, identifier) => {
 	if (!identifier) return null;
-	return Object.values(XSOLLA_PRODUCTS).find((product) => env[product.xsollaIdentifierEnvKey] === identifier) || null;
+	return Object.values(XSOLLA_PRODUCTS).find((product) => getXsollaProductIdentifier(env, product) === identifier) || null;
 };
 
 const isXsollaRecurringPlan = (plan) =>
@@ -774,7 +795,7 @@ const getXsollaProductById = (productId) =>
 
 const getXsollaProductIdentifierByPlan = (env, plan) => {
 	const product = getXsollaProductById(plan);
-	return product ? env[product.xsollaIdentifierEnvKey] || null : null;
+	return getXsollaProductIdentifier(env, product);
 };
 
 const isValidXsollaSubscriptionId = (value) =>
@@ -847,10 +868,13 @@ const upsertEntitlement = async (
 	).run();
 };
 
-const createXsollaAuthHeaders = (env) => ({
-	'Authorization': `Basic ${encodeBasicAuth(env.XSOLLA_MERCHANT_ID, env.XSOLLA_API_KEY)}`,
-	'Content-Type': 'application/json',
-});
+const createXsollaAuthHeaders = (env) => {
+	const xsollaBaseConfig = getXsollaBaseConfig(env);
+	return {
+		'Authorization': `Basic ${encodeBasicAuth(xsollaBaseConfig.merchantId, xsollaBaseConfig.apiKey)}`,
+		'Content-Type': 'application/json',
+	};
+};
 
 const requestXsollaSubscriptionCancellation = async (env, userId, currentPlan, subscriptionId) => {
 	if (!isValidXsollaSubscriptionId(subscriptionId)) {
@@ -865,7 +889,7 @@ const requestXsollaSubscriptionCancellation = async (env, userId, currentPlan, s
 	}
 
 	const response = await fetch(
-		XSOLLA_UPDATE_SUBSCRIPTION_URL(env.XSOLLA_PROJECT_ID, userId, subscriptionId),
+		XSOLLA_UPDATE_SUBSCRIPTION_URL(getXsollaBaseConfig(env).projectId, userId, subscriptionId),
 		{
 			method: 'PUT',
 			headers: createXsollaAuthHeaders(env),
@@ -904,7 +928,7 @@ const requestXsollaRefund = async (env, transactionId, email = null) => {
 	}
 
 	const response = await fetch(
-		XSOLLA_REFUND_URL(env.XSOLLA_MERCHANT_ID, transactionId),
+		XSOLLA_REFUND_URL(getXsollaBaseConfig(env).merchantId, transactionId),
 		{
 			method: 'PUT',
 			headers: createXsollaAuthHeaders(env),
@@ -1307,12 +1331,13 @@ const createXsollaSubscriptionToken = async ({
 	language,
 	returnUrl,
 }) => {
+	const xsollaBaseConfig = getXsollaBaseConfig(env);
 	const body = {
 		user: {
 			id: { value: userId },
 		},
 		settings: {
-			project_id: Number(env.XSOLLA_PROJECT_ID),
+			project_id: Number(xsollaBaseConfig.projectId),
 			language,
 			currency: 'USD',
 			mode: xsollaEnvironment.subscriptionMode,
@@ -1338,10 +1363,10 @@ const createXsollaSubscriptionToken = async ({
 		body.user.country = { value: countryCode, allow_modify: true };
 	}
 
-	const response = await fetch(XSOLLA_SUBSCRIPTION_TOKEN_URL(env.XSOLLA_MERCHANT_ID), {
+	const response = await fetch(XSOLLA_SUBSCRIPTION_TOKEN_URL(xsollaBaseConfig.merchantId), {
 		method: 'POST',
 		headers: {
-			'Authorization': `Basic ${encodeBasicAuth(env.XSOLLA_MERCHANT_ID, env.XSOLLA_API_KEY)}`,
+			'Authorization': `Basic ${encodeBasicAuth(xsollaBaseConfig.merchantId, xsollaBaseConfig.apiKey)}`,
 			'Content-Type': 'application/json',
 		},
 		body: JSON.stringify(body),
@@ -1367,6 +1392,7 @@ const createXsollaCatalogToken = async ({
 	returnUrl,
 	clientIp,
 }) => {
+	const xsollaBaseConfig = getXsollaBaseConfig(env);
 	const body = {
 		sandbox: xsollaEnvironment.catalogSandbox,
 		user: {
@@ -1397,14 +1423,14 @@ const createXsollaCatalogToken = async ({
 	}
 
 	const headers = {
-		'Authorization': `Basic ${encodeBasicAuth(env.XSOLLA_PROJECT_ID, env.XSOLLA_API_KEY)}`,
+		'Authorization': `Basic ${encodeBasicAuth(xsollaBaseConfig.projectId, xsollaBaseConfig.apiKey)}`,
 		'Content-Type': 'application/json',
 	};
 	if (!countryCode && clientIp && clientIp !== 'unknown') {
 		headers['X-User-Ip'] = clientIp;
 	}
 
-	const response = await fetch(XSOLLA_CATALOG_TOKEN_URL(env.XSOLLA_PROJECT_ID), {
+	const response = await fetch(XSOLLA_CATALOG_TOKEN_URL(xsollaBaseConfig.projectId), {
 		method: 'POST',
 		headers,
 		body: JSON.stringify(body),
@@ -1434,15 +1460,14 @@ const handleXsollaCheckoutTokenRequest = async (request, env, corsHeaders, uid, 
 		}, 503);
 	}
 
-	if (!env[product.xsollaIdentifierEnvKey]) {
+	const productIdentifier = getXsollaProductIdentifier(env, product);
+	if (!productIdentifier) {
 		return jsonResponse(corsHeaders, {
 			error: 'Xsolla product mapping incomplete',
-			missing: [product.xsollaIdentifierEnvKey],
+			missing: [`${product.xsollaIdentifierEnvKeyBase}[_SANDBOX|_PRODUCTION]`],
 			productId,
 		}, 503);
 	}
-
-	const productIdentifier = env[product.xsollaIdentifierEnvKey];
 	const normalizedCountryCode = normalizeCountryCode(countryCode);
 	const normalizedLanguage = toTwoLetterLanguage(languageCode);
 	const expectedProductId = resolveExpectedBillingProductId(

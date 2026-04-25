@@ -1,8 +1,8 @@
 # Xsolla 샌드박스 결제 연동 체크리스트
 
 > 마지막 업데이트: 2026-04-25
-> 상태: 레거시 코드/데이터 정리 완료, 최소 event ledger + 웹훅 멱등 처리 완료, 결제 상태 모델을 `entitlement_*` / `billing_reference_*` 구조로 전환 완료, 다음 우선순위는 `샌드박스 실결선 재검증`과 `D1 migration history 정상화`
-> 현재 확인: Xsolla 결제 페이지 iframe 오버레이, webhook 기반 entitlement 반영, 구독 취소 `non_renewing` UX, 원격 D1 레거시 plan(`3_months`, `12_months`) 22건 초기화 완료, `xsolla_webhook_events` 원격 생성 완료, 원격 D1 `users` entitlement 스키마 반영 완료, duplicate `order_paid/create_subscription/update_subscription/cancel_subscription/non_renewal_subscription/refund` 테스트 통과, `mismatched refund transaction` 무시 테스트 추가
+> 상태: 레거시 코드/데이터 정리 완료, 최소 event ledger + 웹훅 멱등 처리 완료, 결제 상태 모델을 `entitlement_*` / `billing_reference_*` 구조로 전환 완료, 구독권/기간권 1차 실결선 검증 완료, 1차 보안 보강 완료, 다음 우선순위는 `기간권 refund/order_canceled 실검증`과 `D1 migration history 정상화`
+> 현재 확인: Xsolla 결제 페이지 iframe 오버레이, webhook 기반 entitlement 반영, 구독 취소 `non_renewing` UX 및 Xsolla 콘솔 `비갱신` 확인, 원격 D1 레거시 plan(`3_months`, `12_months`) 22건 초기화 완료, `xsolla_webhook_events` 원격 생성 완료, 원격 D1 `users` entitlement 스키마 반영 완료, duplicate `order_paid/create_subscription/update_subscription/cancel_subscription/non_renewal_subscription/refund` 테스트 통과, `mismatched refund transaction` 무시 테스트 추가, 결제 완료 후 복귀 탭 `my_jello` 전환 완료
 
 ## 목적
 
@@ -32,9 +32,9 @@
 
 하지만 운영 전환 전에 반드시 정리해야 하는 핵심 문제는 아래 3가지다.
 
-1. 멱등 처리 1차는 완료됐지만 모든 webhook 타입에 대한 중복 검증이 끝난 것은 아니다.
-2. 단일 활성 entitlement 정책에 맞는 최소 reference 검증은 들어갔지만, 샌드박스 실결선으로 새 entitlement 스키마를 아직 재검증하지 않았다.
-3. 원격 D1의 실제 스키마와 `d1_migrations` 기록이 어긋나 있어 일반적인 migration apply가 실패한다.
+1. 기간권 `refund` / `order_canceled` 를 실제 webhook 기준으로 아직 끝까지 검증하지 않았다.
+2. 원격 D1의 실제 스키마와 `d1_migrations` 기록이 어긋나 있어 일반적인 migration apply가 실패한다.
+3. 시장/가격 정책 판정은 아직 서버 신뢰원 대신 클라이언트 입력값 fallback을 일부 사용하므로, 최종 운영 전에는 정합성 정리가 필요하다.
 
 ## 상태 규칙
 
@@ -79,6 +79,7 @@
 - [x] 구독 취소 확인 모달 문구를 “즉시 혜택 상실”이 아닌 “현재 구독 종료일까지 유지” 의미로 수정
 - [x] 구독 취소 성공 후 시스템 `alert` 제거
 - [x] 구독 취소 후 `Cancel Subscription` 버튼 대신 `Auto-Renew Off` 상태 배지 표시
+- [x] 결제 완료 후 복귀 탭을 `pass` 가 아닌 `my_jello` 로 전환
 - [x] 주요 다국어 문구 동기화
 
 ### 현재 정책 상태
@@ -431,6 +432,10 @@ LIMIT 10;
   - 검증:
     - production-specific webhook secret 선택 테스트 통과
 
+- [x] 1차 결제 보안 보강 완료 후 커밋/푸시
+  - 커밋:
+    - `cea81fc Harden Xsolla payment security surface`
+
 #### Lowest / Deferred
 
 - [ ] 시장/가격 정책을 클라이언트 입력 `countryCode/languageCode`에 의존
@@ -447,8 +452,8 @@ LIMIT 10;
 ### 잔여 진행사항
 
 1. 기간권 `refund` 또는 `order_canceled` webhook 실검증
-2. 결제 실패 시나리오와 비정상 webhook 시나리오 점검
-3. `d1_migrations` baseline 정상화
+2. `d1_migrations` baseline 정상화
+3. 시장/가격 판정 신뢰원 전환 여부 최종 결정 및 운영 전 정리
 
 ## 전체 단계
 
@@ -523,46 +528,54 @@ LIMIT 10;
     - `sqlite_master` 재조회 시 테이블 존재 확인
 - [x] Xsolla 전용 신규 결제 흐름 설계
 - [x] 신규 endpoint 경로 확정
-- [-] Xsolla 결제 토큰 발급 endpoint 추가
+- [x] Xsolla 결제 토큰 발급 endpoint 추가
   - 현재 상태:
     - 라우팅 추가
     - 실제 Xsolla 토큰 호출 구현 완료
     - Worker secret/env 값 입력 완료
-- [-] 서버 내부 plan 매핑 고정
+- [x] 서버 내부 plan 매핑 고정
   - 현재 상태:
     - 내부 상품 ID 4종 -> Xsolla plan env key 매핑 추가
     - 실제 Xsolla plan ID/SKU 값 Worker secret 등록 완료
 - [x] 샌드박스 모드 강제
 - [x] 결제창 오픈용 응답 포맷 정의
-- [-] 프론트 redirect/callback URL 설계
+- [x] 프론트 redirect/callback URL 설계
   - 현재 기본 동작:
     - `XSOLLA_RETURN_URL`가 있으면 해당 값 사용
-    - 없으면 허용된 요청 origin 기준 `.../profile?tab=pass` 사용
-    - 둘 다 없으면 fallback으로 `https://www.grogrojello.com/profile?tab=pass`
-  - 운영 전환 시 env 분리형 return URL 구조로 정리 필요
+    - 없으면 허용된 요청 origin 기준 `.../profile?tab=my_jello` 사용
+    - 둘 다 없으면 fallback으로 `https://www.grogrojello.com/profile?tab=my_jello`
+  - 현재 UX:
+    - 결제 완료 후 `my_jello` 탭으로 복귀
 
 ### Phase 2. 웹훅 검증 및 권한 반영
 
 - [x] Xsolla 웹훅 endpoint 추가
 - [x] raw body 기반 서명 검증 구현
-- [-] 허용 event 타입 정의
+- [x] 허용 event 타입 정의
   - 현재 반영:
     - `user_validation`
+    - `payment`
     - `create_subscription`
     - `update_subscription`
+    - `non_renewal_subscription`
     - `cancel_subscription`
     - `order_paid`
-- [ ] 웹훅 멱등 처리 구현
+    - `refund`
+    - `order_canceled`
+- [x] 웹훅 멱등 처리 구현
 - [x] 웹훅 멱등 처리 1차 구현
-- [-] 검증 성공 시에만 DB entitlement 반영
+- [x] 검증 성공 시에만 DB entitlement 반영
   - 현재 반영:
-    - 구독 생성/갱신/취소
+    - 구독 생성/갱신/비갱신/취소
     - 1회성 기간 이용권 구매
-- [ ] 실패/중복/알 수 없는 이벤트 로깅
-- [ ] webhook fingerprint 기준 확정
-  - 후보:
-    - subscription 계열: `notification_type + subscription_id + date_end/date_next_charge`
+    - 현재 entitlement reference 일치 시 duration 회수
+- [x] 실패/중복/알 수 없는 이벤트 로깅
+- [-] webhook fingerprint 기준 확정
+  - 현재 반영:
+    - subscription 계열: subscription/payment 식별자 기반
     - duration 계열: `notification_type + transaction_id + sku`
+  - 잔여:
+    - replay / collision 강건성 최종 재검토
 
 ### Phase 3. 데이터 모델 및 추적성 보강
 
@@ -571,8 +584,11 @@ LIMIT 10;
 - [x] refund/order_canceled를 현재 entitlement reference 매칭 방식으로 보강
 - [x] 원격 D1 `users` 테이블을 entitlement 스키마로 교체
 - [ ] 구독 상태 변경 이력 저장
-- [ ] 테스트 데이터와 운영 데이터 구분 전략 수립
-- [ ] 원격 D1 반영 후 프론트/백엔드 실결선 재검증
+- [-] 테스트 데이터와 운영 데이터 구분 전략 수립
+  - 현재 상태:
+    - 테스트 계정/레거시 row 정리 수행
+    - 완전한 운영/테스트 분리 규칙 문서화는 아직
+- [x] 원격 D1 반영 후 프론트/백엔드 실결선 재검증
 
 ### 레거시 D1 정리 SQL
 
@@ -624,27 +640,30 @@ WHERE subscription_plan IN ('3_months', '12_months');
 
 ### Phase 4. 프론트 연동
 
-- [-] `purchasePlan()` 흐름을 토큰 발급 기반으로 변경
+- [x] `purchasePlan()` 흐름을 토큰 발급 기반으로 변경
 - [x] 샌드박스 Pay Station 열기
-- [-] 결제 중 UI 상태 처리
-- [-] 결제 종료 후 상태 재조회
+- [x] 결제 중 UI 상태 처리
+- [x] 결제 종료 후 상태 재조회
 - [-] 실패/취소 UX 처리
   - 현재 반영:
-    - 기존 탭 이동 제거
     - full-screen iframe 오버레이 결제 UI
     - 결제 준비 중 로딩 오버레이
     - 중복 클릭 방지
     - 닫기 버튼 및 Escape 종료
+    - 결제 실패 시 localized 안내 표시
+    - 프로덕션 콘솔 상세 노출 축소
+  - 잔여:
+    - refund/cancel 실 webhook 기준 UX 최종 검증
 
 ### Phase 5. 검증
 
-- [-] 샌드박스 결제 성공 테스트
+- [x] 샌드박스 결제 성공 테스트
   - 현재 상태:
-    - 신규 테스트 계정 구매/취소 UI 시나리오 1차 확인
-    - 서버/D1/Xsolla 상태 교차검증은 별도 `결제 확인 및 서버 연계 검증` 섹션에서 계속 진행
-- [ ] 결제 실패 테스트
-- [ ] 웹훅 서명 불일치 테스트
-- [ ] 웹훅 중복 전송 테스트
+    - 구독권/기간권 1차 실결선 확인 완료
+    - 서버/D1/Xsolla 상태 교차검증 완료
+- [x] 결제 실패 테스트
+- [x] 웹훅 서명 불일치 테스트
+- [x] 웹훅 중복 전송 테스트
 - [x] 거래 기록/멱등 처리 추가 후 duplicate `order_paid` 재전송 테스트 통과
 - [x] duplicate `create_subscription` 재전송 테스트 통과
 - [x] duplicate `update_subscription` 재전송 테스트 통과
@@ -652,57 +671,176 @@ WHERE subscription_plan IN ('3_months', '12_months');
 - [x] duplicate `non_renewal_subscription` 재전송 테스트 통과
 - [x] duplicate `refund` 재전송 테스트 통과
 - [ ] fingerprint 충돌 가능성 검토 및 보강 필요
-- [ ] 비로그인/타 UID 요청 차단 테스트
-- [ ] planId 변조 테스트
-- [ ] 프론트 성공 콜백만으로 premium 부여 안 되는지 검증
+- [x] 비로그인/타 UID 요청 차단 테스트
+- [x] planId 변조 테스트
+- [x] 프론트 성공 콜백만으로 premium 부여 안 되는지 검증
 
 ### Phase 6. 운영 전환 준비
 
 - [-] 샌드박스 URL 제거 계획
 - [-] 운영용 Xsolla 설정값 분리
-- [ ] 운영 webhook endpoint 확인
+- [x] 운영 webhook endpoint 확인
 - [ ] 모니터링 항목 정리
 - [ ] 장애 대응 절차 문서화
 - [ ] migration history 정상화 후 운영 배포 경로 재검증
 
 ### Phase 6-A. 환경 분리 구조 보강
 
-- [ ] Xsolla environment mode를 env 기반으로 분리
+- [x] Xsolla environment mode를 env 기반으로 분리
   - 예시:
     - `XSOLLA_ENV=sandbox|production`
-- [ ] Pay Station base URL을 env 기반으로 분리
+  - 현재 구현:
+    - `backend/api-grogrojello/src/index.js`
+    - `XSOLLA_ENVIRONMENTS.sandbox|production`
+    - `subscriptionMode`, `catalogSandbox` 함께 분기
+- [x] Pay Station base URL을 env 기반으로 분리
   - 예시:
     - sandbox: `https://sandbox-secure.xsolla.com/paystation4/`
     - production: `https://secure.xsolla.com/paystation4/`
-- [ ] return URL을 env 기반으로 분리
+  - 현재 구현:
+    - `XSOLLA_ENV=production` 테스트 포함
+    - production checkout base URL 테스트 통과
+- [x] return URL을 env 기반으로 분리
   - 예시:
     - `XSOLLA_RETURN_URL`
-- [ ] webhook secret을 환경별로 분리
+  - 현재 구현:
+    - `XSOLLA_RETURN_URL` 우선 사용
+    - 없으면 허용 origin 또는 기본 return URL fallback
+- [x] webhook secret을 환경별로 분리
   - 예시:
     - sandbox: `XSOLLA_WEBHOOK_SECRET`
     - production: 운영 Worker secret 별도 등록
-- [ ] project/merchant/api key를 환경별로 분리
+  - 현재 구현:
+    - sandbox: `XSOLLA_WEBHOOK_SECRET_SANDBOX`
+    - production: `XSOLLA_WEBHOOK_SECRET_PRODUCTION`
+    - legacy fallback: `XSOLLA_WEBHOOK_SECRET`
+    - production-specific secret 선택 테스트 통과
+- [x] project/merchant/api key를 환경별로 분리
   - 예시:
     - sandbox values
     - production values
-- [ ] plan_id / sku 매핑을 환경별로 분리
+  - 현재 구현:
+    - sandbox 우선:
+      - `XSOLLA_MERCHANT_ID_SANDBOX`
+      - `XSOLLA_PROJECT_ID_SANDBOX`
+      - `XSOLLA_API_KEY_SANDBOX`
+    - production 우선:
+      - `XSOLLA_MERCHANT_ID_PRODUCTION`
+      - `XSOLLA_PROJECT_ID_PRODUCTION`
+      - `XSOLLA_API_KEY_PRODUCTION`
+    - legacy fallback:
+      - `XSOLLA_MERCHANT_ID`
+      - `XSOLLA_PROJECT_ID`
+      - `XSOLLA_API_KEY`
+    - production-scoped credentials 선택 테스트 통과
+- [x] plan_id / sku 매핑을 환경별로 분리
   - 예시:
     - sandbox plan ids
     - production plan ids
-- [ ] 코드에서 sandbox 전용 하드코딩 제거
+  - 현재 구현:
+    - sandbox 우선:
+      - `XSOLLA_REGULAR_SUBSCRIPTION_3_MONTHS_PLAN_ID_SANDBOX`
+      - `XSOLLA_REGULAR_SUBSCRIPTION_12_MONTHS_PLAN_ID_SANDBOX`
+      - `XSOLLA_DURATION_3_MONTHS_SKU_SANDBOX`
+      - `XSOLLA_DURATION_12_MONTHS_SKU_SANDBOX`
+    - production 우선:
+      - `XSOLLA_REGULAR_SUBSCRIPTION_3_MONTHS_PLAN_ID_PRODUCTION`
+      - `XSOLLA_REGULAR_SUBSCRIPTION_12_MONTHS_PLAN_ID_PRODUCTION`
+      - `XSOLLA_DURATION_3_MONTHS_SKU_PRODUCTION`
+      - `XSOLLA_DURATION_12_MONTHS_SKU_PRODUCTION`
+    - legacy fallback:
+      - 기존 공용 key 유지
+    - sandbox/prod scoped plan/sku 선택 테스트 통과
+- [-] 코드에서 sandbox 전용 하드코딩 제거
+  - 현재 상태:
+    - sandbox/production URL 자체는 코드 상수 map으로 관리
+    - 기본 fallback env가 `sandbox` 라서 운영 전환 전 최종 점검 필요
+    - credentials / plan / sku / return_url 은 scoped env 우선 읽기로 전환 완료
 - [ ] 운영 전환 절차를 "코드 수정 없이 env 교체 + 배포" 형태로 문서화
+  - TODO:
+    - sandbox/production secret 세트 표준화
+    - 전환 순서 문서화
+    - 배포 체크리스트 확정
+
+#### 최종 env 키 표준
+
+- 공통:
+  - `XSOLLA_ENV`
+    - `sandbox` | `production`
+- sandbox:
+  - `XSOLLA_MERCHANT_ID_SANDBOX`
+  - `XSOLLA_PROJECT_ID_SANDBOX`
+  - `XSOLLA_API_KEY_SANDBOX`
+  - `XSOLLA_WEBHOOK_SECRET_SANDBOX`
+  - `XSOLLA_RETURN_URL_SANDBOX`
+  - `XSOLLA_REGULAR_SUBSCRIPTION_3_MONTHS_PLAN_ID_SANDBOX`
+  - `XSOLLA_REGULAR_SUBSCRIPTION_12_MONTHS_PLAN_ID_SANDBOX`
+  - `XSOLLA_DURATION_3_MONTHS_SKU_SANDBOX`
+  - `XSOLLA_DURATION_12_MONTHS_SKU_SANDBOX`
+- production:
+  - `XSOLLA_MERCHANT_ID_PRODUCTION`
+  - `XSOLLA_PROJECT_ID_PRODUCTION`
+  - `XSOLLA_API_KEY_PRODUCTION`
+  - `XSOLLA_WEBHOOK_SECRET_PRODUCTION`
+  - `XSOLLA_RETURN_URL_PRODUCTION`
+  - `XSOLLA_REGULAR_SUBSCRIPTION_3_MONTHS_PLAN_ID_PRODUCTION`
+  - `XSOLLA_REGULAR_SUBSCRIPTION_12_MONTHS_PLAN_ID_PRODUCTION`
+  - `XSOLLA_DURATION_3_MONTHS_SKU_PRODUCTION`
+  - `XSOLLA_DURATION_12_MONTHS_SKU_PRODUCTION`
+- fallback:
+  - 기존 공용 key는 전환 중 fallback 으로만 유지
+  - 최종 안정화 후 제거 후보:
+    - `XSOLLA_MERCHANT_ID`
+    - `XSOLLA_PROJECT_ID`
+    - `XSOLLA_API_KEY`
+    - `XSOLLA_WEBHOOK_SECRET`
+    - `XSOLLA_RETURN_URL`
+    - 공용 plan id / sku key
+
+#### Worker secret 적용 순서
+
+1. 현재 sandbox 값과 production 값을 각각 별도로 정리한다.
+2. Cloudflare Worker에 sandbox scoped key를 먼저 등록한다.
+3. 같은 방식으로 production scoped key를 등록한다.
+4. `XSOLLA_ENV=sandbox` 상태에서 sandbox 결제 회귀 테스트를 수행한다.
+5. `XSOLLA_ENV=production` 로 전환 가능한지 dry-run 기준으로 점검한다.
+6. scoped key가 모두 정상 동작하면 공용 fallback key는 제거 후보로 표시한다.
+
+#### 운영 전환 runbook 초안
+
+1. sandbox/prod 식별자 세트를 표로 고정한다.
+2. Worker secret 등록:
+   - sandbox scoped
+   - production scoped
+3. `XSOLLA_ENV=sandbox` 배포 후 sandbox smoke test:
+   - subscription checkout
+   - duration checkout
+   - webhook receive
+4. production 전환 직전:
+   - `XSOLLA_ENV=production`
+   - `XSOLLA_RETURN_URL_PRODUCTION`
+   - production webhook secret / plan ids / skus 재확인
+5. production 배포 후 smoke test:
+   - checkout token 생성
+   - webhook signature 수용
+   - entitlement 반영
+
+#### 주의
+
+- Cloudflare는 기존 secret 값을 조회할 수 없으므로, 원격 secret 체계를 실제로 표준화하려면 현재 사용 중인 API key / webhook secret 값을 다시 입력해야 한다.
+- 즉, 코드와 문서 표준화는 완료 가능하지만, 원격 secret migration 자체는 값 재입력 시점에 실행해야 한다.
 
 ## 사용자 할 일
 
 ### 계정 및 Xsolla 콘솔
 
-- [ ] Xsolla 프로젝트의 샌드박스 사용 가능 상태 확인
+- [x] Xsolla 프로젝트의 샌드박스 사용 가능 상태 확인
 - [x] 판매할 상품/구독 플랜 생성
 - [x] 실제 사용할 상품 구성 확정
 - [x] webhook secret 확인
   - webhook URL:
     - `https://api.grogrojello.com/api/xsolla/webhook`
-- [ ] 샌드박스 테스트 카드/결제 시나리오 확인
+- [x] 샌드박스 테스트 카드/결제 시나리오 확인
 
 ### 인프라 및 비밀값
 
@@ -715,11 +853,31 @@ WHERE subscription_plan IN ('3_months', '12_months');
   - `XSOLLA_REGULAR_SUBSCRIPTION_12_MONTHS_PLAN_ID`
   - `XSOLLA_DURATION_3_MONTHS_SKU`
   - `XSOLLA_DURATION_12_MONTHS_SKU`
-- [-] 프론트에서 사용할 redirect URL 후보 확정
+  - 현재 권장:
+    - sandbox:
+      - `XSOLLA_MERCHANT_ID_SANDBOX`
+      - `XSOLLA_PROJECT_ID_SANDBOX`
+      - `XSOLLA_API_KEY_SANDBOX`
+      - `XSOLLA_WEBHOOK_SECRET_SANDBOX`
+      - `XSOLLA_REGULAR_SUBSCRIPTION_3_MONTHS_PLAN_ID_SANDBOX`
+      - `XSOLLA_REGULAR_SUBSCRIPTION_12_MONTHS_PLAN_ID_SANDBOX`
+      - `XSOLLA_DURATION_3_MONTHS_SKU_SANDBOX`
+      - `XSOLLA_DURATION_12_MONTHS_SKU_SANDBOX`
+    - production:
+      - `XSOLLA_MERCHANT_ID_PRODUCTION`
+      - `XSOLLA_PROJECT_ID_PRODUCTION`
+      - `XSOLLA_API_KEY_PRODUCTION`
+      - `XSOLLA_WEBHOOK_SECRET_PRODUCTION`
+      - `XSOLLA_REGULAR_SUBSCRIPTION_3_MONTHS_PLAN_ID_PRODUCTION`
+      - `XSOLLA_REGULAR_SUBSCRIPTION_12_MONTHS_PLAN_ID_PRODUCTION`
+      - `XSOLLA_DURATION_3_MONTHS_SKU_PRODUCTION`
+      - `XSOLLA_DURATION_12_MONTHS_SKU_PRODUCTION`
+    - 기존 공용 key는 전환 중 fallback 용도로만 유지
+- [x] 프론트에서 사용할 redirect URL 후보 확정
   - 현재 사용 중:
     - `XSOLLA_RETURN_URL` 우선
-    - 미설정 시 현재 허용 origin + `/profile?tab=pass`
-    - 최종 fallback: `https://www.grogrojello.com/profile?tab=pass`
+    - 미설정 시 현재 허용 origin + `/profile?tab=my_jello`
+    - 최종 fallback: `https://www.grogrojello.com/profile?tab=my_jello`
   - 추후 환경별 `XSOLLA_RETURN_URL` 로 완전 고정 가능
 - [-] 운영과 샌드박스 값을 혼동하지 않도록 환경 분리 원칙 확정
   - 원칙:
@@ -729,13 +887,26 @@ WHERE subscription_plan IN ('3_months', '12_months');
     - `XSOLLA_ENV=sandbox|production`
     - checkout base URL env 연동
     - subscription token mode / catalog sandbox flag env 연동
+    - credentials / plan / sku / return URL scoped env 우선 읽기 반영
 
 ### 정책 및 제품 결정
 
-- [ ] 플랜별 가격/통화 확정
-- [ ] 결제 성공 후 부여할 권한 범위 확정
-- [ ] 취소/환불 시 권한 회수 정책 확정
-- [ ] 고객 지원 시 확인할 관리자 기준 정보 확정
+- [x] 플랜별 가격/통화 확정
+- [x] 결제 성공 후 부여할 권한 범위 확정
+- [-] 취소/환불 시 권한 회수 정책 확정
+  - 현재 확정:
+    - 구독 취소 -> `non_renewing`
+    - duration 회수 -> current entitlement reference match 필요
+  - 잔여:
+    - duration `refund/order_canceled` 실 webhook 기준 최종 검증
+- [-] 고객 지원 시 확인할 관리자 기준 정보 확정
+  - 현재 확보:
+    - `billing_reference_id`
+    - `billing_reference_type`
+    - `entitlement_*`
+    - `xsolla_webhook_events`
+  - 잔여:
+    - 운영 지원 runbook 문서화
 - [x] 국가군 seed list 검토 및 확정
   - 확정 반영 파일:
     - `src/constants/billingPlans.ts`
@@ -745,48 +916,51 @@ WHERE subscription_plan IN ('3_months', '12_months');
 - [ ] Worker 마이그레이션 적용 승인
 - [x] Worker 배포 실행 또는 배포 승인
 - [x] Xsolla 콘솔 webhook URL 실제 등록
-- [-] 샌드박스 실결제 테스트 실행
+- [x] 샌드박스 실결제 테스트 실행
   - 현재 상태:
     - 신규 계정 기반 구독 구매/구독 취소/취소 후 UI 상태 확인
+    - `vi-VN`, `id-ID` 기간권 구매 확인
+    - `duration_12_months` 구매 확인
     - 이용권 환불은 아직 범위 밖
-- [-] 결과 스크린샷 또는 로그 확인
+- [x] 결과 스크린샷 또는 로그 확인
   - 현재 확보:
     - 구독 취소 후 `Auto-Renew Off` 상태 화면
     - localhost return URL 실패 원인 추적 결과
-  - 추가 필요:
-    - `/api/users/:uid` 응답 캡처
-    - Xsolla 구독 상태(`non_renewing`) 캡처
+    - Xsolla 구독 상태 `비갱신(non_renewing)` 화면 확인
 
 ## 내가 처리할 일
 
 ### 백엔드
 
-- [-] 현재 `/purchase` 구조를 Xsolla 토큰 발급 방식으로 교체
+- [x] 현재 `/purchase` 구조를 Xsolla 토큰 발급 방식으로 교체
   - 신규 Xsolla 경로 구현 완료
   - 기존 레거시 `/purchase` 직접지급 차단 완료
 - [x] planId 화이트리스트 및 서버 고정 매핑 추가
 - [x] Xsolla 샌드박스 토큰 발급 호출 구현
 - [x] 웹훅 endpoint 및 서명 검증 구현
-- [-] Xsolla 토큰 요청 payload 보정
+- [x] Xsolla 토큰 요청 payload 보정
   - 현재 반영:
     - subscription token request에 `project_id`, env 기반 `mode` 반영
     - Xsolla 콘솔 옵션과 충돌하는 `settings.external_id` 제거
-- [ ] 거래 멱등 처리 구현
-- [-] 프리미엄 반영 로직을 웹훅 성공 기준으로 이동
+- [x] 거래 멱등 처리 구현
+- [x] 프리미엄 반영 로직을 웹훅 성공 기준으로 이동
   - 기본 반영 완료
-  - 거래 로그/멱등 처리 보강 필요
+  - 거래 로그/멱등 처리 1차 보강 완료
 
 ### 데이터 및 보안
 
-- [ ] 거래 기록용 D1 스키마 초안 작성
+- [x] 거래 기록용 D1 스키마 초안 작성
 - [x] 거래 기록 테이블 기준 unique key 1차 전략 반영
   - `subscription`: `notification_type + subscription_id + date`
   - `duration`: `notification_type + transaction_id + product_id`
 - [ ] replay 공격/지연 재전송에 대한 fingerprint 강건성 재검토
-- [ ] 위변조 방지 체크 추가
-- [ ] 민감값 노출 경계 검토
-- [ ] 에러/보안 이벤트 로그 포인트 정리
-- [ ] 실패 시 롤백 또는 무시 기준 정리
+- [x] 위변조 방지 체크 추가
+- [x] 민감값 노출 경계 검토
+- [x] 에러/보안 이벤트 로그 포인트 정리
+- [-] 실패 시 롤백 또는 무시 기준 정리
+  - 현재 상태:
+    - malformed/invalid webhook은 failed 또는 reject
+    - 실 refund/order_canceled 운영 정책은 추가 검증 필요
 - [ ] `d1_migrations` 정상화 계획 수립
 
 ### 프론트엔드
@@ -794,20 +968,25 @@ WHERE subscription_plan IN ('3_months', '12_months');
 - [x] `src/services/syncService.ts` 결제 API 흐름 수정
 - [x] `useNurturingSync.ts` 구매 완료 처리 구조 수정
 - [x] 결제창 오픈 유틸 추가
-- [-] 결제 대기/실패/취소 UI 상태 연결
-- [-] 결제 후 서버 상태 재동기화 처리
+- [x] 결제 대기/실패/취소 UI 상태 연결
+- [x] 결제 후 서버 상태 재동기화 처리
   - 현재 반영:
     - full-screen iframe overlay
     - localized checkout header title
     - service-wide loading overlay reuse
     - purchase button disable during checkout preparation/open
+    - checkout 종료 후 서버 상태 재조회
+    - 결제 완료 후 `my_jello` 탭 복귀
 
 ### 문서 및 진행 관리
 
 - [x] 단계별 통합 체크리스트 문서 생성
 - [x] 구현 시작 시 현재 진행 상태 갱신
-- [ ] 각 단계 완료 때마다 체크박스 업데이트
-- [ ] 최종 검증 결과와 잔여 리스크 기록
+- [x] 각 단계 완료 때마다 체크박스 업데이트
+- [-] 최종 검증 결과와 잔여 리스크 기록
+  - 현재 상태:
+    - 1차 결제/보안/실결선 결과 반영 완료
+    - refund/order_canceled, `d1_migrations` 잔여 리스크 유지
 
 ## Phase 0 결정 사항
 
@@ -849,7 +1028,7 @@ WHERE subscription_plan IN ('3_months', '12_months');
 - Item name: `3-Month Jello Pass`
 - Description: `One-time premium access for 3 months.`
 - Price: `USD 3.99`
-- Purchase limit per user: `1`
+- Purchase limit per user: `off`
 - Store display: `Always`
 - JSON:
 
@@ -869,7 +1048,7 @@ WHERE subscription_plan IN ('3_months', '12_months');
 - Item name: `12-Month Angel Pass`
 - Description: `One-time premium access for 12 months.`
 - Price: `USD 12.00`
-- Purchase limit per user: `1`
+- Purchase limit per user: `off`
 - Store display: `Always`
 - JSON:
 
@@ -1079,7 +1258,7 @@ sku: ...
 ### 민감 정보 관리
 
 - [x] `api_key`를 프론트 코드에 절대 노출하지 않는다
-- [ ] `webhook secret`을 프론트 코드에 절대 노출하지 않는다
+- [x] `webhook secret`을 프론트 코드에 절대 노출하지 않는다
 - [x] 토큰 발급은 서버에서만 수행한다
 - [x] plan 가격/기간은 서버 고정값으로만 사용한다
 
@@ -1087,30 +1266,41 @@ sku: ...
 
 - [x] `planId` 화이트리스트 검증
 - [x] UID-path와 Firebase claims.sub 일치 강제 유지
-- [ ] webhook event 구조 검증
+- [x] webhook event 구조 검증
 - [ ] 통화/금액/상품 ID 일치 검증
 
 ### 권한 부여
 
 - [x] 프론트 콜백만으로 premium 부여 금지
 - [x] 웹훅 서명 검증 실패 시 즉시 거절
-- [-] 결제 성공 event 확인 후에만 premium 부여
-  - 기본 반영 완료
-  - 거래 멱등 처리 보강 필요
-- [ ] 취소/환불 event 처리 정책 반영
+- [x] 결제 성공 event 확인 후에만 premium 부여
+- [-] 취소/환불 event 처리 정책 반영
+  - 현재 반영:
+    - 구독 취소 -> `non_renewing`
+    - duration -> current entitlement reference match 시 회수
+  - 잔여:
+    - `refund/order_canceled` 실 webhook 최종 검증
 
 ### 중복 및 재시도
 
-- [ ] 동일 transaction 중복 처리 방지
-- [ ] 동일 webhook 재전송 멱등 처리
-- [ ] 네트워크 실패 시 부분 반영 방지
+- [x] 동일 transaction 중복 처리 방지
+- [x] 동일 webhook 재전송 멱등 처리
+- [-] 네트워크 실패 시 부분 반영 방지
+  - 현재 반영:
+    - failed webhook row 재처리 가능
+  - 잔여:
+    - replay/collision 강건성 재검토
 
 ### 감사 추적
 
-- [ ] transaction 로그 저장
-- [ ] uid, planId, amount, currency, eventType 기록
-- [ ] 보안 실패 로그 저장
-- [ ] 수동 조사 가능한 수준의 payload 보존 정책 수립
+- [x] transaction 로그 저장
+- [x] uid, planId, amount, currency, eventType 기록
+- [x] 보안 실패 로그 저장
+- [-] 수동 조사 가능한 수준의 payload 보존 정책 수립
+  - 현재 반영:
+    - `xsolla_webhook_events` 에 최소 event ledger 저장
+  - 잔여:
+    - 장기 운영용 payload retention 정책 명문화
 
 ## 권장 구현 순서
 
@@ -1160,7 +1350,7 @@ sku: ...
 - [x] 신규 경로 테스트 추가 및 통과
 - [x] Xsolla checkout token 실제 호출 구현
 - [x] Xsolla webhook 서명 검증 및 기본 권한 반영 구현
-- [ ] 다음 작업: Worker secret 등록, webhook 등록, 프론트 연동, 실제 sandbox end-to-end 테스트
+- [x] 이후 작업으로 Worker secret 등록, webhook 등록, 프론트 연동, 실제 sandbox end-to-end 테스트까지 진행 완료
 
 ### 2026-04-25
 
@@ -1190,35 +1380,13 @@ sku: ...
 
 ## 지금 시점의 사용자 할 일
 
-### 지금 바로 해야 하는 것
+### 현재 사용자 측 주요 잔여 작업
 
-1. Xsolla에서 아래 4개 상품을 준비합니다.
-   - 정기결제 플랜:
-     - `subscription_3_months`
-     - `subscription_12_months`
-   - 1회성 아이템:
-     - `duration_3_months`
-     - `duration_12_months`
-2. 각 상품의 실제 Xsolla 식별자를 정리합니다.
-   - 정기결제 2종:
-     - `plan_id`
-   - 1회성 아이템 2종:
-     - `sku`
-3. 샌드박스 테스트 카드/결제 시나리오를 확인합니다.
-4. Cloudflare Worker에 아래 secret/env 값을 등록합니다.
-   - `XSOLLA_MERCHANT_ID`
-   - `XSOLLA_PROJECT_ID`
-   - `XSOLLA_API_KEY`
-   - `XSOLLA_WEBHOOK_SECRET`
-   - `XSOLLA_REGULAR_SUBSCRIPTION_3_MONTHS_PLAN_ID`
-   - `XSOLLA_REGULAR_SUBSCRIPTION_12_MONTHS_PLAN_ID`
-   - `XSOLLA_DURATION_3_MONTHS_SKU`
-   - `XSOLLA_DURATION_12_MONTHS_SKU`
-5. Xsolla Webhooks에 최종 URL을 등록합니다.
-   - `https://api.grogrojello.com/api/xsolla/webhook`
-6. Webhooks 화면에서 `webhook secret`을 확인/생성합니다.
+1. 기간권 `refund` 또는 `order_canceled` 를 실제 Xsolla webhook 기준으로 검증합니다.
+2. Xsolla 운영 전환 전 sandbox/production env 세트 표준을 확정합니다.
+3. `d1_migrations` baseline 정상화 작업 시점과 승인 범위를 정합니다.
 
-### 상품 생성 시 사용자 입력 체크리스트
+### 상품 생성 시 사용자 입력 기록
 
 - [x] `subscription_3_months`
   - 타입: `Regular subscription`
@@ -1236,21 +1404,14 @@ sku: ...
   - 타입: `One-time item`
   - Plan name: `12-Month Angel Pass`
   - Description: `One-time premium access for 12 months.`
-- [ ] 정기결제 2종의 `plan_id` 기록
-- [ ] 1회성 아이템 2종의 `sku` 기록
+- [x] 정기결제 2종의 `plan_id` 기록
+- [x] 1회성 아이템 2종의 `sku` 기록
 
 ### 아직 하지 말아야 하는 것
 
-1. 프론트 결제 버튼을 바로 실테스트하지 않습니다.
-2. Worker secret 등록 전 webhook 테스트를 먼저 돌리지 않습니다.
-3. 거래 로그/멱등 처리 없이 운영 전환을 하지 않습니다.
-
-### 내가 endpoint 구현 후 네가 할 것
-
-1. Xsolla Webhooks에 `https://api.grogrojello.com/api/xsolla/webhook` 입력
-2. 그 화면에서 활성 secret key를 확인하거나 생성
-3. `XSOLLA_WEBHOOK_SECRET` 으로 Worker secret에 등록
-4. 내가 프론트 연동을 마친 뒤 샌드박스 결제 시나리오 테스트 실행
+1. `refund/order_canceled` 실검증 없이 duration 회수 정책을 운영에서 확정하지 않습니다.
+2. `d1_migrations` baseline 정상화 전에는 일반 migration apply 를 바로 신뢰하지 않습니다.
+3. sandbox/production secret 세트 표준화 전에는 env 이름을 임의로 변경하지 않습니다.
 
 ## 다음 세션 인계
 
@@ -1281,15 +1442,52 @@ sku: ...
   - `XSOLLA_DURATION_12_MONTHS_SKU`
 - Worker 배포 완료
   - worker: `api-grogrojello`
-  - latest version: `47390cb9-8713-461d-85cc-2f5f8f89531c`
+  - 이후 결제/보안 수정에 따라 추가 배포 진행됨
 - 프론트 Xsolla 1차 연동 완료
   - `purchasePlan()` -> `/api/users/:uid/xsolla/checkout-token` 연결
   - Xsolla hosted checkout iframe 오버레이 연결
   - 결제 페이지 복귀 시 subscription 상태 재조회 연결
-- Xsolla 결제 페이지 오픈 확인 완료
-  - 기존 페이지 내 full-screen iframe 오버레이로 실제 Pay Station 진입 확인
-  - 아직 샌드박스 결제 완료 검증 전
-- 프론트 결제 UX 2차 보강 완료
+- 구독권 1차 실결선 검증 완료
+  - 구매 성공
+  - 서비스 내 취소 성공
+  - 서버 entitlement 상태 `non_renewing` 확인
+  - Xsolla 콘솔 `비갱신` 상태 확인
+- 기간권 1차 실결선 검증 완료
+  - `vi-VN`, `id-ID` 확인
+  - `duration_3_months`, `duration_12_months` 확인
+  - one-time item `quantity` 누락 및 `user.external_id` UID 파싱 이슈 수정 완료
+- 프론트 결제 UX 보강 완료
+  - full-screen checkout overlay
+  - 로딩/중복 클릭 방지
+  - 결제 완료 후 `my_jello` 탭 복귀
+- 1차 보안 보강 완료
+  - postMessage origin 검증 강화
+  - webhook body size / rate limit 보강
+  - client-supplied email/name 신뢰 제거
+  - production 콘솔 상세 에러 축소
+  - webhook secret 환경 분리
+  - signature 상수시간 비교 적용
+- 환경 분리 구조 보강 완료
+  - credentials / plan ids / skus / return URL scoped env 우선 읽기 반영
+  - 기존 공용 env key는 fallback 유지
+  - environment-scoped 선택 테스트 추가
+
+### 현재 기준 테스트/검증 상태
+
+- 백엔드 테스트 스위트: `48 passed`
+- 프론트 빌드: `npm run build` 통과
+
+### 현재 미완료
+
+- 기간권 `refund` / `order_canceled` 실 webhook 검증
+- `d1_migrations` baseline 정상화
+- sandbox/production env 세트 표준화 및 운영 전환 runbook 문서화
+
+### 다음 세션에서 우선 볼 것
+
+1. duration `refund/order_canceled` 를 실제 webhook으로 끝까지 검증
+2. `d1_migrations` baseline 정상화 절차 수립
+3. 환경 분리(runbook) 문서화 마무리
   - 시스템 confirm 팝업 제거
   - 구매 버튼 클릭 시 즉시 결제 준비 로딩 오버레이 표시
   - 새 탭 없이 기존 페이지에서 full-screen 결제 진행

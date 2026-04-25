@@ -288,6 +288,81 @@ describe('Worker auth gate', () => {
 		}
 	});
 
+	it('prefers production-scoped xsolla credentials and plan mapping when XSOLLA_ENV=production', async () => {
+		env.XSOLLA_ENV = 'production';
+		env.XSOLLA_MERCHANT_ID = 'merchant-generic';
+		env.XSOLLA_PROJECT_ID = 'project-generic';
+		env.XSOLLA_API_KEY = 'api-key-generic';
+		env.XSOLLA_REGULAR_SUBSCRIPTION_12_MONTHS_PLAN_ID = 'plan-generic-12';
+		env.XSOLLA_MERCHANT_ID_PRODUCTION = 'merchant-prod';
+		env.XSOLLA_PROJECT_ID_PRODUCTION = '303877';
+		env.XSOLLA_API_KEY_PRODUCTION = 'api-key-prod';
+		env.XSOLLA_REGULAR_SUBSCRIPTION_12_MONTHS_PLAN_ID_PRODUCTION = 'plan-prod-12';
+
+		const now = Math.floor(Date.now() / 1000);
+		const token = await signJwt(privateKey, publicJwk.kid, {
+			iss: `https://securetoken.google.com/${PROJECT_ID}`,
+			aud: PROJECT_ID,
+			sub: userId,
+			iat: now - 30,
+			exp: now + 3600,
+			auth_time: now - 30,
+		});
+
+		const originalFetch = globalThis.fetch;
+		globalThis.fetch = async (input, init) => {
+			const url = typeof input === 'string' ? input : input?.url;
+			if (url === JWKS_URL) {
+				return new Response(JSON.stringify({ keys: [publicJwk] }), {
+					status: 200,
+					headers: { 'cache-control': 'public, max-age=3600' },
+				});
+			}
+
+			if (url === 'https://api.xsolla.com/merchant/v2/merchants/merchant-prod/token') {
+				const payload = JSON.parse(init.body);
+				expect(payload.settings.project_id).toBe(303877);
+				expect(payload.purchase.subscription.plan_id).toBe('plan-prod-12');
+				expect(init.headers.Authorization).toBe(`Basic ${btoa('merchant-prod:api-key-prod')}`);
+				return new Response(JSON.stringify({ token: 'prod-token-scoped', order_id: 'order-prod-scoped' }), {
+					status: 200,
+					headers: { 'Content-Type': 'application/json' },
+				});
+			}
+
+			return originalFetch(input, init);
+		};
+
+		try {
+			const request = new Request(`http://example.com/api/users/${userId}/xsolla/checkout-token`, {
+				method: 'POST',
+				headers: {
+					Authorization: `Bearer ${token}`,
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({ productId: 'subscription_12_months' }),
+			});
+			const ctx = createExecutionContext();
+			const response = await worker.fetch(request, env, ctx);
+			await waitOnExecutionContext(ctx);
+
+			expect(response.status).toBe(200);
+			const body = await response.json();
+			expect(body.checkoutUrl).toBe('https://secure.xsolla.com/paystation4/?token=prod-token-scoped');
+		} finally {
+			globalThis.fetch = originalFetch;
+			delete env.XSOLLA_ENV;
+			delete env.XSOLLA_MERCHANT_ID;
+			delete env.XSOLLA_PROJECT_ID;
+			delete env.XSOLLA_API_KEY;
+			delete env.XSOLLA_REGULAR_SUBSCRIPTION_12_MONTHS_PLAN_ID;
+			delete env.XSOLLA_MERCHANT_ID_PRODUCTION;
+			delete env.XSOLLA_PROJECT_ID_PRODUCTION;
+			delete env.XSOLLA_API_KEY_PRODUCTION;
+			delete env.XSOLLA_REGULAR_SUBSCRIPTION_12_MONTHS_PLAN_ID_PRODUCTION;
+		}
+	});
+
 	it('uses the allowed request origin as the xsolla return url when XSOLLA_RETURN_URL is unset', async () => {
 		env.XSOLLA_MERCHANT_ID = 'merchant-1';
 		env.XSOLLA_PROJECT_ID = 'project-1';
@@ -537,6 +612,83 @@ describe('Worker auth gate', () => {
 			delete env.XSOLLA_PROJECT_ID;
 			delete env.XSOLLA_API_KEY;
 			delete env.XSOLLA_DURATION_3_MONTHS_SKU;
+		}
+	});
+
+	it('prefers sandbox-scoped duration sku mapping when XSOLLA_ENV=sandbox', async () => {
+		env.XSOLLA_ENV = 'sandbox';
+		env.XSOLLA_MERCHANT_ID = 'merchant-generic';
+		env.XSOLLA_PROJECT_ID = 'project-generic';
+		env.XSOLLA_API_KEY = 'api-key-generic';
+		env.XSOLLA_DURATION_3_MONTHS_SKU = 'duration-generic-sku';
+		env.XSOLLA_MERCHANT_ID_SANDBOX = 'merchant-sandbox';
+		env.XSOLLA_PROJECT_ID_SANDBOX = 'project-sandbox';
+		env.XSOLLA_API_KEY_SANDBOX = 'api-key-sandbox';
+		env.XSOLLA_DURATION_3_MONTHS_SKU_SANDBOX = 'duration-sandbox-sku';
+
+		const now = Math.floor(Date.now() / 1000);
+		const token = await signJwt(privateKey, publicJwk.kid, {
+			iss: `https://securetoken.google.com/${PROJECT_ID}`,
+			aud: PROJECT_ID,
+			sub: userId,
+			iat: now - 30,
+			exp: now + 3600,
+			auth_time: now - 30,
+		});
+
+		const originalFetch = globalThis.fetch;
+		globalThis.fetch = async (input, init) => {
+			const url = typeof input === 'string' ? input : input?.url;
+			if (url === JWKS_URL) {
+				return new Response(JSON.stringify({ keys: [publicJwk] }), {
+					status: 200,
+					headers: { 'cache-control': 'public, max-age=3600' },
+				});
+			}
+
+			if (url === 'https://store.xsolla.com/api/v3/project/project-sandbox/admin/payment/token') {
+				const payload = JSON.parse(init.body);
+				expect(payload.purchase.items[0].sku).toBe('duration-sandbox-sku');
+				expect(init.headers.Authorization).toBe(`Basic ${btoa('project-sandbox:api-key-sandbox')}`);
+				return new Response(JSON.stringify({ token: 'sandbox-token-scoped', order_id: 'sandbox-order-scoped' }), {
+					status: 200,
+					headers: { 'Content-Type': 'application/json' },
+				});
+			}
+
+			return originalFetch(input, init);
+		};
+
+		try {
+			const request = new Request(`http://example.com/api/users/${userId}/xsolla/checkout-token`, {
+				method: 'POST',
+				headers: {
+					Authorization: `Bearer ${token}`,
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({
+					productId: 'duration_3_months',
+					languageCode: 'id-ID',
+				}),
+			});
+			const ctx = createExecutionContext();
+			const response = await worker.fetch(request, env, ctx);
+			await waitOnExecutionContext(ctx);
+
+			expect(response.status).toBe(200);
+			const body = await response.json();
+			expect(body.checkoutUrl).toBe('https://sandbox-secure.xsolla.com/paystation4/?token=sandbox-token-scoped');
+		} finally {
+			globalThis.fetch = originalFetch;
+			delete env.XSOLLA_ENV;
+			delete env.XSOLLA_MERCHANT_ID;
+			delete env.XSOLLA_PROJECT_ID;
+			delete env.XSOLLA_API_KEY;
+			delete env.XSOLLA_DURATION_3_MONTHS_SKU;
+			delete env.XSOLLA_MERCHANT_ID_SANDBOX;
+			delete env.XSOLLA_PROJECT_ID_SANDBOX;
+			delete env.XSOLLA_API_KEY_SANDBOX;
+			delete env.XSOLLA_DURATION_3_MONTHS_SKU_SANDBOX;
 		}
 	});
 
