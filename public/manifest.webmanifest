@@ -1,0 +1,24 @@
+{
+  "name": "Puzzleletic",
+  "short_name": "Puzzleletic",
+  "description": "Puzzleletic is a math adventure game with GroGroJello characters and parent-guided premium access.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#FFF9E6",
+  "theme_color": "#8B4513",
+  "icons": [
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-maskable.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
+}
