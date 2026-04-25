@@ -718,6 +718,70 @@ const isValidXsollaSubscriptionId = (value) =>
 const isValidXsollaTransactionId = (value) =>
 	Number.isInteger(value) && value > 0;
 
+const isActiveEntitlementStatus = (status) =>
+	status === 'active' || status === 'non_renewing';
+
+const clearEntitlement = async (env, uid, now) => {
+	await env.DB.prepare(`
+		INSERT INTO users (
+			uid, entitlement_status, entitlement_kind, entitlement_plan, entitlement_end,
+			billing_provider, billing_reference_id, billing_reference_type, created_at, last_synced_at
+		)
+		VALUES (?, 'inactive', NULL, NULL, 0, NULL, NULL, NULL, ?, ?)
+		ON CONFLICT(uid) DO UPDATE SET
+			entitlement_status = 'inactive',
+			entitlement_kind = NULL,
+			entitlement_plan = NULL,
+			entitlement_end = 0,
+			billing_provider = NULL,
+			billing_reference_id = NULL,
+			billing_reference_type = NULL,
+			last_synced_at = excluded.last_synced_at
+	`).bind(uid, now, now).run();
+};
+
+const upsertEntitlement = async (
+	env,
+	uid,
+	{
+		status,
+		kind,
+		plan,
+		endTimestampMs,
+		billingReferenceId = null,
+		billingReferenceType = null,
+	},
+	now
+) => {
+	await env.DB.prepare(`
+		INSERT INTO users (
+			uid, entitlement_status, entitlement_kind, entitlement_plan, entitlement_end,
+			billing_provider, billing_reference_id, billing_reference_type, created_at, last_synced_at
+		)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+		ON CONFLICT(uid) DO UPDATE SET
+			entitlement_status = excluded.entitlement_status,
+			entitlement_kind = excluded.entitlement_kind,
+			entitlement_plan = excluded.entitlement_plan,
+			entitlement_end = excluded.entitlement_end,
+			billing_provider = excluded.billing_provider,
+			billing_reference_id = excluded.billing_reference_id,
+			billing_reference_type = excluded.billing_reference_type,
+			last_synced_at = excluded.last_synced_at
+	`).bind(
+		uid,
+		status,
+		kind,
+		plan,
+		endTimestampMs,
+		plan ? 'xsolla' : null,
+		billingReferenceId,
+		billingReferenceType,
+		now,
+		now
+	).run();
+};
+
 const createXsollaAuthHeaders = (env) => ({
 	'Authorization': `Basic ${encodeBasicAuth(env.XSOLLA_MERCHANT_ID, env.XSOLLA_API_KEY)}`,
 	'Content-Type': 'application/json',
@@ -730,7 +794,7 @@ const requestXsollaSubscriptionCancellation = async (env, userId, currentPlan, s
 			status: 409,
 			body: {
 				error: 'Xsolla subscription tracking is missing for this account. Sync the subscription from a verified webhook before allowing in-service cancellation.',
-				subscriptionPlan: currentPlan || null,
+				entitlementPlan: currentPlan || null,
 			},
 		};
 	}
@@ -797,86 +861,88 @@ const requestXsollaRefund = async (env, transactionId, email = null) => {
 
 const applySubscriptionGrant = async (env, uid, product, endTimestampMs, now, xsollaSubscriptionId = null) => {
 	const subscriptionEnd = Number.isFinite(endTimestampMs) ? endTimestampMs : addDurationMonths(now, product.durationMonths);
-	await env.DB.prepare(`
-		INSERT INTO users (
-			uid, is_premium, subscription_end, subscription_plan, xsolla_subscription_id, created_at, last_synced_at
-		)
-		VALUES (?, 1, ?, ?, ?, ?, ?)
-		ON CONFLICT(uid) DO UPDATE SET
-			is_premium = 1,
-			subscription_end = excluded.subscription_end,
-			subscription_plan = excluded.subscription_plan,
-			xsolla_subscription_id = excluded.xsolla_subscription_id,
-			last_synced_at = excluded.last_synced_at
-	`).bind(uid, subscriptionEnd, product.id, xsollaSubscriptionId, now, now).run();
+	await upsertEntitlement(env, uid, {
+		status: 'active',
+		kind: 'subscription',
+		plan: product.id,
+		endTimestampMs: subscriptionEnd,
+		billingReferenceId: isValidXsollaSubscriptionId(xsollaSubscriptionId) ? String(xsollaSubscriptionId) : null,
+		billingReferenceType: isValidXsollaSubscriptionId(xsollaSubscriptionId) ? 'subscription_id' : null,
+	}, now);
 };
 
 const applyDurationItemGrant = async (env, uid, product, baseTimestampMs, now, xsollaTransactionId = null) => {
-	const current = await env.DB.prepare('SELECT subscription_end FROM users WHERE uid = ?').bind(uid).first();
-	const startAt = current?.subscription_end && current.subscription_end > baseTimestampMs
-		? current.subscription_end
+	const current = await env.DB.prepare('SELECT entitlement_kind, entitlement_end FROM users WHERE uid = ?').bind(uid).first();
+	const startAt = current?.entitlement_kind === 'duration' && current?.entitlement_end > baseTimestampMs
+		? current.entitlement_end
 		: baseTimestampMs;
-	const subscriptionEnd = addDurationMonths(startAt, product.durationMonths);
-	await env.DB.prepare(`
-		INSERT INTO users (
-			uid, is_premium, subscription_end, subscription_plan, xsolla_transaction_id, created_at, last_synced_at
-		)
-		VALUES (?, 1, ?, ?, ?, ?, ?)
-		ON CONFLICT(uid) DO UPDATE SET
-			is_premium = 1,
-			subscription_end = excluded.subscription_end,
-			subscription_plan = excluded.subscription_plan,
-			xsolla_transaction_id = excluded.xsolla_transaction_id,
-			last_synced_at = excluded.last_synced_at
-	`).bind(uid, subscriptionEnd, product.id, xsollaTransactionId, now, now).run();
+	const entitlementEnd = addDurationMonths(startAt, product.durationMonths);
+	await upsertEntitlement(env, uid, {
+		status: 'active',
+		kind: 'duration',
+		plan: product.id,
+		endTimestampMs: entitlementEnd,
+		billingReferenceId: isValidXsollaTransactionId(xsollaTransactionId) ? String(xsollaTransactionId) : null,
+		billingReferenceType: isValidXsollaTransactionId(xsollaTransactionId) ? 'transaction_id' : null,
+	}, now);
 };
 
 const applySubscriptionCancellation = async (env, uid, product, dateEndMs, now, xsollaSubscriptionId = null) => {
 	const stillActive = Number.isFinite(dateEndMs) && dateEndMs > now;
-	await env.DB.prepare(`
-		INSERT INTO users (
-			uid, is_premium, subscription_end, subscription_plan, xsolla_subscription_id, created_at, last_synced_at
-		)
-		VALUES (?, ?, ?, ?, ?, ?, ?)
-		ON CONFLICT(uid) DO UPDATE SET
-			is_premium = excluded.is_premium,
-			subscription_end = excluded.subscription_end,
-			subscription_plan = excluded.subscription_plan,
-			xsolla_subscription_id = excluded.xsolla_subscription_id,
-			last_synced_at = excluded.last_synced_at
-	`).bind(uid, stillActive ? 1 : 0, stillActive ? dateEndMs : 0, product?.id || null, xsollaSubscriptionId, now, now).run();
+	if (!stillActive) {
+		await clearEntitlement(env, uid, now);
+		return;
+	}
+
+	await upsertEntitlement(env, uid, {
+		status: 'non_renewing',
+		kind: 'subscription',
+		plan: product?.id || null,
+		endTimestampMs: dateEndMs,
+		billingReferenceId: isValidXsollaSubscriptionId(xsollaSubscriptionId) ? String(xsollaSubscriptionId) : null,
+		billingReferenceType: isValidXsollaSubscriptionId(xsollaSubscriptionId) ? 'subscription_id' : null,
+	}, now);
 };
 
 const applySubscriptionNonRenewal = async (env, uid, product, dateEndMs, now, xsollaSubscriptionId = null) => {
 	const activeUntil = Number.isFinite(dateEndMs) ? dateEndMs : 0;
 	const stillActive = activeUntil > now;
-	await env.DB.prepare(`
-		INSERT INTO users (
-			uid, is_premium, subscription_end, subscription_plan, xsolla_subscription_id, created_at, last_synced_at
-		)
-		VALUES (?, ?, ?, ?, ?, ?, ?)
-		ON CONFLICT(uid) DO UPDATE SET
-			is_premium = excluded.is_premium,
-			subscription_end = excluded.subscription_end,
-			subscription_plan = excluded.subscription_plan,
-			xsolla_subscription_id = excluded.xsolla_subscription_id,
-			last_synced_at = excluded.last_synced_at
-	`).bind(uid, stillActive ? 1 : 0, activeUntil, product?.id || null, xsollaSubscriptionId, now, now).run();
+	if (!stillActive) {
+		await clearEntitlement(env, uid, now);
+		return;
+	}
+
+	await upsertEntitlement(env, uid, {
+		status: 'non_renewing',
+		kind: 'subscription',
+		plan: product?.id || null,
+		endTimestampMs: activeUntil,
+		billingReferenceId: isValidXsollaSubscriptionId(xsollaSubscriptionId) ? String(xsollaSubscriptionId) : null,
+		billingReferenceType: isValidXsollaSubscriptionId(xsollaSubscriptionId) ? 'subscription_id' : null,
+	}, now);
 };
 
-const revokeDurationAccess = async (env, uid, now) => {
-	await env.DB.prepare(`
-		INSERT INTO users (
-			uid, is_premium, subscription_end, subscription_plan, xsolla_transaction_id, created_at, last_synced_at
-		)
-		VALUES (?, 0, 0, NULL, NULL, ?, ?)
-		ON CONFLICT(uid) DO UPDATE SET
-			is_premium = 0,
-			subscription_end = 0,
-			subscription_plan = NULL,
-			xsolla_transaction_id = NULL,
-			last_synced_at = excluded.last_synced_at
-	`).bind(uid, now, now).run();
+const revokeDurationAccess = async (env, uid, xsollaTransactionId, now) => {
+	if (!isValidXsollaTransactionId(xsollaTransactionId)) {
+		return false;
+	}
+
+	const current = await env.DB.prepare(`
+		SELECT entitlement_kind, billing_reference_type, billing_reference_id
+		FROM users
+		WHERE uid = ?
+	`).bind(uid).first();
+
+	if (
+		current?.entitlement_kind !== 'duration' ||
+		current?.billing_reference_type !== 'transaction_id' ||
+		current?.billing_reference_id !== String(xsollaTransactionId)
+	) {
+		return false;
+	}
+
+	await clearEntitlement(env, uid, now);
+	return true;
 };
 
 const extractOrderPaidSkus = (payload) => {
@@ -1118,7 +1184,7 @@ const processXsollaWebhook = async (env, payload, now) => {
 		const revokedDurationProducts = eventContext.durationProducts;
 
 		if (uid && revokedDurationProducts.length > 0) {
-			await revokeDurationAccess(env, uid, now);
+			await revokeDurationAccess(env, uid, eventContext.xsollaTransactionId, now);
 		}
 		await finalizeXsollaWebhookEvent(env, eventContext.eventKey, 'processed', now);
 		return { status: 204 };
@@ -1550,12 +1616,19 @@ export default {
 						});
 					}
 
-					// Check Subscription Expiry
-					if (result.is_premium === 1 && result.subscription_end && result.subscription_end < now) {
-						// console.log(`[Subscription] Expired for user ${uid}. Downgrading.`); // Keep as a comment if needed for debugging
-						result.is_premium = 0;
-						// Downgrade expired subscription in DB
-						await env.DB.prepare('UPDATE users SET is_premium = 0 WHERE uid = ?').bind(uid).run();
+					if (
+						isActiveEntitlementStatus(result.entitlement_status) &&
+						result.entitlement_end &&
+						result.entitlement_end < now
+					) {
+						await clearEntitlement(env, uid, now);
+						result.entitlement_status = 'inactive';
+						result.entitlement_kind = null;
+						result.entitlement_plan = null;
+						result.entitlement_end = 0;
+						result.billing_provider = null;
+						result.billing_reference_id = null;
+						result.billing_reference_type = null;
 					}
 
 					// Parse JSON fields
@@ -1594,10 +1667,12 @@ export default {
 				if (path.endsWith('/cancel')) {
 					try {
 						const currentSubscription = await env.DB.prepare(
-							'SELECT email, subscription_plan, xsolla_subscription_id, xsolla_transaction_id FROM users WHERE uid = ?'
+							'SELECT email, entitlement_plan, entitlement_kind, billing_reference_id, billing_reference_type FROM users WHERE uid = ?'
 						).bind(uid).first();
-						const currentPlan = currentSubscription?.subscription_plan || null;
-						const xsollaSubscriptionId = Number(currentSubscription?.xsolla_subscription_id);
+						const currentPlan = currentSubscription?.entitlement_plan || null;
+						const currentKind = currentSubscription?.entitlement_kind || null;
+						const billingReferenceType = currentSubscription?.billing_reference_type || null;
+						const xsollaSubscriptionId = Number(currentSubscription?.billing_reference_id);
 						if (isXsollaRecurringPlan(currentPlan)) {
 							const configStatus = getXsollaConfigStatus(env);
 							if (configStatus.missingBaseEnv.length > 0) {
@@ -1611,7 +1686,9 @@ export default {
 								env,
 								uid,
 								currentPlan,
-								isValidXsollaSubscriptionId(xsollaSubscriptionId) ? xsollaSubscriptionId : null
+								billingReferenceType === 'subscription_id' && isValidXsollaSubscriptionId(xsollaSubscriptionId)
+									? xsollaSubscriptionId
+									: null
 							);
 							if (!cancellation.ok) {
 								return jsonResponse(corsHeaders, cancellation.body, cancellation.status);
@@ -1625,10 +1702,10 @@ export default {
 							});
 						}
 
-						if (isXsollaDurationPlan(currentPlan)) {
+						if (currentKind === 'duration' && isXsollaDurationPlan(currentPlan)) {
 							return jsonResponse(corsHeaders, {
 								error: 'Duration pass refunds are not enabled in-service yet.',
-								subscriptionPlan: currentPlan,
+								entitlementPlan: currentPlan,
 							}, 409);
 						}
 

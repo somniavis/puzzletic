@@ -1,8 +1,8 @@
 # Xsolla 샌드박스 결제 연동 체크리스트
 
 > 마지막 업데이트: 2026-04-25
-> 상태: 레거시 코드/데이터 정리 1차 완료, 최소 거래 기록 테이블 + 웹훅 멱등 처리 1차 구현 및 핵심 lifecycle 중복 테스트 완료, 원격 D1 event ledger 반영 완료, 다음 우선순위는 `환불/취소 거래 단위화`와 `D1 migration history 정상화`
-> 현재 확인: Xsolla 결제 페이지 iframe 오버레이, webhook 기반 premium 반영, 구독 취소 `non_renewing` UX, 원격 D1 레거시 plan(`3_months`, `12_months`) 22건 초기화 완료, `xsolla_webhook_events` 원격 생성 완료, duplicate `order_paid/create_subscription/update_subscription/cancel_subscription/non_renewal_subscription/refund` 테스트 통과
+> 상태: 레거시 코드/데이터 정리 완료, 최소 event ledger + 웹훅 멱등 처리 완료, 결제 상태 모델을 `entitlement_*` / `billing_reference_*` 구조로 전환 완료, 다음 우선순위는 `샌드박스 실결선 재검증`과 `D1 migration history 정상화`
+> 현재 확인: Xsolla 결제 페이지 iframe 오버레이, webhook 기반 entitlement 반영, 구독 취소 `non_renewing` UX, 원격 D1 레거시 plan(`3_months`, `12_months`) 22건 초기화 완료, `xsolla_webhook_events` 원격 생성 완료, 원격 D1 `users` entitlement 스키마 반영 완료, duplicate `order_paid/create_subscription/update_subscription/cancel_subscription/non_renewal_subscription/refund` 테스트 통과, `mismatched refund transaction` 무시 테스트 추가
 
 ## 목적
 
@@ -33,7 +33,7 @@
 하지만 운영 전환 전에 반드시 정리해야 하는 핵심 문제는 아래 3가지다.
 
 1. 멱등 처리 1차는 완료됐지만 모든 webhook 타입에 대한 중복 검증이 끝난 것은 아니다.
-2. 거래 기록은 최소 event ledger 수준이라 환불/취소를 거래 단위로 처리하기엔 아직 부족하다.
+2. 단일 활성 entitlement 정책에 맞는 최소 reference 검증은 들어갔지만, 샌드박스 실결선으로 새 entitlement 스키마를 아직 재검증하지 않았다.
 3. 원격 D1의 실제 스키마와 `d1_migrations` 기록이 어긋나 있어 일반적인 migration apply가 실패한다.
 
 ## 상태 규칙
@@ -49,7 +49,7 @@
 2. 프론트에서 결제 성공처럼 보이는 상태와 실제 정산 완료 상태를 혼동하면 권한 오지급이 발생한다.
 3. Xsolla API Key, webhook secret을 프론트에 노출하면 결제 위변조 가능성이 커진다.
 4. webhook 멱등 처리 범위가 부족하면 일부 이벤트에서 재전송 시 중복 지급/중복 회수가 발생할 수 있다.
-5. 최소 event ledger만으로는 환불, 취소, 운영 조사, 거래 단위 회수 정책이 충분하지 않을 수 있다.
+5. duration refund/cancel이 현재 entitlement의 `billing_reference_id` 와 일치하는지 검증하지 않으면 잘못된 회수가 발생할 수 있다.
 6. 원격 D1의 `d1_migrations` 기록 불일치로 이후 배포 마이그레이션이 깨질 수 있다.
 
 ## 현재까지 반영 사항
@@ -62,12 +62,13 @@
 - [x] `XSOLLA_ENV` 기반 subscription mode / catalog sandbox 분리
 - [x] webhook 서명 검증 및 기본 premium 반영 구현
 - [x] 구독 취소를 `canceled`가 아닌 `non_renewing` 의미로 수정
-- [x] `xsolla_subscription_id` 저장 및 서비스 내 구독 취소 재시도 가능 구조 반영
+- [x] 결제 상태 컬럼을 `entitlement_*` / `billing_reference_*` 구조로 재설계 시작
 - [x] return URL이 허용 origin 또는 `XSOLLA_RETURN_URL`을 따르도록 수정
 - [x] 원격 D1에서 레거시 `subscription_plan IN ('3_months', '12_months')` 22건 초기화 완료
 - [x] 최소 Xsolla webhook event ledger 추가
 - [x] webhook 중복 재전송 멱등 처리 1차 구현
 - [x] 원격 D1에 `xsolla_webhook_events` 테이블 직접 반영 완료
+- [x] refund/order_canceled가 현재 duration entitlement의 `billing_reference_id(transaction_id)` 와 일치할 때만 회수되도록 보강
 - [ ] 이용권 환불 API 연동은 아직 보류
 
 ### 프론트/UX
@@ -95,19 +96,18 @@
 
 이 문서의 남은 작업은 아래 순서로 진행한다. 이전 구조가 비합리적이면 부분 수정이 아니라 새 구조로 교체한다.
 
-### Priority 1. 거래 기록 테이블 도입
+### Priority 1. entitlement 스키마 전환
 
 - 목적:
-  - 어떤 결제/웹훅이 언제 어떤 사용자에게 반영됐는지 추적 가능하게 만든다.
+  - 구독/이용권을 같은 권한 모델로 관리하되, Xsolla 원천 식별은 타입과 함께 저장한다.
 - 이유:
-  - 멱등 처리, 환불 처리, 운영 조사, 테스트 이력 관리의 공통 기반이다.
+  - 현재 서비스는 `동시에 활성 이용권 1개` 정책이라 복잡한 거래 누적 테이블보다 `현재 entitlement + reference 검증`이 더 적합하다.
 - 산출물:
-  - D1 거래 기록 테이블
-  - webhook event 기록용 테이블 또는 통합 event 컬럼 설계
-  - `transaction_id`, `subscription_id`, `notification_type`, `product_id`, `uid`, `status`, `processed_at` 저장
+  - `entitlement_status`, `entitlement_kind`, `entitlement_plan`, `entitlement_end`
+  - `billing_provider`, `billing_reference_id`, `billing_reference_type`
   - 현재 구현:
-    - `xsolla_webhook_events`
-    - 최소 컬럼 기반 event ledger 1차 완료
+    - 로컬 코드/테스트 기준 전환 진행
+    - 원격 D1 반영 완료
 
 ### Priority 2. 웹훅 멱등 처리
 
@@ -198,16 +198,16 @@
 
 - [ ] `/api/users/:uid` 응답 기준
   - 구매 직후:
-    - `is_premium = 1`
-    - `subscription_plan = subscription_3_months | subscription_12_months`
-    - `subscription_end = 미래 시각`
+    - `entitlement_status = active`
+    - `entitlement_plan = subscription_3_months | subscription_12_months`
+    - `entitlement_end = 미래 시각`
   - 구독 취소 직후:
-    - `is_premium = 1` 유지
-    - `subscription_end = 기존 미래 시각 유지`
-    - `subscription_plan` 유지
+    - `entitlement_status = non_renewing`
+    - `entitlement_end = 기존 미래 시각 유지`
+    - `entitlement_plan` 유지
 - [ ] D1 저장 상태 기준
-  - `users.xsolla_subscription_id` 가 정상 저장되는지 확인
-  - 신규 구독 계정 기준 `subscription_end` 와 premium 상태가 webhook 후 업데이트되는지 확인
+  - `users.billing_reference_type = subscription_id | transaction_id` 가 정상 저장되는지 확인
+  - 신규 구독 계정 기준 `entitlement_end` 와 entitlement 상태가 webhook 후 업데이트되는지 확인
 - [ ] Xsolla 상태 기준
   - 거래 상세는 `완료됨`으로 남아도 무방
   - 실제 확인 대상은 구독 상태
@@ -215,6 +215,104 @@
 - [ ] 프론트 오판 방지 기준
   - 결제창 성공/종료만으로 premium이 붙지 않는지 확인
   - 서버 재조회 없이는 UI가 premium 완료로 확정되지 않도록 확인
+
+### 실결선 검증 전 baseline
+
+- [x] 원격 D1 entitlement baseline 확인
+  - `total_users = 69`
+  - `active_users = 0`
+  - `non_renewing_users = 0`
+- [ ] 결제 테스트용 신규 계정 1개 준비
+- [ ] 결제 전 `/api/users/:uid` 응답이 아래와 같은지 확인
+  - `entitlement_status = inactive`
+  - `entitlement_kind = null`
+  - `entitlement_plan = null`
+  - `billing_reference_id = null`
+  - `billing_reference_type = null`
+
+### 실결선 검증 SQL
+
+- baseline / 사후 조회
+
+```sql
+SELECT
+  uid,
+  entitlement_status,
+  entitlement_kind,
+  entitlement_plan,
+  entitlement_end,
+  billing_provider,
+  billing_reference_id,
+  billing_reference_type,
+  last_synced_at
+FROM users
+WHERE uid = ?;
+```
+
+- 전체 카운트 확인
+
+```sql
+SELECT
+  COUNT(*) AS total_users,
+  SUM(CASE WHEN entitlement_status = 'active' THEN 1 ELSE 0 END) AS active_users,
+  SUM(CASE WHEN entitlement_status = 'non_renewing' THEN 1 ELSE 0 END) AS non_renewing_users
+FROM users;
+```
+
+- 최근 활성 entitlement 샘플 확인
+
+```sql
+SELECT
+  uid,
+  entitlement_status,
+  entitlement_kind,
+  entitlement_plan,
+  entitlement_end,
+  billing_reference_id,
+  billing_reference_type
+FROM users
+WHERE entitlement_status != 'inactive'
+ORDER BY entitlement_end DESC
+LIMIT 10;
+```
+
+### 샌드박스 구독 검증 순서
+
+1. 신규 테스트 계정 로그인
+2. 프로필에서 구독형 상품 노출 확인
+3. 결제 시작 전 `/api/users/:uid` 에서 `inactive` 상태 확인
+4. 샌드박스 결제 완료
+5. webhook 반영 후 `/api/users/:uid` 재조회
+6. 아래가 모두 맞는지 확인
+   - `entitlement_status = active`
+   - `entitlement_kind = subscription`
+   - `entitlement_plan = subscription_3_months | subscription_12_months`
+   - `billing_reference_type = subscription_id`
+   - `billing_reference_id IS NOT NULL`
+7. 서비스 내 구독 취소 실행
+8. `/api/users/:uid` 재조회 후 아래 확인
+   - `entitlement_status = non_renewing`
+   - `entitlement_kind = subscription`
+   - `entitlement_plan` 유지
+   - `entitlement_end` 유지
+9. Xsolla에서 해당 subscription 상태가 `non_renewing` 인지 확인
+
+### 샌드박스 이용권 검증 순서
+
+1. 개발도상국 노출 조건 계정/환경으로 duration 상품 노출 확인
+2. 결제 시작 전 `/api/users/:uid` 가 `inactive` 인지 확인
+3. 샌드박스 결제 완료
+4. webhook 반영 후 `/api/users/:uid` 재조회
+5. 아래가 모두 맞는지 확인
+   - `entitlement_status = active`
+   - `entitlement_kind = duration`
+   - `entitlement_plan = duration_3_months | duration_12_months`
+   - `billing_reference_type = transaction_id`
+   - `billing_reference_id IS NOT NULL`
+6. 동일 계정에서 구매 버튼이 숨겨지는지 확인
+7. refund 또는 `order_canceled` webhook 테스트 시 아래 확인
+   - 같은 `transaction_id`면 entitlement 회수
+   - 다른 `transaction_id`면 entitlement 유지
 
 ### 다음 세션에서 이어서 확인할 것
 
@@ -278,7 +376,7 @@
 - [x] 기존 `/cancel`의 임시 테스트 해지 fallback 제거 시작
 - [x] 레거시 결제 흐름 초기화 방안 확정
   - D1에서 `subscription_plan IN ('3_months', '12_months')` 대상 계정을 legacy 테스트 데이터로 간주
-  - 대상 row는 `is_premium = 0`, `subscription_end = 0`, `subscription_plan = NULL`, `xsolla_subscription_id = NULL`, `xsolla_transaction_id = NULL` 로 초기화
+  - 대상 row는 `entitlement_status = inactive`, `entitlement_plan = NULL`, `entitlement_end = 0`, `billing_reference_id = NULL`, `billing_reference_type = NULL` 상태로 정리
 - [x] 원격 D1 legacy row 실제 정리 완료
   - 직접 SQL 실행 결과:
     - legacy row 22건 초기화
@@ -321,7 +419,7 @@
     - `order_paid`
 - [ ] 웹훅 멱등 처리 구현
 - [x] 웹훅 멱등 처리 1차 구현
-- [-] 검증 성공 시에만 DB premium 반영
+- [-] 검증 성공 시에만 DB entitlement 반영
   - 현재 반영:
     - 구독 생성/갱신/취소
     - 1회성 기간 이용권 구매
@@ -333,17 +431,17 @@
 
 ### Phase 3. 데이터 모델 및 추적성 보강
 
-- [x] 거래 기록 테이블 추가
 - [x] webhook event ledger 테이블 추가
-- [ ] 거래 기록 테이블과 event ledger 분리 유지 여부 최종 확정
+- [x] entitlement 상태 컬럼 통합 설계 확정
+- [x] refund/order_canceled를 현재 entitlement reference 매칭 방식으로 보강
+- [x] 원격 D1 `users` 테이블을 entitlement 스키마로 교체
 - [ ] 구독 상태 변경 이력 저장
-- [ ] 사용자-거래-플랜 매핑 필드 정리
 - [ ] 테스트 데이터와 운영 데이터 구분 전략 수립
-- [ ] 거래 기준 환불/취소 대상 식별 구조 추가
+- [ ] 원격 D1 반영 후 프론트/백엔드 실결선 재검증
 
 ### 레거시 D1 정리 SQL
 
-레거시 테스트 계정 정리는 **조회 후 초기화** 순서로 진행합니다.
+레거시 테스트 계정 정리는 **구형 billing schema 기준으로 이미 실행 완료**했습니다. 아래 SQL은 당시 실행 기준을 기록용으로 남긴 것입니다.
 
 - 조회 SQL
 
@@ -1062,23 +1160,22 @@ sku: ...
   - 새 탭 없이 기존 페이지에서 full-screen 결제 진행
   - checkout header title 다국어 적용
 - 로컬 빌드 통과
-- backend tests `27 passed`
+- backend tests `35 passed`
 
 ### 사용자 다음 작업
 
-1. 샌드박스 테스트 카드/결제 시나리오 확인
-2. 샌드박스 결제 성공 시나리오 1회 실행
-3. 결제 완료 후 premium 반영 여부 확인
-4. 실패/취소 시나리오에서 권한 미부여 확인
+1. 신규 테스트 계정으로 구독 1회 결제/취소 검증
+2. duration 노출 조건에서 이용권 1회 결제/환불 webhook 검증
+3. 실패/취소 시나리오에서 entitlement 오지급/오회수 없는지 확인
+4. 검증 후 결과를 체크리스트의 합격선 항목에 반영
 
 ### 다음 세션에서 내가 할 일
 
-1. 실패/중복 event 로깅 세분화
-2. duration refund/cancel 정책을 거래 단위 구조로 재설계
+1. 샌드박스 구독/이용권 실결선 결과를 entitlement 기준으로 기록
+2. 실패/중복 event 로깅 세분화
 3. fingerprint 충돌 가능성 검토 및 필요 시 event key 보강
-4. 프론트 결제 상태 UX 보강
-5. `d1_migrations` baseline 정상화 계획 수립 및 검증
-6. 이후 `d1_migrations` 정상화 작업 분리 진행
+4. `d1_migrations` baseline 정상화 계획 수립 및 검증
+5. 이후 migration apply 복구
 
 ## 관련 파일
 

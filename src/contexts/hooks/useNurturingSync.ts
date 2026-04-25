@@ -28,7 +28,7 @@ import {
     purchaseSubscription,
     cancelSubscription as cancelSubscriptionApi,
 } from '../../services/syncService';
-import type { CancelSubscriptionResult } from '../../services/syncService';
+import type { CancelSubscriptionResult, CloudUserData } from '../../services/syncService';
 import { useDebounce } from '../../hooks/useDebounce';
 import { getProgressionCategory, getUnlockThreshold, createGameScore } from '../../utils/progression';
 
@@ -98,6 +98,29 @@ const hasMeaningfulLocalState = (state: NurturingPersistentState): boolean => {
     return false;
 };
 
+const toSubscriptionState = (
+    cloudData: Pick<CloudUserData, 'entitlement_status' | 'entitlement_plan' | 'entitlement_end'>
+): SubscriptionState => {
+    const expiryDate = typeof cloudData.entitlement_end === 'number'
+        ? cloudData.entitlement_end
+        : null;
+    const isPremium = (
+        cloudData.entitlement_status === 'active' ||
+        cloudData.entitlement_status === 'non_renewing'
+    ) && !!expiryDate && expiryDate > Date.now();
+
+    return {
+        isPremium,
+        plan: (cloudData.entitlement_plan as BillingProductId | null) || null,
+        expiryDate,
+        renewalStatus: cloudData.entitlement_status === 'non_renewing'
+            ? 'non_renewing'
+            : isPremium
+                ? 'active'
+                : null,
+    };
+};
+
 export const useNurturingSync = (user: User | null, guestId: string | null = null) => {
     const [isGlobalLoading, setIsGlobalLoading] = useState(true);
 
@@ -152,16 +175,9 @@ export const useNurturingSync = (user: User | null, guestId: string | null = nul
             return false;
         }
 
-        setSubscription({
-            isPremium: !!result.data.is_premium,
-            plan: result.data.subscription_plan as any || null,
-            expiryDate: result.data.subscription_end || null,
-            renewalStatus: result.data.is_premium
-                ? subscription.renewalStatus || 'active'
-                : null,
-        });
+        setSubscription(toSubscriptionState(result.data));
         return true;
-    }, [subscription.renewalStatus, user]);
+    }, [user]);
 
     const closeCheckoutOverlay = useCallback((options: { refresh?: boolean } = {}) => {
         setCheckoutOverlay({
@@ -389,13 +405,8 @@ export const useNurturingSync = (user: User | null, guestId: string | null = nul
 
             const cloudData = result.data;
 
-            if (cloudData.is_premium !== undefined) {
-                setSubscription({
-                    isPremium: !!cloudData.is_premium,
-                    plan: cloudData.subscription_plan as any || null,
-                    expiryDate: cloudData.subscription_end || null,
-                    renewalStatus: cloudData.is_premium ? subscription.renewalStatus || 'active' : null,
-                });
+            if (cloudData.entitlement_status !== undefined) {
+                setSubscription(toSubscriptionState(cloudData));
             }
 
             let parsedGameData = cloudData.gameData || cloudData.game_data;
@@ -690,7 +701,7 @@ export const useNurturingSync = (user: User | null, guestId: string | null = nul
         } catch {
             return { success: false, reason: 'request_failed', message: 'Unknown error' };
         }
-    }, [refreshSubscriptionFromCloud, subscription.plan, user]);
+    }, [refreshSubscriptionFromCloud, user]);
 
     return {
         state,

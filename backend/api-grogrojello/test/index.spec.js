@@ -102,11 +102,13 @@ describe('Worker auth gate', () => {
 				game_data TEXT,
 				created_at INTEGER,
 				last_synced_at INTEGER,
-				is_premium INTEGER DEFAULT 0,
-				subscription_end INTEGER DEFAULT 0,
-				subscription_plan TEXT,
-				xsolla_subscription_id INTEGER,
-				xsolla_transaction_id INTEGER
+				entitlement_status TEXT DEFAULT 'inactive',
+				entitlement_kind TEXT,
+				entitlement_plan TEXT,
+				entitlement_end INTEGER DEFAULT 0,
+				billing_provider TEXT,
+				billing_reference_id TEXT,
+				billing_reference_type TEXT
 			)
 		`).run();
 		await env.DB.prepare(`
@@ -429,12 +431,14 @@ describe('Worker auth gate', () => {
 
 		expect(response.status).toBe(204);
 		const stored = await env.DB.prepare(
-			'SELECT is_premium, subscription_plan, subscription_end, xsolla_subscription_id FROM users WHERE uid = ?'
+			'SELECT entitlement_status, entitlement_kind, entitlement_plan, entitlement_end, billing_reference_id, billing_reference_type FROM users WHERE uid = ?'
 		).bind(userId).first();
-		expect(stored.is_premium).toBe(1);
-		expect(stored.subscription_plan).toBe('subscription_3_months');
-		expect(stored.subscription_end).toBe(Date.parse('2026-07-24T00:00:00+00:00'));
-		expect(stored.xsolla_subscription_id).toBe(551122);
+		expect(stored.entitlement_status).toBe('active');
+		expect(stored.entitlement_kind).toBe('subscription');
+		expect(stored.entitlement_plan).toBe('subscription_3_months');
+		expect(stored.entitlement_end).toBe(Date.parse('2026-07-24T00:00:00+00:00'));
+		expect(stored.billing_reference_id).toBe('551122');
+		expect(stored.billing_reference_type).toBe('subscription_id');
 		delete env.XSOLLA_WEBHOOK_SECRET;
 		delete env.XSOLLA_REGULAR_SUBSCRIPTION_3_MONTHS_PLAN_ID;
 	});
@@ -468,10 +472,11 @@ describe('Worker auth gate', () => {
 		}
 
 		const stored = await env.DB.prepare(
-			'SELECT subscription_end, xsolla_subscription_id FROM users WHERE uid = ?'
+			'SELECT entitlement_end, billing_reference_id, billing_reference_type FROM users WHERE uid = ?'
 		).bind(userId).first();
-		expect(stored.subscription_end).toBe(Date.parse('2026-07-24T00:00:00+00:00'));
-		expect(stored.xsolla_subscription_id).toBe(551122);
+		expect(stored.entitlement_end).toBe(Date.parse('2026-07-24T00:00:00+00:00'));
+		expect(stored.billing_reference_id).toBe('551122');
+		expect(stored.billing_reference_type).toBe('subscription_id');
 
 		const events = await env.DB.prepare(
 			'SELECT notification_type, product_id, processing_status FROM xsolla_webhook_events WHERE xsolla_subscription_id = ?'
@@ -514,12 +519,13 @@ describe('Worker auth gate', () => {
 		}
 
 		const stored = await env.DB.prepare(
-			'SELECT is_premium, subscription_plan, subscription_end, xsolla_subscription_id FROM users WHERE uid = ?'
+			'SELECT entitlement_status, entitlement_kind, entitlement_plan, entitlement_end, billing_reference_id FROM users WHERE uid = ?'
 		).bind(userId).first();
-		expect(stored.is_premium).toBe(1);
-		expect(stored.subscription_plan).toBe('subscription_12_months');
-		expect(stored.subscription_end).toBe(Date.parse('2027-07-24T00:00:00+00:00'));
-		expect(stored.xsolla_subscription_id).toBe(991122);
+		expect(stored.entitlement_status).toBe('active');
+		expect(stored.entitlement_kind).toBe('subscription');
+		expect(stored.entitlement_plan).toBe('subscription_12_months');
+		expect(stored.entitlement_end).toBe(Date.parse('2027-07-24T00:00:00+00:00'));
+		expect(stored.billing_reference_id).toBe('991122');
 
 		const events = await env.DB.prepare(
 			'SELECT notification_type, product_id, processing_status FROM xsolla_webhook_events WHERE xsolla_subscription_id = ?'
@@ -558,12 +564,14 @@ describe('Worker auth gate', () => {
 
 		expect(response.status).toBe(204);
 		const stored = await env.DB.prepare(
-			'SELECT is_premium, subscription_plan, subscription_end, xsolla_transaction_id FROM users WHERE uid = ?'
+			'SELECT entitlement_status, entitlement_kind, entitlement_plan, entitlement_end, billing_reference_id, billing_reference_type FROM users WHERE uid = ?'
 		).bind(userId).first();
-		expect(stored.is_premium).toBe(1);
-		expect(stored.subscription_plan).toBe('duration_3_months');
-		expect(stored.subscription_end).toBe(Date.parse('2026-07-24T00:00:00.000Z'));
-		expect(stored.xsolla_transaction_id).toBe(2002806344);
+		expect(stored.entitlement_status).toBe('active');
+		expect(stored.entitlement_kind).toBe('duration');
+		expect(stored.entitlement_plan).toBe('duration_3_months');
+		expect(stored.entitlement_end).toBe(Date.parse('2026-07-24T00:00:00.000Z'));
+		expect(stored.billing_reference_id).toBe('2002806344');
+		expect(stored.billing_reference_type).toBe('transaction_id');
 		delete env.XSOLLA_WEBHOOK_SECRET;
 		delete env.XSOLLA_DURATION_3_MONTHS_SKU;
 	});
@@ -596,10 +604,11 @@ describe('Worker auth gate', () => {
 		}
 
 		const stored = await env.DB.prepare(
-			'SELECT subscription_end, xsolla_transaction_id FROM users WHERE uid = ?'
+			'SELECT entitlement_end, billing_reference_id, billing_reference_type FROM users WHERE uid = ?'
 		).bind(userId).first();
-		expect(stored.subscription_end).toBe(Date.parse('2026-07-24T00:00:00.000Z'));
-		expect(stored.xsolla_transaction_id).toBe(2002806344);
+		expect(stored.entitlement_end).toBe(Date.parse('2026-07-24T00:00:00.000Z'));
+		expect(stored.billing_reference_id).toBe('2002806344');
+		expect(stored.billing_reference_type).toBe('transaction_id');
 
 		const events = await env.DB.prepare(
 			'SELECT notification_type, product_id, processing_status FROM xsolla_webhook_events WHERE xsolla_transaction_id = ?'
@@ -639,12 +648,13 @@ describe('Worker auth gate', () => {
 
 		expect(response.status).toBe(204);
 		const stored = await env.DB.prepare(
-			'SELECT is_premium, subscription_plan, subscription_end, xsolla_subscription_id FROM users WHERE uid = ?'
+			'SELECT entitlement_status, entitlement_kind, entitlement_plan, entitlement_end, billing_reference_id FROM users WHERE uid = ?'
 		).bind(userId).first();
-		expect(stored.is_premium).toBe(1);
-		expect(stored.subscription_plan).toBe('subscription_12_months');
-		expect(stored.subscription_end).toBe(Date.parse('2026-07-24T00:00:00+00:00'));
-		expect(stored.xsolla_subscription_id).toBe(991122);
+		expect(stored.entitlement_status).toBe('non_renewing');
+		expect(stored.entitlement_kind).toBe('subscription');
+		expect(stored.entitlement_plan).toBe('subscription_12_months');
+		expect(stored.entitlement_end).toBe(Date.parse('2026-07-24T00:00:00+00:00'));
+		expect(stored.billing_reference_id).toBe('991122');
 		delete env.XSOLLA_WEBHOOK_SECRET;
 		delete env.XSOLLA_REGULAR_SUBSCRIPTION_12_MONTHS_PLAN_ID;
 	});
@@ -678,12 +688,13 @@ describe('Worker auth gate', () => {
 		}
 
 		const stored = await env.DB.prepare(
-			'SELECT is_premium, subscription_plan, subscription_end, xsolla_subscription_id FROM users WHERE uid = ?'
+			'SELECT entitlement_status, entitlement_kind, entitlement_plan, entitlement_end, billing_reference_id FROM users WHERE uid = ?'
 		).bind(userId).first();
-		expect(stored.is_premium).toBe(1);
-		expect(stored.subscription_plan).toBe('subscription_12_months');
-		expect(stored.subscription_end).toBe(Date.parse('2026-07-24T00:00:00+00:00'));
-		expect(stored.xsolla_subscription_id).toBe(991122);
+		expect(stored.entitlement_status).toBe('non_renewing');
+		expect(stored.entitlement_kind).toBe('subscription');
+		expect(stored.entitlement_plan).toBe('subscription_12_months');
+		expect(stored.entitlement_end).toBe(Date.parse('2026-07-24T00:00:00+00:00'));
+		expect(stored.billing_reference_id).toBe('991122');
 
 		const events = await env.DB.prepare(
 			'SELECT notification_type, product_id, processing_status FROM xsolla_webhook_events WHERE xsolla_subscription_id = ?'
@@ -726,12 +737,13 @@ describe('Worker auth gate', () => {
 		}
 
 		const stored = await env.DB.prepare(
-			'SELECT is_premium, subscription_plan, subscription_end, xsolla_subscription_id FROM users WHERE uid = ?'
+			'SELECT entitlement_status, entitlement_kind, entitlement_plan, entitlement_end, billing_reference_id FROM users WHERE uid = ?'
 		).bind(userId).first();
-		expect(stored.is_premium).toBe(1);
-		expect(stored.subscription_plan).toBe('subscription_12_months');
-		expect(stored.subscription_end).toBe(Date.parse('2026-07-24T00:00:00+00:00'));
-		expect(stored.xsolla_subscription_id).toBe(991122);
+		expect(stored.entitlement_status).toBe('non_renewing');
+		expect(stored.entitlement_kind).toBe('subscription');
+		expect(stored.entitlement_plan).toBe('subscription_12_months');
+		expect(stored.entitlement_end).toBe(Date.parse('2026-07-24T00:00:00+00:00'));
+		expect(stored.billing_reference_id).toBe('991122');
 
 		const events = await env.DB.prepare(
 			'SELECT notification_type, product_id, processing_status FROM xsolla_webhook_events WHERE xsolla_subscription_id = ?'
@@ -748,8 +760,11 @@ describe('Worker auth gate', () => {
 	it('ignores duplicate refund webhook deliveries', async () => {
 		const nowMs = Date.now();
 		await env.DB.prepare(`
-			INSERT INTO users (uid, is_premium, subscription_end, subscription_plan, xsolla_transaction_id, created_at, last_synced_at)
-			VALUES (?, 1, ?, 'duration_3_months', 2002806344, ?, ?)
+			INSERT INTO users (
+				uid, entitlement_status, entitlement_kind, entitlement_plan, entitlement_end,
+				billing_provider, billing_reference_id, billing_reference_type, created_at, last_synced_at
+			)
+			VALUES (?, 'active', 'duration', 'duration_3_months', ?, 'xsolla', '2002806344', 'transaction_id', ?, ?)
 		`).bind(userId, nowMs + (30 * 24 * 60 * 60 * 1000), nowMs, nowMs).run();
 
 		env.XSOLLA_WEBHOOK_SECRET = 'test-secret';
@@ -777,12 +792,14 @@ describe('Worker auth gate', () => {
 		}
 
 		const stored = await env.DB.prepare(
-			'SELECT is_premium, subscription_end, subscription_plan, xsolla_transaction_id FROM users WHERE uid = ?'
+			'SELECT entitlement_status, entitlement_kind, entitlement_plan, entitlement_end, billing_reference_id, billing_reference_type FROM users WHERE uid = ?'
 		).bind(userId).first();
-		expect(stored.is_premium).toBe(0);
-		expect(stored.subscription_end).toBe(0);
-		expect(stored.subscription_plan).toBeNull();
-		expect(stored.xsolla_transaction_id).toBeNull();
+		expect(stored.entitlement_status).toBe('inactive');
+		expect(stored.entitlement_kind).toBeNull();
+		expect(stored.entitlement_plan).toBeNull();
+		expect(stored.entitlement_end).toBe(0);
+		expect(stored.billing_reference_id).toBeNull();
+		expect(stored.billing_reference_type).toBeNull();
 
 		const events = await env.DB.prepare(
 			'SELECT notification_type, product_id, processing_status FROM xsolla_webhook_events WHERE xsolla_transaction_id = ?'
@@ -796,10 +813,55 @@ describe('Worker auth gate', () => {
 		delete env.XSOLLA_DURATION_3_MONTHS_SKU;
 	});
 
+	it('ignores refund webhooks that do not match the current duration entitlement reference', async () => {
+		const nowMs = Date.now();
+		await env.DB.prepare(`
+			INSERT INTO users (
+				uid, entitlement_status, entitlement_kind, entitlement_plan, entitlement_end,
+				billing_provider, billing_reference_id, billing_reference_type, created_at, last_synced_at
+			)
+			VALUES (?, 'active', 'duration', 'duration_3_months', ?, 'xsolla', '2002806344', 'transaction_id', ?, ?)
+		`).bind(userId, nowMs + (30 * 24 * 60 * 60 * 1000), nowMs, nowMs).run();
+
+		env.XSOLLA_WEBHOOK_SECRET = 'test-secret';
+		env.XSOLLA_DURATION_3_MONTHS_SKU = 'duration_3_months';
+		const rawBody = JSON.stringify({
+			notification_type: 'refund',
+			user: { id: userId },
+			order: { invoice_id: 2002806999 },
+			items: [{ sku: 'duration_3_months' }],
+		});
+		const signature = await createXsollaSignature(rawBody, env.XSOLLA_WEBHOOK_SECRET);
+		const request = new Request('http://example.com/api/xsolla/webhook', {
+			method: 'POST',
+			headers: {
+				authorization: `Signature ${signature}`,
+			},
+			body: rawBody,
+		});
+		const ctx = createExecutionContext();
+		const response = await worker.fetch(request, env, ctx);
+		await waitOnExecutionContext(ctx);
+
+		expect(response.status).toBe(204);
+		const stored = await env.DB.prepare(
+			'SELECT entitlement_status, entitlement_kind, entitlement_plan, entitlement_end, billing_reference_id, billing_reference_type FROM users WHERE uid = ?'
+		).bind(userId).first();
+		expect(stored.entitlement_status).toBe('active');
+		expect(stored.entitlement_kind).toBe('duration');
+		expect(stored.entitlement_plan).toBe('duration_3_months');
+		expect(stored.entitlement_end).toBeGreaterThan(nowMs);
+		expect(stored.billing_reference_id).toBe('2002806344');
+		expect(stored.billing_reference_type).toBe('transaction_id');
+
+		delete env.XSOLLA_WEBHOOK_SECRET;
+		delete env.XSOLLA_DURATION_3_MONTHS_SKU;
+	});
+
 	it('allows GET when token is valid and uid matches', async () => {
 		const nowMs = Date.now();
 		await env.DB.prepare(`
-			INSERT INTO users (uid, email, display_name, level, xp, gro, star, current_land, inventory, game_data, created_at, last_synced_at, is_premium, subscription_end, subscription_plan)
+			INSERT INTO users (uid, email, display_name, level, xp, gro, star, current_land, inventory, game_data, created_at, last_synced_at, entitlement_status, entitlement_end, entitlement_plan)
 			VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 		`).bind(
 			userId,
@@ -814,7 +876,7 @@ describe('Worker auth gate', () => {
 			JSON.stringify({ hasCharacter: true }),
 			nowMs,
 			nowMs,
-			0,
+			'inactive',
 			0,
 			null
 		).run();
@@ -847,7 +909,7 @@ describe('Worker auth gate', () => {
 	it('rate limits repeated authenticated GET requests for the same user', async () => {
 		const nowMs = Date.now();
 		await env.DB.prepare(`
-			INSERT INTO users (uid, email, display_name, level, xp, gro, star, current_land, inventory, game_data, created_at, last_synced_at, is_premium, subscription_end, subscription_plan)
+			INSERT INTO users (uid, email, display_name, level, xp, gro, star, current_land, inventory, game_data, created_at, last_synced_at, entitlement_status, entitlement_end, entitlement_plan)
 			VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 		`).bind(
 			userId,
@@ -862,7 +924,7 @@ describe('Worker auth gate', () => {
 			JSON.stringify({ hasCharacter: true }),
 			nowMs,
 			nowMs,
-			0,
+			'inactive',
 			0,
 			null
 		).run();
@@ -959,7 +1021,7 @@ describe('Worker auth gate', () => {
 	it('rejects abnormal star jumps during sync', async () => {
 		const nowMs = Date.now();
 		await env.DB.prepare(`
-			INSERT INTO users (uid, email, display_name, level, xp, gro, star, current_land, inventory, game_data, created_at, last_synced_at, is_premium, subscription_end, subscription_plan)
+			INSERT INTO users (uid, email, display_name, level, xp, gro, star, current_land, inventory, game_data, created_at, last_synced_at, entitlement_status, entitlement_end, entitlement_plan)
 			VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 		`).bind(
 			userId,
@@ -981,7 +1043,7 @@ describe('Worker auth gate', () => {
 			}),
 			nowMs,
 			nowMs,
-			0,
+			'inactive',
 			0,
 			null
 		).run();
@@ -1163,8 +1225,11 @@ describe('Worker auth gate', () => {
 	it('forwards recurring subscription cancellation to xsolla', async () => {
 		const nowMs = Date.now();
 		await env.DB.prepare(`
-			INSERT INTO users (uid, is_premium, subscription_end, subscription_plan, xsolla_subscription_id, created_at, last_synced_at)
-			VALUES (?, 1, ?, 'subscription_12_months', 991122, ?, ?)
+			INSERT INTO users (
+				uid, entitlement_status, entitlement_kind, entitlement_plan, entitlement_end,
+				billing_provider, billing_reference_id, billing_reference_type, created_at, last_synced_at
+			)
+			VALUES (?, 'active', 'subscription', 'subscription_12_months', ?, 'xsolla', '991122', 'subscription_id', ?, ?)
 		`).bind(userId, nowMs + (30 * 24 * 60 * 60 * 1000), nowMs, nowMs).run();
 		env.XSOLLA_MERCHANT_ID = 'merchant-1';
 		env.XSOLLA_PROJECT_ID = '303877';
@@ -1228,19 +1293,22 @@ describe('Worker auth gate', () => {
 			delete env.XSOLLA_REGULAR_SUBSCRIPTION_12_MONTHS_PLAN_ID;
 		}
 
-		const row = await env.DB.prepare('SELECT is_premium, subscription_end, subscription_plan FROM users WHERE uid = ?')
+		const row = await env.DB.prepare('SELECT entitlement_status, entitlement_end, entitlement_plan FROM users WHERE uid = ?')
 			.bind(userId)
 			.first();
 		expect(row).toBeTruthy();
-		expect(row.is_premium).toBe(1);
-		expect(row.subscription_plan).toBe('subscription_12_months');
+		expect(row.entitlement_status).toBe('active');
+		expect(row.entitlement_plan).toBe('subscription_12_months');
 	});
 
 	it('returns 409 for duration pass cancellation until refund flow is enabled', async () => {
 		const nowMs = Date.now();
 		await env.DB.prepare(`
-			INSERT INTO users (uid, email, is_premium, subscription_end, subscription_plan, xsolla_transaction_id, created_at, last_synced_at)
-			VALUES (?, 'test@example.com', 1, ?, 'duration_3_months', 2002806344, ?, ?)
+			INSERT INTO users (
+				uid, email, entitlement_status, entitlement_kind, entitlement_plan, entitlement_end,
+				billing_provider, billing_reference_id, billing_reference_type, created_at, last_synced_at
+			)
+			VALUES (?, 'test@example.com', 'active', 'duration', 'duration_3_months', ?, 'xsolla', '2002806344', 'transaction_id', ?, ?)
 		`).bind(userId, nowMs + (30 * 24 * 60 * 60 * 1000), nowMs, nowMs).run();
 
 		const now = Math.floor(Date.now() / 1000);
@@ -1266,24 +1334,25 @@ describe('Worker auth gate', () => {
 			expect(response.status).toBe(409);
 			const body = await response.json();
 			expect(body.error).toContain('refunds are not enabled');
-			expect(body.subscriptionPlan).toBe('duration_3_months');
+			expect(body.entitlementPlan).toBe('duration_3_months');
 		});
 
 		const row = await env.DB.prepare(
-			'SELECT is_premium, subscription_end, subscription_plan, xsolla_transaction_id FROM users WHERE uid = ?'
+			'SELECT entitlement_status, entitlement_end, entitlement_plan, billing_reference_id, billing_reference_type FROM users WHERE uid = ?'
 		).bind(userId).first();
 		expect(row).toBeTruthy();
-		expect(row.is_premium).toBe(1);
-		expect(row.subscription_end).toBeGreaterThan(nowMs);
-		expect(row.subscription_plan).toBe('duration_3_months');
-		expect(row.xsolla_transaction_id).toBe(2002806344);
+		expect(row.entitlement_status).toBe('active');
+		expect(row.entitlement_end).toBeGreaterThan(nowMs);
+		expect(row.entitlement_plan).toBe('duration_3_months');
+		expect(row.billing_reference_id).toBe('2002806344');
+		expect(row.billing_reference_type).toBe('transaction_id');
 	});
 
 	it('returns 409 when recurring xsolla subscription id is missing locally', async () => {
 		const nowMs = Date.now();
 		await env.DB.prepare(`
-			INSERT INTO users (uid, is_premium, subscription_end, subscription_plan, created_at, last_synced_at)
-			VALUES (?, 1, ?, 'subscription_12_months', ?, ?)
+			INSERT INTO users (uid, entitlement_status, entitlement_kind, entitlement_plan, entitlement_end, created_at, last_synced_at)
+			VALUES (?, 'active', 'subscription', 'subscription_12_months', ?, ?, ?)
 		`).bind(userId, nowMs + (30 * 24 * 60 * 60 * 1000), nowMs, nowMs).run();
 		env.XSOLLA_MERCHANT_ID = 'merchant-1';
 		env.XSOLLA_PROJECT_ID = '303877';
@@ -1313,7 +1382,7 @@ describe('Worker auth gate', () => {
 			expect(response.status).toBe(409);
 			const body = await response.json();
 			expect(body.error).toContain('Xsolla subscription tracking is missing');
-			expect(body.subscriptionPlan).toBe('subscription_12_months');
+			expect(body.entitlementPlan).toBe('subscription_12_months');
 		});
 
 		delete env.XSOLLA_MERCHANT_ID;
@@ -1324,7 +1393,7 @@ describe('Worker auth gate', () => {
 	it('claims daily routine reward once per date and updates xp/gro', async () => {
 		const nowMs = Date.now();
 		await env.DB.prepare(`
-			INSERT INTO users (uid, email, display_name, level, xp, gro, star, current_land, inventory, game_data, created_at, last_synced_at, is_premium, subscription_end, subscription_plan)
+			INSERT INTO users (uid, email, display_name, level, xp, gro, star, current_land, inventory, game_data, created_at, last_synced_at, entitlement_status, entitlement_end, entitlement_plan)
 			VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 		`).bind(
 			userId,
@@ -1339,7 +1408,7 @@ describe('Worker auth gate', () => {
 			JSON.stringify({ hasCharacter: true }),
 			nowMs,
 			nowMs,
-			0,
+			'inactive',
 			0,
 			null
 		).run();

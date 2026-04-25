@@ -145,23 +145,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
                 if (!result.success || !result.data) return;
 
-                const { subscription_end } = result.data;
-                const premiumRaw = (result.data as { is_premium?: unknown }).is_premium;
-                const premiumFlag =
-                    premiumRaw === 1 ||
-                    premiumRaw === true ||
-                    premiumRaw === '1';
-
-                const premiumExpiry =
-                    typeof subscription_end === 'string'
-                        ? Number(subscription_end)
-                        : subscription_end;
-
+                const entitlementEndRaw = result.data.entitlement_end;
+                const entitlementEnd =
+                    typeof entitlementEndRaw === 'string'
+                        ? Number(entitlementEndRaw)
+                        : entitlementEndRaw;
                 const isPremium =
-                    premiumFlag ||
-                    (typeof premiumExpiry === 'number' &&
-                        Number.isFinite(premiumExpiry) &&
-                        premiumExpiry > Date.now());
+                    (result.data.entitlement_status === 'active' ||
+                        result.data.entitlement_status === 'non_renewing') &&
+                    typeof entitlementEnd === 'number' &&
+                    Number.isFinite(entitlementEnd) &&
+                    entitlementEnd > Date.now();
 
                 if (!isPremium) return;
 

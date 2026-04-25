@@ -10,9 +10,13 @@ CREATE TABLE users (
   current_land TEXT DEFAULT 'default_ground',
   inventory TEXT DEFAULT '[]',
   game_data TEXT,
-  is_premium INTEGER DEFAULT 0,
-  subscription_end INTEGER DEFAULT 0,
-  subscription_plan TEXT,
+  entitlement_status TEXT DEFAULT 'inactive',
+  entitlement_kind TEXT,
+  entitlement_plan TEXT,
+  entitlement_end INTEGER DEFAULT 0,
+  billing_provider TEXT,
+  billing_reference_id TEXT,
+  billing_reference_type TEXT,
   created_at INTEGER,
   last_synced_at INTEGER
 );

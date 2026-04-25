@@ -83,10 +83,13 @@ export interface CloudUserData {
     gameData?: NurturingPersistentState; // Parsed object from backend
     created_at: number;
     last_synced_at: number;
-    // Subscription fields
-    is_premium?: number; // 0 or 1
-    subscription_end?: number; // timestamp
-    subscription_plan?: string;
+    entitlement_status?: 'active' | 'inactive' | 'non_renewing' | null;
+    entitlement_kind?: 'subscription' | 'duration' | null;
+    entitlement_plan?: BillingProductId | null;
+    entitlement_end?: number;
+    billing_provider?: string | null;
+    billing_reference_id?: string | null;
+    billing_reference_type?: 'subscription_id' | 'transaction_id' | null;
 
     // Redundancy fields (V2.1)
     current_house_id?: string;
@@ -432,7 +435,7 @@ export type CancelSubscriptionResult =
         success: false;
         reason: 'xsolla_managed' | 'request_failed';
         message?: string;
-        subscriptionPlan?: string | null;
+        entitlementPlan?: string | null;
     };
 
 /**
@@ -494,7 +497,7 @@ export const cancelSubscription = async (
                     success: false,
                     reason: 'xsolla_managed',
                     message: json?.error || 'Cancel through Xsolla and wait for the verified webhook.',
-                    subscriptionPlan: json?.subscriptionPlan || null,
+                    entitlementPlan: json?.entitlementPlan || null,
                 };
             }
 
