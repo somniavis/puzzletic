@@ -108,8 +108,8 @@ const XSOLLA_UPDATE_SUBSCRIPTION_URL = (projectId, userId, subscriptionId) =>
 	`https://api.xsolla.com/merchant/v2/projects/${projectId}/users/${encodeURIComponent(userId)}/subscriptions/${subscriptionId}`;
 const XSOLLA_REFUND_URL = (merchantId, transactionId) =>
 	`https://api.xsolla.com/merchant/v2/merchants/${merchantId}/reports/transactions/${transactionId}/refund`;
-const DEFAULT_XSOLLA_RETURN_URL = 'https://www.grogrojello.com/profile?tab=pass';
-const XSOLLA_RETURN_PATH = '/profile?tab=pass';
+const DEFAULT_XSOLLA_RETURN_URL = 'https://www.grogrojello.com/profile?tab=my_jello';
+const XSOLLA_RETURN_PATH = '/profile?tab=my_jello';
 const XSOLLA_ENVIRONMENTS = {
 	sandbox: {
 		checkoutBaseUrl: 'https://sandbox-secure.xsolla.com/paystation4/',

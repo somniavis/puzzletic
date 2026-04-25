@@ -316,7 +316,7 @@ describe('Worker auth gate', () => {
 
 			if (url === 'https://api.xsolla.com/merchant/v2/merchants/merchant-1/token') {
 				const payload = JSON.parse(init.body);
-				expect(payload.settings.return_url).toBe('http://localhost:5173/profile?tab=pass');
+				expect(payload.settings.return_url).toBe('http://localhost:5173/profile?tab=my_jello');
 				return new Response(JSON.stringify({ token: 'sandbox-token-123', order_id: 'order-sandbox-1' }), {
 					status: 200,
 					headers: { 'Content-Type': 'application/json' },
