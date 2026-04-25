@@ -185,6 +185,29 @@
 - [x] 구매 후 premium 적용 및 만료일 표시 확인
 - [x] 구독 취소 후 premium 즉시 회수되지 않음 확인
 - [x] 구독 취소 후 `Auto-Renew Off` UI 표시 확인
+- [x] `test001b@gmail.com` 기준 entitlement 반영 정상 확인
+  - `entitlement_status = active`
+  - `entitlement_kind = subscription`
+  - `entitlement_plan = subscription_12_months`
+  - `billing_reference_type = subscription_id`
+  - webhook:
+    - `payment`
+    - `create_subscription`
+    - 둘 다 `processed`
+- [x] Xsolla Pay Station 내부 loyalty 조회 `400` 관찰
+  - 콘솔:
+    - `GET https://loyalty-points.xsolla.com/loyalty?... 400 (Bad Request)`
+  - 현재 판단:
+    - 결제 실패 원인 아님
+    - entitlement 반영 및 premium UI 반영과는 별개
+    - Xsolla 내부 optional loyalty/points lookup 실패 가능성 높음
+  - Publisher Account 확인 결과:
+    - `LiveOps > 로열티 프로그램` 미생성
+    - `결제 > 결제 설정 > PayRank` 상에서도 loyalty/points 관련 명시 설정 미확인
+  - 대응:
+    - Known issue로 기록
+    - 필요 시 `결제 > 결제 인터페이스` 1회 추가 점검
+    - 계속 재현되면 Xsolla 지원 문의 후보
 - [x] 로컬 fallback 복귀 URL 이슈 원인 확인
   - 원인:
     - checkout token 생성 시 `Origin: http://localhost:5173`
