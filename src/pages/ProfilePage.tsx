@@ -834,9 +834,9 @@ export const ProfilePage: React.FC = () => {
             <footer className="profile-footer" aria-label="Legal">
                 <span className="profile-footer-copy">© grogrojello</span>
                 <div className="profile-footer-links">
-                    <Link to="/terms" className="profile-footer-link">이용약관</Link>
+                    <Link to="/terms" className="profile-footer-link">{t('auth.signup.termsLink')}</Link>
                     <span className="profile-footer-separator">|</span>
-                    <Link to="/privacy" className="profile-footer-link">개인정보 처리방침</Link>
+                    <Link to="/privacy" className="profile-footer-link">{t('auth.signup.privacyLink')}</Link>
                 </div>
             </footer>
 

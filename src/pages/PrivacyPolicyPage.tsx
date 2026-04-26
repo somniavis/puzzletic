@@ -819,6 +819,11 @@ export const PrivacyPolicyPage: React.FC = () => {
     const { i18n } = useTranslation();
     const navigate = useNavigate();
     const [locale, setLocale] = React.useState<Locale>(() => getDefaultLegalLocale(i18n.resolvedLanguage || i18n.language));
+    const resolvedLegalLocale = getDefaultLegalLocale(i18n.resolvedLanguage || i18n.language);
+
+    React.useEffect(() => {
+        setLocale(resolvedLegalLocale);
+    }, [resolvedLegalLocale]);
 
     const sections = locale === 'ko' ? koreanSections : englishSections;
     const eyebrow = 'GroGroJello';

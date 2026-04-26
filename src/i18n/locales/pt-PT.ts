@@ -1282,8 +1282,8 @@ export const ptPT = {
       action: 'Registar', // Explicit action key
       consentPrefix: 'Ao registar-se, concorda com os ',
       termsLink: 'Termos de Serviço',
-      privacyLink: 'a Política de Privacidade',
-      consentConnector: ' e ',
+      privacyLink: 'Política de Privacidade',
+      consentConnector: ' e a ',
       consentSuffix: '.',
     },
     errors: {

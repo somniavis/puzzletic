@@ -1282,8 +1282,8 @@ export const esES = {
       action: 'Crear cuenta', // Explicit action key
       consentPrefix: 'Al registrarte, aceptas los ',
       termsLink: 'Términos del Servicio',
-      privacyLink: 'la Política de Privacidad',
-      consentConnector: ' y ',
+      privacyLink: 'Política de Privacidad',
+      consentConnector: ' y la ',
       consentSuffix: '.',
     },
     errors: {

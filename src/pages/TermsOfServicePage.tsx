@@ -291,70 +291,245 @@ const englishSections: TermsSection[] = [
     },
     {
         id: 'refund-policy',
-        title: '12. Refund Policy',
+        title: '12. Refunds and Withdrawal',
         content: (
             <>
                 <p>
-                    As a general rule, all payments are non-refundable, and no refund or
-                    credit is provided for virtual items or partially used access or
-                    subscription periods. However, mandatory withdrawal or refund rights
-                    under applicable law, including Korean consumer protection laws,
-                    will prevail where required.
+                    [Scope]
                 </p>
                 <p>
-                    If you purchase a paid service and do not use any of the content at
-                    all, such as by not attempting any math puzzle or not progressing
-                    character evolution, you may request withdrawal within 7 days of the
-                    payment date and receive a full refund.
+                    This refund policy applies to withdrawal, cancellation, and refunds
+                    for paid services, recurring subscription products, fixed-term access
+                    passes, and products linked to donations or sponsorships offered by
+                    the Company.
                 </p>
                 <p>
-                    The 12-month subscription is a special product linked to the social
-                    donation program. Once service use begins or a digital donation
-                    certificate has been issued, GroGroJello may treat the donation
-                    fulfillment process as completed immediately.
+                    The Company&apos;s paid products are provided as time-limited access
+                    rights that allow users to access and use paid services for a stated
+                    period.
                 </p>
                 <p>
-                    If you request cancellation and a refund after beginning use of that
-                    product, GroGroJello may deduct the following amounts to the extent
-                    permitted by law:
+                    [Conditions for Withdrawal]
+                </p>
+                <p>
+                    If a user purchases a paid service but has not started using the paid
+                    service, the user may request withdrawal within 7 days from the date
+                    of payment or the date on which supply of the paid service began.
+                </p>
+                <p>
+                    In that case, the Company will refund the full amount paid by the
+                    user in accordance with applicable law and the refund procedures of
+                    the relevant payment method.
+                </p>
+                <p>
+                    [When Use of the Paid Service Is Deemed to Have Begun]
+                </p>
+                <p>
+                    Use of a paid service may be deemed to have begun if any of the
+                    following applies:
                 </p>
                 <ul>
                     <li>
-                        Actual expenses incurred in fulfilling the donation, including
-                        the cost and related expenses of the 12-month account already
-                        provided to a low-income student;
+                        the user accesses or uses paid services, including paid content,
+                        learning activities, game activities, nurturing systems,
+                        character evolution features, premium features, or similar paid
+                        services through a paid account, subscription product, or
+                        fixed-term access pass;
                     </li>
                     <li>
-                        Fees corresponding to the period already used, calculated on a
-                        daily pro rata basis; and
+                        the user accesses any screen, content, feature, or benefit
+                        exclusive to the paid service; or
                     </li>
-                    <li>10% of the total payment amount as an early termination fee.</li>
+                    <li>
+                        the paid service entitlement is activated at the user&apos;s request
+                        or based on the user&apos;s settings, and the Company begins
+                        providing the service normally.
+                    </li>
                 </ul>
                 <p>
-                    Even if a refund is processed, access rights already granted to a
-                    student beneficiary will not be withdrawn or canceled. Upon
-                    completion of the refund, any digital donation certificate issued in
-                    connection with that purchase becomes immediately invalid.
+                    [Restrictions on Withdrawal and Refunds]
                 </p>
-                <p>Refunds may also be restricted if:</p>
+                <p>
+                    Withdrawal or refunds may be restricted to the extent permitted by
+                    applicable law if any of the following applies:
+                </p>
                 <ul>
-                    <li>more than 7 days have passed since purchase;</li>
-                    <li>you have already used part of the digital content;</li>
-                    <li>you have consumed any virtual items, such as gems; or</li>
-                    <li>another legal ground restricting withdrawal applies.</li>
+                    <li>
+                        more than 7 days have passed since the payment date or the date
+                        on which supply of the paid service began;
+                    </li>
+                    <li>the user has begun using the paid service;</li>
+                    <li>
+                        the Company clearly disclosed in advance that withdrawal would be
+                        restricted and provided measures required by applicable law, such
+                        as previews, trial use, free content, or service information; or
+                    </li>
+                    <li>
+                        another restriction on withdrawal or refunds applies under
+                        applicable law.
+                    </li>
                 </ul>
                 <p>
-                    If you cancel a recurring paid subscription, you may continue using
-                    the paid features until the end of the current billing period. If
-                    you purchase a fixed-term access pass, access ends automatically when
-                    the term expires and no separate cancellation process is required.
+                    However, these refund restrictions will not be interpreted to
+                    improperly limit any withdrawal right, refund right, or consumer
+                    protection right guaranteed to the user under applicable law.
                 </p>
                 <p>
-                    If you purchase a paid product through the Apple App Store or Google
-                    Play Store, refunds are handled according to that storefront&apos;s
-                    terms and payment system. GroGroJello does not have authority to
-                    directly approve or issue refunds for purchases made through those
-                    platforms.
+                    [Cancellation of Recurring Subscription Products]
+                </p>
+                <p>
+                    Users may cancel a recurring subscription at any time.
+                </p>
+                <p>
+                    If a recurring subscription is canceled, access to the paid service
+                    remains available until the end of the current billing period for
+                    which payment has already been completed, and automatic renewal will
+                    stop beginning with the next billing date.
+                </p>
+                <p>
+                    For the current billing period that has already been paid, refunds or
+                    credits may not be provided unless the request falls within the
+                    withdrawal conditions set out in this refund policy or another refund
+                    basis required by applicable law.
+                </p>
+                <p>
+                    [Expiration and Refunds for Fixed-Term Access Passes]
+                </p>
+                <p>
+                    For a fixed-term access pass, access to the paid service ends
+                    automatically when the stated access period expires.
+                </p>
+                <p>
+                    If a user purchases a fixed-term access pass, has not begun using the
+                    paid service, and requests withdrawal within 7 days from the payment
+                    date or the date on which supply of the paid service began, the
+                    Company will refund the full purchase amount.
+                </p>
+                <p>
+                    However, if more than 7 days have passed or use of the paid service
+                    has begun, refunds may be restricted to the extent permitted by
+                    applicable law.
+                </p>
+                <p>
+                    A refund or credit for the remaining access period is not
+                    automatically provided solely because the user terminates or stops
+                    using a fixed-term access pass before the end of the term.
+                </p>
+                <p>
+                    However, refunds, cancellations, or compensation may be provided on
+                    an exceptional basis where required by applicable law, including in
+                    cases involving the Company&apos;s fault, service outages, duplicate
+                    charges, erroneous charges, or provision of a service different from
+                    the contracted service.
+                </p>
+                <p>
+                    [Products Linked to Donations or Sponsorships]
+                </p>
+                <p>
+                    Certain products, including 12-month subscriptions, may be linked to
+                    social contribution procedures such as donations, sponsorships,
+                    support for low-income students, or provision of free access
+                    accounts.
+                </p>
+                <p>
+                    The Company may disclose on the purchase screen or checkout screen
+                    whether the product is linked to a donation or sponsorship, the main
+                    details, possible refund restrictions, and possible deductions of
+                    costs.
+                </p>
+                <p>
+                    If a user purchases a product linked to a donation or sponsorship,
+                    has not begun using the paid service, and requests withdrawal within
+                    7 days from the payment date or the date on which supply of the paid
+                    service began, the Company will refund the full purchase amount.
+                </p>
+                <p>
+                    However, if the user has begun using the paid service, or if a
+                    digital donation certificate, sponsorship certificate, or related
+                    sponsorship indication has been issued, withdrawal or refunds for the
+                    product may be restricted to the extent permitted by applicable law.
+                </p>
+                <p>
+                    The fact that a product is linked to a donation or sponsorship will
+                    not be interpreted as a basis for improperly restricting any legal
+                    withdrawal right available to the user.
+                </p>
+                <p>
+                    If a refund is made for a product linked to a donation or
+                    sponsorship, the Company may deduct, to the extent permitted by
+                    applicable law, the value of paid services already used, actual
+                    out-of-pocket expenses incurred in carrying out the donation or
+                    sponsorship, and the cost and related expenses of any access pass or
+                    service access rights already provided to a sponsored beneficiary.
+                </p>
+                <p>
+                    Even if a refund is processed, service access rights, user accounts,
+                    or passes already delivered to a sponsored beneficiary or other third
+                    party may, in principle, not be withdrawn or canceled.
+                </p>
+                <p>
+                    Once a refund is completed, any digital donation certificate,
+                    sponsorship certificate, or related designation issued in connection
+                    with that purchase will lose its effect.
+                </p>
+                <p>
+                    [Exceptional Refunds]
+                </p>
+                <p>
+                    Refunds, cancellations, or compensation may still be provided under
+                    applicable law notwithstanding the refund restrictions above if any
+                    of the following applies:
+                </p>
+                <ul>
+                    <li>
+                        the content of the paid service differs from what was indicated
+                        in advertising or from the terms of the contract;
+                    </li>
+                    <li>
+                        the paid service was not properly provided due to the
+                        Company&apos;s fault;
+                    </li>
+                    <li>duplicate charges or erroneous charges occurred;</li>
+                    <li>
+                        cancellation or refunds are required by applicable law, including
+                        payments made by a minor without the consent of a legal guardian;
+                        or
+                    </li>
+                    <li>
+                        mandatory laws in the user&apos;s jurisdiction require withdrawal,
+                        cancellation, refunds, or compensation.
+                    </li>
+                </ul>
+                <p>
+                    [How Refunds Are Processed]
+                </p>
+                <p>
+                    As a general rule, refunds will be processed using the same payment
+                    method used by the user for the original transaction.
+                </p>
+                <p>
+                    However, the actual refund method, processing time, and refund
+                    availability may vary depending on the policies of the payment
+                    method, app marketplace, payment processor, platform, card issuer,
+                    or financial institution.
+                </p>
+                <p>
+                    [Payments Through App Marketplaces and External Platforms]
+                </p>
+                <p>
+                    If a paid product is purchased through the Apple App Store, Google
+                    Play Store, or another external app marketplace or platform,
+                    cancellation, withdrawal, refunds, and cancellation of recurring
+                    subscriptions for that purchase may be handled in accordance with the
+                    applicable marketplace&apos;s or platform&apos;s terms, policies, and
+                    payment system.
+                </p>
+                <p>
+                    In such cases, the user may need to request a refund or subscription
+                    cancellation directly through the relevant app marketplace or
+                    platform, and the Company may provide reasonable assistance to the
+                    extent permitted under applicable law and the relevant platform
+                    policies.
                 </p>
             </>
         ),
@@ -859,58 +1034,210 @@ const koreanSections: TermsSection[] = [
     },
     {
         id: 'refund-policy',
-        title: '12. 환불 정책',
+        title: '12. 환불 및 청약철회',
         content: (
             <>
                 <p>
-                    모든 결제는 원칙적으로 환불되지 않으며, 가상 아이템 또는 부분적으로
-                    사용된 이용/구독 기간에 대한 환불이나 크레딧은 제공되지 않습니다.
-                    다만, 귀하의 관할권 내 관련 법률에서 청약철회를 강제하거나 환불을
-                    요구하는 경우는 해당 법령을 우선하여 적용합니다.
+                    [적용 범위]
                 </p>
                 <p>
-                    귀하가 유료 서비스를 구매한 후 콘텐츠를 전혀 이용하지 않은 경우,
-                    결제일로부터 7일 이내에 청약철회를 요청할 수 있으며, 이 경우 전액
-                    환불을 원칙으로 합니다.
+                    본 환불 정책은 회사가 제공하는 유료 서비스, 정기 구독 상품, 기간제
+                    이용권 및 기부 또는 후원 연동 상품의 청약철회, 해지 및 환불에
+                    적용됩니다.
                 </p>
                 <p>
-                    12개월 구독권은 구매와 동시에 사회적 기부 절차가 연동되는 특수
-                    상품으로, 서비스 이용을 개시하거나 디지털 기부 인증서가 발행된 경우
-                    회사는 즉시 기부 이행 절차를 완료한 것으로 간주할 수 있습니다.
+                    회사의 유료 상품은 일정 기간 동안 유료 서비스에 접근하고 이용할 수
+                    있는 기간 이용 권한 방식으로 제공됩니다.
                 </p>
                 <p>
-                    이용 개시 후 중도 해지 및 환불을 요청할 경우, 회사는 관련 법령에 따라
-                    다음의 금액을 공제한 후 잔액을 환불할 수 있습니다.
+                    [청약철회 가능 조건]
+                </p>
+                <p>
+                    이용자는 유료 서비스를 구매한 후 유료 서비스 이용을 개시하지 않은
+                    경우, 결제일 또는 유료 서비스의 공급이 시작된 날로부터 7일 이내에
+                    청약철회를 요청할 수 있습니다.
+                </p>
+                <p>
+                    이 경우 회사는 관련 법령 및 결제수단의 환불 절차에 따라 이용자가
+                    결제한 금액 전액을 환불합니다.
+                </p>
+                <p>
+                    [유료 서비스 이용 개시의 기준]
+                </p>
+                <p>
+                    다음 각 호의 어느 하나에 해당하는 경우, 유료 서비스의 이용이
+                    개시된 것으로 볼 수 있습니다.
                 </p>
                 <ul>
                     <li>
-                        기부 이행에 소요된 실비, 이미 저소득층 학생에게 전달된 12개월 이용
-                        계정의 원가 및 제반 비용
+                        이용자가 유료 계정, 구독 상품 또는 기간제 이용권을 통해 유료
+                        콘텐츠, 학습 활동, 게임 활동, 양육 시스템, 캐릭터 진화 기능,
+                        프리미엄 기능 등 유료 서비스에 접속하거나 이용한 경우
                     </li>
-                    <li>이용한 기간에 비례한 이용료 (일할 계산)</li>
-                    <li>총 결제 금액의 10% 위약금 (중도 해지 수수료)</li>
+                    <li>
+                        이용자가 유료 서비스 전용 화면, 콘텐츠, 기능 또는 혜택에 접근한
+                        경우
+                    </li>
+                    <li>
+                        이용자의 요청 또는 설정에 따라 유료 서비스 이용권이 활성화되고,
+                        회사가 해당 서비스를 정상적으로 제공하기 시작한 경우
+                    </li>
                 </ul>
                 <p>
-                    환불이 진행되더라도 이미 학생에게 전달된 서비스 이용 권한은 철회되거나
-                    취소되지 않습니다. 환불 완료 시, 해당 구매와 연계되어 발행된 디지털
-                    기부 인증서는 즉시 효력을 상실합니다.
+                    [청약철회 및 환불 제한]
                 </p>
-                <p>다음 각 호의 경우에는 청약철회 및 환불이 제한될 수 있습니다.</p>
+                <p>
+                    다음 각 호의 어느 하나에 해당하는 경우에는 관련 법령상 허용되는
+                    범위 내에서 청약철회 또는 환불이 제한될 수 있습니다.
+                </p>
                 <ul>
-                    <li>구매 후 7일이 경과하거나, 디지털 콘텐츠의 일부를 이미 사용한 경우</li>
-                    <li>가상 아이템(젬 등)을 일부라도 소진한 경우</li>
-                    <li>기타 법령에 따라 청약철회 제한 사유에 해당하는 경우</li>
+                    <li>
+                        결제일 또는 유료 서비스의 공급이 시작된 날로부터 7일이 경과한
+                        경우
+                    </li>
+                    <li>이용자가 유료 서비스 이용을 개시한 경우</li>
+                    <li>
+                        회사가 사전에 청약철회 제한 사실을 명확히 고지하고, 미리보기,
+                        체험 이용, 무료 콘텐츠 제공, 서비스 정보 제공 등 관련 법령상
+                        필요한 조치를 제공한 경우
+                    </li>
+                    <li>기타 관련 법령에서 청약철회 또는 환불 제한 사유로 정한 경우</li>
                 </ul>
                 <p>
-                    귀하가 유료 서비스의 정기 구독을 해지하더라도, 이미 결제가 완료된
-                    현재의 청구 기간이 종료될 때까지는 서비스의 모든 유료 기능을 계속해서
-                    이용할 수 있습니다. 기간제 이용권의 경우 정해진 이용 기간이 만료되면
-                    서비스 접근 권한이 자동으로 종료됩니다.
+                    다만, 본 환불 제한 규정은 이용자에게 관련 법령상 보장되는
+                    청약철회권, 환불권 또는 소비자 권리를 부당하게 제한하는 것으로
+                    해석되지 않습니다.
                 </p>
                 <p>
-                    Apple 앱 스토어 또는 Google 플레이 스토어를 통해 유료 상품을 구매한
-                    경우, 해당 결제와 환불 절차는 각 앱 스토어 운영사의 약관 및 결제
-                    시스템에 따라 처리됩니다.
+                    [정기 구독 상품의 해지]
+                </p>
+                <p>
+                    이용자는 언제든지 정기 구독을 해지할 수 있습니다.
+                </p>
+                <p>
+                    정기 구독을 해지한 경우, 이미 결제가 완료된 현재 청구 기간이 종료될
+                    때까지 유료 서비스 이용 권한은 유지되며, 다음 결제일부터 자동 갱신이
+                    중단됩니다.
+                </p>
+                <p>
+                    이미 결제가 완료된 현재 청구 기간에 대해서는, 본 환불 정책에서 정한
+                    청약철회 가능 조건 또는 관련 법령상 환불 사유에 해당하지 않는 한
+                    환불이나 크레딧이 제공되지 않을 수 있습니다.
+                </p>
+                <p>
+                    [기간제 이용권의 종료 및 환불]
+                </p>
+                <p>
+                    기간제 이용권의 경우, 정해진 이용 기간이 만료되면 유료 서비스 접근
+                    권한은 자동으로 종료됩니다.
+                </p>
+                <p>
+                    이용자가 기간제 이용권을 구매한 후 유료 서비스 이용을 개시하지
+                    않았고, 결제일 또는 유료 서비스의 공급이 시작된 날로부터 7일 이내에
+                    청약철회를 요청하는 경우 회사는 결제금액 전액을 환불합니다.
+                </p>
+                <p>
+                    다만, 7일이 경과했거나 유료 서비스 이용이 개시된 경우, 관련 법령상
+                    허용되는 범위 내에서 환불이 제한될 수 있습니다.
+                </p>
+                <p>
+                    기간제 이용권의 중도 해지 또는 이용 중단만을 이유로 남은 이용 기간에
+                    대한 환불이나 크레딧이 자동으로 제공되지는 않습니다.
+                </p>
+                <p>
+                    다만, 회사의 귀책사유, 서비스 장애, 중복 결제, 오결제, 계약 내용과
+                    다른 서비스 제공 등 관련 법령상 환불이 필요한 경우에는 예외적으로
+                    환불, 취소 또는 보상이 이루어질 수 있습니다.
+                </p>
+                <p>
+                    [기부 또는 후원 연동 상품]
+                </p>
+                <p>
+                    12개월 구독권 등 일부 상품은 사회적 기부, 후원, 저소득층 학생 지원,
+                    무료 이용 계정 제공 등 사회공헌 절차와 연동될 수 있습니다.
+                </p>
+                <p>
+                    회사는 해당 상품의 구매 화면 또는 결제 화면에서 기부 또는 후원 연동
+                    여부, 주요 내용, 환불 제한 가능성 및 비용 공제 가능성을 안내할 수
+                    있습니다.
+                </p>
+                <p>
+                    이용자가 기부 또는 후원 연동 상품을 구매한 후 유료 서비스 이용을
+                    개시하지 않았고, 결제일 또는 유료 서비스의 공급이 시작된 날로부터
+                    7일 이내에 청약철회를 요청하는 경우 회사는 결제금액 전액을
+                    환불합니다.
+                </p>
+                <p>
+                    다만, 이용자가 유료 서비스 이용을 개시하거나, 디지털 기부 인증서,
+                    후원 인증서 또는 후원 관련 표시가 발행된 경우, 해당 상품은 관련
+                    법령상 허용되는 범위 내에서 청약철회 또는 환불이 제한될 수 있습니다.
+                </p>
+                <p>
+                    기부 또는 후원 연동 사실은 이용자의 법정 청약철회권을 부당하게
+                    제한하는 사유로 해석되지 않습니다.
+                </p>
+                <p>
+                    기부 또는 후원 연동 상품에 대해 환불이 이루어지는 경우, 회사는 관련
+                    법령상 허용되는 범위 내에서 이미 이용한 유료 서비스 금액, 기부 또는
+                    후원 이행을 위해 실제 발생한 실비, 이미 후원 대상자에게 제공된
+                    이용권 또는 서비스 접근 권한의 원가 및 제반 비용을 공제할 수
+                    있습니다.
+                </p>
+                <p>
+                    환불이 진행되더라도 이미 후원 대상자 또는 제3자에게 전달된 서비스
+                    이용 권한, 이용 계정 또는 이용권은 원칙적으로 철회되거나 취소되지
+                    않을 수 있습니다.
+                </p>
+                <p>
+                    환불이 완료된 경우, 해당 구매와 연계되어 발행된 디지털 기부 인증서,
+                    후원 인증서 또는 관련 표시는 효력을 상실합니다.
+                </p>
+                <p>
+                    [예외적 환불]
+                </p>
+                <p>
+                    다음 각 호의 경우에는 본 환불 제한 규정에도 불구하고 관련 법령에
+                    따라 환불, 취소 또는 보상이 이루어질 수 있습니다.
+                </p>
+                <ul>
+                    <li>유료 서비스의 내용이 표시·광고 또는 계약 내용과 다른 경우</li>
+                    <li>회사의 귀책사유로 유료 서비스가 정상적으로 제공되지 않은 경우</li>
+                    <li>중복 결제, 오결제 등 결제 오류가 발생한 경우</li>
+                    <li>
+                        미성년자의 법정대리인 동의 없는 결제 등 관련 법령상 취소 또는
+                        환불이 필요한 경우
+                    </li>
+                    <li>
+                        이용자의 관할권 내 강행 법규가 청약철회, 취소, 환불 또는 보상을
+                        요구하는 경우
+                    </li>
+                </ul>
+                <p>
+                    [환불 처리 방식]
+                </p>
+                <p>
+                    환불은 이용자가 결제한 수단과 동일한 방법으로 처리하는 것을 원칙으로
+                    합니다.
+                </p>
+                <p>
+                    다만, 결제수단, 앱마켓, 결제대행사, 플랫폼, 카드사 또는 금융기관의
+                    정책에 따라 실제 환불 처리 방식, 처리 기간 및 환불 가능 여부가
+                    달라질 수 있습니다.
+                </p>
+                <p>
+                    [앱마켓 및 외부 플랫폼 결제]
+                </p>
+                <p>
+                    Apple App Store, Google Play Store 또는 기타 외부
+                    앱마켓·플랫폼을 통해 유료 상품을 구매한 경우, 해당 결제의 취소,
+                    청약철회, 환불 및 정기 구독 해지는 각 앱마켓 또는 플랫폼의 약관,
+                    정책 및 결제 시스템에 따라 처리될 수 있습니다.
+                </p>
+                <p>
+                    이 경우 이용자는 해당 앱마켓 또는 플랫폼에서 제공하는 절차에 따라
+                    직접 환불 또는 구독 해지를 요청해야 할 수 있으며, 회사는 관련 법령
+                    및 해당 플랫폼 정책상 허용되는 범위 내에서 필요한 지원을 제공할 수
+                    있습니다.
                 </p>
             </>
         ),
@@ -1136,6 +1463,11 @@ export const TermsOfServicePage: React.FC = () => {
     const { i18n } = useTranslation();
     const navigate = useNavigate();
     const [locale, setLocale] = React.useState<Locale>(() => getDefaultLegalLocale(i18n.resolvedLanguage || i18n.language));
+    const resolvedLegalLocale = getDefaultLegalLocale(i18n.resolvedLanguage || i18n.language);
+
+    React.useEffect(() => {
+        setLocale(resolvedLegalLocale);
+    }, [resolvedLegalLocale]);
 
     const sections = locale === 'ko' ? koreanSections : englishSections;
     const eyebrow = 'GroGroJello';

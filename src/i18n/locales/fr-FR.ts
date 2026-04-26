@@ -1282,8 +1282,8 @@ export const frFR = {
       action: 'Inscription', // Explicit action key
       consentPrefix: "En vous inscrivant, vous acceptez les ",
       termsLink: "Conditions d'utilisation",
-      privacyLink: 'la Politique de confidentialité',
-      consentConnector: ' et ',
+      privacyLink: 'Politique de confidentialité',
+      consentConnector: ' et la ',
       consentSuffix: '.',
     },
     errors: {
