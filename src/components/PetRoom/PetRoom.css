@@ -130,7 +130,7 @@
 .premium-btn-floating {
   position: relative;
   /* Changed from absolute to flow in flex container */
-  width: 58px;
+  width: 53px;
   height: auto;
   background: transparent;
   border: none;
@@ -148,20 +148,20 @@
 }
 
 .premium-btn-floating .action-icon {
-  font-size: 3rem;
+  font-size: 2.72rem;
   line-height: 1;
   position: relative;
   z-index: 2;
-  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+  filter: drop-shadow(0 3px 7px rgba(0, 0, 0, 0.32));
 }
 
 .premium-label {
   background: #FFD700;
   color: #4d3e2f;
-  font-size: 0.7rem;
+  font-size: 0.64rem;
   /* Reduced label size */
   font-weight: 800;
-  padding: 2px 8px;
+  padding: 2px 7.25px;
   /* Slightly reduced padding */
   position: absolute;
   left: 50%;
@@ -169,11 +169,11 @@
   top: 100%;
   /* Position below/over icon */
   width: max-content;
-  border-radius: 12px;
+  border-radius: 11.5px;
   z-index: 3;
   /* margin-top: -3px; Removed */
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  border: 2px solid #fff;
+  border: 1.8px solid #fff;
   white-space: nowrap;
   letter-spacing: -0.3px;
 }
@@ -184,7 +184,7 @@
 }
 
 .premium-btn-floating:hover .action-icon {
-  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.4));
+  filter: drop-shadow(0 5px 11px rgba(0, 0, 0, 0.42));
 }
 
 .premium-btn-floating:focus,
@@ -245,7 +245,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1rem 1.5rem;
+  padding: 0.77rem 1.16rem;
   background: linear-gradient(180deg, #5a9c7d 0%, #4a8c6d 100%);
   border-bottom: 5px solid #3a6c4d;
   box-shadow: 0 4px 0 rgba(0, 0, 0, 0.2);
@@ -277,17 +277,17 @@
 .character-profile {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.58rem;
   background: rgba(255, 255, 255, 0.95);
-  padding: 0.5rem 1rem 0.5rem 0.5rem;
+  padding: 0.38rem 0.77rem 0.38rem 0.38rem;
   border-radius: 50px;
   border: 4px solid #2d4a3d;
   box-shadow: 0 4px 0 rgba(0, 0, 0, 0.3);
 }
 
 .profile-avatar {
-  width: 60px;
-  height: 60px;
+  width: 46px;
+  height: 46px;
   background: linear-gradient(135deg, #FFE4B5 0%, #FFD7A3 100%);
   border-radius: 50%;
   border: 4px solid #2d4a3d;
@@ -305,7 +305,7 @@
 }
 
 .profile-name {
-  font-size: 1rem;
+  font-size: 0.77rem;
   font-weight: 800;
   color: #2d4a3d;
   text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.5);
@@ -320,49 +320,49 @@
 }
 
 .profile-level {
-  font-size: 0.85rem;
+  font-size: 0.65rem;
   font-weight: 700;
   color: #5a9c7d;
   background: #e8f5e8;
-  padding: 0.15rem 0.5rem;
+  padding: 0.11rem 0.38rem;
   border-radius: 8px;
   display: inline-block;
 }
 
 .profile-gro {
-  font-size: 0.85rem;
+  font-size: 0.65rem;
   font-weight: 700;
   color: #8b6914;
   background: #fff9e6;
-  padding: 0.15rem 0.5rem;
+  padding: 0.11rem 0.38rem;
   border-radius: 8px;
   display: inline-block;
 }
 
 .stats-row {
   display: flex;
-  gap: 0.75rem;
+  gap: 0.58rem;
 }
 
 .stat-badge {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.38rem;
   background: rgba(255, 255, 255, 0.95);
-  padding: 0.5rem 1rem;
+  padding: 0.38rem 0.77rem;
   border-radius: 25px;
   border: 4px solid #2d4a3d;
   box-shadow: 0 4px 0 rgba(0, 0, 0, 0.3);
-  min-width: 80px;
+  min-width: 62px;
 }
 
 .stat-icon {
-  font-size: 1.5rem;
+  font-size: 1.16rem;
   filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.2));
 }
 
 .stat-value {
-  font-size: 0.85rem;
+  font-size: 0.65rem;
   font-weight: 700;
   color: #2d4a3d;
 }
@@ -446,8 +446,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 1rem;
-  padding: 0.4rem 1.5rem 0.6rem;
+  gap: 0.77rem;
+  padding: 0.3rem 1.16rem 0.46rem;
   background: linear-gradient(180deg, #5a9c7d 0%, #4a8c6d 100%);
   border-top: 5px solid #3a6c4d;
   box-shadow: 0 -4px 0 rgba(0, 0, 0, 0.2);
@@ -470,8 +470,8 @@
 }
 
 .action-btn--small {
-  width: 70px;
-  height: 70px;
+  width: 54px;
+  height: 54px;
   background: linear-gradient(180deg, #7d5e4f 0%, #6d4e3f 100%);
   border-radius: 16px;
   border: 4px solid #4d3e2f;
@@ -484,13 +484,13 @@
 }
 
 .action-btn--main {
-  width: 140px;
-  height: 90px;
+  width: 107px;
+  height: 69px;
   background: linear-gradient(180deg, #FFD700 0%, #FFA500 100%);
   border-radius: 24px;
   border: 5px solid #d4961f;
   box-shadow: 0 8px 0 #b4761f, 0 10px 16px rgba(0, 0, 0, 0.4);
-  gap: 0.25rem;
+  gap: 0.2rem;
 }
 
 .action-btn--main:active:not(:disabled) {
@@ -505,17 +505,17 @@
 }
 
 .action-icon {
-  font-size: 2.5rem;
+  font-size: 1.92rem;
   filter: drop-shadow(2px 2px 3px rgba(0, 0, 0, 0.3));
 }
 
 .action-icon-large {
-  font-size: 3rem;
+  font-size: 2.3rem;
   filter: drop-shadow(2px 2px 3px rgba(0, 0, 0, 0.3));
 }
 
 .action-label {
-  font-size: 1rem;
+  font-size: 0.77rem;
   font-weight: 800;
   color: #4d3e2f;
   text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.5);
@@ -1099,77 +1099,77 @@
 /* Responsive Design */
 @media (max-width: 768px) {
   .game-header {
-    padding: 0.5rem 0.75rem;
+    padding: 0.38rem 0.58rem;
     flex-direction: row;
     gap: 0.5rem;
   }
 
   .character-profile {
-    padding: 0.25rem 0.4rem 0.25rem 0.25rem;
+    padding: 0.19rem 0.3rem 0.19rem 0.19rem;
     flex-shrink: 0;
     border: 3px solid #2d4a3d;
   }
 
   .profile-avatar {
-    width: 38px;
-    height: 38px;
+    width: 29px;
+    height: 29px;
     border: 3px solid #2d4a3d;
   }
 
   .profile-name {
-    font-size: 0.75rem;
+    font-size: 0.58rem;
   }
 
   .profile-level {
-    font-size: 0.6rem;
-    padding: 0.1rem 0.3rem;
+    font-size: 0.46rem;
+    padding: 0.08rem 0.24rem;
     border: 3px solid #4a6b5a;
   }
 
   .stats-row {
     flex: 1;
-    gap: 0.35rem;
+    gap: 0.27rem;
     justify-content: flex-end;
     flex-direction: row;
   }
 
   .stat-badge {
-    padding: 0.25rem 0.4rem;
-    min-width: 50px;
+    padding: 0.19rem 0.3rem;
+    min-width: 39px;
     border: 3px solid #2d4a3d;
   }
 
   .stat-icon {
-    font-size: 1rem;
+    font-size: 0.77rem;
   }
 
 
 
   .action-bar {
-    padding: 0.6rem 1rem 0.8rem;
-    gap: 0.75rem;
+    padding: 0.46rem 0.77rem 0.62rem;
+    gap: 0.58rem;
   }
 
   .action-btn--small {
-    width: 60px;
-    height: 60px;
+    width: 46px;
+    height: 46px;
   }
 
   .action-btn--main {
-    width: 120px;
-    height: 80px;
+    width: 92px;
+    height: 62px;
   }
 
   .action-icon {
-    font-size: 2rem;
+    font-size: 1.54rem;
   }
 
   .action-icon-large {
-    font-size: 2.5rem;
+    font-size: 1.92rem;
   }
 
   .action-label {
-    font-size: 0.9rem;
+    font-size: 0.68rem;
   }
 
   .food-menu-header {
@@ -1282,8 +1282,8 @@
 
 /* ==========/* Jello Wrapper for Responsive Sizing */
 .jello-wrapper {
-  width: 96px;
-  height: 96px;
+  width: 74px;
+  height: 74px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1291,34 +1291,34 @@
 }
 
 .jello-wrapper.baby {
-  padding: 8px;
+  padding: 5px;
   /* Internal padding for baby jellos to appear slightly smaller */
   box-sizing: border-box;
 }
 
 .jello-wrapper.legendary {
-  width: 144px;
+  width: 110px;
   /* 96 * 1.5 */
-  height: 144px;
+  height: 110px;
 }
 
 /* Tablet & Desktop: Scale up by integer multiples for crisp pixel art (Base 32px) */
 @media (min-width: 600px) {
   .jello-wrapper {
-    width: 128px;
+    width: 99px;
     /* 32 * 4 */
-    height: 128px;
+    height: 99px;
   }
 
   .jello-wrapper.baby {
-    padding: 10px;
+    padding: 6px;
     /* 8 * 1.25 */
   }
 
   .jello-wrapper.legendary {
-    width: 192px;
+    width: 147px;
     /* 32 * 6 */
-    height: 192px;
+    height: 147px;
   }
 }
 
@@ -1419,22 +1419,22 @@
 /* Shop Floating Button (now inside FAB container - same size as menu items) */
 .shop-btn-floating {
   position: relative;
-  width: 58px;
-  height: 58px;
+  width: 53px;
+  height: 53px;
   background: linear-gradient(180deg, #FFF9E6 0%, #FFE4B5 100%);
-  border: 3.5px solid #8B4513;
+  border: 3.1px solid #8B4513;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 0 3px 0 #6B3513, 0 4px 6px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 3px 0 #6B3513, 0 4px 5px rgba(0, 0, 0, 0.22);
   transition: all 0.2s ease;
 }
 
 .shop-btn-floating:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 5px 0 #6B3513, 0 6px 10px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 0 #6B3513, 0 5px 9px rgba(0, 0, 0, 0.32);
 }
 
 .shop-btn-floating:active:not(:disabled) {
@@ -1449,7 +1449,7 @@
 }
 
 .shop-btn-floating .action-icon {
-  font-size: 1.7rem;
+  font-size: 1.55rem;
   line-height: 1;
   display: block;
   filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.2));
@@ -1457,55 +1457,55 @@
 
 @media (max-width: 768px) {
   .shop-btn-floating {
-    width: 52px;
-    height: 52px;
+    width: 47px;
+    height: 47px;
   }
 
   .shop-btn-floating .action-icon {
-    font-size: 1.5rem;
+    font-size: 1.36rem;
     line-height: 1;
   }
 
   .fab-menu-container {
-    right: 10px;
-    top: 15px;
+    right: 9px;
+    top: 13.5px;
   }
 }
 
 .fab-menu-container {
   position: absolute;
   /* Anchored to bottom of header via parent relative div */
-  top: 20px;
-  right: 14px;
+  top: 18.5px;
+  right: 12.5px;
   z-index: 20;
   display: flex;
   flex-direction: column;
   align-items: center;
   /* Align right to prevent + button shift */
-  gap: 6px;
+  gap: 5.2px;
 }
 
 /* FAB Menu Items (Shop, Camera, etc.) */
 .fab-menu-item {
   position: relative;
 
-  width: 58px;
-  height: 58px;
+  width: 53px;
+  height: 53px;
   background: linear-gradient(180deg, #FFF9E6 0%, #FFE4B5 100%);
-  border: 3.5px solid #8B4513;
+  border: 3.1px solid #8B4513;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 0 3px 0 #6B3513, 0 4px 6px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 3px 0 #6B3513, 0 4px 5px rgba(0, 0, 0, 0.22);
   transition: all 0.2s ease;
   animation: fabItemAppear 0.2s ease-out;
 }
 
 .fab-menu-item:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 5px 0 #6B3513, 0 6px 10px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 0 #6B3513, 0 5px 9px rgba(0, 0, 0, 0.32);
 }
 
 .fab-menu-item:active:not(:disabled) {
@@ -1519,7 +1519,7 @@
 }
 
 .fab-menu-item .action-icon {
-  font-size: 1.7rem;
+  font-size: 1.55rem;
   filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.2));
 }
 
@@ -1541,17 +1541,17 @@
 @media (max-width: 1024px) {
   .fab-menu-container {
     /* Anchored to bottom of header */
-    top: 15px;
-    right: 9px;
+    top: 13.5px;
+    right: 8.5px;
   }
 
   .fab-menu-item {
-    width: 52px;
-    height: 52px;
+    width: 47px;
+    height: 47px;
   }
 
   .fab-menu-item .action-icon {
-    font-size: 1.5rem;
+    font-size: 1.36rem;
   }
 
   /* Mobile Specific Compact Spacing handled by global gap,
@@ -1563,12 +1563,12 @@
 .evolution-controls-container {
   position: absolute;
   /* Top aligned with FAB (20px from anchor below header) */
-  top: 20px;
-  left: 14px;
+  top: 18.5px;
+  left: 12.5px;
   z-index: 20;
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 11.3px;
   /* Space between Evolution and Graduation buttons */
   pointer-events: auto;
   /* Enable clicks */
@@ -1577,28 +1577,28 @@
 @media (max-width: 768px) {
   .evolution-controls-container {
     /* Mobile specific adjustment to match FAB */
-    top: 15px;
-    left: 10px;
+    top: 13.5px;
+    left: 9.5px;
   }
 }
 
 .evolution-btn {
   /* Rounded Rectangular 3D Button (Like Play Button) */
-  min-width: 120px;
-  height: 60px;
-  padding: 0 20px;
-  border-radius: 20px;
-  border: 4px solid #d4961f;
+  min-width: 109px;
+  height: 55px;
+  padding: 0 18.5px;
+  border-radius: 18.5px;
+  border: 3.6px solid #d4961f;
   /* Gold dark border */
   /* Default: Strong Gold Gradient (Graduation) */
   background: linear-gradient(180deg, #FFD700 0%, #FFA500 100%);
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 7.2px;
   /* Icon + Text gap */
   cursor: pointer;
-  box-shadow: 0 5px 0 #b4761f, 0 8px 12px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 0 #b4761f, 0 7px 11px rgba(0, 0, 0, 0.32);
   transition: all 0.2s ease;
   animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   position: relative;
@@ -1613,16 +1613,16 @@
   border-color: #d4a01f;
   /* Slightly lighter border to match */
   box-shadow:
-    0 5px 0 #9b6d14,
-    0 9px 14px rgba(113, 75, 9, 0.22),
+    0 4px 0 #9b6d14,
+    0 8px 12px rgba(113, 75, 9, 0.24),
     inset 0 1px 0 rgba(255, 255, 255, 0.82);
 }
 
 .evolution-btn.type-evolution::before {
   content: '';
   position: absolute;
-  inset: 3px;
-  border-radius: 15px;
+  inset: 2.6px;
+  border-radius: 13.5px;
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0.16) 32%, rgba(255, 255, 255, 0.03) 100%);
   pointer-events: none;
@@ -1631,8 +1631,8 @@
 
 .evolution-btn-glass-mask {
   position: absolute;
-  inset: 7px;
-  border-radius: 13px;
+  inset: 6.2px;
+  border-radius: 11.3px;
   overflow: hidden;
   pointer-events: none;
   z-index: 1;
@@ -1658,41 +1658,41 @@
   animation: evolutionGlassSweep 2.8s ease-in-out infinite;
   filter: blur(0.25px);
   mix-blend-mode: screen;
-  border-radius: 11px;
-  box-shadow: 0 0 12px rgba(255, 255, 255, 0.22);
+  border-radius: 10.3px;
+  box-shadow: 0 0 11px rgba(255, 255, 255, 0.24);
 }
 
 /* Ensure hover brightness applies to both */
 .evolution-btn:hover {
   transform: translateY(-2px);
   /* Stronger shadow for hover */
-  box-shadow: 0 7px 0 #b4761f, 0 10px 16px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 6px 0 #b4761f, 0 9px 14px rgba(0, 0, 0, 0.42);
   filter: brightness(1.05);
 }
 
 /* Adjust hover shadow color for light button if needed, but gold shadow is fine */
 .evolution-btn.type-evolution:hover {
-  box-shadow: 0 7px 0 #9b6d14, 0 11px 18px rgba(113, 75, 9, 0.28);
+  box-shadow: 0 6px 0 #9b6d14, 0 10px 16px rgba(113, 75, 9, 0.3);
 }
 
 .evolution-btn.type-evolution:active {
-  box-shadow: 0 2px 0 #9b6d14, 0 4px 8px rgba(113, 75, 9, 0.18);
+  box-shadow: 0 2px 0 #9b6d14, 0 4px 7px rgba(113, 75, 9, 0.2);
 }
 
 .evolution-btn:active {
   transform: translateY(3px);
-  box-shadow: 0 2px 0 #b4761f, 0 4px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 0 #b4761f, 0 4px 7px rgba(0, 0, 0, 0.22);
 }
 
 .evolution-btn .action-icon {
-  font-size: 1.5rem;
+  font-size: 1.36rem;
   filter: drop-shadow(1px 1px 1px rgba(0, 0, 0, 0.2));
   position: relative;
   z-index: 2;
 }
 
 .evolution-btn .btn-text {
-  font-size: 1rem;
+  font-size: 0.91rem;
   font-weight: 800;
   color: #4d3e2f;
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.3);
@@ -1703,18 +1703,18 @@
 
 @media (max-width: 768px) {
   .evolution-btn {
-    height: 52px;
-    padding: 0 16px;
-    min-width: 100px;
-    border-radius: 18px;
+    height: 47px;
+    padding: 0 14.5px;
+    min-width: 91px;
+    border-radius: 16.5px;
   }
 
   .evolution-btn .action-icon {
-    font-size: 1.2rem;
+    font-size: 1.09rem;
   }
 
   .evolution-btn .btn-text {
-    font-size: 0.9rem;
+    font-size: 0.81rem;
   }
 }
 
