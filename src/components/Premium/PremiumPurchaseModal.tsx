@@ -128,12 +128,13 @@ export const PremiumPurchaseModal: React.FC<PremiumPurchaseModalProps> = ({ isOp
                     padding: '54px 20px 0',
                     display: 'flex',
                     flexDirection: 'column',
-                    alignItems: 'center'
+                    alignItems: 'center',
+                    fontSize: '0.85rem'
                 }}>
                     {/* Title */}
 
                     <h2 style={{
-                        fontSize: '1.5rem',
+                        fontSize: '1.22rem',
                         marginBottom: '8px',
                         background: 'linear-gradient(to right, #FFD700, #FDB931)',
                         WebkitBackgroundClip: 'text',
@@ -152,7 +153,7 @@ export const PremiumPurchaseModal: React.FC<PremiumPurchaseModalProps> = ({ isOp
                         color: '#063b35',
                         padding: '7px 16px',
                         borderRadius: '999px',
-                        fontSize: '0.95rem',
+                        fontSize: '0.86rem',
                         fontWeight: 900,
                         lineHeight: 1,
                         marginTop: '8px',
@@ -204,7 +205,7 @@ export const PremiumPurchaseModal: React.FC<PremiumPurchaseModalProps> = ({ isOp
                             width: '100%',
                             padding: '16px',
                             borderRadius: '16px',
-                            fontSize: '1.2rem',
+                            fontSize: '1.08rem',
                             fontWeight: '800',
                             cursor: 'pointer',
                             boxShadow: '0 4px 0 #b4761f, 0 5px 15px rgba(255, 165, 0, 0.6)', // 3D Solid + Glow
