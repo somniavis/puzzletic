@@ -2,10 +2,12 @@
     width: 100%;
     height: 100dvh;
     overflow-y: auto;
+    overflow-x: hidden;
     background:
         radial-gradient(circle at top right, rgba(255, 209, 102, 0.22), transparent 22rem),
         linear-gradient(180deg, #fffaf0 0%, #f7f5ef 100%);
     color: #243127;
+    box-sizing: border-box;
 }
 
 .terms-page__hero {
@@ -18,20 +20,24 @@
 .terms-page__content-inner {
     width: min(960px, calc(100% - 32px));
     margin: 0 auto;
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
 .terms-page__hero-inner {
+    position: relative;
     padding: 48px 0 40px;
 }
 
 .terms-page__toolbar {
     display: flex;
     align-items: flex-start;
-    justify-content: space-between;
-    gap: 20px;
 }
 
 .terms-page__actions {
+    position: absolute;
+    top: 48px;
+    right: 0;
     display: flex;
     align-items: flex-start;
     justify-content: flex-end;
@@ -107,6 +113,8 @@
 
 .terms-document {
     display: block;
+    width: 100%;
+    max-width: 100%;
 }
 
 .terms-section {
@@ -127,6 +135,8 @@
     font-size: 0.98rem;
     line-height: 1.72;
     color: #324438;
+    overflow-wrap: anywhere;
+    word-break: break-word;
 }
 
 .terms-section__body p:last-child,
@@ -146,6 +156,8 @@
     color: #2a6f4f;
     text-decoration: underline;
     text-underline-offset: 2px;
+    overflow-wrap: anywhere;
+    word-break: break-word;
 }
 
 .terms-page__footer {
@@ -160,27 +172,28 @@
 
 @media (max-width: 640px) {
     .terms-page__hero-inner {
-        padding: 36px 0 28px;
+        padding: 88px 0 28px;
     }
 
     .terms-page__toolbar {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 16px;
+        display: block;
     }
 
     .terms-page__actions {
-        width: 100%;
-        justify-content: space-between;
+        top: 20px;
+        right: 0;
+        width: auto;
+        flex-direction: row;
         align-items: center;
     }
 
     .terms-page__language-picker {
-        width: 100%;
+        width: auto;
     }
 
     .terms-page__language-picker select {
-        width: 100%;
+        width: auto;
+        min-width: 120px;
     }
 
     .terms-page__content-inner {

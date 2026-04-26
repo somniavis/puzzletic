@@ -821,7 +821,7 @@ export const PrivacyPolicyPage: React.FC = () => {
     const [locale, setLocale] = React.useState<Locale>(() => getDefaultLegalLocale(i18n.resolvedLanguage || i18n.language));
 
     const sections = locale === 'ko' ? koreanSections : englishSections;
-    const eyebrow = locale === 'ko' ? 'GroGroJello 법률' : 'GroGroJello Legal';
+    const eyebrow = 'GroGroJello';
     const title = locale === 'ko' ? '개인정보처리방침' : 'Privacy Policy';
     const footerText =
         locale === 'ko'

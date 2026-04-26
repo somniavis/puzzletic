@@ -2,10 +2,12 @@
     width: 100%;
     height: 100dvh;
     overflow-y: auto;
+    overflow-x: hidden;
     background:
         radial-gradient(circle at top right, rgba(146, 210, 246, 0.24), transparent 22rem),
         linear-gradient(180deg, #f8fbff 0%, #f2f6f8 100%);
     color: #1f2d38;
+    box-sizing: border-box;
 }
 
 .privacy-page__hero {
@@ -18,20 +20,24 @@
 .privacy-page__content-inner {
     width: min(960px, calc(100% - 32px));
     margin: 0 auto;
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
 .privacy-page__hero-inner {
+    position: relative;
     padding: 48px 0 40px;
 }
 
 .privacy-page__toolbar {
     display: flex;
     align-items: flex-start;
-    justify-content: space-between;
-    gap: 20px;
 }
 
 .privacy-page__actions {
+    position: absolute;
+    top: 48px;
+    right: 0;
     display: flex;
     align-items: flex-start;
     justify-content: flex-end;
@@ -107,6 +113,8 @@
 
 .privacy-document {
     display: block;
+    width: 100%;
+    max-width: 100%;
 }
 
 .privacy-section {
@@ -127,6 +135,8 @@
     font-size: 0.98rem;
     line-height: 1.72;
     color: #2f4552;
+    overflow-wrap: anywhere;
+    word-break: break-word;
 }
 
 .privacy-section__body p:last-child,
@@ -146,6 +156,8 @@
     color: #1f6aa5;
     text-decoration: underline;
     text-underline-offset: 2px;
+    overflow-wrap: anywhere;
+    word-break: break-word;
 }
 
 .privacy-page__footer {
@@ -160,27 +172,28 @@
 
 @media (max-width: 640px) {
     .privacy-page__hero-inner {
-        padding: 36px 0 28px;
+        padding: 88px 0 28px;
     }
 
     .privacy-page__toolbar {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 16px;
+        display: block;
     }
 
     .privacy-page__actions {
-        width: 100%;
-        justify-content: space-between;
+        top: 20px;
+        right: 0;
+        width: auto;
+        flex-direction: row;
         align-items: center;
     }
 
     .privacy-page__language-picker {
-        width: 100%;
+        width: auto;
     }
 
     .privacy-page__language-picker select {
-        width: 100%;
+        width: auto;
+        min-width: 120px;
     }
 
     .privacy-page__content-inner {

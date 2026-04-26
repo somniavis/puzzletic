@@ -1,6 +1,6 @@
 import React from 'react';
 import { Check, Globe, Star } from 'lucide-react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation, Trans } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
 import { useNurturing } from '../contexts/NurturingContext';
@@ -830,6 +830,15 @@ export const ProfilePage: React.FC = () => {
                     </>
                 )}
             </div>
+
+            <footer className="profile-footer" aria-label="Legal">
+                <span className="profile-footer-copy">© grogrojello</span>
+                <div className="profile-footer-links">
+                    <Link to="/terms" className="profile-footer-link">이용약관</Link>
+                    <span className="profile-footer-separator">|</span>
+                    <Link to="/privacy" className="profile-footer-link">개인정보 처리방침</Link>
+                </div>
+            </footer>
 
             {checkoutOverlay.isPreparing && (
                 <AppLoadingOverlay message={t('profile.checkoutPreparing')} zIndex={2400} />

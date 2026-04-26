@@ -1138,7 +1138,7 @@ export const TermsOfServicePage: React.FC = () => {
     const [locale, setLocale] = React.useState<Locale>(() => getDefaultLegalLocale(i18n.resolvedLanguage || i18n.language));
 
     const sections = locale === 'ko' ? koreanSections : englishSections;
-    const eyebrow = locale === 'ko' ? 'GroGroJello 법률' : 'GroGroJello Legal';
+    const eyebrow = 'GroGroJello';
     const title = locale === 'ko' ? '서비스 약관' : 'Terms of Service';
     const footerText =
         locale === 'ko'
