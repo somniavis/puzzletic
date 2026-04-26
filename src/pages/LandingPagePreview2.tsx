@@ -149,16 +149,17 @@ export const LandingPortalPage: React.FC = () => {
                 </section>
 
                 <section className="portal-landing__slot portal-landing__slot--footer">
-                        <div className="portal-landing__footer">
-                            <div className="portal-landing__auth portal-landing__auth--footer">
-                                <button onClick={() => navigate('/login')} className="portal-landing__link">
-                                    {t('landing.login')}
-                                </button>
-                                <button onClick={() => navigate('/signup')} className="portal-landing__link">
-                                    {t('landing.signup')}
-                                </button>
-                            </div>
+                    <div className="portal-landing__footer">
+                        <div className="portal-landing__auth portal-landing__auth--footer">
+                            <button onClick={() => navigate('/login')} className="portal-landing__link">
+                                {t('landing.login')}
+                            </button>
+                            <button onClick={() => navigate('/signup')} className="portal-landing__link">
+                                {t('landing.signup')}
+                            </button>
                         </div>
+                        <p className="portal-landing__copyright">© grogrojello</p>
+                    </div>
                 </section>
             </main>
         </div>
