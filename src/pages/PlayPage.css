@@ -56,6 +56,7 @@
 }
 
 .play-page-container {
+    --play-bottom-nav-clearance: calc(5.5rem + env(safe-area-inset-bottom, 0px));
     display: flex;
     flex-direction: column;
     height: 100vh;
@@ -239,12 +240,16 @@
 .hub-content {
     flex: 1;
     overflow-y: auto;
-    padding: 0.5rem 0.75rem 5.5rem 0.75rem;
-    /* Bottom padding for nav */
+    padding: 0.5rem 0.75rem var(--play-bottom-nav-clearance) 0.75rem;
+    /* Leave room for the fixed bottom nav, including iOS safe area. */
     scrollbar-width: none;
     /* Firefox */
     overflow-x: hidden;
     /* Prevent horizontal scroll */
+}
+
+.play-page-container.play-page-container-play .hub-content {
+    padding-bottom: calc(var(--play-bottom-nav-clearance) + 1.5rem);
 }
 
 .hub-content.hub-content-adventure-board {
@@ -259,7 +264,7 @@
     flex-direction: column;
     justify-content: space-between;
     gap: 1.25rem;
-    padding: 0.2rem 0 0.15rem;
+    padding: 0.2rem 0 max(0.85rem, env(safe-area-inset-bottom, 0px));
     overflow: hidden;
     background: transparent;
     border-radius: 0;
