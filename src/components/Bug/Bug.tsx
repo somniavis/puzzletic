@@ -28,7 +28,10 @@ export const Bug: React.FC<BugProps> = ({ bug, onClick, cleanupTrigger }) => {
     if (isBeingSwatted) return;
 
     setIsBeingSwatted(true);
-    onClick(bug.id);
+
+    setTimeout(() => {
+      onClick(bug.id);
+    }, 500); // Let the newspaper hit animation play before unmounting
   };
 
   useEffect(() => {
