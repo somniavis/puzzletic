@@ -53,12 +53,15 @@ export const PetRoomHeader: React.FC<PetRoomHeaderProps> = ({
             <div className="character-profile" onClick={() => navigate('/profile')} style={{ cursor: 'pointer' }}>
                 <div className="profile-avatar">
                     {!showGiftBox ? (
-                        <JelloAvatar
-                            character={character}
-                            size="small"
-                            mood={mood}
-                            action={action}
-                        />
+                        <div className="profile-avatar-jello">
+                            <JelloAvatar
+                                character={character}
+                                size="small"
+                                mood={mood}
+                                action={action}
+                                responsive
+                            />
+                        </div>
                     ) : (
                         <div className="profile-avatar-placeholder" style={{ width: '100%', height: '100%', borderRadius: '50%', background: 'rgba(0,0,0,0.1)' }} />
                     )}
