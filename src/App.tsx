@@ -112,7 +112,28 @@ function AppContent() {
 
   // 앱 시작 시 사운드 프리로드
   useEffect(() => {
-    preloadSounds();
+    let hasStartedPreload = false;
+
+    const startSoundPreload = () => {
+      if (hasStartedPreload) return;
+      hasStartedPreload = true;
+
+      void preloadSounds();
+
+      window.removeEventListener('pointerdown', startSoundPreload);
+      window.removeEventListener('touchstart', startSoundPreload);
+      window.removeEventListener('keydown', startSoundPreload);
+    };
+
+    window.addEventListener('pointerdown', startSoundPreload, { passive: true });
+    window.addEventListener('touchstart', startSoundPreload, { passive: true });
+    window.addEventListener('keydown', startSoundPreload);
+
+    return () => {
+      window.removeEventListener('pointerdown', startSoundPreload);
+      window.removeEventListener('touchstart', startSoundPreload);
+      window.removeEventListener('keydown', startSoundPreload);
+    };
   }, []);
 
   // Sync speciesId AND evolutionStage from Nurturing Context

@@ -105,7 +105,7 @@ i18n
     interpolation: {
       escapeValue: false,
     },
-    debug: true,
+    debug: import.meta.env.DEV,
   });
 
 const originalChangeLanguage = i18n.changeLanguage.bind(i18n);

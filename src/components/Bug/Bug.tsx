@@ -28,10 +28,7 @@ export const Bug: React.FC<BugProps> = ({ bug, onClick, cleanupTrigger }) => {
     if (isBeingSwatted) return;
 
     setIsBeingSwatted(true);
-
-    setTimeout(() => {
-      onClick(bug.id);
-    }, 500); // 애니메이션 duration과 맞춤
+    onClick(bug.id);
   };
 
   useEffect(() => {

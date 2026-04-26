@@ -74,7 +74,7 @@ const isSfxEnabled = (): boolean => {
  */
 class SoundManager {
   private audioPool: Map<string, HTMLAudioElement[]> = new Map();
-  private poolSize: number = 3; // 각 사운드당 최대 3개 인스턴스
+  private poolSize: number = 1; // 초기 로드 비용을 줄이기 위해 기본 풀 크기를 최소화
   private preloadComplete: Set<string> = new Set();
   private isUnlocked: boolean = false; // 모바일 오디오 컨텍스트 활성화 여부
   private bgmAudio: HTMLAudioElement | null = null; // 배경음 전용 인스턴스
