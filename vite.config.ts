@@ -22,8 +22,10 @@ export default defineConfig({
       },
       workbox: {
         cleanupOutdatedCaches: true,
+        clientsClaim: true,
         globPatterns: ['**/*.{html,js,css,svg,png,webp,woff2,ico,webmanifest}'],
         navigateFallbackDenylist: [/^\/api\//],
+        skipWaiting: true,
         runtimeCaching: [
           {
             urlPattern: ({ request }) => request.mode === 'navigate',

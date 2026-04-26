@@ -6,8 +6,11 @@ import './i18n/config'
 import App from './App.tsx'
 
 if (import.meta.env.PROD) {
-  registerSW({
+  const updateSW = registerSW({
     immediate: true,
+    onNeedRefresh() {
+      void updateSW(true)
+    },
   })
 }
 
