@@ -172,7 +172,7 @@ export const PetWorldLayer: React.FC<PetWorldLayerProps> = ({
                     style={{
                         left: showGiftBox ? '50%' : `${position.x}%`,
                         bottom: showGiftBox ? '50%' : `${position.y}%`,
-                        transform: 'translate(-50%, 50%)',
+                        transform: 'translate3d(-50%, 50%, 0)',
                     }}
                     onClick={onCharacterClick}
                 >
@@ -231,7 +231,6 @@ export const PetWorldLayer: React.FC<PetWorldLayerProps> = ({
                         </div>
                     ) : (
                         <>
-                            <div className="jello-shadow"></div>
                             <div
                                 style={{ pointerEvents: 'auto' }}
                                 className={`jello-wrapper ${character.evolutionStage === 5 ? 'legendary' : ''} ${character.evolutionStage <= 2 ? 'baby' : ''}`}
@@ -240,6 +239,7 @@ export const PetWorldLayer: React.FC<PetWorldLayerProps> = ({
                                     onJelloClick();
                                 }}
                             >
+                                <div className="jello-shadow"></div>
                                 <JelloAvatar
                                     character={character}
                                     responsive={true}

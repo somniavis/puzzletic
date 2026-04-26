@@ -35,6 +35,10 @@ export const usePetInteraction = ({
     const [position, setPosition] = useState({ x: 50, y: 50 });
     const [isMoving, setIsMoving] = useState(false);
     const interactionLockRef = useRef(false);
+    const isMovingRef = useRef(false);
+    const actionRef = useRef(action);
+    const isShoweringRef = useRef(isShowering);
+    const moveEndTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     // Emotion Bubbles Logic (using existing hook)
     useEmotionBubbles({
@@ -45,29 +49,50 @@ export const usePetInteraction = ({
         bubble
     });
 
+    useEffect(() => {
+        actionRef.current = action;
+    }, [action]);
+
+    useEffect(() => {
+        isShoweringRef.current = isShowering;
+    }, [isShowering]);
+
     // Random Movement Logic
     useEffect(() => {
         if (showGiftBox) return;
 
         const moveRandomly = () => {
-            if (isMoving || action !== 'idle' || isShowering) return;
+            if (isMovingRef.current || actionRef.current !== 'idle' || isShoweringRef.current) return;
 
             if (Math.random() > 0.3) return; // 30% chance
 
             const newX = 6 + Math.random() * 88;
             const newY = 6 + Math.random() * 69;
 
+            isMovingRef.current = true;
             setIsMoving(true);
             setPosition({ x: newX, y: newY });
 
-            setTimeout(() => {
+            if (moveEndTimeoutRef.current) {
+                clearTimeout(moveEndTimeoutRef.current);
+            }
+
+            moveEndTimeoutRef.current = setTimeout(() => {
+                isMovingRef.current = false;
                 setIsMoving(false);
             }, 1000);
         };
 
         const interval = setInterval(moveRandomly, 3000);
-        return () => clearInterval(interval);
-    }, [isMoving, action, isShowering, showGiftBox]);
+        return () => {
+            clearInterval(interval);
+            if (moveEndTimeoutRef.current) {
+                clearTimeout(moveEndTimeoutRef.current);
+                moveEndTimeoutRef.current = null;
+            }
+            isMovingRef.current = false;
+        };
+    }, [showGiftBox]);
 
     // Click Handlers
     const handleCharacterClick = () => {
