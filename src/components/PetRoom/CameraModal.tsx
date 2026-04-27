@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { playButtonSound } from '../../utils/sound';
 import { useTranslation } from 'react-i18next';
-import './PetRoom.css'; // Reusing PetRoom styles for modal overlay
+import { PixelModalShell } from '../common/PixelModalShell';
+import './PetRoom.css';
 
-// Loading Spinner Component (Internal)
 const LoadingSpinner = () => {
     const { t } = useTranslation();
     return (
-        <div className="loading-spinner-container" style={{ margin: '2rem 0' }}>
+        <div className="loading-spinner-container camera-modal__loading">
             <div className="loading-spinner">🐾</div>
             <div className="loading-text">{t('camera.capturing')}</div>
         </div>
@@ -46,14 +46,12 @@ export const CameraModal: React.FC<CameraModalProps> = ({
         playButtonSound();
 
         const copyToClipboardFallback = (text: string) => {
-            const textArea = document.createElement("textarea");
+            const textArea = document.createElement('textarea');
             textArea.value = text;
-
-            // Avoid scrolling to bottom
-            textArea.style.top = "0";
-            textArea.style.left = "0";
-            textArea.style.position = "fixed";
-            textArea.style.opacity = "0";
+            textArea.style.top = '0';
+            textArea.style.left = '0';
+            textArea.style.position = 'fixed';
+            textArea.style.opacity = '0';
 
             document.body.appendChild(textArea);
             textArea.focus();
@@ -61,13 +59,9 @@ export const CameraModal: React.FC<CameraModalProps> = ({
 
             try {
                 const successful = document.execCommand('copy');
-                if (successful) {
-                    setCopyFeedback(t('share.linkCopied'));
-                } else {
-                    throw new Error('Fallback copy failed');
-                }
+                setCopyFeedback(successful ? t('share.linkCopied') : t('share.copyFailed'));
             } catch (err) {
-                console.error('Fallback: Oops, unable to copy', err);
+                console.error('Fallback: unable to copy', err);
                 setCopyFeedback(t('share.copyFailed'));
             }
 
@@ -75,7 +69,7 @@ export const CameraModal: React.FC<CameraModalProps> = ({
             setTimeout(() => setCopyFeedback(null), 2000);
         };
 
-        if (navigator.clipboard && navigator.clipboard.writeText) {
+        if (navigator.clipboard?.writeText) {
             try {
                 await navigator.clipboard.writeText(shareUrl);
                 setCopyFeedback(t('share.linkCopied'));
@@ -95,130 +89,46 @@ export const CameraModal: React.FC<CameraModalProps> = ({
     };
 
     return (
-        <div
-            className="food-menu-overlay camera-modal-overlay"
-            style={{ zIndex: 1000 }}
-            onClick={(e) => {
-                if (e.target === e.currentTarget) handleClose();
-            }}
+        <PixelModalShell
+            title={t('camera.title')}
+            onClose={handleClose}
+            className="pr-modal--camera"
         >
-            <div
-                className="food-menu"
-                style={{
-                    maxWidth: '450px',
-                    width: '90%',
-                    height: 'auto',
-                    maxHeight: '90vh',
-                    padding: '0',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    overflow: 'hidden'
-                }}
-                onClick={(e) => e.stopPropagation()}
-            >
-                <div className="food-menu-header">
-                    <h3>{t('camera.title')}</h3>
+            <div className="camera-modal">
+                <div className="camera-modal__preview">
+                    {isLoading || !imageDataUrl ? (
+                        <LoadingSpinner />
+                    ) : (
+                        <img
+                            src={imageDataUrl}
+                            alt="Captured Pet Room"
+                            className="camera-modal__image"
+                        />
+                    )}
+                </div>
+
+                <div className="camera-modal__actions">
                     <button
-                        className="close-btn"
-                        onClick={handleClose}
+                        className="camera-modal__action camera-modal__action--download"
+                        disabled={isLoading || !imageDataUrl}
+                        onClick={handleDownload}
                     >
-                        ✕
+                        <span className="camera-modal__action-icon">💾</span>
+                        <span className="camera-modal__action-label">{t('camera.save')}</span>
+                    </button>
+
+                    <button
+                        className={`camera-modal__action camera-modal__action--copy ${copyFeedback ? 'is-success' : ''}`}
+                        disabled={isLoading || !imageDataUrl}
+                        onClick={handleCopyLink}
+                    >
+                        <span className="camera-modal__action-icon">🔗</span>
+                        <span className="camera-modal__action-label">
+                            {copyFeedback || t('camera.copyLink')}
+                        </span>
                     </button>
                 </div>
-
-                <div style={{
-                    padding: '1.5rem',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    gap: '0.75rem',
-                    overflowY: 'auto'
-                }}>
-                    {/* Image Preview or Loading State */}
-                    <div style={{
-                        width: '100%',
-                        display: 'flex',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        minHeight: '200px', // Minimum height for loading state
-                        background: '#f0e6d2', // Light beige background for better contrast
-                        borderRadius: '12px',
-                        padding: '10px',
-                        border: '4px solid #8B4513',
-                        boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.1)'
-                    }}>
-                        {isLoading || !imageDataUrl ? (
-                            <LoadingSpinner />
-                        ) : (
-                            <img
-                                src={imageDataUrl}
-                                alt="Captured Pet Room"
-                                style={{
-                                    maxHeight: '50vh', // Limit height to ensure visibility without excessive scrolling
-                                    maxWidth: '100%',
-                                    width: 'auto',
-                                    height: 'auto',
-                                    display: 'block',
-                                    borderRadius: '8px',
-                                    boxShadow: '0 4px 8px rgba(0,0,0,0.2)'
-                                }}
-                            />
-                        )}
-                    </div>
-
-                    <div style={{ width: '100%', display: 'flex', flexDirection: 'row', gap: '10px' }}>
-                        {/* Download Button */}
-                        <button
-                            className="action-btn"
-                            disabled={isLoading || !imageDataUrl}
-                            style={{
-                                flex: 1,
-                                height: '60px',
-                                flexDirection: 'row',
-                                gap: '8px',
-                                background: 'linear-gradient(180deg, #4CAF50 0%, #388E3C 100%)',
-                                borderColor: '#2E7D32',
-                                border: '3px solid #1b5e20',
-                                borderRadius: '12px',
-                                boxShadow: '0 4px 0 #1b5e20, 0 6px 10px rgba(0, 0, 0, 0.2)',
-                                opacity: isLoading ? 0.6 : 1,
-                                cursor: isLoading ? 'not-allowed' : 'pointer',
-                                filter: isLoading ? 'grayscale(0.5)' : 'none'
-                            }}
-                            onClick={handleDownload}
-                        >
-                            <span className="action-icon" style={{ fontSize: '1.4rem', filter: 'none' }}>💾</span>
-                            <span className="action-label" style={{ color: '#fff', fontSize: '0.9rem', fontWeight: 'bold' }}>{t('camera.save')}</span>
-                        </button>
-
-                        {/* Copy Link Button */}
-                        <button
-                            className="action-btn"
-                            disabled={isLoading || !imageDataUrl}
-                            style={{
-                                flex: 1,
-                                height: '60px',
-                                flexDirection: 'row',
-                                gap: '8px',
-                                background: copyFeedback ? '#e8f5e9' : 'linear-gradient(180deg, #2196F3 0%, #1976D2 100%)',
-                                borderColor: '#0D47A1',
-                                border: '3px solid #0d47a1',
-                                borderRadius: '12px',
-                                boxShadow: '0 4px 0 #0d47a1, 0 6px 10px rgba(0, 0, 0, 0.2)',
-                                opacity: isLoading ? 0.6 : 1,
-                                cursor: isLoading ? 'not-allowed' : 'pointer',
-                                filter: isLoading ? 'grayscale(0.5)' : 'none'
-                            }}
-                            onClick={handleCopyLink}
-                        >
-                            <span className="action-icon" style={{ fontSize: '1.4rem', filter: 'none' }}>🔗</span>
-                            <span className="action-label" style={{ color: copyFeedback ? '#333' : '#fff', fontSize: '0.9rem', fontWeight: 'bold' }}>
-                                {copyFeedback || t('camera.copyLink')}
-                            </span>
-                        </button>
-                    </div>
-                </div>
             </div>
-        </div>
+        </PixelModalShell>
     );
 };

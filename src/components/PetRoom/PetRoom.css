@@ -317,6 +317,133 @@
   color: #6b3513;
 }
 
+.pr-modal--camera {
+  max-width: 450px;
+  max-height: 90vh;
+}
+
+.camera-modal {
+  flex: 1;
+  min-height: 0;
+  padding: 1.5rem;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 1rem;
+  overflow-y: auto;
+}
+
+.camera-modal__preview {
+  width: 100%;
+  height: min(52vh, 420px);
+  min-height: 220px;
+  box-sizing: border-box;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f0e6d2;
+  border-radius: 12px;
+  border: 4px solid #8b4513;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.camera-modal__loading {
+  margin: 2rem 0;
+}
+
+.camera-modal__image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  object-position: center;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.camera-modal__actions {
+  width: 100%;
+  display: flex;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.camera-modal__action {
+  flex: 1;
+  min-height: 56px;
+  padding: 0.8rem 0.9rem;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: 12px;
+  border: 3px solid;
+  box-shadow: 0 4px 0 currentColor, 0 6px 10px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  font-weight: 700;
+  transition: all 0.2s ease;
+}
+
+.camera-modal__action:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  filter: grayscale(0.5);
+}
+
+.camera-modal__action--download {
+  background: linear-gradient(180deg, #4caf50 0%, #388e3c 100%);
+  border-color: #1b5e20;
+  color: #1b5e20;
+}
+
+.camera-modal__action--copy {
+  background: linear-gradient(180deg, #2196f3 0%, #1976d2 100%);
+  border-color: #0d47a1;
+  color: #0d47a1;
+}
+
+.camera-modal__action--copy.is-success {
+  background: #e8f5e9;
+  color: #2f4735;
+}
+
+.camera-modal__action-icon {
+  font-size: 1.4rem;
+  line-height: 1;
+}
+
+.camera-modal__action-label {
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.camera-modal__action--copy.is-success .camera-modal__action-label {
+  color: #333;
+}
+
+@media (max-width: 480px) {
+  .camera-modal {
+    padding: 1rem;
+    gap: 0.85rem;
+  }
+
+  .camera-modal__preview {
+    height: min(46vh, 340px);
+    min-height: 180px;
+  }
+
+  .camera-modal__actions {
+    flex-direction: column;
+  }
+}
+
 .pr-modal .pet-shop-grid {
   padding: 0;
   max-height: none;
