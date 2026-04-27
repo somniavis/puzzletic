@@ -27,7 +27,7 @@ export const PremiumPurchaseModal: React.FC<PremiumPurchaseModalProps> = ({ isOp
         >
             <div className="premium-purchase-modal__content">
                 <div className="premium-purchase-modal__hero" aria-hidden="true">🌍</div>
-                <h2 className="premium-purchase-modal__title">{`one for you,\none for a friend in need.`}</h2>
+                <h2 className="premium-purchase-modal__title">{t('common.modal.title')}</h2>
 
                 <div className="premium-purchase-modal__benefits">
                     <div className="premium-purchase-modal__benefit">
