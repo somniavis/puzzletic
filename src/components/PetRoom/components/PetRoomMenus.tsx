@@ -6,6 +6,7 @@ import { FOOD_ITEMS, FOOD_CATEGORIES, type FoodCategory, type FoodItem } from '.
 import { MEDICINE_ITEMS, type MedicineItem } from '../../../types/medicine';
 import { CLEANING_TOOLS, type CleaningTool } from '../../../types/cleaning';
 import { SHOP_ITEMS, SHOP_CATEGORIES, PET_ITEMS, type ShopCategory, type ShopItem } from '../../../types/shop';
+import { PremiumLockOverlay } from '../../Premium/PremiumLockOverlay';
 import { playButtonSound } from '../../../utils/sound';
 import { useNurturing } from '../../../contexts/NurturingContext';
 import { useAuth } from '../../../contexts/AuthContext';
@@ -35,13 +36,23 @@ interface PetRoomMenusProps {
     onGiveMedicine: (medicine: MedicineItem, onClose: () => void) => void;
     onClean: (tool: CleaningTool, onClose: () => void) => void;
     onShopItemClick: (item: ShopItem) => void;
+    onOpenPremiumModal: () => void;
 
     // Context
     nurturing: ReturnType<typeof useNurturing>;
     action: CharacterAction;
     flyingFood: any;
 }
-const PetShopContent: React.FC<{ nurturing: any, onPetGacha: () => void }> = ({ nurturing, onPetGacha }) => {
+
+const PET_GACHA_PRICE = 350;
+const PREMIUM_LOCKED_FOOD_CATEGORIES = new Set<FoodCategory>(['bakery', 'meal', 'dessert']);
+
+const isPremiumLockedFoodCategory = (category: FoodCategory, isPremium: boolean) =>
+    !isPremium && PREMIUM_LOCKED_FOOD_CATEGORIES.has(category);
+
+type NurturingState = ReturnType<typeof useNurturing>;
+
+const PetShopContent: React.FC<{ nurturing: NurturingState, onPetGacha: () => void }> = ({ nurturing, onPetGacha }) => {
     const { currentPetId } = nurturing;
     const { t } = useTranslation();
 
@@ -64,7 +75,11 @@ const PetShopContent: React.FC<{ nurturing: any, onPetGacha: () => void }> = ({ 
             {/* Top: Gacha Button */}
             <div className="pet-gacha-section">
 
-                <button className="gacha-button" onClick={onPetGacha}>
+                <button
+                    className="gacha-button"
+                    onClick={onPetGacha}
+                    disabled={nurturing.gro < PET_GACHA_PRICE}
+                >
                     <span className="gacha-icon">🐾</span>
                     <div className="gacha-text">
                         <span className="gacha-title">{t('shop.items.pet.gacha.title')}</span>
@@ -76,35 +91,25 @@ const PetShopContent: React.FC<{ nurturing: any, onPetGacha: () => void }> = ({ 
 
             <div className="shop-divider"></div>
 
-            {/* Bottom: Showcase */}
-            {/* Bottom: Showcase */}
-            <div
-                className="food-items-grid pet-shop-grid"
-                style={{ padding: 0, maxHeight: 'none', overflow: 'visible', overflowY: 'visible' }}
-            >
+            <div className="food-items-grid pet-shop-grid">
                 {PET_ITEMS.filter(pet => !pet.isHidden).map((pet) => {
-                    const isCurrent = currentPetId === pet.id || (currentPetId && currentPetId.startsWith('special_pet_')); // Keep highlighted if special variant is active? 
-                    // check logic: if we want to highlight the 'special pet' button when a variant is active.
-                    // But wait, the button for special pet has id 'r2_pet_1'.
-                    // If currentPetId is 'special_pet_3', 'r2_pet_1' button should probably be highlighted.
-
+                    const isCurrent = currentPetId === pet.id || Boolean(currentPetId?.startsWith('special_pet_'));
                     const effectiveIsCurrent = currentPetId === pet.id || (pet.id === 'r2_pet_1' && currentPetId?.startsWith('special_pet_'));
 
                     return (
                         <button
                             key={pet.id}
-                            className={`food-item ${effectiveIsCurrent ? 'active-item' : ''}`}
+                            className={`food-item pet-shop-item ${effectiveIsCurrent ? 'active-item pet-shop-item--active' : ''}`}
                             onClick={() => { /* No click action for now as it is gacha */ }}
-                            style={effectiveIsCurrent ? { borderColor: '#FFD700', backgroundColor: '#FFF9E6', cursor: 'default' } : { cursor: 'default' }}
                         >
-                            <span className="food-item-icon" style={{ fontSize: '2.5rem' }}>{pet.icon}</span>
-                                <span className="food-item-name">{t(pet.nameKey)}</span>
-                                <div className="food-item-effects">
-                                    {isCurrent && (
-                                        <span className="food-item-price">✅ {t('shop.status.active')}</span>
-                                    )}
-                                </div>
-                            </button>
+                            <span className="food-item-icon pet-shop-item__icon">{pet.icon}</span>
+                            <span className="food-item-name">{t(pet.nameKey)}</span>
+                            <div className="food-item-effects">
+                                {isCurrent && (
+                                    <span className="food-item-price">✅ {t('shop.status.active')}</span>
+                                )}
+                            </div>
+                        </button>
                     );
                 })}
             </div>
@@ -124,12 +129,14 @@ export const PetRoomMenus: React.FC<PetRoomMenusProps> = ({
     onGiveMedicine,
     onClean,
     onShopItemClick,
+    onOpenPremiumModal,
     nurturing,
     action,
     flyingFood
 }) => {
     const { t } = useTranslation();
     const { isAdmin } = useAuth();
+    const isPremium = nurturing.subscription.isPremium;
 
     const filteredFoods = useMemo(() => FOOD_ITEMS.filter(food => food.category === selectedFoodCategory), [selectedFoodCategory]);
     const filteredShopItems = useMemo(
@@ -148,6 +155,7 @@ export const PetRoomMenus: React.FC<PetRoomMenusProps> = ({
             }),
         [isAdmin, selectedShopCategory]
     );
+    const isSelectedFoodCategoryLocked = isPremiumLockedFoodCategory(selectedFoodCategory, isPremium);
 
     return (
         <>
@@ -157,18 +165,26 @@ export const PetRoomMenus: React.FC<PetRoomMenusProps> = ({
                     title={t('food.menu.title')}
                     onClose={() => setShowFoodMenu(false)}
                     className="pr-modal--food"
+                    contentOverlay={isSelectedFoodCategoryLocked ? <PremiumLockOverlay variant="food" onClick={onOpenPremiumModal} /> : null}
                     headerContent={
                         <div className="food-categories">
-                            {(Object.keys(FOOD_CATEGORIES) as FoodCategory[]).map((category) => (
-                                <button
-                                    key={category}
-                                    className={`category-tab ${selectedFoodCategory === category ? 'active' : ''}`}
-                                    onClick={() => { playButtonSound(); setSelectedFoodCategory(category); }}
-                                >
-                                    <span className="category-icon">{FOOD_CATEGORIES[category].icon}</span>
-                                    <span className="category-name">{t(FOOD_CATEGORIES[category].nameKey)}</span>
-                                </button>
-                            ))}
+                            {(Object.keys(FOOD_CATEGORIES) as FoodCategory[]).map((category) => {
+                                const isLocked = isPremiumLockedFoodCategory(category, isPremium);
+
+                                return (
+                                    <button
+                                        key={category}
+                                        className={`category-tab ${selectedFoodCategory === category ? 'active' : ''}`}
+                                        onClick={() => {
+                                            playButtonSound();
+                                            setSelectedFoodCategory(category);
+                                        }}
+                                    >
+                                        <span className="category-icon">{isLocked ? '🔒' : FOOD_CATEGORIES[category].icon}</span>
+                                        <span className="category-name">{t(FOOD_CATEGORIES[category].nameKey)}</span>
+                                    </button>
+                                );
+                            })}
                         </div>
                     }
                 >
@@ -281,17 +297,20 @@ export const PetRoomMenus: React.FC<PetRoomMenusProps> = ({
                         />
                     ) : (
                         filteredShopItems.map((item) => (
+                            (() => {
+                                const isOwned = nurturing.inventory.includes(item.id) || (item.category === 'house' && item.id === 'tent');
+                                const isEquipped = (item.category === 'ground' && nurturing.currentLand === item.id) ||
+                                    (item.category === 'house' && nurturing.currentHouseId === item.id);
+                                const isDisabled = !isOwned && nurturing.gro < item.price;
+
+                                return (
                             <button
                                 key={item.id}
-                                className={`food-item ${(item.category === 'ground' && nurturing.currentLand === item.id) ||
-                                    (item.category === 'house' && nurturing.currentHouseId === item.id)
-                                    ? 'active-item' : ''
-                                    }`}
+                                className={`food-item ${isEquipped ? 'active-item' : ''}`}
                                 onClick={() => onShopItemClick(item)}
+                                disabled={isDisabled}
                                 style={
-                                    (item.category === 'ground' && nurturing.currentLand === item.id) ||
-                                        (item.category === 'house' && nurturing.currentHouseId === item.id)
-                                        ? { borderColor: '#FFD700', backgroundColor: '#FFF9E6' } : {}
+                                    isEquipped ? { borderColor: '#FFD700', backgroundColor: '#FFF9E6' } : {}
                                 }
                             >
                                 <span className="food-item-icon">
@@ -299,9 +318,8 @@ export const PetRoomMenus: React.FC<PetRoomMenusProps> = ({
                                 </span>
                                 <span className="food-item-name">{t(item.nameKey)}</span>
                                 <div className="food-item-effects">
-                                    {nurturing.inventory.includes(item.id) || (item.category === 'house' && item.id === 'tent') ? (
-                                        (item.category === 'ground' && nurturing.currentLand === item.id) ||
-                                            (item.category === 'house' && nurturing.currentHouseId === item.id) ? (
+                                    {isOwned ? (
+                                        isEquipped ? (
                                             <span className="food-item-price">✅ {t('shop.status.owned')}</span>
                                         ) : (
                                             <span className="food-item-price">{t('shop.status.owned')}</span>
@@ -311,6 +329,8 @@ export const PetRoomMenus: React.FC<PetRoomMenusProps> = ({
                                     )}
                                 </div>
                             </button>
+                                );
+                            })()
                         ))
                     )}
                 </MenuModal >

@@ -131,8 +131,19 @@
 }
 
 .pr-modal--premium .pr-modal__header {
+  position: relative;
+  justify-content: flex-end;
   padding: 0.72rem 1rem 0.54rem;
   border-bottom: none;
+}
+
+.pr-modal--premium .pr-modal__header-main {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  min-width: 0;
+  max-width: calc(100% - 5rem);
+  justify-content: center;
 }
 
 .pr-modal--premium .pr-modal__title {

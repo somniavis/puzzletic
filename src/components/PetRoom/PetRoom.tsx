@@ -459,6 +459,7 @@ export const PetRoom: React.FC<PetRoomProps> = ({
         onGiveMedicine={actions.handlers.handleGiveMedicine}
         onClean={actions.handlers.handleClean}
         onShopItemClick={actions.handlers.handleShopItemClick}
+        onOpenPremiumModal={handlePremiumClick}
         nurturing={nurturing}
         action={action}
         flyingFood={actions.states.flyingFood}

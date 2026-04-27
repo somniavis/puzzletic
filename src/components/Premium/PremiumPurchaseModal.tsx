@@ -18,20 +18,16 @@ export const PremiumPurchaseModal: React.FC<PremiumPurchaseModalProps> = ({ isOp
 
     return (
         <PixelModalShell
-            title={t('common.modal.title')}
+            title={t('profile.status.angelPass')}
             onClose={() => {
                 playButtonSound();
                 onClose();
             }}
             className="pr-modal--premium premium-purchase-modal"
-            headerStart={<span aria-hidden="true" style={{ fontSize: '2rem', lineHeight: 1 }}>🌍</span>}
         >
             <div className="premium-purchase-modal__content">
-                <h2 className="premium-purchase-modal__title">{t('common.modal.title')}</h2>
-
-                <div className="premium-purchase-modal__badge">
-                    {t('profile.status.angelPass')}
-                </div>
+                <div className="premium-purchase-modal__hero" aria-hidden="true">🌍</div>
+                <h2 className="premium-purchase-modal__title">{`one for you,\none for a friend in need.`}</h2>
 
                 <div className="premium-purchase-modal__benefits">
                     <div className="premium-purchase-modal__benefit">

@@ -6,37 +6,29 @@
 .premium-purchase-modal__content {
   flex: 1;
   overflow-y: auto;
-  padding: 0.5rem 1.25rem 0;
+  padding: 0.75rem 1.25rem 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   font-size: 0.85rem;
 }
 
+.premium-purchase-modal__hero {
+  margin-bottom: 0.45rem;
+  font-size: 2rem;
+  line-height: 1;
+  filter: drop-shadow(0 4px 10px rgba(255, 215, 0, 0.22));
+}
+
 .premium-purchase-modal__title {
-  margin: 0 0 0.5rem;
+  margin: 0 0 0.65rem;
   font-size: 1.22rem;
   font-weight: 800;
   white-space: pre-line;
+  line-height: 1.35;
   background: linear-gradient(to right, #ffd700, #fdb931);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-}
-
-.premium-purchase-modal__badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0.5rem 0 0.9rem;
-  padding: 7px 16px;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.45);
-  background: linear-gradient(135deg, #8ff3dc, #31cdb4);
-  box-shadow: 0 3px 12px rgba(49, 205, 180, 0.36);
-  color: #063b35;
-  font-size: 0.86rem;
-  font-weight: 900;
-  line-height: 1;
 }
 
 .premium-purchase-modal__benefits {

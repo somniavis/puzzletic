@@ -10,6 +10,7 @@ interface MenuModalProps {
     headerContent?: React.ReactNode; // For category tabs in Shop
     variant?: 'grid' | 'custom';
     className?: string;
+    contentOverlay?: React.ReactNode;
 }
 
 export const MenuModal: React.FC<MenuModalProps> = ({
@@ -19,6 +20,7 @@ export const MenuModal: React.FC<MenuModalProps> = ({
     headerContent,
     variant = 'grid',
     className = '',
+    contentOverlay,
 }) => {
     return (
         <PixelModalShell
@@ -28,9 +30,18 @@ export const MenuModal: React.FC<MenuModalProps> = ({
         >
             {headerContent}
 
-            <div className={variant === 'grid' ? "food-items-grid" : "menu-modal-content"}>
-                {children}
-            </div>
+            {variant === 'grid' ? (
+                <div className="menu-modal-grid-shell">
+                    <div className="food-items-grid">
+                        {children}
+                    </div>
+                    {contentOverlay}
+                </div>
+            ) : (
+                <div className="menu-modal-content">
+                    {children}
+                </div>
+            )}
         </PixelModalShell>
     );
 };
