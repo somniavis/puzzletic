@@ -667,6 +667,7 @@ export const idID = {
     capturing: 'Mengambil gambar...',
   },
   share: {
+    share: 'Bagikan',
     linkCopied: 'Tautan Disalin!',
     copyFailed: 'Gagal Menyalin',
     invite: {

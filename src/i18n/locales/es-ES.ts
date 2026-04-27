@@ -667,6 +667,7 @@ export const esES = {
     capturing: 'Capturando...',
   },
   share: {
+    share: 'Compartir',
     linkCopied: '¡Enlace copiado!',
     copyFailed: 'Error al copiar',
     invite: {

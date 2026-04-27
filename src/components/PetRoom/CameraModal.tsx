@@ -124,7 +124,7 @@ export const CameraModal: React.FC<CameraModalProps> = ({
                     >
                         <span className="camera-modal__action-icon">🔗</span>
                         <span className="camera-modal__action-label">
-                            {copyFeedback || t('camera.copyLink')}
+                            {copyFeedback || t('share.share')}
                         </span>
                     </button>
                 </div>

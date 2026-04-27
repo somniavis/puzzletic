@@ -882,6 +882,7 @@ export const viVN = {
     capturing: 'Đang chụp...',
   },
   share: {
+    share: 'Chia sẻ',
     linkCopied: 'Đã sao chép liên kết!',
     copyFailed: 'Sao chép thất bại',
     invite: {

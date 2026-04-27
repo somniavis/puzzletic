@@ -667,6 +667,7 @@ export const frFR = {
     capturing: 'Capture en cours...',
   },
   share: {
+    share: 'Partager',
     linkCopied: 'Lien copié !',
     copyFailed: 'Échec de la copie',
     invite: {

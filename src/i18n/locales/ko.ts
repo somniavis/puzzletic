@@ -669,6 +669,7 @@ const koBase = {
         capturing: '촬영 중...',
     },
     share: {
+        share: '공유',
         linkCopied: '링크 복사됨!',
         copyFailed: '복사 실패',
         invite: {

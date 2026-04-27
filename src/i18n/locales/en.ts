@@ -667,6 +667,7 @@ export const en = {
     capturing: 'Capturing...',
   },
   share: {
+    share: 'Share',
     linkCopied: 'Link Copied!',
     copyFailed: 'Failed to Copy',
     invite: {

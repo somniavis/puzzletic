@@ -13,6 +13,7 @@ import './PlayPage.css'; // Reuse basic page styles
 import './SharePage.css';
 
 export const SharePage: React.FC = () => {
+    const landingPageUrl = 'https://grogrojello.com';
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
     const { t } = useTranslation();
@@ -116,7 +117,12 @@ export const SharePage: React.FC = () => {
                     </p>
                 </div>
 
-                <button className="share-action-btn">
+                <button
+                    className="share-action-btn"
+                    onClick={() => {
+                        window.location.href = landingPageUrl;
+                    }}
+                >
                     {t('share.cta')}
                 </button>
             </div>

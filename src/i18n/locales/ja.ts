@@ -667,6 +667,7 @@ const jaBase = {
         capturing: '撮影中...',
     },
     share: {
+        share: '共有',
         linkCopied: 'コピーしました！',
         copyFailed: 'コピー失敗',
         invite: {

@@ -667,6 +667,7 @@ export const ptPT = {
     capturing: 'A capturar...',
   },
   share: {
+    share: 'Partilhar',
     linkCopied: 'Ligação copiada!',
     copyFailed: 'Falha ao copiar',
     invite: {

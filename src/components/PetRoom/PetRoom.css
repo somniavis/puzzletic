@@ -438,10 +438,6 @@
     height: min(46vh, 340px);
     min-height: 180px;
   }
-
-  .camera-modal__actions {
-    flex-direction: column;
-  }
 }
 
 .pr-modal .pet-shop-grid {
