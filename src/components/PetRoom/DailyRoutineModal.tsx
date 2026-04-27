@@ -64,7 +64,7 @@ export const DailyRoutineModal: React.FC<DailyRoutineModalProps> = ({
       title={t('dailyRoutine.title')}
       onClose={onClose}
       variant="custom"
-      className="daily-routine-menu"
+      className="daily-routine-menu pr-modal--daily"
     >
       <div className="daily-routine-modal">
         <div className="daily-routine-task-list">

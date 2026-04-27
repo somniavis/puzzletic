@@ -1,5 +1,6 @@
 import React from 'react';
 import { playButtonSound } from '../../utils/sound';
+import { PixelModalShell } from '../common/PixelModalShell';
 import './PetRoom.css'; // Reusing existing styles
 
 interface MenuModalProps {
@@ -20,19 +21,16 @@ export const MenuModal: React.FC<MenuModalProps> = ({
     className = '',
 }) => {
     return (
-        <div className="food-menu-overlay" onClick={() => { playButtonSound(); onClose(); }}>
-            <div className={`food-menu ${className}`.trim()} onClick={(e) => e.stopPropagation()}>
-                <div className="food-menu-header">
-                    <h3>{title}</h3>
-                    <button className="close-btn" onClick={() => { playButtonSound(); onClose(); }}>✕</button>
-                </div>
+        <PixelModalShell
+            title={title}
+            onClose={() => { playButtonSound(); onClose(); }}
+            className={className}
+        >
+            {headerContent}
 
-                {headerContent}
-
-                <div className={variant === 'grid' ? "food-items-grid" : "menu-modal-content"}>
-                    {children}
-                </div>
+            <div className={variant === 'grid' ? "food-items-grid" : "menu-modal-content"}>
+                {children}
             </div>
-        </div>
+        </PixelModalShell>
     );
 };

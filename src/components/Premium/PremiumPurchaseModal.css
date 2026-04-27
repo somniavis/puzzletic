@@ -1,0 +1,94 @@
+.premium-purchase-modal {
+  text-align: center;
+  color: #fff;
+}
+
+.premium-purchase-modal__content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0.5rem 1.25rem 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 0.85rem;
+}
+
+.premium-purchase-modal__title {
+  margin: 0 0 0.5rem;
+  font-size: 1.22rem;
+  font-weight: 800;
+  white-space: pre-line;
+  background: linear-gradient(to right, #ffd700, #fdb931);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.premium-purchase-modal__badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0.5rem 0 0.9rem;
+  padding: 7px 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  background: linear-gradient(135deg, #8ff3dc, #31cdb4);
+  box-shadow: 0 3px 12px rgba(49, 205, 180, 0.36);
+  color: #063b35;
+  font-size: 0.86rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.premium-purchase-modal__benefits {
+  width: 100%;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.05);
+  text-align: left;
+}
+
+.premium-purchase-modal__benefit {
+  padding: 0.5rem 0;
+}
+
+.premium-purchase-modal__benefit + .premium-purchase-modal__benefit {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.premium-purchase-modal__footer {
+  flex-shrink: 0;
+  margin-top: auto;
+  padding: 0 1.25rem 1.5rem;
+}
+
+.premium-purchase-modal__cta {
+  width: 100%;
+  padding: 16px;
+  border-radius: 16px;
+  border: 3px solid #d4961f;
+  background: linear-gradient(180deg, #ffd700 0%, #ffa500 100%);
+  box-shadow: 0 4px 0 #b4761f, 0 5px 15px rgba(255, 165, 0, 0.6);
+  color: #4d3e2f;
+  font-size: 1.08rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.1s ease;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.premium-purchase-modal__cta:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.1);
+  box-shadow: 0 6px 0 #b4761f, 0 8px 20px rgba(255, 165, 0, 0.7);
+}
+
+.premium-purchase-modal__cta:active {
+  transform: translateY(4px);
+  box-shadow: 0 0 0 #b4761f, 0 2px 5px rgba(255, 165, 0, 0.4);
+}

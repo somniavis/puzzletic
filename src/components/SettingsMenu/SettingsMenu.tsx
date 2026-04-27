@@ -6,6 +6,7 @@ import { useSound } from '../../contexts/SoundContext';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNurturing } from '../../contexts/NurturingContext';
 import type { PlayLearnMode } from '../../services/playUiPreferencesService';
+import { PixelModalShell } from '../common/PixelModalShell';
 import './SettingsMenu.css';
 
 import { useNavigate } from 'react-router-dom';
@@ -175,25 +176,26 @@ export const SettingsMenu: React.FC<SettingsMenuProps> = ({
   };
 
   const menuContent = (
-    <div className="food-menu-overlay" onClick={handleClose}>
-      <div className="food-menu" onClick={(e) => e.stopPropagation()}>
-        <div className="food-menu-header">
-          <div className="header-left">
-            {currentView !== 'main' && (
-              <button className="back-btn" onClick={handleBack}>
-                ←
-              </button>
-            )}
-            <h3>
-              {currentView === 'main' && t('settings.title')}
-              {currentView === 'sound' && t('settings.sound.title')}
-              {currentView === 'language' && t('settings.language.title')}
-              {currentView === 'mode' && t('settings.mode.title')}
-              {currentView === 'admin' && t('settings.admin.title')}
-            </h3>
-          </div>
-          <button className="close-btn" onClick={handleClose}>✕</button>
-        </div>
+    <PixelModalShell
+      title={
+        <>
+          {currentView === 'main' && t('settings.title')}
+          {currentView === 'sound' && t('settings.sound.title')}
+          {currentView === 'language' && t('settings.language.title')}
+          {currentView === 'mode' && t('settings.mode.title')}
+          {currentView === 'admin' && t('settings.admin.title')}
+        </>
+      }
+      onClose={handleClose}
+      className="pr-modal--settings"
+      headerStart={
+        currentView !== 'main' ? (
+          <button className="pr-modal__nav-btn back-btn" onClick={handleBack}>
+            ←
+          </button>
+        ) : undefined
+      }
+    >
 
         {/* Main Menu */}
         {currentView === 'main' && (
@@ -461,8 +463,7 @@ export const SettingsMenu: React.FC<SettingsMenuProps> = ({
             </button>
           </div>
         )}
-      </div>
-    </div>
+    </PixelModalShell>
   );
 
   return createPortal(menuContent, document.body);

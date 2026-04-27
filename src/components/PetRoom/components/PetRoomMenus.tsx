@@ -78,7 +78,10 @@ const PetShopContent: React.FC<{ nurturing: any, onPetGacha: () => void }> = ({ 
 
             {/* Bottom: Showcase */}
             {/* Bottom: Showcase */}
-            <div className="food-items-grid" style={{ padding: '0 4px 20px 4px', maxHeight: 'none', marginTop: 0 }}>
+            <div
+                className="food-items-grid pet-shop-grid"
+                style={{ padding: 0, maxHeight: 'none', overflow: 'visible', overflowY: 'visible' }}
+            >
                 {PET_ITEMS.filter(pet => !pet.isHidden).map((pet) => {
                     const isCurrent = currentPetId === pet.id || (currentPetId && currentPetId.startsWith('special_pet_')); // Keep highlighted if special variant is active? 
                     // check logic: if we want to highlight the 'special pet' button when a variant is active.
@@ -153,6 +156,7 @@ export const PetRoomMenus: React.FC<PetRoomMenusProps> = ({
                 <MenuModal
                     title={t('food.menu.title')}
                     onClose={() => setShowFoodMenu(false)}
+                    className="pr-modal--food"
                     headerContent={
                         <div className="food-categories">
                             {(Object.keys(FOOD_CATEGORIES) as FoodCategory[]).map((category) => (
@@ -245,7 +249,8 @@ export const PetRoomMenus: React.FC<PetRoomMenusProps> = ({
                 <MenuModal
                     title={t('shop.menu.title')}
                     onClose={() => setShowShopMenu(false)}
-                    variant="custom"
+                    variant={selectedShopCategory === 'pet' ? 'custom' : 'grid'}
+                    className={`pr-modal--shop ${selectedShopCategory === 'pet' ? 'pr-modal--shop-pet' : ''}`.trim()}
                     headerContent={
                         <div className="food-categories">
                             {(Object.keys(SHOP_CATEGORIES) as ShopCategory[]).map((category) => (
@@ -261,57 +266,53 @@ export const PetRoomMenus: React.FC<PetRoomMenusProps> = ({
                         </div>
                     }
                 >
-                    <div className="shop-content">
-                        {selectedShopCategory === 'pet' ? (
-                            <PetShopContent
-                                nurturing={nurturing}
-                                onPetGacha={async () => {
-                                    const result = nurturing.purchaseRandomPet();
-                                    if (result.success) {
-                                        playButtonSound();
-                                        // Success alert removed as per request
-                                    } else {
-                                        alert(result.message);
-                                    }
-                                }}
-                            />
-                        ) : (
-                            <div className="food-items-grid" style={{ padding: 0, maxHeight: 'none' }}>
-                                {filteredShopItems.map((item) => (
-                                    <button
-                                        key={item.id}
-                                        className={`food-item ${(item.category === 'ground' && nurturing.currentLand === item.id) ||
-                                            (item.category === 'house' && nurturing.currentHouseId === item.id)
-                                            ? 'active-item' : ''
-                                            }`}
-                                        onClick={() => onShopItemClick(item)}
-                                        style={
-                                            (item.category === 'ground' && nurturing.currentLand === item.id) ||
-                                                (item.category === 'house' && nurturing.currentHouseId === item.id)
-                                                ? { borderColor: '#FFD700', backgroundColor: '#FFF9E6' } : {}
-                                        }
-                                    >
-                                        <span className="food-item-icon">
-                                            {item.icon}
-                                        </span>
-                                        <span className="food-item-name">{t(item.nameKey)}</span>
-                                        <div className="food-item-effects">
-                                            {nurturing.inventory.includes(item.id) || (item.category === 'house' && item.id === 'tent') ? (
-                                                (item.category === 'ground' && nurturing.currentLand === item.id) ||
-                                                    (item.category === 'house' && nurturing.currentHouseId === item.id) ? (
-                                                    <span className="food-item-price">✅ {t('shop.status.owned')}</span>
-                                                ) : (
-                                                    <span className="food-item-price">{t('shop.status.owned')}</span>
-                                                )
-                                            ) : (
-                                                <span className="food-item-price">💰 {item.price}</span>
-                                            )}
-                                        </div>
-                                    </button>
-                                ))}
-                            </div>
-                        )}
-                    </div>
+                    {selectedShopCategory === 'pet' ? (
+                        <PetShopContent
+                            nurturing={nurturing}
+                            onPetGacha={async () => {
+                                const result = nurturing.purchaseRandomPet();
+                                if (result.success) {
+                                    playButtonSound();
+                                    // Success alert removed as per request
+                                } else {
+                                    alert(result.message);
+                                }
+                            }}
+                        />
+                    ) : (
+                        filteredShopItems.map((item) => (
+                            <button
+                                key={item.id}
+                                className={`food-item ${(item.category === 'ground' && nurturing.currentLand === item.id) ||
+                                    (item.category === 'house' && nurturing.currentHouseId === item.id)
+                                    ? 'active-item' : ''
+                                    }`}
+                                onClick={() => onShopItemClick(item)}
+                                style={
+                                    (item.category === 'ground' && nurturing.currentLand === item.id) ||
+                                        (item.category === 'house' && nurturing.currentHouseId === item.id)
+                                        ? { borderColor: '#FFD700', backgroundColor: '#FFF9E6' } : {}
+                                }
+                            >
+                                <span className="food-item-icon">
+                                    {item.icon}
+                                </span>
+                                <span className="food-item-name">{t(item.nameKey)}</span>
+                                <div className="food-item-effects">
+                                    {nurturing.inventory.includes(item.id) || (item.category === 'house' && item.id === 'tent') ? (
+                                        (item.category === 'ground' && nurturing.currentLand === item.id) ||
+                                            (item.category === 'house' && nurturing.currentHouseId === item.id) ? (
+                                            <span className="food-item-price">✅ {t('shop.status.owned')}</span>
+                                        ) : (
+                                            <span className="food-item-price">{t('shop.status.owned')}</span>
+                                        )
+                                    ) : (
+                                        <span className="food-item-price">💰 {item.price}</span>
+                                    )}
+                                </div>
+                            </button>
+                        ))
+                    )}
                 </MenuModal >
             )}
 
